@@ -1,0 +1,75 @@
+import JJMath.Uniformization.Biholomorphic
+import JJMath.Uniformization.Hyperbolic
+import JJMath.Uniformization.LiouvilleExistence
+import JJMath.Uniformization.SurfaceDiskSurgery
+import JJMath.Uniformization.SimplyConnectedExhaustion
+import JJMath.Uniformization.BoundaryComponentPeriod
+import JJMath.Uniformization.BoundaryComponentPrimitive
+import JJMath.Uniformization.SmoothBoundaryProductChart
+import JJMath.Uniformization.SmoothFrontierOneManifold
+import JJMath.Uniformization.SmoothFrontierCollar
+import JJMath.Uniformization.SmoothFrontierFlow
+import JJMath.Uniformization.SmoothFrontierLocalCollar
+import JJMath.Uniformization.SmoothFrontierTangentField
+import JJMath.Uniformization.SmoothSurfaceVectorFieldFlow
+import JJMath.Uniformization.SmoothFrontierPeriodicFlow
+import JJMath.Uniformization.SmoothFrontierMayerVietoris
+import JJMath.Uniformization.SurfaceEndPath
+import JJMath.Uniformization.ExteriorComponentProperLine
+import JJMath.Uniformization.CompactSupportTransfer
+import JJMath.Uniformization.AnnularMassTransport
+import JJMath.Uniformization.ExteriorMassTransport
+import JJMath.Uniformization.ExteriorMassConsolidation
+import JJMath.Uniformization.ExteriorAngularExtension
+import JJMath.Uniformization.PlanarVortexPair
+import JJMath.Uniformization.SmoothUnitPhaseCirclePrimitive
+import JJMath.Uniformization.CoordinateVortexPair
+import JJMath.Uniformization.HolomorphicVortexSeam
+import JJMath.Uniformization.AtlasVortexPair
+import JJMath.Uniformization.LocallyStableSmoothPhase
+import JJMath.Uniformization.AtlasVortexTransport
+import JJMath.Uniformization.AtlasVortexChainSubdivision
+import JJMath.Uniformization.EscapingAtlasVortexTransport
+import JJMath.Uniformization.ExteriorVortexPrimitive
+import JJMath.Uniformization.PlanarVortexGerm
+import JJMath.Uniformization.AtlasVortexGerm
+import JJMath.Uniformization.PuncturedVortexGerm
+import JJMath.Uniformization.PuncturedVortexAngularClass
+import JJMath.Uniformization.H1ZeroExhaustion
+import JJMath.Uniformization.AnnularProperLineTube
+import JJMath.Uniformization.PoleProperLineTube
+import JJMath.Manifold.ProperLineThom
+import JJMath.Manifold.AnnularCohomologyMayerVietoris
+import JJMath.Manifold.DeRhamTwoOpenCircle
+import JJMath.Uniformization.PoissonExtensionDisc
+import JJMath.Uniformization.Subharmonic
+import JJMath.Uniformization.Perron
+import JJMath.Uniformization.RadoSecondCountable
+import JJMath.Uniformization.CoordinateDiskSmoothBoundary
+import JJMath.Uniformization.PuncturedAngularForm
+import JJMath.Uniformization.HarmonicConjugateDeRham
+import JJMath.Uniformization.PuncturedGreenConjugate
+import JJMath.Uniformization.BoundedGreenDomain
+import JJMath.Uniformization.ComplexSurfaceMaps
+import JJMath.ComplexAnalysis.KoebeQuarter
+import JJMath.Uniformization.HubbardExhaustion
+import JJMath.Uniformization.Sard
+import JJMath.Uniformization.GreenFunctionCore
+import JJMath.Uniformization.GreenFunction
+import JJMath.Uniformization.PuncturedAngularCirclePrimitive
+import JJMath.Uniformization.CirclePrimitiveIntegralPeriods
+import JJMath.Uniformization.CirclePrimitiveHolomorphicExp
+import JJMath.Uniformization.GreenPuncturedExponential
+import JJMath.Uniformization.GreenConjugateCirclePrimitive
+import JJMath.Uniformization.GreenConjugateVortex
+import JJMath.Uniformization.BoundedGreenUniformization
+import JJMath.Uniformization.HubbardUniformization
+import JJMath.Uniformization.CompactH1Uniformization
+import JJMath.Uniformization.EvansPotential
+import JJMath.RiemannianGeometry
+
+/-!
+# Uniformization targets
+
+This module re-exports the formalization targets for the uniformization theorem.
+-/

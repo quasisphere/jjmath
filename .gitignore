@@ -1,0 +1,11 @@
+.DS_Store
+.codex/
+/external/
+
+# Lean / Lake
+.lake/
+*.olean
+*.ilean
+*.c
+*.c.hash
+*.o

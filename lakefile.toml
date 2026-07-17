@@ -1,0 +1,24 @@
+name = "jjmath"
+version = "0.1.0"
+defaultTargets = ["JJMath"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[lean_lib]]
+name = "JJMath"
+roots = ["JJMath"]
+
+[[lean_lib]]
+name = "SimplyConnectedUniformizationComparator"
+roots = [
+  "Comparator.SimplyConnectedUniformization.Challenge",
+  "Comparator.SimplyConnectedUniformization.Solution",
+]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.30.0"

@@ -1,0 +1,13 @@
+{
+  "challenge_module": "Comparator.SimplyConnectedUniformization.Challenge",
+  "solution_module": "Comparator.SimplyConnectedUniformization.Solution",
+  "theorem_names": [
+    "JJMath.Uniformization.simplyConnected_riemannSurface_uniformization"
+  ],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
+  "enable_nanoda": false
+}
