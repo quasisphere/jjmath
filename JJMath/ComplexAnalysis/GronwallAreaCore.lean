@@ -24,6 +24,14 @@ noncomputable section
 
 namespace JJMath.ComplexAnalysis
 
+/--
+%%handwave
+name: Connectedness of the exterior of a disk
+statement:
+  For every $R\ge 0$, the set $\{z\in\mathbb C:R<|z|\}$ is connected.
+proof:
+  Parametrize the exterior as the continuous image of $(R,\infty)\times S^1$ under $(r,u)\mapsto ru$. Both factors are connected, and every exterior point has the polar representation $(|z|,z/|z|)$.
+-/
 private theorem isPreconnected_exterior (R : ℝ) (hR : 0 ≤ R) :
     IsPreconnected {z : ℂ | R < ‖z‖} := by
   let S : Set (ℝ × ℂ) := Ioi R ×ˢ sphere (0 : ℂ) 1
@@ -57,6 +65,14 @@ private theorem isPreconnected_exterior (R : ℝ) (hR : 0 ≤ R) :
   rw [← himage]
   exact hS.image p hp.continuousOn
 
+/--
+%%handwave
+name: Exterior images are unbounded in every real-linear direction
+statement:
+  Let $G:\mathbb C\to\mathbb C$ satisfy $G(z)-z\to0$ as $|z|\to\infty$, and let $L:\mathbb C\to\mathbb R$ be a nonzero continuous real-linear functional. For every $R,u\in\mathbb R$, there is $z$ with $|z|>R$ and $L(G(z))>u$.
+proof:
+  Choose $w$ with $L(w)=1$. Along the ray $tw$, the norm tends to infinity and $L(G(tw))=t+L(G(tw)-tw)\to\infty$, so a sufficiently large $t$ satisfies both inequalities.
+-/
 private theorem exists_exterior_image_above
     {G : ℂ → ℂ}
     (hG : Tendsto (fun z ↦ G z - z) (cocompact ℂ) (𝓝 0))
@@ -103,6 +119,14 @@ private theorem exists_exterior_image_above
   rcases hevent.exists with ⟨t, htR, htu⟩
   exact ⟨t • w, htR, htu⟩
 
+/--
+%%handwave
+name: Closedness of an asymptotically normalized exterior image
+statement:
+  If $G$ is continuous on $\{z:R\le |z|\}$ and $G(z)-z\to0$ as $|z|\to\infty$, then $G(\{z:R\le |z|\})$ is closed in $\mathbb C$.
+proof:
+  The asymptotic identity implies $|G(z)|\to\infty$ as $|z|\to\infty$. Thus the restriction of $G$ to the closed exterior is proper; a proper map into $\mathbb C$ is closed, so its range is closed.
+-/
 private theorem isClosed_image_exterior_of_tendsto_sub_id
     {G : ℂ → ℂ} {R : ℝ}
     (hGcont : ContinuousOn G {z : ℂ | R ≤ ‖z‖})
@@ -144,6 +168,13 @@ The compact set omitted by an exterior univalent map lies in the closed convex
 hull of the image of the boundary circle.  This is the topological input in
 the area proof; it uses only openness, properness at the finite boundary, and
 the normalization at infinity.
+
+%%handwave
+name: Convex-hull bound for an exterior image
+statement:
+  Let $R\ge0$. Suppose $G$ is holomorphic on $|z|>R$, injective on $|z|\ge R$, has closed image of $|z|\ge R$, and satisfies $G(z)-z\to0$ at infinity. Then $\mathbb C\setminus G(\{z:|z|>R\})$ is contained in the closed convex hull of $G(\{z:|z|=R\})$.
+proof:
+  Separate a point outside that convex hull by a nonzero real-linear functional. The resulting open half-plane avoids the boundary image but meets the exterior image far out. Connectedness of the half-plane and the decomposition of the closed exterior image into its open part and boundary force the entire half-plane into the open image, contradicting that the separated point was omitted.
 -/
 theorem complement_exterior_image_subset_closedConvexHull
     {G : ℂ → ℂ} {R : ℝ} (hR : 0 ≤ R)
@@ -233,18 +264,42 @@ theorem complement_exterior_image_subset_closedConvexHull
 def exteriorLaurentMap (b : ℂ) (h : ℂ → ℂ) (z : ℂ) : ℂ :=
   z + b * z⁻¹ + h z⁻¹
 
+/--
+%%handwave
+name: Laurent remainder after subtracting the identity
+statement:
+  For $G(z)=z+bz^{-1}+h(z^{-1})$, one has $G(z)-z=bz^{-1}+h(z^{-1})$ for every $b,z\in\mathbb C$ and every function $h:\mathbb C\to\mathbb C$.
+proof:
+  Expand the definition of $G$ and simplify the ring expression.
+-/
 @[simp]
 theorem exteriorLaurentMap_sub_id (b : ℂ) (h : ℂ → ℂ) (z : ℂ) :
     exteriorLaurentMap b h z - z = b * z⁻¹ + h z⁻¹ := by
   simp [exteriorLaurentMap]
   ring
 
+/--
+%%handwave
+name: Reciprocal tends to zero at infinity
+statement:
+  As $|z|\to\infty$ in $\mathbb C$, one has $z^{-1}\to0$.
+proof:
+  Taking norms reduces the assertion to $|z|^{-1}\to0$ as $|z|\to\infty$.
+-/
 private theorem tendsto_inv_cocompact_zero :
     Tendsto (fun z : ℂ ↦ z⁻¹) (cocompact ℂ) (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [norm_inv] using
     (tendsto_norm_cocompact_atTop (E := ℂ)).inv_tendsto_atTop
 
+/--
+%%handwave
+name: Asymptotic normalization of the exterior Laurent map
+statement:
+  If $h$ is continuous at $0$ and $h(0)=0$, then $G(z)=z+bz^{-1}+h(z^{-1})$ satisfies $G(z)-z\to0$ as $|z|\to\infty$.
+proof:
+  Both $bz^{-1}$ and $h(z^{-1})$ tend to zero: the first by the reciprocal limit and the second by continuity of $h$ at $0$.
+-/
 private theorem exteriorLaurentMap_tendsto_sub_id
     {b : ℂ} {h : ℂ → ℂ} (hh : ContinuousAt h 0) (h0 : h 0 = 0) :
     Tendsto (fun z ↦ exteriorLaurentMap b h z - z) (cocompact ℂ) (𝓝 0) := by
@@ -255,6 +310,14 @@ private theorem exteriorLaurentMap_tendsto_sub_id
     simpa [h0] using hh.tendsto.comp hinv
   simpa [exteriorLaurentMap_sub_id] using hb.add hh'
 
+/--
+%%handwave
+name: Holomorphicity of the exterior Laurent map
+statement:
+  If $h$ is holomorphic on $|w|<1$ and $R\ge1$, then $G(z)=z+bz^{-1}+h(z^{-1})$ is holomorphic on $|z|>R$.
+proof:
+  On $|z|>R$, the reciprocal is holomorphic, nonzero, and lies in the unit disk. Compose $h$ with inversion and use closure of holomorphic functions under sums and products.
+-/
 theorem exteriorLaurentMap_analyticOn_exterior
     {b : ℂ} {h : ℂ → ℂ}
     (hh : AnalyticOnNhd ℂ h (ball 0 1)) {R : ℝ} (hR : 1 ≤ R) :
@@ -272,6 +335,14 @@ theorem exteriorLaurentMap_analyticOn_exterior
   exact analyticAt_id.add (analyticAt_const.mul hinv) |>.add
     ((hh z⁻¹ hinv_mem).comp hinv)
 
+/--
+%%handwave
+name: Continuity on a closed exterior region
+statement:
+  If $h$ is holomorphic on the unit disk and $R>1$, then $G(z)=z+bz^{-1}+h(z^{-1})$ is continuous on $|z|\ge R$.
+proof:
+  Every point of the closed exterior lies in the open set $|z|>1$, where the preceding holomorphicity result gives continuity.
+-/
 private theorem exteriorLaurentMap_continuousOn_closedExterior
     {b : ℂ} {h : ℂ → ℂ}
     (hh : AnalyticOnNhd ℂ h (ball 0 1)) {R : ℝ} (hR : 1 < R) :
@@ -281,7 +352,15 @@ private theorem exteriorLaurentMap_continuousOn_closedExterior
   exact (exteriorLaurentMap_analyticOn_exterior (R := 1) hh le_rfl z hz').continuousAt.continuousWithinAt
 
 /-- An analytic function whose value and first derivative vanish has a quadratic
-bound on a sufficiently small disk. -/
+bound on a sufficiently small disk.
+
+%%handwave
+name: Quadratic bound at a double zero
+statement:
+  If $h$ is holomorphic near $0$ and $h(0)=h'(0)=0$, then there are constants $\rho>0$ and $C\ge0$ such that $|h(z)|\le C|z|^2$ whenever $|z|<\rho$.
+proof:
+  The Taylor expansion factors as $h(z)=z^2H(z)$ with $H$ holomorphic near $0$. Bound $|H|$ on a sufficiently small disk and multiply by $|z|^2$.
+-/
 theorem analytic_quadratic_bound
     {h : ℂ → ℂ} (hh : AnalyticAt ℂ h 0) (h0 : h 0 = 0) (h1 : deriv h 0 = 0) :
     ∃ ρ C : ℝ, 0 < ρ ∧ 0 ≤ C ∧
@@ -309,12 +388,28 @@ theorem analytic_quadratic_bound
 def ellipseLinearMap (c : ℂ) : ℂ →L[ℝ] ℂ :=
   ContinuousLinearMap.id ℝ ℂ + c • (Complex.conjCLE : ℂ →L[ℝ] ℂ)
 
+/--
+%%handwave
+name: Formula for the real-linear ellipse map
+statement:
+  For $c,z\in\mathbb C$, the real-linear ellipse map associated with $c$ sends $z$ to $z+c\overline z$.
+proof:
+  Evaluate the identity map and complex conjugation in the defining sum.
+-/
 @[simp]
 theorem ellipseLinearMap_apply (c z : ℂ) :
     ellipseLinearMap c z = z + c * starRingEnd ℂ z := by
   change z + c * Complex.conjCLE z = z + c * starRingEnd ℂ z
   rw [Complex.conjCLE_apply]
 
+/--
+%%handwave
+name: Determinant of the ellipse map
+statement:
+  The real determinant of $z\mapsto z+c\overline z$ is $1-|c|^2$.
+proof:
+  Write the images of the real basis $(1,i)$, form the resulting $2\times2$ real matrix, and compute its determinant.
+-/
 theorem ellipseLinearMap_det (c : ℂ) :
     LinearMap.det (ellipseLinearMap c : ℂ →ₗ[ℝ] ℂ) = 1 - ‖c‖ ^ 2 := by
   calc
@@ -341,6 +436,14 @@ theorem ellipseLinearMap_det (c : ℂ) :
       rw [Complex.sq_norm, Complex.normSq_apply]
       ring
 
+/--
+%%handwave
+name: Lower norm bound for the ellipse map
+statement:
+  For all $c,z\in\mathbb C$, one has $(1-|c|)|z|\le |z+c\overline z|$.
+proof:
+  Apply the reverse triangle inequality to $z$ and $-c\overline z$, using $|c\overline z|=|c||z|$.
+-/
 private theorem ellipseLinearMap_norm_lower (c z : ℂ) :
     (1 - ‖c‖) * ‖z‖ ≤ ‖ellipseLinearMap c z‖ := by
   rw [ellipseLinearMap_apply]
@@ -352,6 +455,14 @@ private theorem ellipseLinearMap_norm_lower (c z : ℂ) :
       simpa [sub_eq_add_neg] using
         norm_sub_norm_le z (-(c * starRingEnd ℂ z))
 
+/--
+%%handwave
+name: Elliptic area bound for an omitted exterior set
+statement:
+  Let $G(z)=z+bz^{-1}+h(z^{-1})$, where $h(0)=0$ and $|h(w)|\le C|w|^2$ for $|w|<\rho$. If $R>1$, $|b|<R^2$, $R^{-1}<\rho$, and $G$ is injective on $|z|\ge R$, then the area of $\mathbb C\setminus G(\{z:|z|>R\})$ is at most $(1-|b|^2/R^4)$ times the area of the closed disk of radius $R+(C/R^2)/(1-|b|/R^2)$.
+proof:
+  The convex-hull theorem places the omitted set inside the image of that disk under $z\mapsto z+(b/R^2)\overline z$. The quadratic tail estimate controls the inverse image of the boundary curve, and the real change-of-variables formula contributes determinant $1-|b|^2/R^4$.
+-/
 theorem exterior_omitted_measure_le_ellipse
     {b : ℂ} {h : ℂ → ℂ}
     (hh : AnalyticOnNhd ℂ h (ball 0 1)) (h0 : h 0 = 0)
@@ -455,10 +566,26 @@ theorem exterior_omitted_measure_le_ellipse
 def complexMulReal (a : ℂ) : ℂ →L[ℝ] ℂ :=
   (ContinuousLinearMap.toSpanSingleton ℂ a).restrictScalars ℝ
 
+/--
+%%handwave
+name: Complex multiplication as a real-linear map
+statement:
+  For $a,z\in\mathbb C$, the real-linear map given by multiplication by $a$ sends $z$ to $za$.
+proof:
+  Evaluate the restricted complex-linear multiplication map at $z$.
+-/
 @[simp]
 theorem complexMulReal_apply (a z : ℂ) : complexMulReal a z = z * a := by
   simp [complexMulReal]
 
+/--
+%%handwave
+name: Real determinant of complex multiplication
+statement:
+  The real determinant of multiplication by $a\in\mathbb C$ is $|a|^2$.
+proof:
+  Compute the matrix on the basis $(1,i)$; its determinant is $(\Re a)^2+(\Im a)^2=|a|^2$.
+-/
 theorem complexMulReal_det (a : ℂ) :
     LinearMap.det (complexMulReal a : ℂ →ₗ[ℝ] ℂ) = ‖a‖ ^ 2 := by
   calc
@@ -480,6 +607,14 @@ theorem complexMulReal_det (a : ℂ) :
       rw [Complex.sq_norm, Complex.normSq_apply]
       ring
 
+/--
+%%handwave
+name: Derivative of the exterior Laurent map
+statement:
+  If $h$ is holomorphic on the unit disk and $|z|>1$, then for $G(z)=z+bz^{-1}+h(z^{-1})$ one has $G'(z)=1-bz^{-2}-h'(z^{-1})z^{-2}$.
+proof:
+  Differentiate the three summands, using $(z^{-1})'=-z^{-2}$ and the chain rule for $h(z^{-1})$.
+-/
 theorem exteriorLaurentMap_deriv
     {b : ℂ} {h : ℂ → ℂ}
     (hh : AnalyticOnNhd ℂ h (ball 0 1)) {z : ℂ} (hz : 1 < ‖z‖) :

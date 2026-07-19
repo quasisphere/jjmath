@@ -32,7 +32,15 @@ noncomputable def gaussianCurvatureOfDensitySq (ρ : ℂ → ℝ) (z : ℂ) : �
   - Real.exp (-(2 * logDensityFromDensitySq ρ z)) *
     Laplacian.laplacian (logDensityFromDensitySq ρ) z
 
-/-- The computed Gaussian curvature only depends on the density germ. -/
+/-- The computed Gaussian curvature only depends on the density germ.
+%%handwave
+name:
+  Curvature depends only on the germ of the squared density
+statement:
+  Let $\rho,\sigma:\mathbb C\to\mathbb R$ agree on a neighborhood of $z\in\mathbb C$. Then the curvature expressions determined by $\rho$ and $\sigma$ agree at $z$.
+proof:
+  The neighborhood equality passes through $u=\tfrac12\log\rho$, so both $u(z)$ and $\Delta u(z)$ agree for the two densities; substituting these equalities into $K=-e^{-2u}\Delta u$ proves the claim.
+-/
 theorem gaussianCurvatureOfDensitySq_congr_nhds
     {ρ σ : ℂ → ℝ} {z : ℂ} (h : ρ =ᶠ[𝓝 z] σ) :
     gaussianCurvatureOfDensitySq ρ z =
@@ -54,6 +62,14 @@ theorem gaussianCurvatureOfDensitySq_congr_nhds
 If the logarithmic density determined by a positive squared density satisfies
 the Liouville equation at a point, then the corresponding curvature expression
 is `-1` there.
+
+%%handwave
+name:
+  The Liouville equation gives curvature $-1$
+statement:
+  Let $\rho:\mathbb C\to\mathbb R$ satisfy $\rho(z)>0$, set $u=\tfrac12\log\rho$, and suppose $\Delta u(z)=\rho(z)$. Then $-e^{-2u(z)}\Delta u(z)=-1$.
+proof:
+  Since $2u(z)=\log\rho(z)$ and $\rho(z)>0$, one has $e^{-2u(z)}=\rho(z)^{-1}$. Substitute the Liouville equation and cancel $\rho(z)$.
 -/
 theorem gaussianCurvatureOfDensitySq_eq_minus_one_of_liouville
     {ρ : ℂ → ℝ} {z : ℂ} (hpos : 0 < ρ z)
@@ -116,13 +132,29 @@ def densitySqInChart (g : ConformalMetric X)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) : ℂ → ℝ :=
   g.chartedDensity.densitySqInChart e he
 
-/-- Positivity of the squared density in an arbitrary chart. -/
+/-- Positivity of the squared density in an arbitrary chart.
+%%handwave
+name:
+  Positivity of a conformal metric density in every chart
+statement:
+  Let $g$ be a conformal metric, $e$ a complex chart, and $z$ a point of the chart image. Then the squared density $\rho_{g,e}(z)$ is positive.
+proof:
+  This is the positivity condition in the chartwise squared-density data of $g$, evaluated at $e$ and $z$.
+-/
 theorem positive_densitySqInChart (g : ConformalMetric X)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) {z : ℂ}
     (hz : z ∈ e.target) : 0 < g.densitySqInChart e he z :=
   g.chartedDensity.densitySq_pos e he z hz
 
-/-- The chartwise coordinate-change law for squared densities. -/
+/-- The chartwise coordinate-change law for squared densities.
+%%handwave
+name:
+  Coordinate transformation law for squared conformal densities
+statement:
+  Let $e,e'$ be complex charts for a conformal metric $g$, and let $z$ lie in the image of $e$ with $e^{-1}(z)$ in the source of $e'$. Then $\rho_{g,e}(z)=\rho_{g,e'}(e'(e^{-1}z))\,|(e'\circ e^{-1})'(z)|^2$.
+proof:
+  This is the coordinate-transition law stored in the chartwise squared-density data of $g$.
+-/
 theorem densitySq_transition (g : ConformalMetric X)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
     (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
@@ -144,6 +176,14 @@ def smooth_in_charts (g : ConformalMetric X) : Prop :=
 /--
 The finite `C^3` regularity used by local Liouville/Schwarzian formulas follows
 from the stored smoothness of the metric.
+
+%%handwave
+name:
+  Smooth chart densities are $C^3$
+statement:
+  If every chartwise squared density of a conformal metric $g$ is smooth on the chart image, then every such density is $C^3$ there.
+proof:
+  Infinite differentiability restricts to differentiability of order three by monotonicity of the differentiability order.
 -/
 theorem smooth_in_charts_three (g : ConformalMetric X)
     (h : g.smooth_in_charts) :
@@ -159,6 +199,14 @@ def curvature_eq (g : ConformalMetric X) (K : ℝ) : Prop :=
 For a metric whose computed chartwise curvature is a fixed constant, the
 computed curvature is independent of the chart.  This is the invariant form
 used by the hyperbolic/Liouville route.
+
+%%handwave
+name:
+  Chart independence of a prescribed constant curvature
+statement:
+  Let $g$ have constant computed curvature $K$. If $e,e'$ are complex charts and $z$ represents the same surface point in both, then $K_{g,e}(z)=K_{g,e'}(e'(e^{-1}z))$.
+proof:
+  The constant-curvature hypothesis identifies each side separately with $K$; the coordinate-domain assumptions justify applying it in both charts.
 -/
 theorem gaussianCurvatureInChart_eq_of_curvature_eq (g : ConformalMetric X)
     {K : ℝ} (hK : g.curvature_eq K)
@@ -173,7 +221,15 @@ theorem gaussianCurvatureInChart_eq_of_curvature_eq (g : ConformalMetric X)
 def IsSmooth (g : ConformalMetric X) : Prop :=
   g.smooth_in_charts
 
-/-- A smooth conformal metric has the finite `C^3` regularity needed downstream. -/
+/-- A smooth conformal metric has the finite `C^3` regularity needed downstream.
+%%handwave
+name:
+  A smooth conformal metric has $C^3$ chart densities
+statement:
+  For every smooth conformal metric $g$ and every complex chart $e$, the squared density $\rho_{g,e}$ is $C^3$ on the image of $e$.
+proof:
+  Apply [smooth chart densities are $C^3$](lean:JJMath.ConformalMetric.smooth_in_charts_three) to the smoothness assumption.
+-/
 theorem IsSmooth.contDiffOn_three (g : ConformalMetric X) (h : g.IsSmooth) :
     ∀ e he, ContDiffOn ℝ 3 (g.densitySqInChart e he) e.target :=
   g.smooth_in_charts_three h
@@ -325,6 +381,14 @@ The chartwise pullback-metric identity is local in the source map.
 If `f` and `f'` agree near `x`, any coordinate witness for `f` can be
 restricted to the part of the source-coordinate neighborhood where the two
 maps agree, giving the same squared-density formula for `f'`.
+
+%%handwave
+name:
+  Local invariance of a chartwise metric pullback
+statement:
+  Let $f,f':X\to Y$ agree on a neighborhood of $x$. If $f$ pulls the target conformal metric back to the source metric at $x$ in fixed source and target charts, then $f'$ has the same chartwise pullback property at $x$.
+proof:
+  Intersect the coordinate witness neighborhood for $f$ with the inverse image of a neighborhood on which $f=f'$. The same local coordinate map and derivative then satisfy the pullback-density formula for $f'$.
 -/
 theorem congr_of_eventuallyEq_nhds
     (h :
@@ -369,6 +433,14 @@ The intermediate chart is fixed explicitly.  The proof shrinks the source
 coordinate neighborhood so that the first local coordinate expression lands in
 the second witness's coordinate neighborhood, then uses the complex chain rule
 and multiplicativity of `Complex.normSq`.
+
+%%handwave
+name:
+  Composition of chartwise metric pullbacks
+statement:
+  Let $G:X\to Y$ and $F:Y\to Z$. If $G$ pulls the metric on $Y$ back to that on $X$ at $x$, and $F$ pulls the metric on $Z$ back to that on $Y$ at $G(x)$ in compatible fixed charts, then $F\circ G$ pulls the metric on $Z$ back to that on $X$ at $x$.
+proof:
+  Shrink the source coordinate neighborhood so that the local expression of $G$ lands in the witness neighborhood for $F$. Compose the two local maps, apply the complex chain rule, and multiply the two squared-density identities using $|(F\circ G)'|^2=|F'|^2|G'|^2$.
 -/
 theorem comp
     {F : Y → Z} {G : X → Y}
@@ -480,7 +552,15 @@ theorem comp
         rw [hderiv, Complex.normSq_mul]
         ring
 
-/-- The identity map has the concrete pullback witness between any two charts of one metric. -/
+/-- The identity map has the concrete pullback witness between any two charts of one metric.
+%%handwave
+name:
+  The identity map pulls a conformal metric back to itself
+statement:
+  For any conformal metric $g$, two complex charts $e,e'$, and $x\in X$, the identity map has a chartwise pullback witness from $g$ to itself at $x$.
+proof:
+  Use the coordinate transition $e'\circ e^{-1}$ on the overlap of the chart images. Its differentiability follows from the complex-manifold transition law, and the squared-density equality is exactly the conformal coordinate-change formula.
+-/
 theorem id_map
     [ComplexOneManifold X]
     (g : ConformalMetric X)
@@ -558,7 +638,15 @@ variable {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y] {f : X → Y}
     {target : ConformalMetric Y} {source : ConformalMetric X}
 
-/-- The chartwise coordinate formula for pullback metrics. -/
+/-- The chartwise coordinate formula for pullback metrics.
+%%handwave
+name:
+  A metric pullback supplies every chartwise pullback identity
+statement:
+  If $f:X\to Y$ pulls a conformal metric $g_Y$ back to $g_X$, then for every source chart, target chart, and $x\in X$, the corresponding chartwise pullback property holds at $x$.
+proof:
+  Evaluate the defining family of chartwise pullback identities at the chosen two charts and point $x$.
+-/
 theorem in_charts_at (h : PullsBackMetric f target source)
     (sourceChart : OpenPartialHomeomorph X ℂ)
     (sourceChart_mem_atlas : sourceChart ∈ atlas ℂ X)
@@ -568,7 +656,15 @@ theorem in_charts_at (h : PullsBackMetric f target source)
       sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x :=
   h.in_charts sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x
 
-/-- Pullback-metric identities are unchanged by replacing the map locally at every point. -/
+/-- Pullback-metric identities are unchanged by replacing the map locally at every point.
+%%handwave
+name:
+  Local equality preserves global metric pullback
+statement:
+  Let $f,f':X\to Y$ agree on a neighborhood of every $x\in X$. If $f^*g_Y=g_X$, then $(f')^*g_Y=g_X$.
+proof:
+  For each pair of charts and each point, apply [local invariance of a chartwise metric pullback](lean:JJMath.PullsBackMetricInChartsAt.congr_of_eventuallyEq_nhds) to the chartwise witness for $f$.
+-/
 theorem congr_of_eventuallyEq_nhds {f' : X → Y}
     (h : PullsBackMetric f target source)
     (hff' : ∀ x, f =ᶠ[nhds x] f') :
@@ -586,7 +682,15 @@ namespace PathHomotopyUniversalCover
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [LocallySimplyConnectedSpace X] [ComplexOneManifold X] {x₀ : X}
 
-/-- The path-homotopy cover metric really is the pullback of the base metric. -/
+/-- The path-homotopy cover metric really is the pullback of the base metric.
+%%handwave
+name:
+  The universal-cover metric is the pullback of the base metric
+statement:
+  Let $p:\widetilde X_{x_0}\to X$ be the path-homotopy universal cover and $g$ a conformal metric on $X$. Then $p^*g$ equals the conformal metric whose density in each cover chart is the density of $g$ in the associated base chart.
+proof:
+  In a cover chart, use the transition from its associated base chart to the chosen target chart as local expression of $p$. Cover-chart projection identities identify the points and derivatives, and the base metric’s coordinate-change law gives the required density formula.
+-/
 theorem pullsBackMetric_endpoint_pullbackConformalMetric (g : ConformalMetric X) :
     PullsBackMetric
       (endpoint : PathHomotopyUniversalCover X x₀ → X)

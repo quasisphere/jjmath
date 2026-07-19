@@ -25,7 +25,15 @@ def SmoothBoundaryDomain.openCarrier
   ⟨Ω.carrier, Ω.isOpen⟩
 
 /-- A path-connected smooth boundary domain, regarded as an open
-submanifold, is a Riemann surface. -/
+submanifold, is a Riemann surface.
+
+%%handwave
+name: Riemann-surface structure on an open smooth domain
+statement:
+  If $\Omega$ is a nonempty path-connected smooth domain in a Riemann surface $X$, then its open carrier, with the induced charts, is a Riemann surface.
+proof:
+  Path connectedness gives connectedness of the open carrier. Restrict the ambient complex atlas to this nonempty connected open subset.
+-/
 theorem SmoothBoundaryDomain.openCarrier_riemannSurface
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -83,7 +91,15 @@ theorem SmoothBoundaryDomain.not_compactSpace_openCarrier
   simpa [hcarrier_univ] using hcarrier_compact
 
 /-- A bounded negative Green potential is strictly negative at every point
-of its domain other than its pole. -/
+of its domain other than its pole.
+
+%%handwave
+name: Strict negativity of a bounded Green potential
+statement:
+  Let $G$ be a negative Green potential on a path-connected bounded domain $\Omega$, with pole $p\in\Omega$. Then $G(x)<0$ for every $x\in\Omega\setminus\{p\}$.
+proof:
+  The punctured open domain is connected and $G\le0$ is harmonic there. If $G$ vanished at an interior point, the strong maximum principle would make it identically zero on the punctured domain, contradicting the logarithmic divergence at the pole.
+-/
 theorem BoundedNegativeGreenPotential.strict_negative_on_domain
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -186,7 +202,15 @@ theorem BoundedNegativeGreenPotential.strict_negative_on_domain
     G.tends_to_neg_infinity_at_pole (0 : ℝ)) htendsto_zero
 
 /-- The negative of a bounded Green potential has the usual removable
-logarithmic pole when the domain is regarded as an open Riemann surface. -/
+logarithmic pole when the domain is regarded as an open Riemann surface.
+
+%%handwave
+name: Logarithmic singularity on the open carrier
+statement:
+  Let $G$ be a bounded negative Green potential on $\Omega$ with pole $p\in\Omega$. In every pointed complex coordinate $\chi$ on the open carrier, there is a harmonic function $H$ on the chart source such that $-G(x)+\log|\chi(x)-\chi(p)|=H(x)$ near $p$ away from $p$.
+proof:
+  Restrict the logarithmic-singularity identity for $G$ from the ambient surface to the open subtype. Transport its harmonic correction through the inclusion and use the equality of the induced chart with the ambient coordinate near the pole.
+-/
 theorem BoundedNegativeGreenPotential.neg_logarithmic_singularity_openCarrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -300,7 +324,15 @@ theorem BoundedNegativeGreenPotential.neg_logarithmic_singularity_openCarrier
     _ ≤ ‖h p‖ + 1 := hhy
 
 /-- On the open surface carried by a bounded domain, the negative Dirichlet
-Green potential tends to zero along the cocompact filter. -/
+Green potential tends to zero along the cocompact filter.
+
+%%handwave
+name: Vanishing of a bounded Green potential at the ideal boundary
+statement:
+  Let $G$ be a bounded negative Green potential on a relatively compact domain $\Omega$, with pole $p\in\Omega$. On the open Riemann surface $\Omega$, the function $-G$ tends to $0$ along the cocompact filter.
+proof:
+  Extend $-G$ continuously to the compact closure, where it vanishes on the boundary. For any neighborhood of $0$, compactness gives a neighborhood of the boundary on which the values lie there; the complement of that neighborhood inside the open carrier is compact, which is exactly cocompact convergence.
+-/
 theorem BoundedNegativeGreenPotential.neg_tendsto_zero_cocompact_openCarrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]

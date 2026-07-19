@@ -199,7 +199,15 @@ noncomputable def puncturedAngularCirclePrimitive_of_local_period_eq_or_neg
 /-- The coordinate-disk angular construction supplies a normalized smooth
 cycle in the punctured surface.  If that cycle generates all smooth
 one-cycles modulo smooth boundaries, the angular form has a circle-valued
-primitive. -/
+primitive.
+
+%%handwave
+name: Circle primitive from a generating puncture cycle
+statement:
+  Let $p$ be the center of a coordinate disk and let $\eta$ be its normalized closed angular one-form on $X\setminus\{p\}$. There is a smooth cycle $\gamma$ with $\partial\gamma=0$ and $\int_\gamma 2\pi\eta=2\pi$; if every smooth one-cycle is homologous to an integral multiple of $\gamma$, then $2\pi\eta$ has a smooth circle-valued primitive.
+proof:
+  Include the normalized local angular cycle into the punctured surface and reverse its orientation so its period becomes $1$, hence the period of $2\pi\eta$ becomes $2\pi$. The cycle-generator hypothesis and Stokes' theorem show that every period of $2\pi\eta$ is an integral multiple of $2\pi$, which is exactly the integral-period criterion for a circle primitive.
+-/
 theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm_circlePrimitive_of_cycleGenerator
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

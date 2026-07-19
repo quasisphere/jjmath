@@ -24,7 +24,15 @@ variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 /-- A compactly supported two-form in an exterior component can be moved,
 modulo an exact correction supported in that component, into one prescribed
 full-plane coordinate chart.  All pieces of a finite partition of unity are
-summed in the target chart before any transport to infinity is performed. -/
+summed in the target chart before any transport to infinity is performed.
+
+%%handwave
+name: Consolidation of compactly supported mass in an exterior component
+statement:
+  Let $V$ be an exterior component of the complement of a compact set in a noncompact Riemann surface, let $C\subseteq V$ be compact, and let $T\subseteq V$ be a prescribed full-plane coordinate neighborhood. If a smooth two-form $\omega$ vanishes outside $C$, then there are a one-form $\eta$, a two-form $\beta$, and a compact set $K_T\subseteq T$ such that $d\eta=\omega-\beta$, $\eta$ vanishes outside $V$, and $\beta$ vanishes outside the ambient image of $K_T$.
+proof:
+  Cover $C$ by finitely many planar charts inside $V$ and split $\omega$ with a smooth partition of unity. Move each compactly supported piece along paths in $V$ into the prescribed chart, producing exact corrections supported in $V$. Sum the transported pieces in $T$ and take the finite union of their compact cores.
+-/
 theorem IsExteriorComponent.exists_compactSupport_consolidation_in_open
     {K V C : Set X} (hKcompact : IsCompact K)
     (hV : IsExteriorComponent K V)

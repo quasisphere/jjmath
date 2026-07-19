@@ -138,6 +138,14 @@ omit [RiemannSurface X] in
 /--
 The handoff point between consecutive weak subdivision pieces lies in the
 overlap of the two attached local-transition model domains.
+
+%%handwave
+name:
+  Every handoff point lies in the adjacent chart overlap
+statement:
+  For a finite continuation skeleton along $p$, the subdivision point $p(t_{k+1})$ belongs to the domains of both local models centered at the vertices $k$ and $k+1$.
+proof:
+  The segment-coverage condition puts the right endpoint of segment $k$ in the left chart domain, while the sampling condition puts it in the chart domain selected at vertex $k+1$.
 -/
 theorem transitionPoint_mem_adjacent_overlap
     (S :
@@ -155,6 +163,14 @@ omit [RiemannSurface X] in
 /--
 The componentwise local-transition atlas supplies local real-Mobius handoff
 data at each shared subdivision vertex of a weak skeleton.
+
+%%handwave
+name:
+  Local real Möbius transition data exist at every handoff
+statement:
+  At each subdivision point $p(t_{k+1})$ of a weak continuation skeleton, there is a neighborhood and a real Möbius transformation carrying the local upper-half-plane chart used on segment $k$ to the chart used on segment $k+1$.
+proof:
+  The handoff point lies in the overlap of the two chart domains, so apply the local real Möbius transition property of the selected atlas.
 -/
 theorem transitionData_nonempty_at_handoff
     (S :
@@ -200,7 +216,16 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {x : X} {p : Path x₀ x}
 
 omit [RiemannSurface X] in
-/-- Forget the explicit handoff representatives from a weak handoff skeleton. -/
+/-- Forget the explicit handoff representatives from a weak handoff skeleton.
+
+%%handwave
+name:
+  Forgetting handoff representatives preserves the subdivision length
+statement:
+  Removing the chosen real Möbius transformations from a weak handoff skeleton does not change its number of path segments.
+proof:
+  The underlying weak continuation skeleton retains the same length field.
+-/
 @[simp]
 theorem toWeak_length
     (S :
@@ -209,7 +234,16 @@ theorem toWeak_length
   rfl
 
 omit [RiemannSurface X] in
-/-- Each selected handoff representative is valid at the corresponding vertex. -/
+/-- Each selected handoff representative is valid at the corresponding vertex.
+
+%%handwave
+name:
+  A handoff point belongs to its transition neighborhood
+statement:
+  For every handoff index $k$, the point $p(t_{k+1})$ belongs to the neighborhood on which the chosen real Möbius transition between the adjacent charts is valid.
+proof:
+  This membership is part of the selected local transition data at index $k$.
+-/
 theorem transitionAt_mem_neighborhood
     (S :
       PathLocalTransitionModelWeakHandoffSkeleton x₀ g localModels p)
@@ -218,7 +252,16 @@ theorem transitionAt_mem_neighborhood
   (S.transitionAt k).mem_neighborhood
 
 omit [RiemannSurface X] in
-/-- Each selected handoff neighborhood lies in the adjacent chart overlap. -/
+/-- Each selected handoff neighborhood lies in the adjacent chart overlap.
+
+%%handwave
+name:
+  A handoff neighborhood lies in the adjacent chart overlap
+statement:
+  The neighborhood chosen at handoff $k$ is contained in the intersection of the chart domains used on segments $k$ and $k+1$.
+proof:
+  This inclusion is part of the local real Möbius transition data at the handoff.
+-/
 theorem transitionAt_subset_overlap
     (S :
       PathLocalTransitionModelWeakHandoffSkeleton x₀ g localModels p)
@@ -254,6 +297,14 @@ subordinate to the selected local-transition model domains along any path.
 This proves the finite-subdivision part of analytic continuation.  It does not
 yet remove repeated subdivision vertices or prove homotopy/loop invariance of
 the accumulated Mobius products.
+
+%%handwave
+name:
+  Every path admits a finite local-model continuation skeleton
+statement:
+  For any path $p:[0,1]\to X$ and any atlas of local upper-half-plane models, there exist subdivision parameters $0=t_0<\cdots<t_n=1$ and chart centers $c_i$ such that $p(t_i)$ lies in the chart centered at $c_i$ and each subpath $p([t_i,t_{i+1}])$ remains in the chart centered at $c_i$.
+proof:
+  The inverse images under $p$ of the selected chart domains form an open cover of $[0,1]$. Compactness supplies a finite monotone subdivision subordinate to this cover; choose at each subdivision vertex a covering chart and use the subordinate interval containment for each segment.
 -/
 theorem exists_pathLocalTransitionModelWeakContinuationSkeleton
     {x₀ : X} {g : HyperbolicMetric X}
@@ -353,6 +404,14 @@ omit [RiemannSurface X] in
 Every path admits a finite weak handoff skeleton: compactness gives the
 subdivision, and the componentwise local-transition atlas supplies real-Mobius
 transition data at the handoffs.
+
+%%handwave
+name:
+  Every path admits a finite skeleton with real Möbius handoffs
+statement:
+  For any path $p:[0,1]\to X$ through an atlas whose chart overlaps are locally real Möbius, there is a finite subordinate continuation skeleton together with a chosen local real Möbius transition at every subdivision handoff.
+proof:
+  First choose a finite subordinate continuation skeleton. At each handoff, the point lies in the adjacent chart overlap, so choose the local real Möbius transition data supplied by the atlas.
 -/
 theorem exists_pathLocalTransitionModelWeakHandoffSkeleton
     {x₀ : X} {g : HyperbolicMetric X}
@@ -367,6 +426,14 @@ omit [RiemannSurface X] in
 /--
 One local-transition handoff updates the accumulated branch representative by
 right-multiplying with the inverse transition representative.
+
+%%handwave
+name:
+  Updating an accumulated Möbius factor preserves the branch value
+statement:
+  Suppose $V(y)=T\cdot U(y)$ on a transition neighborhood. Then for every accumulated real Möbius transformation $M$ and every point $y$ in that neighborhood, $(MT^{-1})\cdot V(y)=M\cdot U(y)$.
+proof:
+  Substitute $V(y)=T\cdot U(y)$, use associativity of the Möbius action, and cancel $T^{-1}T$.
 -/
 theorem localRealMobiusTransitionData_accumulated_handoff
     {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
@@ -382,6 +449,14 @@ theorem localRealMobiusTransitionData_accumulated_handoff
 /--
 Equal PSL classes of real Mobius representatives have the same action on the
 upper half-plane.
+
+%%handwave
+name:
+  Equal projective classes have the same upper-half-plane action
+statement:
+  If two real Möbius representatives $A$ and $B$ define the same element of $\mathrm{PSL}_2(\mathbb R)$, then $A\cdot z=B\cdot z$ for every $z\in\mathbb H$.
+proof:
+  The action of a representative factors through its projective class, so equality of the classes gives equality of their actions.
 -/
 theorem realMobiusRepresentativeAction_eq_of_projection_eq
     {A B : RealMobiusRepresentative}
@@ -394,6 +469,14 @@ theorem realMobiusRepresentativeAction_eq_of_projection_eq
 /--
 Equal PSL classes of real Mobius representatives have inverse lifts with the
 same action on the upper half-plane.
+
+%%handwave
+name:
+  Inverses of equal projective classes have the same action
+statement:
+  If $[A]=[B]$ in $\mathrm{PSL}_2(\mathbb R)$, then $A^{-1}\cdot z=B^{-1}\cdot z$ for every $z\in\mathbb H$.
+proof:
+  Taking inverses gives $[A^{-1}]=[B^{-1}]$; equal projective classes act identically on $\mathbb H$.
 -/
 theorem realMobiusRepresentativeAction_inv_eq_of_projection_eq
     {A B : RealMobiusRepresentative}
@@ -428,6 +511,16 @@ def localRealMobiusTransitionData_congr
     simpa [hU, hV] using T.transition_eq y hy
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Transporting transition data across equal charts preserves its representative
+statement:
+  If the source chart, target chart, and basepoint of local transition data are replaced by equal objects, the transported transition data use the same real Möbius representative.
+proof:
+  Substitute the three equalities. The transported transition is then the
+  original transition, so its real Möbius representative is unchanged.
+-/
 @[simp]
 theorem localRealMobiusTransitionData_congr_representative
     {g : HyperbolicMetric X}
@@ -457,6 +550,15 @@ def localRealMobiusTransitionData_recenter
   transition_eq := T.transition_eq
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Recentering transition data preserves its Möbius representative
+statement:
+  If local transition data based at $x$ are recentered at a point $y$ in the same transition neighborhood, the real Möbius representative remains unchanged.
+proof:
+  The recentered data retain the original neighborhood and transition formula, including the same representative.
+-/
 @[simp]
 theorem localRealMobiusTransitionData_recenter_representative
     {g : HyperbolicMetric X}
@@ -541,6 +643,15 @@ def localRealMobiusTransitionData_trans
     simp [realMobiusRepresentativeAction_mul]
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Representative of the reversed local transition
+statement:
+  Reversing local transition data from $U$ to $V$ gives transition data from $V$ to $U$ whose representative is $T^{-1}$ when the original representative is $T$.
+proof:
+  The reversed transition is defined using the inverse Möbius transformation.
+-/
 @[simp]
 theorem localRealMobiusTransitionData_symm_representative
     {g : HyperbolicMetric X}
@@ -551,6 +662,15 @@ theorem localRealMobiusTransitionData_symm_representative
   rfl
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Representative of a composite local transition
+statement:
+  If the transition from $U$ to $V$ is represented by $T_{UV}$ and the transition from $V$ to $W$ by $T_{VW}$, then their composite transition from $U$ to $W$ is represented by $T_{VW}T_{UV}$.
+proof:
+  Apply the $U$-to-$V$ transition first and the $V$-to-$W$ transition second; composition of the actions corresponds to the product $T_{VW}T_{UV}$.
+-/
 @[simp]
 theorem localRealMobiusTransitionData_trans_representative
     {g : HyperbolicMetric X}

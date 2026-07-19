@@ -74,9 +74,12 @@ def CanonicalChartedCurvatureBranchBallShrinkDataTheorem
       (CanonicalChartedCurvatureBranchBallShrinkData g realBranchAtlasAt)
 
 /--
-For a fixed canonical coordinate real-branch family, branch-contained ball
-shrinks exist pointwise.  This part is purely local openness of the branch
-domains; it carries no surface-overlap content.
+%%handwave
+name: Pointwise ball shrinking of canonical curvature branches
+statement:
+  Let a real-transition upper-half-plane branch atlas be chosen in the canonical curvature coordinate at every point $x$ of a surface. Then one can choose, for every $x$, positive-radius balls centered at each coordinate point and contained in the corresponding branch domains.
+proof:
+  Each branch atlas admits canonical ball-shrink data because its branch domains are open neighborhoods of their centers; choose this data independently for every $x$.
 -/
 theorem canonicalChartedCurvatureBranchBallShrinkDataAt_nonempty
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -245,6 +248,15 @@ def ChartedSpaceBoundedBaseBallSurfaceOverlapSelectionTheorem
           IsPreconnected
             (ChartedSpaceBaseBallSurfaceOverlapSet X baseRadiusAt x y)
 
+/--
+%%handwave
+name: Canonical curvature ball overlaps are charted-space ball overlaps
+statement:
+  For any surface points $x,y$ and radius function $r$, the overlap of the canonical curvature-coordinate balls centered at $x$ and $y$ is exactly
+  $$\{z:z\in\operatorname{source}(\phi_x),\ |\phi_x(z)-\phi_x(x)|<r(x),\ z\in\operatorname{source}(\phi_y),\ |\phi_y(z)-\phi_y(y)|<r(y)\}.$$
+proof:
+  Expand the canonical curvature formulas: their coordinate maps and domains are precisely the ambient chart maps and chart sources. The two set descriptions then agree pointwise.
+-/
 @[simp]
 theorem canonicalChartedCurvatureBaseBallSurfaceOverlapSet_eq_chartedSpace
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

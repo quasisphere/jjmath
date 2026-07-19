@@ -21,6 +21,17 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
 
+/--
+%%handwave
+name:
+  Smooth corestriction to an open range
+statement:
+  If a smooth map \(f:M\to N\) takes all its values in an open subset
+  \(V\subseteq N\), then the corestricted map \(M\to V\) is smooth.
+proof:
+  Near each image point, use the local retraction onto \(V\), which agrees
+  there with the identity, and compose it with \(f\).
+-/
 theorem contMDiffCodRestrictOpen_transport
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -52,8 +63,22 @@ theorem contMDiffCodRestrictOpen_transport
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- Glue the product of two smooth unit phases across their common removed
-point once that product has a smooth unit local extension there. -/
+/--
+%%handwave
+name:
+  Gluing two unit phases across their common puncture
+statement:
+  Let \(P_1\) be a smooth unit phase on \(X\setminus\{a,q\}\) and \(P_2\) one
+  on \(X\setminus\{q,b\}\).  If their product has a smooth unit-valued
+  extension \(S\) near \(q\), then there is a smooth unit phase \(Q\) on
+  \(X\setminus\{a,b\}\) such that
+  \(Q=P_1P_2\) away from \(q\).
+proof:
+  Define \(Q\) to be \(S\) at the middle point and \(P_1P_2\) elsewhere.
+  These descriptions agree on the overlap of a neighborhood of \(q\) with
+  its punctured complement, so the two smooth maps glue.  Their unit-norm
+  identities likewise give \(|Q|=1\).
+-/
 theorem exists_gluedUnitPhase_across_middle
     {a q b : X}
     (P₁ : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -234,9 +259,26 @@ def AtlasVortexTransportData.single {a b : X}
   terminalMultiplier_norm := by simp
   phase_eq_terminal := by simp
 
-/-- Append one atlas vortex pair to a finite transport.  All old seams remain
-hidden inside the existing smooth phase; only its remembered final pair has
-to cancel with the new pair. -/
+/--
+%%handwave
+name:
+  Appending an atlas vortex pair to a finite transport
+statement:
+  Let \(T\) be a finite atlas-vortex transport from \(a\) to \(q\), and let
+  \(D\) be an atlas vortex from \(q\) to \(b\), with \(a\ne b\).  There is a
+  transport \(T'\) from \(a\) to \(b\) whose phase satisfies
+  \[
+    P_{T'}(x)=P_T(x)P_D(x)
+  \]
+  whenever \(x\ne q\).
+proof:
+  Factor the old transport near \(q\) into its smooth terminal multiplier and
+  last vortex pair.  The last pair and the new pair have a smooth unit seam
+  product at \(q\); multiplying by the old terminal multiplier gives a local
+  extension of the full product.  Glue across \(q\), and record the old phase
+  as the new terminal multiplier so that the new pair becomes the remembered
+  terminal factor.
+-/
 theorem AtlasVortexTransportData.exists_append
     {a q b : X} (T : AtlasVortexTransportData X a q)
     (D : AtlasVortexPairData X q b) (hab : a ≠ b) :
@@ -342,10 +384,20 @@ theorem AtlasVortexTransportData.exists_append
           simp [R, hxV]] }
   exact ⟨T', hQproduct⟩
 
-/-- Every finite initial segment of a chain of compact atlas vortex pairs
-has a smooth unit transport phase.  Internal vertices need not be globally
-distinct: once a seam has been glued, a later visit to it is just a visit to
-an ordinary smooth point. -/
+/--
+%%handwave
+name:
+  Finite transport along a chain of atlas vortices
+statement:
+  Let \(v_0,v_1,\ldots\) be points with \(v_0\ne v_{n+1}\) for every \(n\),
+  and let an atlas vortex join each \(v_n\) to \(v_{n+1}\).  Every finite
+  initial chain through \(v_{n+1}\) has a smooth unit transport phase on
+  \(X\setminus\{v_0,v_{n+1}\}\).
+proof:
+  Induct on the chain length.  A single pair is a transport.  At the successor
+  step, append the next vortex pair using smooth seam cancellation; the only
+  endpoint condition needed is \(v_0\ne v_{n+2}\).
+-/
 theorem exists_atlasVortexTransport_of_finite_chain
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
@@ -373,8 +425,18 @@ noncomputable def finiteAtlasVortexTransport
       ((finiteAtlasVortexTransport v D hfirst n).exists_append
         (D (n + 1)) (hfirst (n + 1)))
 
-/-- Consecutive coherent finite transports differ by precisely the next
-compact atlas vortex away from their shared terminal vertex. -/
+/--
+%%handwave
+name:
+  Successor formula for coherent finite vortex transports
+statement:
+  Away from the intermediate point \(v_{n+1}\), the phase of the coherent
+  transport through \(v_{n+2}\) is the product of the phase through
+  \(v_{n+1}\) and the atlas-vortex phase from \(v_{n+1}\) to \(v_{n+2}\).
+proof:
+  This is exactly the phase identity supplied when the recursive construction
+  appends the \((n+1)\)-st vortex pair.
+-/
 theorem finiteAtlasVortexTransport_phase_succ
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
@@ -411,6 +473,17 @@ noncomputable def finiteAtlasVortexTransportPartialPhase
       ⟨(x : X), ⟨x.2, hxt⟩⟩
   else 1
 
+/--
+%%handwave
+name:
+  Unit norm of a finite partial transport phase
+statement:
+  The totalized stage-\(n\) transport phase on
+  \(X\setminus\{v_0\}\) has complex modulus one at every point.
+proof:
+  Away from the current terminal point it is the unit phase of the finite
+  transport; at the terminal point it was defined to be \(1\).
+-/
 theorem norm_finiteAtlasVortexTransportPartialPhase
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
@@ -425,7 +498,19 @@ theorem norm_finiteAtlasVortexTransportPartialPhase
     exact (finiteAtlasVortexTransport v D hfirst n).norm_phase _
   · simp [finiteAtlasVortexTransportPartialPhase, hxt]
 
-/-- Away from its current terminal point, a finite partial phase is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of a finite partial transport phase off its terminal point
+statement:
+  At stage \(n\), the totalized transport phase on
+  \(X\setminus\{v_0\}\) is smooth at every point other than its current
+  terminal point \(v_{n+1}\).
+proof:
+  On the open complement of \(v_{n+1}\), the totalized phase is exactly the
+  smooth finite-transport phase composed with the canonical inclusion into
+  the twice-punctured surface.
+-/
 theorem contMDiffAt_finiteAtlasVortexTransportPartialPhase_of_ne
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
@@ -468,8 +553,18 @@ theorem contMDiffAt_finiteAtlasVortexTransportPartialPhase_of_ne
   rw [heq]
   exact hsmooth.contMDiffAt
 
-/-- If the next compact vortex core and the two adjacent vertices miss a
-point, appending that vortex does not change the partial phase there. -/
+/--
+%%handwave
+name:
+  Stability of a partial transport phase outside the next vortex core
+statement:
+  If \(x\) differs from the adjacent vertices \(v_{n+1},v_{n+2}\) and lies
+  outside the compact core of the next atlas vortex, then the stage-\(n+1\)
+  partial phase at \(x\) equals the stage-\(n\) partial phase there.
+proof:
+  Use the successor product formula.  Outside its compact core the appended
+  atlas-vortex phase is \(1\), so the product reduces to the previous phase.
+-/
 theorem finiteAtlasVortexTransportPartialPhase_succ_eq
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
@@ -493,11 +588,23 @@ theorem finiteAtlasVortexTransportPartialPhase_succ_eq
   rw [hDone, mul_one]
   simp [finiteAtlasVortexTransportPartialPhase, hxq]
 
-/-- A chain whose vertices and compact vortex cores eventually miss a
-neighborhood of every point has a global smooth unit limiting phase and
-hence a circle primitive.  This is the complete analytic telescope; the
-remaining input is purely the locally finite atlas subdivision of an
-escaping path. -/
+/--
+%%handwave
+name:
+  Circle primitive of a locally escaping atlas-vortex chain
+statement:
+  Suppose that, near every point of \(X\setminus\{v_0\}\), all sufficiently
+  late terminal vertices and compact vortex cores are absent.  Then the finite
+  transport phases stabilize locally to a smooth unit phase \(P\) on
+  \(X\setminus\{v_0\}\), and the canonical logarithmic one-form of \(P\)
+  admits a circle primitive.
+proof:
+  On an escaping neighborhood, a sufficiently late partial phase is smooth,
+  and every subsequent phase agrees with it by the stability theorem.  Thus
+  the sequence is locally eventually constant and always has unit norm.
+  Apply the locally stable unit-phase construction and its circle-primitive
+  theorem.
+-/
 theorem exists_circlePrimitive_of_locallyEscaping_atlasVortexChain
     (v : ℕ → X)
     (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))

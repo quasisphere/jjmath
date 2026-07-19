@@ -26,6 +26,20 @@ def pathChainPatch (n : ℕ) : Set NNReal :=
   {t | (n : ℝ) - 1 / 4 < (t : ℝ) ∧
     (t : ℝ) < (n : ℝ) + 5 / 4}
 
+/--
+%%handwave
+name:
+  Openness of a path-chain time patch
+statement:
+  For every \(n\in\mathbb N\), the set of nonnegative times
+  \[
+    n-\tfrac14<t<n+\tfrac54
+  \]
+  is open in \(\mathbb R_{\ge0}\).
+proof:
+  It is the intersection of the inverse images of two open rays under the
+  continuous inclusion \(\mathbb R_{\ge0}\hookrightarrow\mathbb R\).
+-/
 theorem isOpen_pathChainPatch (n : ℕ) : IsOpen (pathChainPatch n) := by
   change IsOpen
     ({t : NNReal | (n : ℝ) - 1 / 4 < (t : ℝ)} ∩
@@ -45,6 +59,18 @@ def pathChainLocalMap
   continuous_toFun := by
     fun_prop
 
+/--
+%%handwave
+name:
+  Compatibility of local maps in a path chain
+statement:
+  On every overlap of the \(i\)-th and \(j\)-th time patches, the corresponding
+  extended path maps have the same value.
+proof:
+  Two overlapping patches are equal or adjacent.  In the adjacent case, the
+  earlier extended path is already constant at its terminal point and the
+  later one is still constant at its initial point; these endpoints coincide.
+-/
 theorem pathChainLocalMap_agree
     {X : Type} [TopologicalSpace X]
     (x : ℕ → X) (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
@@ -106,6 +132,18 @@ theorem pathChainLocalMap_agree
     rw [(gamma (j + 1)).extend_of_le_zero hleft,
       (gamma j).extend_of_one_le hright]
 
+/--
+%%handwave
+name:
+  The floor-indexed path patch is a neighborhood
+statement:
+  For every \(t\ge0\), the patch indexed by \(\lfloor t\rfloor\) is a
+  neighborhood of \(t\).
+proof:
+  The floor inequalities
+  \(\lfloor t\rfloor\le t<\lfloor t\rfloor+1\) place \(t\) strictly inside the
+  wider interval \((\lfloor t\rfloor-1/4,\lfloor t\rfloor+5/4)\).
+-/
 theorem pathChainPatch_mem_nhds (t : NNReal) :
     pathChainPatch ⌊(t : ℝ)⌋₊ ∈ 𝓝 t := by
   apply (isOpen_pathChainPatch ⌊(t : ℝ)⌋₊).mem_nhds
@@ -115,6 +153,16 @@ theorem pathChainPatch_mem_nhds (t : NNReal) :
     Nat.lt_floor_add_one (t : ℝ)
   constructor <;> dsimp [pathChainPatch] <;> linarith
 
+/--
+%%handwave
+name:
+  The path-chain patches cover nonnegative time
+statement:
+  Every \(t\in\mathbb R_{\ge0}\) lies in a neighborhood given by one of the
+  path-chain time patches.
+proof:
+  Choose the patch indexed by \(\lfloor t\rfloor\).
+-/
 theorem pathChainPatch_cover (t : NNReal) :
     ∃ n : ℕ, pathChainPatch n ∈ 𝓝 t :=
   ⟨⌊(t : ℝ)⌋₊, pathChainPatch_mem_nhds t⟩
@@ -128,6 +176,17 @@ noncomputable def pathChainRay
     (pathChainLocalMap_agree x gamma)
     pathChainPatch_cover
 
+/--
+%%handwave
+name:
+  Floor formula for the glued path-chain ray
+statement:
+  At time \(t\ge0\), the ray obtained by gluing a path chain equals the local
+  path map indexed by \(\lfloor t\rfloor\).
+proof:
+  Apply the evaluation formula for a continuous map glued from a compatible
+  open cover, using the floor-indexed patch containing \(t\).
+-/
 theorem pathChainRay_apply_floor
     {X : Type} [TopologicalSpace X]
     (x : ℕ → X) (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
@@ -143,6 +202,16 @@ theorem pathChainRay_apply_floor
       (hS := pathChainPatch_cover)
       ⟨t, mem_of_mem_nhds (pathChainPatch_mem_nhds t)⟩) using 1
 
+/--
+%%handwave
+name:
+  A local path-chain map stays in its assigned set
+statement:
+  If the \(n\)-th path has image in \(U_n\), then its extended local map on
+  the \(n\)-th time patch also has image in \(U_n\).
+proof:
+  Extending a path constantly beyond its endpoints does not change its range.
+-/
 theorem pathChainLocalMap_mem
     {X : Type} [TopologicalSpace X]
     {U : ℕ → Set X} (x : ℕ → X)
@@ -158,6 +227,20 @@ theorem pathChainLocalMap_mem
   rw [← hs]
   exact hgamma n s
 
+/--
+%%handwave
+name:
+  The glued ray lies in the floor-indexed set
+statement:
+  If each \(n\)-th path lies in \(U_n\), then the glued ray satisfies
+  \[
+    r(t)\in U_{\lfloor t\rfloor}
+  \]
+  for every \(t\ge0\).
+proof:
+  Use the floor formula for the glued ray and the range property of the
+  corresponding local path map.
+-/
 theorem pathChainRay_mem_floor
     {X : Type} [TopologicalSpace X]
     {U : ℕ → Set X} (x : ℕ → X)
@@ -168,6 +251,18 @@ theorem pathChainRay_mem_floor
   rw [pathChainRay_apply_floor]
   exact pathChainLocalMap_mem x gamma hgamma _ _
 
+/--
+%%handwave
+name:
+  Tail containment of a glued path-chain ray
+statement:
+  Suppose \(U_{n+1}\subseteq U_n\) and the \(m\)-th path lies in \(U_m\).  If
+  \(n\le t\), then the glued ray satisfies \(r(t)\in U_n\).
+proof:
+  The floor-indexed range formula gives
+  \(r(t)\in U_{\lfloor t\rfloor}\); since \(n\le\lfloor t\rfloor\), antitonicity
+  yields membership in \(U_n\).
+-/
 theorem pathChainRay_mem_of_le
     {X : Type} [TopologicalSpace X]
     {U : ℕ → Set X} (x : ℕ → X)
@@ -201,13 +296,35 @@ noncomputable def pathPrependRay
       subst t
       simp
 
+/--
+%%handwave
+name:
+  Initial value of a prepended ray
+statement:
+  If a path from \(a\) to \(r(0)\) is prepended to a ray \(r\), the resulting
+  ray starts at \(a\).
+proof:
+  At time zero the construction uses the path branch at its initial parameter.
+-/
 theorem pathPrependRay_zero
     {X : Type} [TopologicalSpace X] {a : X}
     (r : C(NNReal, X)) (p : Path a (r 0)) :
     pathPrependRay r p 0 = a := by
   simp [pathPrependRay]
 
-/-- Prepending a compact path preserves properness of a ray. -/
+/--
+%%handwave
+name:
+  Prepending a compact path preserves properness
+statement:
+  If \(r:\mathbb R_{\ge0}\to X\) is proper and \(p\) is a compact path ending
+  at \(r(0)\), then the ray obtained by traversing \(p\) first and then \(r\)
+  is proper.
+proof:
+  The inverse image of a compact set is contained in the union of the compact
+  initial half-interval and a translate of its compact inverse image under
+  \(r\).  It is closed in this compact union.
+-/
 theorem isProperMap_pathPrependRay
     {X : Type} [TopologicalSpace X] [T2Space X] [CompactlyCoherentSpace X]
     {a : X} (r : C(NNReal, X)) (p : Path a (r 0))
@@ -268,6 +385,16 @@ noncomputable def twoRaysLine
       subst t
       simpa using hstart
 
+/--
+%%handwave
+name:
+  Value at the gluing point of two rays
+statement:
+  Gluing two rays with the same initial point into a line gives their common
+  initial value at time zero.
+proof:
+  Evaluate the nonpositive-time branch at zero.
+-/
 @[simp]
 theorem twoRaysLine_zero
     {X : Type} [TopologicalSpace X]
@@ -275,8 +402,18 @@ theorem twoRaysLine_zero
     twoRaysLine rneg rpos hstart 0 = rneg 0 := by
   simp [twoRaysLine]
 
-/-- Gluing two proper rays at their common initial point gives a proper map
-from the real line. -/
+/--
+%%handwave
+name:
+  Two proper rays glue to a proper line
+statement:
+  If two proper rays share their initial point, reversing the first and gluing
+  it to the second produces a proper continuous map \(\mathbb R\to X\).
+proof:
+  The inverse image of a compact set is a closed subset of the union of the
+  reflected compact inverse image for the negative ray and the compact inverse
+  image for the positive ray.
+-/
 theorem isProperMap_twoRaysLine
     {X : Type} [TopologicalSpace X] [T2Space X] [CompactlyCoherentSpace X]
     (rneg rpos : C(NNReal, X)) (hstart : rneg 0 = rpos 0)
@@ -318,8 +455,24 @@ theorem isProperMap_twoRaysLine
     · dsimp [posTime]
       rw [max_eq_left htpos]
 
-/-- An exterior component contains a nested sequence of exterior components
-outside the members of any smooth relatively compact exhaustion. -/
+/--
+%%handwave
+name:
+  Nested exterior components along an exhaustion
+statement:
+  Let \(V\) be an exterior component of \(X\setminus K\), with \(K\) compact.
+  Along a smooth relatively compact exhaustion there are an index \(N\) and
+  exterior components \(U_n\) of
+  \(X\setminus\overline{E_{N+n}}\) such that
+  \[
+    K\subseteq\overline{E_N},\qquad U_0\subseteq V,
+    \qquad U_{n+1}\subseteq U_n.
+  \]
+proof:
+  Choose \(N\) containing \(K\).  Finiteness of complementary components at
+  each compact exhaustion level lets one choose an exterior component nested
+  inside the preceding one; define the sequence recursively.
+-/
 theorem IsExteriorComponent.exists_nested_sequence_along_smoothExhaustion
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -387,9 +540,21 @@ theorem IsExteriorComponent.exists_nested_sequence_along_smoothExhaustion
           (hobstacle_components_finite (n + 1)))
     exact hspec.2
 
-/-- The nested exterior components can be equipped with points and compatible
-paths.  Every path in the tail lies outside the corresponding earlier compact
-exhaustion member. -/
+/--
+%%handwave
+name:
+  An escaping path chain through nested exterior components
+statement:
+  The nested exterior components \(U_n\) can be equipped with points
+  \(x_n\in U_n\) and paths \(\gamma_n:x_n\leadsto x_{n+1}\) contained in \(U_n\).
+  Every later path \(\gamma_m\), \(m\ge n\), avoids
+  \(\overline{E_{N+n}}\).
+proof:
+  Choose one point in each nonempty exterior component.  Surface exterior
+  components are path connected, and nesting places both successive points in
+  \(U_n\).  Antitonicity then puts each later path in \(U_n\), which is
+  disjoint from the corresponding compact obstacle.
+-/
 theorem IsExteriorComponent.exists_escaping_path_chain_along_smoothExhaustion
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -435,8 +600,23 @@ theorem IsExteriorComponent.exists_escaping_path_chain_along_smoothExhaustion
     have hgammaUn : gamma m t ∈ U n := hUanti hnm hgammaUm
     exact (hUexterior n).subset_compl hgammaUn hmem
 
-/-- Every exterior complementary component contains a proper ray.  Moreover,
-the ray eventually avoids each prescribed compact member of the exhaustion. -/
+/--
+%%handwave
+name:
+  A proper escaping ray in every exterior component
+statement:
+  Every exterior component \(V\) of the complement of a compact set contains
+  a proper ray \(r:\mathbb R_{\ge0}\to X\).  For suitable \(N\), whenever
+  \(t\ge n\),
+  \[
+    r(t)\notin\overline{E_{N+n}}.
+  \]
+proof:
+  Glue the escaping chain of paths through nested exterior components.  Its
+  tail after time \(n\) lies in the component disjoint from
+  \(\overline{E_{N+n}}\).  Hence the inverse image of any compact set is closed
+  and bounded in nonnegative time, and therefore compact.
+-/
 theorem IsExteriorComponent.exists_proper_ray_along_smoothExhaustion
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]

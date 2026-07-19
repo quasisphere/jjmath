@@ -37,6 +37,16 @@ def orderedMiddleParameter
         have hca : 0 ≤ ((c : ℝ) - (a : ℝ)) := sub_nonneg.mpr (hab.trans hbc)
         exact div_le_one_of_le₀ hba_ca hca⟩
 
+/--
+%%handwave
+name:
+  Coordinate of the ordered middle parameter
+statement:
+  If \(a\le b\le c\) in \([0,1]\), the parameter locating \(b\) on the affine
+  segment from \(a\) to \(c\) is \((b-a)/(c-a)\).
+proof:
+  This is the defining coordinate of the ordered middle parameter.
+-/
 @[simp]
 theorem coe_orderedMiddleParameter
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
@@ -44,13 +54,32 @@ theorem coe_orderedMiddleParameter
       ((b : ℝ) - (a : ℝ)) / ((c : ℝ) - (a : ℝ)) :=
   rfl
 
-/-- The ordered middle parameter recovers the middle point by convex combination. -/
+/--
+%%handwave
+name:
+  Affine recovery of an ordered middle point
+statement:
+  If \(a\le b\le c\) and \(m=(b-a)/(c-a)\), then
+  \(b=(1-m)a+mc\), with the degenerate case \(a=c\) included.
+proof:
+  Apply the standard convex-combination representation of a point between two
+  ordered endpoints.
+-/
 theorem orderedMiddleParameter_spec
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
     b = Set.Icc.convexComb a c
       (orderedMiddleParameter a b c hab hbc) :=
   Set.Icc.eq_convexComb hab hbc
 
+/--
+%%handwave
+name:
+  Positivity of the ordered middle parameter
+statement:
+  If \(a<b\le c\), then \(m=(b-a)/(c-a)\) satisfies \(m>0\).
+proof:
+  Both \(b-a\) and \(c-a\) are positive, so their quotient is positive.
+-/
 theorem orderedMiddleParameter_pos_of_lt
     (a b c : unitInterval) (hab : a < b) (hbc : b ≤ c) :
     (0 : ℝ) < orderedMiddleParameter a b c hab.le hbc := by
@@ -59,6 +88,16 @@ theorem orderedMiddleParameter_pos_of_lt
   · linarith [show (a : ℝ) < b from hab]
   · linarith [show (a : ℝ) < b from hab, show (b : ℝ) ≤ c from hbc]
 
+/--
+%%handwave
+name:
+  Strict upper bound for the ordered middle parameter
+statement:
+  If \(a\le b<c\), then \(m=(b-a)/(c-a)\) satisfies \(m<1\).
+proof:
+  The denominator is positive and \(b-a<c-a\); division by \(c-a\) preserves
+  the strict inequality.
+-/
 theorem orderedMiddleParameter_lt_one_of_lt
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b < c) :
     (orderedMiddleParameter a b c hab hbc.le : ℝ) < 1 := by
@@ -88,41 +127,114 @@ def secondHalf (t : unitInterval) : unitInterval :=
     · nlinarith [unitInterval.nonneg t]
     · nlinarith [unitInterval.le_one t]⟩
 
+/--
+%%handwave
+name:
+  Formula for the first-half embedding
+statement:
+  For \(t\in[0,1]\), the first-half embedding has real coordinate \(t/2\).
+proof:
+  This is its defining coordinate.
+-/
 @[simp]
 theorem coe_firstHalf (t : unitInterval) :
     (firstHalf t : ℝ) = (t : ℝ) / 2 :=
   rfl
 
+/--
+%%handwave
+name:
+  Formula for the second-half embedding
+statement:
+  For \(t\in[0,1]\), the second-half embedding has real coordinate
+  \((1+t)/2\).
+proof:
+  This is its defining coordinate.
+-/
 @[simp]
 theorem coe_secondHalf (t : unitInterval) :
     (secondHalf t : ℝ) = (1 + (t : ℝ)) / 2 :=
   rfl
 
+/--
+%%handwave
+name:
+  First-half embedding at zero
+statement:
+  The first-half embedding sends \(0\) to \(0\).
+proof:
+  Substitute \(t=0\) into \(t/2\).
+-/
 @[simp]
 theorem firstHalf_zero : firstHalf 0 = 0 := by
   ext
   norm_num [firstHalf]
 
+/--
+%%handwave
+name:
+  First-half embedding at one
+statement:
+  The first-half embedding sends \(1\) to \(1/2\).
+proof:
+  Substitute \(t=1\) into \(t/2\).
+-/
 @[simp]
 theorem firstHalf_one : firstHalf 1 = (⟨(1 / 2 : ℝ), by norm_num⟩ : unitInterval) := by
   ext
   norm_num [firstHalf]
 
+/--
+%%handwave
+name:
+  Second-half embedding at zero
+statement:
+  The second-half embedding sends \(0\) to \(1/2\).
+proof:
+  Substitute \(t=0\) into \((1+t)/2\).
+-/
 @[simp]
 theorem secondHalf_zero : secondHalf 0 = (⟨(1 / 2 : ℝ), by norm_num⟩ : unitInterval) := by
   ext
   norm_num [secondHalf]
 
+/--
+%%handwave
+name:
+  Second-half embedding at one
+statement:
+  The second-half embedding sends \(1\) to \(1\).
+proof:
+  Substitute \(t=1\) into \((1+t)/2\).
+-/
 @[simp]
 theorem secondHalf_one : secondHalf 1 = 1 := by
   ext
   norm_num [secondHalf]
 
+/--
+%%handwave
+name:
+  Range of the first-half embedding
+statement:
+  For every \(t\in[0,1]\), one has \(t/2\le 1/2\).
+proof:
+  Divide the bound \(t\le1\) by \(2\).
+-/
 theorem firstHalf_le_half (t : unitInterval) :
     (firstHalf t : ℝ) ≤ 1 / 2 := by
   change (t : ℝ) / 2 ≤ 1 / 2
   nlinarith [unitInterval.le_one t]
 
+/--
+%%handwave
+name:
+  Range of the second-half embedding
+statement:
+  For every \(t\in[0,1]\), one has \(1/2\le(1+t)/2\).
+proof:
+  This follows from \(t\ge0\).
+-/
 theorem half_le_secondHalf (t : unitInterval) :
     (1 / 2 : ℝ) ≤ secondHalf t := by
   change (1 / 2 : ℝ) ≤ (1 + (t : ℝ)) / 2
@@ -147,17 +259,45 @@ def doubleSubOneOfHalfLe (t : unitInterval) (ht : (1 / 2 : ℝ) ≤ t) :
     · nlinarith
     · nlinarith [unitInterval.le_one t]⟩
 
+/--
+%%handwave
+name:
+  Formula for doubling a first-half parameter
+statement:
+  If \(t\in[0,1/2]\), its rescaling to \([0,1]\) has real coordinate \(2t\).
+proof:
+  This is the defining coordinate of the rescaling.
+-/
 @[simp]
 theorem coe_doubleOfLeHalf (t : unitInterval) (ht : (t : ℝ) ≤ 1 / 2) :
     (doubleOfLeHalf t ht : ℝ) = 2 * (t : ℝ) :=
   rfl
 
+/--
+%%handwave
+name:
+  Formula for recentering a second-half parameter
+statement:
+  If \(t\in[1/2,1]\), its rescaling to \([0,1]\) has real coordinate \(2t-1\).
+proof:
+  This is the defining coordinate of the rescaling.
+-/
 @[simp]
 theorem coe_doubleSubOneOfHalfLe
     (t : unitInterval) (ht : (1 / 2 : ℝ) ≤ t) :
     (doubleSubOneOfHalfLe t ht : ℝ) = 2 * (t : ℝ) - 1 :=
   rfl
 
+/--
+%%handwave
+name:
+  Doubling inverts the first-half embedding
+statement:
+  For every \(t\in[0,1]\), doubling the embedded parameter \(t/2\) recovers
+  \(t\).
+proof:
+  The coordinate identity is \(2(t/2)=t\).
+-/
 @[simp]
 theorem doubleOfLeHalf_firstHalf (t : unitInterval)
     (ht : (unitInterval.firstHalf t : ℝ) ≤ 1 / 2 := firstHalf_le_half t) :
@@ -166,6 +306,16 @@ theorem doubleOfLeHalf_firstHalf (t : unitInterval)
   change 2 * ((t : ℝ) / 2) = (t : ℝ)
   ring
 
+/--
+%%handwave
+name:
+  The first-half embedding inverts doubling
+statement:
+  For \(t\in[0,1/2]\), embedding the doubled parameter \(2t\) into the first
+  half recovers \(t\).
+proof:
+  The coordinate identity is \((2t)/2=t\).
+-/
 @[simp]
 theorem firstHalf_doubleOfLeHalf (t : unitInterval)
     (ht : (t : ℝ) ≤ 1 / 2) :
@@ -174,6 +324,16 @@ theorem firstHalf_doubleOfLeHalf (t : unitInterval)
   change (2 * (t : ℝ)) / 2 = (t : ℝ)
   ring
 
+/--
+%%handwave
+name:
+  Recentering inverts the second-half embedding
+statement:
+  For every \(t\in[0,1]\), recentering \((1+t)/2\) by \(s\mapsto2s-1\)
+  recovers \(t\).
+proof:
+  Expand \(2(1+t)/2-1=t\).
+-/
 @[simp]
 theorem doubleSubOneOfHalfLe_secondHalf (t : unitInterval)
     (ht : (1 / 2 : ℝ) ≤ unitInterval.secondHalf t := half_le_secondHalf t) :
@@ -182,6 +342,15 @@ theorem doubleSubOneOfHalfLe_secondHalf (t : unitInterval)
   change 2 * ((1 + (t : ℝ)) / 2) - 1 = (t : ℝ)
   ring
 
+/--
+%%handwave
+name:
+  The second-half embedding inverts recentering
+statement:
+  For \(t\in[1/2,1]\), embedding \(2t-1\) into the second half recovers \(t\).
+proof:
+  Expand \((1+(2t-1))/2=t\).
+-/
 @[simp]
 theorem secondHalf_doubleSubOneOfHalfLe (t : unitInterval)
     (ht : (1 / 2 : ℝ) ≤ t) :
@@ -198,13 +367,32 @@ def splitAtRescaleLeft
     div_nonneg (unitInterval.nonneg u) hr0.le,
     div_le_one_of_le₀ hu hr0.le⟩
 
+/--
+%%handwave
+name:
+  Formula for left-subinterval rescaling
+statement:
+  If \(0<r\le1\) and \(0\le u\le r\), rescaling \([0,r]\) to \([0,1]\)
+  sends \(u\) to \(u/r\).
+proof:
+  This is the defining coordinate of the left rescaling.
+-/
 @[simp]
 theorem coe_splitAtRescaleLeft
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
     (splitAtRescaleLeft r u hr0 hu : ℝ) = (u : ℝ) / r :=
   rfl
 
-/-- Rescaling inverts the left subinterval parametrization. -/
+/--
+%%handwave
+name:
+  Left-subinterval rescaling recovers the original parameter
+statement:
+  If \(0<r\) and \(u\le r\), then the affine interpolation from \(0\) to
+  \(r\) at parameter \(u/r\) equals \(u\).
+proof:
+  The interpolation is \(0+(u/r)r=u\), since \(r\ne0\).
+-/
 theorem convexCombo_zero_right_splitAtRescaleLeft
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
     Set.Icc.convexComb 0 r (splitAtRescaleLeft r u hr0 hu) = u := by
@@ -223,6 +411,16 @@ def splitAtRescaleRight
         linarith [unitInterval.le_one u]
       exact div_le_one_of_le₀ hur (sub_nonneg.mpr hr1.le)⟩
 
+/--
+%%handwave
+name:
+  Formula for right-subinterval rescaling
+statement:
+  If \(r<1\) and \(r\le u\le1\), rescaling \([r,1]\) to \([0,1]\)
+  sends \(u\) to \((u-r)/(1-r)\).
+proof:
+  This is the defining coordinate of the right rescaling.
+-/
 @[simp]
 theorem coe_splitAtRescaleRight
     (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
@@ -230,7 +428,16 @@ theorem coe_splitAtRescaleRight
       ((u : ℝ) - r) / (1 - r) :=
   rfl
 
-/-- Rescaling inverts the right subinterval parametrization. -/
+/--
+%%handwave
+name:
+  Right-subinterval rescaling recovers the original parameter
+statement:
+  If \(r<1\) and \(r\le u\), then the affine interpolation from \(r\) to
+  \(1\) at parameter \((u-r)/(1-r)\) equals \(u\).
+proof:
+  Expand the interpolation and cancel the nonzero factor \(1-r\).
+-/
 theorem convexCombo_left_one_splitAtRescaleRight
     (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
     Set.Icc.convexComb r 1 (splitAtRescaleRight r u hr1 hu) = u := by
@@ -253,6 +460,16 @@ noncomputable def splitAtReparam
     secondHalf
       (splitAtRescaleRight r u hr1 (le_of_lt (lt_of_not_ge hu)))
 
+/--
+%%handwave
+name:
+  Split reparametrization on the left subinterval
+statement:
+  For an interior breakpoint \(r\), if \(u\le r\), then the split-path
+  parameter of \(u\) is \(\frac12(u/r)\).
+proof:
+  The left branch of the piecewise definition applies.
+-/
 theorem splitAtReparam_of_le
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (hu : u ≤ r) :
@@ -260,6 +477,18 @@ theorem splitAtReparam_of_le
       firstHalf (splitAtRescaleLeft r u hr0 hu) := by
   simp [splitAtReparam, hu]
 
+/--
+%%handwave
+name:
+  Split reparametrization on the right subinterval
+statement:
+  For an interior breakpoint \(r\), if \(r\le u\), then the split-path
+  parameter of \(u\) is
+  \(\frac12\bigl(1+(u-r)/(1-r)\bigr)\).
+proof:
+  Away from \(u=r\) this is the right branch of the definition.  At \(u=r\),
+  both branch formulas equal \(1/2\).
+-/
 theorem splitAtReparam_of_ge
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (hu : r ≤ u) :
@@ -277,7 +506,18 @@ theorem splitAtReparam_of_ge
     rw [splitAtReparam_of_le r r hr0 hr1 le_rfl, hleft]
   · simp [splitAtReparam, hur]
 
-/-- The split reparameterization is monotone. -/
+/--
+%%handwave
+name:
+  Monotonicity of the split reparametrization
+statement:
+  For fixed \(0<r<1\), the map sending an original parameter \(u\) to its
+  split-path parameter is monotone on \([0,1]\).
+proof:
+  On each side of \(r\) the map is affine with positive slope.  Across the
+  breakpoint, the left values are at most \(1/2\) and the right values are at
+  least \(1/2\).
+-/
 theorem splitAtReparam_mono
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     {u v : unitInterval} (huv : u ≤ v) :
@@ -313,6 +553,16 @@ theorem splitAtReparam_mono
       div_le_div_of_nonneg_right hnum (sub_nonneg.mpr hr1.le)
     nlinarith
 
+/--
+%%handwave
+name:
+  Split reparametrization at zero
+statement:
+  For every interior breakpoint \(r\), the split reparametrization sends
+  \(0\) to \(0\).
+proof:
+  Use the left formula and substitute \(u=0\).
+-/
 @[simp]
 theorem splitAtReparam_zero
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -322,6 +572,16 @@ theorem splitAtReparam_zero
   ext
   simp [firstHalf, splitAtRescaleLeft]
 
+/--
+%%handwave
+name:
+  Split reparametrization at one
+statement:
+  For every interior breakpoint \(r\), the split reparametrization sends
+  \(1\) to \(1\).
+proof:
+  Use the right formula and simplify \((1-r)/(1-r)=1\).
+-/
 @[simp]
 theorem splitAtReparam_one
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -346,6 +606,17 @@ noncomputable def splitAtOriginalParameter
     Set.Icc.convexComb r 1
       (doubleSubOneOfHalfLe t (le_of_lt (lt_of_not_ge ht)))
 
+/--
+%%handwave
+name:
+  Original parameter on the first half of a split path
+statement:
+  If \(t\le1/2\), the original parameter corresponding to the split-path
+  parameter \(t\) is the affine interpolation from \(0\) to \(r\) at \(2t\),
+  equivalently \(2rt\).
+proof:
+  The first branch of the inverse reparametrization applies.
+-/
 theorem splitAtOriginalParameter_of_le_half
     (r t : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (ht : (t : ℝ) ≤ 1 / 2) :
@@ -354,6 +625,17 @@ theorem splitAtOriginalParameter_of_le_half
   unfold splitAtOriginalParameter
   rw [dif_pos ht]
 
+/--
+%%handwave
+name:
+  Original parameter on the second half of a split path
+statement:
+  If \(1/2\le t\), the original parameter corresponding to \(t\) is the affine
+  interpolation from \(r\) to \(1\) at \(2t-1\).
+proof:
+  Above \(1/2\) this is the second branch by definition; at \(t=1/2\), both
+  affine formulas equal \(r\).
+-/
 theorem splitAtOriginalParameter_of_half_le
     (r t : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (ht : (1 / 2 : ℝ) ≤ t) :
@@ -370,7 +652,17 @@ theorem splitAtOriginalParameter_of_half_le
     unfold splitAtOriginalParameter
     rw [dif_neg ht']
 
-/-- The inverse split parameter is monotone. -/
+/--
+%%handwave
+name:
+  Monotonicity of the original-parameter map
+statement:
+  For fixed \(0<r<1\), the map from a split-path parameter \(t\) back to the
+  original parameter is monotone on \([0,1]\).
+proof:
+  Each affine branch has positive slope.  Across \(t=1/2\), the first branch
+  is at most \(r\) and the second branch is at least \(r\).
+-/
 theorem splitAtOriginalParameter_mono
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     {s t : unitInterval} (hst : s ≤ t) :
@@ -402,7 +694,17 @@ theorem splitAtOriginalParameter_mono
     simp [Set.Icc.convexComb]
     nlinarith [show (r : ℝ) ≤ 1 from hr1.le, show (s : ℝ) ≤ t from hst]
 
-/-- Inverting the split reparameterization recovers the original parameter. -/
+/--
+%%handwave
+name:
+  The original-parameter map is a left inverse
+statement:
+  For \(0<r<1\) and \(u\in[0,1]\), converting \(u\) to a split-path parameter
+  and back recovers \(u\).
+proof:
+  Split at \(u\le r\).  On each branch, half-interval rescaling is inverted
+  and the corresponding affine subinterval interpolation recovers \(u\).
+-/
 theorem splitAtOriginalParameter_splitAtReparam
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
     splitAtOriginalParameter r (splitAtReparam r u hr0 hr1) hr0 hr1 = u := by
@@ -419,7 +721,17 @@ theorem splitAtOriginalParameter_splitAtReparam
       exact convexCombo_left_one_splitAtRescaleRight r u hr1 hru
     · exact half_le_secondHalf _
 
-/-- Reparameterizing the original parameter of a split path recovers the split parameter. -/
+/--
+%%handwave
+name:
+  The split reparametrization is a left inverse
+statement:
+  For \(0<r<1\) and \(t\in[0,1]\), converting \(t\) to its original parameter
+  and then back to a split-path parameter recovers \(t\).
+proof:
+  Split at \(t\le1/2\), substitute the appropriate affine branch, and cancel
+  \(r\) or \(1-r\), both of which are nonzero.
+-/
 theorem splitAtReparam_splitAtOriginalParameter
     (r t : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
     splitAtReparam r (splitAtOriginalParameter r t hr0 hr1) hr0 hr1 = t := by
@@ -449,8 +761,15 @@ theorem splitAtReparam_splitAtOriginalParameter
     ring
 
 /--
-If a split parameter lies between the split images of two original
-parameters, its original inverse lies between those original parameters.
+%%handwave
+name:
+  Pulling split-parameter bounds back to original parameters
+statement:
+  Let \(F\) be the split reparametrization for \(0<r<1\), with inverse
+  \(G\).  If \(F(a)\le t\le F(b)\), then \(a\le G(t)\le b\).
+proof:
+  Apply monotonicity of \(G\) to both inequalities and use
+  \(G(F(u))=u\).
 -/
 theorem splitAtOriginalParameter_mem_interval_of_reparam_bounds
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
@@ -466,8 +785,16 @@ theorem splitAtOriginalParameter_mem_interval_of_reparam_bounds
     simpa [splitAtOriginalParameter_splitAtReparam] using hmono
 
 /--
-If an original parameter lies between original images of two split parameters,
-its split inverse lies between those split parameters.
+%%handwave
+name:
+  Pulling original-parameter bounds back to split parameters
+statement:
+  Let \(G\) send split-path parameters to original parameters for
+  \(0<r<1\), with inverse \(F\).  If \(G(a)\le t\le G(b)\), then
+  \(a\le F(t)\le b\).
+proof:
+  Apply monotonicity of \(F\) to both inequalities and use
+  \(F(G(u))=u\).
 -/
 theorem splitAtReparam_mem_interval_of_originalParameter_bounds
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
@@ -523,12 +850,30 @@ def reassocLeftToRight (t : unitInterval) : unitInterval :=
       · nlinarith [unitInterval.nonneg t]
       · nlinarith [unitInterval.le_one t]⟩
 
+/--
+%%handwave
+name:
+  Right-associated to left-associated reparametrization at zero
+statement:
+  The reparametrization from \(p*(q*r)\) to \((p*q)*r\) fixes \(0\).
+proof:
+  Substitute \(t=0\) into its first affine branch.
+-/
 @[simp]
 theorem reassocRightToLeft_zero :
     reassocRightToLeft 0 = 0 := by
   ext
   simp [reassocRightToLeft]
 
+/--
+%%handwave
+name:
+  Right-associated to left-associated reparametrization at one
+statement:
+  The reparametrization from \(p*(q*r)\) to \((p*q)*r\) fixes \(1\).
+proof:
+  Substitute \(t=1\) into its last affine branch.
+-/
 @[simp]
 theorem reassocRightToLeft_one :
     reassocRightToLeft 1 = 1 := by
@@ -536,12 +881,30 @@ theorem reassocRightToLeft_one :
   simp [reassocRightToLeft]
   norm_num
 
+/--
+%%handwave
+name:
+  Left-associated to right-associated reparametrization at zero
+statement:
+  The reparametrization from \((p*q)*r\) to \(p*(q*r)\) fixes \(0\).
+proof:
+  Substitute \(t=0\) into its first affine branch.
+-/
 @[simp]
 theorem reassocLeftToRight_zero :
     reassocLeftToRight 0 = 0 := by
   ext
   simp [reassocLeftToRight]
 
+/--
+%%handwave
+name:
+  Left-associated to right-associated reparametrization at one
+statement:
+  The reparametrization from \((p*q)*r\) to \(p*(q*r)\) fixes \(1\).
+proof:
+  Substitute \(t=1\) into its last affine branch.
+-/
 @[simp]
 theorem reassocLeftToRight_one :
     reassocLeftToRight 1 = 1 := by
@@ -549,12 +912,31 @@ theorem reassocLeftToRight_one :
   simp [reassocLeftToRight]
   norm_num
 
+/--
+%%handwave
+name:
+  First branch of right-to-left reassociation
+statement:
+  For \(0\le t\le1/2\), the right-to-left reassociation parameter is \(t/2\).
+proof:
+  The first branch of the piecewise definition applies.
+-/
 theorem coe_reassocRightToLeft_of_le_half
     (t : unitInterval) (ht : (t : ℝ) ≤ 1 / 2) :
     (reassocRightToLeft t : ℝ) = (t : ℝ) / 2 := by
   unfold reassocRightToLeft
   rw [dif_pos ht]
 
+/--
+%%handwave
+name:
+  Middle branch of right-to-left reassociation
+statement:
+  For \(1/2<t\le3/4\), the right-to-left reassociation parameter is
+  \(t-1/4\).
+proof:
+  The middle branch of the piecewise definition applies.
+-/
 theorem coe_reassocRightToLeft_of_half_lt_of_le_three_quarters
     (t : unitInterval) (ht₁ : ¬ (t : ℝ) ≤ 1 / 2)
     (ht₂ : (t : ℝ) ≤ 3 / 4) :
@@ -562,6 +944,15 @@ theorem coe_reassocRightToLeft_of_half_lt_of_le_three_quarters
   unfold reassocRightToLeft
   rw [dif_neg ht₁, dif_pos ht₂]
 
+/--
+%%handwave
+name:
+  Last branch of right-to-left reassociation
+statement:
+  For \(3/4<t\le1\), the right-to-left reassociation parameter is \(2t-1\).
+proof:
+  The final branch of the piecewise definition applies.
+-/
 theorem coe_reassocRightToLeft_of_three_quarters_lt
     (t : unitInterval) (ht₁ : ¬ (t : ℝ) ≤ 1 / 2)
     (ht₂ : ¬ (t : ℝ) ≤ 3 / 4) :
@@ -569,12 +960,31 @@ theorem coe_reassocRightToLeft_of_three_quarters_lt
   unfold reassocRightToLeft
   rw [dif_neg ht₁, dif_neg ht₂]
 
+/--
+%%handwave
+name:
+  First branch of left-to-right reassociation
+statement:
+  For \(0\le t\le1/4\), the left-to-right reassociation parameter is \(2t\).
+proof:
+  The first branch of the piecewise definition applies.
+-/
 theorem coe_reassocLeftToRight_of_le_quarter
     (t : unitInterval) (ht : (t : ℝ) ≤ 1 / 4) :
     (reassocLeftToRight t : ℝ) = 2 * (t : ℝ) := by
   unfold reassocLeftToRight
   rw [dif_pos ht]
 
+/--
+%%handwave
+name:
+  Middle branch of left-to-right reassociation
+statement:
+  For \(1/4<t\le1/2\), the left-to-right reassociation parameter is
+  \(t+1/4\).
+proof:
+  The middle branch of the piecewise definition applies.
+-/
 theorem coe_reassocLeftToRight_of_quarter_lt_of_le_half
     (t : unitInterval) (ht₁ : ¬ (t : ℝ) ≤ 1 / 4)
     (ht₂ : (t : ℝ) ≤ 1 / 2) :
@@ -582,6 +992,16 @@ theorem coe_reassocLeftToRight_of_quarter_lt_of_le_half
   unfold reassocLeftToRight
   rw [dif_neg ht₁, dif_pos ht₂]
 
+/--
+%%handwave
+name:
+  Last branch of left-to-right reassociation
+statement:
+  For \(1/2<t\le1\), the left-to-right reassociation parameter is
+  \((t+1)/2\).
+proof:
+  The final branch of the piecewise definition applies.
+-/
 theorem coe_reassocLeftToRight_of_half_lt
     (t : unitInterval) (ht₁ : ¬ (t : ℝ) ≤ 1 / 4)
     (ht₂ : ¬ (t : ℝ) ≤ 1 / 2) :
@@ -589,6 +1009,18 @@ theorem coe_reassocLeftToRight_of_half_lt
   unfold reassocLeftToRight
   rw [dif_neg ht₁, dif_neg ht₂]
 
+/--
+%%handwave
+name:
+  Monotonicity of right-to-left reassociation
+statement:
+  The piecewise affine map
+  \(t/2,\ t-1/4,\ 2t-1\) on the intervals cut at \(1/2\) and \(3/4\)
+  is monotone on \([0,1]\).
+proof:
+  Compare the affine formulas in each possible pair of branches.  Every
+  branch has positive slope and adjacent formulas agree at their breakpoint.
+-/
 theorem reassocRightToLeft_mono :
     Monotone reassocRightToLeft := by
   intro a b hab
@@ -623,6 +1055,18 @@ theorem reassocRightToLeft_mono :
         coe_reassocRightToLeft_of_three_quarters_lt b hb₁ hb₂]
       nlinarith [show (a : ℝ) ≤ b from hab]
 
+/--
+%%handwave
+name:
+  Monotonicity of left-to-right reassociation
+statement:
+  The piecewise affine map
+  \(2t,\ t+1/4,\ (t+1)/2\) on the intervals cut at \(1/4\) and \(1/2\)
+  is monotone on \([0,1]\).
+proof:
+  Compare the affine formulas branch by branch.  Their slopes are positive
+  and adjacent formulas meet at the breakpoints.
+-/
 theorem reassocLeftToRight_mono :
     Monotone reassocLeftToRight := by
   intro a b hab
@@ -657,6 +1101,18 @@ theorem reassocLeftToRight_mono :
         coe_reassocLeftToRight_of_half_lt b hb₁ hb₂]
       nlinarith [show (a : ℝ) ≤ b from hab]
 
+/--
+%%handwave
+name:
+  Left-to-right reassociation inverts right-to-left reassociation
+statement:
+  For every \(t\in[0,1]\), applying the right-to-left reassociation and then
+  the left-to-right reassociation recovers \(t\).
+proof:
+  Split at \(t=1/2\) and \(t=3/4\).  The image lands respectively in the
+  intervals cut at \(1/4\) and \(1/2\), where the paired affine formulas
+  compose to the identity.
+-/
 theorem reassocLeftToRight_reassocRightToLeft
     (t : unitInterval) :
     reassocLeftToRight (reassocRightToLeft t) = t := by
@@ -693,6 +1149,17 @@ theorem reassocLeftToRight_reassocRightToLeft
         coe_reassocRightToLeft_of_three_quarters_lt t ht₁ ht₂]
       ring
 
+/--
+%%handwave
+name:
+  Right-to-left reassociation inverts left-to-right reassociation
+statement:
+  For every \(t\in[0,1]\), applying the left-to-right reassociation and then
+  the right-to-left reassociation recovers \(t\).
+proof:
+  Split at \(t=1/4\) and \(t=1/2\).  On each resulting interval, substitute
+  the matching affine branch formulas and simplify.
+-/
 theorem reassocRightToLeft_reassocLeftToRight
     (t : unitInterval) :
     reassocRightToLeft (reassocLeftToRight t) = t := by
@@ -729,6 +1196,16 @@ theorem reassocRightToLeft_reassocLeftToRight
         coe_reassocLeftToRight_of_half_lt t ht₁ ht₂]
       ring
 
+/--
+%%handwave
+name:
+  Transporting right-to-left reassociation bounds through the inverse
+statement:
+  If \(R(a)\le t\le R(b)\), where \(R\) is right-to-left reassociation and
+  \(L\) its inverse, then \(a\le L(t)\le b\).
+proof:
+  Apply monotonicity of \(L\) to both bounds and use \(L(R(u))=u\).
+-/
 theorem reassocLeftToRight_mem_interval_of_rightToLeft_bounds
     {a b t : unitInterval}
     (hleft : reassocRightToLeft a ≤ t)
@@ -740,6 +1217,16 @@ theorem reassocLeftToRight_mem_interval_of_rightToLeft_bounds
   · have hmono := reassocLeftToRight_mono hright
     simpa [reassocLeftToRight_reassocRightToLeft] using hmono
 
+/--
+%%handwave
+name:
+  Transporting left-to-right reassociation bounds through the inverse
+statement:
+  If \(L(a)\le t\le L(b)\), where \(L\) is left-to-right reassociation and
+  \(R\) its inverse, then \(a\le R(t)\le b\).
+proof:
+  Apply monotonicity of \(R\) to both bounds and use \(R(L(u))=u\).
+-/
 theorem reassocRightToLeft_mem_interval_of_leftToRight_bounds
     {a b t : unitInterval}
     (hleft : reassocLeftToRight a ≤ t)
@@ -753,7 +1240,17 @@ theorem reassocRightToLeft_mem_interval_of_leftToRight_bounds
 
 end unitInterval
 
-/-- On the first half of a concatenated path, `Path.trans` is the first path. -/
+/--
+%%handwave
+name:
+  A concatenated path on its first half
+statement:
+  For composable paths \(p,q\) and \(t\in[0,1]\),
+  \((p*q)(t/2)=p(t)\).
+proof:
+  The parameter \(t/2\) lies in the first half, where path concatenation
+  evaluates \(p\) at the doubled parameter \(2(t/2)=t\).
+-/
 theorem path_trans_firstHalf_apply
     {X : Type*} [TopologicalSpace X]
     {x₀ x y : X} (p : Path x₀ x) (q : Path x y)
@@ -766,7 +1263,18 @@ theorem path_trans_firstHalf_apply
   change 2 * ((t : ℝ) / 2) = (t : ℝ)
   ring
 
-/-- On the second half of a concatenated path, `Path.trans` is the second path. -/
+/--
+%%handwave
+name:
+  A concatenated path on its second half
+statement:
+  For composable paths \(p,q\) and \(t\in[0,1]\),
+  \((p*q)((1+t)/2)=q(t)\).
+proof:
+  If \(t>0\), the parameter is in the second half and recentering gives
+  \(2(1+t)/2-1=t\).  At \(t=0\), the common endpoint identifies the two
+  branch values.
+-/
 theorem path_trans_secondHalf_apply
     {X : Type*} [TopologicalSpace X]
     {x₀ x y : X} (p : Path x₀ x) (q : Path x y)
@@ -790,8 +1298,14 @@ theorem path_trans_secondHalf_apply
     ring
 
 /--
-A point of a concatenated path in the first half is the first path at the
-doubled parameter.
+%%handwave
+name:
+  Evaluation of a concatenated path before the midpoint
+statement:
+  For composable paths \(p,q\), if \(t\le1/2\), then
+  \((p*q)(t)=p(2t)\).
+proof:
+  Select the first branch of the definition of path concatenation.
 -/
 theorem path_trans_apply_of_le_half
     {X : Type*} [TopologicalSpace X]
@@ -803,8 +1317,15 @@ theorem path_trans_apply_of_le_half
   congr 1
 
 /--
-A point of a concatenated path in the second half is the second path at the
-re-centered doubled parameter.
+%%handwave
+name:
+  Evaluation of a concatenated path after the midpoint
+statement:
+  For composable paths \(p,q\), if \(1/2\le t\), then
+  \((p*q)(t)=q(2t-1)\).
+proof:
+  Above the midpoint this is the second branch of concatenation.  At the
+  midpoint, the terminal value of \(p\) and initial value of \(q\) agree.
 -/
 theorem path_trans_apply_of_half_le
     {X : Type*} [TopologicalSpace X]
@@ -829,7 +1350,22 @@ theorem path_trans_apply_of_half_le
   · rw [dif_neg h]
     congr 1
 
-/-- Taking a subpath of a subpath is the corresponding subpath of the original path. -/
+/--
+%%handwave
+name:
+  Subpath of a subpath
+statement:
+  For a path \(\gamma\) and \(a,b,s,t\in[0,1]\),
+  \[
+    (\gamma|_{[a,b]})|_{[s,t]}
+    =\gamma|_{[(1-s)a+sb,\,(1-t)a+tb]}.
+  \]
+proof:
+  Evaluate both paths at \(u\) and use associativity of affine interpolation:
+  interpolating from \(a\) to \(b\) at the interpolation from \(s\) to \(t\)
+  gives the same affine polynomial as interpolating between the two displayed
+  endpoints at \(u\).
+-/
 theorem path_subpath_subpath
     {X : Type*} [TopologicalSpace X]
     {x y : X} (γ : Path x y)
@@ -849,8 +1385,16 @@ theorem path_subpath_subpath
   ring_nf
 
 /--
-On the first half of the split path, the left rescaling recovers the original
-path value at `u`.
+%%handwave
+name:
+  Left half of a path split at an interior parameter
+statement:
+  Let \(0<r<1\) and \(u\le r\).  Concatenate the subpaths of \(\gamma\) from
+  \(0\) to \(r\) and from \(r\) to \(1\).  At split-path parameter
+  \(\frac12(u/r)\), the resulting path has value \(\gamma(u)\).
+proof:
+  First-half evaluation reduces to the left subpath at parameter \(u/r\);
+  affine interpolation from \(0\) to \(r\) at \(u/r\) equals \(u\).
 -/
 theorem path_splitAt_firstHalf_rescaleLeft
     {X : Type*} [TopologicalSpace X]
@@ -866,8 +1410,16 @@ theorem path_splitAt_firstHalf_rescaleLeft
   rw [unitInterval.convexCombo_zero_right_splitAtRescaleLeft]
 
 /--
-On the second half of the split path, the right rescaling recovers the
-original path value at `u`.
+%%handwave
+name:
+  Right half of a path split at an interior parameter
+statement:
+  Let \(0<r<1\) and \(r\le u\).  Concatenate the subpaths of \(\gamma\) from
+  \(0\) to \(r\) and from \(r\) to \(1\).  At split-path parameter
+  \(\frac12(1+(u-r)/(1-r))\), the resulting path has value \(\gamma(u)\).
+proof:
+  Second-half evaluation reduces to the right subpath at parameter
+  \((u-r)/(1-r)\), whose affine interpolation between \(r\) and \(1\) is \(u\).
 -/
 theorem path_splitAt_secondHalf_rescaleRight
     {X : Type*} [TopologicalSpace X]
@@ -882,7 +1434,18 @@ theorem path_splitAt_secondHalf_rescaleRight
       (unitInterval.splitAtRescaleRight r u hr1 hu)) = γ u
   rw [unitInterval.convexCombo_left_one_splitAtRescaleRight]
 
-/-- The combined split reparameterization recovers the original path value. -/
+/--
+%%handwave
+name:
+  Reparametrizing a split path recovers the original path
+statement:
+  Let \(0<r<1\).  If the two subpaths of \(\gamma\) cut at \(r\) are
+  concatenated and evaluated at the split reparametrization of \(u\), the
+  result is \(\gamma(u)\).
+proof:
+  Split into \(u\le r\) and \(r\le u\), then apply the corresponding
+  left- or right-half recovery formula.
+-/
 theorem path_splitAt_splitAtReparam
     {X : Type*} [TopologicalSpace X]
     {x y : X} (γ : Path x y)
@@ -898,8 +1461,20 @@ theorem path_splitAt_splitAtReparam
     exact path_splitAt_secondHalf_rescaleRight γ r u hr1 hru
 
 /--
-Evaluating the split path and then inverting its parameter recovers the same
-point of the original path.
+%%handwave
+name:
+  A split path as an inverse reparametrization of the original path
+statement:
+  Let \(0<r<1\).  The concatenation of the subpaths of \(\gamma\) cut at \(r\)
+  satisfies
+  \[
+    (\gamma|_{[0,r]}*\gamma|_{[r,1]})(t)=\gamma(G_r(t)),
+  \]
+  where \(G_r\) sends split-path parameters back to original parameters.
+proof:
+  For \(t\le1/2\), use first-half evaluation and the affine formula on
+  \([0,r]\).  For \(t\ge1/2\), use second-half evaluation and the affine
+  formula on \([r,1]\).
 -/
 theorem path_splitAt_originalParameter
     {X : Type*} [TopologicalSpace X]

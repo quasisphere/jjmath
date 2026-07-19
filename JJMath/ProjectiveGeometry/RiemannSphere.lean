@@ -20,7 +20,17 @@ noncomputable section
 
 local instance : DecidableEq RiemannSphere := Classical.decEq RiemannSphere
 
-/-- Inversion on the Riemann sphere is an involution. -/
+/--
+%%handwave
+name:
+  Inversion on the Riemann sphere is involutive
+statement:
+  For every \(z\in\widehat{\mathbb C}\), applying spherical inversion twice gives
+  \(\iota(\iota(z))=z\).
+proof:
+  Separate infinity from finite points.  At a finite point, split off \(z=0\);
+  otherwise the conclusion is the identity \((z^{-1})^{-1}=z\).
+-/
 theorem riemannSphereInv_involutive : Function.Involutive riemannSphereInv := by
   intro z
   induction z using OnePoint.rec with
@@ -33,6 +43,15 @@ theorem riemannSphereInv_involutive : Function.Involutive riemannSphereInv := by
         rw [riemannSphereInv_coe_of_ne_zero (inv_ne_zero hz)]
         simp
 
+/--
+%%handwave
+name:
+  Double spherical inversion
+statement:
+  For every \(z\in\widehat{\mathbb C}\), one has \(\iota(\iota(z))=z\).
+proof:
+  This is the pointwise form of [spherical inversion is involutive](lean:JJMath.riemannSphereInv_involutive).
+-/
 @[simp]
 theorem riemannSphereInv_inv (z : RiemannSphere) :
     riemannSphereInv (riemannSphereInv z) = z :=
@@ -47,6 +66,16 @@ def riemannSphereInvHomeomorph : RiemannSphere ≃ₜ RiemannSphere where
   continuous_toFun := riemannSphereInv_continuous
   continuous_invFun := riemannSphereInv_continuous
 
+/--
+%%handwave
+name:
+  The inversion homeomorphism acts by inversion
+statement:
+  For \(z\in\widehat{\mathbb C}\), the self-homeomorphism defined by spherical
+  inversion sends \(z\) to \(\iota(z)\).
+proof:
+  This is the defining formula for the homeomorphism.
+-/
 @[simp]
 theorem riemannSphereInvHomeomorph_apply (z : RiemannSphere) :
     riemannSphereInvHomeomorph z = riemannSphereInv z :=
@@ -57,16 +86,47 @@ def riemannSphereFiniteChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   (OnePoint.isOpenEmbedding_coe.toOpenPartialHomeomorph
     ((↑) : ℂ → RiemannSphere)).symm
 
+/--
+%%handwave
+name:
+  Domain of the affine chart
+statement:
+  The source of the affine chart on \(\widehat{\mathbb C}\) is exactly
+  \(\widehat{\mathbb C}\setminus\{\infty\}\).
+proof:
+  The affine chart is the inverse of the open embedding
+  \(\mathbb C\hookrightarrow\widehat{\mathbb C}\), whose image is the complement of infinity.
+-/
 @[simp]
 theorem riemannSphereFiniteChart_source :
     riemannSphereFiniteChart.source = ({OnePoint.infty} : Set RiemannSphere)ᶜ := by
   simp [riemannSphereFiniteChart, OnePoint.compl_infty]
 
+/--
+%%handwave
+name:
+  Range of the affine chart
+statement:
+  The affine chart maps onto all of \(\mathbb C\).
+proof:
+  It is the inverse partial homeomorphism of the inclusion
+  \(\mathbb C\hookrightarrow\widehat{\mathbb C}\).
+-/
 @[simp]
 theorem riemannSphereFiniteChart_target :
     riemannSphereFiniteChart.target = Set.univ := by
   simp [riemannSphereFiniteChart]
 
+/--
+%%handwave
+name:
+  Affine coordinate of a finite point
+statement:
+  For every \(z\in\mathbb C\), the affine chart sends the corresponding finite
+  point of \(\widehat{\mathbb C}\) to \(z\).
+proof:
+  Apply the left-inverse identity for the open embedding of the finite plane.
+-/
 @[simp]
 theorem riemannSphereFiniteChart_coe (z : ℂ) :
     riemannSphereFiniteChart (z : RiemannSphere) = z := by
@@ -74,6 +134,16 @@ theorem riemannSphereFiniteChart_coe (z : ℂ) :
     (Topology.IsOpenEmbedding.toOpenPartialHomeomorph_left_inv
       ((↑) : ℂ → RiemannSphere) OnePoint.isOpenEmbedding_coe (x := z))
 
+/--
+%%handwave
+name:
+  Inverse affine chart
+statement:
+  For every \(z\in\mathbb C\), the inverse affine chart sends \(z\) to its
+  canonical finite point in \(\widehat{\mathbb C}\).
+proof:
+  This is the defining inverse map of the affine chart.
+-/
 @[simp]
 theorem riemannSphereFiniteChart_symm_apply (z : ℂ) :
     riemannSphereFiniteChart.symm z = (z : RiemannSphere) :=
@@ -83,6 +153,17 @@ theorem riemannSphereFiniteChart_symm_apply (z : ℂ) :
 def riemannSphereInfinityChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   riemannSphereInvHomeomorph.toOpenPartialHomeomorph.trans riemannSphereFiniteChart
 
+/--
+%%handwave
+name:
+  Domain of the reciprocal chart
+statement:
+  The source of the reciprocal chart is
+  \(\widehat{\mathbb C}\setminus\{0\}\).
+proof:
+  Check infinity and finite points separately; for a finite point, inversion
+  lands in the affine chart exactly when the point is nonzero.
+-/
 @[simp]
 theorem riemannSphereInfinityChart_source :
     riemannSphereInfinityChart.source = ({((0 : ℂ) : RiemannSphere)} : Set RiemannSphere)ᶜ := by
@@ -95,26 +176,76 @@ theorem riemannSphereInfinityChart_source :
         simp [riemannSphereInfinityChart]
       · simp [riemannSphereInfinityChart, hz, riemannSphereInv_coe_of_ne_zero]
 
+/--
+%%handwave
+name:
+  Range of the reciprocal chart
+statement:
+  The reciprocal chart maps onto all of \(\mathbb C\).
+proof:
+  Spherical inversion is a homeomorphism and the affine chart has full target.
+-/
 @[simp]
 theorem riemannSphereInfinityChart_target :
     riemannSphereInfinityChart.target = Set.univ := by
   simp [riemannSphereInfinityChart]
 
+/--
+%%handwave
+name:
+  Inverse reciprocal chart
+statement:
+  For every \(z\in\mathbb C\), the inverse reciprocal chart sends \(z\) to the
+  spherical inverse of its finite point.
+proof:
+  This is the inverse formula for the composite of spherical inversion with
+  the affine chart.
+-/
 @[simp]
 theorem riemannSphereInfinityChart_symm_apply (z : ℂ) :
     riemannSphereInfinityChart.symm z = riemannSphereInv (z : RiemannSphere) :=
   rfl
 
+/--
+%%handwave
+name:
+  Reciprocal coordinate of infinity
+statement:
+  The reciprocal chart sends \(\infty\in\widehat{\mathbb C}\) to \(0\in\mathbb C\).
+proof:
+  Spherical inversion sends infinity to zero, after which the affine chart is the identity.
+-/
 @[simp]
 theorem riemannSphereInfinityChart_infty :
     riemannSphereInfinityChart OnePoint.infty = 0 := by
   simp [riemannSphereInfinityChart]
 
+/--
+%%handwave
+name:
+  Reciprocal coordinate of a nonzero finite point
+statement:
+  If \(z\in\mathbb C\setminus\{0\}\), then the reciprocal chart of the
+  corresponding point of \(\widehat{\mathbb C}\) is \(z^{-1}\).
+proof:
+  Substitute the finite-point formula for spherical inversion into the affine chart.
+-/
 @[simp]
 theorem riemannSphereInfinityChart_coe_of_ne_zero {z : ℂ} (hz : z ≠ 0) :
     riemannSphereInfinityChart (z : RiemannSphere) = z⁻¹ := by
   simp [riemannSphereInfinityChart, riemannSphereInv_coe_of_ne_zero hz]
 
+/--
+%%handwave
+name:
+  Reciprocal chart after spherical inversion
+statement:
+  For every \(z\in\mathbb C\), the reciprocal chart of the spherical inverse
+  of the finite point \(z\) equals \(z\).
+proof:
+  If \(z=0\), simplify directly; otherwise use the reciprocal formulas and
+  \((z^{-1})^{-1}=z\).
+-/
 @[simp]
 theorem riemannSphereInfinityChart_inv_coe (z : ℂ) :
     riemannSphereInfinityChart (riemannSphereInv (z : RiemannSphere)) = z := by
@@ -139,6 +270,16 @@ noncomputable instance instChartedSpaceComplexRiemannSphere :
   chart_mem_atlas z := by
     by_cases hz : z = OnePoint.infty <;> simp [hz]
 
+/--
+%%handwave
+name:
+  The chart at infinity is the reciprocal chart
+statement:
+  In the standard two-chart atlas on \(\widehat{\mathbb C}\), the chart selected
+  at infinity is the reciprocal chart.
+proof:
+  Evaluate the defining case distinction for the chosen chart at infinity.
+-/
 @[simp]
 theorem chartAt_riemannSphere_infty :
     chartAt ℂ (OnePoint.infty : RiemannSphere) = riemannSphereInfinityChart := by
@@ -147,6 +288,16 @@ theorem chartAt_riemannSphere_infty :
       riemannSphereInfinityChart else riemannSphereFiniteChart from rfl]
   simp
 
+/--
+%%handwave
+name:
+  The chart at a finite point is the affine chart
+statement:
+  For every \(z\in\mathbb C\), the chart selected at the corresponding finite
+  point of \(\widehat{\mathbb C}\) is the affine chart.
+proof:
+  A finite point is not infinity, so the defining case distinction selects the affine chart.
+-/
 @[simp]
 theorem chartAt_riemannSphere_coe (z : ℂ) :
     chartAt ℂ (z : RiemannSphere) = riemannSphereFiniteChart := by
@@ -251,8 +402,18 @@ theorem riemannSphereCoe_mdifferentiable :
   exact (mdifferentiableOn_atlas_symm (I := 𝓘(ℂ)) hmem z (by simp)).mdifferentiableAt
     (by simp)
 
-/-- Translation of the affine coordinate, fixing infinity, is holomorphic on
-the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Affine translations are holomorphic on the Riemann sphere
+statement:
+  For each \(a\in\mathbb C\), the map \(z\mapsto z+a\) on finite points,
+  extended by \(\infty\mapsto\infty\), is holomorphic on \(\widehat{\mathbb C}\).
+proof:
+  At finite points the affine-coordinate expression is a translation.  At
+  infinity the reciprocal-coordinate expression is \(w\mapsto w/(1+aw)\),
+  which is holomorphic near \(w=0\).
+-/
 theorem riemannSphereTranslation_mdifferentiable (a : ℂ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (riemannSphereTranslation a) := by
   intro z
@@ -296,8 +457,17 @@ theorem riemannSphereTranslation_mdifferentiable (a : ℂ) :
       · simp [extChartAt, Function.comp_def]
         exact differentiableAt_id.differentiableWithinAt
 
-/-- A nonzero affine dilation, fixing infinity, is holomorphic on the Riemann
-sphere. -/
+/--
+%%handwave
+name:
+  Nonzero dilations are holomorphic on the Riemann sphere
+statement:
+  If \(a\in\mathbb C^\times\), the map \(z\mapsto az\) on finite points,
+  extended by \(\infty\mapsto\infty\), is holomorphic on \(\widehat{\mathbb C}\).
+proof:
+  In the affine chart the map is \(z\mapsto az\), while in the reciprocal chart
+  at infinity it is \(w\mapsto w/a\); both expressions are holomorphic.
+-/
 theorem riemannSphereDilation_mdifferentiable {a : ℂ} (ha : a ≠ 0) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (riemannSphereDilation a) := by
   intro z
@@ -331,8 +501,19 @@ theorem riemannSphereDilation_mdifferentiable {a : ℂ} (ha : a ≠ 0) :
       · simp [extChartAt, Function.comp_def]
         fun_prop
 
-/-- Inversion is holomorphic for the standard complex structure on the
-Riemann sphere. -/
+/--
+%%handwave
+name:
+  Spherical inversion is holomorphic
+statement:
+  The involution exchanging (0) and \(\infty\) and sending each
+  \(z\in\mathbb C^\times\) to \(z^{-1}\) is holomorphic on
+  \(\widehat{\mathbb C}\).
+proof:
+  At (0) and \(\infty\), use one affine and one reciprocal chart, where the
+  coordinate expression is the identity.  Away from these points it is
+  \(z\mapsto z^{-1}\).
+-/
 theorem riemannSphereInv_mdifferentiable :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) riemannSphereInv := by
   intro z
@@ -366,8 +547,18 @@ theorem riemannSphereInv_mdifferentiable :
           filter_upwards [eventually_ne_nhds hz] with x hx
           simp [riemannSphereInv_coe_of_ne_zero hx]
 
-/-- Every complex Möbius representative acts holomorphically on the standard
-Riemann sphere. -/
+/--
+%%handwave
+name:
+  Möbius transformations are holomorphic on the Riemann sphere
+statement:
+  Every matrix \(A\in\operatorname{GL}_2(\mathbb C)\) acts holomorphically on
+  \(\widehat{\mathbb C}\) by its fractional-linear transformation.
+proof:
+  If the lower-left entry vanishes, factor the action into a nonzero dilation
+  and a translation.  Otherwise factor it into two translations, inversion,
+  and a nonzero dilation; the preceding holomorphicity results are stable under composition.
+-/
 theorem mobiusRepresentative_smul_mdifferentiable (A : MobiusRepresentative) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun z : RiemannSphere ↦ A • z) := by
   by_cases hc : A 1 0 = 0
@@ -447,20 +638,51 @@ def mobiusRepresentativeHomeomorph (A : MobiusRepresentative) :
   continuous_toFun := mobiusRepresentative_smul_continuous A
   continuous_invFun := mobiusRepresentative_smul_continuous A⁻¹
 
+/--
+%%handwave
+name:
+  Evaluation of the Möbius homeomorphism
+statement:
+  For \(A\in\operatorname{GL}_2(\mathbb C)\) and
+  \(z\in\widehat{\mathbb C}\), the homeomorphism associated with \(A\) sends
+  \(z\) to the fractional-linear action \(A\cdot z\).
+proof:
+  This is the defining forward map of the homeomorphism.
+-/
 @[simp]
 theorem mobiusRepresentativeHomeomorph_apply
     (A : MobiusRepresentative) (z : RiemannSphere) :
     mobiusRepresentativeHomeomorph A z = A • z :=
   rfl
 
+/--
+%%handwave
+name:
+  Evaluation of the inverse Möbius homeomorphism
+statement:
+  For \(A\in\operatorname{GL}_2(\mathbb C)\) and
+  \(z\in\widehat{\mathbb C}\), the inverse homeomorphism sends \(z\) to
+  \(A^{-1}\cdot z\).
+proof:
+  This is the defining inverse map of the Möbius homeomorphism.
+-/
 @[simp]
 theorem mobiusRepresentativeHomeomorph_symm_apply
     (A : MobiusRepresentative) (z : RiemannSphere) :
     (mobiusRepresentativeHomeomorph A).symm z = A⁻¹ • z :=
   rfl
 
-/-- Möbius representatives act by holomorphic local diffeomorphisms of the
-standard sphere. -/
+/--
+%%handwave
+name:
+  Möbius transformations are holomorphic local diffeomorphisms
+statement:
+  For every \(A\in\operatorname{GL}_2(\mathbb C)\), both the Möbius
+  homeomorphism of \(\widehat{\mathbb C}\) induced by \(A\) and its inverse are
+  holomorphic on their full domains.
+proof:
+  Apply [Möbius transformations are holomorphic on the Riemann sphere](lean:JJMath.mobiusRepresentative_smul_mdifferentiable) to \(A\) and \(A^{-1}\).
+-/
 theorem mobiusRepresentative_openPartialHomeomorph_mdifferentiable
     (A : MobiusRepresentative) :
     (mobiusRepresentativeHomeomorph A).toOpenPartialHomeomorph.MDifferentiable

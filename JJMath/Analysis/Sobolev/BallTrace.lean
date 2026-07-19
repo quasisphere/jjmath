@@ -30,6 +30,15 @@ noncomputable section
 
 open ContinuousLinearMap
 
+/--
+%%handwave
+name:
+  Lebesgue measure under scalar dilation
+statement:
+  Let \(H\) be a finite-dimensional real normed space with Lebesgue measure and let \(a\ne0\).  Under the dilation \(z\mapsto az\), the pushforward measure is \(\operatorname{ofReal}(|(a^{\dim H})^{-1}|)\) times Lebesgue measure.
+proof:
+  Apply the change-of-variables formula for the continuous linear equivalence \(a\,\mathrm{id}_H\), whose determinant has absolute value \(|a|^{\dim H}\).
+-/
 private theorem map_const_smul_volume_eq_smul
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -163,6 +172,15 @@ theorem ae_polar_product_unitBall_of_ae_volume_unitBall
     simpa [hpoint] using hx
   simpa [hmap_target, μS, μR, R] using hpush
 
+/--
+%%handwave
+name:
+  Absolute continuity after restriction
+statement:
+  If measures \(\mu\) and \(\nu\) satisfy \(\mu\ll\nu\), then for every measurable set \(S\) one has \(\mu|_S\ll\nu|_S\).
+proof:
+  A set null for \(\nu|_S\) has null intersection with \(S\) under \(\nu\), hence also under \(\mu\); this is exactly nullity for \(\mu|_S\).
+-/
 private theorem restrict_absolutelyContinuous_same_set
     {α : Type} [MeasurableSpace α] {μ ν : Measure α} (hμν : μ ≪ ν)
     {s : Set α} (hs : MeasurableSet s) :
@@ -171,6 +189,15 @@ private theorem restrict_absolutelyContinuous_same_set
   rw [Measure.restrict_apply_eq_zero' hs] at ht ⊢
   exact hμν ht
 
+/--
+%%handwave
+name:
+  Ordinary radial measure is dominated by polar radial measure
+statement:
+  On \((0,\infty)\), the pullback of one-dimensional Lebesgue measure under the inclusion is absolutely continuous with respect to the radial measure \(r^n\,dr\).
+proof:
+  A set of zero \(r^n\,dr\)-measure is Lebesgue-null away from the origin because the density \(r^n\) is strictly positive on \((0,\infty)\).  Pulling back along the inclusion gives the claim.
+-/
 private theorem volumeIoi_absolutelyContinuous_volumeIoiPow (n : ℕ) :
     ((Measure.comap ((↑) : Set.Ioi (0 : ℝ) → ℝ)
         MeasureTheory.volume) : Measure (Set.Ioi (0 : ℝ))) ≪
@@ -182,6 +209,15 @@ private theorem volumeIoi_absolutelyContinuous_volumeIoiPow (n : ℕ) :
     have hrpow : 0 < (r : ℝ) ^ n := pow_pos r.2 n
     exact ne_of_gt (ENNReal.ofReal_pos.mpr hrpow)
 
+/--
+%%handwave
+name:
+  Removing the polar weight on the unit radial interval
+statement:
+  Let \(P\) be a property of positive radii.  If \(P(r)\) holds for \(r^n\,dr\)-almost every \(0<r<1\), then for Lebesgue-almost every real \(t\), \(0<t<1\) implies \(P(t)\).
+proof:
+  Restrict the absolute continuity \(dt\ll r^n\,dr\) to \(0<r<1\), transfer the almost-everywhere statement, and rewrite the pullback along the inclusion.
+-/
 private theorem ae_volume_Ioo_zero_one_of_ae_volumeIoiPow_restrict
     {n : ℕ} {P : Set.Ioi (0 : ℝ) → Prop}
     (hP : ∀ᵐ r
@@ -414,6 +450,18 @@ theorem euclideanSobolev_unit_ball_radial_tailMajorant_le_norm_tailIntegral
             rw [hdir_norm, mul_one]
   exact ENNReal.ofReal_le_ofReal hle
 
+/--
+%%handwave
+name:
+  Polar formula for the radial tail majorant
+statement:
+  For a unit direction \(\theta\) and radius \(r>0\), the radial tail majorant at \(r\theta\) equals
+  \[
+    \int_{\{t:r<t<1\}}\!\!\|dw(t\theta)(\theta)\|\,dt.
+  \]
+proof:
+  In the defining line integral, use \(\|r\theta\|=r\), simplify \((t/r)(r\theta)=t\theta\), and simplify the rescaled radial direction \((1/r)(r\theta)=\theta\).
+-/
 private theorem euclideanSobolevUnitBallRadialTailMajorant_polar
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {dw : H → H →L[ℝ] ℝ}
@@ -466,6 +514,15 @@ private theorem euclideanSobolevUnitBallRadialTailMajorant_polar
       ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
   rw [hpoint t, hdir]
 
+/--
+%%handwave
+name:
+  Fubini principle with a null-measurable exceptional set
+statement:
+  Suppose the failure set \(\{(a,b):\neg P(a,b)\}\) is null-measurable for \(\mu\times\nu\), where \(\nu\) is \(\sigma\)-finite in the generalized sense.  If \(P(a,b)\) holds for \(\mu\)-almost every \(a\) and then for \(\nu\)-almost every \(b\), it holds for \((\mu\times\nu)\)-almost every pair.
+proof:
+  Replace the failure set by a measurable set equal to it almost everywhere.  Fubini shows that almost every section of this measurable replacement is null; the iterated hypothesis forces the replacement itself to be product-null, and hence so is the original failure set.
+-/
 private theorem ae_prod_of_ae_ae_of_nullMeasurable_bad
     {α β : Type} [MeasurableSpace α] [MeasurableSpace β]
     {μ : Measure α} {ν : Measure β} [SFinite ν]
@@ -575,8 +632,7 @@ statement:
   every direction on the whole unit sphere.
 proof:
   The complement of a stereographic source is its pole.  By
-  [points have zero spherical measure in dimension at least
-  two](lean:JJMath.Uniformization.toSphere_singleton_eq_zero_of_one_lt_finrank),
+  [points have zero spherical measure in dimension at least two](lean:JJMath.Uniformization.toSphere_singleton_eq_zero_of_one_lt_finrank),
   this pole can be discarded from any almost-everywhere statement.
 -/
 theorem ae_toSphere_of_ae_restrict_stereographic_source_of_one_lt_finrank
@@ -618,6 +674,15 @@ private def stereographicPolarPatchMap
     ℝ × EuclideanSpace ℝ (Fin n) → H :=
   fun p ↦ p.1 • ((stereographic' n v).symm p.2 : H)
 
+/--
+%%handwave
+name:
+  Formula for a stereographic polar patch
+statement:
+  If \(\sigma_v(y)\) is the inverse stereographic image of \(y\) with pole \(v\), then the associated polar patch satisfies \(\Phi_v(r,y)=r\,\sigma_v(y)\).
+proof:
+  This is the definition of the polar patch map.
+-/
 private theorem stereographicPolarPatchMap_apply
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -628,6 +693,15 @@ private theorem stereographicPolarPatchMap_apply
       r • ((stereographic' n v).symm y : H) :=
   rfl
 
+/--
+%%handwave
+name:
+  Inverse stereographic projection on its source
+statement:
+  For every sphere point \(\theta\) in the source of stereographic projection with pole \(v\), inverse stereographic projection sends its coordinate back to \(\theta\).
+proof:
+  Apply the left-inverse property of the stereographic chart and then forget the sphere subtype.
+-/
 private theorem stereographic'_symm_apply_apply_of_mem_source
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -638,6 +712,15 @@ private theorem stereographic'_symm_apply_apply_of_mem_source
     ((stereographic' n v).symm ((stereographic' n v) θ) : H) = θ := by
   exact congrArg Subtype.val ((stereographic' n v).left_inv hθ)
 
+/--
+%%handwave
+name:
+  Polar patch in spherical coordinates
+statement:
+  If \(\theta\) lies in the stereographic source, then \(\Phi_v(r,\operatorname{stereo}_v(\theta))=r\theta\).
+proof:
+  Substitute the polar patch formula and use that inverse stereographic projection recovers \(\theta\) on the chart source.
+-/
 private theorem stereographicPolarPatchMap_apply_chart
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -651,6 +734,19 @@ private theorem stereographicPolarPatchMap_apply_chart
   rw [stereographicPolarPatchMap_apply,
     stereographic'_symm_apply_apply_of_mem_source (n := n) v hθ]
 
+/--
+%%handwave
+name:
+  Explicit inverse-stereographic polar formula
+statement:
+  Let \(U:v^\perp\to\mathbb R^n\) be the orthonormal coordinate map.  The polar patch is
+  \[
+  \Phi_v(r,y)=r\left(\frac{4\,U^{-1}y}{\|U^{-1}y\|^2+4}
+  +\frac{\|U^{-1}y\|^2-4}{\|U^{-1}y\|^2+4}\,v\right).
+  \]
+proof:
+  Insert the standard explicit formula for inverse stereographic projection into \(\Phi_v(r,y)=r\,\sigma_v(y)\).
+-/
 private theorem stereographicPolarPatchMap_apply_explicit
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -671,6 +767,15 @@ private def stereographicPolarPatchCylinder (n : ℕ) :
     Set (ℝ × EuclideanSpace ℝ (Fin n)) :=
   {p | 0 < p.1 ∧ p.1 < 1}
 
+/--
+%%handwave
+name:
+  Inverse stereographic projection has unit norm
+statement:
+  Every inverse stereographic image \(\sigma_v(y)\) lies on the unit sphere, so \(\|\sigma_v(y)\|=1\).
+proof:
+  Unpack membership in the unit sphere and rewrite distance from the origin as the norm.
+-/
 private theorem norm_stereographic'_symm
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -681,6 +786,15 @@ private theorem norm_stereographic'_symm
   simpa [Metric.mem_sphere, dist_eq_norm] using
     ((stereographic' n v).symm y).2
 
+/--
+%%handwave
+name:
+  Radius of a stereographic polar point
+statement:
+  For every \(r\in\mathbb R\) and stereographic coordinate \(y\), \(\|\Phi_v(r,y)\|=|r|\).
+proof:
+  Use \(\Phi_v(r,y)=r\,\sigma_v(y)\), multiplicativity of the norm under real scaling, and \(\|\sigma_v(y)\|=1\).
+-/
 private theorem norm_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -692,6 +806,15 @@ private theorem norm_stereographicPolarPatchMap
     norm_stereographic'_symm (n := n) v y, mul_one]
   exact Real.norm_eq_abs r
 
+/--
+%%handwave
+name:
+  The positive polar cylinder maps into the unit ball
+statement:
+  The map \(\Phi_v\) sends every \((r,y)\) with \(0<r<1\) into the open unit ball.
+proof:
+  The image has norm \(|r|=r<1\).
+-/
 private theorem stereographicPolarPatchMap_mapsTo_cylinder_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -707,6 +830,15 @@ private theorem stereographicPolarPatchMap_mapsTo_cylinder_unitBall
       abs_of_nonneg hp.1.le]
   simpa [Metric.mem_ball, dist_eq_norm, hnorm] using hp.2
 
+/--
+%%handwave
+name:
+  Injectivity of a stereographic polar patch
+statement:
+  The map \((r,y)\mapsto r\,\sigma_v(y)\) is injective on the cylinder \(0<r<1\).
+proof:
+  Equality of two images first gives equality of their positive radii by taking norms.  Cancelling the common nonzero radius gives equality of the unit directions, and injectivity of inverse stereographic projection then gives equality of the coordinates.
+-/
 private theorem stereographicPolarPatchMap_injOn_cylinder
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -751,6 +883,15 @@ private theorem stereographicPolarPatchMap_injOn_cylinder
       (stereographic' n v).right_inv hq_target] using happ
   exact Prod.ext hfirst hsecond
 
+/--
+%%handwave
+name:
+  A cylinder over a null set is null
+statement:
+  If \(A\subseteq E\) has zero volume, then \((0,1)\times A\subseteq\mathbb R\times E\) has zero product volume.
+proof:
+  Product volume of the rectangle is bounded by \(\operatorname{vol}(0,1)\operatorname{vol}(A)=0\).
+-/
 private theorem volume_Ioo_prod_null_of_null
     {E : Type} [MeasureSpace E]
     {A : Set E}
@@ -773,6 +914,15 @@ private theorem volume_Ioo_prod_null_of_null
         Measure.prod_prod_le _ _
     _ = 0 := by rw [hA, mul_zero]
 
+/--
+%%handwave
+name:
+  Nullity descends from a nondegenerate cylinder
+statement:
+  If \((0,1)\times A\) has zero product volume and volume on \(E\) is \(\sigma\)-finite in the generalized sense, then \(A\) has zero volume.
+proof:
+  The product formula gives \(0=\operatorname{vol}(0,1)\operatorname{vol}(A)\); since \(\operatorname{vol}(0,1)\ne0\), the second factor vanishes.
+-/
 private theorem volume_null_of_Ioo_prod_null
     {E : Type} [MeasureSpace E] [SFinite (MeasureTheory.volume : Measure E)]
     {A : Set E}
@@ -790,6 +940,15 @@ private theorem volume_null_of_Ioo_prod_null
     simp
   exact (mul_eq_zero.mp hprod).resolve_left hI
 
+/--
+%%handwave
+name:
+  Linear coordinate changes preserve volume-null sets
+statement:
+  A continuous linear equivalence between finite-dimensional real normed spaces sends every Lebesgue-null set to a Lebesgue-null set.
+proof:
+  Enlarge the set to a measurable null set.  Haar uniqueness expresses pushforward volume under the equivalence as a positive scalar multiple of target volume, so the measurable image is null; monotonicity handles the original set.
+-/
 private theorem continuousLinearEquiv_image_volume_null
     {E F : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasureSpace E] [BorelSpace E] [FiniteDimensional ℝ E]
@@ -836,6 +995,19 @@ private theorem continuousLinearEquiv_image_volume_null
     exact (mul_eq_zero.mp hmap_image).resolve_left (ne_of_gt hc_pos)
   exact measure_mono_null himage_subset himage_t_zero
 
+/--
+%%handwave
+name:
+  Image of a stereographic polar cylinder
+statement:
+  For \(A\subseteq\mathbb R^n\),
+  \[
+    \Phi_v\big((0,1)\times A\big)
+    =(0,1)\cdot\{\theta\in\mathbb S:\theta\ne v,\ \operatorname{stereo}_v(\theta)\in A\}.
+  \]
+proof:
+  In one direction write the angular factor as the inverse stereographic image of \(y\in A\).  In the other, parameterize a source direction by its stereographic coordinate and use the chart inverse identities.
+-/
 private theorem stereographicPolarPatchMap_image_Ioo_prod_eq_cone_chart_preimage
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -866,6 +1038,18 @@ private theorem stereographicPolarPatchMap_image_Ioo_prod_eq_cone_chart_preimage
     · exact ⟨hr, hθA⟩
     · exact stereographicPolarPatchMap_apply_chart (n := n) v hθ_source r
 
+/--
+%%handwave
+name:
+  Vertical lines map to radial lines
+statement:
+  For every \(r,t\in\mathbb R\) and stereographic coordinate \(y\),
+  \[
+    \Phi_v((r,y)+t(1,0))=\Phi_v(r,y)+t\,\sigma_v(y).
+  \]
+proof:
+  Expand the polar patch and use distributivity of scalar multiplication over addition.
+-/
 private theorem stereographicPolarPatchMap_vertical_segment
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -879,6 +1063,18 @@ private theorem stereographicPolarPatchMap_vertical_segment
         t • ((stereographic' n v).symm y : H) := by
   simp [stereographicPolarPatchMap, add_smul]
 
+/--
+%%handwave
+name:
+  Affine radial interpolation in a polar patch
+statement:
+  For \(r,s,u\in\mathbb R\),
+  \[
+    \Phi_v(r+u(s-r),y)=\Phi_v(r,y)+u(s-r)\,\sigma_v(y).
+  \]
+proof:
+  Apply the vertical-line formula with displacement \(u(s-r)\).
+-/
 private theorem stereographicPolarPatchMap_vertical_affine
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -892,6 +1088,15 @@ private theorem stereographicPolarPatchMap_vertical_affine
     stereographicPolarPatchMap_vertical_segment
       (n := n) v r (u * (s - r)) y
 
+/--
+%%handwave
+name:
+  Initial endpoint of radial interpolation
+statement:
+  The affine radial path satisfies \(\Phi_v(r+0(s-r),y)=\Phi_v(r,y)\).
+proof:
+  Simplify the zero scalar and the resulting sum.
+-/
 private theorem stereographicPolarPatchMap_vertical_affine_zero
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -902,6 +1107,15 @@ private theorem stereographicPolarPatchMap_vertical_affine_zero
       stereographicPolarPatchMap v (r, y) := by
   simp
 
+/--
+%%handwave
+name:
+  Final endpoint of radial interpolation
+statement:
+  The affine radial path satisfies \(\Phi_v(r+1(s-r),y)=\Phi_v(s,y)\).
+proof:
+  Simplify \(r+(s-r)=s\).
+-/
 private theorem stereographicPolarPatchMap_vertical_affine_one
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -912,6 +1126,15 @@ private theorem stereographicPolarPatchMap_vertical_affine_one
       stereographicPolarPatchMap v (s, y) := by
   simp [stereographicPolarPatchMap_apply]
 
+/--
+%%handwave
+name:
+  Continuity of the stereographic polar patch
+statement:
+  The map \(\Phi_v:\mathbb R\times\mathbb R^n\to H\), \((r,y)\mapsto r\,\sigma_v(y)\), is continuous.
+proof:
+  Inverse stereographic projection is continuous, as is scalar multiplication; compose these maps with the two coordinate projections.
+-/
 private theorem continuous_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -932,6 +1155,15 @@ private theorem continuous_stereographicPolarPatchMap
     exact continuous_subtype_val.comp hsymm_sphere
   exact continuous_fst.smul (hsymm_cont.comp continuous_snd)
 
+/--
+%%handwave
+name:
+  Smoothness of inverse stereographic projection
+statement:
+  The ambient-space-valued map \(y\mapsto\sigma_v(y)\) from \(\mathbb R^n\) to \(H\) is smooth.
+proof:
+  Inverse stereographic projection is smooth as a map into the sphere, and the inclusion of the sphere into \(H\) is smooth.
+-/
 private theorem contDiff_stereographic'_symm_coe
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -952,6 +1184,15 @@ private theorem contDiff_stereographic'_symm_coe
   simpa [Function.comp_def, U, stereographic'_symm_apply,
     stereoInvFunAux_apply] using h
 
+/--
+%%handwave
+name:
+  Smoothness of the stereographic polar patch
+statement:
+  The polar patch \(\Phi_v(r,y)=r\,\sigma_v(y)\) is smooth on \(\mathbb R\times\mathbb R^n\).
+proof:
+  The first coordinate and the inverse stereographic direction are smooth, and scalar multiplication is a smooth bilinear operation.
+-/
 private theorem contDiff_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -965,6 +1206,15 @@ private theorem contDiff_stereographicPolarPatchMap
     (contDiff_stereographic'_symm_coe (n := n) v).comp contDiff_snd
   simpa [stereographicPolarPatchMap] using contDiff_fst.smul hsymm
 
+/--
+%%handwave
+name:
+  Radial derivative of a stereographic polar patch
+statement:
+  At every \((r,y)\), the derivative of \(\Phi_v\) in the first-coordinate direction \((1,0)\) is the unit vector \(\sigma_v(y)\).
+proof:
+  Differentiate \(\Phi_v(r,y)=r\,\sigma_v(y)\).  The angular factor has zero derivative in the first-coordinate direction, while the derivative of \(r\) is \(1\).
+-/
 private theorem fderiv_stereographicPolarPatchMap_firstCoordinate
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1018,6 +1268,18 @@ private theorem fderiv_stereographicPolarPatchMap_firstCoordinate
   simp [ContinuousLinearMap.add_apply, ContinuousLinearMap.smulRight_apply,
     fderiv_fst, hsymm_prod_zero]
 
+/--
+%%handwave
+name:
+  Radial component of a pulled-back covector field
+statement:
+  For a covector field \(dw\), the pullback through \(\Phi_v\), evaluated on \((1,0)\) at \(p=(r,y)\), is
+  \[
+    dw(\Phi_v(p))\big(\sigma_v(y)\big).
+  \]
+proof:
+  Expand the composition of continuous linear maps and use that \(D\Phi_v(p)(1,0)=\sigma_v(y)\).
+-/
 private theorem stereographicPolarPatchMap_pullback_firstCoordinate_derivative
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1058,6 +1320,15 @@ private noncomputable def stereographicPolarPatchInv
     ℝ × EuclideanSpace ℝ (Fin n) :=
   (‖z‖, (stereographic' n v) (stereographicPolarPatchUnit v z))
 
+/--
+%%handwave
+name:
+  Normalizing a positive polar point recovers its direction
+statement:
+  If \(r>0\), then the unit normalization of \(\Phi_v(r,y)\) is \(\sigma_v(y)\).
+proof:
+  Since \(\|\Phi_v(r,y)\|=r\ne0\), normalization gives \(r^{-1}(r\,\sigma_v(y))=\sigma_v(y)\).
+-/
 private theorem stereographicPolarPatchUnit_apply_map
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1100,6 +1371,15 @@ private theorem stereographicPolarPatchUnit_apply_map
   change ((‖r • σ‖⁻¹ : ℝ) • (r • σ)) = σ
   rw [smul_smul, hcoef, one_smul]
 
+/--
+%%handwave
+name:
+  The polar coordinate map is a left inverse on positive radii
+statement:
+  If \(r>0\), the radius-and-stereographic-coordinate map sends \(\Phi_v(r,y)\) back to \((r,y)\).
+proof:
+  The norm of \(\Phi_v(r,y)\) is \(r\), its normalized direction is \(\sigma_v(y)\), and stereographic projection inverts \(\sigma_v\).
+-/
 private theorem stereographicPolarPatchInv_apply_map
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1187,6 +1467,15 @@ private theorem measurable_stereographicPolarPatchInv
   simpa [stereographicPolarPatchInv] using
     continuous_norm.measurable.prod hangular
 
+/--
+%%handwave
+name:
+  Almost-everywhere measurability of a stereographic polar patch
+statement:
+  For every measure \(\mu\) on \(\mathbb R\times\mathbb R^n\), the polar patch \(\Phi_v\) is \(\mu\)-almost-everywhere measurable.
+proof:
+  The polar patch is continuous, hence Borel measurable, and every measurable map is almost-everywhere measurable for any measure.
+-/
 private theorem aemeasurable_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H]
@@ -1197,6 +1486,15 @@ private theorem aemeasurable_stereographicPolarPatchMap
     AEMeasurable (stereographicPolarPatchMap (n := n) v) μ :=
   (continuous_stereographicPolarPatchMap (n := n) v).measurable.aemeasurable
 
+/--
+%%handwave
+name:
+  A polar patch sends null angular cylinders to null sets
+statement:
+  If \(A\subseteq\mathbb R^n\) is Lebesgue-null, then \(\Phi_v((0,1)\times A)\) is Lebesgue-null in \(H\).
+proof:
+  The cylinder is null by the product-measure formula.  After identifying the domain linearly with \(H\), the polar patch is differentiable on the cylinder, so the differentiable image of this null set is null; the final linear coordinate change also preserves null sets.
+-/
 private theorem stereographicPolarPatchMap_image_volume_null_of_null
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -1248,6 +1546,15 @@ private theorem stereographicPolarPatchMap_image_volume_null_of_null
       exact ⟨p, hp, by simp [g, L]⟩
   simpa [S, himage] using hL_zero
 
+/--
+%%handwave
+name:
+  A polar patch preserves Lebesgue-null sets
+statement:
+  If \(S\subseteq\mathbb R\times\mathbb R^n\) is Lebesgue-null, then \(\Phi_v(S)\) is Lebesgue-null in \(H\).
+proof:
+  Identify the domain with \(H\) by a continuous linear equivalence.  In these coordinates the smooth polar patch maps null sets to null sets, and the linear equivalence preserves nullity.
+-/
 private theorem stereographicPolarPatchMap_image_volume_null
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -1296,6 +1603,20 @@ private theorem stereographicPolarPatchMap_image_volume_null
       exact ⟨p, hp, by simp [g, L]⟩
   simpa [himage] using hL_zero
 
+/--
+%%handwave
+name:
+  Ambient formula for stereographic coordinates
+statement:
+  If \(U:v^\perp\to\mathbb R^n\) is the chosen orthonormal coordinate map, then
+  \[
+    \operatorname{stereo}_v(\theta)
+    =U\!\left(\frac{2}{1-\langle v,\theta\rangle}
+      \operatorname{proj}_{v^\perp}\theta\right).
+  \]
+proof:
+  Unfold the definition of the stereographic chart and the standard ambient stereographic formula.
+-/
 private theorem stereographic'_apply_eq_stereoToFun
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1426,6 +1747,19 @@ private theorem contDiffAt_stereographicPolarPatchInv_of_mem_source
         hstereo
   exact hmodel_cd.congr_of_eventuallyEq heq
 
+/--
+%%handwave
+name:
+  Differentiability of inverse polar coordinates at regular points
+statement:
+  Let \(L:\mathbb R\times\mathbb R^n\to H\) be a continuous linear equivalence.  At every nonzero \(z\) whose normalized direction lies in the stereographic source, the map
+  \[
+    z\longmapsto L\big(\|z\|,\operatorname{stereo}_v(z/\|z\|)\big)
+  \]
+  is differentiable.
+proof:
+  The same map is smooth at such a point: the norm and normalization are smooth away from zero, stereographic projection is smooth away from its pole, and \(L\) is linear.  Smoothness implies differentiability.
+-/
 private theorem differentiableAt_stereographicPolarPatchInv_of_mem_source
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -1577,6 +1911,19 @@ private theorem stereographicPolarPatchMap_Ioo_prod_volume_null_of_image_null
     exact stereographicPolarPatchInv_apply_map (n := n) v hp.1.1 p.2
   exact measure_mono_null hS_subset hinv_image_zero
 
+/--
+%%handwave
+name:
+  Measurability of a stereographic chart pullback
+statement:
+  If \(A\subseteq\mathbb R^n\) is measurable, then
+  \[
+    \{\theta\in\mathbb S:\theta\ne v,\ \operatorname{stereo}_v(\theta)\in A\}
+  \]
+  is measurable on the sphere.
+proof:
+  The stereographic source is open, and the chart is continuous on that source.  Its relative preimage of \(A\) is therefore measurable.
+-/
 private theorem stereographic_source_inter_preimage_measurable
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H]
@@ -1729,6 +2076,15 @@ theorem stereographic_toSphere_restrict_chart_map_eq_withDensity
   rw [hsing, zero_add] at hdec
   simpa [μ, ν] using hdec
 
+/--
+%%handwave
+name:
+  Transfer of almost-everywhere properties to a stereographic sphere patch
+statement:
+  If \(P(y)\) holds for Lebesgue-almost every \(y\in\mathbb R^n\), then \(P(\operatorname{stereo}_v(\theta))\) holds for spherical-almost every \(\theta\ne v\), with spherical measure restricted to the stereographic source.
+proof:
+  The exceptional coordinate set is Lebesgue-null.  Its product with \(0<r<1\) is null, and the smooth polar patch sends this cylinder to the cone over the exceptional sphere directions.  The polar definition of spherical measure then makes that angular exceptional set null.
+-/
 private theorem ae_stereographic_toSphere_restrict_of_ae_volume
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -2091,6 +2447,19 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.congr_ae
           exact integral_congr_ae hleft_ae.symm
     _ = -∫ z in Ω, φ z • du z v ∂MeasureTheory.volume := hEq
 
+/--
+%%handwave
+name:
+  Endpoint bound for an absolutely continuous real function
+statement:
+  Let \(r<s\).  If \(f\) is absolutely continuous on \([r,s]\) and \(f'(t)=g(t)\) for almost every \(t\in[r,s]\), then
+  \[
+    \operatorname{ofReal}(\|f(r)-f(s)\|)
+    \le \int_{r<t<s}^{-}\operatorname{ofReal}(\|g(t)\|)\,dt.
+  \]
+proof:
+  The fundamental theorem of calculus writes \(f(s)-f(r)\) as the integral of \(f'\).  Apply the norm bound for the integral, replace \(f'\) by \(g\) almost everywhere, and note that the endpoints are Lebesgue-null.
+-/
 private theorem real_acl_endpoint_lintegral_bound
     {f g : ℝ → ℝ} {r s : ℝ}
     (hrs : r < s)
@@ -2380,6 +2749,20 @@ theorem firstCoordinateAnchoredRepresentative_measurable
         firstCoordinateAnchoredPrimitive G p)
   exact (hconstant_meas.comp measurable_snd).add hprimitive_meas
 
+/--
+%%handwave
+name:
+  Anchored primitive formula for a weakly differentiable function
+statement:
+  Suppose \(g\) is the weak derivative of \(u\) on \((0,1)\), and \(g_0=g\) almost everywhere there.  Then \(u\) agrees almost everywhere on \((0,1)\) with
+  \[
+    r\longmapsto
+    3\int_{1/3}^{2/3}\left(u(a)-\int_{1/2}^{a}g_0(t)\,dt\right)da
+    +\int_{1/2}^{r}g_0(t)\,dt.
+  \]
+proof:
+  A one-dimensional weakly differentiable function has an absolutely continuous representative \(D+\int_{1/2}^r g\).  Averaging \(u(a)-\int_{1/2}^a g\) over the interval of length \(1/3\) identifies \(D\).  Replace \(g\) by \(g_0\) in all interval integrals using almost-everywhere equality.
+-/
 private theorem realWeakSobolev_anchoredPrimitive_ae_eq_on_unit_interval
     {u g g₀ : ℝ → ℝ}
     (hg₀_eq :
@@ -3929,8 +4312,7 @@ statement:
       \le \int_r^s |Du(t\sigma(y))\sigma(y)|\,dt .
   \]
 proof:
-  Apply [the representative obtained from the polar-coordinate vertical
-  slices](lean:JJMath.Uniformization.scalarWeakSobolev_stereographic_polar_patch_acl_representative_from_polar_chart_slices).
+  Apply [the representative obtained from the polar-coordinate vertical slices](lean:JJMath.Uniformization.scalarWeakSobolev_stereographic_polar_patch_acl_representative_from_polar_chart_slices).
 -/
 theorem scalarWeakSobolev_stereographic_polar_patch_full_vertical_acl_bound_of_weak_measurable
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -4176,8 +4558,7 @@ proof:
   In the coordinates \((r,y)\), the map into the ball is smooth and locally
   bi-Lipschitz on compact subcylinders with radii bounded away from the origin.
   Pull back the weak derivative identity through this map using
-  [weak derivatives pull back under locally bi-Lipschitz changes of
-  variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
+  [weak derivatives pull back under locally bi-Lipschitz changes of variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
   The derivative in the radial coordinate is the inverse stereographic point
   \(\sigma(y)\).  The first-coordinate ACL theorem applied to the pulled-back
   function gives the displayed estimate; the stereographic chart transfers the
@@ -4255,8 +4636,7 @@ proof:
   space, and on compact coordinate subcylinders the polar map is bi-Lipschitz
   onto its image.  Pull back the weak derivative identity through this
   locally bi-Lipschitz map using
-  [weak derivatives pull back under locally bi-Lipschitz changes of
-  variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
+  [weak derivatives pull back under locally bi-Lipschitz changes of variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
   In the pulled-back coordinates the radial derivative is the first coordinate
   derivative, so the one-dimensional ACL theorem on almost every vertical
   fiber gives the displayed radial estimate.
@@ -5646,6 +6026,15 @@ theorem scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_bound_ae_polar_en
     ⟨wacl, hwacl_eq, hwacl_segments⟩
   exact ⟨wacl, hwacl_eq, hwacl_segments s hs_pos hs_lt_one⟩
 
+/--
+%%handwave
+name:
+  An \(L^1\)-Cauchy family of spherical slices converges in measure
+statement:
+  Let \(s_k\) be radii and suppose each slice \(\theta\mapsto w(s_k\theta)\) belongs to \(L^1\) of the unit sphere.  If these slices are Cauchy in \(L^1\), then there is a measurable \(\tau:H\to\mathbb R\) such that \(w(s_k\theta)\) converges in spherical measure to \(\tau(\theta)\).
+proof:
+  Completeness of \(L^1\) gives a limit class.  Choose a measurable representative on the sphere, extend it measurably to \(H\), and use that convergence in \(L^1\) implies convergence in measure.
+-/
 private theorem sphere_slices_tendstoInMeasure_of_L1_cauchy
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -5710,6 +6099,15 @@ private theorem sphere_slices_tendstoInMeasure_of_L1_cauchy
   exact Filter.Eventually.of_forall fun θ ↦ by
     simpa [Function.comp_def] using (congrFun hτ_ext θ).symm
 
+/--
+%%handwave
+name:
+  Almost-everywhere equality on the ball gives almost-everywhere equality of slices
+statement:
+  If \(f=g\) almost everywhere in the unit ball of \(H\), then for \(r^{\dim H-1}dr\)-almost every \(0<r<1\), one has \(f(r\theta)=g(r\theta)\) for spherical-almost every unit direction \(\theta\).
+proof:
+  Apply the polar integration formula to the null set on which \(f\ne g\).  The corresponding product set of directions and radii is null, and Fubini gives the asserted almost-everywhere statement in the radial variable.
+-/
 private theorem ae_radius_sphere_slice_eq_of_ae_volume_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -5748,6 +6146,15 @@ private theorem ae_radius_sphere_slice_eq_of_ae_volume_unitBall
     simpa [Prod.swap] using h
   simpa [μS, μR, R, νR] using Measure.ae_ae_of_ae_prod hswap
 
+/--
+%%handwave
+name:
+  Selecting good radii converging to one
+statement:
+  If \(P(r)\) holds for \(r^n\,dr\)-almost every \(0<r<1\), then there are radii \(s_k\in(0,1)\) with \(P(s_k)\) for every \(k\) and \(s_k\to1\).
+proof:
+  For each \(k\), the interval \((1-1/(k+2),1)\) has positive \(r^n\,dr\)-measure, so it cannot be contained in the exceptional null set.  Choose a good radius there; the interval bounds force convergence to \(1\).
+-/
 private theorem exists_seq_tendsto_one_of_ae_volumeIoiPow_restrict
     {n : ℕ} {P : Set.Ioi (0 : ℝ) → Prop}
     (hP : ∀ᵐ r
@@ -5812,6 +6219,15 @@ private theorem exists_seq_tendsto_one_of_ae_volumeIoiPow_restrict
     · exact Filter.Eventually.of_forall fun k ↦ le_of_lt (hs k).2.1
     · exact Filter.Eventually.of_forall fun k ↦ le_of_lt (hs k).2.2
 
+/--
+%%handwave
+name:
+  Selecting boundary-approaching radii where representatives agree
+statement:
+  If \(f=g\) almost everywhere in the unit ball, then there are radii \(s_k<1\) with \(s_k\to1\) such that \(f(s_k\theta)=g(s_k\theta)\) for spherical-almost every \(\theta\), for every \(k\).
+proof:
+  Almost-everywhere equality in the ball yields the slice equality for almost every radial parameter.  Apply the selection of good radii converging to \(1\) to this radial property.
+-/
 private theorem exists_seq_tendsto_one_sphere_slice_eq_of_ae_volume_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -5991,6 +6407,19 @@ private theorem polar_product_sphere_radius_memLp_two_of_memLp_two_unitBall
     simpa [hcomp_eq] using hw_subtype
   simpa [F, μS, μR, R, hmap_target] using hF_map
 
+/--
+%%handwave
+name:
+  Square integrability of the radial derivative in polar coordinates
+statement:
+  If a covector field \(dw\) belongs to \(L^2\) on the unit ball, then
+  \[
+    (\theta,r)\longmapsto dw(r\theta)(\theta)
+  \]
+  belongs to \(L^2\) for spherical measure times \(r^{\dim H-1}dr\), restricted to \(0<r<1\).
+proof:
+  The evaluation is bounded pointwise by the operator norm \(\|dw(r\theta)\|\), since \(\|\theta\|=1\).  The polar-coordinate formula transfers the \(L^2\) bound of \(dw\) on the ball to the product measure.
+-/
 private theorem
     polar_product_sphere_radius_derivative_eval_memLp_two_of_memLp_two_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -6046,6 +6475,19 @@ private theorem
       _ = ‖dw ((p.2 : ℝ) • (p.1 : H))‖ := by
         rw [hθ_norm, mul_one]
 
+/--
+%%handwave
+name:
+  Polar measure of a shrinking boundary collar tends to zero
+statement:
+  For spherical measure times \(r^{\dim H-1}dr\) on \(0<r<1\), the measure of
+  \[
+    \{(\theta,r):1-\varepsilon<r<1\}
+  \]
+  tends to zero as \(\varepsilon\downarrow0\).
+proof:
+  The collar measure factors into the finite measure of the sphere and the radial measure of \((1-\varepsilon,1)\).  The latter tends to zero by continuity of the integral, equivalently continuity from above for the shrinking intervals.
+-/
 private theorem polar_product_inner_collar_measure_tendsto_zero
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -6137,6 +6579,22 @@ private theorem polar_product_inner_collar_measure_tendsto_zero
     simpa [hS_empty] using htendsto
   simpa [Function.comp_def, μ, μS, μR, R, S] using htarget
 
+/--
+%%handwave
+name:
+  Weighted radial derivative mass vanishes in shrinking collars
+statement:
+  If \(dw\in L^2\) on the unit ball, then
+  \[
+    \int_{\{(\theta,r):1-\varepsilon<r<1\}}^{-}
+      \operatorname{ofReal}(\|dw(r\theta)(\theta)\|)
+      \,d\theta\,r^{\dim H-1}dr
+    \longrightarrow0
+  \]
+  as \(\varepsilon\downarrow0\).
+proof:
+  The radial evaluation belongs to \(L^2\), hence to \(L^1\) on the finite polar product space.  Absolute continuity of its integral, together with the fact that the collar measures tend to zero, gives the limit.
+-/
 private theorem
     polar_product_sphere_radius_derivative_eval_weighted_tail_tendsto_zero
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -6209,6 +6667,19 @@ private theorem
     tendsto_setLIntegral_zero hF_finite hmeasure
   simpa [F, μ] using htendsto
 
+/--
+%%handwave
+name:
+  Comparing unweighted and weighted radial measure near the boundary
+statement:
+  If \(\varepsilon\le1/2\), then on \(1-\varepsilon<r<1\),
+  \[
+    dr\le \big((1/2)^n\big)^{-1} r^n\,dr
+  \]
+  as measures on the positive real axis.
+proof:
+  Throughout the collar, \(r\ge1/2\), hence \(r^n\ge(1/2)^n\).  Integrating this pointwise lower bound for the density and rearranging gives the measure inequality.
+-/
 private theorem radial_comap_volume_restrict_inner_collar_le_volumeIoiPow
     (n : ℕ) {ε : ℝ} (hε_le_half : ε ≤ (1 / 2 : ℝ)) :
     (Measure.comap ((↑) : Set.Ioi (0 : ℝ) → ℝ)
@@ -6272,6 +6743,20 @@ private theorem radial_comap_volume_restrict_inner_collar_le_volumeIoiPow
           {r : Set.Ioi (0 : ℝ) |
             (1 : ℝ) - ε < (r : ℝ) ∧ (r : ℝ) < 1} := rfl
 
+/--
+%%handwave
+name:
+  Comparing unweighted and weighted radial integrals near the boundary
+statement:
+  If \(\varepsilon\le1/2\) and \(F\ge0\), then
+  \[
+    \int_{1-\varepsilon<r<1}^{-}F(r)\,dr
+    \le \big((1/2)^n\big)^{-1}
+       \int_{1-\varepsilon<r<1}^{-}F(r)r^n\,dr.
+  \]
+proof:
+  Integrate \(F\) against the measure inequality \(dr\le((1/2)^n)^{-1}r^n\,dr\) on the collar.
+-/
 private theorem radial_comap_volume_setLIntegral_inner_collar_le_volumeIoiPow
     (n : ℕ) {ε : ℝ} (hε_le_half : ε ≤ (1 / 2 : ℝ))
     (F : Set.Ioi (0 : ℝ) → ℝ≥0∞) :
@@ -6309,6 +6794,21 @@ private theorem radial_comap_volume_setLIntegral_inner_collar_le_volumeIoiPow
         ∫⁻ r in K, F r ∂MeasureTheory.Measure.volumeIoiPow n := by
       rw [lintegral_smul_measure, smul_eq_mul]
 
+/--
+%%handwave
+name:
+  Unweighted radial derivative tails vanish at the sphere
+statement:
+  If \(dw\in L^2\) on the unit ball, then
+  \[
+    \int_{\mathbb S}^{-}\int_{1-\varepsilon<t<1}^{-}
+      \operatorname{ofReal}(\|dw(t\theta)(\theta)\|)\,dt\,d\theta
+    \longrightarrow0
+  \]
+  as \(\varepsilon\downarrow0\).
+proof:
+  For small \(\varepsilon\), \(t\ge1/2\) on the collar, so unweighted radial measure is bounded by a fixed multiple of \(t^{\dim H-1}dt\).  Tonelli converts the iterated integral to the polar product integral, whose weighted collar tail tends to zero.
+-/
 private theorem
     polar_sphere_unweighted_radial_derivative_tail_tendsto_zero
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -6704,6 +7204,15 @@ private theorem exists_seq_tendsto_one_sphere_slice_eq_memLp_of_ae_volume_unitBa
   intro k
   simpa [P] using hs k
 
+/--
+%%handwave
+name:
+  Transferring radial segment bounds from a representative to the original function
+statement:
+  Let \(w_{\mathrm{ac}}=w\) almost everywhere in the unit ball.  Suppose \(w_{\mathrm{ac}}\) satisfies the radial segment estimate up to every \(s\in(0,1)\).  For radii \(s_k<1\) where \(w_{\mathrm{ac}}(s_k\theta)=w(s_k\theta)\) almost everywhere on the sphere, the same segment estimate with both endpoints evaluated using \(w\) holds for product-almost every \((\theta,r)\) with \(r<s_k\).
+proof:
+  Polar coordinates transfer the interior almost-everywhere equality \(w_{\mathrm{ac}}=w\) to product-almost every \((\theta,r)\).  Combine this with the assumed segment estimate and the endpoint equality at \(s_k\), then replace both function values.
+-/
 private theorem radial_acl_segments_for_original_of_representative
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -6807,6 +7316,15 @@ private theorem radial_acl_segments_for_original_of_representative
     rw [← hp_base, ← hp_end]
   simpa [hnorm] using hp_seg hpr
 
+/--
+%%handwave
+name:
+  Transferring all radial segment bounds to selected original slices
+statement:
+  Let \(w_{\mathrm{ac}}=w\) almost everywhere in the unit ball and assume that, for almost every \(\theta\), every \(0<r<s<1\) satisfies the radial segment estimate for \(w_{\mathrm{ac}}\).  At any sequence of radii \(s_k<1\) where the two functions agree on almost every spherical slice, the corresponding estimate for \(w\) holds for product-almost every \((\theta,r)\) with \(r<s_k\).
+proof:
+  Specialize the all-segments hypothesis to each fixed \(s_k\), use Fubini to express it on the polar product, and apply the transfer from the representative to the original function.
+-/
 private theorem radial_acl_segments_for_original_of_representative_all_segments
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -6927,6 +7445,19 @@ private theorem radial_acl_segments_for_original_of_representative_all_segments
     rw [← hp_base, ← hp_end]
   simpa [hnorm] using hp_seg hpr
 
+/--
+%%handwave
+name:
+  \(L^1\) distance between spherical slices is bounded by radial variation
+statement:
+  Let \(0<a<b<1\).  Suppose an absolutely continuous representative obeys the radial segment bound and agrees almost everywhere with \(w\) on the spheres of radii \(a\) and \(b\).  If both slices are in \(L^1\), then their extended \(L^1\)-distance is at most
+  \[
+    \int_{\mathbb S}^{-}\int_{a<t<b}^{-}
+      \operatorname{ofReal}(\|dw(t\theta)(\theta)\|)\,dt\,d\theta.
+  \]
+proof:
+  The \(L^1\)-distance is the integral of the pointwise distance between the two slices.  Replace the endpoint values by the absolutely continuous representative, apply the radial segment bound almost everywhere, and use monotonicity of the outer integral.
+-/
 private theorem euclideanSobolev_unit_ball_radial_l1_slice_edist_le_segmentIntegral
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -8163,8 +8694,7 @@ statement:
   corresponding polar product measure.
 proof:
   This is exactly
-  [the raywise endpoint estimate with a null-measurable exceptional
-  set](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw_analytic).
+  [the raywise endpoint estimate with a null-measurable exceptional set](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw_analytic).
 -/
 private theorem
     euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw
@@ -10301,11 +10831,9 @@ statement:
   normalized collar integrals of \(R\) tend to zero.
 proof:
   Combine
-  [the radial ACL endpoint representative with the radial tail
-  bound](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound)
+  [the radial ACL endpoint representative with the radial tail bound](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound)
   and
-  [the vanishing normalized collar mass of the radial tail
-  majorant](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_tail_majorant_normalized_collar_tendsto_zero).
+  [the vanishing normalized collar mass of the radial tail majorant](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_tail_majorant_normalized_collar_tendsto_zero).
 -/
 theorem euclideanSobolev_unit_ball_radial_l1_trace_bound
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -10352,11 +10880,9 @@ statement:
   trace representative on the unit sphere from the inside.
 proof:
   Apply
-  [the radial endpoint representative admits a vanishing normalized collar
-  majorant](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_l1_trace_bound).
+  [the radial endpoint representative admits a vanishing normalized collar majorant](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_l1_trace_bound).
   Then use
-  [a vanishing collar majorant gives an inside \(L^1\)
-  trace](lean:JJMath.Uniformization.hasL1TraceFromInsideSphere_one_of_eventually_ae_bound).
+  [a vanishing collar majorant gives an inside \(L^1\) trace](lean:JJMath.Uniformization.hasL1TraceFromInsideSphere_one_of_eventually_ae_bound).
 -/
 theorem euclideanSobolev_unit_ball_has_l1_trace_from_inside_core
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -10391,8 +10917,7 @@ statement:
   trace representative on the unit sphere from the inside.
 proof:
   Apply
-  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the
-  unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core).
+  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core).
 tags:
   milestone
 -/

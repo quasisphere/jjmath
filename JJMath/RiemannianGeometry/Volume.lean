@@ -107,7 +107,17 @@ def manifoldChartOverlapRange {H X : Type}
     (e e' : OpenPartialHomeomorph X H) : Set H :=
   e.target ∩ e.symm ⁻¹' e'.source
 
-/-- The coordinate overlap domain is open. -/
+/--
+%%handwave
+name:
+  Coordinate overlap domains are open
+statement:
+  For manifold charts \(e,e'\), the set of \(e'\)-coordinates whose inverse
+  image lies in \(e.source\) is open in the model space.
+proof:
+  It is the intersection of \(e'.target\) with the inverse image of the open
+  set \(e.source\) under the continuous inverse chart.
+-/
 theorem manifoldChartOverlapDomain_isOpen {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e e' : OpenPartialHomeomorph X H) :
@@ -115,7 +125,17 @@ theorem manifoldChartOverlapDomain_isOpen {H X : Type}
   simpa [manifoldChartOverlapDomain] using
     (e'.isOpen_inter_preimage_symm e.open_source)
 
-/-- The coordinate overlap range is open. -/
+/--
+%%handwave
+name:
+  Coordinate overlap ranges are open
+statement:
+  For manifold charts \(e,e'\), the image of their overlap in the
+  \(e\)-coordinate space is open.
+proof:
+  It is the intersection of \(e.target\) with the inverse image of the open
+  set \(e'.source\) under the inverse chart \(e^{-1}\).
+-/
 theorem manifoldChartOverlapRange_isOpen {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e e' : OpenPartialHomeomorph X H) :
@@ -123,7 +143,17 @@ theorem manifoldChartOverlapRange_isOpen {H X : Type}
   simpa [manifoldChartOverlapRange] using
     (e.isOpen_inter_preimage_symm e'.open_source)
 
-/-- The transition map identifies the two coordinate descriptions of an overlap. -/
+/--
+%%handwave
+name:
+  A chart transition maps its overlap domain onto its overlap range
+statement:
+  For charts \(e,e'\), the transition \(e\circ(e')^{-1}\) maps the
+  \(e'\)-coordinate overlap domain exactly onto the \(e\)-coordinate overlap range.
+proof:
+  In each direction, use the left- and right-inverse identities of the two
+  partial homeomorphisms to transfer membership across the transition.
+-/
 theorem manifoldChartTransition_image_overlapDomain {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e e' : OpenPartialHomeomorph X H) :
@@ -146,7 +176,17 @@ theorem manifoldChartTransition_image_overlapDomain {H X : Type}
       exact ⟨hz_target, by simpa [e'.left_inv hy_source'] using hx_source⟩
     · simp [manifoldChartTransition, e'.left_inv hy_source', e.right_inv hy_target]
 
-/-- The transition map is injective on a coordinate overlap. -/
+/--
+%%handwave
+name:
+  Chart transitions are injective on overlap domains
+statement:
+  The transition \(e\circ(e')^{-1}\) is injective on the coordinate domain
+  where both charts are defined.
+proof:
+  Equality after applying \(e\), together with injectivity of \(e\), gives
+  equality after \((e')^{-1}\); applying \(e'\) then recovers the original coordinates.
+-/
 theorem manifoldChartTransition_injOn_overlapDomain {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e e' : OpenPartialHomeomorph X H) :
@@ -163,7 +203,16 @@ theorem manifoldChartTransition_injOn_overlapDomain {H X : Type}
     _ = e' (e'.symm z₂) := by rw [hsymm]
     _ = z₂ := e'.right_inv hz₂_target
 
-/-- The transition map is continuous on a coordinate overlap. -/
+/--
+%%handwave
+name:
+  Chart transitions are continuous on overlap domains
+statement:
+  The transition \(e\circ(e')^{-1}\) is continuous on its coordinate overlap domain.
+proof:
+  Compose continuity of the inverse of \(e'\) on its target with continuity
+  of \(e\) on its source.
+-/
 theorem manifoldChartTransition_continuousOn_overlap {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e e' : OpenPartialHomeomorph X H) :
@@ -753,7 +802,17 @@ noncomputable def manifoldRiemannianVolumeChartMeasure {H X : Type}
     (fun z : H ↦ ENNReal.ofReal
       (manifoldMetricVolumeDensityInChart (I := I) g e z))
 
-/-- The coordinate Riemannian volume measure is supported on the chart image. -/
+/--
+%%handwave
+name:
+  A Riemannian chart measure is supported on the chart target
+statement:
+  For a smooth Riemannian metric \(g\) and chart \(e\), restricting the
+  coordinate volume measure \(\nu_{g,e}\) to \(e.target\) leaves it unchanged.
+proof:
+  The chart measure is defined as Lebesgue measure restricted to \(e.target\),
+  with the Riemannian density; restricting once more to the same set is idempotent.
+-/
 theorem manifoldRiemannianVolumeChartMeasure_restrict_target {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H] [BorelSpace H]
     [OpensMeasurableSpace H]
@@ -980,7 +1039,21 @@ theorem weighted_changeOfVariablesOn_manifold_overlap {H : Type}
     _ = ∫⁻ y in A ∩ t, ρt y ∂MeasureTheory.volume :=
       setLIntegral_indicator hA ρt
 
-/-- A finite-dimensional Gram determinant transforms by the square of the determinant. -/
+/--
+%%handwave
+name:
+  Gram determinants transform by the square of the Jacobian
+statement:
+  For a bilinear form \(b\) on a finite-dimensional real space and linear maps
+  \(A,J\),
+  \[
+    \det\!\bigl(b(AJ e_i,AJ e_j)\bigr)
+    =\det(J)^2\det\!\bigl(b(Ae_i,Ae_j)\bigr).
+  \]
+proof:
+  The Gram matrix for \(A\circ J\) is \(J^{\mathsf T}G_AJ\).  Multiplicativity
+  of determinants and \(\det(J^{\mathsf T})=\det(J)\) give the formula.
+-/
 theorem manifoldMetricGramDet_comp_continuousLinearMap {H : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
     [DecidableEq (ManifoldRiemannianVolumeBasisIndex H)]
@@ -1255,8 +1328,17 @@ theorem riemannianVolumeChartMeasuresCompatibleOnManifold_of_smoothMetric {H X :
     g e e' he he'
     (manifoldMetricVolumeDensityInChart_transform_on_overlap g e e' he he')
 
-/-- On a second-countable charted space, preferred chart sources cover the space
-    after passing to a countable set of centers. -/
+/--
+%%handwave
+name:
+  A second-countable charted space has a countable chart-source cover
+statement:
+  If \(X\) is second countable, there is a countable set \(S\subseteq X\) such
+  that \(\bigcup_{x\in S}chart_x.source=X\).
+proof:
+  Apply the countable neighborhood-cover theorem to the chart-source
+  neighborhood assigned to each point.
+-/
 theorem exists_countable_manifoldChartAt_source_cover
     (H X : Type) [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     [SecondCountableTopology X] :
@@ -1270,6 +1352,17 @@ def manifoldChartMeasureGluingSourcePiece {H X : Type}
     (c : ℕ → X) (n : ℕ) : Set X :=
   disjointed (fun m : ℕ ↦ (chartAt H (c m)).source) n
 
+/--
+%%handwave
+name:
+  Each disjoint gluing source piece lies in its chart
+statement:
+  If \(P_n\) is the part of the \(n\)-th chart source not already used by
+  earlier chart sources, then \(P_n\subseteq chart_{c_n}.source\).
+proof:
+  This is the standard containment of the \(n\)-th disjointification inside
+  the \(n\)-th member of the original sequence.
+-/
 theorem manifoldChartMeasureGluingSourcePiece_subset {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (c : ℕ → X) (n : ℕ) :
@@ -1277,6 +1370,16 @@ theorem manifoldChartMeasureGluingSourcePiece_subset {H X : Type}
       (chartAt H (c n)).source := by
   exact disjointed_subset _ _
 
+/--
+%%handwave
+name:
+  Gluing source pieces are pairwise disjoint
+statement:
+  The disjointified source pieces \(P_n\) of a sequence of chart sources are
+  pairwise disjoint.
+proof:
+  Apply pairwise disjointness of the standard disjointification construction.
+-/
 theorem pairwise_disjoint_manifoldChartMeasureGluingSourcePiece {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (c : ℕ → X) :
@@ -1286,6 +1389,16 @@ theorem pairwise_disjoint_manifoldChartMeasureGluingSourcePiece {H X : Type}
   simpa [manifoldChartMeasureGluingSourcePiece] using
     disjoint_disjointed (fun n : ℕ ↦ (chartAt H (c n)).source)
 
+/--
+%%handwave
+name:
+  Disjointification preserves the union of chart sources
+statement:
+  For a sequence of chart centers \(c_n\), the union of its disjoint source
+  pieces equals \(\bigcup_n chart_{c_n}.source\).
+proof:
+  This is the union identity for the standard disjointification of a sequence of sets.
+-/
 theorem iUnion_manifoldChartMeasureGluingSourcePiece {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (c : ℕ → X) :
@@ -1294,12 +1407,31 @@ theorem iUnion_manifoldChartMeasureGluingSourcePiece {H X : Type}
   simpa [manifoldChartMeasureGluingSourcePiece] using
     (iUnion_disjointed (f := fun n : ℕ ↦ (chartAt H (c n)).source))
 
+/--
+%%handwave
+name:
+  Disjoint gluing pieces cover the manifold
+statement:
+  If the chosen chart sources cover \(X\), then their disjoint source pieces
+  also have union \(X\).
+proof:
+  Combine preservation of the union under disjointification with the assumed chart cover.
+-/
 theorem iUnion_manifoldChartMeasureGluingSourcePiece_eq_univ {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (c : ℕ → X) (hc_cover : (⋃ n, (chartAt H (c n)).source) = Set.univ) :
     (⋃ n, manifoldChartMeasureGluingSourcePiece (H := H) c n) = Set.univ := by
   rw [iUnion_manifoldChartMeasureGluingSourcePiece (H := H) c, hc_cover]
 
+/--
+%%handwave
+name:
+  Gluing source pieces are measurable
+statement:
+  Every disjoint source piece obtained from a sequence of open chart sources is Borel measurable.
+proof:
+  Open chart sources are measurable, and disjointification preserves measurability.
+-/
 theorem measurableSet_manifoldChartMeasureGluingSourcePiece {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     [MeasurableSpace X] [BorelSpace X]
@@ -1314,6 +1446,17 @@ def manifoldChartMeasureGluingTargetPiece {H X : Type}
     (c : ℕ → X) (n : ℕ) : Set H :=
   (chartAt H (c n)) '' manifoldChartMeasureGluingSourcePiece (H := H) c n
 
+/--
+%%handwave
+name:
+  A coordinate gluing piece lies in its chart target
+statement:
+  The coordinate image \(chart_{c_n}(P_n)\) of the \(n\)-th gluing source piece
+  is contained in \(chart_{c_n}.target\).
+proof:
+  The source piece lies in the chart source, and a partial homeomorphism maps
+  its source into its target.
+-/
 theorem manifoldChartMeasureGluingTargetPiece_subset {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (c : ℕ → X) (n : ℕ) :
@@ -1324,6 +1467,17 @@ theorem manifoldChartMeasureGluingTargetPiece_subset {H X : Type}
   exact (chartAt H (c n)).map_source
     (manifoldChartMeasureGluingSourcePiece_subset (H := H) c n hx)
 
+/--
+%%handwave
+name:
+  Coordinate gluing pieces are measurable
+statement:
+  The image \(chart_{c_n}(P_n)\) of each measurable gluing source piece is
+  measurable in the model space.
+proof:
+  Restrict the chart to its source-target homeomorphism.  This restriction is
+  a measurable embedding, so it maps the measurable subtype of \(P_n\) to a measurable set.
+-/
 theorem measurableSet_manifoldChartMeasureGluingTargetPiece {H X : Type}
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X] [MeasurableSpace X] [BorelSpace X]
@@ -1363,6 +1517,15 @@ def manifoldChartMeasureGluingOverlapTargetPiece {H X : Type}
     (e : OpenPartialHomeomorph X H) (c : ℕ → X) (n : ℕ) : Set H :=
   e '' (manifoldChartMeasureGluingSourcePiece (H := H) c n ∩ e.source)
 
+/--
+%%handwave
+name:
+  Overlap target pieces lie in the comparison chart
+statement:
+  For a chart \(e\), the set \(e(P_n\cap e.source)\) is contained in \(e.target\).
+proof:
+  Every point of \(P_n\cap e.source\) lies in the source of \(e\), which maps into its target.
+-/
 theorem manifoldChartMeasureGluingOverlapTargetPiece_subset {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e : OpenPartialHomeomorph X H) (c : ℕ → X) (n : ℕ) :
@@ -1371,6 +1534,17 @@ theorem manifoldChartMeasureGluingOverlapTargetPiece_subset {H X : Type}
   rcases hz with ⟨x, hx, rfl⟩
   exact e.map_source hx.2
 
+/--
+%%handwave
+name:
+  Overlap target pieces are measurable
+statement:
+  For every chart \(e\) and gluing piece \(P_n\), the coordinate set
+  \(e(P_n\cap e.source)\) is measurable.
+proof:
+  The intersection is measurable, and the source-target restriction of \(e\)
+  is a measurable embedding.
+-/
 theorem measurableSet_manifoldChartMeasureGluingOverlapTargetPiece {H X : Type}
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X] [MeasurableSpace X] [BorelSpace X]
@@ -1401,6 +1575,16 @@ theorem measurableSet_manifoldChartMeasureGluingOverlapTargetPiece {H X : Type}
     subst z'
     exact ⟨x, hx, rfl⟩
 
+/--
+%%handwave
+name:
+  Overlap target pieces are pairwise disjoint
+statement:
+  For a fixed chart \(e\), the sets \(e(P_n\cap e.source)\) are pairwise disjoint.
+proof:
+  If a coordinate point belonged to two such images, injectivity of \(e\)
+  would give a point in two distinct source pieces, contradicting their disjointness.
+-/
 theorem pairwise_disjoint_manifoldChartMeasureGluingOverlapTargetPiece {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e : OpenPartialHomeomorph X H) (c : ℕ → X) :
@@ -1423,6 +1607,19 @@ theorem pairwise_disjoint_manifoldChartMeasureGluingOverlapTargetPiece {H X : Ty
     pairwise_disjoint_manifoldChartMeasureGluingSourcePiece (H := H) c hij
   exact Set.disjoint_left.mp hdisj hx.1 (by simpa [hyx] using hy.1)
 
+/--
+%%handwave
+name:
+  Overlap target pieces partition a chart target
+statement:
+  If the chosen chart sources cover \(X\), then for every chart \(e\),
+  \[
+    \bigcup_n e(P_n\cap e.source)=e.target.
+  \]
+proof:
+  One inclusion is immediate.  For \(z\in e.target\), its inverse image lies in
+  a unique covering source piece and hence places \(z\) in the corresponding overlap image.
+-/
 theorem iUnion_manifoldChartMeasureGluingOverlapTargetPiece_eq_target {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e : OpenPartialHomeomorph X H) (c : ℕ → X)
@@ -1446,6 +1643,17 @@ theorem iUnion_manifoldChartMeasureGluingOverlapTargetPiece_eq_target {H X : Typ
     exact Set.mem_iUnion.mpr
       ⟨n, ⟨x, ⟨hxn, hx_source⟩, e.right_inv hz⟩⟩
 
+/--
+%%handwave
+name:
+  Each overlap target piece lies in the corresponding transition range
+statement:
+  For \(e'=chart_{c_n}\), the set \(e(P_n\cap e.source)\) is contained in the
+  range of the transition from \(e'\)-coordinates to \(e\)-coordinates.
+proof:
+  A point of \(P_n\) belongs to \(e'.source\), while membership in the overlap
+  piece gives membership in \(e.source\); these are exactly the two range conditions.
+-/
 theorem manifoldChartMeasureGluingOverlapTargetPiece_subset_overlapRange {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e : OpenPartialHomeomorph X H) (c : ℕ → X) (n : ℕ) :
@@ -1457,6 +1665,18 @@ theorem manifoldChartMeasureGluingOverlapTargetPiece_subset_overlapRange {H X : 
   simpa [e.left_inv hx.2] using
     manifoldChartMeasureGluingSourcePiece_subset (H := H) c n hx.1
 
+/--
+%%handwave
+name:
+  Transition preimage of an overlap gluing piece
+statement:
+  On the overlap domain between \(e'=chart_{c_n}\) and \(e\), the preimage under
+  \(e\circ(e')^{-1}\) of \(e(P_n\cap e.source)\) is precisely
+  \(e'(P_n)\) intersected with that overlap domain.
+proof:
+  Expand both image memberships and use the inverse identities and injectivity
+  of the two charts to pass between their representatives of the same point.
+-/
 theorem manifoldChartTransition_preimage_overlapTargetPiece_inter_overlapDomain {H X : Type}
     [TopologicalSpace H] [TopologicalSpace X] [ChartedSpace H X]
     (e : OpenPartialHomeomorph X H) (c : ℕ → X) (n : ℕ) :
@@ -1525,6 +1745,21 @@ noncomputable def manifoldChartMeasureGluingMeasure {H X : Type}
     (c : ℕ → X) : Measure X :=
   Measure.sum (fun n : ℕ ↦ manifoldChartMeasureGluingLocalMeasure (H := H) ν c n)
 
+/--
+%%handwave
+name:
+  Restricting over the overlap partition reconstructs a chart measure
+statement:
+  Let \(\nu_e\) be supported on \(e.target\).  If the source charts cover \(X\),
+  then
+  \[
+    \sum_n \nu_e|_{e(P_n\cap e.source)}=\nu_e.
+  \]
+proof:
+  The overlap target pieces are measurable, pairwise disjoint, and cover
+  \(e.target\).  Sum of restrictions over this partition equals restriction to
+  \(e.target\), which is \(\nu_e\) by support.
+-/
 theorem manifoldChartMeasureGluingOverlapTargetPiece_sum_restrict {H X : Type}
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X] [MeasurableSpace X] [BorelSpace X]
@@ -1555,6 +1790,17 @@ theorem manifoldChartMeasureGluingOverlapTargetPiece_sum_restrict {H X : Type}
             rw [iUnion_manifoldChartMeasureGluingOverlapTargetPiece_eq_target e c hc_cover]
     _ = ν e he := hsupport e he
 
+/--
+%%handwave
+name:
+  Chart transitions are almost everywhere measurable on overlaps
+statement:
+  For any measure \(\nu\), the transition \(e\circ(e')^{-1}\) is almost
+  everywhere measurable with respect to \(\nu\) restricted to its overlap domain.
+proof:
+  The transition is continuous on the open overlap domain, hence measurable
+  there and therefore almost everywhere measurable for the restricted measure.
+-/
 theorem manifoldChartTransition_aemeasurable_restrict_overlapDomain {H X : Type}
     [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X]
@@ -1564,6 +1810,19 @@ theorem manifoldChartTransition_aemeasurable_restrict_overlapDomain {H X : Type}
   exact (manifoldChartTransition_continuousOn_overlap e e').aemeasurable
     (manifoldChartOverlapDomain_isOpen e e').measurableSet
 
+/--
+%%handwave
+name:
+  Pushforward of one local gluing measure
+statement:
+  Suppose chart measures \(\nu_e\) obey the transition compatibility law.  For
+  the \(n\)-th source piece \(P_n\), pushing its local measure through a chart
+  \(e\) gives \(\nu_e\) restricted to \(e(P_n\cap e.source)\).
+proof:
+  Express the local measure using the native chart \(e'=chart_{c_n}\).
+  Restrict transition compatibility to the relevant coordinate piece, use the
+  transition-preimage identity, and rewrite the composite pushforward as pushforward by \(e\).
+-/
 theorem manifoldChartMeasureGluingLocalMeasure_chart_pushforward_piece
     (H X : Type) [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X] [MeasurableSpace X] [BorelSpace X]
@@ -1697,6 +1956,21 @@ theorem manifoldChartMeasureGluingLocalMeasure_chart_pushforward_piece
     _ = (ν e he).restrict (manifoldChartMeasureGluingOverlapTargetPiece e c n) := by
         simpa [νe, B] using hcompat_piece
 
+/--
+%%handwave
+name:
+  The glued measure has the prescribed chart pushforwards
+statement:
+  For compatible chart measures \(\nu_e\) supported on their chart targets,
+  the measure \(\mu\) obtained by summing the disjoint source-piece measures satisfies
+  \[
+    e_*(\mu|_{e.source})=\nu_e
+  \]
+  for every atlas chart \(e\).
+proof:
+  Commute restriction and pushforward with the countable sum.  Each summand is
+  the restriction of \(\nu_e\) to one overlap target piece, and these restrictions sum to \(\nu_e\).
+-/
 theorem manifoldChartMeasureGluingMeasure_chart_pushforward
     (H X : Type) [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [TopologicalSpace X] [ChartedSpace H X] [MeasurableSpace X] [BorelSpace X]
@@ -1729,6 +2003,18 @@ theorem manifoldChartMeasureGluingMeasure_chart_pushforward
   exact manifoldChartMeasureGluingOverlapTargetPiece_sum_restrict
     ν hsupport c hc_cover e he
 
+/--
+%%handwave
+name:
+  The glued measure is finite on compact sets inside one chart
+statement:
+  If every coordinate measure is finite on compact subsets of its chart target,
+  then the glued measure \(\mu\) satisfies \(\mu(K)<\infty\) whenever \(K\) is
+  compact and contained in one chart source.
+proof:
+  The chart image \(e(K)\) is compact.  Compare \(\mu(K)\) with its chart
+  pushforward value \(\nu_e(e(K))\), which is finite by hypothesis.
+-/
 theorem manifoldChartMeasureGluingMeasure_compact_subset_chart_source_ne_top
     (H X : Type) [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [T2Space H]
@@ -1781,6 +2067,18 @@ theorem manifoldChartMeasureGluingMeasure_compact_subset_chart_source_ne_top
         rw [hpush]
   exact ne_top_of_le_ne_top hL_finite hle
 
+/--
+%%handwave
+name:
+  The glued measure is finite on all compact sets
+statement:
+  Under local compact-finiteness of the compatible coordinate measures, the
+  glued measure \(\mu\) satisfies \(\mu(K)<\infty\) for every compact \(K\subseteq X\).
+proof:
+  Around every point choose a compact neighborhood contained in a chart source;
+  the preceding chart-local estimate makes \(\mu\) locally finite.  A locally
+  finite measure on a compact set is finite.
+-/
 theorem manifoldChartMeasureGluingMeasure_finite_on_compact
     (H X : Type) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] [MeasurableSpace H] [BorelSpace H]
@@ -1824,6 +2122,20 @@ theorem manifoldChartMeasureGluingMeasure_finite_on_compact
   intro K hK
   exact (hK.measure_lt_top (μ := μ)).ne
 
+/--
+%%handwave
+name:
+  Existence of a global measure with compatible chart pushforwards
+statement:
+  Let \(\nu_e\) be locally finite Borel measures supported on chart targets and
+  compatible under all chart transitions.  Given a countable chart-source
+  cover, there exists a measure \(\mu\) on \(X\), finite on compact sets, such that
+  \(e_*(\mu|_{e.source})=\nu_e\) for every atlas chart \(e\).
+proof:
+  Take the measure assembled from disjoint chart-source pieces.  The chart
+  pushforward theorem gives the prescribed local measures, and the compactness
+  theorem gives finiteness on compact sets.
+-/
 theorem exists_measure_with_compatible_manifold_nat_chart_pushforwards
     (H X : Type) [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H] [MeasurableSpace H] [BorelSpace H]
@@ -2081,6 +2393,8 @@ statement:
   The volume measure chosen from the Riemannian metric is a Riemannian volume
   measure: in every coordinate chart its pushforward is the weighted
   Lebesgue measure with density \(\sqrt{\det(g_{ij})}\).
+proof:
+  In every metric chart, the constructed measure is Lebesgue measure weighted by the Riemannian density, which is exactly the defining Riemannian-measure condition.
 -/
 theorem volume_isRiemannian {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H] [BorelSpace H]
@@ -2103,6 +2417,8 @@ statement:
   The Riemannian volume measure of a finite-dimensional smooth Riemannian
   manifold has smooth strictly positive coordinate densities and is finite on
   compact sets.
+proof:
+  The metric Gram determinant is smooth and strictly positive; its square root is therefore a smooth positive chart density.
 -/
 theorem volume_smooth_positive {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H] [BorelSpace H]
@@ -2123,6 +2439,8 @@ name:
 statement:
   In every smooth coordinate chart, the Riemannian volume measure is
   Lebesgue measure multiplied by a smooth strictly positive density.
+proof:
+  Unfold the Riemannian volume construction in the chosen chart and identify its density with the square root of the Gram determinant.
 -/
 theorem volume_chart_density {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H] [BorelSpace H]

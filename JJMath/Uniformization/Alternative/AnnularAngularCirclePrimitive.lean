@@ -87,7 +87,15 @@ noncomputable def annularAngularRightPhase (v : Circle) :
       exact Complex.contDiff_exp
     exact hexp.comp (hmul.comp harg)
 
-/-- The two local phases agree on the double-puncture overlap. -/
+/-- The two local phases agree on the double-puncture overlap.
+
+%%handwave
+name: Agreement of the two annular angular phases
+statement:
+  On the overlap of the two slit annular cylinders, exponentiating $2\pi i$ times either local angular lift gives the same unit-complex phase.
+proof:
+  The two lifts differ by $1$ on one connected overlap component and by $0$ on the other. Exponentiation by $2\pi i$ is unchanged by either difference.
+-/
 theorem annularAngularLocalPhases_agree (v : Circle)
     (x : annularDoublePunctureOpen v) :
     annularAngularLeftPhase v
@@ -147,12 +155,28 @@ noncomputable def annularAngularGlobalPhaseFun (v : Circle)
         exact this
       exact hcover.resolve_left hx⟩
 
+/--
+%%handwave
+name: Global annular phase on the first slit chart
+statement:
+  At every point of the annulus away from the first cut, the global angular phase equals the phase obtained from the first local angular lift.
+proof:
+  On this set the defining case distinction selects the first local phase.
+-/
 theorem annularAngularGlobalPhaseFun_eq_left (v : Circle)
     {x : Circle × ℝ} (hx : x ∈ annularPunctureOpen v) :
     annularAngularGlobalPhaseFun v x =
       annularAngularLeftPhase v ⟨x, hx⟩ := by
   simp [annularAngularGlobalPhaseFun, hx]
 
+/--
+%%handwave
+name: Global annular phase on the second slit chart
+statement:
+  At every point of the annulus away from the opposite cut, the global angular phase equals the phase obtained from the second local angular lift.
+proof:
+  If the point also lies in the first slit chart, use agreement of the two local phases on the overlap; otherwise the defining case distinction directly selects the second phase.
+-/
 theorem annularAngularGlobalPhaseFun_eq_right (v : Circle)
     {x : Circle × ℝ} (hx : x ∈ annularPunctureOpen (annularOpposite v)) :
     annularAngularGlobalPhaseFun v x =

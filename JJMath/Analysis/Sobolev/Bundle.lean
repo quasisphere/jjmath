@@ -292,6 +292,15 @@ noncomputable def surfaceCotangentFieldOfExtDerivFun {X : Type}
     SurfaceCotangentField X :=
   mvfderiv (I := SurfaceRealModel) u
 
+/--
+%%handwave
+name:
+  Exterior derivative evaluated at a surface point
+statement:
+  For a real-valued function \(u\) on a surface, its exterior-derivative cotangent field satisfies \((du)_x=D u(x)\).
+proof:
+  This is the pointwise form of the definition of the exterior derivative as the manifold derivative.
+-/
 @[simp]
 theorem surfaceCotangentFieldOfExtDerivFun_apply {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] (u : X → ℝ) (x : X) :
@@ -318,6 +327,18 @@ noncomputable def evalChart (du : ManifoldDifferentialField I X E)
     (e : OpenPartialHomeomorph X H) (z v : H) : E :=
   du (e.symm z) (manifoldChartTangentVector (I := I) e z v)
 
+/--
+%%handwave
+name:
+  Coordinate evaluation of a manifold differential field
+statement:
+  If \(e\) is a chart and \(z,v\) are model coordinates, then the coordinate evaluation of a differential field \(A\) is
+  \[
+    A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
+  \]
+proof:
+  This is the definition of coordinate evaluation through the chart tangent map.
+-/
 @[simp]
 theorem evalChart_eq (du : ManifoldDifferentialField I X E)
     (e : OpenPartialHomeomorph X H) (z v : H) :
@@ -357,12 +378,36 @@ noncomputable def chartPullback (du : SurfaceDifferentialField X E)
     (e : OpenPartialHomeomorph X ℂ) : ℂ → ℂ →L[ℝ] E :=
   fun z ↦ (du (e.symm z)).comp (surfaceChartTangentMap e z)
 
+/--
+%%handwave
+name:
+  Coordinate evaluation of a surface differential field
+statement:
+  For a surface chart \(e\), a differential field \(A\), and \(z,v\in\mathbb C\), its coordinate evaluation is
+  \[
+    A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
+  \]
+proof:
+  Specialize the manifold coordinate-evaluation definition to the real model \(\mathbb C\).
+-/
 @[simp]
 theorem evalChart_eq (du : SurfaceDifferentialField X E)
     (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
     evalChart du e z v = du (e.symm z) (surfaceChartTangentVector e z v) :=
   rfl
 
+/--
+%%handwave
+name:
+  Coordinate pullback evaluated on a tangent vector
+statement:
+  The pullback of a surface differential field \(A\) through a chart \(e\) satisfies
+  \[
+    (e^\ast A)_z(v)=A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
+  \]
+proof:
+  Both sides are the definition of the coordinate evaluation of \(A\).
+-/
 @[simp]
 theorem chartPullback_apply (du : SurfaceDifferentialField X E)
     (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
@@ -394,11 +439,29 @@ noncomputable def ofCoordinateField (du : X → ℂ →L[ℝ] E) :
     SurfaceDifferentialField X E :=
   fun x ↦ du x
 
+/--
+%%handwave
+name:
+  Recovering a coordinate differential field
+statement:
+  Converting a coordinate field \(A_x:\mathbb C\to E\) into an intrinsic surface differential field and then reading it in the preferred tangent coordinates recovers \(A\).
+proof:
+  Both conversions use the same pointwise linear maps, so the equality is definitional.
+-/
 @[simp]
 theorem toCoordinateField_ofCoordinateField (du : X → ℂ →L[ℝ] E) :
     toCoordinateField (ofCoordinateField du) = du :=
   rfl
 
+/--
+%%handwave
+name:
+  Recovering an intrinsic differential field
+statement:
+  Reading an intrinsic surface differential field in the preferred tangent coordinates and then rebuilding the intrinsic field recovers the original field.
+proof:
+  The two pointwise coordinate conversions are inverse by definition.
+-/
 @[simp]
 theorem ofCoordinateField_toCoordinateField (du : SurfaceDifferentialField X E) :
     ofCoordinateField (toCoordinateField du) = du :=
@@ -424,6 +487,15 @@ noncomputable def toField (du : ContMDiffSurfaceDifferentialSection n X E) :
     SurfaceDifferentialField X E :=
   fun x ↦ du x
 
+/--
+%%handwave
+name:
+  Underlying field of a differentiable differential section
+statement:
+  The differential field underlying a \(C^n\) section \(A\) has value \(A(x)\) at every point \(x\).
+proof:
+  The underlying field is defined by pointwise evaluation of the section.
+-/
 @[simp]
 theorem toField_apply (du : ContMDiffSurfaceDifferentialSection n X E) (x : X) :
     toField du x = du x :=
@@ -510,6 +582,15 @@ noncomputable def toTotalSpace {X F : Type} {V : X → Type}
     X → Bundle.TotalSpace F V :=
   fun x ↦ Bundle.TotalSpace.mk' F x (s x)
 
+/--
+%%handwave
+name:
+  Base point of a bundle section in the total space
+statement:
+  If a bundle section \(s\) is regarded as a total-space-valued map, the base point of \(s(x)\) is \(x\).
+proof:
+  A section value is inserted into the total space as the pair \((x,s(x))\).
+-/
 @[simp]
 theorem toTotalSpace_apply {X F : Type} {V : X → Type}
     (s : HilbertBundleSectionOnSurface X V) (x : X) :
@@ -543,20 +624,42 @@ variable {X F : Type} [TopologicalSpace X] [MeasurableSpace X]
     {G : HilbertBundleGeometry X F V} {μ : Measure X}
     {s t : HilbertBundleSectionOnSurface X V}
 
-/-- A square-integrable bundle section is almost everywhere Borel measurable as
-a total-space-valued map. -/
+/--
+%%handwave
+name:
+  Measurability of a square-integrable bundle section
+statement:
+  A square-integrable Hilbert-bundle section is almost everywhere measurable as a map into the bundle total space.
+proof:
+  This is the measurability component of the definition of square-integrability.
+-/
 theorem aemeasurable (h : HilbertBundleSectionMemL2 G μ s) :
     AEMeasurable
       (HilbertBundleSectionOnSurface.toTotalSpace (F := F) s) μ :=
   h.1
 
-/-- A square-integrable bundle section has integrable fiberwise square norm. -/
+/--
+%%handwave
+name:
+  Integrability of the fiberwise square norm
+statement:
+  If \(s\) is a square-integrable Hilbert-bundle section, then \(x\mapsto\|s(x)\|_x^2\) is integrable.
+proof:
+  This is the integrability component of the definition of square-integrability.
+-/
 theorem integrable_normSq (h : HilbertBundleSectionMemL2 G μ s) :
     Integrable (fun x ↦ G.fiberNormSq x (s x)) μ :=
   h.2
 
-/-- Square-integrability is invariant under almost-everywhere equality of
-sections. -/
+/--
+%%handwave
+name:
+  Square-integrability is invariant under almost-everywhere equality
+statement:
+  If \(s\) is a square-integrable Hilbert-bundle section and \(s(x)=t(x)\) for almost every \(x\), then \(t\) is square-integrable.
+proof:
+  Almost-everywhere equality preserves both measurability of the total-space map and integrability of the fiberwise square norm.
+-/
 theorem congr_ae (hs : HilbertBundleSectionMemL2 G μ s)
     (hst : ∀ᵐ x ∂μ, s x = t x) :
     HilbertBundleSectionMemL2 G μ t := by
@@ -568,7 +671,15 @@ theorem congr_ae (hs : HilbertBundleSectionMemL2 G μ s)
     filter_upwards [hst] with x hx
     rw [hx]
 
-/-- An if-and-only-if form of invariance under almost-everywhere equality. -/
+/--
+%%handwave
+name:
+  Almost-everywhere invariance of square-integrability
+statement:
+  If bundle sections \(s\) and \(t\) agree almost everywhere, then \(s\) is square-integrable if and only if \(t\) is square-integrable.
+proof:
+  Transfer square-integrability in each direction using the given equality and its symmetry.
+-/
 theorem congr_ae_iff (hst : ∀ᵐ x ∂μ, s x = t x) :
     HilbertBundleSectionMemL2 G μ s ↔ HilbertBundleSectionMemL2 G μ t :=
   ⟨fun hs ↦ hs.congr_ae hst, fun ht ↦ ht.congr_ae (hst.mono fun _ hx ↦ hx.symm)⟩
@@ -609,6 +720,8 @@ name:
 statement:
   Two square-integrable bundle-section representatives are equal if their
   underlying sections are pointwise equal.
+proof:
+  Destructure the two representatives.  Pointwise equality gives equality of the underlying sections by function extensionality, after which the stored square-integrability proofs are propositionally irrelevant.
 -/
 theorem ext {s t : SquareIntegrableHilbertBundleSection G μ}
     (h : ∀ x : X, s.toSection x = t.toSection x) : s = t := by
@@ -631,14 +744,41 @@ statement:
 def AeEq (s t : SquareIntegrableHilbertBundleSection G μ) : Prop :=
   ∀ᵐ x ∂μ, s.toSection x = t.toSection x
 
+/--
+%%handwave
+name:
+  Reflexivity of almost-everywhere equality for bundle sections
+statement:
+  Every square-integrable bundle-section representative agrees almost everywhere with itself.
+proof:
+  Pointwise equality is reflexive at every base point.
+-/
 theorem AeEq.refl (s : SquareIntegrableHilbertBundleSection G μ) :
     AeEq s s :=
   Filter.Eventually.of_forall fun _ ↦ rfl
 
+/--
+%%handwave
+name:
+  Symmetry of almost-everywhere equality for bundle sections
+statement:
+  If square-integrable bundle-section representatives \(s\) and \(t\) agree almost everywhere, then \(t\) and \(s\) agree almost everywhere.
+proof:
+  Reverse the pointwise equality on the full-measure set where it holds.
+-/
 theorem AeEq.symm {s t : SquareIntegrableHilbertBundleSection G μ}
     (h : AeEq s t) : AeEq t s :=
   h.mono fun _ hx ↦ hx.symm
 
+/--
+%%handwave
+name:
+  Transitivity of almost-everywhere equality for bundle sections
+statement:
+  If \(s=t\) almost everywhere and \(t=r\) almost everywhere, then \(s=r\) almost everywhere.
+proof:
+  Intersect the two full-measure sets and use transitivity of pointwise equality.
+-/
 theorem AeEq.trans {s t r : SquareIntegrableHilbertBundleSection G μ}
     (h₁ : AeEq s t) (h₂ : AeEq t r) : AeEq s r := by
   filter_upwards [h₁, h₂] with x hx₁ hx₂
@@ -674,17 +814,43 @@ variable {X F : Type} [TopologicalSpace X] [MeasurableSpace X]
 abbrev mk (s : SquareIntegrableHilbertBundleSection G μ) : L2HilbertBundle G μ :=
   Quotient.mk (SquareIntegrableHilbertBundleSection.aeSetoid (G := G) (μ := μ)) s
 
+/--
+%%handwave
+name:
+  Equality of \(L^2\) bundle classes
+statement:
+  Two square-integrable bundle-section representatives determine the same \(L^2\) class if and only if they agree almost everywhere.
+proof:
+  This is the equality criterion for the quotient by almost-everywhere equality.
+-/
 @[simp]
 theorem mk_eq_mk {s t : SquareIntegrableHilbertBundleSection G μ} :
     mk s = mk t ↔ SquareIntegrableHilbertBundleSection.AeEq s t :=
   Quotient.eq
 
-/-- Almost-everywhere equal representatives define the same \(L^2\)-section. -/
+/--
+%%handwave
+name:
+  Almost-everywhere equal bundle sections have the same \(L^2\) class
+statement:
+  If two square-integrable bundle sections agree almost everywhere, their classes in the bundle \(L^2\) space are equal.
+proof:
+  Apply the quotient relation defining the \(L^2\) space.
+-/
 theorem sound {s t : SquareIntegrableHilbertBundleSection G μ}
     (h : SquareIntegrableHilbertBundleSection.AeEq s t) :
     mk s = mk t :=
   Quotient.sound h
 
+/--
+%%handwave
+name:
+  Representative induction for bundle \(L^2\) sections
+statement:
+  To prove a property of every \(L^2\) bundle section, it suffices to prove it for the class of each square-integrable representative.
+proof:
+  Use induction on the quotient by almost-everywhere equality.
+-/
 @[elab_as_elim]
 protected theorem induction_on {C : L2HilbertBundle G μ → Prop}
     (u : L2HilbertBundle G μ)
@@ -896,6 +1062,15 @@ noncomputable def toTotalSpaceSection (du : SurfaceDifferentialField X E) :
     X → SurfaceDifferentialTotalSpace X E :=
   fun x ↦ Bundle.TotalSpace.mk' (ℂ →L[ℝ] E) x (du x)
 
+/--
+%%handwave
+name:
+  Base point of a differential field as a bundle section
+statement:
+  When a surface differential field \(A\) is viewed as a section of the differential-bundle total space, the base point of its value at \(x\) is \(x\).
+proof:
+  The total-space section is the pair \((x,A_x)\) by definition.
+-/
 @[simp]
 theorem toTotalSpaceSection_apply (du : SurfaceDifferentialField X E) (x : X) :
     (toTotalSpaceSection du x).1 = x :=
@@ -1145,6 +1320,8 @@ statement:
   The continuous bilinear form representing the Hilbert-Schmidt pairing agrees
   with the coordinate formula obtained by contracting with the inverse
   Riemannian metric.
+proof:
+  Unfold the continuous bilinear form induced by the surface Hilbert--Schmidt metric; its evaluation is definitionally the stated fiber inner product.
 -/
 theorem surfaceDifferentialHilbertSchmidtInnerCLMAt_apply {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1202,6 +1379,8 @@ name:
 statement:
   The metric Hilbert-Schmidt pairing on vector-valued differentials is
   symmetric.
+proof:
+  Expand the Hilbert--Schmidt contraction and use symmetry of the inverse metric coefficients together with symmetry of the target inner product.
 -/
 theorem surfaceDifferentialHilbertSchmidtInnerAt_symm {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1514,6 +1693,8 @@ statement:
   The continuous bilinear form representing the manifold Hilbert-Schmidt
   pairing agrees with the coordinate formula obtained by contracting with the
   inverse Riemannian metric.
+proof:
+  Unfold the manifold differential-bundle metric and its associated continuous bilinear map.
 -/
 theorem manifoldDifferentialHilbertSchmidtInnerCLMAt_apply {H X E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1573,6 +1754,8 @@ name:
 statement:
   The Gram matrix of a Riemannian metric in a fixed model tangent basis is
   symmetric.
+proof:
+  Each matrix entry is a Riemannian metric pairing of two basis vectors, so symmetry of the metric swaps the indices.
 -/
 theorem manifoldMetricModelGramMatrix_isSymm {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1627,6 +1810,8 @@ name:
 statement:
   The inverse of the Riemannian metric Gram matrix in a fixed model tangent
   basis is positive definite.
+proof:
+  The Gram matrix of a positive-definite metric in a basis is positive definite; its inverse is therefore positive definite as well.
 -/
 theorem manifoldMetricModelGramMatrix_inv_posDef {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1687,6 +1872,8 @@ name:
 statement:
   Contracting a matrix with a symmetric matrix entrywise is the trace of their
   product.
+proof:
+  Expand the trace and matrix product as finite sums, use symmetry to swap the relevant indices, and commute the scalar factors.
 -/
 theorem Matrix.sum_mul_of_isSymm_eq_trace_mul
     {ι : Type} [Fintype ι] {C K : Matrix ι ι ℝ} (hK : K.IsSymm) :
@@ -1706,6 +1893,8 @@ name:
 statement:
   The metric Hilbert-Schmidt pairing on vector-valued differentials over a
   manifold is symmetric.
+proof:
+  Write the contraction in basis coordinates, swap the two differential fields, and use symmetry of both the inverse Gram matrix and the target inner product.
 -/
 theorem manifoldDifferentialHilbertSchmidtInnerAt_symm {H X E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1762,6 +1951,8 @@ statement:
   The continuous bilinear form representing the metric Hilbert-Schmidt pairing
   on vector-valued differentials is symmetric in the two differential
   arguments.
+proof:
+  Evaluate both continuous bilinear forms on arbitrary fields and apply symmetry of the underlying Hilbert--Schmidt inner product.
 -/
 theorem manifoldDifferentialHilbertSchmidtInnerCLMAt_symm {H X E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1853,8 +2044,19 @@ theorem manifoldDifferentialHilbertSchmidtInnerAt_pos {H X E : Type}
   rw [hformula, Matrix.sum_mul_of_isSymm_eq_trace_mul hKsymm]
   exact htrace_pos
 
-/-- Expanding a real positive square-root factorization gives a sum of
-squares after contracting against a Gram matrix. -/
+/--
+%%handwave
+name:
+  Gram contraction after a square-root factorization
+statement:
+  For a real matrix \(B\) and vectors \(u_i\) in a real inner-product space,
+  \[
+    \sum_{i,j}(B^\mathsf{T}B)_{ij}\langle u_i,u_j\rangle
+    =\sum_a\left\langle\sum_iB_{ai}u_i,\sum_jB_{aj}u_j\right\rangle.
+  \]
+proof:
+  Expand the matrix product and both inner products, then interchange the three finite sums.
+-/
 theorem Matrix.conjTranspose_mul_self_inner_sum
     {ι E : Type} [Fintype ι]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E]
@@ -1885,8 +2087,18 @@ theorem Matrix.conjTranspose_mul_self_inner_sum
           simp_rw [inner_sum, sum_inner, real_inner_smul_left, real_inner_smul_right]
           simp [f, real_inner_comm, mul_assoc, mul_left_comm]
 
-/-- Applying an invertible scalar matrix and then its inverse recovers an
-`E`-valued finite vector. -/
+/--
+%%handwave
+name:
+  Inverting a scalar matrix acting on a vector-valued family
+statement:
+  If \(B^{-1}B=I\), then for every finite family \(u_k\) in a real module,
+  \[
+    \sum_a(B^{-1})_{ia}\left(\sum_kB_{ak}u_k\right)=u_i.
+  \]
+proof:
+  Distribute scalar multiplication through the sums, interchange the finite sums, and use the \((i,k)\)-entry of \(B^{-1}B=I\).
+-/
 theorem Matrix.inv_mul_smulVec_apply
     {ι E : Type} [Fintype ι] [DecidableEq ι]
     [AddCommMonoid E] [Module ℝ E]
@@ -2042,6 +2254,8 @@ statement:
   Hilbert-Schmidt metric at a nearby point evaluates on model vectors by first
   transporting those model vectors back to the two differential fibers and then
   applying the fiberwise Hilbert-Schmidt pairing.
+proof:
+  Unfold transport through the local differential-bundle trivialization and evaluate the resulting coordinate bilinear form.
 -/
 theorem manifoldDifferentialHilbertSchmidtInnerCLMAt_inCoordinates_apply
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2081,6 +2295,8 @@ statement:
   model differentials is the finite contraction of the inverse metric
   coefficients with the target inner products of the transported
   differentials.
+proof:
+  Expand the coordinate model and obtain the double finite contraction of inverse metric coefficients with the target inner products of basis evaluations.
 -/
 theorem manifoldDifferentialHilbertSchmidtInnerCLMAt_inCoordinates_apply_eq_sum
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2147,6 +2363,8 @@ name:
 statement:
   The coordinate expression of a smooth Riemannian metric in any local tangent
   trivialization is continuous at the base point.
+proof:
+  In a fixed local trivialization, continuity of the Riemannian bundle metric gives continuity of its coordinate bilinear form at the base point.
 -/
 theorem manifoldMetricInCoordinates_continuousAt {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2175,6 +2393,8 @@ name:
 statement:
   The Gram matrix of a smooth Riemannian metric in local tangent coordinates
   varies continuously at the base point.
+proof:
+  Each Gram-matrix entry is evaluation of the continuous coordinate metric on two constant basis vectors.
 -/
 theorem manifoldMetricCoordinateGramMatrix_continuousAt {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2201,6 +2421,8 @@ name:
 statement:
   At the center of a tangent trivialization, the coordinate Gram matrix of a
   Riemannian metric is the Gram matrix in the model tangent basis.
+proof:
+  At the chart base point, the coordinate trivialization is the identity on the model tangent fiber, so the coordinate Gram matrix is the model Gram matrix.
 -/
 theorem manifoldMetricCoordinateGramMatrix_self {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2240,6 +2462,8 @@ name:
 statement:
   The inverse Gram coefficients of a smooth Riemannian metric in local tangent
   coordinates vary continuously at the base point.
+proof:
+  Matrix inversion is continuous near an invertible positive-definite Gram matrix; compose it with continuity of the coordinate Gram matrix and evaluate the chosen entry.
 -/
 theorem manifoldMetricCoordinateInverseGramCoeff_continuousAt {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2302,6 +2526,8 @@ name:
 statement:
   The rank-one model Hilbert-Schmidt form evaluates by applying the two
   model differentials and taking the target inner product.
+proof:
+  Unfold the continuous bilinear map that pairs evaluations of two model differentials on fixed basis vectors.
 -/
 theorem modelDifferentialEvalInnerCLM_apply {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2340,6 +2566,8 @@ name:
 statement:
   Evaluating the coordinate Hilbert-Schmidt form on two model differentials is
   the finite inverse-metric contraction of their coordinate values.
+proof:
+  Unfold the coordinate Hilbert--Schmidt form and distribute its finite sum of inverse metric coefficients times evaluation inner products.
 -/
 theorem manifoldDifferentialHilbertSchmidtCoordinateModelCLM_apply
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2364,6 +2592,8 @@ name:
 statement:
   The coordinate model Hilbert-Schmidt form is continuous at the center of the
   trivialization.
+proof:
+  Every inverse Gram coefficient is continuous and every evaluation pairing is a fixed continuous bilinear form; finite sums and scalar products preserve continuity.
 -/
 theorem manifoldDifferentialHilbertSchmidtCoordinateModelCLM_continuousAt
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2446,6 +2676,15 @@ def continuousBilinearMap_toLinearMap₂ {V W G : Type}
     ext z
     simp
 
+/--
+%%handwave
+name:
+  Evaluation of the algebraic form of a continuous bilinear map
+statement:
+  Viewing a continuous bilinear map \(B:V\times W\to G\) as an algebraic bilinear map does not change its values: the resulting map sends \((v,w)\) to \(B(v,w)\).
+proof:
+  The conversion only forgets continuity and retains the same underlying functions.
+-/
 @[simp]
 theorem continuousBilinearMap_toLinearMap₂_apply {V W G : Type}
     [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
@@ -2463,6 +2702,8 @@ name:
 statement:
   In the local trivialization of the differential bundle, transporting a model
   differential back to the fiber composes it with the tangent-coordinate map.
+proof:
+  The inverse bundle trivialization transports a model differential to the fiber by precomposing it with the chart tangent-coordinate map.
 -/
 theorem manifoldDifferentialBundle_trivialization_symm_apply
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2501,6 +2742,8 @@ statement:
   If two model vectors are expanded in a basis using the columns of a matrix,
   then the inner product of their images under two linear maps expands as the
   corresponding double sum of matrix coefficients and target inner products.
+proof:
+  Expand each vector in the finite basis, use bilinearity of the inner product, and interchange the resulting finite sums.
 -/
 theorem inner_apply_basis_matrix_sum {ι H E : Type} [Fintype ι]
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2524,6 +2767,8 @@ name:
 statement:
   Expanding both arguments of a bilinear coefficient matrix through a change
   of coordinates transforms the coefficient matrix by \(P C P^T\).
+proof:
+  Expand the two matrix products and the double contraction, then rearrange the finite sums and scalar factors.
 -/
 theorem matrix_double_contraction_mul_transpose {ι : Type} [Fintype ι]
     (P C K : Matrix ι ι ℝ) :
@@ -2562,6 +2807,8 @@ name:
 statement:
   If \(Q\) and \(P\) are inverse change-of-basis matrices, then the inverse
   of \(Q^T G Q\) is \(P G^{-1} P^T\).
+proof:
+  Use the inverse identities and transpose/conjugate rules for real matrices to simplify the product to the identity matrix.
 -/
 theorem matrix_inv_transpose_mul_conj {ι : Type} [Fintype ι] [DecidableEq ι]
     (P Q G : Matrix ι ι ℝ) (hQP : Q * P = 1) :
@@ -3029,6 +3276,8 @@ statement:
   After registering the canonical Hilbert-Schmidt Riemannian metric on
   \(T^\ast X\otimes E\), the fiberwise inner product is exactly the metric
   Hilbert-Schmidt pairing.
+proof:
+  In the preferred complex tangent basis, the surface Hilbert--Schmidt contraction is exactly the declared inner product on the two coordinate components.
 -/
 theorem surfaceDifferentialHilbertSchmidtInnerAt_eq_inner {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -3243,18 +3492,45 @@ def AeEq
     Prop :=
   SquareIntegrableHilbertBundleSection.AeEq du dv
 
+/--
+%%handwave
+name:
+  Reflexivity of almost-everywhere equality for manifold differential fields
+statement:
+  Every square-integrable manifold differential representative agrees almost everywhere with itself.
+proof:
+  This is reflexivity of almost-everywhere equality for the underlying Hilbert-bundle section.
+-/
 theorem AeEq.refl
     (du :
       SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ) :
     AeEq du du :=
   SquareIntegrableHilbertBundleSection.AeEq.refl du
 
+/--
+%%handwave
+name:
+  Symmetry of almost-everywhere equality for manifold differential fields
+statement:
+  If two square-integrable manifold differential representatives agree almost everywhere, they also agree in the reverse order.
+proof:
+  Apply symmetry of almost-everywhere equality for the underlying bundle sections.
+-/
 theorem AeEq.symm
     {du dv :
       SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ}
     (h : AeEq du dv) : AeEq dv du :=
   SquareIntegrableHilbertBundleSection.AeEq.symm h
 
+/--
+%%handwave
+name:
+  Transitivity of almost-everywhere equality for manifold differential fields
+statement:
+  If \(A=B\) almost everywhere and \(B=C\) almost everywhere, then \(A=C\) almost everywhere as manifold differential fields.
+proof:
+  Apply transitivity of almost-everywhere equality for the underlying bundle sections.
+-/
 theorem AeEq.trans
     {du dv dw :
       SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ}
@@ -3359,16 +3635,43 @@ def AeEq
     Prop :=
   SquareIntegrableHilbertBundleSection.AeEq du dv
 
+/--
+%%handwave
+name:
+  Reflexivity of almost-everywhere equality for surface differential fields
+statement:
+  Every square-integrable surface differential representative agrees almost everywhere with itself.
+proof:
+  This is reflexivity for its underlying Hilbert-bundle section.
+-/
 theorem AeEq.refl
     (du : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :
     AeEq du du :=
   SquareIntegrableHilbertBundleSection.AeEq.refl du
 
+/--
+%%handwave
+name:
+  Symmetry of almost-everywhere equality for surface differential fields
+statement:
+  Almost-everywhere equality of square-integrable surface differential representatives is symmetric.
+proof:
+  Reverse the fiberwise equality on the full-measure set where it holds.
+-/
 theorem AeEq.symm
     {du dv : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ}
     (h : AeEq du dv) : AeEq dv du :=
   SquareIntegrableHilbertBundleSection.AeEq.symm h
 
+/--
+%%handwave
+name:
+  Transitivity of almost-everywhere equality for surface differential fields
+statement:
+  Almost-everywhere equality of square-integrable surface differential representatives is transitive.
+proof:
+  Combine the two fiberwise equalities on the intersection of their full-measure sets.
+-/
 theorem AeEq.trans
     {du dv dw : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ}
     (h₁ : AeEq du dv) (h₂ : AeEq dv dw) : AeEq du dw := by
@@ -3564,12 +3867,36 @@ noncomputable def chartPullback (du : SurfaceCotangentField X)
     (e : OpenPartialHomeomorph X ℂ) : ℂ → ℂ →L[ℝ] ℝ :=
   fun z ↦ (du (e.symm z)).comp (surfaceChartTangentMap e z)
 
+/--
+%%handwave
+name:
+  Coordinate evaluation of a surface cotangent field
+statement:
+  For a surface chart \(e\), cotangent field \(\alpha\), and \(z,v\in\mathbb C\),
+  \[
+    \alpha^{e}_z(v)=\alpha_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
+  \]
+proof:
+  This is the definition of coordinate evaluation of the cotangent field.
+-/
 @[simp]
 theorem evalChart_eq (du : SurfaceCotangentField X)
     (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
     evalChart du e z v = du (e.symm z) (surfaceChartTangentVector e z v) :=
   rfl
 
+/--
+%%handwave
+name:
+  Coordinate pullback of a cotangent field evaluated on a vector
+statement:
+  The coordinate pullback of a cotangent field \(\alpha\) satisfies
+  \[
+    (e^\ast\alpha)_z(v)=\alpha_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
+  \]
+proof:
+  Expand the pullback as composition with the tangent map of the inverse chart.
+-/
 @[simp]
 theorem chartPullback_apply (du : SurfaceCotangentField X)
     (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
@@ -3600,11 +3927,29 @@ noncomputable def ofCoordinateField (du : X → ℂ →L[ℝ] ℝ) :
     SurfaceCotangentField X :=
   fun x ↦ du x
 
+/--
+%%handwave
+name:
+  Recovering a coordinate cotangent field
+statement:
+  Converting a coordinate cotangent field into an intrinsic field and then reading its preferred tangent coordinates recovers the original coordinate field.
+proof:
+  The two conversions leave every pointwise linear functional unchanged.
+-/
 @[simp]
 theorem toCoordinateField_ofCoordinateField (du : X → ℂ →L[ℝ] ℝ) :
     toCoordinateField (ofCoordinateField du) = du :=
   rfl
 
+/--
+%%handwave
+name:
+  Recovering an intrinsic cotangent field
+statement:
+  Reading an intrinsic cotangent field in preferred tangent coordinates and rebuilding the intrinsic field recovers the original field.
+proof:
+  The pointwise coordinate conversions are inverse by definition.
+-/
 @[simp]
 theorem ofCoordinateField_toCoordinateField (du : SurfaceCotangentField X) :
     ofCoordinateField (toCoordinateField du) = du :=
@@ -3629,6 +3974,15 @@ noncomputable def toField (du : SmoothSurfaceCotangentSection X) :
     SurfaceCotangentField X :=
   fun x ↦ du x
 
+/--
+%%handwave
+name:
+  Underlying field of a smooth cotangent section
+statement:
+  The cotangent field underlying a smooth cotangent section \(\alpha\) has value \(\alpha(x)\) at every point \(x\).
+proof:
+  The underlying field is obtained by pointwise evaluation.
+-/
 @[simp]
 theorem toField_apply (du : SmoothSurfaceCotangentSection X) (x : X) :
     toField du x = du x :=
@@ -3691,6 +4045,15 @@ def IsWeakGradientOnSurfaceBundle {X : Type}
     (_μ : Measure X) (u : X → ℝ) (du : SurfaceCotangentField X) : Prop :=
   IsWeakGradientOnRegionBundle (Set.univ : Set X) u du
 
+/--
+%%handwave
+name:
+  Coordinate and intrinsic weak gradients on a region agree
+statement:
+  A coordinate cotangent field \(A_x:\mathbb C\to\mathbb R\) is a weak gradient of \(u\) on \(U\) exactly when the corresponding intrinsic cotangent field is.
+proof:
+  The intrinsic definition is the coordinate weak-gradient identity after the pointwise coordinate identification, so the two propositions coincide.
+-/
 @[simp]
 theorem isWeakGradientOnRegionBundle_ofCoordinateField_iff {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3699,6 +4062,15 @@ theorem isWeakGradientOnRegionBundle_ofCoordinateField_iff {X : Type}
       IsWeakGradientOnRegion U u du :=
   Iff.rfl
 
+/--
+%%handwave
+name:
+  Intrinsic weak gradients are characterized by their coordinate fields
+statement:
+  An intrinsic cotangent field \(\alpha\) is a weak gradient of \(u\) on \(U\) if and only if its preferred coordinate field is a coordinate weak gradient there.
+proof:
+  Unfold the intrinsic weak-gradient definition and the coordinate representation of \(\alpha\).
+-/
 @[simp]
 theorem isWeakGradientOnRegionBundle_toCoordinateField_iff {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3707,6 +4079,15 @@ theorem isWeakGradientOnRegionBundle_toCoordinateField_iff {X : Type}
       IsWeakGradientOnRegion U u (SurfaceCotangentField.toCoordinateField du) :=
   Iff.rfl
 
+/--
+%%handwave
+name:
+  Coordinate and intrinsic weak gradients on a surface agree
+statement:
+  A coordinate cotangent field is a weak gradient of \(u\) on the whole measured surface exactly when its associated intrinsic cotangent field is.
+proof:
+  Specialize the regional equivalence to the full surface.
+-/
 @[simp]
 theorem isWeakGradientOnSurfaceBundle_ofCoordinateField_iff {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -3715,6 +4096,15 @@ theorem isWeakGradientOnSurfaceBundle_ofCoordinateField_iff {X : Type}
       IsWeakGradientOnSurface μ u du :=
   Iff.rfl
 
+/--
+%%handwave
+name:
+  Surface weak gradients are characterized by their coordinate fields
+statement:
+  An intrinsic cotangent field is a weak gradient of \(u\) on the measured surface if and only if its preferred coordinate field is a coordinate weak gradient.
+proof:
+  Unfold the whole-surface definition and apply the coordinate identification pointwise.
+-/
 @[simp]
 theorem isWeakGradientOnSurfaceBundle_toCoordinateField_iff {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]

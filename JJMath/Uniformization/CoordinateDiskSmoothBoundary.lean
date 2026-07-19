@@ -18,6 +18,14 @@ noncomputable section
 
 open JJMath.Manifold
 
+/--
+%%handwave
+name: Smooth boundary of a coordinate disk
+statement:
+  Let $D$ be a closed coordinate disk of radius $R>0$ in a Riemann surface. Its open coordinate disk $\{|z-c|<R\}$ has smooth boundary.
+proof:
+  In the defining chart use the real function $r(z)=|z-c|^2-R^2$. Its derivative at a boundary point is $v\mapsto2\langle z-c,v\rangle$, which is nonzero because $|z-c|=R>0$. The regular zero-set description agrees locally with the disk and its boundary.
+-/
 theorem ClosedCoordinateDisk.expandedOpenDisk_hasSmoothBoundary
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -206,7 +214,15 @@ noncomputable def ClosedCoordinateDisk.toSmoothBoundaryDomain
       (closure_minimal hsubset D.compact.isClosed)
   smooth_boundary := D.expandedOpenDisk_hasSmoothBoundary
 
-/-- The smooth open interior of a closed coordinate disk is path connected. -/
+/-- The smooth open interior of a closed coordinate disk is path connected.
+
+%%handwave
+name: Path connectedness of a coordinate-disk interior
+statement:
+  The open interior of every closed coordinate disk in a Riemann surface is path connected.
+proof:
+  Regard it as the coordinate disk defined by the same chart, center, and radius. Its chart image is a convex Euclidean ball, hence it is path connected.
+-/
 theorem ClosedCoordinateDisk.toSmoothBoundaryDomain_isPathConnected
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -225,7 +241,15 @@ theorem ClosedCoordinateDisk.toSmoothBoundaryDomain_isPathConnected
   simpa [ClosedCoordinateDisk.toSmoothBoundaryDomain, C] using C.isPathConnected
 
 /-- The open interior of a closed coordinate disk is smoothly equivalent to
-the corresponding Euclidean ball in its defining coordinate. -/
+the corresponding Euclidean ball in its defining coordinate.
+
+%%handwave
+name: Coordinate-disk interior is diffeomorphic to a Euclidean ball
+statement:
+  The open interior of a closed coordinate disk is diffeomorphic, as a real smooth surface, to the Euclidean ball with the same center and radius in $\mathbb C$.
+proof:
+  Restrict the defining complex chart to the open disk. Its source and target are exactly the two stated open sets, and a complex chart is a real-smooth diffeomorphism on such restrictions.
+-/
 theorem ClosedCoordinateDisk.expandedOpenDisk_diffeomorphic_ball
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -251,7 +275,15 @@ theorem ClosedCoordinateDisk.expandedOpenDisk_diffeomorphic_ball
     simpa [deRham_boundarylessExtendedChart, SurfaceRealModel] using hy'
 
 /-- The first real de Rham cohomology of the open interior of a closed
-coordinate disk vanishes. -/
+coordinate disk vanishes.
+
+%%handwave
+name: Vanishing first cohomology of a coordinate-disk interior
+statement:
+  The first real de Rham cohomology of the open interior of a closed coordinate disk is zero.
+proof:
+  Transfer de Rham cohomology through the diffeomorphism with a Euclidean ball, then apply the Poincaré lemma to that nonempty convex open set.
+-/
 theorem ClosedCoordinateDisk.expandedOpenDisk_deRhamH1_subsingleton
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

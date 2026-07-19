@@ -22,8 +22,20 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
-/-- Restricting a map to an open set on which it agrees with an open partial
-homeomorphism gives an open map. -/
+/--
+%%handwave
+name:
+  Openness of a restriction agreeing with a local homeomorphism
+statement:
+  Let \(S\subseteq A\) be open.  If a map \(f:A\to B\) agrees on \(S\) with
+  an open partial homeomorphism whose source contains \(S\), then the
+  restricted map \(f|_S:S\to B\) is open.
+proof:
+  The inclusion \(S\hookrightarrow A\) sends open subsets of \(S\) to open
+  subsets of \(A\).  The partial homeomorphism sends these sets to open
+  subsets of \(B\), and agreement on \(S\) identifies those images with the
+  images under \(f|_S\).
+-/
 theorem isOpenMap_restrict_of_eqOn_openPartialHomeomorph
     {A B : Type*} [TopologicalSpace A] [TopologicalSpace B]
     {S : Set A} (hS : IsOpen S) {f : A → B}
@@ -45,7 +57,17 @@ theorem isOpenMap_restrict_of_eqOn_openPartialHomeomorph
   · rintro ⟨a, ⟨z, hzU, rfl⟩, rfl⟩
     exact ⟨z, hzU, heq z.2⟩
 
-/-- An open restriction of an open map is still open. -/
+/--
+%%handwave
+name:
+  Further open restriction of an open map
+statement:
+  Suppose \(f|_S:S\to B\) is open and \(T\subseteq S\) is open in the ambient
+  space.  Then \(f|_T:T\to B\) is open.
+proof:
+  Factor the restriction to \(T\) through the open inclusion \(T\hookrightarrow
+  S\) and compose the two open maps.
+-/
 theorem isOpenMap_restrict_mono
     {A B : Type*} [TopologicalSpace A] [TopologicalSpace B]
     {S T : Set A} {f : A → B} (hf : IsOpenMap (S.restrict f))
@@ -54,9 +76,23 @@ theorem isOpenMap_restrict_mono
     using hf.comp (hT.isOpenMap_inclusion hsub)
 
 omit [RiemannSurface X] in
-/-- Near the center of a frontier chart, applying the preferred chart and
-then its inverse to the product-chart boundary axis returns that axis.  The
-same neighborhood lies in the target of the restricted frontier chart. -/
+/--
+%%handwave
+name:
+  Compatibility of the surface chart with the boundary axis
+statement:
+  Let \(x\in\partial D\), and parameterize the boundary axis of a smooth
+  product chart by \(s\mapsto C^{-1}(0,s)\).  For all \(s\) sufficiently close
+  to zero, \(s\) lies in the target of the induced boundary chart and
+  \[
+    \phi_x^{-1}\bigl(\phi_x(C^{-1}(0,s))\bigr)=C^{-1}(0,s).
+  \]
+proof:
+  Near zero the inverse boundary chart stays in the source of the ambient
+  surface chart, by continuity and the source neighborhood of \(x\).  The
+  boundary-chart inverse is the product-chart boundary axis there, and the
+  surface chart's inverse identity gives the formula.
+-/
 theorem eventually_extChartAt_symm_productAxis_eq
     (D : SmoothBoundaryDomain X) (x : frontier D.carrier) :
     ∀ᶠ s : ℝ in 𝓝 0,
@@ -1001,7 +1037,21 @@ structure SmoothFrontierFlowPatch (D : SmoothBoundaryDomain X) where
       (smoothFrontierTransverseVectorField D)
       (Ioo (-timeRadius) timeRadius)
 
-/-- A local transverse-flow patch can be chosen around each frontier point. -/
+/--
+%%handwave
+name:
+  Transverse-flow patch through a boundary point
+statement:
+  Through every point \(x\) of the smooth boundary of \(D\) there is an open
+  boundary patch \(V\), a time radius \(\delta>0\), and a smooth transverse
+  flow \(\Phi:V\times(-\delta,\delta)\to X\) which is injective and open, has
+  a smooth left inverse, satisfies \(\Phi(q,0)=q\), and whose time curves are
+  integral curves of the chosen transverse vector field.
+proof:
+  Package the local flow-collar construction at \(x\), together with its
+  inverse, openness, injectivity, initial-value identity, and integral-curve
+  properties, into one flow patch.
+-/
 theorem exists_smoothFrontierFlowPatch_through
     (D : SmoothBoundaryDomain X) (x : frontier D.carrier) :
     ∃ P : SmoothFrontierFlowPatch D, x ∈ P.carrier := by
@@ -1126,9 +1176,24 @@ theorem smoothFrontierTransverseIntegralCurves_eqOn_commonInterval
       (Ioo_subset_Ioo (neg_le_neg (min_le_right ε η)) (min_le_right ε η))
   · exact hzero
 
-/-- A finite uniformly timed flow-patch cover glues to a flow family on the
-whole connected frontier component.  The glued family agrees on the common
-time interval with every local patch containing its initial point. -/
+/--
+%%handwave
+name:
+  Gluing a finite cover of transverse-flow patches
+statement:
+  Let finitely many transverse-flow patches cover a connected boundary
+  component \(C\), and let \(\varepsilon>0\) be no larger than every patch's
+  time radius.  There is a family \(\Phi:C\times\mathbb R\to X\) with
+  \(\Phi(q,0)=q\), whose time curves are integral curves on
+  \((-\varepsilon,\varepsilon)\), and which agrees on that interval with every
+  local patch containing \(q\).
+proof:
+  For each \(q\in C\), choose one covering patch and use its trajectory to
+  define \(\Phi(q,\cdot)\).  Any other patch containing \(q\) yields an
+  integral curve of the same smooth vector field with the same initial value;
+  uniqueness of integral curves makes the two trajectories agree throughout
+  the common time interval.
+-/
 theorem exists_glued_smoothFrontierFlow_of_finite_cover
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     (patch : {q // q ∈ connectedComponent p} →
@@ -1181,10 +1246,25 @@ theorem exists_glued_smoothFrontierFlow_of_finite_cover
       (by rw [hinitial q, (patch i).initial q hqi])
   simpa only [min_eq_left (hεle i hi)] using hagree
 
-/-- The pointwise glued family extends arbitrarily away from the chosen
-component to a map on the whole frontier product.  On the component it is
-smooth, because near every point ODE uniqueness identifies it with any one
-smooth local patch containing that point. -/
+/--
+%%handwave
+name:
+  Smooth glued transverse flow on a connected boundary component
+statement:
+  Under a finite uniformly timed flow-patch cover of a connected boundary
+  component \(C\), there is a map
+  \(\Psi:\partial D\times\mathbb R\to X\) such that on
+  \(C\times(-\varepsilon,\varepsilon)\) it is a smooth open transverse flow,
+  satisfies \(\Psi(q,0)=q\), and is injective on a product neighborhood of
+  each \(q\in C\).
+proof:
+  Extend the pointwise glued family arbitrarily off \(C\).  Since \(C\) is
+  open in the locally connected boundary, near each of its points uniqueness
+  of integral curves identifies the glued family with one smooth local patch.
+  This local agreement gives smoothness and local injectivity.  The image of
+  an open set is assembled from its intersections with the covering patches,
+  whose restricted flow maps are open.
+-/
 theorem exists_smooth_gluedFrontierFlow_of_finite_cover
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     (patch : {q // q ∈ connectedComponent p} →

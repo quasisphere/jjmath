@@ -346,8 +346,6 @@ proof:
   kernel with \(A\).  The compatibility with endomorphisms follows by the
   uniqueness of maps into a kernel and the commutative square at the
   augmentation.
-tags:
-  milestone
 -/
 theorem exists_homology_zero_addEquiv_of_left_exact_augmented_cochain_with_family_map
     (A : AddCommGrpCat.{w})
@@ -445,8 +443,6 @@ proof:
   \(\mathbb N\), there is no incoming differential into degree zero, hence
   zeroth homology is precisely this kernel.  Naturality follows from the
   commutative square between the augmentations.
-tags:
-  milestone
 -/
 theorem exists_globalSections_homology_zero_addEquiv_globalSections_of_left_exact_resolution_with_family_map
     [HasWeakSheafify J AddCommGrpCat.{w}]
@@ -515,8 +511,6 @@ proof:
   \(H^0(\Gamma(K^\bullet))\) with \(\Gamma(F)\).  Then use the degree-zero
   identification \(H^0(F)=\Gamma(F)\).  Naturality of kernels and of this
   degree-zero identification gives compatibility with the endomorphisms.
-tags:
-  milestone
 -/
 theorem exists_globalSections_zero_homology_addEquiv_sheafCohomology_of_left_exact_resolution_with_family_map
     [HasWeakSheafify J AddCommGrpCat.{w}]
@@ -731,8 +725,6 @@ proof:
   \(B^{p+1}\to Z^{p+1}\) as both mono and epi, hence as an isomorphism in
   the balanced abelian category of sheaves.  Transport exactness across this
   isomorphism.
-tags:
-  milestone
 -/
 theorem cochain_cycles_shortExact_of_exactAt_and_succ
     [HasSheafify J AddCommGrpCat.{w}]
@@ -816,8 +808,6 @@ proof:
   \(Z^1\subset K^1\).  Exactness is transported along the monomorphism
   \(Z^1\to K^1\), while exactness in degree \(1\) makes
   \(K^0\to Z^1\) an epimorphism.
-tags:
-  milestone
 -/
 theorem cochain_augmented_cycles_shortExact_of_exactAt_one
     [HasSheafify J AddCommGrpCat.{w}]
@@ -1710,8 +1700,6 @@ proof:
   \(\Gamma(K^\bullet)\) in degree \(n+1\) identify with
   \(\Gamma(Z^{n+1})\).  Homology in degree \(n+1\) is the cokernel of the
   previous differential into these cycles.
-tags:
-  milestone
 -/
 theorem nonempty_globalSections_homology_succ_addEquiv_cokernel_to_cycles
     [HasWeakSheafify J AddCommGrpCat.{w}]
@@ -2280,8 +2268,6 @@ proof:
   \(\Gamma(K^\bullet)\).  This cokernel is the \((n+1)\)-st homology of
   \(\Gamma(K^\bullet)\).  Naturality of the long exact sequences and kernels
   gives the stated compatibility with endomorphisms.
-tags:
-  milestone
 -/
 theorem exists_globalSections_positive_homology_addEquiv_sheafCohomology_of_acyclic_resolution_with_family_map
     [HasWeakSheafify J AddCommGrpCat.{w}]
@@ -2354,8 +2340,6 @@ proof:
   argument along the cycles of the acyclic resolution.  These two comparisons
   are natural for morphisms of augmented resolutions, so they give the stated
   simultaneous compatibility.
-tags:
-  milestone
 -/
 theorem exists_globalSections_homology_addEquiv_sheafCohomology_of_acyclic_resolution_with_family_map_core
     [HasWeakSheafify J AddCommGrpCat.{w}]

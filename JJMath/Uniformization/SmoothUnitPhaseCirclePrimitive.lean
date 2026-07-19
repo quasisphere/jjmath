@@ -41,6 +41,18 @@ def smoothUnitPhaseRightOpen
   ⟨(fun x ↦ -P x) ⁻¹' Complex.slitPlane,
     Complex.isOpen_slitPlane.preimage P.contMDiff.continuous.neg⟩
 
+/--
+%%handwave
+name:
+  The two logarithm cuts cover a unit complex phase
+statement:
+  Let \(P:M\to\mathbb C\) be smooth with \(|P(x)|=1\) for every \(x\).
+  Then the inverse images under \(P\) and \(-P\) of the principal logarithm
+  slit plane cover \(M\).
+proof:
+  A unit complex number is nonzero.  For every nonzero \(z\), either \(z\)
+  or \(-z\) avoids the branch cut of the principal logarithm.
+-/
 theorem smoothUnitPhase_cuts_cover
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1) :
@@ -55,8 +67,21 @@ theorem smoothUnitPhase_cuts_cover
   exact ⟨fun _ ↦ trivial, fun _ ↦
     Complex.mem_slitPlane_or_neg_mem_slitPlane hne⟩
 
-/-- Smoothness of the principal logarithm after a smooth map into the slit
-plane. -/
+/--
+%%handwave
+name:
+  Smoothness of the principal logarithm on the slit plane
+statement:
+  If \(f:N\to\mathbb C\) is smooth and \(f(N)\) lies in the principal
+  logarithm slit plane, then
+  \[
+    x\longmapsto\log(f(x))
+  \]
+  is smooth as a complex-valued real-smooth map.
+proof:
+  The principal complex logarithm is holomorphic, hence real-smooth, on the
+  slit plane.  Compose its smooth restriction with \(f\).
+-/
 theorem contMDiff_complexLog_comp_of_mem_slitPlane
     {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
     [IsManifold I ∞ N]
@@ -112,6 +137,20 @@ def smoothUnitPhaseRightArgument
     have hlog := contMDiff_complexLog_comp_of_mem_slitPlane I f (fun x ↦ x.2)
     exact (Complex.imCLM.contDiff.contMDiff.comp hlog).add contMDiff_const
 
+/--
+%%handwave
+name:
+  The principal logarithm supplies an argument on the first cut
+statement:
+  On the open set where \(P\) lies in the principal slit plane, let
+  \(\theta_L=\operatorname{Im}\log P\).  Then
+  \[
+    e^{i\theta_L(x)}=P(x).
+  \]
+proof:
+  For nonzero \(z\), exponentiating \(i\operatorname{Im}\log z\) gives
+  \(z/|z|\).  Since \(|P(x)|=1\), this is \(P(x)\).
+-/
 theorem smoothUnitPhaseLeftArgument_is_argument
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1)
@@ -124,6 +163,20 @@ theorem smoothUnitPhaseLeftArgument_is_argument
   rw [complex_exp_im_log_mul_I_eq_div_norm hne, hnorm]
   simp
 
+/--
+%%handwave
+name:
+  The opposite logarithm cut supplies a second argument
+statement:
+  On the open set where \(-P\) lies in the principal slit plane, put
+  \[
+    \theta_R=\operatorname{Im}\log(-P)+\pi.
+  \]
+  Then \(e^{i\theta_R(x)}=P(x)\).
+proof:
+  The logarithmic term exponentiates to \(-P(x)\) because \(P\) has unit
+  norm, while \(e^{i\pi}=-1\).  Their product is \(P(x)\).
+-/
 theorem smoothUnitPhaseRightArgument_is_argument
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1)
@@ -151,7 +204,20 @@ abbrev smoothUnitPhaseOverlap
     TopologicalSpace.Opens M :=
   smoothUnitPhaseLeftOpen I P ⊓ smoothUnitPhaseRightOpen I P
 
-/-- On the overlap, the phase cannot lie on the real axis. -/
+/--
+%%handwave
+name:
+  A phase in both logarithm cuts is nonreal
+statement:
+  If both \(P(x)\) and \(-P(x)\) lie in the principal slit plane, then
+  \[
+    \operatorname{Im}P(x)\ne0.
+  \]
+proof:
+  If the imaginary part vanished, membership of \(P(x)\) in the slit plane
+  would force its real part to be positive, while membership of \(-P(x)\)
+  would force it to be negative, a contradiction.
+-/
 theorem smoothUnitPhase_im_ne_zero_on_overlap
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (x : smoothUnitPhaseOverlap I P) :
@@ -177,6 +243,25 @@ def smoothUnitPhaseArgumentTransition
     smoothUnitPhaseRightArgument I P
       (TopologicalSpace.Opens.inclusion inf_le_right x)
 
+/--
+%%handwave
+name:
+  Transition between the two principal arguments
+statement:
+  On the overlap of the logarithm cuts,
+  \[
+    \theta_L(x)-\theta_R(x)=
+    \begin{cases}
+      0,&\operatorname{Im}P(x)>0,\\
+      -2\pi,&\operatorname{Im}P(x)<0.
+    \end{cases}
+  \]
+proof:
+  The principal arguments of \(z\) and \(-z\) differ by \(-\pi\) in the
+  upper half-plane and by \(+\pi\) in the lower half-plane.  Substitute
+  these formulas into
+  \(\operatorname{Arg}(z)-(\operatorname{Arg}(-z)+\pi)\).
+-/
 theorem smoothUnitPhaseArgumentTransition_eq
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (x : smoothUnitPhaseOverlap I P) :
@@ -206,6 +291,19 @@ def smoothUnitPhaseUpperIndicator
     (x : smoothUnitPhaseOverlap I P) : ℝ :=
   if 0 < (P (x : M)).im then 1 else 0
 
+/--
+%%handwave
+name:
+  Local constancy of the upper-half-plane indicator
+statement:
+  On the overlap of the two cuts, the function equal to \(1\) when
+  \(\operatorname{Im}P>0\) and to \(0\) when
+  \(\operatorname{Im}P<0\) is locally constant.
+proof:
+  The imaginary part of \(P\) is continuous and never vanishes on the
+  overlap.  Its sign is therefore constant on a neighborhood of every
+  point.
+-/
 theorem smoothUnitPhaseUpperIndicator_isLocallyConstant
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     IsLocallyConstant (smoothUnitPhaseUpperIndicator I P) := by
@@ -224,6 +322,18 @@ theorem smoothUnitPhaseUpperIndicator_isLocallyConstant
     have hynot : ¬0 < f y := not_lt.mpr hy.le
     simp [smoothUnitPhaseUpperIndicator, f, hx, hynot]
 
+/--
+%%handwave
+name:
+  Local constancy of the argument transition
+statement:
+  The difference \(\theta_L-\theta_R\) is locally constant on the overlap
+  of the two logarithm cuts.
+proof:
+  The transition is \(0\) on the upper-half-plane part and \(-2\pi\) on the
+  lower-half-plane part.  Express it as an affine function of the locally
+  constant upper-half-plane indicator.
+-/
 theorem smoothUnitPhaseArgumentTransition_isLocallyConstant
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     IsLocallyConstant (smoothUnitPhaseArgumentTransition I P) := by
@@ -262,6 +372,19 @@ def smoothUnitPhaseTransitionZeroForm
       (smoothUnitPhaseArgumentTransition I P)
       (smoothUnitPhaseArgumentTransition_isLocallyConstant I P))
 
+/--
+%%handwave
+name:
+  Difference of the two local argument zero-forms
+statement:
+  On the overlap of the logarithm cuts, the Mayer--Vietoris difference of
+  the zero-forms defined by \(\theta_L\) and \(\theta_R\) is the zero-form
+  defined by \(\theta_L-\theta_R\).
+proof:
+  Evaluate both zero-forms at the unique empty tuple of tangent vectors.
+  Restriction to the overlap preserves their underlying functions, so the
+  difference is pointwise \(\theta_L-\theta_R\).
+-/
 theorem smoothUnitPhase_zeroForm_difference
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     deRhamMayerVietorisSmoothDifference (I := I) (A := ℝ)
@@ -355,6 +478,20 @@ def smoothUnitPhaseRightOneForm
   deRhamDifferential (I := I) (M := smoothUnitPhaseRightOpen I P)
     (A := ℝ) 0 (smoothUnitPhaseRightZeroForm I P)
 
+/--
+%%handwave
+name:
+  Agreement of the local argument differentials
+statement:
+  On the overlap of the two logarithm cuts,
+  \[
+    d\theta_L-d\theta_R=0.
+  \]
+proof:
+  Exterior differentiation commutes with the Mayer--Vietoris difference.
+  The zero-form difference is the locally constant transition
+  \(\theta_L-\theta_R\), whose differential is zero.
+-/
 theorem smoothUnitPhase_oneForm_difference_eq_zero
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     deRhamMayerVietorisSmoothDifference (I := I) (A := ℝ)
@@ -399,6 +536,20 @@ def smoothUnitPhaseOneForm
     (smoothUnitPhaseLeftOneForm I P) (smoothUnitPhaseRightOneForm I P)
     (smoothUnitPhase_oneForm_difference_eq_zero I P)
 
+/--
+%%handwave
+name:
+  Restriction of the global phase form to the first cut
+statement:
+  The global one-form obtained by gluing the local argument differentials
+  restricts on the first logarithm cut to
+  \[
+    d\theta_L.
+  \]
+proof:
+  This is the first restriction identity for gluing differential forms over
+  a two-open cover.
+-/
 theorem smoothUnitPhaseOneForm_restrict_left
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1) :
@@ -413,6 +564,20 @@ theorem smoothUnitPhaseOneForm_restrict_left
     (smoothUnitPhaseLeftOneForm I P) (smoothUnitPhaseRightOneForm I P)
     (smoothUnitPhase_oneForm_difference_eq_zero I P)
 
+/--
+%%handwave
+name:
+  Restriction of the global phase form to the second cut
+statement:
+  The global one-form obtained by gluing the local argument differentials
+  restricts on the opposite logarithm cut to
+  \[
+    d\theta_R.
+  \]
+proof:
+  This is the second restriction identity for the two-open gluing
+  construction.
+-/
 theorem smoothUnitPhaseOneForm_restrict_right
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1) :

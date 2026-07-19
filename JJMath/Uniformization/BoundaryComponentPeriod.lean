@@ -105,7 +105,18 @@ def BoundaryComponentTransition.core
   {x | x ∈ closure (T.band : Set X) ∧
     |T.signed.coordinate x| ≤ T.epsilon}
 
-/-- The middle transition strip is compact. -/
+/--
+%%handwave
+name:
+  Compactness of the middle boundary-transition strip
+statement:
+  The set of points in the closed transition band where the absolute signed
+  boundary coordinate is at most \(\varepsilon\) is compact.
+proof:
+  On the compact closure of the band, the absolute signed coordinate is
+  continuous.  Its sublevel set \(( -\infty,\varepsilon]\) is closed there,
+  hence compact, and its image in the ambient surface is the transition core.
+-/
 theorem BoundaryComponentTransition.core_isCompact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -133,7 +144,18 @@ theorem BoundaryComponentTransition.core_isCompact
   rw [← himage]
   exact hKcompact.image continuous_subtype_val
 
-/-- The compact transition strip lies in the open band. -/
+/--
+%%handwave
+name:
+  The compact transition core lies inside its open band
+statement:
+  Every point of the closed band with signed-coordinate magnitude at most
+  \(\varepsilon\) actually belongs to the open transition band.
+proof:
+  Otherwise it would lie on the frontier of the open band, where the frontier
+  gap gives absolute coordinate at least \(2\varepsilon\), contradicting the
+  core bound and \(\varepsilon>0\).
+-/
 theorem BoundaryComponentTransition.core_subset_band
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -149,8 +171,18 @@ theorem BoundaryComponentTransition.core_subset_band
   have hcorele := hxcore.2
   linarith [T.epsilon_pos]
 
-/-- Every point where the transition function has a value strictly between
-zero and one lies in the compact middle strip. -/
+/--
+%%handwave
+name:
+  Intermediate step values lie in the compact transition core
+statement:
+  If the smooth transition step satisfies \(0<h(x)<1\), then
+  \(|s(x)|\le\varepsilon\), so \(x\) belongs to the compact middle core.
+proof:
+  If \(s(x)\le-\varepsilon\), the step is zero; if
+  \(s(x)\ge\varepsilon\), it is one.  Both alternatives contradict the
+  strict bounds on \(h(x)\), leaving \(-\varepsilon\le s(x)\le\varepsilon\).
+-/
 theorem BoundaryComponentTransition.mem_core_of_step_mem_Ioo
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -182,8 +214,18 @@ def BoundaryComponentTransition.levelSet
     (T : BoundaryComponentTransition D p) (c : ℝ) : Set X :=
   {x | ∃ hx : x ∈ (T.band : Set X), T.step ⟨x, hx⟩ = c}
 
-/-- Every intermediate level of the transition function is compact in the
-ambient surface. -/
+/--
+%%handwave
+name:
+  Compactness of intermediate boundary-transition levels
+statement:
+  For every \(c\in(0,1)\), the ambient level set \(\{x:h(x)=c\}\) of the
+  transition step is compact.
+proof:
+  Every point of this level lies in the compact transition core.  Within that
+  core the level set is closed by continuity of the step, hence compact; its
+  ambient image is precisely the stated level set.
+-/
 theorem BoundaryComponentTransition.levelSet_isCompact_of_mem_Ioo
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -228,7 +270,16 @@ noncomputable def BoundaryComponentTransition.localOneForm
   deRhamDifferential (I := SurfaceRealModel) (M := T.band) (A := ℝ) 0
     (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel) T.step)
 
-/-- The local transition form is closed. -/
+/--
+%%handwave
+name:
+  Closedness of the local boundary-transition form
+statement:
+  The one-form \(dh\) defined by the smooth transition step on the band is
+  closed.
+proof:
+  Apply \(d^2=0\) to the zero-form defined by \(h\).
+-/
 theorem BoundaryComponentTransition.localOneForm_closed
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -240,7 +291,19 @@ theorem BoundaryComponentTransition.localOneForm_closed
     (I := SurfaceRealModel) (M := T.band) (A := ℝ)
     (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel) T.step)
 
-/-- The local transition form vanishes off its compact middle strip. -/
+/--
+%%handwave
+name:
+  Vanishing of the transition form outside its compact core
+statement:
+  At every band point outside the compact middle core, the local one-form
+  \(dh\) vanishes.
+proof:
+  Outside the core the signed coordinate is either below
+  \(-\varepsilon\) or above \(\varepsilon\).  By continuity the same strict
+  inequality holds nearby, where the step is constantly \(0\) or constantly
+  \(1\).  Its differential therefore vanishes at the point.
+-/
 theorem BoundaryComponentTransition.localOneForm_toFun_eq_zero_of_not_mem_core
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -312,7 +375,17 @@ noncomputable def BoundaryComponentTransition.exteriorOpen
     (T : BoundaryComponentTransition D p) : TopologicalSpace.Opens X :=
   ⟨T.coreᶜ, T.core_isCompact.isClosed.isOpen_compl⟩
 
-/-- The transition band and the exterior of its compact middle cover the surface. -/
+/--
+%%handwave
+name:
+  The transition band and core exterior cover the surface
+statement:
+  The union of the open transition band with the complement of its compact
+  middle core is the whole surface.
+proof:
+  A point in the core lies in the band; a point outside the core lies in its
+  open complement.
+-/
 theorem BoundaryComponentTransition.band_sup_exteriorOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -326,7 +399,17 @@ theorem BoundaryComponentTransition.band_sup_exteriorOpen
   · exact Or.inl (T.core_subset_band hxcore)
   · exact Or.inr hxcore
 
-/-- On the overlap with the exterior, the local transition form is zero. -/
+/--
+%%handwave
+name:
+  The local transition form vanishes on the band--exterior overlap
+statement:
+  Restricting \(dh\) to the part of the transition band outside the compact
+  core gives the zero one-form.
+proof:
+  Pointwise on this overlap, the local transition form vanishes outside the
+  core.  Evaluate the restricted form and use that pointwise identity.
+-/
 theorem BoundaryComponentTransition.localOneForm_overlap_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -346,7 +429,18 @@ theorem BoundaryComponentTransition.localOneForm_overlap_eq_zero
   rw [hzero]
   rfl
 
-/-- The local form and zero have matching restrictions on the overlap. -/
+/--
+%%handwave
+name:
+  Mayer--Vietoris compatibility of the local transition form and zero
+statement:
+  For the cover by the transition band and the exterior of its core, the
+  Mayer--Vietoris difference of \(dh\) on the band and \(0\) on the exterior
+  is zero.
+proof:
+  The exterior restriction of zero is zero, and the band restriction of
+  \(dh\) is zero on the overlap by the preceding vanishing theorem.
+-/
 theorem BoundaryComponentTransition.localOneForm_mayerVietorisDifference_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -404,7 +498,16 @@ theorem BoundaryComponentTransition.globalOneForm_closed
       restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_right]
     exact LinearMap.map_zero _
 
-/-- The global form restricts to the local exact form on the transition band. -/
+/--
+%%handwave
+name:
+  Restriction of the global boundary-component form to the band
+statement:
+  The global one-form obtained by gluing equals the local exact form \(dh\)
+  when restricted to the transition band.
+proof:
+  This is the left restriction identity for the two-open gluing construction.
+-/
 theorem BoundaryComponentTransition.globalOneForm_restrict_band
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -415,7 +518,17 @@ theorem BoundaryComponentTransition.globalOneForm_restrict_band
   rw [BoundaryComponentTransition.globalOneForm,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_left]
 
-/-- The global form restricts to zero off the compact transition strip. -/
+/--
+%%handwave
+name:
+  Restriction of the global boundary-component form outside the core
+statement:
+  The global boundary-component one-form restricts to zero on the open
+  complement of its compact transition core.
+proof:
+  This is the right restriction identity for the gluing of \(dh\) with the
+  zero form.
+-/
 theorem BoundaryComponentTransition.globalOneForm_restrict_exterior
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

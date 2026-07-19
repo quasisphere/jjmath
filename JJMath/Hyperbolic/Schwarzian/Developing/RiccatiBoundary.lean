@@ -255,8 +255,13 @@ def LocalLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem : Prop
         u.logDensity z = C.conformalFactor.logDensity z
 
 /--
-Path certificates plus Grönwall uniqueness imply the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness for the Liouville–Schwarzian system along paths
+statement:
+  Suppose that for every \(z∈Ω\), the restricted state \(X=(φ_C-φ,α):[0,1]→ℂ²\) starts at \(0\), ends at its value at \(z\), and solves a uniformly Lipschitz linear ODE. Then \(φ(z)=φ_C(z)\) throughout \(Ω\).
+proof:
+  ODE uniqueness compares \(X\) with the zero solution, so \(X(1)=0\); its first component is \(φ_C(z)-φ(z)\).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_pathData
     (hPath : LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem) :
@@ -266,8 +271,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
   exact P.logDensity_eq
 
 /--
-Operator-bound path certificates imply the closed first-order linear-system
-uniqueness theorem.
+%%handwave
+name:
+  Uniqueness for the Liouville–Schwarzian system from operator bounds along paths
+statement:
+  If the linear operators defining the path-restricted system have a uniform operator-norm bound and the normalized state solves that system, then \(φ(z)=φ_C(z)\) for every \(z∈Ω\).
+proof:
+  The operator bound makes the path vector field uniformly Lipschitz. Apply [a normalized path solution of the closed system is identically zero](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_pathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_operatorBoundPathData
     (hPath : LocalLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem) :
@@ -276,8 +286,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
     (localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_operatorBoundPathData hPath)
 
 /--
-Bounded-coefficient path certificates imply the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness for the Liouville–Schwarzian system from bounded path coefficients
+statement:
+  If the two coefficients \(β\) and \(γ\) of the path-restricted system are uniformly bounded and the normalized state solves the system, then \(φ(z)=φ_C(z)\) throughout \(Ω\).
+proof:
+  The coefficient bounds give a uniform norm bound for the associated linear operators. Apply [uniform operator bounds force equality of the logarithmic densities](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_operatorBoundPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_coefficientBoundPathData
     (hPath : LocalLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem) :
@@ -287,8 +302,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Compact-continuous coefficient path certificates imply the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness for the Liouville–Schwarzian system from continuous path coefficients
+statement:
+  If \(β\) and \(γ\) are continuous on \([0,1]\), extended outside that interval by clamping, and the normalized state solves the restricted system, then \(φ(z)=φ_C(z)\) throughout \(Ω\).
+proof:
+  Compactness of \([0,1]\) bounds both coefficients; their clamped extensions retain those bounds. Apply [bounded coefficients force equality of the logarithmic densities](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_coefficientBoundPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_continuousCoefficientPathData
     (hPath :
@@ -299,8 +319,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Straight-segment path certificates imply the closed first-order linear-system
-uniqueness theorem.
+%%handwave
+name:
+  Uniqueness for the Liouville–Schwarzian system along straight segments
+statement:
+  Suppose every straight segment from \(z₀\) to \(z∈Ω\) stays in \(Ω\), the coefficients \(β,γ\) and state \((φ_C-φ,α)\) are continuous along it, and the state satisfies the restricted ODE. Then \(φ=φ_C\) on \(Ω\).
+proof:
+  Restrict to the segment, clamp the continuous coefficients outside \([0,1]\), and apply [continuous path coefficients force logarithmic uniqueness](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_continuousCoefficientPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentPathData
     (hPath :
@@ -311,8 +336,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Analytic-core straight-segment path certificates imply the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness from analytic straight-line restrictions
+statement:
+  On the disk-shaped normalized domain, assume \(β,γ\) and the canonical state are continuous along straight segments and that the state satisfies the restricted ODE. Then \(φ=φ_C\) on \(Ω\).
+proof:
+  Convexity of the normalized disk keeps every segment inside \(Ω\). Apply [the straight-line closed system has only the zero normalized solution](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentAnalyticPathData
     (hPath :
@@ -323,8 +353,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Differential-core straight-segment path certificates imply the closed
-first-order linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness from the differential identities along straight segments
+statement:
+  On the disk-shaped normalized domain, assume \(β\) and \(γ\) are continuous and the canonical state satisfies the differential equation along every straight segment. Then \(φ=φ_C\) on \(Ω\).
+proof:
+  Regularity of the two conformal factors makes the state continuous along each segment. Apply [analytic straight-line restrictions give logarithmic uniqueness](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentAnalyticPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentDifferentialPathData
     (hPath :
@@ -335,8 +370,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Potential-core straight-segment path certificates imply the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness from continuity of the potential along straight segments
+statement:
+  If the scalar linearized Liouville potential is continuous on the disk-shaped normalized domain, then the straight-line closed system has only the zero normalized solution, and hence \(φ=φ_C\) on \(Ω\).
+proof:
+  Potential continuity gives continuity of \(γ\), while \(β\) is automatically continuous; the chain rule gives the path ODE. Apply [the straight-line differential system has only the zero normalized solution](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentDifferentialPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentPotentialPathData
     (hPath :
@@ -347,8 +387,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of
       hPath)
 
 /--
-Continuity of the scalar linearized potential implies the closed first-order
-linear-system uniqueness theorem.
+%%handwave
+name:
+  Uniqueness from continuity of the linearized Liouville potential
+statement:
+  For a closed first-order Liouville–Schwarzian system on the normalized disk, continuity of its scalar linearized potential implies \(φ(z)=φ_C(z)\) for every \(z∈Ω\).
+proof:
+  Use potential continuity along each affine segment and apply [continuity of the potential gives pathwise logarithmic uniqueness](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_affineSegmentPotentialPathData).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_potentialContinuity
     (hPotential :
@@ -372,9 +417,13 @@ def LocalLiouvilleSchwarzianCanonicalMetricHolomorphicRiccatiTheorem : Prop :=
       Nonempty (LocalLiouvilleSchwarzianCanonicalMetricHolomorphicRiccatiData data)
 
 /--
-The older metric-scaled complex-derivative target implies the corrected
-Wirtinger-Riccati target by forgetting holomorphic derivative evidence to real
-differentiability.
+%%handwave
+name:
+  The metric-scaled Wirtinger–Riccati equation from the metric-scaled Schwarzian identity
+statement:
+  If the canonical complex derivatives of the original and pullback logarithmic factors satisfy the metric-scaled Schwarzian identity, then their difference \(α\) satisfies the corresponding Fréchet–Wirtinger Riccati equation on the normalized domain.
+proof:
+  The complex derivative is the \(z\)-component of the Fréchet derivative; retain this component and the same metric-scaled Schwarzian identity.
 -/
 theorem localLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem_of_metric
     (hMetric : LocalLiouvilleSchwarzianCanonicalMetricRiccatiCalculusTheorem) :
@@ -384,9 +433,13 @@ theorem localLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem_of_metric
   exact ⟨A.toCanonicalMetricWirtingerRiccatiData⟩
 
 /--
-The corrected Wirtinger-Riccati reduction automatically gives the genuine
-first-order system, because the missing `∂bar α` equation follows from the two
-Liouville equations in the uniqueness data.
+%%handwave
+name:
+  The first-order Liouville–Schwarzian system from the corrected Wirtinger–Riccati equation
+statement:
+  Let \(φ=φ_C-φ_u\) and \(α=∂_zφ\). The corrected Wirtinger–Riccati equation for \(∂_zα\), together with the two Liouville equations, yields a closed first-order system for \((φ,α)\) containing both the \(∂_zα\) and \(∂_{\bar z}α\) equations and the normalized zero initial values.
+proof:
+  Subtract the two Liouville equations to obtain the \(∂_{\bar z}α\) equation; combine it with the Riccati \(∂_zα\) equation and the normalized two-jet identities.
 -/
 theorem localLiouvilleSchwarzianFirstOrderSystemTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -396,8 +449,13 @@ theorem localLiouvilleSchwarzianFirstOrderSystemTheorem_of_wirtingerRiccati
   exact ⟨localLiouvilleSchwarzianFirstOrderSystemData_of_wirtingerRiccati A⟩
 
 /--
-The genuine first-order system gives the scalar elliptic difference
-formulation.
+%%handwave
+name:
+  The scalar Liouville difference equation from the first-order Liouville–Schwarzian system
+statement:
+  The genuine first-order system gives the scalar elliptic difference formulation.
+proof:
+  Unpack the first-order system and apply its canonical conversion to the scalar difference equation.
 -/
 theorem localLiouvilleSchwarzianScalarDifferenceTheorem_of_firstOrderSystem
     (hSystem : LocalLiouvilleSchwarzianFirstOrderSystemTheorem) :
@@ -407,8 +465,13 @@ theorem localLiouvilleSchwarzianScalarDifferenceTheorem_of_firstOrderSystem
   exact ⟨localLiouvilleSchwarzianScalarDifferenceData_of_firstOrderSystem F⟩
 
 /--
-The corrected Wirtinger-Riccati reduction gives the scalar elliptic difference
-formulation.
+%%handwave
+name:
+  The scalar Liouville difference equation from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger-Riccati reduction gives the scalar elliptic difference formulation.
+proof:
+  Combine [the corrected Wirtinger equation yields the full first-order Liouville–Schwarzian system](lean:localLiouvilleSchwarzianFirstOrderSystemTheorem_of_wirtingerRiccati) with [the first-order system yields the scalar elliptic difference equation](lean:localLiouvilleSchwarzianScalarDifferenceTheorem_of_firstOrderSystem).
 -/
 theorem localLiouvilleSchwarzianScalarDifferenceTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -417,8 +480,13 @@ theorem localLiouvilleSchwarzianScalarDifferenceTheorem_of_wirtingerRiccati
     (localLiouvilleSchwarzianFirstOrderSystemTheorem_of_wirtingerRiccati hWirtinger)
 
 /--
-The pure real continuity of the divided difference of `x ↦ exp (2x)` supplies
-continuity of the explicit scalar Liouville linearized potential.
+%%handwave
+name:
+  Continuity of the scalar linearized potential from continuity of the divided difference of \(e^{2x}\)
+statement:
+  If the divided difference of \(x↦e^{2x}\) is continuous on \(ℝ²\), then the potential \(Q(z)\) obtained by evaluating it at the two logarithmic conformal factors is continuous on \(Ω\).
+proof:
+  Express the linearized potential through the divided difference of \(e^{2x}\) and compose its continuity with the two logarithmic densities.
 -/
 theorem localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference
     (hdiv : RealExpTwoDividedDifferenceContinuityTheorem) :
@@ -427,8 +495,13 @@ theorem localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_re
   exact E.linearizedPotential_continuousOn_of_realExpTwoDividedDifferenceContinuous hdiv
 
 /--
-The explicit scalar Liouville linearized potential is continuous on the
-normalized domain.
+%%handwave
+name:
+  Continuity of the scalar linearized potential
+statement:
+  The divided-difference potential \(Q(z)\) associated with the two logarithmic conformal factors is continuous on the normalized domain \(Ω\).
+proof:
+  Apply [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference).
 -/
 theorem localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_real :
     LocalLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem :=
@@ -436,8 +509,13 @@ theorem localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_real 
     realExpTwoDividedDifference_continuous
 
 /--
-The scalar elliptic difference formulation gives the linearized scalar
-difference formulation.
+%%handwave
+name:
+  The linearized scalar Liouville equation from the scalar Liouville difference equation
+statement:
+  The scalar elliptic difference formulation gives the linearized scalar difference formulation.
+proof:
+  Rewrite the nonlinear difference \(e^{2φ_C}-e^{2φ_u}\) as \(Q(φ_C-φ_u)\).
 -/
 theorem localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_scalarDifference
     (hScalar : LocalLiouvilleSchwarzianScalarDifferenceTheorem) :
@@ -447,8 +525,13 @@ theorem localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_scalarDiffe
   exact ⟨localLiouvilleSchwarzianLinearizedScalarDifferenceData_of_scalarDifference E⟩
 
 /--
-The corrected Wirtinger-Riccati reduction gives the linearized scalar elliptic
-difference formulation.
+%%handwave
+name:
+  The linearized scalar Liouville equation from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger-Riccati reduction gives the linearized scalar elliptic difference formulation.
+proof:
+  Combine [the Wirtinger–Riccati equation yields the scalar elliptic difference equation](lean:localLiouvilleSchwarzianScalarDifferenceTheorem_of_wirtingerRiccati) with [the scalar difference equation yields its linearized form](lean:localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_scalarDifference).
 -/
 theorem localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -457,8 +540,13 @@ theorem localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_wirtingerRi
     (localLiouvilleSchwarzianScalarDifferenceTheorem_of_wirtingerRiccati hWirtinger)
 
 /--
-The linearized scalar elliptic formulation gives the standard linear elliptic
-Cauchy-data formulation.
+%%handwave
+name:
+  The linear elliptic Cauchy formulation from the linearized scalar equation
+statement:
+  The linearized scalar elliptic formulation gives the standard linear elliptic Cauchy-data formulation.
+proof:
+  Combine the linearized scalar equation with its normalized value and first-derivative Cauchy values.
 -/
 theorem localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_linearizedScalarDifference
     (hLinear : LocalLiouvilleSchwarzianLinearizedScalarDifferenceTheorem) :
@@ -468,8 +556,13 @@ theorem localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_linearizedScalarD
   exact ⟨localLiouvilleSchwarzianLinearEllipticCauchyData_of_linearizedScalarDifference E⟩
 
 /--
-The corrected Wirtinger-Riccati reduction gives the standard linear elliptic
-Cauchy-data formulation.
+%%handwave
+name:
+  The linear elliptic Cauchy formulation from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger-Riccati reduction gives the standard linear elliptic Cauchy-data formulation.
+proof:
+  Combine [the Wirtinger–Riccati equation yields the linearized scalar equation](lean:localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_wirtingerRiccati) with [the linearized scalar equation yields the elliptic Cauchy formulation](lean:localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_linearizedScalarDifference).
 -/
 theorem localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -479,8 +572,13 @@ theorem localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_wirtingerRiccati
       hWirtinger)
 
 /--
-The linearized scalar elliptic formulation gives the closed first-order linear
-system formulation.
+%%handwave
+name:
+  The closed first-order Liouville–Schwarzian system from the linearized scalar equation
+statement:
+  The linearized scalar elliptic formulation gives the closed first-order linear system formulation.
+proof:
+  Introduce the first derivative of the scalar difference as a second unknown, turning the linearized second-order equation into a closed first-order linear system.
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_linearizedScalarDifference
     (hLinear : LocalLiouvilleSchwarzianLinearizedScalarDifferenceTheorem) :
@@ -492,8 +590,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_linearize
       E⟩
 
 /--
-The corrected Wirtinger-Riccati reduction gives the closed first-order linear
-system formulation.
+%%handwave
+name:
+  The closed first-order Liouville–Schwarzian system from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger-Riccati reduction gives the closed first-order linear system formulation.
+proof:
+  Combine [the Wirtinger–Riccati equation yields the linearized scalar equation](lean:localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_wirtingerRiccati) with [the linearized scalar equation yields the closed first-order system](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_linearizedScalarDifference).
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -503,8 +606,13 @@ theorem localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_wirtinger
       hWirtinger)
 
 /--
-The strengthened holomorphic Wirtinger-Riccati package gives the ordinary
-Riccati reduction package.
+%%handwave
+name:
+  The scalar Riccati reduction from the holomorphic metric-scaled Wirtinger–Riccati equation
+statement:
+  If \(α=∂_zφ_C-∂_zφ_u\) satisfies the metric-scaled Wirtinger–Riccati equation and the Cauchy–Riemann condition, while its coefficient is analytic, then \(α\) satisfies the scalar holomorphic Riccati equation \(α'=αq\) with \(α(z₀)=0\).
+proof:
+  The Cauchy–Riemann condition identifies the Fréchet \(z\)-derivative with the complex derivative; the normalized first derivative gives \(α(z₀)=0\).
 -/
 theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonicalMetricHolomorphicRiccati
     (hHolomorphic : LocalLiouvilleSchwarzianCanonicalMetricHolomorphicRiccatiTheorem) :
@@ -514,8 +622,13 @@ theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonicalMetricHolomo
   exact ⟨A.toRiccatiDifferenceData⟩
 
 /--
-Metric-scaled canonical Frechet-Wirtinger data imply the unscaled canonical
-Riccati target.
+%%handwave
+name:
+  Canonical Wirtinger Riccati calculus from the metric-scaled Schwarzian identity
+statement:
+  Equality of the metric Schwarzians \(2(u_{zz}-u_z²)=2(v_{zz}-v_z²)\) implies equality of the corresponding half-Schwarzians and hence the canonical Riccati identities.
+proof:
+  Cancel the common metric factor (2) in the Schwarzian identity and keep the same canonical first and second Wirtinger derivatives.
 -/
 theorem localLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem_of_metric
     (hMetric : LocalLiouvilleSchwarzianCanonicalMetricRiccatiCalculusTheorem) :
@@ -525,7 +638,13 @@ theorem localLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem_of_metric
   exact ⟨A.toCanonicalRiccatiCalculusData⟩
 
 /--
-The canonical Frechet-Wirtinger target implies the concrete calculus target.
+%%handwave
+name:
+  Concrete Riccati calculus from canonical Wirtinger calculus
+statement:
+  The canonical Wirtinger derivatives of the original and pullback logarithmic factors provide first- and second-derivative fields satisfying the concrete Riccati calculus identities.
+proof:
+  Choose the canonical first and second Wirtinger derivatives; all derivative identities and normalized equalities are unchanged.
 -/
 theorem localLiouvilleSchwarzianRiccatiReductionCalculusTheorem_of_canonical
     (hCanonical : LocalLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem) :
@@ -535,7 +654,13 @@ theorem localLiouvilleSchwarzianRiccatiReductionCalculusTheorem_of_canonical
   exact ⟨A.toCalculusData⟩
 
 /--
-The concrete Riccati calculus target implies the Riccati reduction theorem.
+%%handwave
+name:
+  The scalar Riccati reduction from the Schwarzian identities
+statement:
+  Suppose \(u\) and \(v\) have equal half-Schwarzians, with analytic first derivatives on the normalized domain and equal normalized first-order data. Then \(α=v_z-u_z\) satisfies \(α'=αq\) for \(q=v_z+u_z\), with \(α(z₀)=0\).
+proof:
+  Subtract the two half-Schwarzian identities: \(v_{zz}-u_{zz}=(v_z-u_z)(v_z+u_z)\). The assumed derivative identities and analyticity supply the remaining Riccati hypotheses.
 -/
 theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus
     (hCalc : LocalLiouvilleSchwarzianRiccatiReductionCalculusTheorem) :
@@ -545,7 +670,13 @@ theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus
   exact ⟨A.toRiccatiDifferenceData⟩
 
 /--
-The canonical Frechet-Wirtinger target implies the Riccati reduction theorem.
+%%handwave
+name:
+  The scalar Riccati reduction from canonical Wirtinger calculus
+statement:
+  Canonical Wirtinger derivatives satisfying the equal half-Schwarzian identity yield \(α'=αq\) for \(α=v_z-u_z\) and \(q=v_z+u_z\), with analytic \(q\) and \(α(z₀)=0\).
+proof:
+  Combine [canonical Wirtinger identities imply the concrete Riccati calculus identities](lean:localLiouvilleSchwarzianRiccatiReductionCalculusTheorem_of_canonical) with [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus).
 -/
 theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonical
     (hCanonical : LocalLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem) :
@@ -555,8 +686,13 @@ theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonical
       hCanonical)
 
 /--
-Metric-scaled canonical Frechet-Wirtinger data imply the Riccati reduction
-target.
+%%handwave
+name:
+  The scalar Riccati reduction from the metric-scaled canonical Schwarzian identity
+statement:
+  Canonical Wirtinger derivatives satisfying equality of the metric Schwarzians yield \(α'=αq\) for \(α=v_z-u_z\) and \(q=v_z+u_z\), with analytic \(q\) and \(α(z₀)=0\).
+proof:
+  Combine [the metric-scaled Schwarzian identity implies the canonical Riccati identities](lean:localLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem_of_metric) with [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonical).
 -/
 theorem localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonicalMetric
     (hMetric : LocalLiouvilleSchwarzianCanonicalMetricRiccatiCalculusTheorem) :
@@ -611,8 +747,13 @@ def LocalRiccatiCoefficientExactnessTheorem : Prop :=
       Complex.IsExactOn R.coefficient N.domain
 
 /--
-If the Riccati coefficient is exact on the normalized domain, then it supplies
-the primitive data used by the integrating-factor argument.
+%%handwave
+name:
+  Existence of a local Riccati primitive from exactness of the Riccati coefficient
+statement:
+  If the Riccati coefficient \(q\) is exact on the normalized domain, then there is a function \(A\) with \(A'=q\) throughout that domain.
+proof:
+  Choose a primitive witnessing exactness and record its pointwise derivative equation \(A'=q\).
 -/
 theorem localRiccatiPrimitiveExistenceTheorem_of_exactness
     (hExact : LocalRiccatiCoefficientExactnessTheorem) :
@@ -673,8 +814,13 @@ def LocalRiccatiCoefficientAnalyticTheorem : Prop :=
       AnalyticOnNhd ℂ R.coefficient N.domain
 
 /--
-The domain-level Riccati coefficient analyticity theorem is now part of the
-Riccati difference package produced by the reduction step.
+%%handwave
+name:
+  Analyticity of the Riccati coefficient
+statement:
+  In particular, the Riccati coefficient \(q\) is analytic on a neighborhood of the normalized domain.
+proof:
+  Use the assumed neighborhood analyticity of the coefficient.
 -/
 theorem localRiccatiCoefficientAnalyticTheorem :
     LocalRiccatiCoefficientAnalyticTheorem := by
@@ -682,9 +828,13 @@ theorem localRiccatiCoefficientAnalyticTheorem :
   exact R.coefficient_analytic_on_domain
 
 /--
-Domain-level analyticity plus a ball-shaped normalized domain gives the
-disk-local analytic input.  The proof uses mathlib's `AnalyticOnNhd.mono`;
-the equality case is intentionally just a rewrite.
+%%handwave
+name:
+  Analyticity near the normalized disk from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity plus a ball-shaped normalized domain gives the disk-local analytic input. Thus the normalized domain is a disk \(B(c,r)\) and \(q\) is analytic on a neighborhood of that disk.
+proof:
+  Write \(\Omega=B(c,r)\), rewrite the domain, and restrict the assumed neighborhood analyticity to that ball.
 -/
 theorem localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -697,8 +847,13 @@ theorem localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain
     exact hAnalytic R⟩
 
 /--
-Domain-level analyticity gives the disk-local analytic input using the ball
-domain packaged in each two-jet normalization.
+%%handwave
+name:
+  Analyticity near the normalized disk from analyticity of the Riccati coefficient
+statement:
+  Since the normalized domain is a disk \(B(c,r)\), analyticity of \(q\) on a neighborhood of the domain is exactly analyticity on a neighborhood of that disk.
+proof:
+  Apply [the Riccati coefficient is analytic near the normalized disk](lean:localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain).
 -/
 theorem localRiccatiCoefficientBallAnalyticTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
@@ -707,8 +862,13 @@ theorem localRiccatiCoefficientBallAnalyticTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-If a coefficient is analytic on a larger set containing the normalized domain,
-then it is analytic on the normalized domain by mathlib monotonicity.
+%%handwave
+name:
+  Analyticity of the Riccati coefficient from analyticity on a larger neighborhood
+statement:
+  If a coefficient is analytic on a larger set containing the normalized domain, then it is analytic on the normalized domain by the standard library monotonicity. In particular, the Riccati coefficient \(q\) is analytic on a neighborhood of the normalized domain.
+proof:
+  Restrict neighborhood analyticity along the inclusion \(\Omega\subseteq U\).
 -/
 theorem localRiccatiCoefficientAnalytic_of_analyticOn_superset
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -723,8 +883,13 @@ theorem localRiccatiCoefficientAnalytic_of_analyticOn_superset
   hAnalytic.mono hSub
 
 /--
-Analyticity on a neighborhood of a ball gives holomorphicity on that ball by
-mathlib.
+%%handwave
+name:
+  Holomorphicity on the normalized disk from analyticity near the normalized disk
+statement:
+  Analyticity on a neighborhood of a ball gives holomorphicity on that ball by the standard library. Thus the normalized domain is a disk \(B(c,r)\) and \(q\) is complex differentiable throughout \(B(c,r)\).
+proof:
+  Neighborhood analyticity implies complex differentiability at every point of the ball.
 -/
 theorem localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic
     (hAnalytic : LocalRiccatiCoefficientBallAnalyticTheorem) :
@@ -734,8 +899,13 @@ theorem localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic
   exact ⟨c, r, hdomain, hanalytic.differentiableOn⟩
 
 /--
-Domain-level analyticity plus ball-shaped normalized domains gives the
-disk-local holomorphic input needed by mathlib's primitive theorem.
+%%handwave
+name:
+  Holomorphicity on the normalized disk from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity plus ball-shaped normalized domains gives the disk-local holomorphic input needed by the standard primitive theorem. Thus the normalized domain is a disk \(B(c,r)\) and \(q\) is complex differentiable throughout \(B(c,r)\).
+proof:
+  Combine [the Riccati coefficient is analytic near the normalized disk](lean:localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain) with [the Riccati coefficient is holomorphic on the normalized disk](lean:localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic).
 -/
 theorem localRiccatiCoefficientBallHolomorphicTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -745,7 +915,15 @@ theorem localRiccatiCoefficientBallHolomorphicTheorem_of_analytic_and_ballDomain
     (localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain
       hAnalytic hBallDomain)
 
-/-- Domain-level analyticity gives disk-local holomorphicity on the packaged ball domain. -/
+/--
+%%handwave
+name:
+  Holomorphicity on the normalized disk from analyticity of the Riccati coefficient
+statement:
+  Domain-level analyticity gives disk-local holomorphicity on the normalized disk. Thus the normalized domain is a disk \(B(c,r)\) and \(q\) is complex differentiable throughout \(B(c,r)\).
+proof:
+  Apply [the Riccati coefficient is holomorphic on the normalized disk](lean:localRiccatiCoefficientBallHolomorphicTheorem_of_analytic_and_ballDomain).
+-/
 theorem localRiccatiCoefficientBallHolomorphicTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
     LocalRiccatiCoefficientBallHolomorphicTheorem :=
@@ -753,8 +931,13 @@ theorem localRiccatiCoefficientBallHolomorphicTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-Holomorphicity of the Riccati coefficient on a disk gives exactness by
-mathlib's primitive theorem for disks.
+%%handwave
+name:
+  Exactness of the Riccati coefficient from holomorphicity on the normalized disk
+statement:
+  Holomorphicity of the Riccati coefficient on a disk gives exactness by the standard primitive theorem for disks. Equivalently, the coefficient \(q\) has a complex primitive on the normalized domain.
+proof:
+  Rewrite the normalized domain as a disk and apply the primitive theorem for a holomorphic function on a complex disk.
 -/
 theorem localRiccatiCoefficientExactnessTheorem_of_ballHolomorphic
     (hBall : LocalRiccatiCoefficientBallHolomorphicTheorem) :
@@ -765,8 +948,13 @@ theorem localRiccatiCoefficientExactnessTheorem_of_ballHolomorphic
   exact hdiff.isExactOn_ball
 
 /--
-Domain-level analyticity plus ball-shaped normalized domains gives exactness of
-the Riccati coefficient, using mathlib's primitive theorem for disks.
+%%handwave
+name:
+  Exactness of the Riccati coefficient from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity plus ball-shaped normalized domains gives exactness of the Riccati coefficient, using the standard primitive theorem for disks. Equivalently, the coefficient \(q\) has a complex primitive on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is holomorphic on the normalized disk](lean:localRiccatiCoefficientBallHolomorphicTheorem_of_analytic_and_ballDomain) with [the Riccati coefficient is exact on the normalized domain](lean:localRiccatiCoefficientExactnessTheorem_of_ballHolomorphic).
 -/
 theorem localRiccatiCoefficientExactnessTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -776,7 +964,15 @@ theorem localRiccatiCoefficientExactnessTheorem_of_analytic_and_ballDomain
     (localRiccatiCoefficientBallHolomorphicTheorem_of_analytic_and_ballDomain
       hAnalytic hBallDomain)
 
-/-- Domain-level analyticity gives exactness on the packaged ball domain. -/
+/--
+%%handwave
+name:
+  Exactness of the Riccati coefficient from analyticity of the Riccati coefficient
+statement:
+  Domain-level analyticity gives exactness on the normalized disk. Equivalently, the coefficient \(q\) has a complex primitive on the normalized domain.
+proof:
+  Apply [the Riccati coefficient is exact on the normalized domain](lean:localRiccatiCoefficientExactnessTheorem_of_analytic_and_ballDomain).
+-/
 theorem localRiccatiCoefficientExactnessTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
     LocalRiccatiCoefficientExactnessTheorem :=
@@ -784,8 +980,13 @@ theorem localRiccatiCoefficientExactnessTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-The disk holomorphic primitive theorem gives the local Riccati primitive
-existence theorem.
+%%handwave
+name:
+  Existence of a local Riccati primitive from holomorphicity on the normalized disk
+statement:
+  The disk holomorphic primitive theorem gives the local Riccati primitive existence theorem. For every Riccati coefficient \(q\) satisfying \(α'=αq\), there is a function \(A\) with \(A'=q\) on the normalized domain.
+proof:
+  Combine [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_exactness) with [the Riccati coefficient is exact on the normalized domain](lean:localRiccatiCoefficientExactnessTheorem_of_ballHolomorphic).
 -/
 theorem localRiccatiPrimitiveExistenceTheorem_of_ballHolomorphic
     (hBall : LocalRiccatiCoefficientBallHolomorphicTheorem) :
@@ -793,7 +994,15 @@ theorem localRiccatiPrimitiveExistenceTheorem_of_ballHolomorphic
   localRiccatiPrimitiveExistenceTheorem_of_exactness
     (localRiccatiCoefficientExactnessTheorem_of_ballHolomorphic hBall)
 
-/-- Analyticity on a ball gives the local Riccati primitive existence theorem. -/
+/--
+%%handwave
+name:
+  Existence of a local Riccati primitive from analyticity near the normalized disk
+statement:
+  Analyticity on a ball gives the local Riccati primitive existence theorem. For every Riccati coefficient \(q\) satisfying \(α'=αq\), there is a function \(A\) with \(A'=q\) on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is holomorphic on the normalized disk](lean:localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic) with [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_ballHolomorphic).
+-/
 theorem localRiccatiPrimitiveExistenceTheorem_of_ballAnalytic
     (hAnalytic : LocalRiccatiCoefficientBallAnalyticTheorem) :
     LocalRiccatiPrimitiveExistenceTheorem :=
@@ -801,8 +1010,13 @@ theorem localRiccatiPrimitiveExistenceTheorem_of_ballAnalytic
     (localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic hAnalytic)
 
 /--
-Domain-level analyticity plus ball-shaped normalized domains gives local
-Riccati primitive existence.
+%%handwave
+name:
+  Existence of a local Riccati primitive from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity plus ball-shaped normalized domains gives local Riccati primitive existence. For every Riccati coefficient \(q\) satisfying \(α'=αq\), there is a function \(A\) with \(A'=q\) on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is analytic near the normalized disk](lean:localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain) with [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_ballAnalytic).
 -/
 theorem localRiccatiPrimitiveExistenceTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -812,7 +1026,15 @@ theorem localRiccatiPrimitiveExistenceTheorem_of_analytic_and_ballDomain
     (localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain
       hAnalytic hBallDomain)
 
-/-- Domain-level analyticity gives local Riccati primitive existence. -/
+/--
+%%handwave
+name:
+  Existence of a local Riccati primitive from analyticity of the Riccati coefficient
+statement:
+  Domain-level analyticity gives local Riccati primitive existence. For every Riccati coefficient \(q\) satisfying \(α'=αq\), there is a function \(A\) with \(A'=q\) on the normalized domain.
+proof:
+  Apply [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_analytic_and_ballDomain).
+-/
 theorem localRiccatiPrimitiveExistenceTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
     LocalRiccatiPrimitiveExistenceTheorem :=
@@ -820,9 +1042,13 @@ theorem localRiccatiPrimitiveExistenceTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-Local Riccati primitive existence is now discharged from the analyticity field
-carried by the Riccati difference package and the ball-shaped normalized
-domain packaged by the two-jet normalization.
+%%handwave
+name:
+  Existence of a local Riccati primitive
+statement:
+  Analyticity of the Riccati coefficient on the normalized disk gives a local primitive. For every Riccati coefficient \(q\) satisfying \(α'=αq\), there is a function \(A\) with \(A'=q\) on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is analytic on the normalized domain](lean:localRiccatiCoefficientAnalyticTheorem) with [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_analytic).
 -/
 theorem localRiccatiPrimitiveExistenceTheorem :
     LocalRiccatiPrimitiveExistenceTheorem :=
@@ -847,8 +1073,13 @@ def LocalRiccatiPrimitiveProductDerivativeZeroTheorem : Prop :=
       Nonempty (P.ProductDerivativeZeroData)
 
 /--
-The product-derivative-zero target follows from the derivative evidence carried
-by the Riccati package and the primitive package.
+%%handwave
+name:
+  The product-rule identity for a Riccati primitive
+statement:
+  If \(A'=q\) and \(\alpha'=\alpha q\), then \((\alpha e^{-A})'=0\) on the normalized domain.
+proof:
+  Differentiate \(\alpha e^{-A}\); substituting \(\alpha'=\alpha q\) and \(A'=q\) makes the two product-rule terms cancel.
 -/
 theorem localRiccatiPrimitiveProductDerivativeZeroTheorem :
     LocalRiccatiPrimitiveProductDerivativeZeroTheorem := by
@@ -875,8 +1106,13 @@ def LocalRiccatiPrimitiveProductConstancyTheorem : Prop :=
             R.alpha z₀ * P.integratingFactor z₀
 
 /--
-The product-derivative-zero calculation plus the mean-value theorem gives
-primitive product constancy.
+%%handwave
+name:
+  Constancy of the Riccati integrating-factor product from the identity \((\alpha e^{-A})'=0\)
+statement:
+  The product-derivative-zero calculation plus the mean-value theorem gives primitive product constancy. If the normalized domain is preconnected, then \(\alpha(z)e^{-A(z)}=\alpha(z_0)e^{-A(z_0)}\) for every point in it.
+proof:
+  A complex-differentiable function with zero derivative on a preconnected set is constant; compare its values at \(z\) and \(z_0\).
 -/
 theorem localRiccatiPrimitiveProductConstancyTheorem_of_productDerivativeZero
     (hDerivZero : LocalRiccatiPrimitiveProductDerivativeZeroTheorem) :
@@ -888,8 +1124,13 @@ theorem localRiccatiPrimitiveProductConstancyTheorem_of_productDerivativeZero
       Z z hz
 
 /--
-Primitive existence plus the product-constancy calculation gives an integrating
-factor.
+%%handwave
+name:
+  Existence of a Riccati integrating factor from a primitive and constancy of \(\alpha e^{-A}\)
+statement:
+  Primitive existence plus the product-constancy calculation gives an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Choose a primitive \(A\), set \(\mu=e^{-A}\), use its nonvanishing, and apply the supplied constancy of \(\alpha e^{-A}\).
 -/
 theorem localRiccatiIntegratingFactorTheorem_of_primitive
     (hPrim : LocalRiccatiPrimitiveExistenceTheorem)
@@ -900,8 +1141,13 @@ theorem localRiccatiIntegratingFactorTheorem_of_primitive
   exact ⟨P.toIntegratingFactorData (hConst P data.domain_preconnected)⟩
 
 /--
-Primitive existence plus the product-derivative-zero calculation gives an
-integrating factor.
+%%handwave
+name:
+  Existence of a Riccati integrating factor from a primitive and the product-rule identity
+statement:
+  Primitive existence plus the product-derivative-zero calculation gives an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [\(\alpha e^{-A}\) is constant on the preconnected normalized domain](lean:localRiccatiPrimitiveProductConstancyTheorem_of_productDerivativeZero) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitive).
 -/
 theorem localRiccatiIntegratingFactorTheorem_of_primitive_derivativeZero
     (hPrim : LocalRiccatiPrimitiveExistenceTheorem)
@@ -911,9 +1157,13 @@ theorem localRiccatiIntegratingFactorTheorem_of_primitive_derivativeZero
     (localRiccatiPrimitiveProductConstancyTheorem_of_productDerivativeZero hDerivZero)
 
 /--
-Primitive existence alone now gives an integrating factor: the product-rule
-calculation is proved from the derivative fields in the Riccati and primitive
-packages.
+%%handwave
+name:
+  Existence of a Riccati integrating factor from existence of a primitive
+statement:
+  Primitive existence alone now gives an integrating factor: the product-rule calculation is proved from the equations \(α'=αq\) and \(A'=q\). For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [the derivative of \(\alpha e^{-A}\) vanishes on the normalized domain](lean:localRiccatiPrimitiveProductDerivativeZeroTheorem) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitive_derivativeZero).
 -/
 theorem localRiccatiIntegratingFactorTheorem_of_primitiveExistence
     (hPrim : LocalRiccatiPrimitiveExistenceTheorem) :
@@ -922,8 +1172,13 @@ theorem localRiccatiIntegratingFactorTheorem_of_primitiveExistence
     localRiccatiPrimitiveProductDerivativeZeroTheorem
 
 /--
-Disk-local holomorphicity of the Riccati coefficient gives an integrating
-factor.
+%%handwave
+name:
+  Existence of a Riccati integrating factor from holomorphicity on the normalized disk
+statement:
+  Disk-local holomorphicity of the Riccati coefficient gives an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem_of_ballHolomorphic) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitiveExistence).
 -/
 theorem localRiccatiIntegratingFactorTheorem_of_ballHolomorphic
     (hBall : LocalRiccatiCoefficientBallHolomorphicTheorem) :
@@ -931,7 +1186,15 @@ theorem localRiccatiIntegratingFactorTheorem_of_ballHolomorphic
   localRiccatiIntegratingFactorTheorem_of_primitiveExistence
     (localRiccatiPrimitiveExistenceTheorem_of_ballHolomorphic hBall)
 
-/-- Disk-local analyticity of the Riccati coefficient gives an integrating factor. -/
+/--
+%%handwave
+name:
+  Existence of a Riccati integrating factor from analyticity near the normalized disk
+statement:
+  Disk-local analyticity of the Riccati coefficient gives an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is holomorphic on the normalized disk](lean:localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_ballHolomorphic).
+-/
 theorem localRiccatiIntegratingFactorTheorem_of_ballAnalytic
     (hAnalytic : LocalRiccatiCoefficientBallAnalyticTheorem) :
     LocalRiccatiIntegratingFactorTheorem :=
@@ -939,8 +1202,13 @@ theorem localRiccatiIntegratingFactorTheorem_of_ballAnalytic
     (localRiccatiCoefficientBallHolomorphicTheorem_of_ballAnalytic hAnalytic)
 
 /--
-Domain-level analyticity plus ball-shaped normalized domains gives an
-integrating factor.
+%%handwave
+name:
+  Existence of a Riccati integrating factor from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity plus ball-shaped normalized domains gives an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [the Riccati coefficient is analytic near the normalized disk](lean:localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_ballAnalytic).
 -/
 theorem localRiccatiIntegratingFactorTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -950,7 +1218,15 @@ theorem localRiccatiIntegratingFactorTheorem_of_analytic_and_ballDomain
     (localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain
       hAnalytic hBallDomain)
 
-/-- Domain-level analyticity gives an integrating factor on the packaged ball domain. -/
+/--
+%%handwave
+name:
+  Existence of a Riccati integrating factor from analyticity of the Riccati coefficient
+statement:
+  Domain-level analyticity gives an integrating factor on the normalized disk. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Apply [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_analytic_and_ballDomain).
+-/
 theorem localRiccatiIntegratingFactorTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
     LocalRiccatiIntegratingFactorTheorem :=
@@ -958,8 +1234,13 @@ theorem localRiccatiIntegratingFactorTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-The scalar Riccati integrating-factor step is now discharged from the analytic
-coefficient field in the Riccati package.
+%%handwave
+name:
+  Existence of a Riccati integrating factor
+statement:
+  Analyticity of the Riccati coefficient gives a primitive and hence an integrating factor. For every equation \(\alpha'=\alpha q\) satisfying \(α'=αq\), there is a nowhere-zero \(\mu\) such that \(\alpha\mu\) is constant on the normalized domain.
+proof:
+  Combine [the Riccati coefficient has a primitive on the normalized domain](lean:localRiccatiPrimitiveExistenceTheorem) with [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitiveExistence).
 -/
 theorem localRiccatiIntegratingFactorTheorem :
     LocalRiccatiIntegratingFactorTheorem :=
@@ -983,8 +1264,13 @@ def LocalRiccatiZeroUniquenessTheorem : Prop :=
         ∀ z, z ∈ N.domain → R.alpha z = 0
 
 /--
-An integrating factor gives the zero-solution uniqueness theorem for the
-Riccati difference equation.
+%%handwave
+name:
+  Uniqueness for the scalar Riccati equation from an integrating factor
+statement:
+  An integrating factor gives the zero-solution uniqueness theorem for the Riccati difference equation. If \(\partial_z\alpha=\alpha q\) on the preconnected normalized domain and \(\alpha(z_0)=0\), then \(\alpha(z)=0\) throughout that domain.
+proof:
+  Constancy gives \(\alpha(z)\mu(z)=\alpha(z_0)\mu(z_0)=0\); since \(\mu(z)\ne0\), cancel it.
 -/
 theorem localRiccatiZeroUniquenessTheorem_of_integratingFactor
     (hIF : LocalRiccatiIntegratingFactorTheorem) :
@@ -994,8 +1280,13 @@ theorem localRiccatiZeroUniquenessTheorem_of_integratingFactor
   exact M.alpha_eq_zero z hz
 
 /--
-Domain-level analyticity of the Riccati coefficient on ball-shaped normalized
-domains gives zero-solution uniqueness for the Riccati equation.
+%%handwave
+name:
+  Uniqueness for the scalar Riccati equation from analyticity and a disk-shaped normalized domain
+statement:
+  Domain-level analyticity of the Riccati coefficient on ball-shaped normalized domains gives zero-solution uniqueness for the Riccati equation. If \(\partial_z\alpha=\alpha q\) on the preconnected normalized domain and \(\alpha(z_0)=0\), then \(\alpha(z)=0\) throughout that domain.
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_analytic_and_ballDomain) with [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_integratingFactor).
 -/
 theorem localRiccatiZeroUniquenessTheorem_of_analytic_and_ballDomain
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem)
@@ -1005,7 +1296,15 @@ theorem localRiccatiZeroUniquenessTheorem_of_analytic_and_ballDomain
     (localRiccatiIntegratingFactorTheorem_of_analytic_and_ballDomain
       hAnalytic hBallDomain)
 
-/-- Domain-level analyticity gives zero-solution uniqueness for the Riccati equation. -/
+/--
+%%handwave
+name:
+  Uniqueness for the scalar Riccati equation from analyticity of the Riccati coefficient
+statement:
+  Domain-level analyticity gives zero-solution uniqueness for the Riccati equation. If \(\partial_z\alpha=\alpha q\) on the preconnected normalized domain and \(\alpha(z_0)=0\), then \(\alpha(z)=0\) throughout that domain.
+proof:
+  Apply [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_analytic_and_ballDomain).
+-/
 theorem localRiccatiZeroUniquenessTheorem_of_analytic
     (hAnalytic : LocalRiccatiCoefficientAnalyticTheorem) :
     LocalRiccatiZeroUniquenessTheorem :=
@@ -1013,8 +1312,13 @@ theorem localRiccatiZeroUniquenessTheorem_of_analytic
     hAnalytic hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
 /--
-Zero-solution uniqueness for the Riccati difference equation is now discharged
-from the data carried by the Riccati package.
+%%handwave
+name:
+  Uniqueness for the scalar Riccati equation
+statement:
+  If \(\partial_z\alpha=\alpha q\) on the preconnected normalized domain and \(\alpha(z_0)=0\), then \(\alpha(z)=0\) throughout that domain.
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem) with [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_integratingFactor).
 -/
 theorem localRiccatiZeroUniquenessTheorem :
     LocalRiccatiZeroUniquenessTheorem :=
@@ -1022,9 +1326,13 @@ theorem localRiccatiZeroUniquenessTheorem :
     localRiccatiIntegratingFactorTheorem
 
 /--
-The strengthened holomorphic package supplies the zero-uniqueness theorem for
-the corrected Wirtinger-Riccati statement by reducing it to the scalar
-Riccati package.
+%%handwave
+name:
+  Uniqueness for the Wirtinger–Riccati equation from the holomorphic metric-scaled Wirtinger–Riccati equation
+statement:
+  The holomorphic Wirtinger–Riccati equation reduces to a scalar complex ODE. For every \(z\in\Omega\), the first-derivative difference \(\alpha=\partial_z\phi_C-\partial_z\phi\) therefore satisfies \(\alpha(z)=0\).
+proof:
+  Convert the holomorphic Fréchet–Wirtinger equation to the scalar Riccati equation and apply zero-solution uniqueness on the preconnected domain.
 -/
 theorem localWirtingerRiccatiZeroUniquenessTheorem_of_canonicalMetricHolomorphicRiccati
     (hHolomorphic : LocalLiouvilleSchwarzianCanonicalMetricHolomorphicRiccatiTheorem) :
@@ -1036,9 +1344,13 @@ theorem localWirtingerRiccatiZeroUniquenessTheorem_of_canonicalMetricHolomorphic
       data.domain_preconnected z hz
 
 /--
-The corrected Frechet-Wirtinger Riccati data give zero-uniqueness directly
-through the closed first-order path argument and scalar divided-difference
-potential continuity.
+%%handwave
+name:
+  Uniqueness for the Wirtinger–Riccati equation from continuity of the scalar linearized potential
+statement:
+  The corrected Fréchet–Wirtinger Riccati equation gives zero-uniqueness directly through the closed first-order path argument and scalar divided-difference potential continuity. For every \(z\in\Omega\), the first-derivative difference \(\alpha=\partial_z\phi_C-\partial_z\phi\) therefore satisfies \(\alpha(z)=0\).
+proof:
+  Pass from the first-order system to the scalar difference and its closed linear system; continuity of the potential makes the normalized state solve the straight-segment ODE, whose uniqueness conclusion is \(\alpha=0\).
 -/
 theorem localWirtingerRiccatiZeroUniquenessTheorem_of_scalarPotentialContinuity
     (hPotential :
@@ -1069,8 +1381,13 @@ theorem localWirtingerRiccatiZeroUniquenessTheorem_of_scalarPotentialContinuity
       hz).alpha_eq hz
 
 /--
-The pure real divided-difference continuity lemma discharges the scalar
-potential-continuity input for corrected Wirtinger-Riccati zero-uniqueness.
+%%handwave
+name:
+  Uniqueness for the Wirtinger–Riccati equation from continuity of the divided difference of \(e^{2x}\)
+statement:
+  The pure real divided-difference continuity lemma discharges the scalar potential-continuity input for corrected Wirtinger-Riccati zero-uniqueness. For every \(z\in\Omega\), the first-derivative difference \(\alpha=\partial_z\phi_C-\partial_z\phi\) therefore satisfies \(\alpha(z)=0\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference) with [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localWirtingerRiccatiZeroUniquenessTheorem_of_scalarPotentialContinuity).
 -/
 theorem localWirtingerRiccatiZeroUniquenessTheorem_of_realExpTwoDividedDifference
     (hdiv : RealExpTwoDividedDifferenceContinuityTheorem) :
@@ -1080,9 +1397,13 @@ theorem localWirtingerRiccatiZeroUniquenessTheorem_of_realExpTwoDividedDifferenc
       hdiv)
 
 /--
-Corrected Frechet-Wirtinger Riccati zero-uniqueness is now proved from the
-pathwise closed first-order system and the real divided-difference continuity
-lemma.
+%%handwave
+name:
+  Uniqueness for the Wirtinger–Riccati equation
+statement:
+  Corrected Fréchet-Wirtinger Riccati zero-uniqueness is now proved from the pathwise closed first-order system and the real divided-difference continuity lemma. For every \(z\in\Omega\), the first-derivative difference \(\alpha=\partial_z\phi_C-\partial_z\phi\) therefore satisfies \(\alpha(z)=0\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_real) with [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localWirtingerRiccatiZeroUniquenessTheorem_of_scalarPotentialContinuity).
 -/
 theorem localWirtingerRiccatiZeroUniquenessTheorem :
     LocalWirtingerRiccatiZeroUniquenessTheorem :=
@@ -1105,8 +1426,13 @@ def LocalLiouvilleSchwarzianLogUniquenessTheorem : Prop :=
         u.logDensity z = C.conformalFactor.logDensity z
 
 /--
-The Riccati reduction plus zero-solution uniqueness proves logarithmic
-Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from Riccati
+statement:
+  The Riccati reduction plus zero-solution uniqueness proves logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the Riccati reduction, use zero-solution uniqueness to obtain \(\alpha=0\), and invoke the fact that a vanishing first-derivative difference and the normalized base value force equality of logarithmic densities.
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1118,8 +1444,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati
     (fun w hw ↦ hRiccatiUnique R data.domain_preconnected w hw) z hz
 
 /--
-The Riccati reduction plus integrating-factor existence proves logarithmic
-Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from an integrating factor
+statement:
+  The Riccati reduction plus integrating-factor existence proves logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_integratingFactor) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_integratingFactor
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1129,8 +1460,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_integratingFactor
     hReduce (localRiccatiZeroUniquenessTheorem_of_integratingFactor hIF)
 
 /--
-Riccati reduction plus domain-level analytic coefficients on ball-shaped
-normalized domains gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Riccati reduction, analyticity, and a disk-shaped domain
+statement:
+  Riccati reduction plus domain-level analytic coefficients on ball-shaped normalized domains gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_analytic_and_ballDomain) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalyticAndBallDomain
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1143,9 +1479,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalyticAndBallDo
       hAnalytic hBallDomain)
 
 /--
-Riccati reduction plus domain-level analytic coefficients gives logarithmic
-Liouville-Schwarzian uniqueness; ball domains are supplied by the normalized
-branch package.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Riccati reduction and analyticity
+statement:
+  Riccati reduction plus domain-level analytic coefficients gives logarithmic Liouville-Schwarzian uniqueness; the normalized domain is a disk. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem_of_analytic) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalytic
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1155,9 +1495,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalytic
     hReduce (localRiccatiZeroUniquenessTheorem_of_analytic hAnalytic)
 
 /--
-Once the Liouville-Schwarzian uniqueness problem has been reduced to the
-Riccati difference package, the scalar Riccati uniqueness step is fully
-discharged.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the scalar Riccati reduction
+statement:
+  Once the logarithmic difference satisfies \(α'=αq\) with analytic \(q\) and \(α(z₀)=0\), scalar Riccati uniqueness applies. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [a normalized Riccati solution with zero initial value vanishes on the domain](lean:localRiccatiZeroUniquenessTheorem) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem) :
@@ -1166,8 +1510,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction
     hReduce localRiccatiZeroUniquenessTheorem
 
 /--
-Concrete Riccati calculus data give logarithmic Liouville-Schwarzian
-uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the concrete Riccati calculus identities
+statement:
+  The concrete Riccati calculus identities give logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus
     (hCalc : LocalLiouvilleSchwarzianRiccatiReductionCalculusTheorem) :
@@ -1176,8 +1525,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus
     (localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus hCalc)
 
 /--
-Canonical Frechet-Wirtinger Riccati data give logarithmic
-Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from canonical Wirtinger calculus
+statement:
+  Canonical Fréchet–Wirtinger Riccati identities give logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [canonical Wirtinger identities imply the concrete Riccati calculus identities](lean:localLiouvilleSchwarzianRiccatiReductionCalculusTheorem_of_canonical) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalRiccatiCalculus
     (hCanonical : LocalLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem) :
@@ -1187,8 +1541,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalRiccatiCalculus
       hCanonical)
 
 /--
-The corrected Wirtinger-Riccati reduction plus its zero-uniqueness theorem
-give log-density uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from canonical metric Wirtinger Riccati
+statement:
+  The corrected Wirtinger-Riccati reduction plus its zero-uniqueness theorem give log-density uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Apply the assumed zero-uniqueness to the canonical derivative difference, then integrate the vanishing first-derivative difference using the normalized base value.
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalMetricWirtingerRiccati
     (hReduce : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1202,9 +1561,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalMetricWirtinger
       (hUnique S N C data A) z hz
 
 /--
-The strengthened holomorphic Wirtinger-Riccati package gives logarithmic
-Liouville-Schwarzian uniqueness through the already-proved scalar Riccati
-machinery.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the holomorphic metric-scaled Wirtinger–Riccati equation
+statement:
+  The holomorphic Wirtinger–Riccati equation gives logarithmic Liouville-Schwarzian uniqueness through the already-proved scalar Riccati machinery. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonicalMetricHolomorphicRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalMetricHolomorphicRiccati
     (hHolomorphic : LocalLiouvilleSchwarzianCanonicalMetricHolomorphicRiccatiTheorem) :
@@ -1214,8 +1577,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalMetricHolomorph
       hHolomorphic)
 
 /--
-The genuine first-order system plus its local uniqueness theorem gives
-logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the first-order Liouville–Schwarzian system
+statement:
+  The genuine first-order system plus its local uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the stated local solution and apply the corresponding uniqueness hypothesis at \(z\in\Omega\).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_firstOrderSystem
     (hSystem : LocalLiouvilleSchwarzianFirstOrderSystemTheorem)
@@ -1226,8 +1594,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_firstOrderSystem
   exact hUnique S N C data F z hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus the genuine first-order
-uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati reduction and first-order uniqueness
+statement:
+  The corrected Wirtinger-Riccati reduction plus the genuine first-order uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the corrected Wirtinger equation yields the full first-order Liouville–Schwarzian system](lean:localLiouvilleSchwarzianFirstOrderSystemTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_firstOrderSystem).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_firstOrderUnique
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1238,8 +1611,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_firstOr
     hUnique
 
 /--
-The scalar elliptic difference formulation plus its local uniqueness theorem
-gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the scalar Liouville difference equation
+statement:
+  The scalar elliptic difference formulation plus its local uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the stated local solution and apply the corresponding uniqueness hypothesis at \(z\in\Omega\).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_scalarDifference
     (hScalar : LocalLiouvilleSchwarzianScalarDifferenceTheorem)
@@ -1250,8 +1628,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_scalarDifference
   exact hUnique S N C data E z hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus scalar-difference uniqueness
-gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati reduction and uniqueness of the scalar equation
+statement:
+  The corrected Wirtinger-Riccati reduction plus scalar-difference uniqueness gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the first-order system yields the scalar elliptic difference equation](lean:localLiouvilleSchwarzianScalarDifferenceTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_scalarDifference).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarDifferenceUnique
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1262,8 +1645,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarD
     hUnique
 
 /--
-The linearized scalar elliptic difference formulation plus its local
-uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the linearized scalar equation
+statement:
+  The linearized scalar elliptic difference formulation plus its local uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the stated local solution and apply the corresponding uniqueness hypothesis at \(z\in\Omega\).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_linearizedScalarDifference
     (hLinear : LocalLiouvilleSchwarzianLinearizedScalarDifferenceTheorem)
@@ -1274,8 +1662,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_linearizedScalarDifferen
   exact hUnique S N C data E z hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus linearized scalar-difference
-uniqueness gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati reduction and uniqueness of the linearized scalar equation
+statement:
+  The corrected Wirtinger-Riccati reduction plus linearized scalar-difference uniqueness gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the first-order system yields the scalar elliptic difference equation](lean:localLiouvilleSchwarzianLinearizedScalarDifferenceTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_linearizedScalarDifference).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_linearizedScalarDifferenceUnique
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1287,8 +1680,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_lineari
     hUnique
 
 /--
-The standard linear elliptic Cauchy-data formulation plus its local uniqueness
-theorem gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the linear elliptic Cauchy problem
+statement:
+  The standard linear elliptic Cauchy-data formulation plus its local uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the stated local solution and apply the corresponding uniqueness hypothesis at \(z\in\Omega\).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_linearEllipticCauchy
     (hCauchy : LocalLiouvilleSchwarzianLinearEllipticCauchyTheorem)
@@ -1299,8 +1697,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_linearEllipticCauchy
   exact hUnique S N C data E z hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus standard linear elliptic Cauchy
-uniqueness gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati reduction and elliptic Cauchy uniqueness
+statement:
+  The corrected Wirtinger-Riccati reduction plus standard linear elliptic Cauchy uniqueness gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the linearized scalar equation yields the elliptic Cauchy formulation](lean:localLiouvilleSchwarzianLinearEllipticCauchyTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_linearEllipticCauchy).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_linearEllipticCauchyUnique
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1312,8 +1715,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_linearE
     hUnique
 
 /--
-The closed first-order linear system formulation plus its pathwise uniqueness
-theorem gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the closed first-order linear system
+statement:
+  The closed first-order linear system formulation plus its pathwise uniqueness theorem gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Choose the stated local solution and apply the corresponding uniqueness hypothesis at \(z\in\Omega\).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSystem
     (hSystem : LocalLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem)
@@ -1324,8 +1732,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSy
   exact hUnique S N C data E z hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus closed first-order linear
-system uniqueness gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati reduction and pathwise first-order uniqueness
+statement:
+  The corrected Wirtinger-Riccati reduction plus closed first-order linear system uniqueness gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the Wirtinger–Riccati equation yields the closed first-order system](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSystem).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_closedFirstOrderLinearSystemUnique
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1337,8 +1750,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_closedF
     hUnique
 
 /--
-The closed first-order linear system plus continuity of its scalar linearized
-potential gives logarithmic Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from closed first order linear system potential continuity
+statement:
+  The closed first-order linear system plus continuity of its scalar linearized potential gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [pathwise uniqueness gives equality of the logarithmic densities on the normalized domain](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemUniquenessTheorem_of_potentialContinuity) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSystem).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSystem_potentialContinuity
     (hSystem : LocalLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem)
@@ -1351,9 +1769,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSy
       hPotential)
 
 /--
-The corrected Wirtinger-Riccati reduction plus scalar-potential continuity gives
-logarithmic Liouville-Schwarzian uniqueness through the closed first-order
-linear system.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati equation and continuity of the closed-system potential
+statement:
+  The corrected Wirtinger-Riccati reduction plus scalar-potential continuity gives logarithmic Liouville-Schwarzian uniqueness through the closed first-order linear system. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the Wirtinger–Riccati equation yields the closed first-order system](lean:localLiouvilleSchwarzianClosedFirstOrderLinearSystemTheorem_of_wirtingerRiccati) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_closedFirstOrderLinearSystem_potentialContinuity).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_potentialContinuity
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1366,10 +1788,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_potenti
     hPotential
 
 /--
-The corrected Wirtinger-Riccati reduction plus continuity of the concrete
-scalar divided-difference potential gives logarithmic Liouville-Schwarzian
-uniqueness.  This avoids asking for potential continuity for arbitrary closed
-first-order systems.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati equation and continuity of the scalar potential
+statement:
+  The corrected Wirtinger-Riccati reduction plus continuity of the concrete scalar divided-difference potential gives logarithmic Liouville-Schwarzian uniqueness. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Convert the Wirtinger equation successively to the scalar and closed linear formulations; continuity makes the normalized state solve the straight-segment ODE, whose uniqueness conclusion is equality of logarithmic densities.
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1400,9 +1825,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarP
       hz).logDensity_eq hz
 
 /--
-The corrected Wirtinger-Riccati reduction plus the pure real divided-difference
-continuity lemma gives logarithmic Liouville-Schwarzian uniqueness through the
-concrete scalar potential.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the Wirtinger–Riccati equation and continuity of the exponential divided difference
+statement:
+  The corrected Wirtinger-Riccati reduction plus the pure real divided-difference continuity lemma gives logarithmic Liouville-Schwarzian uniqueness through the concrete scalar potential. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_realExpTwoDividedDifference
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1414,9 +1843,13 @@ theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_realExp
       hdiv)
 
 /--
-Corrected Wirtinger-Riccati data alone give logarithmic
-Liouville-Schwarzian uniqueness via the proved scalar divided-difference
-continuity lemma.
+%%handwave
+name:
+  Logarithmic Liouville–Schwarzian uniqueness from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger–Riccati equation gives logarithmic Liouville-Schwarzian uniqueness via the proved scalar divided-difference continuity lemma. Precisely, for every normalized branch, compatible pullback candidate, and \(z\in\Omega\), one has \(\phi(z)=\phi_C(z)\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_real) with [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity).
 -/
 theorem localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -1443,8 +1876,13 @@ def LocalLiouvilleSchwarzianUniquenessTheorem : Prop :=
         u.densitySq z = C.conformalFactor.densitySq z
 
 /--
-Logarithmic uniqueness implies the squared-density uniqueness statement used by
-the metric-recovery bridge.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from logarithmic uniqueness
+statement:
+  Logarithmic uniqueness implies the squared-density uniqueness statement used by the metric-recovery bridge. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Apply logarithmic uniqueness and exponentiate twice to turn \(\phi=\phi_C\) into equality of squared densities.
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness
     (hLogUnique : LocalLiouvilleSchwarzianLogUniquenessTheorem) :
@@ -1456,9 +1894,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness
       z hz)
 
 /--
-Riccati reduction plus domain-level analytic coefficients on ball-shaped
-normalized domains gives the squared-density Liouville-Schwarzian uniqueness
-statement.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the Riccati reduction, analyticity, and a disk-shaped domain
+statement:
+  Riccati reduction plus domain-level analytic coefficients on ball-shaped normalized domains gives the squared-density Liouville-Schwarzian uniqueness statement. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalyticAndBallDomain) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiAnalyticAndBallDomain
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1470,8 +1912,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiAnalyticAndBallDomai
       hReduce hAnalytic hBallDomain)
 
 /--
-Riccati reduction plus domain-level analytic coefficients gives
-squared-density Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the Riccati reduction and analyticity
+statement:
+  Riccati reduction plus domain-level analytic coefficients gives squared-density Liouville-Schwarzian uniqueness. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiAnalytic) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiAnalytic
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem)
@@ -1482,9 +1929,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiAnalytic
       hReduce hAnalytic)
 
 /--
-Riccati reduction alone gives squared-density Liouville-Schwarzian uniqueness:
-the coefficient analyticity, primitive, integrating factor, and zero-solution
-steps are all supplied by the Riccati data and mathlib.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the scalar Riccati reduction
+statement:
+  For \(α'=αq\) with analytic \(q\) and \(α(z₀)=0\), a local primitive produces an integrating factor and forces \(α=0\). Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiReduction
     (hReduce : LocalLiouvilleSchwarzianRiccatiReductionTheorem) :
@@ -1493,8 +1944,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiReduction
     (localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction hReduce)
 
 /--
-Concrete Riccati calculus data give squared-density Liouville-Schwarzian
-uniqueness.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the concrete Riccati calculus identities
+statement:
+  The concrete Riccati calculus identities give squared-density Liouville-Schwarzian uniqueness. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiCalculus
     (hCalc : LocalLiouvilleSchwarzianRiccatiReductionCalculusTheorem) :
@@ -1503,8 +1959,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_riccatiCalculus
     (localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus hCalc)
 
 /--
-Canonical Frechet-Wirtinger Riccati data give squared-density
-Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from canonical Wirtinger calculus
+statement:
+  Canonical Fréchet–Wirtinger Riccati identities give squared-density Liouville-Schwarzian uniqueness. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalRiccatiCalculus) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_canonicalRiccatiCalculus
     (hCanonical : LocalLiouvilleSchwarzianCanonicalRiccatiCalculusTheorem) :
@@ -1514,8 +1975,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_canonicalRiccatiCalculus
       hCanonical)
 
 /--
-Corrected Wirtinger-Riccati data plus continuity of the concrete scalar
-linearized potential give squared-density Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the Wirtinger–Riccati equation and continuity of the scalar potential
+statement:
+  The corrected Wirtinger–Riccati equation plus continuity of the concrete scalar linearized potential give squared-density Liouville-Schwarzian uniqueness. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1527,8 +1993,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati_scalarPote
       hWirtinger hPotential)
 
 /--
-Corrected Wirtinger-Riccati data plus the pure real divided-difference
-continuity lemma give squared-density Liouville-Schwarzian uniqueness.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the Wirtinger–Riccati equation and continuity of the exponential divided difference
+statement:
+  The corrected Wirtinger–Riccati equation plus the pure real divided-difference continuity lemma give squared-density Liouville-Schwarzian uniqueness. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati_realExpTwoDividedDifference
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem)
@@ -1540,8 +2011,13 @@ theorem localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati_realExpTwo
       hdiv)
 
 /--
-Corrected Wirtinger-Riccati data give squared-density Liouville-Schwarzian
-uniqueness via the proved scalar divided-difference continuity lemma.
+%%handwave
+name:
+  Liouville–Schwarzian uniqueness from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger–Riccati equation gives squared-density Liouville-Schwarzian uniqueness via the proved scalar divided-difference continuity lemma. Precisely, on the normalized domain \(\Omega\), the squared densities agree: \(\rho_u(z)^2=\rho_C(z)^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati) with [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness).
 -/
 theorem localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati
     (hWirtinger : LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem) :
@@ -1571,20 +2047,9 @@ def HyperbolicTwoJetNormalizationRecoversMetricTheorem : Prop :=
 name:
   Metric recovery from a normalized Schwarzian solution
 statement:
-  Let $F : V \to \mathbb H$ solve the metric Schwarzian equation for a
-  hyperbolic conformal factor $u$ and have the normalized two-jet
-  $F(z_0)=i$, $F'(z_0)=e^{u(z_0)}$, and
-  $F''(z_0)=F'(z_0)(2u_z(z_0)-iF'(z_0))$.
-  If the Poincaré pullback logarithmic factor
-  $v=\log|F'|-\log\operatorname{Im}F$ solves the same Liouville--Schwarzian
-  system as $u$ on a preconnected domain, and that system has the stated
-  local uniqueness property, then
-  $e^{2u}=|F'|^2/(\operatorname{Im}F)^2$ throughout $V$.
+  Let \(F:V→ℍ\) solve the metric Schwarzian equation for a hyperbolic logarithmic conformal factor \(u\), with normalized two-jet \(F(z₀)=i\), \(F'(z₀)=e^{u(z₀)}\), and \(F''(z₀)=F'(z₀)(2u_z(z₀)-iF'(z₀))\). If its Poincaré pullback logarithmic factor \(v=\log |F'|-\log \operatorname{Im} F\) solves the same Liouville–Schwarzian system as \(u\) on a preconnected domain and that system is locally unique, then \(e^{2u}=|F'|²/(\operatorname{Im} F)²\) throughout \(V\).
 proof:
-  The normalized two-jet gives $v(z_0)=u(z_0)$ and
-  $v_z(z_0)=u_z(z_0)$. Local Liouville--Schwarzian uniqueness therefore gives
-  $v=u$ on $V$. Exponentiating twice this equality yields the Poincaré
-  pullback formula.
+  The normalized two-jet gives \(v(z₀)=u(z₀)\) and \(v_z(z₀)=u_z(z₀)\). Local Liouville–Schwarzian uniqueness gives \(v=u\), and exponentiating twice yields the Poincaré pullback formula.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_liouvilleUniqueness
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1597,8 +2062,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_liouvilleUniquenes
     (hUnique S N C hu (hPreconnected S N) z hz)
 
 /--
-The pullback calculation, preconnected shrinking, and logarithmic
-Liouville-Schwarzian uniqueness give metric recovery.
+%%handwave
+name:
+  Metric recovery from logarithmic Liouville–Schwarzian uniqueness
+statement:
+  The pullback calculation, preconnected shrinking, and logarithmic Liouville-Schwarzian uniqueness give metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback squared densities agree on the normalized domain](lean:localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_liouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1610,8 +2080,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUnique
     (localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness hLogUnique)
 
 /--
-The concrete scalar-potential route gives metric recovery from the hyperbolic
-two-jet normalization.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati equation and continuity of the scalar potential
+statement:
+  The concrete scalar-potential route gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarPotentialContinuity) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_scalarPotentialContinuity
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1626,8 +2101,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_s
       hWirtinger hPotential)
 
 /--
-The pure real divided-difference continuity lemma gives the scalar-potential
-metric-recovery route.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati equation and continuity of the exponential divided difference
+statement:
+  The pure real divided-difference continuity lemma gives the scalar-potential metric-recovery route. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the scalar linearized potential is continuous on the normalized domain](lean:localLiouvilleSchwarzianScalarDifferencePotentialContinuityTheorem_of_realExpTwoDividedDifference) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_scalarPotentialContinuity).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_realExpTwoDividedDifference
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1641,9 +2121,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_r
       hdiv)
 
 /--
-Corrected Wirtinger-Riccati data give metric recovery from the hyperbolic
-two-jet normalization via the proved scalar divided-difference continuity
-lemma.
+%%handwave
+name:
+  Metric recovery from the corrected Wirtinger–Riccati equation
+statement:
+  The corrected Wirtinger–Riccati equation gives metric recovery from the hyperbolic two-jet normalization via the proved scalar divided-difference continuity lemma. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1659,21 +2143,11 @@ namespace LocalHyperbolicCanonicalPullbackLiouvilleFormulaData
 /--
 %%handwave
 name:
-  Liouville--Schwarzian uniqueness recovers the metric
+  Liouville–Schwarzian uniqueness recovers the metric
 statement:
-  Let $u : V\to\mathbb R$ satisfy $\Delta u=e^{2u}$, and let
-  $F:V\to\mathbb H$ have the normalized hyperbolic two-jet at $z_0$ and
-  Schwarzian derivative $\{F,z\}=2(u_{zz}-u_z^2)$. If the canonical
-  Poincaré pullback identities hold for $F$, then throughout the normalization
-  domain
-  $$e^{2u(z)}=\frac{|F'(z)|^2}{(\operatorname{Im}F(z))^2}.$$
+  Let \(u:V→ℝ\) satisfy \(Δu=e^{2u}\), and let \(F:V→ℍ\) have the normalized hyperbolic two-jet at \(z₀\) and Schwarzian derivative \(\{F,z\}=2(u_{zz}-u_z²)\). If the canonical Poincaré pullback identities hold for \(F\), then \(e^{2u(z)}=|F'(z)|²/(\operatorname{Im} F(z))²\) throughout the normalization domain.
 proof:
-  Put $v=\log|F'|-\log\operatorname{Im}F$ and $\phi=u-v$. Equality of the
-  metric Schwarzians turns $\phi$ and its first Wirtinger derivative into a
-  closed linear first-order system whose coefficients contain the continuous
-  divided difference of $e^{2u}$ and $e^{2v}$. The normalized two-jet gives
-  $\phi(z_0)=\phi_z(z_0)=0$. Uniqueness along the affine segment from $z_0$
-  to $z$ yields $\phi(z)=0$, and exponentiation gives the formula.
+  Put \(v=\log |F'|-\log \operatorname{Im} F\) and \(φ=u-v\). Equality of metric Schwarzians turns \((φ,φ_z)\) into a closed linear first-order system with a continuous exponential divided-difference coefficient. The normalized two-jet gives \(φ(z₀)=φ_z(z₀)=0\); uniqueness along affine segments gives \(φ=0\), and exponentiation yields the formula.
 -/
 theorem densitySq_eq_original_of_originalMetricSchwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1727,13 +2201,13 @@ end LocalHyperbolicCanonicalPullbackLiouvilleFormulaData
 namespace LocalHyperbolicCanonicalPullbackDerivativeAlgebraData
 
 /--
-Derivative algebra for a normalized branch gives metric recovery as soon as
-the branch Schwarzian coefficient is the original metric Schwarzian of the
-Liouville factor.
-
-The Poincare Laplacian field is supplied internally by converting derivative
-algebra to actual affine derivative algebra and using the mixed-expression
-calculation.
+%%handwave
+name:
+  Metric recovery from pullback derivative algebra
+statement:
+  Derivative algebra for a normalized branch gives metric recovery as soon as the branch Schwarzian coefficient is the original metric Schwarzian of the Liouville factor. For every \(z\in\Omega\), the original squared density equals the canonical Poincaré pullback squared density.
+proof:
+  Convert the derivative identities to affine derivative identities, derive the Poincaré Laplacian formula, and apply the canonical pullback calculation.
 -/
 theorem densitySq_eq_original_of_originalMetricSchwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1754,8 +2228,13 @@ theorem densitySq_eq_original_of_originalMetricSchwarzian
   exact P.densitySq_eq_original_of_originalMetricSchwarzian hu hOriginal z hz
 
 /--
-Derivative algebra for a normalized branch gives the concrete Poincare metric
-recovery formula under the original metric-Schwarzian identification.
+%%handwave
+name:
+  The explicit Poincaré pullback metric formula
+statement:
+  Derivative algebra for a normalized branch gives the concrete Poincaré metric recovery formula under the original metric-Schwarzian identification. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Use equality with the canonical pullback density and unfold that density as \(|F'|^2/(\operatorname{Im}F)^2\).
 -/
 theorem metric_recovery_of_originalMetricSchwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1791,8 +2270,13 @@ def HyperbolicTwoJetMetricSchwarzianNormalizationRecoversMetricTheorem : Prop :=
             ((N.normalized.upperHalfPlaneMap z : ℂ).im ^ 2)
 
 /--
-The canonical Poincare pullback formula proves metric recovery for metric
-Schwarzian data without an external corrected-Riccati theorem.
+%%handwave
+name:
+  Metric recovery for metric Schwarzian data from the canonical Poincaré pullback formula
+statement:
+  The canonical Poincaré pullback formula proves metric recovery for metric Schwarzian data without an external corrected-Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Instantiate the canonical pullback formula with the original metric Schwarzian and use its identification with the original metric Schwarzian.
 -/
 theorem hyperbolicTwoJetMetricSchwarzianNormalizationRecoversMetricTheorem_of_canonicalPullbackLiouvilleFormula
     (hPullback : HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem) :
@@ -1803,10 +2287,13 @@ theorem hyperbolicTwoJetMetricSchwarzianNormalizationRecoversMetricTheorem_of_ca
     hu M.originalMetricIdentification z hz
 
 /--
-For metric-Schwarzian data, derivative algebra for the normalized branch
-directly gives metric recovery.  The canonical Poincare formula and the
-corrected uniqueness data are constructed internally from the derivative
-algebra package.
+%%handwave
+name:
+  Metric recovery for metric Schwarzian data from the pullback derivative identities
+statement:
+  For the original metric Schwarzian, derivative algebra for the normalized branch directly gives metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Use the derivative identities and apply its original-metric Schwarzian recovery formula.
 -/
 theorem hyperbolicTwoJetMetricSchwarzianNormalizationRecoversMetricTheorem_of_derivativeAlgebra
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
@@ -1817,8 +2304,13 @@ theorem hyperbolicTwoJetMetricSchwarzianNormalizationRecoversMetricTheorem_of_de
     hu M.originalMetricIdentification z hz
 
 /--
-The Riccati uniqueness route gives metric recovery from the hyperbolic two-jet
-normalization.
+%%handwave
+name:
+  Metric recovery from uniqueness for the scalar Riccati equation
+statement:
+  The Riccati uniqueness route gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccati) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiUniqueness
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1832,8 +2324,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiUniqueness
       hReduce hRiccatiUnique)
 
 /--
-The integrating-factor route gives metric recovery from the hyperbolic two-jet
-normalization.
+%%handwave
+name:
+  Metric recovery from an integrating factor
+statement:
+  The integrating-factor route gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_integratingFactor) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1847,8 +2344,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor
       hReduce hIF)
 
 /--
-The primitive/integrating-factor route gives metric recovery from the
-hyperbolic two-jet normalization.
+%%handwave
+name:
+  Metric recovery from a Riccati primitive and constancy of \(\alpha e^{-A}\)
+statement:
+  The primitive/integrating-factor route gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitive) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitive
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1862,8 +2364,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitive
     (localRiccatiIntegratingFactorTheorem_of_primitive hPrim hConst)
 
 /--
-Primitive existence plus the derivative-zero product-rule calculation give
-metric recovery from the hyperbolic two-jet normalization.
+%%handwave
+name:
+  Metric recovery from a Riccati primitive and the product-rule identity
+statement:
+  Primitive existence plus the derivative-zero product-rule calculation give metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitive_derivativeZero) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitiveDerivativeZero
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1878,9 +2385,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitiveDe
       hPrim hDerivZero)
 
 /--
-Primitive existence alone gives metric recovery from the hyperbolic two-jet
-normalization, since the product-rule calculation is now proved by mathlib
-calculus.
+%%handwave
+name:
+  Metric recovery from existence of a Riccati primitive
+statement:
+  Primitive existence alone gives metric recovery from the hyperbolic two-jet normalization, since the product-rule calculation is now proved by the standard library calculus. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_primitiveExistence) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitiveExistence
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1893,8 +2404,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiPrimitiveEx
     (localRiccatiIntegratingFactorTheorem_of_primitiveExistence hPrim)
 
 /--
-Disk-local holomorphicity of the Riccati coefficient gives metric recovery
-from the hyperbolic two-jet normalization.
+%%handwave
+name:
+  Metric recovery from holomorphicity on the normalized disk
+statement:
+  Disk-local holomorphicity of the Riccati coefficient gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_ballHolomorphic) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallHolomorphic
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1907,8 +2423,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallHolomor
     (localRiccatiIntegratingFactorTheorem_of_ballHolomorphic hBall)
 
 /--
-Analyticity of the Riccati coefficient on ball-shaped normalized domains gives
-metric recovery from the hyperbolic two-jet normalization.
+%%handwave
+name:
+  Metric recovery from analyticity near the normalized disk
+statement:
+  Analyticity of the Riccati coefficient on ball-shaped normalized domains gives metric recovery from the hyperbolic two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati equation admits a nowhere-zero integrating factor](lean:localRiccatiIntegratingFactorTheorem_of_ballAnalytic) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_integratingFactor).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalytic
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1921,8 +2442,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalyti
     (localRiccatiIntegratingFactorTheorem_of_ballAnalytic hAnalytic)
 
 /--
-Ball-shaped normalized domains and analytic Riccati coefficients give metric
-recovery, with preconnectedness supplied by mathlib's connectedness of balls.
+%%handwave
+name:
+  Metric recovery from analyticity and a disk-shaped normalized domain
+statement:
+  Ball-shaped normalized domains and analytic Riccati coefficients give metric recovery, with preconnectedness supplied by the standard connectedness of balls. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalytic).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalyticAndBallDomain
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1937,8 +2463,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalyti
     hReduce hAnalytic
 
 /--
-Domain-level analytic Riccati coefficients and ball-shaped normalized domains
-give metric recovery.
+%%handwave
+name:
+  Metric recovery from the Riccati reduction, analyticity, and a disk-shaped domain
+statement:
+  Domain-level analytic Riccati coefficients and ball-shaped normalized domains give metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Riccati coefficient is analytic near the normalized disk](lean:localRiccatiCoefficientBallAnalyticTheorem_of_analytic_and_ballDomain) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiBallAnalyticAndBallDomain).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalyticAndBallDomain
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1952,8 +2483,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalyticAnd
       hAnalytic hBallDomain)
 
 /--
-Domain-level analytic Riccati coefficients give metric recovery; ball domains
-and preconnectedness are supplied by the two-jet normalization package.
+%%handwave
+name:
+  Metric recovery from the Riccati reduction and analyticity
+statement:
+  Domain-level analytic Riccati coefficients give metric recovery; ball domains and preconnectedness are supplied by the two-jet normalization. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalyticAndBallDomain).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalytic
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1965,9 +2501,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalytic
     hReduce hAnalytic
 
 /--
-The current strongest unbundled metric-recovery bridge: after the direct
-pullback Liouville calculation, the only uniqueness-side input is the Riccati
-reduction data.
+%%handwave
+name:
+  Metric recovery from the scalar Riccati reduction
+statement:
+  The Poincaré pullback Liouville formula and the scalar Riccati equation imply \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\) for every \(z\in\Omega\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiReduction
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1980,8 +2520,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiReduction
     (localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction hReduce)
 
 /--
-The metric-recovery bridge expressed in terms of the concrete Riccati calculus
-target.
+%%handwave
+name:
+  Metric recovery from the concrete Riccati calculus identities
+statement:
+  The metric-recovery bridge expressed in terms of the concrete Riccati calculus identities. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiReduction).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiCalculus
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -1992,8 +2537,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiCalculus
     (localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus hCalc)
 
 /--
-The metric-recovery bridge expressed in terms of canonical Frechet-Wirtinger
-Riccati calculus data.
+%%handwave
+name:
+  Metric recovery from canonical Wirtinger calculus
+statement:
+  The metric-recovery bridge expressed in terms of canonical Fréchet–Wirtinger Riccati identities. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [canonical Wirtinger identities imply the concrete Riccati calculus identities](lean:localLiouvilleSchwarzianRiccatiReductionCalculusTheorem_of_canonical) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiCalculus).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_canonicalRiccatiCalculus
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2005,10 +2555,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_canonicalRiccatiCa
       hCanonical)
 
 /--
-Metric recovery from the strengthened holomorphic Wirtinger-Riccati package.
-This is the honest replacement for the over-strong canonical complex-derivative
-route: once the extra holomorphic Riccati data are supplied, the rest is
-already handled by the scalar Riccati package.
+%%handwave
+name:
+  Metric recovery from the holomorphic metric-scaled Wirtinger–Riccati equation
+statement:
+  Metric recovery from the holomorphic Wirtinger–Riccati equation. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the Liouville–Schwarzian difference satisfies the scalar Riccati equation](lean:localLiouvilleSchwarzianRiccatiReductionTheorem_of_canonicalMetricHolomorphicRiccati) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiReduction).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_canonicalMetricHolomorphicRiccati
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2020,8 +2573,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_canonicalMetricHol
       hHolomorphic)
 
 /--
-Metric recovery from the corrected Wirtinger-Riccati reduction and the genuine
-first-order Liouville-Schwarzian uniqueness theorem.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati reduction and first-order uniqueness
+statement:
+  Metric recovery from the corrected Wirtinger-Riccati reduction and the genuine first-order Liouville-Schwarzian uniqueness theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_firstOrderUnique) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_firstOrderUnique
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2036,8 +2594,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_f
       hWirtinger hUnique)
 
 /--
-Metric recovery from the corrected Wirtinger-Riccati reduction and uniqueness
-for the scalar elliptic difference formulation.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati reduction and uniqueness of the scalar equation
+statement:
+  Metric recovery from the corrected Wirtinger-Riccati reduction and uniqueness for the scalar elliptic difference formulation. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_scalarDifferenceUnique) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_scalarDifferenceUnique
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2052,8 +2615,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_s
       hWirtinger hUnique)
 
 /--
-Metric recovery from the corrected Wirtinger-Riccati reduction and uniqueness
-for the linearized scalar elliptic difference formulation.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati reduction and uniqueness of the linearized scalar equation
+statement:
+  Metric recovery from the corrected Wirtinger-Riccati reduction and uniqueness for the linearized scalar elliptic difference formulation. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_linearizedScalarDifferenceUnique) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_linearizedScalarDifferenceUnique
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2068,8 +2636,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_l
       hWirtinger hUnique)
 
 /--
-Metric recovery from the corrected Wirtinger-Riccati reduction and standard
-linear elliptic Cauchy uniqueness.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati reduction and elliptic Cauchy uniqueness
+statement:
+  Metric recovery from the corrected Wirtinger-Riccati reduction and standard linear elliptic Cauchy uniqueness. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_linearEllipticCauchyUnique) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_linearEllipticCauchyUnique
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2084,8 +2657,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_l
       hWirtinger hUnique)
 
 /--
-Metric recovery from the corrected Wirtinger-Riccati reduction and pathwise
-uniqueness for the closed first-order linear system.
+%%handwave
+name:
+  Metric recovery from the Wirtinger–Riccati reduction and pathwise first-order uniqueness
+statement:
+  Metric recovery from the corrected Wirtinger-Riccati reduction and pathwise uniqueness for the closed first-order linear system. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Combine [the original and pullback logarithmic densities agree on the normalized domain](lean:localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati_closedFirstOrderLinearSystemUnique) with [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_logLiouvilleUniqueness).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_wirtingerRiccati_closedFirstOrderLinearSystemUnique
     (hPullback : HyperbolicTwoJetPullbackLiouvilleCandidateTheorem)
@@ -2116,25 +2694,54 @@ structure HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems where
 namespace HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems
 
 /--
-The bundled Riccati boundary inherits ball-shaped normalized domains from the
-two-jet normalization package itself.
+%%handwave
+name:
+  The normalized domain is a disk
+statement:
+  Every normalized two-jet domain occurring here is a complex disk.
+proof:
+  Use the disk description supplied by the two-jet normalization.
 -/
 theorem ballDomain (_B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
     HyperbolicTwoJetNormalizationHasBallDomainTheorem :=
   hyperbolicTwoJetNormalizationHasBallDomainTheorem
 
-/-- The bundled Riccati analytic boundary gives logarithmic uniqueness. -/
+/--
+%%handwave
+name:
+  Logarithmic uniqueness from the pullback formula and scalar Riccati reduction
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the logarithmic conformal factors agree: \(φ(z)=φ_C(z)\) for all \(z∈Ω\).
+proof:
+  Reduce the stated Riccati identities to zero-initial-value uniqueness for the first-derivative difference, then integrate using the normalized base value.
+-/
 theorem localLogUniqueness (B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
     LocalLiouvilleSchwarzianLogUniquenessTheorem :=
   localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiReduction
     B.riccatiReduction
 
-/-- The bundled Riccati analytic boundary gives squared-density uniqueness. -/
+/--
+%%handwave
+name:
+  Squared-density uniqueness from the pullback formula and scalar Riccati reduction
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the squared densities agree: \(ρ_u(z)²=ρ_C(z)²\) for all \(z∈Ω\).
+proof:
+  Exponentiate the preceding equality of logarithmic conformal factors.
+-/
 theorem localUniqueness (B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
     LocalLiouvilleSchwarzianUniquenessTheorem :=
   localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness B.localLogUniqueness
 
-/-- The bundled Riccati analytic boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the pullback formula and scalar Riccati reduction
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric (B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
   hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiReduction
@@ -2166,18 +2773,42 @@ def toRiccatiAnalyticBoundary
   riccatiReduction :=
     localLiouvilleSchwarzianRiccatiReductionTheorem_of_calculus B.riccatiCalculus
 
-/-- The bundled concrete Riccati calculus boundary gives logarithmic uniqueness. -/
+/--
+%%handwave
+name:
+  Logarithmic uniqueness from the pullback formula and concrete Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the logarithmic conformal factors agree: \(φ(z)=φ_C(z)\) for all \(z∈Ω\).
+proof:
+  Reduce the stated Riccati identities to zero-initial-value uniqueness for the first-derivative difference, then integrate using the normalized base value.
+-/
 theorem localLogUniqueness (B : HyperbolicTwoJetRiccatiCalculusBoundaryTheorems) :
     LocalLiouvilleSchwarzianLogUniquenessTheorem :=
   localLiouvilleSchwarzianLogUniquenessTheorem_of_riccatiCalculus
     B.riccatiCalculus
 
-/-- The bundled concrete Riccati calculus boundary gives squared-density uniqueness. -/
+/--
+%%handwave
+name:
+  Squared-density uniqueness from the pullback formula and concrete Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the squared densities agree: \(ρ_u(z)²=ρ_C(z)²\) for all \(z∈Ω\).
+proof:
+  Exponentiate the preceding equality of logarithmic conformal factors.
+-/
 theorem localUniqueness (B : HyperbolicTwoJetRiccatiCalculusBoundaryTheorems) :
     LocalLiouvilleSchwarzianUniquenessTheorem :=
   localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness B.localLogUniqueness
 
-/-- The bundled concrete Riccati calculus boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the pullback formula and concrete Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric (B : HyperbolicTwoJetRiccatiCalculusBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
   hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiCalculus
@@ -2213,18 +2844,42 @@ def toRiccatiAnalyticBoundary
     HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems :=
   B.toRiccatiCalculusBoundary.toRiccatiAnalyticBoundary
 
-/-- The bundled canonical Riccati boundary gives logarithmic uniqueness. -/
+/--
+%%handwave
+name:
+  Logarithmic uniqueness from the pullback formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the logarithmic conformal factors agree: \(φ(z)=φ_C(z)\) for all \(z∈Ω\).
+proof:
+  Reduce the stated Riccati identities to zero-initial-value uniqueness for the first-derivative difference, then integrate using the normalized base value.
+-/
 theorem localLogUniqueness (B : HyperbolicTwoJetCanonicalRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianLogUniquenessTheorem :=
   localLiouvilleSchwarzianLogUniquenessTheorem_of_canonicalRiccatiCalculus
     B.canonicalRiccati
 
-/-- The bundled canonical Riccati boundary gives squared-density uniqueness. -/
+/--
+%%handwave
+name:
+  Squared-density uniqueness from the pullback formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the squared densities agree: \(ρ_u(z)²=ρ_C(z)²\) for all \(z∈Ω\).
+proof:
+  Exponentiate the preceding equality of logarithmic conformal factors.
+-/
 theorem localUniqueness (B : HyperbolicTwoJetCanonicalRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianUniquenessTheorem :=
   localLiouvilleSchwarzianUniquenessTheorem_of_logUniqueness B.localLogUniqueness
 
-/-- The bundled canonical Riccati boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the pullback formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric (B : HyperbolicTwoJetCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
   hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_canonicalRiccatiCalculus
@@ -2268,17 +2923,41 @@ def toRiccatiAnalyticBoundary
     HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems :=
   B.toCanonicalRiccatiBoundary.toRiccatiAnalyticBoundary
 
-/-- The bundled metric-scaled canonical boundary gives logarithmic uniqueness. -/
+/--
+%%handwave
+name:
+  Logarithmic uniqueness from the metric-scaled canonical Riccati identities
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the logarithmic conformal factors agree: \(φ(z)=φ_C(z)\) for all \(z∈Ω\).
+proof:
+  Reduce the stated Riccati identities to zero-initial-value uniqueness for the first-derivative difference, then integrate using the normalized base value.
+-/
 theorem localLogUniqueness (B : HyperbolicTwoJetCanonicalMetricRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianLogUniquenessTheorem :=
   B.toCanonicalRiccatiBoundary.localLogUniqueness
 
-/-- The bundled metric-scaled canonical boundary gives squared-density uniqueness. -/
+/--
+%%handwave
+name:
+  Squared-density uniqueness from the metric-scaled canonical Riccati identities
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the squared densities agree: \(ρ_u(z)²=ρ_C(z)²\) for all \(z∈Ω\).
+proof:
+  Exponentiate the preceding equality of logarithmic conformal factors.
+-/
 theorem localUniqueness (B : HyperbolicTwoJetCanonicalMetricRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianUniquenessTheorem :=
   B.toCanonicalRiccatiBoundary.localUniqueness
 
-/-- The bundled metric-scaled canonical boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the metric-scaled canonical Riccati identities
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric (B : HyperbolicTwoJetCanonicalMetricRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
   B.toCanonicalRiccatiBoundary.recoversMetric
@@ -2311,21 +2990,45 @@ def ofCanonicalMetricRiccatiBoundary
     localLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem_of_metric
       B.canonicalMetricRiccati
 
-/-- The corrected Wirtinger boundary gives logarithmic uniqueness. -/
+/--
+%%handwave
+name:
+  Logarithmic uniqueness from the corrected metric-scaled Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the logarithmic conformal factors agree: \(φ(z)=φ_C(z)\) for all \(z∈Ω\).
+proof:
+  Reduce the stated Riccati identities to zero-initial-value uniqueness for the first-derivative difference, then integrate using the normalized base value.
+-/
 theorem localLogUniqueness
     (B : HyperbolicTwoJetCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianLogUniquenessTheorem :=
   localLiouvilleSchwarzianLogUniquenessTheorem_of_wirtingerRiccati
     B.canonicalMetricWirtingerRiccati
 
-/-- The corrected Wirtinger boundary gives squared-density uniqueness. -/
+/--
+%%handwave
+name:
+  Squared-density uniqueness from the corrected metric-scaled Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the squared densities agree: \(ρ_u(z)²=ρ_C(z)²\) for all \(z∈Ω\).
+proof:
+  Exponentiate the preceding equality of logarithmic conformal factors.
+-/
 theorem localUniqueness
     (B : HyperbolicTwoJetCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
     LocalLiouvilleSchwarzianUniquenessTheorem :=
   localLiouvilleSchwarzianUniquenessTheorem_of_wirtingerRiccati
     B.canonicalMetricWirtingerRiccati
 
-/-- The corrected Wirtinger boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the corrected metric-scaled Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2360,7 +3063,15 @@ def toCanonicalRiccatiBoundary
     B.pullbackFormula
   canonicalRiccati := B.canonicalRiccati
 
-/-- The formula-level boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the explicit pullback formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetPullbackFormulaCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2399,7 +3110,15 @@ def toCanonicalMetricRiccatiBoundary
     B.pullbackFormula
   canonicalMetricRiccati := B.canonicalMetricRiccati
 
-/-- The formula-level metric-scaled boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the explicit pullback formula and metric-scaled Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetPullbackFormulaCanonicalMetricRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2432,7 +3151,15 @@ def toPullbackFormulaCanonicalRiccatiBoundary
       B.canonicalPullbackFormula
   canonicalRiccati := B.canonicalRiccati
 
-/-- The canonical-formula boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the canonical pullback formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackFormulaCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2472,7 +3199,15 @@ def toPullbackFormulaCanonicalMetricRiccatiBoundary
       B.canonicalPullbackFormula
   canonicalMetricRiccati := B.canonicalMetricRiccati
 
-/-- The canonical-formula metric-scaled boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the canonical pullback formula and metric-scaled Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackFormulaCanonicalMetricRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2506,7 +3241,15 @@ def toCanonicalPullbackFormulaCanonicalRiccatiBoundary
       B.canonicalPullbackWirtingerFormula
   canonicalRiccati := B.canonicalRiccati
 
-/-- The Wirtinger-formula boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the explicit Wirtinger pullback formulas and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackWirtingerFormulaCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2540,7 +3283,15 @@ def toCanonicalPullbackWirtingerFormulaCanonicalRiccatiBoundary
       B.canonicalPullbackDensityDerivative
   canonicalRiccati := B.canonicalRiccati
 
-/-- The density-derivative boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the pullback density derivative and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackDensityDerivativeCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2573,7 +3324,15 @@ def toCanonicalPullbackDensityDerivativeCanonicalRiccatiBoundary
       B.canonicalPullbackBranchDerivative
   canonicalRiccati := B.canonicalRiccati
 
-/-- The branch-derivative boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the branch derivative formula and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackBranchDerivativeCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2609,7 +3368,15 @@ def toCanonicalPullbackBranchDerivativeCanonicalRiccatiBoundary
       B.canonicalPullbackSecondExpression
   canonicalRiccati := B.canonicalRiccati
 
-/-- The second-expression boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the second pullback identity and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackSecondExpressionCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2645,7 +3412,15 @@ def toCanonicalPullbackSecondExpressionCanonicalRiccatiBoundary
       B.canonicalPullbackThirdDerivative
   canonicalRiccati := B.canonicalRiccati
 
-/-- The third-derivative boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from the third-derivative identity and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackThirdDerivativeCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2681,7 +3456,15 @@ def toCanonicalPullbackThirdDerivativeCanonicalRiccatiBoundary
       B.canonicalPullbackAffineDerivative
   canonicalRiccati := B.canonicalRiccati
 
-/-- The affine-derivative boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from affine derivative identities and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackAffineDerivativeCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2740,7 +3523,15 @@ def toCanonicalPullbackAffineDerivativeCanonicalRiccatiBoundary
       B.canonicalPullbackDerivIdentified
   canonicalRiccati := B.canonicalRiccati
 
-/-- The derivative-identification boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from derivative identification and canonical Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2804,7 +3595,15 @@ def toRiccatiAnalyticBoundary
     HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems :=
   B.toCanonicalMetricRiccatiBoundary.toRiccatiAnalyticBoundary
 
-/-- The derivative-identification metric-scaled boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from derivative identification and metric-scaled Riccati calculus
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalMetricRiccatiBoundaryTheorems) :
     HyperbolicTwoJetNormalizationRecoversMetricTheorem :=
@@ -2858,7 +3657,15 @@ def ofCanonicalMetricRiccatiBoundary
     localLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiTheorem_of_metric
       B.canonicalMetricRiccati
 
-/-- The derivative-identified corrected Wirtinger boundary gives metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from derivative identification and the Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B :
       HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
@@ -2895,7 +3702,15 @@ def toDerivIdentifiedCanonicalMetricWirtingerRiccatiBoundary
       B.canonicalPullbackDerivativeAlgebra
   canonicalMetricWirtingerRiccati := B.canonicalMetricWirtingerRiccati
 
-/-- The derivative-algebra corrected boundary gives two-jet metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from derivative algebra and the Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B :
       HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
@@ -2942,7 +3757,15 @@ def toDerivIdentifiedCanonicalMetricWirtingerRiccatiBoundary
       B.canonicalPullbackAffineDerivative
   canonicalMetricWirtingerRiccati := B.canonicalMetricWirtingerRiccati
 
-/-- The affine-derivative corrected boundary gives two-jet metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from affine derivative identities and the Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B :
       HyperbolicTwoJetCanonicalPullbackAffineDerivativeCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
@@ -3001,7 +3824,15 @@ def toDerivIdentifiedCanonicalMetricWirtingerRiccatiBoundary
       B.canonicalPullbackAffineDerivativeAlgebra
   canonicalMetricWirtingerRiccati := B.canonicalMetricWirtingerRiccati
 
-/-- The affine-derivative-algebra corrected boundary gives two-jet metric recovery. -/
+/--
+%%handwave
+name:
+  Metric recovery from affine derivative algebra and the Wirtinger–Riccati equation
+statement:
+  For every normalized branch satisfying the stated pullback and Riccati hypotheses, the original metric is the Poincaré pullback: \(ρ_u(z)²=|F'(z)|²/(\operatorname{Im} F(z))²\) for all \(z∈Ω\).
+proof:
+  Construct the Poincaré pullback factor, use Riccati uniqueness to identify its density with the original one, and unfold the pullback density formula.
+-/
 theorem recoversMetric
     (B :
       HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
@@ -3032,7 +3863,13 @@ def toAffineDerivativeAlgebraCanonicalMetricWirtingerRiccatiBoundary
 end HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraCanonicalMetricWirtingerRiccatiBoundaryTheorems
 
 /--
-Bundled version of the current strongest metric-recovery bridge.
+%%handwave
+name:
+  Metric recovery from the pullback formula and scalar Riccati reduction
+statement:
+  The pullback Liouville formula and scalar Riccati reduction imply metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply metric recovery from the pullback Liouville formula and scalar Riccati equation.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalyticBoundary
     (B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
@@ -3040,8 +3877,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_riccatiAnalyticBou
   B.recoversMetric
 
 /--
-The current strongest derivative-identified and metric-scaled boundary gives
-metric recovery.
+%%handwave
+name:
+  Metric recovery from derivative identification and metric-scaled Riccati calculus
+statement:
+  The current strongest derivative-identified and metric-scaled boundary gives metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Forget the derivative-identified provenance and metric scaling to the pullback formula and canonical Riccati identities, then apply its metric-recovery theorem.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentifiedCanonicalMetricRiccatiBoundary
     (B : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalMetricRiccatiBoundaryTheorems) :
@@ -3049,8 +3891,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentifiedCan
   B.recoversMetric
 
 /--
-The derivative-identified pullback boundary plus corrected Frechet-Wirtinger
-Riccati uniqueness gives metric recovery.
+%%handwave
+name:
+  Metric recovery from derivative identification and the Wirtinger–Riccati equation
+statement:
+  The derivative-identified pullback boundary plus corrected Fréchet-Wirtinger Riccati uniqueness gives metric recovery. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Convert the derivative-identified pullback formulas into a pullback Liouville candidate and apply corrected Wirtinger–Riccati uniqueness.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentifiedCanonicalMetricWirtingerRiccatiBoundary
     (B :
@@ -3059,9 +3906,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentifiedCan
   B.recoversMetric
 
 /--
-The affine-derivative-algebra pullback boundary plus corrected
-Frechet-Wirtinger Riccati uniqueness gives metric recovery, with the Poincare
-Laplacian calculation supplied internally.
+%%handwave
+name:
+  Metric recovery from affine derivative algebra and the Wirtinger–Riccati equation
+statement:
+  The affine-derivative-algebra pullback boundary plus corrected Fréchet-Wirtinger Riccati uniqueness gives metric recovery, with the Poincaré Laplacian calculation supplied internally. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Derive the Poincaré Laplacian and derivative identities from the affine derivative algebra, then apply the corrected Wirtinger boundary’s metric-recovery result.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAlgebraCanonicalMetricWirtingerRiccatiBoundary
     (B :
@@ -3070,9 +3921,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAl
   B.recoversMetric
 
 /--
-The derivative-algebra pullback boundary plus corrected Frechet-Wirtinger
-Riccati uniqueness gives metric recovery, with the Poincare Laplacian
-calculation supplied internally.
+%%handwave
+name:
+  Metric recovery from derivative algebra and the Wirtinger–Riccati equation
+statement:
+  The derivative-algebra pullback boundary plus corrected Fréchet-Wirtinger Riccati uniqueness gives metric recovery, with the Poincaré Laplacian calculation supplied internally. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Convert derivative algebra to affine derivative algebra, derive the Poincaré Laplacian internally, and invoke the corrected Wirtinger boundary’s metric-recovery result.
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebraCanonicalMetricWirtingerRiccatiBoundary
     (B :
@@ -3081,11 +3936,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebraC
   B.recoversMetric
 
 /--
-Unbundled derivative-identified pullback plus corrected
-Frechet-Wirtinger-Riccati uniqueness gives metric recovery.
-
-This exposes the two current pullback/uniqueness inputs directly, without the
-intermediate boundary structure.
+%%handwave
+name:
+  Metric recovery from derivative identification and the Wirtinger–Riccati equation
+statement:
+  Derivative identification for the Poincaré pullback together with corrected Fréchet–Wirtinger Riccati uniqueness gives \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\) for every \(z\in\Omega\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentifiedCanonicalMetricWirtingerRiccatiBoundary).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati
     (hPullback : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem)
@@ -3096,8 +3953,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_an
       canonicalMetricWirtingerRiccati := hRiccati }
 
 /--
-Metric recovery from actual affine `HasDerivAt` pullback data and the
-corrected Frechet-Wirtinger Riccati theorem.
+%%handwave
+name:
+  Metric recovery from affine derivative identities and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from actual affine complex-derivative identities and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivative_and_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem)
@@ -3108,8 +3970,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivative_a
     hRiccati
 
 /--
-Metric recovery from actual affine derivative algebra, the geometric Poincare
-Laplacian identity, and the corrected Frechet-Wirtinger Riccati theorem.
+%%handwave
+name:
+  Metric recovery from affine derivative algebra, the Poincaré Laplacian identity, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from actual affine derivative algebra, the geometric Poincaré Laplacian identity, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAlgebra_laplacian_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
@@ -3122,9 +3989,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAl
     hRiccati
 
 /--
-Metric recovery from actual affine derivative algebra and the corrected
-Frechet-Wirtinger Riccati theorem.  The Poincare Laplacian calculation is
-derived from the affine algebra internally.
+%%handwave
+name:
+  Metric recovery from affine derivative algebra and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from actual affine derivative algebra and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAlgebra_and_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
@@ -3136,9 +4007,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_affineDerivativeAl
     hRiccati
 
 /--
-Metric recovery from the three separated local inputs: derivative algebra for
-the normalized branch, the geometric Poincare Laplacian identity, and the
-corrected Frechet-Wirtinger Riccati theorem.
+%%handwave
+name:
+  Metric recovery from derivative algebra, the Poincaré Laplacian identity, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from the three separated local inputs: derivative algebra for the normalized branch, the geometric Poincaré Laplacian identity, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebra_laplacian_wirtingerRiccati
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem)
@@ -3151,10 +4026,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebra_
     hRiccati
 
 /--
-Metric recovery from derivative algebra for the normalized branch and the
-corrected Frechet-Wirtinger Riccati theorem.  The Poincare Laplacian
-calculation is derived by converting derivative algebra to affine derivative
-algebra.
+%%handwave
+name:
+  Metric recovery from derivative algebra and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from derivative algebra for the normalized branch and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebra_and_wirtingerRiccati
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem)
@@ -3165,10 +4043,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivativeAlgebra_
     hRiccati
 
 /--
-Metric recovery from the four separated local inputs: regularity of the
-normalized branch, derivative identification for its affine branch, the
-geometric Poincare Laplacian identity, and the corrected Frechet-Wirtinger
-Riccati theorem.
+%%handwave
+name:
+  Metric recovery from regularity, derivative identification, the Poincaré Laplacian identity, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from the four separated local inputs: regularity of the normalized branch, derivative identification for its affine branch, the geometric Poincaré Laplacian identity, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_derivativeIdentification_laplacian_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3182,9 +4063,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_derivat
     hRiccati
 
 /--
-Metric recovery from regularity, derivative identification, and the corrected
-Frechet-Wirtinger Riccati theorem.  No separate Poincare Laplacian input is
-needed.
+%%handwave
+name:
+  Metric recovery from regularity, derivative identification, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from regularity, derivative identification, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_derivativeIdentification_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3197,10 +4082,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_derivat
     hRiccati
 
 /--
-Metric recovery from the five separated local inputs: regularity of the
-normalized branch, the three affine derivative-identification levels, the
-geometric Poincare Laplacian identity, and the corrected Frechet-Wirtinger
-Riccati theorem.
+%%handwave
+name:
+  Metric recovery from regularity, three derivative identities, the Poincaré Laplacian identity, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from the five separated local inputs: regularity of the normalized branch, the three affine derivative-identification levels, the geometric Poincaré Laplacian identity, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_first_second_third_laplacian_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3216,9 +4104,13 @@ theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_first_s
     hRiccati
 
 /--
-Metric recovery from regularity, the three affine derivative-identification
-levels, and the corrected Frechet-Wirtinger Riccati theorem.  The Poincare
-Laplacian calculation is supplied internally by the derivative-algebra route.
+%%handwave
+name:
+  Metric recovery from regularity, three derivative identities, and the Wirtinger–Riccati equation
+statement:
+  Metric recovery from regularity, the three affine derivative-identification levels, and the corrected Fréchet-Wirtinger Riccati theorem. For every \(z\in\Omega\), this is the formula \(\rho_u(z)^2=|F'(z)|^2/(\operatorname{Im}F(z))^2\).
+proof:
+  Apply [the normalized branch satisfies \(\rho_u^2=|F'|^2/(\operatorname{Im}F)^2\)](lean:hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_derivIdentified_and_wirtingerRiccati).
 -/
 theorem hyperbolicTwoJetNormalizationRecoversMetricTheorem_of_regularity_first_second_third_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3249,8 +4141,13 @@ def HyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem 
         z ∈ N.normalized.domain
 
 /--
-The precise 2-jet normalization theorem plus metric recovery from that 2-jet
-imply the older metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and metric recovery
+statement:
+  The precise 2-jet normalization theorem plus metric recovery from that 2-jet imply the older existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Choose the two-jet normalization at the given point, attach the assumed metric-recovery identity to it, and retain the original point in the normalized domain.
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3263,8 +4160,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
   exact hNz
 
 /--
-The precise 2-jet normalization theorem plus the bundled Riccati analytic
-boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and the scalar Riccati reduction
+statement:
+  The precise 2-jet normalization theorem plus the pullback Liouville formula and scalar Riccati reduction give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetRiccatiAnalyticBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3274,8 +4176,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus the concrete Riccati calculus
-boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and concrete Riccati calculus
+statement:
+  The precise 2-jet normalization theorem plus the pullback formula and concrete Riccati calculus identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetRiccatiAnalyticBoundary).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetRiccatiCalculusBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3285,8 +4192,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.toRiccatiAnalyticBoundary
 
 /--
-The precise 2-jet normalization theorem plus the canonical Riccati boundary
-give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and canonical Riccati calculus
+statement:
+  The precise 2-jet normalization theorem plus the pullback formula and canonical Riccati identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetRiccatiCalculusBoundary).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetCanonicalRiccatiBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3296,8 +4208,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.toRiccatiCalculusBoundary
 
 /--
-The precise 2-jet normalization theorem plus the sharp second-expression
-pullback/Riccati boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and the second pullback identity
+statement:
+  The precise 2-jet normalization theorem plus the second pullback identity and canonical Riccati identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetSecondExpressionBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3307,8 +4224,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus the sharp third-derivative
-pullback/Riccati boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and the third-derivative identity
+statement:
+  The precise 2-jet normalization theorem plus the third-derivative identity and canonical Riccati identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetThirdDerivativeBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3318,8 +4240,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus the sharp affine-derivative
-pullback/Riccati boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and affine derivative identities
+statement:
+  The precise 2-jet normalization theorem plus the affine derivative identities and canonical Riccati identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetAffineDerivativeBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3329,8 +4256,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus the sharp derivative-identified
-pullback/Riccati boundary give the metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization and derivative identification
+statement:
+  The precise 2-jet normalization theorem plus the derivative identification and canonical Riccati identities give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetDerivIdentifiedBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3340,9 +4272,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus the derivative-identified
-pullback/corrected-Wirtinger boundary give the metric-recovering normalization
-target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization, derivative identification, and Wirtinger–Riccati uniqueness
+statement:
+  The precise 2-jet normalization theorem plus the derivative identification and the corrected Wirtinger–Riccati equation give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetDerivIdentifiedMetricWirtingerBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3353,9 +4289,13 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheo
     hJet B.recoversMetric
 
 /--
-The precise 2-jet normalization theorem plus actual affine pullback
-derivatives and corrected Wirtinger-Riccati uniqueness give the
-metric-recovering normalization target.
+%%handwave
+name:
+  Existence of a metric-recovering upper-half-plane normalization from two-jet normalization, affine derivative identities, and Wirtinger–Riccati uniqueness
+statement:
+  The precise 2-jet normalization theorem plus actual affine pullback derivatives and corrected Wirtinger-Riccati uniqueness give the existence of a metric-recovering upper-half-plane normalization. Thus every point of the Schwarzian branch lies in a local upper-half-plane normalization whose Poincaré pullback metric equals the original conformal metric.
+proof:
+  Apply [two-jet normalization and metric recovery give a metric-recovering upper-half-plane normalization](lean:hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJet).
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsMetricRecoveringNormalizationTheorem_of_twoJetAffineDerivativeMetricWirtingerBoundary
     (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
@@ -3377,8 +4317,13 @@ def HolomorphicSchwarzianLinearODELocalExistenceTheorem : Prop :=
         Nonempty (NormalizedSchwarzianLinearODESolutionPair S.coefficient U z)
 
 /--
-The Frobenius-pair existence theorem implies the normalized linear ODE local
-existence theorem used by the Schwarzian chart construction.
+%%handwave
+name:
+  Local existence for the Schwarzian linear ODE from existence of a normalized Frobenius pair
+statement:
+  The Frobenius-pair existence theorem implies the normalized linear ODE local existence theorem used by the Schwarzian chart construction. For each \(z_0\) in the coordinate domain there is an open neighborhood \(U\) and a normalized fundamental pair for \(y''+\tfrac12 qy=0\) on \(U\).
+proof:
+  Take the convergent Frobenius solution pair, use its centered disk of convergence as \(U\), and pass to the normalized fundamental pair.
 -/
 theorem holomorphicSchwarzianLinearODELocalExistence_of_frobeniusPairExistence
     (h : HolomorphicSchwarzianFrobeniusPairExistenceTheorem) :
@@ -3393,8 +4338,13 @@ theorem holomorphicSchwarzianLinearODELocalExistence_of_frobeniusPairExistence
       ⟨P.toNormalizedSchwarzianLinearODESolutionPair⟩⟩
 
 /--
-Local existence of normalized solution pairs implies local solvability of the
-Schwarzian equation.
+%%handwave
+name:
+  Local solvability of the holomorphic Schwarzian equation from local existence for the Schwarzian linear ODE
+statement:
+  Local existence of normalized solution pairs implies local solvability of the Schwarzian equation. For every \(z_0\) in the coordinate domain there is a local Schwarzian ODE chart whose domain contains \(z_0\).
+proof:
+  Choose the normalized fundamental pair on \(U\) and form its Schwarzian linear-ODE frame; the resulting chart still contains the base point.
 -/
 theorem holomorphicSchwarzianLocallySolvableTheorem_of_linearODELocalExistence
     (h : HolomorphicSchwarzianLinearODELocalExistenceTheorem) :
@@ -3409,8 +4359,13 @@ theorem holomorphicSchwarzianLocallySolvableTheorem_of_linearODELocalExistence
       hzU⟩
 
 /--
-The power-series/Frobenius existence theorem directly gives local solvability
-of the Schwarzian equation.
+%%handwave
+name:
+  Local solvability of the holomorphic Schwarzian equation from existence of a normalized Frobenius pair
+statement:
+  The power-series/Frobenius existence theorem directly gives local solvability of the Schwarzian equation. For every \(z_0\) in the coordinate domain there is a local Schwarzian ODE chart whose domain contains \(z_0\).
+proof:
+  Combine [a Frobenius pair gives a normalized local solution pair for \(y''+\tfrac12 qy=0\)](lean:holomorphicSchwarzianLinearODELocalExistence_of_frobeniusPairExistence) with [normalized local ODE solutions give a local Schwarzian chart](lean:holomorphicSchwarzianLocallySolvableTheorem_of_linearODELocalExistence).
 -/
 theorem holomorphicSchwarzianLocallySolvableTheorem_of_frobeniusPairExistence
     (h : HolomorphicSchwarzianFrobeniusPairExistenceTheorem) :
@@ -3418,7 +4373,15 @@ theorem holomorphicSchwarzianLocallySolvableTheorem_of_frobeniusPairExistence
   holomorphicSchwarzianLocallySolvableTheorem_of_linearODELocalExistence
     (holomorphicSchwarzianLinearODELocalExistence_of_frobeniusPairExistence h)
 
-/-- Apply the local Schwarzian ODE existence theorem to a chosen coefficient. -/
+/--
+%%handwave
+name:
+  A local Schwarzian ODE chart from local solvability of the Schwarzian equation
+statement:
+  Apply the local Schwarzian ODE existence theorem to a chosen coefficient. For every \(z_0\) in the coordinate domain there is a local Schwarzian ODE chart whose domain contains \(z_0\).
+proof:
+  Specialize the assumed local existence statement to the chosen coefficient and base point.
+-/
 theorem localSchwarzianODEChart_of_localSolvability
     (h : HolomorphicSchwarzianLocallySolvableTheorem)
     {u : LocalConformalFactor} (S : LocalSchwarzianData u) ⦃z : ℂ⦄
@@ -3426,7 +4389,15 @@ theorem localSchwarzianODEChart_of_localSolvability
     ∃ C : LocalSchwarzianODEChart S, z ∈ C.domain :=
   h S hz
 
-/-- Local Schwarzian solvability gives local projective developing maps. -/
+/--
+%%handwave
+name:
+  Local projective developing maps for a holomorphic Schwarzian from local solvability of the Schwarzian equation
+statement:
+  Local Schwarzian solvability gives local projective developing maps. For every \(z_0\) in the coordinate domain there is a local projective developing map defined at \(z_0\).
+proof:
+  Choose a local Schwarzian ODE chart and take the projective ratio of its normalized solution frame.
+-/
 theorem holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_localSolvability
     (h : HolomorphicSchwarzianLocallySolvableTheorem) :
     HolomorphicSchwarzianLocalProjectiveDevelopingMapTheorem := by
@@ -3434,14 +4405,30 @@ theorem holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_localSolvabi
   rcases h S hz with ⟨C, hzC⟩
   exact ⟨C.toLocalProjectiveDevelopingMap, hzC⟩
 
-/-- Frobenius-pair existence gives local projective developing maps. -/
+/--
+%%handwave
+name:
+  Local projective developing maps for a holomorphic Schwarzian from existence of a normalized Frobenius pair
+statement:
+  Frobenius-pair existence gives local projective developing maps. For every \(z_0\) in the coordinate domain there is a local projective developing map defined at \(z_0\).
+proof:
+  Combine [normalized local ODE solutions give a local Schwarzian chart](lean:holomorphicSchwarzianLocallySolvableTheorem_of_frobeniusPairExistence) with [local Schwarzian solvability gives a local projective developing map](lean:holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_localSolvability).
+-/
 theorem holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_frobeniusPairExistence
     (h : HolomorphicSchwarzianFrobeniusPairExistenceTheorem) :
     HolomorphicSchwarzianLocalProjectiveDevelopingMapTheorem :=
   holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_localSolvability
     (holomorphicSchwarzianLocallySolvableTheorem_of_frobeniusPairExistence h)
 
-/-- Apply the local projective-developing-map theorem to a chosen coefficient. -/
+/--
+%%handwave
+name:
+  A local projective developing map from local solvability of the Schwarzian equation
+statement:
+  Apply the local projective-developing-map theorem to a chosen coefficient. For every \(z_0\) in the coordinate domain there is a local projective developing map defined at \(z_0\).
+proof:
+  Specialize the assumed local existence statement to the chosen coefficient and base point.
+-/
 theorem localProjectiveDevelopingMap_of_localSolvability
     (h : HolomorphicSchwarzianLocalProjectiveDevelopingMapTheorem)
     {u : LocalConformalFactor} (S : LocalSchwarzianData u) ⦃z : ℂ⦄

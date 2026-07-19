@@ -66,8 +66,19 @@ noncomputable def smoothRealFunctionOfZeroForm
       (heq.eq_of_nhdsWithin hx_target)).mono_of_mem_nhdsWithin
       (e.extend_target_mem_nhdsWithin (by simp [e]))
 
-/-- Passing from a smooth zero-form to its scalar function and back recovers
-the original zero-form. -/
+/--
+%%handwave
+name:
+  Recovering a smooth zero-form from its scalar function
+statement:
+  If a smooth real zero-form \(\theta\) is evaluated on the unique empty
+  tangent frame to obtain a scalar function, then converting that function
+  back to a zero-form recovers \(\theta\).
+proof:
+  Two zero-forms are equal if their values agree at every point and empty
+  tangent frame.  Alternating zero-linear maps are constant, so both values
+  are the same scalar.
+-/
 theorem smoothRealFunctionToZeroForm_smoothRealFunctionOfZeroForm
     (theta : SmoothForms (I := I) (M := M) ℝ 0) :
     smoothRealFunctionToZeroForm (I0 := I)
@@ -100,8 +111,18 @@ structure SmoothCirclePrimitive
 
 namespace SmoothCirclePrimitive
 
-/-- Two continuous real arguments of the same unit-complex phase differ
-locally by an integer multiple of `2 * pi`. -/
+/--
+%%handwave
+name:
+  Two continuous arguments of one phase differ locally by a constant
+statement:
+  If continuous functions \(f,g:T\to\mathbb R\) satisfy
+  \(e^{if(x)}=e^{ig(x)}\) for every \(x\), then \(f-g\) is locally constant.
+proof:
+  At every point, \(f-g\) is an integer multiple of \(2\pi\).  Continuity
+  gives a neighborhood on which its variation is less than \(2\pi\), forcing
+  the integer multiple to remain unchanged.
+-/
 theorem isLocallyConstant_sub_of_exp_mul_I_eq
     {T : Type*} [TopologicalSpace T]
     (f g : T → ℝ) (hf : Continuous f) (hg : Continuous g)
@@ -149,6 +170,17 @@ def congr
   rw [← h]
   exact P
 
+/--
+%%handwave
+name:
+  A smooth circle primitive has nonzero phase
+statement:
+  For every point \(x\), the complex phase of a smooth circle primitive is
+  nonzero.
+proof:
+  Locally the phase is \(e^{i\theta}\), and the complex exponential never
+  vanishes.
+-/
 theorem phase_ne_zero
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) (x : M) :
@@ -158,6 +190,17 @@ theorem phase_ne_zero
   rw [hphase xU]
   exact Complex.exp_ne_zero _
 
+/--
+%%handwave
+name:
+  A smooth circle primitive has unit phase
+statement:
+  For every point \(x\), the phase \(P(x)\) of a smooth circle primitive
+  satisfies \(\lVert P(x)\rVert=1\).
+proof:
+  Locally \(P=e^{i\theta}\) with real \(\theta\), whose real part in the
+  exponent is zero; hence its norm is \(e^0=1\).
+-/
 theorem norm_phase_eq_one
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) (x : M) :

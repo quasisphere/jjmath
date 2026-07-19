@@ -31,6 +31,11 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 Terminal chart/Mobius agreement gives terminal branch-formula agreement at
 the extended endpoint.
+
+%%handwave
+name: Terminal formulas agree under exact terminal extension data
+statement: Let $y$ lie in the terminal sheet of a continuation skeleton $S$, and let $T$ continue $S$ to the endpoint $\pi(y)$. If $T$ has the same terminal chart and accumulated Möbius transformation as $S$, then $F_T(\pi(y))=F_S(\pi(y))$.
+proof: Expand both terminal formulas as the accumulated real Möbius action on the terminal chart coordinate, then substitute the equal terminal chart centers and Möbius transformations.
 -/
 theorem terminalFormulaAt_eq
     (A :
@@ -76,6 +81,11 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 PSL-level terminal-extension agreement still identifies the terminal branch
 formula at the extended endpoint.
+
+%%handwave
+name: Terminal formulas agree under projective terminal extension data
+statement: Let $y$ lie in the terminal sheet of $S$, and let $T$ continue $S$ to $\pi(y)$. If the terminal chart centers agree and the two accumulated real Möbius transformations have the same class in $\mathrm{PSL}_2(\mathbb R)$, then $F_T(\pi(y))=F_S(\pi(y))$.
+proof: After identifying the terminal chart coordinates, use that real Möbius transformations with the same projective class induce the same action on the upper half-plane.
 -/
 theorem terminalFormulaAt_eq
     (A :
@@ -126,6 +136,11 @@ def terminalExtensionSkeletonProjectionAgreement
 /--
 The explicit terminal-extension skeleton gives the same terminal formula at
 the extended endpoint.
+
+%%handwave
+name: The explicit terminal extension preserves the branch value
+statement: For a skeleton $S$ and a lift $y$ in its terminal sheet, the explicit skeleton extending along the sheet path satisfies $F_{S_y}(\pi(y))=F_S(\pi(y))$.
+proof: The explicit extension has the same terminal center and accumulated Möbius transformation as $S$, so apply [exact terminal extension data identify the two endpoint formulas](lean:JJMath.HyperbolicMetric.PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement.terminalFormulaAt_eq).
 -/
 theorem terminalExtensionSkeleton_terminalFormulaAt_eq
     (S :
@@ -160,7 +175,13 @@ def PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionExistencePrinc
         T.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') =
           S.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y')
 
-/-- The explicit terminal-extension skeleton proves existential local extension. -/
+/-- The explicit terminal-extension skeleton proves existential local extension.
+
+%%handwave
+name: A terminal-sheet path admits a value-preserving continuation skeleton
+statement: For every continuation skeleton $S$ over $p:x_0\rightsquigarrow x$ and every lift $y$ in its terminal sheet, there is a skeleton $T$ over the path obtained by appending the sheet path to $\pi(y)$ such that $F_T(\pi(y))=F_S(\pi(y))$.
+proof: Choose the explicit terminal-extension skeleton and use [its endpoint branch value equals the original branch value](lean:JJMath.HyperbolicMetric.PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalExtensionSkeleton_terminalFormulaAt_eq).
+-/
 theorem pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionExistencePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
     (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) :
@@ -292,6 +313,11 @@ The decomposed one-column value-witness principle is unconditional.
 The rectangle itself is handled in one chart; the common suffix is handled by
 an exact append of an arbitrary componentwise suffix skeleton, so no good-cover
 or one-chart suffix assumption is needed.
+
+%%handwave
+name: A chart-contained homotopy column has matching decomposed continuation values
+statement: Let $F$ be an endpoint-fixed homotopy and $(t_n)$ a monotone subdivision with $t_0=0$. If the rectangle $[t_i,t_{i+1}]\times[t_m,t_{m+1}]$ lies in one local-model chart, then there are continuation skeletons over the decomposed top and bottom column paths with equal terminal values.
+proof: Continue along the common prefix, change to the chart containing the rectangle, compare its two boundary routes there, and append an arbitrary continuation skeleton along the common suffix; exact suffix extension preserves the equality.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessPrinciple_unconditional
     (x₀ : X) (g : HyperbolicMetric X)
@@ -480,6 +506,11 @@ At `r = 1`, the raw cut is the public lower side followed by pointwise
 constant terminal pieces.  At `r = 0`, it is pointwise constant basepoint
 pieces followed by the public upper side.  Away from the endpoints the public
 cut is definitionally the raw cut.
+
+%%handwave
+name: Raw and normalized strip cuts have equal continuation values
+statement: For every endpoint-fixed homotopy $F$ and $a,b,r\in[0,1]$, there are skeletons over the raw strip-cut path and its endpoint-normalized version whose terminal values are equal.
+proof: If $r=1$, remove the constant terminal pieces by terminal extension; if $r=0$, remove the constant initial pieces by constant-prefix invariance; for $0<r<1$ the two paths are definitionally equal.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple_unconditional
     (x₀ : X) (g : HyperbolicMetric X)
@@ -617,6 +648,11 @@ omit [RiemannSurface X] in
 /--
 The explicit witness form implies the arbitrary-skeleton cut-transfer form
 once same-path terminal-value uniqueness is available.
+
+%%handwave
+name: One explicit cut witness transfers every decomposed continuation value
+statement: Assume each chart-contained homotopy column has one top pair and one bottom pair of decomposed and public-cut skeletons with equal terminal values, and assume continuation along a fixed path has a unique terminal value. Then every decomposed top or bottom skeleton admits a public-cut skeleton with the same terminal value.
+proof: Use the explicit public-cut witness on each side, then replace its paired decomposed skeleton by the arbitrary given one using fixed-path terminal-value uniqueness.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple_of_explicitValueWitness
     {x₀ : X} {g : HyperbolicMetric X}
@@ -642,6 +678,11 @@ omit [RiemannSurface X] in
 /--
 Decomposed-column witnesses plus exact cut-reparameterization transfer give
 the public one-column value-witness principle.
+
+%%handwave
+name: Decomposed column comparison descends to public cut paths
+statement: If chart-contained columns admit equal terminal values on their decomposed top and bottom paths, and decomposed values transfer to the corresponding public cut paths, then the two public cut paths admit skeletons with equal terminal values.
+proof: Choose equal-valued decomposed skeletons, transfer each to a public-cut skeleton, and compose the three terminal-value equalities.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnValueWitnessPrinciple_of_decomposed_and_cutReparam
     {x₀ : X} {g : HyperbolicMetric X}
@@ -665,6 +706,11 @@ omit [RiemannSurface X] in
 /--
 Explicit terminal-value witnesses plus same-path uniqueness prove the
 one-column elementary grid-move boundary.
+
+%%handwave
+name: Equal-valued column witnesses yield an elementary grid move
+statement: Fix a chosen continuation skeleton along every based path. If every chart-contained homotopy column admits explicit top and bottom cut skeletons with equal terminal values, and fixed-path terminal values are unique, then the chosen cut skeletons are connected by a one-step elementary grid walk.
+proof: Transfer the explicit equality to the two chosen skeletons by fixed-path uniqueness, package the result as an elementary grid move, and regard that move as a one-step walk.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple_of_valueWitness
     {x₀ : X} {g : HyperbolicMetric X}
@@ -714,7 +760,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
 
 omit [RiemannSurface X] in
-/-- The terminal value equality carried by a same-path skeleton move. -/
+/-- The terminal value equality carried by a same-path skeleton move.
+
+%%handwave
+name: A same-path comparison move preserves terminal value
+statement: If $M$ is an elementary comparison move from a continuation skeleton $S$ to a skeleton $T$ over the same path, then $v(S)=v(T)$.
+proof: This equality is precisely the datum carried by the comparison move.
+-/
 theorem terminalValue_eq_of_move
     (M :
       PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T) :
@@ -1676,7 +1728,13 @@ noncomputable def terminalStutterIterate
         (S.terminalStutterIterateSkeleton k)
 
 omit [RiemannSurface X] in
-/-- A finite same-path skeleton move walk preserves terminal value. -/
+/-- A finite same-path skeleton move walk preserves terminal value.
+
+%%handwave
+name: A finite same-path move walk preserves terminal value
+statement: If $S=S_0,S_1,\ldots,S_N=T$ is a finite walk of terminal-value-preserving comparison moves, then $v(S)=v(T)$.
+proof: Induct along the walk, composing the equality supplied by each move; identify the zeroth and final skeletons with $S$ and $T$.
+-/
 theorem terminalValue_start_eq_end
     (W :
       PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T) :
@@ -1698,38 +1756,12 @@ theorem terminalValue_start_eq_end
 
 /--
 Over a fixed weak subdivision, changing all local-transition witnesses does
-not change the terminal value.
--/
-theorem terminalValue_eq_of_fixedWeakContinuation
-    (W :
-      PathLocalTransitionModelWeakContinuationSkeleton x₀ g localModels p)
-    (transitionAt₁ transitionAt₂ :
-      ∀ k : Fin W.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (W.centerAt k.castSucc))
-          (localModels.chartAt (W.centerAt k.succ))
-          (p (W.parameterAt k.succ)))
-    (initialTransition₁ initialTransition₂ :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (W.centerAt 0))
-        x₀) :
-    ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-          { toPathLocalTransitionModelWeakContinuationSkeleton := W
-            transitionAt := transitionAt₁ }
-       initialTransition := initialTransition₁ } :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p).terminalValue =
-    ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-          { toPathLocalTransitionModelWeakContinuationSkeleton := W
-            transitionAt := transitionAt₂ }
-       initialTransition := initialTransition₂ } :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p).terminalValue :=
-  (witnessReplacement_of_fixedWeakContinuation
-    W transitionAt₁ transitionAt₂ initialTransition₁ initialTransition₂).terminalValue_start_eq_end
-
-/--
-Over a fixed weak subdivision, changing all local-transition witnesses does
 not change the terminal Mobius PSL class.
+
+%%handwave
+name: Transition witnesses do not change the terminal projective Möbius class
+statement: Fix a weak continuation subdivision $W$ of a path. For any two choices of the initial and successive local-transition witnesses on $W$, the resulting accumulated terminal transformations $M_1,M_2$ satisfy $[M_1]=[M_2]$ in $\mathrm{PSL}_2(\mathbb R)$.
+proof: The two skeletons have identical subdivision data. Each pair of transition witnesses has the same projective class, so inductive accumulation preserves equality of the terminal projective classes.
 -/
 theorem terminalMobius_projection_eq_of_fixedWeakContinuation
     (W :
@@ -1783,6 +1815,11 @@ theorem terminalMobius_projection_eq_of_fixedWeakContinuation
 /--
 Over a fixed weak subdivision, changing all local-transition witnesses does
 not change the terminal branch formula.
+
+%%handwave
+name: Transition witnesses do not change the terminal branch formula
+statement: Fix a weak continuation subdivision $W$ and choose its initial and successive local-transition witnesses in two ways. If $F_1,F_2$ are the resulting terminal branch formulas, then $F_1(z)=F_2(z)$ for every $z\in X$.
+proof: The terminal chart data agree, while corresponding transition witnesses have equal projective classes; the accumulated branch-comparison formula therefore identifies $F_1(z)$ and $F_2(z)$.
 -/
 theorem terminalFormulaAt_eq_of_fixedWeakContinuation
     (W :
@@ -1867,6 +1904,11 @@ noncomputable def segmentSplitSkeletonWithWitnesses
 An arbitrary choice of local-transition witnesses on a one-segment refinement
 obtained by splitting an existing segment gives the same terminal branch
 formula as the original skeleton.
+
+%%handwave
+name: Splitting a segment preserves the terminal formula for arbitrary witnesses
+statement: Let $S$ be a continuation skeleton and split its $k$th segment at $\tau$ between its endpoints. For any transition witnesses on the refined subdivision, the resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
+proof: Compare $T$ with the canonical split skeleton using witness independence, then use preservation of the terminal formula by the canonical segment split.
 -/
 theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentSplit
     (S :
@@ -1907,82 +1949,6 @@ theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentSplit
       R.terminalFormulaAt z = S.terminalFormulaAt z := by
     exact S.segmentSplitSkeleton_terminalFormulaAt_eq k τ hτ_left hτ_right z
   exact hRT.symm.trans hRS
-
-/--
-An arbitrary choice of local-transition witnesses on a one-segment refinement
-obtained by splitting an existing segment gives the same terminal Mobius PSL
-class as the original skeleton.
--/
-theorem terminalMobius_projection_eq_of_arbitraryWitnesses_segmentSplit
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.segmentSplitCenterAt k j.castSucc))
-          (localModels.chartAt (S.segmentSplitCenterAt k j.succ))
-          (p (S.segmentSplitParameterAt k τ j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentSplitCenterAt k 0))
-        x₀) :
-    realMobiusProjection
-        (segmentSplitSkeletonWithWitnesses
-          S k τ hτ_left hτ_right transitionAt' initialTransition').terminalMobius =
-      realMobiusProjection S.terminalMobius := by
-  let R := S.segmentSplitSkeleton k τ hτ_left hτ_right
-  let T :=
-    segmentSplitSkeletonWithWitnesses
-      S k τ hτ_left hτ_right transitionAt' initialTransition'
-  have hRT :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection T.terminalMobius := by
-    simpa only [T, segmentSplitSkeletonWithWitnesses] using
-      terminalMobius_projection_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-  have hRS :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection S.terminalMobius := by
-    exact congrArg realMobiusProjection
-      (S.segmentSplitSkeleton_terminalMobius_eq k τ hτ_left hτ_right)
-  exact hRT.symm.trans hRS
-
-/--
-An arbitrary choice of local-transition witnesses on a segment split gives
-the same terminal value as the original skeleton.
--/
-theorem terminalValue_eq_of_arbitraryWitnesses_segmentSplit
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.segmentSplitCenterAt k j.castSucc))
-          (localModels.chartAt (S.segmentSplitCenterAt k j.succ))
-          (p (S.segmentSplitParameterAt k τ j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentSplitCenterAt k 0))
-        x₀) :
-    (segmentSplitSkeletonWithWitnesses
-      S k τ hτ_left hτ_right transitionAt' initialTransition').terminalValue =
-      S.terminalValue := by
-  simpa [PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalValue,
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalFormulaAt] using
-    terminalFormulaAt_eq_of_arbitraryWitnesses_segmentSplit
-      S k τ hτ_left hτ_right transitionAt' initialTransition' x
 
 /--
 Insert a zero-length endpoint chart handoff, but allow arbitrary
@@ -2027,6 +1993,11 @@ noncomputable def segmentEndpointChartInsertSkeletonWithWitnesses
 /--
 Arbitrary local-transition witnesses on an endpoint chart-insertion refinement
 give the same terminal branch formula as the original skeleton.
+
+%%handwave
+name: Inserting an endpoint chart preserves the terminal formula for arbitrary witnesses
+statement: Let $S$ be a continuation skeleton, and insert at the end of its $k$th segment a chart containing that endpoint, with transition data into and out of the chart. For any witnesses on the refined subdivision, the resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
+proof: First compare $T$ with the canonical endpoint-chart insertion using fixed-subdivision witness independence, then apply invariance of the canonical insertion.
 -/
 theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
     (S :
@@ -2083,106 +2054,6 @@ theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
   exact hRT.symm.trans hRS
 
 /--
-Arbitrary local-transition witnesses on an endpoint chart-insertion refinement
-give the same terminal Mobius PSL class as the original skeleton.
--/
-theorem terminalMobius_projection_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀) :
-    realMobiusProjection
-        (segmentEndpointChartInsertSkeletonWithWitnesses
-          S k c hc Tleft Tright transitionAt' initialTransition').terminalMobius =
-      realMobiusProjection S.terminalMobius := by
-  let R := S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright
-  let T :=
-    segmentEndpointChartInsertSkeletonWithWitnesses
-      S k c hc Tleft Tright transitionAt' initialTransition'
-  have hRT :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection T.terminalMobius := by
-    simpa only [T, segmentEndpointChartInsertSkeletonWithWitnesses] using
-      terminalMobius_projection_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-  have hRS :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection S.terminalMobius := by
-    exact
-      S.segmentEndpointChartInsertSkeleton_terminalMobius_projection_eq_of_localTransitions
-        k c hc Tleft Tright
-  exact hRT.symm.trans hRS
-
-/--
-Arbitrary local-transition witnesses on an endpoint chart-insertion refinement
-give the same terminal value as the original skeleton.
--/
-theorem terminalValue_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀) :
-    (segmentEndpointChartInsertSkeletonWithWitnesses
-      S k c hc Tleft Tright transitionAt' initialTransition').terminalValue =
-      S.terminalValue := by
-  simpa [PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalValue,
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalFormulaAt] using
-    terminalFormulaAt_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
-      S k c hc Tleft Tright transitionAt' initialTransition' x
-
-/--
 Append a terminal-stutter vertex, but allow arbitrary local-transition witnesses
 on the stuttered weak subdivision.
 -/
@@ -2210,6 +2081,11 @@ noncomputable def terminalStutterSkeletonWithWitnesses
 /--
 Arbitrary local-transition witnesses on a terminal-stutter refinement give the
 same terminal branch formula as the original skeleton.
+
+%%handwave
+name: A terminal stutter preserves the terminal formula for arbitrary witnesses
+statement: Append a repeated terminal vertex to a continuation skeleton $S$ and choose arbitrary transition witnesses on the enlarged subdivision. The resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
+proof: Compare $T$ with the canonical terminal-stutter skeleton by fixed-subdivision witness independence, and then remove the canonical stutter.
 -/
 theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalStutter
     (S :
@@ -2246,74 +2122,6 @@ theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalStutter
       R.terminalFormulaAt z = S.terminalFormulaAt z := by
     exact S.terminalStutterSkeleton_terminalFormulaAt_eq z
   exact hRT.symm.trans hRS
-
-/--
-Arbitrary local-transition witnesses on a terminal-stutter refinement give the
-same terminal Mobius PSL class as the original skeleton.
--/
-theorem terminalMobius_projection_eq_of_arbitraryWitnesses_terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.terminalStutterCenterAt j.castSucc))
-          (localModels.chartAt (S.terminalStutterCenterAt j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalStutterCenterAt 0))
-        x₀) :
-    realMobiusProjection
-        (terminalStutterSkeletonWithWitnesses
-          S transitionAt' initialTransition').terminalMobius =
-      realMobiusProjection S.terminalMobius := by
-  let R := S.terminalStutterSkeleton
-  let T :=
-    terminalStutterSkeletonWithWitnesses S transitionAt' initialTransition'
-  have hRT :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection T.terminalMobius := by
-    simpa only [T, terminalStutterSkeletonWithWitnesses] using
-      terminalMobius_projection_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-  have hRS :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection S.terminalMobius := by
-    exact congrArg realMobiusProjection
-      S.terminalStutterSkeleton_terminalMobius_eq
-  exact hRT.symm.trans hRS
-
-/--
-Arbitrary local-transition witnesses on a terminal-stutter refinement give the
-same terminal value as the original skeleton.
--/
-theorem terminalValue_eq_of_arbitraryWitnesses_terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.terminalStutterCenterAt j.castSucc))
-          (localModels.chartAt (S.terminalStutterCenterAt j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalStutterCenterAt 0))
-        x₀) :
-    (terminalStutterSkeletonWithWitnesses
-      S transitionAt' initialTransition').terminalValue =
-      S.terminalValue := by
-  simpa [PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalValue,
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalFormulaAt] using
-    terminalFormulaAt_eq_of_arbitraryWitnesses_terminalStutter
-      S transitionAt' initialTransition' x
 
 omit [RiemannSurface X] in
 /--
@@ -2352,6 +2160,11 @@ noncomputable def terminalChartChangeSkeletonWithWitnesses
 /--
 Arbitrary local-transition witnesses on a terminal chart-change refinement
 give the same terminal branch formula as the canonical chart-change skeleton.
+
+%%handwave
+name: Arbitrary witnesses agree with the canonical terminal chart change
+statement: Let $R$ be obtained from a continuation skeleton $S$ by changing its terminal chart to a chart containing the endpoint. If $T$ uses the same enlarged subdivision but arbitrary transition witnesses, then $F_T(z)=F_R(z)$ for every $z\in X$.
+proof: Apply fixed-subdivision witness independence to the canonical chart-change skeleton $R$ and the arbitrary-witness skeleton $T$, then reverse the resulting equality.
 -/
 theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalChartChange
     (S :
@@ -2395,102 +2208,6 @@ theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalChartChange
         z
   exact hRU.symm
 
-/--
-Arbitrary local-transition witnesses on a terminal chart-change refinement
-preserve terminal values.
--/
-theorem terminalValue_eq_of_arbitraryWitnesses_terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.castSucc))
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalChartChangeCenterAt c 0))
-        x₀) :
-    (terminalChartChangeSkeletonWithWitnesses
-      S c hc T transitionAt' initialTransition').terminalValue =
-      S.terminalValue := by
-  calc
-    (terminalChartChangeSkeletonWithWitnesses
-        S c hc T transitionAt' initialTransition').terminalValue =
-        (S.terminalChartChangeSkeleton c hc T).terminalValue := by
-          simpa [PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalValue,
-            PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalFormulaAt]
-            using
-              terminalFormulaAt_eq_of_arbitraryWitnesses_terminalChartChange
-                S c hc T transitionAt' initialTransition' x
-    _ = S.terminalValue := by
-          simp
-
-/--
-Arbitrary witnesses on a terminal chart-change refinement have the same
-adjusted terminal PSL class as the original skeleton.
--/
-theorem terminalMobius_adjustedProjection_eq_of_arbitraryWitnesses_terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.castSucc))
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalChartChangeCenterAt c 0))
-        x₀) :
-    realMobiusProjection
-        ((terminalChartChangeSkeletonWithWitnesses
-          S c hc T transitionAt' initialTransition').terminalMobius *
-          T.representative) =
-      realMobiusProjection S.terminalMobius := by
-  let R := S.terminalChartChangeSkeleton c hc T
-  let U :=
-    terminalChartChangeSkeletonWithWitnesses
-      S c hc T transitionAt' initialTransition'
-  have hRU :
-      realMobiusProjection R.terminalMobius =
-        realMobiusProjection U.terminalMobius := by
-    simpa only [U, terminalChartChangeSkeletonWithWitnesses] using
-      terminalMobius_projection_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-  have hAdjusted :
-      realMobiusProjection (R.terminalMobius * T.representative) =
-        realMobiusProjection S.terminalMobius :=
-    S.terminalChartChangeSkeleton_adjustedTerminalMobius_projection_eq c hc T
-  calc
-    realMobiusProjection (U.terminalMobius * T.representative) =
-        realMobiusProjection (R.terminalMobius * T.representative) := by
-          simp [hRU]
-    _ = realMobiusProjection S.terminalMobius := hAdjusted
-
 end PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
 
 /--
@@ -2528,7 +2245,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
 
 omit [RiemannSurface X] in
-/-- The left skeleton has the same terminal value as the common refinement. -/
+/-- The left skeleton has the same terminal value as the common refinement.
+
+%%handwave
+name: The left skeleton and its common refinement have equal terminal values
+statement: If continuation skeletons $S$ and $T$ admit a common-refinement comparison with refinement $R$, then $v(S)=v(R)$.
+proof: Apply terminal-value preservation to the finite comparison walk from $S$ to $R$.
+-/
 theorem left_terminalValue_eq_refinement
     (C :
       PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
@@ -2536,7 +2259,13 @@ theorem left_terminalValue_eq_refinement
   C.leftWalk.terminalValue_start_eq_end
 
 omit [RiemannSurface X] in
-/-- The right skeleton has the same terminal value as the common refinement. -/
+/-- The right skeleton has the same terminal value as the common refinement.
+
+%%handwave
+name: The right skeleton and its common refinement have equal terminal values
+statement: If continuation skeletons $S$ and $T$ admit a common-refinement comparison with refinement $R$, then $v(T)=v(R)$.
+proof: Apply terminal-value preservation to the finite comparison walk from $T$ to $R$.
+-/
 theorem right_terminalValue_eq_refinement
     (C :
       PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
@@ -2544,24 +2273,19 @@ theorem right_terminalValue_eq_refinement
   C.rightWalk.terminalValue_start_eq_end
 
 omit [RiemannSurface X] in
-/-- A common-refinement comparison identifies terminal values. -/
+/-- A common-refinement comparison identifies terminal values.
+
+%%handwave
+name: A common refinement identifies terminal continuation values
+statement: If two continuation skeletons $S,T$ over the same path admit terminal-value-preserving walks to a common refinement $R$, then $v(S)=v(T)$.
+proof: Compose $v(S)=v(R)$ with the reverse of $v(T)=v(R)$.
+-/
 theorem terminalValue_eq
     (C :
       PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
     S.terminalValue = T.terminalValue :=
   C.left_terminalValue_eq_refinement.trans
     C.right_terminalValue_eq_refinement.symm
-
-omit [RiemannSurface X] in
-/--
-A common-refinement comparison identifies the terminal branch formula at the
-common endpoint of the representative path.
--/
-theorem terminalFormulaAt_endpoint_eq
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    S.terminalFormulaAt x = T.terminalFormulaAt x := by
-  simpa using C.terminalValue_eq
 
 omit [RiemannSurface X] in
 /--
@@ -3452,6 +3176,11 @@ The deterministic own-split parameter-permutation boundary is finite
 bookkeeping: mutual endpoint-chart insertion contributes two copies of the
 other subdivision's parameters, and the final own-split contributes the
 missing second copy of the original subdivision.
+
+%%handwave
+name: The two mutual vertex refinements have the same parameter multiset
+statement: For skeletons $S,T$ over the same path, let $U$ be obtained by inserting every vertex of $T$ into $S$ and then splitting at every vertex of $S$, and define $V$ symmetrically. Then the finite parameter lists of $U$ and $V$ are permutations of one another.
+proof: Insertion gives two copies of the other skeleton’s parameter list and the final split supplies the second copy of the original list. Rearranging concatenations shows both lists are permutations of two copies of each original parameter list.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationPrinciple
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3518,6 +3247,11 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParamet
 omit [RiemannSurface X] in
 /--
 The own-split padding on the two mutual vertex refinements has equal length.
+
+%%handwave
+name: The two padded mutual vertex refinements have equal length
+statement: For skeletons $S,T$ over the same path, the refinement obtained from $S$ by inserting all vertices of $T$ and then splitting at all vertices of $S$ has the same length as the symmetric refinement obtained from $T$.
+proof: Expand the two lengths as $|S|+2(|T|+1)+(|S|+1)$ and $|T|+2(|S|+1)+(|T|+1)$ and simplify the natural-number identity.
 -/
 theorem mutualVertexRefinementOwnSplit_length_eq
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3542,6 +3276,11 @@ omit [RiemannSurface X] in
 /--
 The permutation form of the own-split boundary implies pointwise own-split
 parameter alignment by sorted-list uniqueness.
+
+%%handwave
+name: Sorted parameter permutations are pointwise aligned
+statement: If the two padded mutual vertex refinements of every pair $S,T$ have permuted parameter lists, then their parameters agree at every index valid on both sides.
+proof: Both parameter lists are weakly increasing. Sorted lists that are permutations are equal, so equality of their optional entries at index $n$ gives equality of the two subdivision parameters.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentPrinciple_of_parameterPermutation
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3583,6 +3322,11 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParamet
 omit [RiemannSurface X] in
 /--
 The own-split parameter-alignment boundary is unconditional.
+
+%%handwave
+name: The padded mutual vertex refinements are pointwise aligned
+statement: For every pair of continuation skeletons $S,T$ over one path, their mutually inserted and own-split refinements have equal parameters at every common index.
+proof: Apply sorted-list uniqueness to [the two refinements have permuted parameter lists](lean:JJMath.HyperbolicMetric.pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationPrinciple).
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentPrinciple_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3597,6 +3341,11 @@ omit [RiemannSurface X] in
 The own-split parameter-alignment boundary implies the more flexible common
 aligned-subdivision boundary by taking the own-split refinements as the
 common aligned pair.
+
+%%handwave
+name: Own-split alignment produces common aligned mutual refinements
+statement: If the canonical padded mutual refinements of $S,T$ are pointwise parameter-aligned, then the two mutual vertex insertions admit further same-path refinements $U,V$ of equal length with identical parameter at every index.
+proof: Take $U,V$ to be the canonical own-split refinements. Splitting supplies the two refinement walks, their lengths agree by arithmetic, and the assumed alignment supplies pointwise equality.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_of_ownSplitParameterAlignment
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3625,6 +3374,11 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSu
 omit [RiemannSurface X] in
 /--
 The common aligned-subdivision mutual-refinement boundary is unconditional.
+
+%%handwave
+name: Mutual vertex insertions admit common aligned subdivisions
+statement: For every pair of skeletons $S,T$ over the same path, the two mutual vertex insertions admit terminal-value-preserving refinements $U,V$ of equal length whose subdivision parameters agree pointwise.
+proof: Use the canonical padded mutual refinements and [their unconditional pointwise alignment](lean:JJMath.HyperbolicMetric.pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentPrinciple_unconditional).
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3638,6 +3392,11 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSu
 Aligned mutual vertex refinements give mutual-refinement terminal-value
 comparison.  The proof is the aligned-subdivision branch comparison above,
 with vertexwise local transitions supplied by the local-transition atlas.
+
+%%handwave
+name: Aligned mutual refinements have equal terminal values
+statement: Suppose the mutual vertex insertions of every pair $S,T$ admit equal-length, pointwise parameter-aligned refinements. Then the terminal value after inserting all vertices of $T$ into $S$ equals the terminal value after inserting all vertices of $S$ into $T$.
+proof: Choose a local transition between the two charts at every aligned subdivision vertex. The aligned-subdivision comparison identifies the refined terminal values, and the refinement walks transport that equality back to the two mutual insertions.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePrinciple_of_mutualVertexRefinementCommonAlignedSubdivision
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3685,6 +3444,11 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePr
 
 /--
 The mutual vertex-refinement terminal-value comparison is unconditional.
+
+%%handwave
+name: Mutual vertex insertion preserves a common terminal value
+statement: For any skeletons $S,T$ over the same path, inserting every vertex of $T$ into $S$ and inserting every vertex of $S$ into $T$ produce skeletons with equal terminal values.
+proof: Apply the aligned-subdivision comparison to [the unconditional common aligned mutual refinements](lean:JJMath.HyperbolicMetric.pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_unconditional).
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePrinciple_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3696,47 +3460,13 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePr
 
 omit [RiemannSurface X] in
 /--
-If one skeleton agrees with another on the old prefix and the longer skeleton
-has only terminal duplicates afterwards, then terminal-stuttering the shorter
-one gives a common aligned refinement.
--/
-theorem pathLocalTransitionBasedWeakHandoffCommonAlignedSubdivision_of_prefix_and_terminalTail
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLe : S.length ≤ T.length)
-    (hPrefix :
-      ∀ n (hnS : n ≤ S.length) (hnT : n ≤ T.length),
-        S.parameterAt ⟨n, Nat.lt_succ_of_le hnS⟩ =
-          T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩)
-    (hTail :
-      ∀ n (_hSn : S.length ≤ n) (hnT : n ≤ T.length),
-        T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩ = 1) :
-    ∃ (U V :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p),
-      Nonempty
-        (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S U) ∧
-      Nonempty
-        (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk T V) ∧
-      ∃ _hLength : U.length = V.length,
-        ∀ n (hnU : n ≤ U.length) (hnV : n ≤ V.length),
-          U.parameterAt ⟨n, Nat.lt_succ_of_le hnU⟩ =
-            V.parameterAt ⟨n, Nat.lt_succ_of_le hnV⟩ := by
-  classical
-  let U := S.terminalStutterIterateSkeleton (T.length - S.length)
-  rcases S.terminalStutterIterateSkeleton_parameterAt_eq_of_prefix_and_tail
-      T hLe hPrefix hTail with ⟨hLength, hParam⟩
-  refine ⟨U, T, ?_, ?_, hLength, hParam⟩
-  · exact ⟨PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalStutterIterate
-      S (T.length - S.length)⟩
-  · exact ⟨PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.refl T⟩
-
-omit [RiemannSurface X] in
-/--
 Same-path common-refinement comparisons imply common aligned mutual vertex
 refinements: use the common refinement itself on both sides.
+
+%%handwave
+name: A common refinement gives aligned mutual refinements
+statement: If every two skeletons over a fixed path admit a common refinement, then their mutual vertex insertions admit equal-length, pointwise aligned refinements.
+proof: Apply the assumed common-refinement comparison to the two mutual insertions and use its single refinement on both sides; the lengths and all parameters then agree reflexively.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_of_samePathCommonComparison
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3758,6 +3488,11 @@ omit [RiemannSurface X] in
 /--
 Directed same-path skeleton move walks give common-refinement comparisons by
 taking the target skeleton as the common refinement.
+
+%%handwave
+name: A directed comparison walk gives a common refinement
+statement: If every ordered pair of skeletons $S,T$ over one path is joined by a terminal-value-preserving move walk from $S$ to $T$, then every pair admits a common-refinement comparison.
+proof: Take $T$ itself as the common refinement, use the given walk from $S$ to $T$ on the left, and the empty walk at $T$ on the right.
 -/
 theorem pathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple_of_samePathSkeletonMoveWalk
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3778,6 +3513,11 @@ theorem pathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple_of_
 omit [RiemannSurface X] in
 /--
 Same-path skeleton move walks imply same-path terminal-value uniqueness.
+
+%%handwave
+name: Same-path comparison walks imply terminal-value uniqueness
+statement: If every pair of continuation skeletons $S,T$ over a fixed path is joined by a finite same-path comparison walk, then $v(S)=v(T)$.
+proof: Choose the asserted walk and compose the terminal-value equality carried by each of its moves.
 -/
 theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_of_samePathSkeletonMoveWalk
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3795,6 +3535,11 @@ omit [RiemannSurface X] in
 /--
 Same-path common-refinement comparisons imply same-path terminal-value
 uniqueness.
+
+%%handwave
+name: Common refinements imply terminal-value uniqueness
+statement: If every pair of continuation skeletons $S,T$ over a fixed path admits terminal-value-preserving walks to a common refinement, then $v(S)=v(T)$.
+proof: Choose the common-refinement comparison and compose the equality from $S$ to the refinement with the reverse equality from $T$.
 -/
 theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_of_samePathCommonComparison
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3812,6 +3557,11 @@ theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinci
 Mutual vertex-refinement comparison implies same-path terminal-value
 uniqueness, because finite vertex insertion preserves terminal values on both
 sides.
+
+%%handwave
+name: Equal mutual refinements imply terminal-value uniqueness
+statement: Assume that the two mutual vertex insertions of any same-path skeletons $S,T$ have equal terminal values. Then $v(S)=v(T)$.
+proof: Insert all vertices of $T$ into $S$ and conversely. The insertion walks preserve the two original values, and the assumed equality identifies the inserted values.
 -/
 theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_of_mutualVertexRefinementTerminalValue
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3857,6 +3607,11 @@ theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinci
 /--
 With same-path terminal-value uniqueness discharged, the public
 cut-transfer boundary is exactly the sharper explicit witness boundary.
+
+%%handwave
+name: Explicit cut witnesses transfer arbitrary decomposed values
+statement: If every chart-contained homotopy column has one equal-valued decomposed/public-cut skeleton pair on each horizontal side, then every decomposed skeleton on either side admits an equal-valued public-cut skeleton.
+proof: Apply the explicit-witness transfer theorem and use unconditional uniqueness of the terminal value along a fixed path.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple_of_explicitValueWitness_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3877,6 +3632,11 @@ subpath-merge boundaries.
 Top-side merging occurs at the beginning of the cut path, so the branch-data
 merge principle suffices.  Bottom-side merging occurs after a prefix, so it
 uses the prefixed value-witness form.
+
+%%handwave
+name: Subpath merging supplies raw cut reparameterization witnesses
+statement: Assume continuation branch data are invariant when two adjacent subpaths are merged, both at the start of a path and after an arbitrary prefix. Then every chart-contained homotopy column admits equal-valued skeleton pairs comparing its decomposed top and bottom paths with the corresponding raw cut paths.
+proof: Use the unprefixed merge comparison on the top route and the prefixed merge comparison on the bottom route, transfer through fixed-path uniqueness, and cast the endpoint equalities back to the original based paths.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_subpathMerge
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3950,6 +3710,11 @@ one-dimensional subpath-merge boundaries.
 
 This is the mathematically sharp route for the grid proof: the only subpaths
 merged here are adjacent pieces of the monotone subdivision `t`.
+
+%%handwave
+name: Monotone subpath merging supplies raw cut witnesses
+statement: Assume continuation data are invariant under merging adjacent monotone subpaths, both initially and after a prefix. For every monotone grid subdivision, each chart-contained column admits equal-valued skeleton pairs comparing its decomposed top and bottom routes with the corresponding raw cut paths.
+proof: Monotonicity gives the required order of the two vertical cut parameters. Apply the monotone unprefixed and prefixed merge comparisons, then transport their equalities through endpoint casts.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_monotoneSubpathMerge
     {x₀ : X} {g : HyperbolicMetric X}
@@ -4021,6 +3786,11 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparam
 omit [RiemannSurface X] in
 /--
 Raw-cut witnesses plus endpoint normalization give public cut witnesses.
+
+%%handwave
+name: Raw witnesses and endpoint normalization give public cut witnesses
+statement: If decomposed column paths admit equal-valued raw-cut skeletons, raw and normalized cut paths admit equal-valued skeletons, and fixed-path terminal values are unique, then decomposed paths admit equal-valued public-cut skeletons on both sides of every chart-contained column.
+proof: Normalize the top and bottom raw cuts. On each side, use fixed-path uniqueness to identify the raw skeleton chosen by normalization with the raw skeleton supplied by the column witness, then compose equalities.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_rawCut_and_endpointNormalization
     {x₀ : X} {g : HyperbolicMetric X}
@@ -4049,6 +3819,13 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExp
   · refine ⟨Tcol, Tpub, ?_⟩
     exact hBottomNorm.trans ((hSamePath Traw₀ Traw).trans hBottomRaw)
 
+/-- Raw-cut witnesses and endpoint normalization give public cut witnesses once fixed-path terminal values are known to be unique.
+
+%%handwave
+name: Raw witnesses and endpoint normalization suffice for public cut witnesses
+statement: If every chart-contained column admits equal-valued decomposed/raw-cut skeleton pairs and every raw cut admits an equal-valued normalized-cut skeleton, then every column admits equal-valued decomposed/public-cut pairs.
+proof: Apply the raw-to-public transfer and discharge fixed-path terminal-value uniqueness by the unconditional subdivision-independence theorem.
+-/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_rawCut_and_endpointNormalization_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
@@ -4065,32 +3842,14 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExp
     pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_unconditional
 
 /--
-Subpath merge, prefixed subpath merge, and endpoint normalization together
-give the public explicit cut-reparameterization witness.
--/
-theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_subpathMerge_and_endpointNormalization
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffSubpathMergeBranchDataWitnessPrinciple
-        g localModels)
-    (hPrefMerge :
-      PathLocalTransitionBasedWeakHandoffPrefixedSubpathMergeValueWitnessPrinciple
-        g localModels)
-    (hNormalize :
-      PathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple
-      x₀ g localModels :=
-  pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_rawCut_and_endpointNormalization_unconditional
-    (pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_subpathMerge
-      hMerge hPrefMerge)
-    hNormalize
-
-/--
 Monotone subpath merge, monotone prefixed subpath merge, and endpoint
 normalization together give the public explicit cut-reparameterization
 witness.
+
+%%handwave
+name: Monotone merging and endpoint normalization give public cut witnesses
+statement: If monotone subpath merging preserves continuation data both initially and after a prefix, and raw strip cuts can be normalized without changing terminal value, then every chart-contained homotopy column admits equal-valued decomposed/public-cut skeleton pairs on its top and bottom sides.
+proof: First obtain decomposed/raw-cut witnesses from monotone subpath merging, then pass from raw cuts to public cuts using endpoint normalization and fixed-path uniqueness.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_monotoneSubpathMerge_and_endpointNormalization
     {x₀ : X} {g : HyperbolicMetric X}
@@ -4114,6 +3873,11 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExp
 /--
 After same-path uniqueness is discharged, the one-column boundary is exactly
 the explicit terminal-value witness boundary.
+
+%%handwave
+name: Column value witnesses determine the chosen elementary grid moves
+statement: Fix one continuation skeleton along each based path. If every chart-contained homotopy column admits top and bottom cut skeletons with equal terminal values, then the chosen cut skeletons are joined by an elementary grid-move walk.
+proof: Use unconditional same-path terminal-value uniqueness to transfer the explicit equality to the chosen skeletons, then package it as a one-step grid walk.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple_of_valueWitness_unconditional
     {x₀ : X} {g : HyperbolicMetric X}
@@ -4134,6 +3898,11 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple
 Same-path terminal-value uniqueness upgrades explicit existential
 terminal-sheet extension to local-extension compatibility for any chosen
 based weak handoff skeletons.
+
+%%handwave
+name: Fixed-path uniqueness makes chosen continuation compatible with terminal sheets
+statement: Fix a continuation skeleton $S(p)$ along every based path. If all skeletons over a fixed path have the same terminal value, then for every $y$ in the terminal sheet of $S(p)$, appending the sheet path gives $F_{S(pstar y)}(π(y))=F_{S(p)}(π(y))$.
+proof: Choose an explicit value-preserving terminal extension $T$. Fixed-path uniqueness identifies $T$ with the globally chosen skeleton on the appended path, and the explicit extension identifies its endpoint formula with that of $S(p)$.
 -/
 theorem pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_samePathTerminalValueUniqueness
     {x₀ : X} {g : HyperbolicMetric X}
@@ -4159,22 +3928,6 @@ theorem pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_
     _ = T.terminalValue := (hUnique T U).symm
     _ = T.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') := rfl
     _ = S.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') := hT
-
-/--
-Terminal-sheet local extension is unconditional for any chosen based weak
-handoff skeletons, because same-path terminal-value uniqueness compares the
-chosen extension with the explicit terminal-extension skeleton.
--/
-theorem pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_unconditional
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p} :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
-      x₀ g localModels basedWeakHandoffAlong :=
-  pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_samePathTerminalValueUniqueness
-    pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_unconditional
 
 /--
 The terminal-sheet extension-agreement principle for a coherent choice of
@@ -4282,6 +4035,11 @@ def pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_t
 /--
 Homotopy-grid walks plus local extension inside the terminal sheet prove the
 terminal-sheet homotopy principle.
+
+%%handwave
+name: Grid homotopy and local extension give terminal-sheet continuation invariance
+statement: Fix chosen skeletons along based paths. Let $y$ lie in the terminal sheet of $p$, and let $p′$ be endpoint-fixed homotopic to the path obtained by appending the sheet path from $p$ to $π(y)$. If homotopies give grid walks and terminal-sheet extension preserves the endpoint formula, then $F_{S(p′)}(π(y))=F_{S(p)}(π(y))$.
+proof: The homotopy-grid walk identifies the terminal formulas for $p′$ and the appended path. Compose this with the local-extension equality between the appended path and $p$.
 -/
 theorem pathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyPrinciple_of_homotopyGridWalk_and_localExtension
     {x₀ : X} {g : HyperbolicMetric X}

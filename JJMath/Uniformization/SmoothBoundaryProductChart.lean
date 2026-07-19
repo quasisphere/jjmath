@@ -33,8 +33,26 @@ structure SmoothBoundaryProductChart
   frontier_iff_zero : ∀ x ∈ coordinate.source,
     x ∈ frontier D.carrier ↔ (coordinate x).1 = 0
 
-/-- Every point of the smooth boundary of a surface domain has a smooth
-product chart respecting the two sides of the boundary. -/
+/--
+%%handwave
+name:
+  Boundary product coordinates for a smooth surface domain
+statement:
+  Let \(D\) be a smoothly bounded domain in a complex surface and let
+  \(p\in\partial D\).  There is a smooth local coordinate map
+  \(\Phi\) about \(p\), with \(\Phi(p)=(0,0)\), such that for every
+  \(x\) in its source,
+  \[
+    x\in D\iff (\Phi(x))_1<0,
+    \qquad
+    x\in\partial D\iff (\Phi(x))_1=0.
+  \]
+proof:
+  A local defining function for \(D\) has nonzero differential along the
+  boundary.  The regular-level coordinate theorem makes that function the
+  first coordinate; restricting the resulting chart to the defining
+  neighborhood gives the asserted sign and zero-set descriptions.
+-/
 theorem exists_smoothBoundaryProductChart
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     Nonempty (SmoothBoundaryProductChart D p) := by
@@ -107,19 +125,52 @@ noncomputable def smoothBoundaryProductChartAt
     SmoothBoundaryProductChart D p :=
   Classical.choice (exists_smoothBoundaryProductChart D p)
 
+/--
+%%handwave
+name:
+  The center belongs to its chosen boundary chart
+statement:
+  If \(p\in\partial D\), then \(p\) lies in the source of the chosen
+  boundary product coordinate map \(\Phi_p\).
+proof:
+  This is one of the defining properties of the chosen product chart.
+-/
 theorem smoothBoundaryProductChartAt_point_mem
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     (p : X) ∈ (smoothBoundaryProductChartAt D p).coordinate.source :=
   (smoothBoundaryProductChartAt D p).point_mem
 
+/--
+%%handwave
+name:
+  Openness of a chosen boundary coordinate neighborhood
+statement:
+  For \(p\in\partial D\), the source of the chosen boundary product
+  coordinate map \(\Phi_p\) is open in the surface.
+proof:
+  The source of every partial diffeomorphism is open.
+-/
 theorem smoothBoundaryProductChartAt_source_isOpen
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     IsOpen (smoothBoundaryProductChartAt D p).coordinate.source :=
   (smoothBoundaryProductChartAt D p).coordinate.open_source
 
 omit [IsManifold 𝓘(ℝ, ℂ) ∞ X] in
-/-- A product chart contains a metric product ball about the image of its
-distinguished boundary point. -/
+/--
+%%handwave
+name:
+  A boundary product chart contains a centered ball
+statement:
+  Let \(\Phi\) be a boundary product chart centered at
+  \(p\in\partial D\).  There is an \(\varepsilon>0\) such that
+  \[
+    B_{\mathbb R^2}(0,\varepsilon)\subseteq\operatorname{target}(\Phi).
+  \]
+proof:
+  The chart sends \(p\) to the origin, so the origin belongs to its open
+  target.  An open neighborhood of the origin in Euclidean space contains
+  a positive-radius metric ball.
+-/
 theorem SmoothBoundaryProductChart.exists_target_ball
     {D : SmoothBoundaryDomain X} {p : frontier D.carrier}
     (C : SmoothBoundaryProductChart D p) :
@@ -135,12 +186,35 @@ noncomputable def smoothBoundaryProductChartRadius
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) : ℝ :=
   Classical.choose (smoothBoundaryProductChartAt D p).exists_target_ball
 
+/--
+%%handwave
+name:
+  Positivity of the chosen boundary-chart radius
+statement:
+  For every \(p\in\partial D\), the chosen radius \(r_p\) of the centered
+  target ball is strictly positive.
+proof:
+  The radius is chosen from a pair consisting of a positive number and the
+  proof that its centered ball lies in the chart target.
+-/
 theorem smoothBoundaryProductChartRadius_pos
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     0 < smoothBoundaryProductChartRadius D p :=
   (Classical.choose_spec
     (smoothBoundaryProductChartAt D p).exists_target_ball).1
 
+/--
+%%handwave
+name:
+  The chosen centered ball lies in the chart target
+statement:
+  For every \(p\in\partial D\), the chosen radius \(r_p\) satisfies
+  \[
+    B_{\mathbb R^2}(0,r_p)\subseteq\operatorname{target}(\Phi_p).
+  \]
+proof:
+  This is the containment property of the chosen target-ball radius.
+-/
 theorem smoothBoundaryProductChart_ball_subset_target
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     Metric.ball (0 : ℝ × ℝ) (smoothBoundaryProductChartRadius D p) ⊆
@@ -156,12 +230,39 @@ def smoothBoundaryProductBallSource
     (smoothBoundaryProductChartAt D p).coordinate ⁻¹'
       Metric.ball (0 : ℝ × ℝ) (smoothBoundaryProductChartRadius D p)
 
+/--
+%%handwave
+name:
+  Openness of a boundary product-ball neighborhood
+statement:
+  For \(p\in\partial D\), the set
+  \[
+    U_p=\{x\in\operatorname{source}(\Phi_p):
+      \Phi_p(x)\in B_{\mathbb R^2}(0,r_p)\}
+  \]
+  is open in the surface.
+proof:
+  The chart source and the Euclidean ball are open, and a partial
+  homeomorphism pulls back open subsets of its target to open subsets of its
+  source.
+-/
 theorem smoothBoundaryProductBallSource_isOpen
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     IsOpen (smoothBoundaryProductBallSource D p) := by
   exact (smoothBoundaryProductChartAt D p).coordinate.toOpenPartialHomeomorph
     |>.isOpen_inter_preimage Metric.isOpen_ball
 
+/--
+%%handwave
+name:
+  The center belongs to its boundary product-ball neighborhood
+statement:
+  For every \(p\in\partial D\), one has \(p\in U_p\), where
+  \(U_p=\Phi_p^{-1}(B_{\mathbb R^2}(0,r_p))\) inside the chart source.
+proof:
+  The point \(p\) lies in the chart source and satisfies
+  \(\Phi_p(p)=0\); the origin lies in the ball because \(r_p>0\).
+-/
 theorem smoothBoundaryProductBallSource_point_mem
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     (p : X) ∈ smoothBoundaryProductBallSource D p := by
@@ -411,8 +512,22 @@ theorem smoothBoundaryProductBall_frontier_isConnected
     ⟨p.2, smoothBoundaryProductBallSource_point_mem D p⟩
   exact ⟨⟨p, hpS⟩, hSpre⟩
 
-/-- A connected vertical interval in the target ball pulls back to a
-connected subarc of the smooth frontier. -/
+/--
+%%handwave
+name:
+  Connected vertical intervals pull back to connected frontier arcs
+statement:
+  Let \(p\in\partial D\), and let \(J\subseteq(-r_p,r_p)\) be nonempty
+  and connected.  Then
+  \[
+    \{x\in\partial D\cap U_p:(\Phi_p(x))_2\in J\}
+  \]
+  is nonempty and connected.
+proof:
+  The set is the image of the connected vertical segment
+  \(\{0\}\times J\) under the inverse chart.  The ball containment makes
+  the inverse chart defined there, and continuity preserves connectedness.
+-/
 theorem smoothBoundaryProductBall_verticalInterval_isConnected
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     (J : Set ℝ) (hJ : IsConnected J)
@@ -463,7 +578,20 @@ theorem smoothBoundaryProductBall_verticalInterval_isConnected
   exact hTconnected.image C.coordinate.symm
     (C.coordinate.toOpenPartialHomeomorph.continuousOn_symm.mono hTtarget)
 
-/-- The upper half of a centered frontier arc is connected. -/
+/--
+%%handwave
+name:
+  Connectedness of the upper half of a boundary arc
+statement:
+  For \(p\in\partial D\), the set
+  \[
+    \{x\in\partial D\cap U_p:0<(\Phi_p(x))_2\}
+  \]
+  is nonempty and connected.
+proof:
+  This is the inverse-chart image of the nonempty connected interval
+  \((0,r_p)\) on the vertical coordinate axis.
+-/
 theorem smoothBoundaryProductBall_upperFrontierArc_isConnected
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     IsConnected (smoothBoundaryProductBallUpperFrontierArc D p) := by
@@ -494,7 +622,20 @@ theorem smoothBoundaryProductBall_upperFrontierArc_isConnected
   exact smoothBoundaryProductBall_verticalInterval_isConnected
     D p (Set.Ioo (0 : ℝ) radius) hinterval hinterval_ball
 
-/-- The lower half of a centered frontier arc is connected. -/
+/--
+%%handwave
+name:
+  Connectedness of the lower half of a boundary arc
+statement:
+  For \(p\in\partial D\), the set
+  \[
+    \{x\in\partial D\cap U_p:(\Phi_p(x))_2<0\}
+  \]
+  is nonempty and connected.
+proof:
+  This is the inverse-chart image of the nonempty connected interval
+  \((-r_p,0)\) on the vertical coordinate axis.
+-/
 theorem smoothBoundaryProductBall_lowerFrontierArc_isConnected
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     IsConnected (smoothBoundaryProductBallLowerFrontierArc D p) := by
@@ -609,8 +750,23 @@ theorem smoothBoundaryProductBall_frontier_halves_disjoint
   intro x hupper hlower
   exact (not_lt_of_ge hupper.2.le) hlower.2
 
-/-- A connected product-ball arc centered on a frontier point stays in that
-point's frontier component. -/
+/--
+%%handwave
+name:
+  A boundary product-ball arc lies in one frontier component
+statement:
+  If \(p\in\partial D\), then
+  \[
+    \partial D\cap U_p
+      \subseteq \operatorname{Comp}_{\partial D}(p),
+  \]
+  where the right-hand side is the connected component of \(p\) in
+  \(\partial D\).
+proof:
+  The local frontier arc is connected, contains \(p\), and is contained in
+  \(\partial D\).  Hence it lies in the maximal connected subset of
+  \(\partial D\) containing \(p\).
+-/
 theorem smoothBoundaryProductBall_frontier_subset_connectedComponentIn
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     frontier D.carrier ∩ smoothBoundaryProductBallSource D p ⊆
@@ -622,8 +778,20 @@ theorem smoothBoundaryProductBall_frontier_subset_connectedComponentIn
         inter_subset_left
 
 omit [IsManifold 𝓘(ℝ, ℂ) ∞ X] in
-/-- Every connected component of the compact smooth frontier is compact in
-the ambient surface. -/
+/--
+%%handwave
+name:
+  Compactness of each smooth frontier component
+statement:
+  Let \(D\) be a relatively compact smoothly bounded domain and
+  \(p\in\partial D\).  The connected component
+  \(\operatorname{Comp}_{\partial D}(p)\) is compact in the ambient
+  surface.
+proof:
+  The frontier is closed in the compact closure of \(D\), hence compact.
+  A connected component is closed in the frontier, so it is compact there;
+  the inclusion of the frontier into the surface preserves compactness.
+-/
 theorem smoothBoundaryDomain_frontier_connectedComponentIn_isCompact
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     IsCompact (connectedComponentIn (frontier D.carrier) (p : X)) := by
@@ -679,8 +847,21 @@ theorem exists_finite_smoothBoundaryProductBall_cover_frontierComponent
     ⟨centers, hcenters⟩
   exact ⟨centers, by simpa [C, U, pointOf] using hcenters⟩
 
-/-- The compact frontier of a smooth relatively compact domain is covered by
-finitely many product-coordinate neighborhoods. -/
+/--
+%%handwave
+name:
+  Finite boundary product-chart cover of the frontier
+statement:
+  If \(D\) is a relatively compact smoothly bounded domain, there are
+  finitely many points \(p_1,\ldots,p_N\in\partial D\) such that
+  \[
+    \partial D\subseteq
+      \bigcup_{j=1}^{N}\operatorname{source}(\Phi_{p_j}).
+  \]
+proof:
+  The frontier is compact, and the open sources of the product charts
+  centered at its points cover it.  Compactness supplies a finite subcover.
+-/
 theorem exists_finite_smoothBoundaryProductChart_cover_frontier
     (D : SmoothBoundaryDomain X) :
     ∃ centers : Finset (frontier D.carrier),

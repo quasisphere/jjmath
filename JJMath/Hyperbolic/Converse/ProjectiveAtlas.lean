@@ -22,11 +22,14 @@ def finiteRiemannSphereOpenPartialHomeomorph :
   Topology.IsOpenEmbedding.toOpenPartialHomeomorph
     ((↑) : ℂ → RiemannSphere) OnePoint.isOpenEmbedding_coe
 
-@[simp]
-theorem finiteRiemannSphereOpenPartialHomeomorph_apply (z : ℂ) :
-    finiteRiemannSphereOpenPartialHomeomorph z = (z : RiemannSphere) :=
-  rfl
-
+/--
+%%handwave
+name: Source of the finite affine chart of the Riemann sphere
+statement:
+  The standard inclusion of \(\mathbb C\) as the finite part of the Riemann sphere is defined on all of \(\mathbb C\).
+proof:
+  This is immediate from the definition of the finite affine chart.
+-/
 @[simp]
 theorem finiteRiemannSphereOpenPartialHomeomorph_source :
     finiteRiemannSphereOpenPartialHomeomorph.source = Set.univ := by
@@ -42,21 +45,28 @@ def finiteBranchAt (y : D.hyperbolicDevelopingMap.cover.total) :
     OpenPartialHomeomorph ℂ ℂ :=
   Classical.choose (D.projective_regular.finite_local_biholomorphism_data y)
 
-/-- The selected finite branch is defined at the chart coordinate of its lift. -/
+/--
+%%handwave
+name: The selected finite developing branch contains its base coordinate
+statement:
+  For a lift \(y\) in the simply connected cover, the coordinate \(\varphi_y(y)\) lies in the domain of the selected finite local branch of the projectivized developing map.
+proof:
+  This is the base-point membership supplied by the selected finite local-biholomorphism data at \(y\).
+-/
 theorem mem_finiteBranchAt_source
     (y : D.hyperbolicDevelopingMap.cover.total) :
     (chartAt ℂ y y) ∈ (finiteBranchAt D y).source :=
   (Classical.choose_spec
     (D.projective_regular.finite_local_biholomorphism_data y)).1
 
-/-- The selected finite branch is contained in the source chart target. -/
-theorem finiteBranchAt_source_subset_chartAt_target
-    (y : D.hyperbolicDevelopingMap.cover.total) :
-    (finiteBranchAt D y).source ⊆ (chartAt ℂ y).target :=
-  (Classical.choose_spec
-    (D.projective_regular.finite_local_biholomorphism_data y)).2.1
-
-/-- The selected finite branch agrees with the developing coordinate expression. -/
+/--
+%%handwave
+name: Local finite branch of a projectivized developing map
+statement:
+  On its selected domain near a lift \(y\), the finite branch equals the coordinate expression of the developing map, is holomorphic, and has nonzero derivative.
+proof:
+  These are exactly the equality, holomorphicity, and regularity properties of the selected finite local-biholomorphism data at \(y\).
+-/
 theorem finiteBranchAt_eq_coordinateExpression
     (y : D.hyperbolicDevelopingMap.cover.total) {z : ℂ}
     (hz : z ∈ (finiteBranchAt D y).source) :
@@ -77,7 +87,14 @@ def fixedCoordinateSource (y : D.hyperbolicDevelopingMap.cover.total) :
   let S := D.hyperbolicDevelopingMap.cover.localHolomorphicSection y
   S.coordinateSource ∩ S.sectionCoordinate ⁻¹' (finiteBranchAt D y).source
 
-/-- The fixed coordinate source is open. -/
+/--
+%%handwave
+name: Openness of the fixed coordinate source
+statement:
+  The set of base-chart coordinates on which the local cover section lands in the selected finite developing branch is open.
+proof:
+  It is the intersection of the open coordinate source with the inverse image of the open finite-branch domain under the continuous section-coordinate map.
+-/
 theorem fixedCoordinateSource_open
     (y : D.hyperbolicDevelopingMap.cover.total) :
     IsOpen (fixedCoordinateSource D y) := by
@@ -86,7 +103,14 @@ theorem fixedCoordinateSource_open
   exact S.sectionCoordinate_continuousOn.isOpen_inter_preimage
     S.coordinateSource_open (finiteBranchAt D y).open_source
 
-/-- The projected selected lift belongs to the fixed coordinate source. -/
+/--
+%%handwave
+name: The projected lift belongs to its fixed coordinate source
+statement:
+  For a cover point \(y\), the base coordinate of its projection lies in the fixed coordinate source attached to \(y\).
+proof:
+  The base coordinate belongs to the section-coordinate domain, the section sends it back to the chart coordinate of \(y\), and that coordinate lies in the selected finite branch.
+-/
 theorem projection_mem_fixedCoordinateSource
     (y : D.hyperbolicDevelopingMap.cover.total) :
     let S := D.hyperbolicDevelopingMap.cover.localHolomorphicSection y
@@ -114,7 +138,14 @@ def baseChartDomain (y : D.hyperbolicDevelopingMap.cover.total) :
   let S := D.hyperbolicDevelopingMap.cover.localHolomorphicSection y
   S.baseComplexChart.source ∩ S.baseComplexChart ⁻¹' fixedCoordinateSource D y
 
-/-- The base-space source of the branch chart is open. -/
+/--
+%%handwave
+name: Openness of the base domain of a projective branch chart
+statement:
+  The base-space points whose base-chart coordinates lie in the fixed coordinate source form an open set.
+proof:
+  Intersect the open source of the base chart with the inverse image of the open fixed coordinate source under the continuous chart map.
+-/
 theorem baseChartDomain_open
     (y : D.hyperbolicDevelopingMap.cover.total) :
     IsOpen (baseChartDomain D y) := by
@@ -124,7 +155,14 @@ theorem baseChartDomain_open
   exact S.baseComplexChart.continuousOn.isOpen_inter_preimage
     S.baseComplexChart.open_source (fixedCoordinateSource_open D y)
 
-/-- The projection of the selected lift lies in the base branch-chart domain. -/
+/--
+%%handwave
+name: The projected lift belongs to the base branch domain
+statement:
+  The projection of a selected cover point \(y\) lies in the base domain of the projective branch chart constructed from \(y\).
+proof:
+  The projection lies in the selected base chart, and its base coordinate belongs to the fixed coordinate source.
+-/
 theorem projection_mem_baseChartDomain
     (y : D.hyperbolicDevelopingMap.cover.total) :
     D.hyperbolicDevelopingMap.cover.projection y ∈ baseChartDomain D y := by
@@ -141,7 +179,14 @@ def rawProjectiveBranchChart
   (((S.localProjection.symm.trans (chartAt ℂ y)).trans (finiteBranchAt D y)).trans
     finiteRiemannSphereOpenPartialHomeomorph)
 
-/-- The raw composed projective branch chart is defined at the projected lift. -/
+/--
+%%handwave
+name: The raw projective branch is defined at its projected lift
+statement:
+  The unshrunk projective branch chart associated with a cover point \(y\) is defined at the projection of \(y\).
+proof:
+  The local inverse section sends the projection back to \(y\); its cover coordinate belongs to the selected finite branch, and the finite affine chart of the sphere is defined everywhere.
+-/
 theorem projection_mem_rawProjectiveBranchChart_source
     (y : D.hyperbolicDevelopingMap.cover.total) :
     D.hyperbolicDevelopingMap.cover.projection y ∈
@@ -171,7 +216,14 @@ def projectiveBranchChart
   (rawProjectiveBranchChart D y).restrOpen (baseChartDomain D y)
     (baseChartDomain_open D y)
 
-/-- The restricted projective branch chart is defined at the projected lift. -/
+/--
+%%handwave
+name: The restricted projective branch contains its base point
+statement:
+  After restricting the raw projective branch to its base-chart domain, the projection of the defining lift remains in the chart source.
+proof:
+  The projection belongs both to the raw branch source and to the restricting base domain.
+-/
 theorem projection_mem_projectiveBranchChart_source
     (y : D.hyperbolicDevelopingMap.cover.total) :
     D.hyperbolicDevelopingMap.cover.projection y ∈
@@ -180,7 +232,14 @@ theorem projection_mem_projectiveBranchChart_source
   exact ⟨projection_mem_rawProjectiveBranchChart_source D y,
     projection_mem_baseChartDomain D y⟩
 
-/-- Points in the restricted branch chart source lie in the cover-section domain. -/
+/--
+%%handwave
+name: A projective branch source lies in the local section image
+statement:
+  Every point in the source of the restricted projective branch chart lies in the target of the local projection chart used to lift it to the cover.
+proof:
+  Membership in the restricted source implies membership in the raw composite-chart source, whose first defining condition is precisely membership in that target.
+-/
 theorem projectiveBranchChart_source_subset_localProjection_target
     (y : D.hyperbolicDevelopingMap.cover.total) :
     (projectiveBranchChart D y).source ⊆
@@ -193,7 +252,14 @@ theorem projectiveBranchChart_source_subset_localProjection_target
     Set.mem_preimage, Set.mem_univ, and_true] at hxRaw
   exact hxRaw.1.1
 
-/-- Points in the branch chart source lift into the canonical cover chart at `y`. -/
+/--
+%%handwave
+name: A projective branch lift lies in the canonical cover chart
+statement:
+  If \(x\) belongs to the projective branch source associated with \(y\), then its selected local lift lies in the source of the canonical complex chart at \(y\).
+proof:
+  This membership is the second source condition in the raw composition defining the projective branch chart.
+-/
 theorem projectiveBranchChart_source_lift_mem_chartAt_source
     (y : D.hyperbolicDevelopingMap.cover.total)
     {x : X} (hx : x ∈ (projectiveBranchChart D y).source) :
@@ -206,7 +272,14 @@ theorem projectiveBranchChart_source_lift_mem_chartAt_source
     Set.mem_preimage, Set.mem_univ, and_true] at hxRaw
   exact hxRaw.1.2
 
-/-- The cover-chart coordinate of a branch-source point lies in the finite developing branch. -/
+/--
+%%handwave
+name: Lifted branch coordinates lie in the selected finite developing branch
+statement:
+  If \(x\) lies in the projective branch source associated with \(y\), then the canonical coordinate of its local lift belongs to the domain of the selected finite developing branch at \(y\).
+proof:
+  This is the remaining source condition in the composite raw branch chart.
+-/
 theorem projectiveBranchChart_source_coordinate_mem_finiteBranch
     (y : D.hyperbolicDevelopingMap.cover.total)
     {x : X} (hx : x ∈ (projectiveBranchChart D y).source) :
@@ -220,7 +293,14 @@ theorem projectiveBranchChart_source_coordinate_mem_finiteBranch
     Set.mem_preimage, Set.mem_univ, and_true] at hxRaw
   simpa [OpenPartialHomeomorph.trans_apply] using hxRaw.2
 
-/-- Source points of the restricted branch chart have base coordinates in the fixed source. -/
+/--
+%%handwave
+name: Base coordinates of projective branch points lie in the fixed source
+statement:
+  Every point in a restricted projective branch source has base-chart coordinate in the corresponding fixed coordinate source.
+proof:
+  The restricted source includes membership in the base branch domain, whose second condition is the asserted coordinate membership.
+-/
 theorem projectiveBranchChart_source_baseCoordinate_mem_fixed
     (y : D.hyperbolicDevelopingMap.cover.total)
     {x : X} (hx : x ∈ (projectiveBranchChart D y).source) :
@@ -231,7 +311,14 @@ theorem projectiveBranchChart_source_baseCoordinate_mem_fixed
     simpa [projectiveBranchChart, OpenPartialHomeomorph.restrOpen_source] using hx.2
   simpa [baseChartDomain] using hxDomain.2
 
-/-- Source points of the restricted branch chart lie in the selected base complex chart. -/
+/--
+%%handwave
+name: A projective branch source lies in its base complex chart
+statement:
+  Every point in the restricted projective branch source lies in the source of the selected base complex chart.
+proof:
+  Membership in the restricting base domain includes membership in the base chart source.
+-/
 theorem projectiveBranchChart_source_mem_baseChart_source
     (y : D.hyperbolicDevelopingMap.cover.total)
     {x : X} (hx : x ∈ (projectiveBranchChart D y).source) :
@@ -251,7 +338,14 @@ def projectiveBranchLift
     (D.hyperbolicDevelopingMap.cover.localHolomorphicSection y).localProjection.symm
       (x : X)
 
-/-- The local branch lift projects back to its source point. -/
+/--
+%%handwave
+name: Projection of the local projective-branch lift
+statement:
+  The local lift assigned to a point \(x\) of a projective branch source projects back to \(x\).
+proof:
+  The branch source lies in the target of the local projection chart, so its inverse is a right inverse there.
+-/
 theorem projectiveBranchLift_projects
     (y : D.hyperbolicDevelopingMap.cover.total)
     (x : (projectiveBranchChart D y).source) :
@@ -263,7 +357,14 @@ theorem projectiveBranchLift_projects
   exact S.projection_localProjection_symm
     (projectiveBranchChart_source_subset_localProjection_target D y x.2)
 
-/-- The local branch lift is continuous. -/
+/--
+%%handwave
+name: Continuity of the local projective-branch lift
+statement:
+  The map lifting a projective branch source into the simply connected cover is continuous.
+proof:
+  It is the inverse of the local projection chart restricted to a subset of that chart's target; compose its continuity there with the continuous subtype inclusion.
+-/
 theorem projectiveBranchLift_continuous
     (y : D.hyperbolicDevelopingMap.cover.total) :
     Continuous (projectiveBranchLift D y) := by
@@ -273,7 +374,14 @@ theorem projectiveBranchLift_continuous
   exact S.localProjection.symm.continuousOn.comp_continuous continuous_subtype_val
     (fun x ↦ projectiveBranchChart_source_subset_localProjection_target D y x.2)
 
-/-- The restricted projective branch chart is the projectivized developing map on its lift. -/
+/--
+%%handwave
+name: A projective branch is the descended projectivized developing map
+statement:
+  For a point \(x\) in the branch source associated with \(y\), the value of the projective branch chart at \(x\) equals the projectivized developing map evaluated at the selected local lift of \(x\).
+proof:
+  Write the branch chart as the selected finite branch evaluated in the canonical cover coordinate of the lift. The finite branch agrees with the developing-map coordinate expression there, which is exactly the projectivized developing value.
+-/
 theorem projectiveBranchChart_eq_projectiveDev
     (y : D.hyperbolicDevelopingMap.cover.total)
     (x : (projectiveBranchChart D y).source) :
@@ -296,7 +404,8 @@ theorem projectiveBranchChart_eq_projectiveDev
     projectiveBranchChart D y (x : X) =
         ((finiteBranchAt D y ((chartAt ℂ y) u) : ℂ) : RiemannSphere) := by
       simp [projectiveBranchChart, rawProjectiveBranchChart,
-        OpenPartialHomeomorph.trans_apply, u]
+        OpenPartialHomeomorph.trans_apply,
+        finiteRiemannSphereOpenPartialHomeomorph, u]
     _ =
         (((D.hyperbolicDevelopingMap.dev u : ℍ) : ℂ) : RiemannSphere) := by
       rw [hbranch.1]
@@ -306,7 +415,14 @@ theorem projectiveBranchChart_eq_projectiveDev
     _ = D.projectiveDev (projectiveBranchLift D y x) := by
       rfl
 
-/-- The descended projective developing branch is continuous on the branch source. -/
+/--
+%%handwave
+name: Continuity of a descended projectivized developing branch
+statement:
+  On each projective branch source, the projectivized developing map evaluated along the selected local lift is continuous.
+proof:
+  This function equals the projective branch chart on its source, and an open partial homeomorphism is continuous on its source.
+-/
 theorem projectiveBranch_projectiveDev_continuous
     (y : D.hyperbolicDevelopingMap.cover.total) :
     Continuous
@@ -329,7 +445,14 @@ def branchFiniteCoordinate
   let S := D.hyperbolicDevelopingMap.cover.localHolomorphicSection y
   fun z ↦ finiteBranchAt D y (S.sectionCoordinate z)
 
-/-- The section coordinate agrees with the cover chart coordinate of the local lift. -/
+/--
+%%handwave
+name: Compatibility of base, section, and cover coordinates
+statement:
+  For a point \(x\) in a projective branch source, applying the local section coordinate to the base-chart coordinate of \(x\) gives the canonical cover-chart coordinate of the selected lift of \(x\).
+proof:
+  Use the defining formula for the section-coordinate transition, cancel the base chart with its inverse, and identify the selected total-space chart with the canonical chart at the lift.
+-/
 theorem sectionCoordinate_base_eq_chartAt_lift
     (y : D.hyperbolicDevelopingMap.cover.total)
     (x : (projectiveBranchChart D y).source) :
@@ -344,7 +467,14 @@ theorem sectionCoordinate_base_eq_chartAt_lift
   rw [S.totalComplexChart_eq_chartAt]
   rfl
 
-/-- The finite coordinate expression recovers the projectivized developing branch. -/
+/--
+%%handwave
+name: Finite coordinate formula for a projectivized developing branch
+statement:
+  On a projective branch source, the projectivized developing map at the local lift equals the finite branch coordinate, viewed in the Riemann sphere, evaluated at the base coordinate.
+proof:
+  The selected finite branch equals the coordinate expression of the developing map at the lifted point. Replace its cover coordinate by the compatible section coordinate of the base point.
+-/
 theorem branchFiniteCoordinate_eq_projective_branch
     (y : D.hyperbolicDevelopingMap.cover.total)
     (x : (projectiveBranchChart D y).source) :
@@ -379,8 +509,12 @@ theorem branchFiniteCoordinate_eq_projective_branch
       simp [branchFiniteCoordinate, hsection]
 
 /--
-The finite coordinate identity in the form where a coordinate point is pulled
-back through the selected base chart.
+%%handwave
+name: Finite coordinate formula on the fixed source
+statement:
+  Let \(z\) lie in the fixed coordinate source, and suppose the inverse base-chart point determined by \(z\) lies in the projective branch source. Then the projectivized developing map at its selected lift equals the finite branch coordinate at \(z\), viewed in the Riemann sphere.
+proof:
+  Apply the branch-source finite coordinate formula to the inverse base-chart point, then use the right-inverse identity of the base chart at \(z\).
 -/
 theorem branchFiniteCoordinate_eq_on_source
     (y : D.hyperbolicDevelopingMap.cover.total)
@@ -404,7 +538,14 @@ theorem branchFiniteCoordinate_eq_on_source
       ⟨S.baseComplexChart.symm z, hzsource⟩
   simpa [hright] using h
 
-/-- The finite coordinate expression is holomorphic on the fixed coordinate source. -/
+/--
+%%handwave
+name: Holomorphicity of the finite projective branch coordinate
+statement:
+  The finite coordinate expression of a projective developing branch is holomorphic at every point of its fixed coordinate source.
+proof:
+  It is the composition of the holomorphic section-coordinate map with the selected finite developing branch, which is holomorphic on its domain.
+-/
 theorem branchFiniteCoordinate_holomorphic
     (y : D.hyperbolicDevelopingMap.cover.total)
     {z : ℂ} (hz : z ∈ fixedCoordinateSource D y) :
@@ -417,7 +558,14 @@ theorem branchFiniteCoordinate_holomorphic
     (finiteBranchAt_eq_coordinateExpression D y hz.2).2.1
   simpa [branchFiniteCoordinate] using hbranch.comp z hsection
 
-/-- The finite coordinate expression has nonzero derivative on the fixed coordinate source. -/
+/--
+%%handwave
+name: Regularity of the finite projective branch coordinate
+statement:
+  The derivative of the finite coordinate expression of a projective developing branch is nonzero throughout its fixed coordinate source.
+proof:
+  The chain rule factors the derivative into the derivative of the selected finite developing branch and that of the section-coordinate transition. Both factors are nonzero.
+-/
 theorem branchFiniteCoordinate_deriv_ne_zero
     (y : D.hyperbolicDevelopingMap.cover.total)
     {z : ℂ} (hz : z ∈ fixedCoordinateSource D y) :
@@ -474,11 +622,12 @@ def projectiveLocalChartFromLift
   branch_local_homeomorphism := projectiveBranchLocalHomeomorphismData D y
 
 /--
-Two projective branch charts constructed from lifts have local transitions in
-the complexified `PSL(2, ℝ)` subgroup.  Around an overlap point, a deck
-transformation relates the two local lifts; projective equivariance supplies
-the Mobius representative, and the H-valued developing map identifies its
-projective class with real holonomy.
+%%handwave
+name: Real-Mobius transitions between projective developing branches
+statement:
+  Any two projective branch charts descended from a projectivized hyperbolic developing map have transition germs in \(\mathrm{PSL}_2(\mathbb R)\) at every point of their overlap.
+proof:
+  Lift an overlap point through the two local cover sections. A deck transformation carries one lift to the other, and local deck compatibility persists near the point. Equivariance of the projectivized developing map identifies the two branch values through the real projective holonomy element of that deck transformation.
 -/
 theorem projectiveBranchChart_hasTransitionInGroup
     (y z : D.hyperbolicDevelopingMap.cover.total) :
@@ -604,9 +753,12 @@ theorem projectiveBranchChart_hasTransitionInGroup
       rw [hright]
 
 /--
-Two projective branch charts constructed from lifts have local Mobius
-transitions.  This is the subgroup-valued transition theorem with the
-`PSL(2, ℝ)` membership forgotten.
+%%handwave
+name: Local Mobius transitions between projective developing branches
+statement:
+  Any two projective branch charts descended from the developing map are locally related by a Mobius transformation on their overlap.
+proof:
+  Their transition germs lie in the real projective Mobius subgroup, hence in the full Mobius group.
 -/
 theorem projectiveBranchChart_hasLocalMobiusTransition
     (y z : D.hyperbolicDevelopingMap.cover.total) :
@@ -714,7 +866,14 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 def selectedLift (x : X) : D.hyperbolicDevelopingMap.cover.total :=
   Classical.choose (D.hyperbolicDevelopingMap.cover.exists_lift x)
 
-/-- The selected lift projects to its base point. -/
+/--
+%%handwave
+name: Projection of a selected cover lift
+statement:
+  For every base point \(x\), its selected lift to the simply connected cover projects to \(x\).
+proof:
+  This is the defining property of the chosen lift.
+-/
 theorem selectedLift_projects (x : X) :
     D.hyperbolicDevelopingMap.cover.projection (selectedLift D x) = x :=
   Classical.choose_spec (D.hyperbolicDevelopingMap.cover.exists_lift x)
@@ -724,7 +883,14 @@ def projectiveLocalChartAtBasePoint (x : X) :
     ProjectiveLocalChartFromDevelopingMap X D :=
   projectiveLocalChartFromLift D (selectedLift D x)
 
-/-- The selected local projective branch near `x` is defined at `x`. -/
+/--
+%%handwave
+name: A selected projective chart contains its base point
+statement:
+  The local projective chart obtained from the selected lift of \(x\) is defined at \(x\).
+proof:
+  The projective branch associated with a lift contains its projection, and the selected lift projects to \(x\).
+-/
 theorem mem_projectiveLocalChartAtBasePoint_source (x : X) :
     x ∈ (projectiveLocalChartAtBasePoint D x).chart.source := by
   have hmem :=
@@ -1313,20 +1479,10 @@ def projectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems :
   branchAtlasData := projectivePointedOverlappingBranchAtlasDataTheorem
 
 /-- Existence wrapper for the unconditional bundled pointed-overlap package. -/
-theorem hasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems :
-    HasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X :=
-  ⟨projectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems⟩
-
 def projectiveDevelopingAtlasDataTheorem_of_bundledPointedOverlappingModularTheorems
     (h : ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
     ProjectiveDevelopingAtlasDataTheorem X :=
   projectiveDevelopingAtlasDataTheorem_of_pointedOverlappingBranchAtlasData h.branchAtlasData
-
-theorem nonempty_projectiveDevelopingAtlasDataTheorem_of_hasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems
-    (h : HasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    Nonempty (ProjectiveDevelopingAtlasDataTheorem X) :=
-  h.elim fun P ↦
-    ⟨projectiveDevelopingAtlasDataTheorem_of_bundledPointedOverlappingModularTheorems P⟩
 
 /--
 Global theorem target for assembling local projective branch atlas data into a
@@ -1600,8 +1756,12 @@ def projectiveAtlasFromPsl2rDevelopingAtlas
     developingAtlas.compatible_with_riemann_surface
 
 /--
-The selected branch atlas of a projectivized hyperbolic developing map has
-`PSL(2, ℝ)`-valued transitions.
+%%handwave
+name: Real projective transitions in the selected branch atlas
+statement:
+  The projective charts obtained from the selected lift at each point have pairwise transition germs in \(\mathrm{PSL}_2(\mathbb R)\).
+proof:
+  Each selected chart is the projective branch associated with its chosen lift. Apply the real-Mobius transition theorem for the two selected lifts.
 -/
 theorem projectivePointedLocalBranchData_hasTransitionInGroup
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1646,9 +1806,12 @@ def psl2rProjectiveStructureOfProjectivizedDevelopingMap
         projectivePointedLocalBranchData_hasTransitionInGroup D x y)
 
 /--
-The `PSL(2, ℝ)`-projective structure generated by a projectivized hyperbolic
-developing map is induced by the original hyperbolic metric after forgetting
-the subgroup decoration.
+%%handwave
+name: The descended real projective structure is induced by the hyperbolic metric
+statement:
+  Let a hyperbolic metric \(g\) have a projectivized developing map with holonomy in \(\mathrm{PSL}_2(\mathbb R)\). The complex projective structure obtained by descending its selected local branches is induced by \(g\).
+proof:
+  Assemble the selected overlapping branches into a projective developing atlas. Their transitions lie in \(\mathrm{PSL}_2(\mathbb R)\); the projective structure constructed from this atlas uses the given projectivized developing map, which is the required witness that the structure is induced by \(g\).
 -/
 theorem psl2rProjectiveStructureOfProjectivizedDevelopingMap_isInducedByHyperbolicMetric
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1760,12 +1923,6 @@ def projectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
   compatibleGeneratedStructure :=
     projectiveStructureWithCompatibleDevelopingChartsTheorem_from_developingAtlas X
 
-theorem hasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] :
-    HasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X :=
-  ⟨projectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X⟩
-
 def projectiveAtlasAssemblyGeneratedStructureTheorems_of_compatibleGeneratedStructureTheorems
     (h : ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
     ProjectiveAtlasAssemblyGeneratedStructureTheorems X where
@@ -1775,12 +1932,6 @@ def projectiveAtlasAssemblyGeneratedStructureTheorems_of_compatibleGeneratedStru
   compatibleWithRiemannSurface :=
     projectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem_of_compatible
       h.compatibleGeneratedStructure
-
-theorem hasProjectiveAtlasAssemblyGeneratedStructureTheorems_of_hasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (h : HasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
-    HasProjectiveAtlasAssemblyGeneratedStructureTheorems X :=
-  h.elim fun S ↦
-    ⟨projectiveAtlasAssemblyGeneratedStructureTheorems_of_compatibleGeneratedStructureTheorems S⟩
 
 def projectiveAtlasAssemblyTheorem_of_generatedStructureTheorems
     (h : ProjectiveAtlasAssemblyGeneratedStructureTheorems X) :
@@ -1802,12 +1953,6 @@ def projectiveAtlasAssemblyTheorem_of_generatedStructureTheorems
       compatible_with_riemann_surface_from_developing_map :=
         Classical.choice (h.compatibleWithRiemannSurface x₀ g D developingAtlas) }
 
-theorem nonempty_projectiveAtlasAssemblyTheorem_of_hasProjectiveAtlasAssemblyGeneratedStructureTheorems
-    (h : HasProjectiveAtlasAssemblyGeneratedStructureTheorems X) :
-    Nonempty (ProjectiveAtlasAssemblyTheorem X) :=
-  h.elim fun S ↦
-    ⟨projectiveAtlasAssemblyTheorem_of_generatedStructureTheorems S⟩
-
 def projectiveAtlasAssemblyTheorem_of_compatibleGeneratedStructureTheorems
     (h : ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
     ProjectiveAtlasAssemblyTheorem X := by
@@ -1827,12 +1972,6 @@ def projectiveAtlasAssemblyTheorem_of_compatibleGeneratedStructureTheorems
           (A.chartsInStructure x)
       compatible_with_riemann_surface_from_developing_map :=
         A.compatibleWithRiemannSurface }
-
-theorem nonempty_projectiveAtlasAssemblyTheorem_of_hasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (h : HasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
-    Nonempty (ProjectiveAtlasAssemblyTheorem X) :=
-  h.elim fun S ↦
-    ⟨projectiveAtlasAssemblyTheorem_of_compatibleGeneratedStructureTheorems S⟩
 
 /--
 Global theorem target for constructing the projective atlas from any
@@ -1947,21 +2086,11 @@ def projectiveAtlasConcreteAssemblySplitTheorems :
     projectivePointedOverlappingBranchAtlasDataTheorem
 
 /-- Existence wrapper for the unconditional split projective assembly constructor. -/
-theorem hasProjectiveAtlasConcreteAssemblySplitTheorems :
-    HasProjectiveAtlasConcreteAssemblySplitTheorems X :=
-  ⟨projectiveAtlasConcreteAssemblySplitTheorems⟩
-
 def projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlapping
     (h : ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
     ProjectiveAtlasConcreteAssemblySplitTheorems X :=
   projectiveAtlasConcreteAssemblySplitTheorems_of_branchAtlasDataTheorem
     h.branchAtlasData
-
-theorem hasProjectiveAtlasConcreteAssemblySplitTheorems_of_hasBundledPointedOverlapping
-    (h : HasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    HasProjectiveAtlasConcreteAssemblySplitTheorems X :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlapping P⟩
 
 /-- Split projective assembly theorems construct concrete projective assembly data. -/
 def projectiveAtlasConcreteAssemblyDataTheorem_of_splitTheorems
@@ -1975,13 +2104,6 @@ def projectiveAtlasConcreteAssemblyDataTheorem_of_splitTheorems
   exact ⟨
     { branchAtlasData := branchAtlasData
       compatibleGeneratedStructure := compatibleGeneratedStructure }⟩
-
-/-- Existence of split projective assembly theorems gives the concrete assembly theorem. -/
-theorem nonempty_projectiveAtlasConcreteAssemblyDataTheorem_of_hasSplitTheorems
-    (h : HasProjectiveAtlasConcreteAssemblySplitTheorems X) :
-    Nonempty (ProjectiveAtlasConcreteAssemblyDataTheorem X) :=
-  h.elim fun S ↦
-    ⟨projectiveAtlasConcreteAssemblyDataTheorem_of_splitTheorems S⟩
 
 /-- Concrete projective assembly data is now available unconditionally. -/
 def projectiveAtlasConcreteAssemblyDataTheorem :
@@ -2051,13 +2173,6 @@ def projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGenerated
   developingAtlasData := h
   assembleAtlas := projectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X
 
-theorem hasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems_of_hasBundledPointedOverlapping
-    (h : HasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems_of_bundledPointedOverlapping
-      P⟩
-
 /-- The bundled pointed-overlap compatible-generated projective package is unconditional. -/
 def projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems :
     ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
@@ -2066,11 +2181,6 @@ def projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGenerated
     projectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems
 
 /-- Existence wrapper for the unconditional bundled compatible-generated package. -/
-theorem hasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems :
-    HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-      X :=
-  ⟨projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems⟩
-
 def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems
     (h : ProjectiveAtlasFromDevelopingMapModularTheorems X) :
     ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X := by
@@ -2079,12 +2189,6 @@ def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems
   exact
     (h.assembleAtlas x₀ g D developingAtlas).map
       (fun A ↦ A.toProjectiveAtlasFromDevelopingMap)
-
-theorem nonempty_projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_hasProjectiveAtlasFromDevelopingMapModularTheorems
-    (h : HasProjectiveAtlasFromDevelopingMapModularTheorems X) :
-    Nonempty (ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X) :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems P⟩
 
 def projectiveAtlasFromDevelopingMapModularTheorems_of_bundledPointedOverlappingCompatibleGenerated
     (h :
@@ -2124,33 +2228,12 @@ def projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlappingCom
   branchAtlasData := h.developingAtlasData.branchAtlasData
   compatibleGeneratedStructure := h.assembleAtlas.compatibleGeneratedStructure
 
-theorem hasProjectiveAtlasConcreteAssemblySplitTheorems_of_hasBundledPointedOverlappingCompatibleGenerated
-    (h :
-      HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
-    HasProjectiveAtlasConcreteAssemblySplitTheorems X :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlappingCompatibleGenerated P⟩
-
-theorem hasProjectiveAtlasFromDevelopingMapModularTheorems_of_hasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-    (h :
-      HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
-    HasProjectiveAtlasFromDevelopingMapModularTheorems X :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasFromDevelopingMapModularTheorems_of_bundledPointedOverlappingCompatibleGenerated P⟩
-
 def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_bundledPointedOverlappingCompatibleGenerated
     (h :
       ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
     ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
   projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems
     (projectiveAtlasFromDevelopingMapModularTheorems_of_bundledPointedOverlappingCompatibleGenerated h)
-
-theorem nonempty_projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_hasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-    (h :
-      HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
-    Nonempty (ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X) :=
-  h.elim fun P ↦
-    ⟨projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_bundledPointedOverlappingCompatibleGenerated P⟩
 
 /--
 Global theorem target for constructing the projective atlas from any

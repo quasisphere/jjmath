@@ -648,6 +648,9 @@ name:
   Pointed coordinate annuli lie in the chart source
 statement:
   A pointed coordinate annulus is contained in the source of its coordinate.
+proof:
+  Membership in the annulus includes membership in the chart source by
+  definition.
 -/
 theorem pointedCoordinateAnnulus_subset_chart_source
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -663,6 +666,9 @@ name:
 statement:
   If the inner radius is positive, then the pointed coordinate annulus is
   contained in the punctured surface.
+proof:
+  At the pole the coordinate distance is zero, contradicting the strict
+  lower bound by the positive inner radius.
 -/
 theorem pointedCoordinateAnnulus_subset_punctured
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -681,6 +687,9 @@ name:
 statement:
   A superharmonic function on the punctured surface is superharmonic on every
   pointed coordinate annulus with positive inner radius.
+proof:
+  The positive inner radius makes the annulus a subset of the punctured
+  surface, and superharmonicity restricts to smaller open sets.
 -/
 theorem superharmonicOnSurface_pointedCoordinateAnnulus
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -698,6 +707,9 @@ name:
 statement:
   On the inner coordinate circle \(|z-z(p)|=\rho\), the annular logarithmic
   comparator equals \(-\log \rho-C\).
+proof:
+  Substituting \(|z-z(p)|=\rho\) makes the logarithmic interpolation factor
+  equal to \(1\); its denominator is nonzero because \(0<\rho<R\).
 -/
 theorem pointedCoordinateAnnularLogComparator_inner_boundary
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -717,6 +729,9 @@ name:
 statement:
   On the outer coordinate circle \(|z-z(p)|=R\), the annular logarithmic
   comparator equals \(0\).
+proof:
+  Substituting \(|z-z(p)|=R\) makes the numerator
+  \(\log R-\log R\) vanish.
 -/
 theorem pointedCoordinateAnnularLogComparator_outer_boundary
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1689,6 +1704,24 @@ theorem pointedCoordinateAnnularLogComparator_tendsto_innerRadius_zero
     ring_nf
   simpa [a, d, sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using hmain
 
+/--
+%%handwave
+name:
+  Annular logarithmic comparators approach their limiting barrier
+statement:
+  Let \(x\ne p\) lie in the coordinate ball of radius \(R>0\), and let
+  \(\varepsilon>0\).  For all sufficiently small inner radii
+  \(0<\rho<\min\{|z(x)-z(p)|,R\}\),
+  \[
+    -\log|z(x)-z(p)|+\log R-\varepsilon
+      \le A_{\rho,R,C}(x),
+  \]
+  where \(A_{\rho,R,C}\) is the annular logarithmic comparator.
+proof:
+  As \(\rho\to0^+\), the comparator at \(x\) tends to
+  \(-\log|z(x)-z(p)|+\log R\).  Eventual membership in the interval above
+  this limit minus \(\varepsilon\) gives a positive radius threshold.
+-/
 theorem exists_small_radius_annularLogComparator_limit_sub_epsilon
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X)
@@ -1730,6 +1763,29 @@ theorem exists_small_radius_annularLogComparator_limit_sub_epsilon
     simpa [Real.dist_eq, abs_of_pos hρ_pos] using hρδ
   simpa [L] using hδ hdist (by simpa [Set.mem_Ioi] using hρ_pos)
 
+/--
+%%handwave
+name:
+  An inner circle supporting the annular comparison
+statement:
+  Suppose \(u\) has the eventual pole bound
+  \[
+    -\log|z(y)-z(p)|-C\le u(y)
+  \]
+  near \(p\).  For \(x\ne p\) in the coordinate \(R\)-ball and
+  \(\varepsilon>0\), there is
+  \(0<\rho<\min\{|z(x)-z(p)|,R\}\) such that the pole bound holds on the
+  entire coordinate circle of radius \(\rho\) and
+  \[
+    -\log|z(x)-z(p)|+\log R-\varepsilon
+      \le A_{\rho,R,C}(x).
+  \]
+proof:
+  One sufficiently small radius threshold makes the eventual pole bound
+  uniform on coordinate circles; another controls the comparator's limit.
+  Choose half the minimum of these thresholds, the distance to \(x\), and
+  \(R\).
+-/
 theorem exists_inner_radius_for_annular_epsilon_comparison
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X)
@@ -1793,6 +1849,23 @@ theorem exists_inner_radius_for_annular_epsilon_comparison
   · exact hδC ρ hρ_pos hρ_lt_δC
   · exact hδL ρ hρ_pos hρ_lt_δL hρ_lt_norm hρ_lt_R
 
+/--
+%%handwave
+name:
+  Fixed-ball logarithmic lower bound up to epsilon
+statement:
+  Let \(u\ge0\) be superharmonic on \(X\setminus\{p\}\) and have at least a
+  logarithmic pole at \(p\).  If the closed coordinate \(R\)-ball lies in
+  the chart target, then for every \(x\ne p\) in its open ball and every
+  \(\varepsilon>0\),
+  \[
+    -\log|z(x)-z(p)|+\log R-\varepsilon\le u(x).
+  \]
+proof:
+  Choose an inner circle on which the logarithmic pole bound holds and whose
+  annular comparator is within \(\varepsilon\) of the limiting barrier.
+  Finite-annulus comparison puts that comparator below \(u(x)\).
+-/
 theorem nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound_sub_epsilon
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X)
@@ -1819,6 +1892,21 @@ theorem nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound_s
       x hxsource hρx hxR
   exact hlimit_lower.trans hfinite
 
+/--
+%%handwave
+name:
+  Fixed-ball logarithmic lower bound with a chosen pole constant
+statement:
+  Under the preceding hypotheses with a fixed eventual pole constant \(C\),
+  every \(x\ne p\) in the coordinate \(R\)-ball satisfies
+  \[
+    -\log|z(x)-z(p)|+\log R\le u(x).
+  \]
+proof:
+  The same inequality holds with an arbitrary positive
+  \(\varepsilon\) subtracted from the left-hand side.  Let
+  \(\varepsilon\downarrow0\).
+-/
 theorem nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound_of_eventual_constant
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X)
@@ -1844,6 +1932,25 @@ theorem nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound_o
       X p χ hR hclosed u hnonneg hsuper hC hxsource hxR hxp hε
   linarith
 
+/--
+%%handwave
+name:
+  Fixed-ball lower barrier for nonnegative logarithmic superharmonic functions
+statement:
+  Let \(u\ge0\) be superharmonic on \(X\setminus\{p\}\), and suppose that for
+  some \(C\),
+  \[
+    -\log|z(x)-z(p)|-C\le u(x)
+  \]
+  eventually near \(p\).  If the closed coordinate \(R\)-ball lies in the
+  chart target, then throughout its punctured open ball,
+  \[
+    -\log|z(x)-z(p)|+\log R\le u(x).
+  \]
+proof:
+  Choose the supplied pole constant \(C\) and apply the fixed-constant
+  annular comparison result.
+-/
 theorem nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X)
@@ -1876,8 +1983,7 @@ statement:
   barrier on a sufficiently small coordinate ball.
 proof:
   Choose a coordinate ball around the pole and apply
-  [the fixed-radius annular comparison
-  theorem](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound).
+  [the fixed-radius annular comparison theorem](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_fixed_chart_ball_lower_bound).
   Writing the lower bound as \(-\log |z-z(p)|-A\) just means taking
   \(A=-\log R\).
 -/
@@ -1928,8 +2034,7 @@ statement:
   barrier near the pole.
 proof:
   Use
-  [the coordinate-ball lower
-  barrier](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_uniform_lower_bound_on_chart_ball)
+  [the coordinate-ball lower barrier](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_uniform_lower_bound_on_chart_ball)
   and take the inverse image of the coordinate ball.
 -/
 theorem nonnegative_superharmonic_logPole_annular_uniform_lower_bound
@@ -1970,8 +2075,7 @@ statement:
   of the pole.
 proof:
   Apply
-  [annular comparison for nonnegative superharmonic functions with a
-  logarithmic pole](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_uniform_lower_bound)
+  [annular comparison for nonnegative superharmonic functions with a logarithmic pole](lean:JJMath.Uniformization.nonnegative_superharmonic_logPole_annular_uniform_lower_bound)
   to each admissible competitor.
 -/
 theorem greenPerronAdmissible_annular_logarithmic_lower_comparison_on_neighborhood
@@ -2006,8 +2110,7 @@ statement:
   competitors dominate one fixed logarithmic lower barrier near the pole.
 proof:
   Use
-  [the neighborhood lower barrier for all admissible
-  competitors](lean:JJMath.Uniformization.greenPerronAdmissible_annular_logarithmic_lower_comparison_on_neighborhood)
+  [the neighborhood lower barrier for all admissible competitors](lean:JJMath.Uniformization.greenPerronAdmissible_annular_logarithmic_lower_comparison_on_neighborhood)
   and translate the neighborhood statement into the corresponding eventual
   statement at the pole.
 -/
@@ -2074,8 +2177,7 @@ statement:
   \(\log |z-z(p)|\) is bounded below in a punctured neighborhood of the pole.
 proof:
   Use the
-  [uniform logarithmic lower barrier for all admissible
-  competitors](lean:JJMath.Uniformization.greenPerronAdmissible_uniform_logarithmic_lower_barrier_near_pole).
+  [uniform logarithmic lower barrier for all admissible competitors](lean:JJMath.Uniformization.greenPerronAdmissible_uniform_logarithmic_lower_barrier_near_pole).
   Since every admissible value at a nearby point is above this logarithmic
   barrier, the infimum envelope is above it too.  Adding
   \(\log |z-z(p)|\) gives the lower bound for the corrected envelope.
@@ -2279,6 +2381,21 @@ noncomputable def evansPotentialLocalPuncturedLogDomain
     (q : {x : X // x ≠ p}) : Set X :=
   Classical.choose (hlocal q.1 q.2)
 
+/--
+%%handwave
+name:
+  Properties of the chosen local Evans logarithm domain
+statement:
+  For each \(q\ne p\), the chosen set \(U_q\) is an open neighborhood of
+  \(q\) contained in \(X\setminus\{p\}\), and there is a holomorphic
+  \(L_q:X\to\mathbb C\) on \(U_q\) satisfying
+  \[
+    \operatorname{Re}L_q(y)=E(y)\qquad(y\in U_q).
+  \]
+proof:
+  These are exactly the properties retained when choosing one witness from
+  the local punctured-logarithm hypothesis at \(q\).
+-/
 theorem evansPotentialLocalPuncturedLogDomain_spec
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {E : EvansPotentialAt X p}
@@ -2311,6 +2428,20 @@ noncomputable def evansPotentialLocalPuncturedLogFunction
   Classical.choose
     (evansPotentialLocalPuncturedLogDomain_spec hlocal q).2.2.2
 
+/--
+%%handwave
+name:
+  Properties of the chosen local Evans logarithm
+statement:
+  For every \(q\ne p\), the chosen function \(L_q\) is holomorphic on its
+  chosen punctured neighborhood \(U_q\) and satisfies
+  \[
+    \operatorname{Re}L_q=E\quad\text{on }U_q.
+  \]
+proof:
+  This is the specification of the holomorphic function selected from the
+  chosen domain's local-logarithm witness.
+-/
 theorem evansPotentialLocalPuncturedLogFunction_spec
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {E : EvansPotentialAt X p}
@@ -2756,6 +2887,26 @@ def EvansPotentialPolePuncturedBranchesHaveLocalCircleTransitions
                     (γ : ℂ) *
                       evansPotentialPolePuncturedBranch P hlocal i y
 
+/--
+%%handwave
+name:
+  Local unit-circle transitions between Evans exponential branches
+statement:
+  Let \(F_0\) be the Evans exponential branch through \(p\), and for each
+  \(q\ne p\) let \(F_q=e^{L_q}\) on a chosen punctured neighborhood.
+  Whenever two branch domains meet at \(x\), there are a neighborhood
+  \(V\) of \(x\) in their overlap and a constant
+  \(\gamma\in S^1\) such that
+  \[
+    F_j(y)=\gamma F_i(y)\qquad(y\in V).
+  \]
+proof:
+  At \(p\), only the pole branch can occur, so take \(\gamma=1\).
+  Away from \(p\), both branches admit holomorphic logarithms with common
+  real part \(E\).  On a smaller connected neighborhood their difference is
+  a constant imaginary number, and exponentiation gives the unit transition
+  factor.
+-/
 theorem evansPotential_polePuncturedBranches_haveLocalCircleTransitions
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -2959,6 +3110,18 @@ def toBranchSystem
   branch_holomorphicOn := A.branch_holomorphicOn
   covers := A.covers
 
+/--
+%%handwave
+name:
+  An Evans branch atlas has local circle transitions
+statement:
+  The holomorphic branch system associated with an Evans local exponential
+  atlas satisfies the local-transition condition: near every point of an
+  overlap, one branch is a constant unit complex multiple of the other.
+proof:
+  Package the open neighborhood, circle constant, and pointwise transition
+  equation supplied by the atlas's transition property.
+-/
 theorem toBranchSystem_hasLocalTransitions
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {E : EvansPotentialAt X p}
@@ -3116,6 +3279,21 @@ noncomputable def evansPotentialLocalExponentialBranchAtlasOfPoleBranch
           (evansPotentialLocalPuncturedLogDomain_spec hlocal q).2.2.1 hp_domain
         exact False.elim (hp_ne rfl)
 
+/--
+%%handwave
+name:
+  Existence of an Evans local exponential branch atlas
+statement:
+  If an Evans potential \(E\) has local holomorphic logarithms on
+  \(X\setminus\{p\}\), then it admits a local exponential branch atlas whose
+  transitions are constant elements of \(S^1\), whose logarithmic modulus is
+  \(E\), and whose branch through \(p\) has a simple zero there.
+proof:
+  Choose the canonical pole exponential branch and exponentiate one chosen
+  local logarithm around every punctured point.  Their common real part gives
+  the local circle transitions, and the pole branch supplies the
+  first-order zero factorization.
+-/
 theorem evansPotential_localExponentialBranchAtlas
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -3372,8 +3550,7 @@ statement:
   The holomorphic plane map associated to an Evans potential is proper.
 proof:
   This is the properness criterion for
-  [plane maps controlled by an Evans
-  potential](lean:JJMath.Uniformization.planeMap_isProper_of_log_norm_evansPotential).
+  [plane maps controlled by an Evans potential](lean:JJMath.Uniformization.planeMap_isProper_of_log_norm_evansPotential).
 -/
 theorem EvansPotentialPlaneMap.isProper
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3431,8 +3608,7 @@ statement:
   one.
 proof:
   Apply the degree-one criterion for
-  [proper holomorphic plane maps with one simple
-  zero](lean:JJMath.Uniformization.proper_holomorphicPlaneMap_degree_one_of_simple_single_zero).
+  [proper holomorphic plane maps with one simple zero](lean:JJMath.Uniformization.proper_holomorphicPlaneMap_degree_one_of_simple_single_zero).
 -/
 theorem EvansPotentialPlaneMap.degree_one
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3729,8 +3905,7 @@ statement:
 proof:
   Degree one gives bijectivity and makes the map unbranched.
   Then use the local inverse theorem for
-  [bijective unbranched holomorphic plane
-  maps](lean:JJMath.Uniformization.biholomorphicToComplexPlane_of_bijective_unbranched_holomorphicPlaneMap).
+  [bijective unbranched holomorphic plane maps](lean:JJMath.Uniformization.biholomorphicToComplexPlane_of_bijective_unbranched_holomorphicPlaneMap).
 -/
 theorem degree_one_holomorphicPlaneMap_biholomorphic
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3902,9 +4077,24 @@ def GreenFunctionWithPole.toCompactSuperlevel
   compact_positive_superlevel := G.compact_positive_superlevel
 
 /--
-If a Green-type function is positive away from its pole and all positive
-superlevel sets are compact after adjoining the pole, then it vanishes along
-the cocompact filter.
+%%handwave
+name:
+  Compact positive superlevels force decay to zero at infinity
+statement:
+  Let \(G:X\to\mathbb R\) satisfy \(G(x)>0\) for \(x\ne p\).  If
+  \[
+    \{p\}\cup\{x:G(x)\ge a\}
+  \]
+  is compact for every \(a>0\), then
+  \[
+    G(x)\longrightarrow0
+    \quad\text{along the cocompact filter of }X.
+  \]
+proof:
+  Outside the compact singleton \(\{p\}\), positivity gives every prescribed
+  negative lower bound near zero.  For \(a>0\), outside the compact
+  \(a\)-superlevel set one has \(G<a\).  These two estimates are the order
+  criterion for convergence to zero.
 -/
 theorem tendsto_zero_at_infinity_of_positive_away_pole_compact_positive_superlevel
     {X : Type} [TopologicalSpace X] {p : X} {G : X → ℝ}
@@ -4090,8 +4280,7 @@ statement:
   The disk map obtained from a Green function is proper.
 proof:
   Apply the properness criterion for
-  [pointed disk maps controlled by a Green
-  function](lean:JJMath.Uniformization.pointedDiskMap_isProper_of_greenFunction_modulus).
+  [pointed disk maps controlled by a Green function](lean:JJMath.Uniformization.pointedDiskMap_isProper_of_greenFunction_modulus).
 -/
 theorem greenFunction_pointedDiskMap_isProper
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4153,8 +4342,7 @@ statement:
   one.
 proof:
   Apply the degree-one criterion for
-  [proper pointed disk maps with one simple
-  zero](lean:JJMath.Uniformization.proper_pointedDiskMap_degree_one_of_simple_single_zero).
+  [proper pointed disk maps with one simple zero](lean:JJMath.Uniformization.proper_pointedDiskMap_degree_one_of_simple_single_zero).
 -/
 theorem greenFunction_pointedDiskMap_has_degree_one
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4233,8 +4421,7 @@ statement:
   with the unit disk.
 proof:
   Degree one gives bijectivity.  Also, a
-  [degree-one pointed disk map is
-  unbranched](lean:JJMath.Uniformization.degree_one_pointedDiskMap_unbranched).
+  [degree-one pointed disk map is unbranched](lean:JJMath.Uniformization.degree_one_pointedDiskMap_unbranched).
   A bijective unbranched pointed holomorphic disk map is biholomorphic.
 -/
 theorem degree_one_pointedDiskMap_biholomorphic
@@ -4617,6 +4804,23 @@ theorem unitDisc_has_bounded_nonconstant_holomorphicFunction :
       ?_
     norm_num
 
+/--
+%%handwave
+name:
+  The Cayley transform maps the upper half-plane into the unit disk
+statement:
+  For every \(z\) in the upper half-plane,
+  \[
+    \left|\frac{z-i}{z+i}\right|<1.
+  \]
+proof:
+  The denominator is nonzero because \(\operatorname{Im}z>0\).  Squaring the
+  two norms reduces the inequality
+  \(|z-i|<|z+i|\) to
+  \((\operatorname{Im}z-1)^2<
+    (\operatorname{Im}z+1)^2\), which follows from
+  \(\operatorname{Im}z>0\).
+-/
 private theorem green_upperHalfPlane_cayley_norm_lt_one (z : UpperHalfPlane) :
     ‖((z : ℂ) - Complex.I) / ((z : ℂ) + Complex.I)‖ < 1 := by
   have hden : (z : ℂ) + Complex.I ≠ 0 := by
@@ -4641,8 +4845,7 @@ statement:
 proof:
   Use \(z\mapsto (z-i)/(z+i)\).  It is holomorphic on the upper half-plane
   because the denominator is nonzero there, and
-  [its absolute value is strictly less than
-  one](lean:JJMath.Uniformization.upperHalfPlane_cayley_norm_lt_one).  It is
+  [its absolute value is strictly less than one](lean:JJMath.Uniformization.upperHalfPlane_cayley_norm_lt_one).  It is
   not constant, since it sends \(i\) to \(0\) but does not send \(1+i\) to
   \(0\).
 -/
@@ -4696,10 +4899,8 @@ statement:
   upper half-plane.
 proof:
   The
-  [upper half-plane has nonconstant bounded holomorphic
-  functions](lean:JJMath.Uniformization.upperHalfPlane_has_bounded_nonconstant_holomorphicFunction),
-  while [the complex plane has
-  none](lean:JJMath.Uniformization.complexPlane_has_no_bounded_nonconstant_holomorphicFunction)
+  [upper half-plane has nonconstant bounded holomorphic functions](lean:JJMath.Uniformization.upperHalfPlane_has_bounded_nonconstant_holomorphicFunction),
+  while [the complex plane has none](lean:JJMath.Uniformization.complexPlane_has_no_bounded_nonconstant_holomorphicFunction)
   by Liouville's theorem.  Pulling such a function back along a biholomorphism
   would contradict this.
 -/

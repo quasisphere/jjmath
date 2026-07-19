@@ -127,12 +127,6 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDa
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/- The interior unit-split branch-data boundary is discharged by explicit
-split-reparameterization transport of finite handoff skeletons. -/
-theorem selectedComponentwiseLeftSourceInteriorUnitSplitBranchDataWitnessTheorem :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
-      X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
 
 /-- The monotone prefixed subpath-merge value boundary for the componentwise route. -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
@@ -143,33 +137,8 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMe
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/--
-On the componentwise route, the monotone prefixed value witness follows from
-the monotone unprefixed branch-data witness by prepending the common prefix
-through the actual source chart.
--/
-theorem selectedComponentwiseLeftSourceMonotonePrefixedSubpathMergeValueWitness_of_monotoneSubpathMergeBranchData
-    (hMerge :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem_of_monotoneSubpathMergeBranchData
-    hMerge
 
-/-- The normalized unit-split boundary gives the monotone branch-data boundary. -/
-theorem selectedComponentwiseLeftSourceMonotoneSubpathMergeBranchDataWitness_of_unitSplit
-    (hUnit :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem_of_unitSplit
-    hUnit
 
-/-- The interior unit-split boundary gives the unit-split boundary. -/
-theorem selectedComponentwiseLeftSourceUnitSplitBranchDataWitness_of_interior
-    (hInterior :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem_of_interior
-    hInterior
 
 /-- The endpoint-normalization boundary for raw-to-public cut paths. -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
@@ -180,10 +149,6 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointN
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/-- Endpoint normalization for raw-to-public cut paths is unconditional. -/
-theorem selectedComponentwiseLeftSourceHomotopyStripCutEndpointNormalizationValueWitness_unconditional :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem_unconditional
 
 /--
 The one-column chart-grid replacement boundary for the componentwise PSL route.
@@ -271,286 +236,173 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwn
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-omit [RiemannSurface X] in
 /--
-The componentwise own-split parameter-permutation boundary is unconditional.
+Construct the canonical continuation directly from the finite path and
+homotopy comparison results, without retaining each theorem-valued adapter as
+a separate public declaration.
 -/
-theorem selectedComponentwiseLeftSourceMutualVertexRefinementOwnSplitParameterPermutation
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
-      X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
+private noncomputable def selectedComponentwiseLeftSourcePSLContinuation :
+    SelectedComponentwiseLeftSourcePSLContinuationTheorem X := by
+  have hInterior :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
+        X := by
+    intro g
+    exact pathLocalTransitionBasedWeakHandoffInteriorUnitSplitBranchDataWitnessPrinciple
+  have hUnit :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem X := by
+    intro g
+    exact
+      pathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple_of_interior
+        (hInterior g)
+  have hMerge :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
+        X := by
+    intro g
+    exact
+      pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple_of_unitSplit
+        (hUnit g)
+  have hPrefixed :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
+        X := by
+    intro g
+    exact
+      pathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple_of_monotoneSubpathMergeBranchData
+        (hMerge g)
+  have hNormalize :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple_unconditional
+        x₀ g
+        (metricBoundPartialConverseComponentwiseLocalTransitionModels
+          pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem g)
+  have hExplicit :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_monotoneSubpathMerge_and_endpointNormalization
+        (hMerge g) (hPrefixed g) (hNormalize x₀ g)
+  have hCut :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple_of_explicitValueWitness_unconditional
+        (hExplicit x₀ g)
+  have hDecomposed :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessPrinciple_unconditional
+        x₀ g
+        (metricBoundPartialConverseComponentwiseLocalTransitionModels
+          pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem g)
+  have hColumnValue :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnValueWitnessPrinciple_of_decomposed_and_cutReparam
+        (hDecomposed x₀ g) (hCut x₀ g)
+  have hColumnMove :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem
+        X := by
+    intro x₀ g basedWeakHandoffAlong
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple_of_valueWitness_unconditional
+        (basedWeakHandoffAlong := basedWeakHandoffAlong) (hColumnValue x₀ g)
+  have hStripMove :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem X := by
+    intro x₀ g basedWeakHandoffAlong
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartStripMovePrinciple_of_columnMovePrinciple
+        (hColumnMove x₀ g basedWeakHandoffAlong)
+  have hGridMove :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem X := by
+    intro x₀ g basedWeakHandoffAlong
+    exact
+      pathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple_of_stripMovePrinciple
+        (hStripMove x₀ g basedWeakHandoffAlong)
+  have hElementary :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem
+        X :=
+    selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem_of_selectedHomotopyChartGridMove
+      hGridMove
+  have hGridWalk :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem X :=
+    selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem_of_selectedElementaryGridMoveWalk
+      hElementary
+  have hPermutation :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
+        X := by
+    intro x₀ g
+    exact
+      pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationPrinciple
+  have hOwnAlignment :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem
+        X :=
+    selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem_of_selectedOwnSplitParameterPermutation
+      hPermutation
+  have hCommonAlignment :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem
+        X :=
+    selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem_of_selectedOwnSplitParameterAlignment
+      hOwnAlignment
+  have hUnique :
+      SelectedComponentwiseLeftSourcePathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem
+        X :=
+    selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem_of_selectedMutualVertexRefinementCommonAlignedSubdivision
+      hCommonAlignment
+  exact
+    selectedLocalTransitionModelContinuationDerivedRegularityCanonicalCoverMetricFieldTheoremPSL_of_selectedHomotopyGridWalk_and_selectedSamePathTerminalValueUniqueness
+      hGridWalk hUnique
 
-/--
-Finite homotopy-grid walks plus same-path terminal-value uniqueness give
-selected PSL continuation for the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_samePathTerminalValueUniqueness
-    (hGrid :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem X)
-    (hUnique :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedLocalTransitionModelContinuationDerivedRegularityCanonicalCoverMetricFieldTheoremPSL_of_selectedHomotopyGridWalk_and_selectedSamePathTerminalValueUniqueness
-    hGrid hUnique
 
-/--
-Finite homotopy-grid walks plus common aligned mutual vertex refinements give
-selected PSL continuation for the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_mutualVertexRefinementCommonAlignedSubdivision
-    (hGrid :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem X)
-    (hAlign :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_samePathTerminalValueUniqueness
-    hGrid
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem_of_selectedMutualVertexRefinementCommonAlignedSubdivision
-      hAlign)
 
-/--
-Finite homotopy-grid walks plus own-split parameter alignment give selected
-PSL continuation for the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_ownSplitParameterAlignment
-    (hGrid :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem X)
-    (hAlign :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_mutualVertexRefinementCommonAlignedSubdivision
-    hGrid
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem_of_selectedOwnSplitParameterAlignment
-      hAlign)
 
-/--
-Finite homotopy-grid walks plus own-split parameter permutations give selected
-PSL continuation for the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_ownSplitParameterPermutation
-    (hGrid :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem X)
-    (hPerm :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_ownSplitParameterAlignment
-    hGrid
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem_of_selectedOwnSplitParameterPermutation
-      hPerm)
 
-/--
-Elementary grid-move walks plus own-split parameter permutations give selected
-PSL continuation for the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_elementaryGridMoveWalk_and_ownSplitParameterPermutation
-    (hElementary :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem X)
-    (hPerm :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyGridWalk_and_ownSplitParameterPermutation
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem_of_selectedElementaryGridMoveWalk
-      hElementary)
-    hPerm
 
-/--
-Elementary grid-move walks give selected PSL continuation for the componentwise
-route; the own-split parameter-permutation part is unconditional.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_elementaryGridMoveWalk
-    (hElementary :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_elementaryGridMoveWalk_and_ownSplitParameterPermutation
-    hElementary
-    (selectedComponentwiseLeftSourceMutualVertexRefinementOwnSplitParameterPermutation X)
 
-/--
-Chart-grid local replacement gives selected PSL continuation for the
-componentwise route; compactness of the homotopy square supplies the finite
-chart grid.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartGridMove
-    (hChartGrid :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_elementaryGridMoveWalk
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem_of_selectedHomotopyChartGridMove
-      hChartGrid)
 
-/--
-One-strip chart-grid replacement gives selected PSL continuation for the
-componentwise route by finite concatenation of homotopy strips.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripMove
-    (hStrip :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartGridMove
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem_of_selectedHomotopyChartStripMove
-      hStrip)
 
-/--
-One-column chart-grid replacement gives selected PSL continuation for the
-componentwise route by finite concatenation across columns and strips.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnMove
-    (hColumn :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripMove
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem_of_selectedHomotopyChartStripColumnMove
-      hColumn)
 
-/--
-Decomposed one-column witnesses plus exact cut-reparameterization transfer
-give the public one-column terminal-value witness boundary.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_decomposed_and_cutReparam
-    (hDecomp :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem X)
-    (hCut :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem_of_selectedDecomposed_and_selectedCutReparam
-    hDecomp hCut
 
-/--
-Explicit cut-reparameterization witnesses imply the selected cut-transfer
-boundary; same-path uniqueness has already been discharged in `Continuation`.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparam_of_explicitValueWitness
-    (hExplicit :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem_of_explicitValueWitness
-    hExplicit
 
-/--
-The explicit cut-reparameterization witness follows from monotone subpath-merge
-data and endpoint normalization.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparamExplicitValueWitness_of_monotoneSubpathMerge_and_endpointNormalization
-    (hMerge :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem X)
-    (hNormalize :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem_of_monotoneSubpathMerge_and_endpointNormalization
-    hMerge
-    (selectedComponentwiseLeftSourceMonotonePrefixedSubpathMergeValueWitness_of_monotoneSubpathMergeBranchData
-      hMerge)
-    hNormalize
 
-/--
-The public cut-reparameterization witness follows from monotone subpath-merge;
-endpoint normalization is now unconditional.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparamExplicitValueWitness_of_monotoneSubpathMerge
-    (hMerge :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem X :=
-  selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparamExplicitValueWitness_of_monotoneSubpathMerge_and_endpointNormalization
-    hMerge
-    selectedComponentwiseLeftSourceHomotopyStripCutEndpointNormalizationValueWitness_unconditional
 
-/-- The selected decomposed one-column witness theorem is unconditional. -/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnDecomposedValueWitness_unconditional :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem X :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem_unconditional
 
-/--
-After the exact componentwise suffix append, only cut-reparameterization
-transfer is needed to get the public one-column terminal-value witness
-boundary.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_cutReparam
-    (hCut :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem X :=
-  selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_decomposed_and_cutReparam
-    selectedComponentwiseLeftSourceHomotopyChartStripColumnDecomposedValueWitness_unconditional
-    hCut
 
-/--
-After the exact componentwise suffix append and same-path uniqueness, only the
-explicit raw/decomposed cut witness remains to get the public one-column
-terminal-value witness boundary.
--/
-theorem selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_cutReparamExplicitValueWitness
-    (hExplicit :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem X :=
-  selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_cutReparam
-    (selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparam_of_explicitValueWitness
-      hExplicit)
 
-/--
-One-column terminal-value witnesses give selected PSL continuation for the
-componentwise route; arbitrary skeleton choices are removed by same-path
-uniqueness.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnValueWitness
-    (hValue :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnMove
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem_of_selectedHomotopyChartStripColumnValueWitness
-      hValue)
 
-/--
-An explicit cut-reparameterization witness gives selected PSL continuation for
-the componentwise route.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnCutReparamExplicitValueWitness
-    (hExplicit :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnValueWitness
-    (selectedComponentwiseLeftSourceHomotopyChartStripColumnValueWitness_of_cutReparamExplicitValueWitness
-      hExplicit)
 
-/--
-Monotone subpath-merge data suffices for selected PSL continuation.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_monotoneSubpathMerge
-    (hMerge :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_homotopyChartStripColumnCutReparamExplicitValueWitness
-    (selectedComponentwiseLeftSourceHomotopyChartStripColumnCutReparamExplicitValueWitness_of_monotoneSubpathMerge
-      hMerge)
 
-/--
-The normalized unit-split branch-data boundary suffices for selected PSL
-continuation.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_unitSplit
-    (hUnit :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_monotoneSubpathMerge
-    (selectedComponentwiseLeftSourceMonotoneSubpathMergeBranchDataWitness_of_unitSplit
-      hUnit)
 
-/--
-The interior normalized unit-split branch-data boundary suffices for selected
-PSL continuation.
--/
-theorem selectedComponentwiseLeftSourcePSLContinuation_of_interiorUnitSplit
-    (hInterior :
-      SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem X) :
-    SelectedComponentwiseLeftSourcePSLContinuationTheorem X :=
-  selectedComponentwiseLeftSourcePSLContinuation_of_unitSplit
-    (selectedComponentwiseLeftSourceUnitSplitBranchDataWitness_of_interior hInterior)
+
 
 /--
 Completed metric-bound partial converse with the conclusion phrased as a
 `PSL(2, ℝ)`-projective structure.  The proof chooses the H-valued developing
 map obtained by analytic continuation and uses its real-equivariant branch
 atlas directly.
+
+%%handwave
+name:
+  A hyperbolic metric induces a real projective structure
+statement:
+  For every hyperbolic metric $g$ on a Riemann surface $X$, there exists a
+  projective structure with transition maps in
+  $\mathrm{PSL}_2(\mathbb R)$ whose underlying complex projective structure
+  is induced by $g$.
+proof:
+  Continue the canonical local upper-half-plane charts on a based simply
+  connected cover to obtain an equivariant map
+  $D:\widetilde X\to\mathbb H$ with real projective holonomy and
+  $D^*g_{\mathbb H}=\pi^*g$. Projectivizing $D$ produces the required real
+  projective atlas, and the pullback identity shows that its underlying
+  complex projective structure is induced by $g$.
 -/
 theorem exists_psl2r_projective_structure_induced_by_metric
     (g : HyperbolicMetric X) :
@@ -568,8 +420,7 @@ theorem exists_psl2r_projective_structure_induced_by_metric
       SelectedLocalTransitionModelContinuationDerivedRegularityCanonicalCoverMetricFieldTheoremPSL X
         (metricBoundPartialConverseComponentwiseLocalTransitionModels
           propagateRealMobiusTransitions) :=
-    selectedComponentwiseLeftSourcePSLContinuation_of_interiorUnitSplit
-      selectedComponentwiseLeftSourceInteriorUnitSplitBranchDataWitnessTheorem
+    selectedComponentwiseLeftSourcePSLContinuation
   let x₀ : X := Classical.choice inferInstance
   let F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -615,8 +466,7 @@ theorem complete_partial_converse_theorem :
       SelectedLocalTransitionModelContinuationDerivedRegularityCanonicalCoverMetricFieldTheoremPSL X
         (metricBoundPartialConverseComponentwiseLocalTransitionModels
           propagateRealMobiusTransitions) :=
-    selectedComponentwiseLeftSourcePSLContinuation_of_interiorUnitSplit
-      selectedComponentwiseLeftSourceInteriorUnitSplitBranchDataWitnessTheorem
+    selectedComponentwiseLeftSourcePSLContinuation
   let assembleProjectiveAtlas :
       ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
     projectiveAtlasFromProjectivizedDevelopingMapTheorem

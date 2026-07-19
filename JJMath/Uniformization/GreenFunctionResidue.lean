@@ -27,8 +27,23 @@ attribute [local instance] finrank_real_complex_fact'
 local instance greenResidue_isScalarTowerRealComplexComplex :
     IsScalarTower ℝ ℂ ℂ := IsScalarTower.right
 
-/-- A nonvanishing holomorphic germ has a holomorphic logarithm on a smaller
-coordinate ball, with its expected real part. -/
+/--
+%%handwave
+name:
+  A nonvanishing holomorphic germ admits a local logarithm
+statement:
+  Let \(A\) be holomorphic on \(B(z_0,r)\), with \(r>0\) and
+  \(A(z_0)\ne0\).  There are \(0<R<r\) and a holomorphic function \(B\) on
+  \(B(z_0,R)\) such that
+  \[
+    e^{B(z)}=A(z),\qquad \operatorname{Re}B(z)=\log|A(z)|.
+  \]
+proof:
+  By continuity, after shrinking the ball either \(A\) or \(-A\) takes values
+  in the slit plane.  In the first case use the principal logarithm.  In the
+  second use \(\log(-A)+\pi i\); its exponential is \(A\), and the added term
+  is purely imaginary.
+-/
 theorem exists_ball_holomorphicLog_of_differentiableOn
     {A : ℂ → ℂ} {z₀ : ℂ} {r : ℝ}
     (hr : 0 < r)
@@ -248,40 +263,111 @@ noncomputable def closedDisk
     (half_pos D.radius_pos) (half_lt_self D.radius_pos)
     D.ball_subset_target
 
+/--
+%%handwave
+name:
+  Chart of the closed pole-coordinate disk
+statement:
+  The open coordinate disk underlying the chosen closed pole disk uses the
+  original pointed coordinate chart.
+proof:
+  This is part of the defining closed-disk construction.
+-/
 @[simp]
 theorem closedDisk_openDisk_chart
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.closedDisk.openDisk.chart = D.coordinate.chart := by
   simp [closedDisk, closedCoordinateDiskOfChartBall]
 
+/--
+%%handwave
+name:
+  Center of the closed pole-coordinate disk
+statement:
+  The center of the chosen pole-coordinate disk is the coordinate
+  \(\chi(p)\) of the pole.
+proof:
+  This is immediate from the construction of the disk from the chart ball
+  centered at \(\chi(p)\).
+-/
 @[simp]
 theorem closedDisk_openDisk_center
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.closedDisk.openDisk.center = D.coordinate.chart p := by
   simp [closedDisk, closedCoordinateDiskOfChartBall]
 
+/--
+%%handwave
+name:
+  Open radius of the closed pole-coordinate disk
+statement:
+  The open disk underlying the chosen closed pole disk has radius \(r\), the
+  radius of the logarithmic coordinate data.
+proof:
+  Unfold the chart-ball construction of the closed disk.
+-/
 @[simp]
 theorem closedDisk_openDisk_radius
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.closedDisk.openDisk.radius = D.radius := by
   simp [closedDisk, closedCoordinateDiskOfChartBall]
 
+/--
+%%handwave
+name:
+  Closed radius of the pole-coordinate disk
+statement:
+  The closed core of the pole-coordinate disk has radius \(r/2\).
+proof:
+  The disk was constructed using the half-radius closed core.
+-/
 @[simp]
 theorem closedDisk_closedRadius
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.closedDisk.closedRadius = D.radius / 2 := by
   simp [closedDisk, closedCoordinateDiskOfChartBall]
 
+/--
+%%handwave
+name:
+  The pole lies in the source chart of its coordinate disk
+statement:
+  The pole \(p\) belongs to the source of the chart used by the chosen closed
+  coordinate disk.
+proof:
+  That chart is the original pointed coordinate, whose base point lies in its
+  source.
+-/
 theorem pole_mem_closedDisk_chart_source
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     p ∈ D.closedDisk.openDisk.chart.source := by
   simpa [D.closedDisk_openDisk_chart] using D.coordinate.base_mem_source
 
+/--
+%%handwave
+name:
+  The pole maps to the disk center
+statement:
+  The chart of the closed pole-coordinate disk sends \(p\) to the center of
+  the disk.
+proof:
+  Both sides reduce to the original coordinate value \(\chi(p)\).
+-/
 theorem closedDisk_chart_p_eq_center
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.closedDisk.openDisk.chart p = D.closedDisk.openDisk.center := by
   simp
 
+/--
+%%handwave
+name:
+  Doubling the closed radius gives the open radius
+statement:
+  For the chosen pole-coordinate disk, twice the closed-core radius equals
+  the radius of its underlying open disk.
+proof:
+  The two radii are \(r/2\) and \(r\), respectively.
+-/
 @[simp]
 theorem closedDisk_double_closedRadius
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
@@ -289,10 +375,21 @@ theorem closedDisk_double_closedRadius
   rw [D.closedDisk_closedRadius, D.closedDisk_openDisk_radius]
   ring
 
-/-- Logarithmic pole-coordinate data may be shrunk so that its associated
-closed coordinate disk has open disk contained in any prescribed
-neighborhood of the pole.  The holomorphic coordinate and logarithmic
-factor are left unchanged. -/
+/--
+%%handwave
+name:
+  Shrinking logarithmic pole data inside a prescribed neighborhood
+statement:
+  Given logarithmic pole-coordinate data and an open neighborhood \(O\) of
+  the pole, one may decrease its radius, keeping the same coordinate and
+  logarithmic factor, so that the associated open coordinate disk lies in
+  \(O\).
+proof:
+  In the coordinate plane, intersect the chart target with the inverse image
+  of \(O\) and choose a small ball about \(\chi(p)\) inside it.  Take the
+  minimum of this radius and half the old radius; all factorization and
+  logarithm identities restrict to the smaller ball.
+-/
 theorem exists_shrink_closedDisk_openDisk_subset_open
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (O : TopologicalSpace.Opens X) (hpO : p ∈ O) :
@@ -360,8 +457,17 @@ def puncturedPoleDisk (D :
   D.closedDisk.puncturedExpandedOpenDisk p
     (2 * D.closedDisk.closedRadius)
 
-/-- Intersecting the doubled punctured pole disk with the inner coordinate
-disk gives exactly the ordinary punctured inner disk. -/
+/--
+%%handwave
+name:
+  Inner part of the doubled punctured pole disk
+statement:
+  Intersecting the punctured coordinate disk of radius \(2R\) with the inner
+  disk of radius \(R\) yields exactly that inner disk with the pole removed.
+proof:
+  The non-pole and inner-radius conditions remain unchanged.  The inner ball
+  is contained in the doubled ball because \(R>0\).
+-/
 theorem puncturedPoleDisk_inf_innerDomain_eq (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.puncturedPoleDisk ⊓
@@ -403,6 +509,17 @@ noncomputable def radialDiffeomorph (D :
     D.closedDisk_chart_p_eq_center
     D.closedDisk_double_closedRadius.le
 
+/--
+%%handwave
+name:
+  Angular component of the radial pole coordinate
+statement:
+  The first component of the radial diffeomorphism at \(y\) is the unit
+  direction \((\chi(y)-\chi(p))/|\chi(y)-\chi(p)|\).
+proof:
+  This is the angular component in the defining radial collar coordinate,
+  after substituting the pole chart and center.
+-/
 @[simp]
 theorem radialDiffeomorph_first_coe (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -473,6 +590,18 @@ def radialRightCut (D :
     TopologicalSpace.Opens D.puncturedPoleDisk :=
   D.radialPreimageOpen (annularPunctureOpen (annularOpposite v))
 
+/--
+%%handwave
+name:
+  The two radial cuts cover the punctured pole disk
+statement:
+  For every direction \(v\in S^1\), the two radial slit domains obtained by
+  deleting \(v\) and \(-v\) from the angular coordinate cover the punctured
+  pole disk.
+proof:
+  Pull the covering of the annular cylinder by its two complementary angular
+  cuts back along the radial-coordinate diffeomorphism.
+-/
 theorem radialCuts_cover (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -488,6 +617,17 @@ theorem radialCuts_cover (D :
       rw [annularPunctures_cover]
       trivial)
 
+/--
+%%handwave
+name:
+  Membership in the punctured pole-coordinate disk
+statement:
+  A point \(x\) belongs to the punctured pole-coordinate disk of radius \(r\)
+  if and only if \(x\ne p\), \(x\) lies in the coordinate-chart source, and
+  its coordinate lies in \(B(\chi(p),r)\).
+proof:
+  Expand the punctured expanded disk and use \(2(r/2)=r\).
+-/
 theorem puncturedPoleDisk_mem_iff (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     {x : X} :
@@ -500,6 +640,17 @@ theorem puncturedPoleDisk_mem_iff (D :
     ClosedCoordinateDisk.puncturedExpandedOpenDisk,
     puncturedSurfaceOpen, ClosedCoordinateDisk.expandedOpenDisk, htwo]
 
+/--
+%%handwave
+name:
+  Positive scaling preserves the slit plane
+statement:
+  If \(r>0\), then \(rz\) lies in the complex plane slit along the
+  nonpositive real axis if and only if \(z\) does.
+proof:
+  Positive multiplication preserves the sign of the imaginary part and
+  preserves nonvanishing on the positive real axis.
+-/
 theorem positiveReal_mul_mem_slitPlane_iff
     {r : ℝ} (hr : 0 < r) (z : ℂ) :
     (r : ℂ) * z ∈ Complex.slitPlane ↔ z ∈ Complex.slitPlane := by
@@ -517,6 +668,18 @@ theorem positiveReal_mul_mem_slitPlane_iff
     · exact Or.inl (mul_pos hr h)
     · exact Or.inr (mul_ne_zero hr.ne' h)
 
+/--
+%%handwave
+name:
+  Slit-plane criterion for a rotated pole coordinate
+statement:
+  For \(v\in S^1\) and \(w\ne0\), the number \(-v^{-1}w\) lies in the
+  principal slit plane if and only if the direction \(w/|w|\) is not \(v\).
+proof:
+  Write \(w=|w|(w/|w|)\).  Positive scaling does not affect slit-plane
+  membership, and the remaining unit-circle rotation meets the slit exactly
+  away from the deleted direction \(v\).
+-/
 theorem rotatedCoordinate_mem_slitPlane_iff_direction_ne
     (v : Circle) {w : ℂ} (hw : w ≠ 0) :
     -((v⁻¹ : Circle) : ℂ) * w ∈ Complex.slitPlane ↔
@@ -542,6 +705,18 @@ theorem rotatedCoordinate_mem_slitPlane_iff_direction_ne
   rw [hdecomp, positiveReal_mul_mem_slitPlane_iff hnorm,
     annularCutRotation_mem_slitPlane_iff]
 
+/--
+%%handwave
+name:
+  Slit-plane criterion for the opposite rotated pole coordinate
+statement:
+  For \(v\in S^1\) and \(w\ne0\), the number \(v^{-1}w\) lies in the
+  principal slit plane if and only if the direction \(w/|w|\) is not the
+  antipode \(-v\).
+proof:
+  Factor \(w\) as its positive norm times its direction.  Remove the positive
+  factor, then apply the complementary unit-circle cut criterion.
+-/
 theorem oppositeRotatedCoordinate_mem_slitPlane_iff_direction_ne
     (v : Circle) {w : ℂ} (hw : w ≠ 0) :
     ((v⁻¹ : Circle) : ℂ) * w ∈ Complex.slitPlane ↔
@@ -587,6 +762,17 @@ def rightCoordinateSlit (D :
       ((v⁻¹ : Circle) : ℂ) * (z - D.coordinate.chart p)) ⁻¹'
         Complex.slitPlane
 
+/--
+%%handwave
+name:
+  Openness of the first slit coordinate disk
+statement:
+  The coordinate disk on which \(-v^{-1}(z-\chi(p))\) lies in the principal
+  slit plane is open.
+proof:
+  It is the intersection of an open ball with the inverse image of the open
+  slit plane under a continuous affine map.
+-/
 theorem isOpen_leftCoordinateSlit (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) : IsOpen (D.leftCoordinateSlit v) := by
@@ -594,6 +780,17 @@ theorem isOpen_leftCoordinateSlit (D :
   apply Complex.isOpen_slitPlane.preimage
   fun_prop
 
+/--
+%%handwave
+name:
+  Openness of the opposite slit coordinate disk
+statement:
+  The coordinate disk on which \(v^{-1}(z-\chi(p))\) lies in the principal
+  slit plane is open.
+proof:
+  It is the intersection of an open ball with the inverse image of the open
+  slit plane under a continuous affine map.
+-/
 theorem isOpen_rightCoordinateSlit (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) : IsOpen (D.rightCoordinateSlit v) := by
@@ -619,6 +816,17 @@ def rightPoleCut (D :
     D.coordinate.chart.isOpen_inter_preimage
       (D.isOpen_rightCoordinateSlit v)⟩
 
+/--
+%%handwave
+name:
+  The first pole cut omits the pole
+statement:
+  Every point of the first slit pole-coordinate disk is different from
+  \(p\).
+proof:
+  At \(p\) the translated and rotated coordinate is zero, whereas the slit
+  plane contains only nonzero points.
+-/
 theorem leftPoleCut_ne_p (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.leftPoleCut v) : x ≠ p := by
@@ -627,6 +835,17 @@ theorem leftPoleCut_ne_p (D :
   have hne := Complex.slitPlane_ne_zero hx.2.2
   simp at hne
 
+/--
+%%handwave
+name:
+  The opposite pole cut omits the pole
+statement:
+  Every point of the opposite slit pole-coordinate disk is different from
+  \(p\).
+proof:
+  At \(p\) the translated and rotated coordinate is zero, which is excluded
+  from the slit plane.
+-/
 theorem rightPoleCut_ne_p (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.rightPoleCut v) : x ≠ p := by
@@ -635,6 +854,17 @@ theorem rightPoleCut_ne_p (D :
   have hne := Complex.slitPlane_ne_zero hx.2.2
   simp at hne
 
+/--
+%%handwave
+name:
+  The first pole cut lies in the branch domain
+statement:
+  Every point of the first slit pole-coordinate disk belongs to the domain of
+  the distinguished holomorphic branch.
+proof:
+  Its coordinate lies in the logarithmic ball, whose inverse-chart image is
+  contained in the branch domain.
+-/
 theorem leftPoleCut_mem_branch_domain (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.leftPoleCut v) : x ∈ P.domain := by
@@ -642,6 +872,17 @@ theorem leftPoleCut_mem_branch_domain (D :
   simpa [hsymm] using
     D.ball_symm_mem_domain (D.coordinate.chart x) hx.2.1
 
+/--
+%%handwave
+name:
+  The opposite pole cut lies in the branch domain
+statement:
+  Every point of the opposite slit pole-coordinate disk belongs to the
+  domain of the distinguished holomorphic branch.
+proof:
+  Its coordinate lies in the logarithmic ball, whose inverse-chart image is
+  contained in the branch domain.
+-/
 theorem rightPoleCut_mem_branch_domain (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.rightPoleCut v) : x ∈ P.domain := by
@@ -649,6 +890,19 @@ theorem rightPoleCut_mem_branch_domain (D :
   simpa [hsymm] using
     D.ball_symm_mem_domain (D.coordinate.chart x) hx.2.1
 
+/--
+%%handwave
+name:
+  Radial and coordinate descriptions of the first pole cut
+statement:
+  A point of the punctured pole disk lies in the radial cut deleting
+  \(v\in S^1\) if and only if its underlying surface point lies in the first
+  slit pole-coordinate disk.
+proof:
+  The angular component of the radial coordinate is the direction of
+  \(\chi(x)-\chi(p)\).  The first radial cut deletes \(v\), and the rotated
+  slit-plane criterion gives the identical condition in the coordinate disk.
+-/
 theorem radialLeftCut_mem_iff_leftPoleCut (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle)
@@ -680,6 +934,19 @@ theorem radialLeftCut_mem_iff_leftPoleCut (D :
     apply (rotatedCoordinate_mem_slitPlane_iff_direction_ne v hw).mp
     simpa [w] using hx.2.2
 
+/--
+%%handwave
+name:
+  Radial and coordinate descriptions of the opposite pole cut
+statement:
+  A point of the punctured pole disk lies in the radial cut deleting
+  \(-v\in S^1\) if and only if its underlying surface point lies in the
+  opposite slit pole-coordinate disk.
+proof:
+  Identify the angular radial coordinate with the direction of
+  \(\chi(x)-\chi(p)\).  Excluding \(-v\) is precisely the complementary
+  rotated slit-plane condition.
+-/
 theorem radialRightCut_mem_iff_rightPoleCut (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle)
@@ -735,6 +1002,23 @@ noncomputable def rightPoleLog (D :
     Complex.log (-((v : Circle) : ℂ)) +
     D.logFactor (D.coordinate.chart x)
 
+/--
+%%handwave
+name:
+  Holomorphicity of the first slit logarithm
+statement:
+  On the first slit pole disk, the function
+  \[
+    x\longmapsto \log\!\bigl(-v^{-1}(\chi(x)-\chi(p))\bigr)
+      +\log(-v)+B(\chi(x))
+  \]
+  is holomorphic, where \(B\) is the local logarithm of the nonvanishing
+  factor in the pole branch.
+proof:
+  The rotated coordinate remains in the principal slit plane, so its
+  principal logarithm is holomorphic.  Add the constant and the holomorphic
+  factor logarithm, then compose with the holomorphic chart.
+-/
 theorem leftPoleLog_mdifferentiableOn (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -777,6 +1061,22 @@ theorem leftPoleLog_mdifferentiableOn (D :
   simpa only [F, Function.comp_def] using
     hFmdiff.comp hchart hmaps
 
+/--
+%%handwave
+name:
+  Holomorphicity of the opposite slit logarithm
+statement:
+  On the opposite slit pole disk, the function
+  \[
+    x\longmapsto \log\!\bigl(v^{-1}(\chi(x)-\chi(p))\bigr)
+      +\pi i+\log(-v)+B(\chi(x))
+  \]
+  is holomorphic.
+proof:
+  The rotated coordinate lies in the principal slit plane, hence its
+  principal logarithm is holomorphic.  Add the constant terms and the local
+  holomorphic factor logarithm, then compose with the chart.
+-/
 theorem rightPoleLog_mdifferentiableOn (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -823,6 +1123,20 @@ theorem rightPoleLog_mdifferentiableOn (D :
   simpa only [F, Function.comp_def] using
     hFmdiff.comp hchart hmaps
 
+/--
+%%handwave
+name:
+  Exponential of the first slit logarithm
+statement:
+  On the first slit pole disk, exponentiating
+  \(\log(-v^{-1}(\chi(x)-\chi(p)))+\log(-v)+B(\chi(x))\) gives the
+  distinguished holomorphic branch at \(x\).
+proof:
+  Exponentiate each summand using the principal-logarithm identities.  The
+  two rotation factors cancel, leaving
+  \((\chi(x)-\chi(p))e^{B(\chi(x))}\), which is the local factorization of
+  the branch.
+-/
 theorem leftPoleLog_exp_eq_branch (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.leftPoleCut v) :
@@ -850,6 +1164,19 @@ theorem leftPoleLog_exp_eq_branch (D :
   simp [z, z₀]
   simp [mul_comm]
 
+/--
+%%handwave
+name:
+  Exponential of the opposite slit logarithm
+statement:
+  On the opposite slit pole disk, exponentiating
+  \(\log(v^{-1}(\chi(x)-\chi(p)))+\pi i+\log(-v)+B(\chi(x))\) gives the
+  distinguished holomorphic branch at \(x\).
+proof:
+  Exponentiate term by term.  Since \(e^{\pi i}=-1\), the constants and
+  rotations cancel to give
+  \((\chi(x)-\chi(p))e^{B(\chi(x))}\), the local branch factorization.
+-/
 theorem rightPoleLog_exp_eq_branch (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.rightPoleCut v) :
@@ -878,6 +1205,18 @@ theorem rightPoleLog_exp_eq_branch (D :
   simp [z, z₀]
   simp [mul_comm]
 
+/--
+%%handwave
+name:
+  Real part of the first slit logarithm
+statement:
+  On the first slit pole disk, the real part of the local logarithm equals
+  \(-G(x)\).
+proof:
+  Its exponential is the distinguished branch, so its real part is the
+  logarithm of the branch modulus.  The branch normalization identifies that
+  logarithm with \(-G(x)\).
+-/
 theorem leftPoleLog_re_eq_neg_green (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.leftPoleCut v) :
@@ -892,6 +1231,18 @@ theorem leftPoleLog_re_eq_neg_green (D :
       P.log_norm_eq x (D.leftPoleCut_mem_branch_domain v hx)
         (D.leftPoleCut_ne_p v hx)
 
+/--
+%%handwave
+name:
+  Real part of the opposite slit logarithm
+statement:
+  On the opposite slit pole disk, the real part of the local logarithm equals
+  \(-G(x)\).
+proof:
+  Its exponential is the distinguished branch, hence its real part is the
+  logarithm of the branch modulus.  The branch normalization gives
+  \(\log|P(x)|=-G(x)\).
+-/
 theorem rightPoleLog_re_eq_neg_green (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X} (hx : x ∈ D.rightPoleCut v) :
@@ -1009,6 +1360,16 @@ noncomputable def rightPoleLogBranch (D :
   have hre := D.rightPoleLog_re_eq_neg_green v hx
   simpa [F, rightPoleLog, D.coordinate.chart.right_inv hzTarget] using hre
 
+/--
+%%handwave
+name:
+  Underlying function of the first logarithm branch
+statement:
+  The total function underlying the holomorphic branch on the first slit is
+  the explicit first slit logarithm.
+proof:
+  This is immediate from the construction of the branch.
+-/
 @[simp]
 theorem leftPoleLogBranch_toSurfaceTotalFunction (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1017,6 +1378,16 @@ theorem leftPoleLogBranch_toSurfaceTotalFunction (D :
       D.leftPoleLog v x := by
   rfl
 
+/--
+%%handwave
+name:
+  Underlying function of the opposite logarithm branch
+statement:
+  The total function underlying the holomorphic branch on the opposite slit
+  is the explicit opposite slit logarithm.
+proof:
+  This is immediate from the construction of the branch.
+-/
 @[simp]
 theorem rightPoleLogBranch_toSurfaceTotalFunction (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1025,6 +1396,16 @@ theorem rightPoleLogBranch_toSurfaceTotalFunction (D :
       D.rightPoleLog v x := by
   rfl
 
+/--
+%%handwave
+name:
+  The first pole cut lies in the punctured surface
+statement:
+  The first slit pole-coordinate disk is contained in \(X\setminus\{p\}\).
+proof:
+  The slit-plane condition excludes the zero coordinate and hence excludes
+  the pole.
+-/
 theorem leftPoleCut_le_puncturedSurfaceOpen (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -1032,6 +1413,17 @@ theorem leftPoleCut_le_puncturedSurfaceOpen (D :
   intro x hx
   exact D.leftPoleCut_ne_p v hx
 
+/--
+%%handwave
+name:
+  The opposite pole cut lies in the punctured surface
+statement:
+  The opposite slit pole-coordinate disk is contained in
+  \(X\setminus\{p\}\).
+proof:
+  The slit-plane condition excludes the zero coordinate and therefore the
+  pole.
+-/
 theorem rightPoleCut_le_puncturedSurfaceOpen (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -1039,12 +1431,33 @@ theorem rightPoleCut_le_puncturedSurfaceOpen (D :
   intro x hx
   exact D.rightPoleCut_ne_p v hx
 
+/--
+%%handwave
+name:
+  The punctured pole disk lies in the punctured surface
+statement:
+  The punctured pole-coordinate disk is contained in \(X\setminus\{p\}\).
+proof:
+  Nonmembership of \(p\) is part of the defining membership condition for
+  the punctured disk.
+-/
 theorem puncturedPoleDisk_le_puncturedSurfaceOpen (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     D.puncturedPoleDisk ≤ puncturedSurfaceOpen p := by
   intro x hx
   exact (D.puncturedPoleDisk_mem_iff.mp hx).1
 
+/--
+%%handwave
+name:
+  The first pole cut lies in the punctured pole disk
+statement:
+  The first slit pole-coordinate disk is contained in the punctured
+  pole-coordinate disk of the same radius.
+proof:
+  A point on the cut lies in the chart ball and is not the pole, which are
+  exactly the membership conditions for the punctured disk.
+-/
 theorem leftPoleCut_le_puncturedPoleDisk (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) : D.leftPoleCut v ≤ D.puncturedPoleDisk := by
@@ -1052,6 +1465,17 @@ theorem leftPoleCut_le_puncturedPoleDisk (D :
   exact D.puncturedPoleDisk_mem_iff.mpr
     ⟨D.leftPoleCut_ne_p v hx, hx.1, hx.2.1⟩
 
+/--
+%%handwave
+name:
+  The opposite pole cut lies in the punctured pole disk
+statement:
+  The opposite slit pole-coordinate disk is contained in the punctured
+  pole-coordinate disk of the same radius.
+proof:
+  Its points lie in the chart ball and differ from the pole, so they satisfy
+  the punctured-disk criterion.
+-/
 theorem rightPoleCut_le_puncturedPoleDisk (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) : D.rightPoleCut v ≤ D.puncturedPoleDisk := by
@@ -1059,6 +1483,17 @@ theorem rightPoleCut_le_puncturedPoleDisk (D :
   exact D.puncturedPoleDisk_mem_iff.mpr
     ⟨D.rightPoleCut_ne_p v hx, hx.1, hx.2.1⟩
 
+/--
+%%handwave
+name:
+  Relative first pole cut lies in the relative punctured disk
+statement:
+  Viewed as open sets of \(X\setminus\{p\}\), the first slit pole disk is
+  contained in the punctured pole-coordinate disk.
+proof:
+  Restrict the ambient inclusion of the first pole cut into the punctured
+  pole disk to the punctured surface.
+-/
 theorem puncturedLeftPoleCut_le_puncturedPoleDisk (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -1067,6 +1502,17 @@ theorem puncturedLeftPoleCut_le_puncturedPoleDisk (D :
   intro x hx
   exact D.leftPoleCut_le_puncturedPoleDisk v hx
 
+/--
+%%handwave
+name:
+  Relative opposite pole cut lies in the relative punctured disk
+statement:
+  Viewed as open sets of \(X\setminus\{p\}\), the opposite slit pole disk is
+  contained in the punctured pole-coordinate disk.
+proof:
+  Restrict the ambient inclusion of the opposite pole cut into the punctured
+  pole disk to the punctured surface.
+-/
 theorem puncturedRightPoleCut_le_puncturedPoleDisk (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) :
@@ -1227,6 +1673,17 @@ noncomputable def annularRightPoleLogImaginarySmoothFunction (D :
   exact ⟨fun q => B.imaginarySmoothFunction (psi q),
     B.imaginarySmoothFunction.property.comp psi.contMDiff⟩
 
+/--
+%%handwave
+name:
+  Evaluation of the left annular pole-logarithm imaginary part
+statement:
+  At a point \(q\) of the left slit annulus, the transported smooth function
+  equals the imaginary part of the left pole logarithm at the inverse radial
+  coordinate of \(q\).
+proof:
+  This is the defining formula for the transported smooth function.
+-/
 @[simp]
 theorem annularLeftPoleLogImaginarySmoothFunction_apply (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1238,6 +1695,17 @@ theorem annularLeftPoleLogImaginarySmoothFunction_apply (D :
           D.puncturedPoleDisk) : X)).im := by
   rfl
 
+/--
+%%handwave
+name:
+  Evaluation of the right annular pole-logarithm imaginary part
+statement:
+  At a point of the opposite slit annulus, the transported smooth function is
+  the imaginary part of the right pole logarithm at its inverse radial
+  coordinate.
+proof:
+  This is immediate from the definition by radial transport.
+-/
 @[simp]
 theorem annularRightPoleLogImaginarySmoothFunction_apply (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1290,6 +1758,17 @@ noncomputable def puncturedRightPoleLogImaginarySmoothFunction (D :
   exact ⟨fun x => B.imaginarySmoothFunction (psi x),
     B.imaginarySmoothFunction.property.comp psi.contMDiff⟩
 
+/--
+%%handwave
+name:
+  Evaluation of the left punctured pole-logarithm imaginary part
+statement:
+  On the left pole cut, the corresponding smooth function evaluates to the
+  imaginary part of the left logarithmic branch.
+proof:
+  This is the defining formula after identifying the open subset with its
+  ambient pole cut.
+-/
 @[simp]
 theorem puncturedLeftPoleLogImaginarySmoothFunction_apply (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1299,6 +1778,16 @@ theorem puncturedLeftPoleLogImaginarySmoothFunction_apply (D :
       (D.leftPoleLog v (x.1 : X)).im := by
   rfl
 
+/--
+%%handwave
+name:
+  Evaluation of the right punctured pole-logarithm imaginary part
+statement:
+  On the right pole cut, the associated smooth function evaluates to the
+  imaginary part of the right logarithmic branch.
+proof:
+  This is the defining evaluation formula for the transported function.
+-/
 @[simp]
 theorem puncturedRightPoleLogImaginarySmoothFunction_apply (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -1308,8 +1797,19 @@ theorem puncturedRightPoleLogImaginarySmoothFunction_apply (D :
       (D.rightPoleLog v (x.1 : X)).im := by
   rfl
 
-/-- On the first pole-coordinate slit, the glued Green conjugate differential
-is the differential of the chosen logarithm's imaginary part. -/
+/--
+%%handwave
+name:
+  Green conjugate as a logarithmic imaginary differential on the left cut
+statement:
+  On the left pole-coordinate cut, the punctured Green-conjugate one-form is
+  \(\omega_G=d\,\operatorname{Im}L_v\), where \(L_v\) is the left
+  holomorphic logarithmic branch.
+proof:
+  The branch is holomorphic on the cut and has real part \(-G\).  The local
+  harmonic-conjugate identity identifies the glued conjugate differential with
+  the differential of its imaginary part.
+-/
 theorem puncturedConjugate_restrict_leftPoleCut (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1343,7 +1843,18 @@ theorem puncturedConjugate_restrict_leftPoleCut (D :
   · intro x
     exact D.leftPoleLog_re_eq_neg_green v x.2
 
-/-- The same local exactness statement on the opposite slit. -/
+/--
+%%handwave
+name:
+  Green conjugate as a logarithmic imaginary differential on the right cut
+statement:
+  On the opposite pole-coordinate cut, the punctured Green-conjugate one-form
+  equals \(d\,\operatorname{Im}R_v\), where \(R_v\) is the right logarithmic
+  branch.
+proof:
+  The right branch is holomorphic and has real part \(-G\) on its cut.  Apply
+  the same harmonic-conjugate differential identity.
+-/
 theorem puncturedConjugate_restrict_rightPoleCut (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1393,8 +1904,19 @@ noncomputable def greenConjugateAnnularClosedForm (D :
   deRhamClosedFormsPullbackDiffeomorph AnnularCylinderModel
     SurfaceRealModel D.annularToPuncturedPoleWithinDiffeomorph 1 omegaW
 
-/-- Pulling the conjugate differential on the first slit to radial coordinates
-gives the differential of the first logarithm's imaginary part. -/
+/--
+%%handwave
+name:
+  Radial pullback of the Green conjugate on the left slit
+statement:
+  Pulling the punctured Green-conjugate one-form on the left pole cut back to
+  the left slit annulus gives the exterior derivative of the transported left
+  logarithmic imaginary part.
+proof:
+  Pull back \(\omega_G=d\,\operatorname{Im}L_v\).  Naturality moves \(d\)
+  through the radial diffeomorphism, and the pulled-back zero-form is the
+  annular logarithmic imaginary function.
+-/
 theorem puncturedConjugate_leftPoleCut_radialPullback (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1443,7 +1965,18 @@ theorem puncturedConjugate_leftPoleCut_radialPullback (D :
         (M := annularPunctureOpen v) (A := ℝ) 0
         (D.annularLeftPoleLogZeroForm v) := by rw [hzero]
 
-/-- The analogous radial exactness statement on the opposite slit. -/
+/--
+%%handwave
+name:
+  Radial pullback of the Green conjugate on the right slit
+statement:
+  Pulling the punctured Green-conjugate form on the right pole cut back to the
+  opposite slit annulus gives the derivative of the transported right
+  logarithmic imaginary part.
+proof:
+  Pull back the right-cut primitive identity and use naturality of \(d\); the
+  pulled-back zero-form is the right annular logarithmic function.
+-/
 theorem puncturedConjugate_rightPoleCut_radialPullback (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1492,6 +2025,19 @@ theorem puncturedConjugate_rightPoleCut_radialPullback (D :
         (M := annularPunctureOpen (annularOpposite v)) (A := ℝ) 0
         (D.annularRightPoleLogZeroForm v) := by rw [hzero]
 
+/--
+%%handwave
+name:
+  Left restriction of the annular Green form as a radial pullback
+statement:
+  Restricting the annular representative of the Green conjugate to the left
+  slit equals the radial pullback of the punctured Green conjugate restricted
+  to the corresponding left pole cut.
+proof:
+  Expand both sides as restrictions and pullbacks.  Their composite maps to
+  the punctured surface agree pointwise; the chain rule identifies the tangent
+  pullbacks and hence the forms.
+-/
 theorem greenConjugateAnnularClosedForm_restrict_left_eq_radialPullback (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1588,6 +2134,17 @@ theorem greenConjugateAnnularClosedForm_restrict_left_eq_radialPullback (D :
   funext i
   exact congrArg (fun L => L (q i)) hDeriv
 
+/--
+%%handwave
+name:
+  Right restriction of the annular Green form as a radial pullback
+statement:
+  Restricting the annular Green-conjugate representative to the opposite slit
+  equals the radial pullback of the punctured form on the right pole cut.
+proof:
+  The relevant restriction and radial-coordinate composites agree as maps.
+  Apply the manifold chain rule to identify their pullbacks pointwise.
+-/
 theorem greenConjugateAnnularClosedForm_restrict_right_eq_radialPullback (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1685,6 +2242,19 @@ theorem greenConjugateAnnularClosedForm_restrict_right_eq_radialPullback (D :
   funext i
   exact congrArg (fun L => L (q i)) hDeriv
 
+/--
+%%handwave
+name:
+  Left slit primitive of the annular Green conjugate
+statement:
+  On the annulus cut along the direction \(v\), the restriction of the Green
+  conjugate one-form is the exterior derivative of the imaginary part of the
+  left logarithmic branch.
+proof:
+  The annular Green form restricts to the radial pullback of the punctured
+  conjugate.  The left logarithmic-branch identity identifies that pullback
+  with the derivative of the left logarithmic zero-form.
+-/
 theorem greenConjugateAnnularClosedForm_restrict_left (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1698,6 +2268,19 @@ theorem greenConjugateAnnularClosedForm_restrict_left (D :
   rw [D.greenConjugateAnnularClosedForm_restrict_left_eq_radialPullback C v]
   exact D.puncturedConjugate_leftPoleCut_radialPullback C v
 
+/--
+%%handwave
+name:
+  Right slit primitive of the annular Green conjugate
+statement:
+  On the annulus cut along the opposite direction, the restriction of the
+  Green conjugate one-form is the exterior derivative of the imaginary part
+  of the right logarithmic branch.
+proof:
+  Restrict the annular form to the right cut, identify it with the radial
+  pullback of the punctured conjugate, and use the right logarithmic-branch
+  differential identity.
+-/
 theorem greenConjugateAnnularClosedForm_restrict_right (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1712,6 +2295,21 @@ theorem greenConjugateAnnularClosedForm_restrict_right (D :
   rw [D.greenConjugateAnnularClosedForm_restrict_right_eq_radialPullback C v]
   exact D.puncturedConjugate_rightPoleCut_radialPullback C v
 
+/--
+%%handwave
+name:
+  Imaginary logarithm of a rotated nonzero complex number
+statement:
+  For \(w\ne0\) and \(v\in S^1\),
+  \[
+    \operatorname{Im}\log(-v^{-1}w)
+      =\operatorname{Im}\log\!\left(-v^{-1}\frac{w}{|w|}\right).
+  \]
+proof:
+  Factor \(-v^{-1}w\) as the positive real scalar \(|w|\) times its rotated
+  unit direction.  The logarithm of the positive factor is real, so it does
+  not affect the imaginary part.
+-/
 theorem complexLog_rotated_im_eq_direction
     (v : Circle) {w : ℂ} (hw : w ≠ 0) :
     (Complex.log (-((v⁻¹ : Circle) : ℂ) * w)).im =
@@ -1743,6 +2341,18 @@ theorem complexLog_rotated_im_eq_direction
     (Circle.coe_ne_zero _)]
   simp
 
+/--
+%%handwave
+name:
+  Imaginary logarithm in the opposite rotated direction
+statement:
+  For \(w\ne0\) and \(v\in S^1\), the imaginary part of
+  \(\log(v^{-1}w)\) equals the imaginary part of the logarithm of the antipode
+  of the rotated unit direction \(-v^{-1}w/|w|\).
+proof:
+  Factor \(v^{-1}w\) as \(|w|\) times that antipodal unit direction.  The
+  positive real factor contributes only a real logarithm.
+-/
 theorem complexLog_oppositeRotated_im_eq_direction
     (v : Circle) {w : ℂ} (hw : w ≠ 0) :
     (Complex.log (((v⁻¹ : Circle) : ℂ) * w)).im =
@@ -1777,6 +2387,20 @@ theorem complexLog_oppositeRotated_im_eq_direction
     (Circle.coe_ne_zero _)]
   simp
 
+/--
+%%handwave
+name:
+  Difference of the two pole logarithm arguments
+statement:
+  On the overlap of the two pole cuts, the difference between the imaginary
+  parts of the left and right logarithmic branches equals the annular angle
+  transition determined by the cut direction \(v\).
+proof:
+  Write the nonzero coordinate difference from the pole as its norm times its
+  unit direction.  The two preceding logarithm identities reduce the branch
+  imaginary parts to the left and right annular angle lifts; their difference
+  is the angle transition by definition.
+-/
 theorem poleLog_im_difference_eq_annularAngleTransition
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     (v : Circle) {x : X}
@@ -1826,6 +2450,19 @@ theorem poleLog_im_difference_eq_annularAngleTransition
       simpa [w] using hright]
   ring
 
+/--
+%%handwave
+name:
+  Pole logarithm transition in radial annular coordinates
+statement:
+  On the overlap of the two radial cuts in the punctured pole disk, the
+  difference of the left and right logarithmic imaginary parts is the annular
+  angle transition at the radial coordinate of the point.
+proof:
+  Convert radial-cut membership to membership in the two pole cuts.  The first
+  component of the radial diffeomorphism is the unit coordinate direction, so
+  the pole-logarithm transition identity applies.
+-/
 theorem radialPoleLog_im_difference_eq_annularAngleTransition
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1851,8 +2488,19 @@ theorem radialPoleLog_im_difference_eq_annularAngleTransition
   simpa [q, y, complexPuncturedPlaneDirection] using
     D.radialDiffeomorph_first_coe y
 
-/-- The two slit logarithms are a Mayer--Vietoris lift of the locally
-constant angular transition. -/
+/--
+%%handwave
+name:
+  The two slit logarithms lift the annular angle transition
+statement:
+  The Mayer--Vietoris difference of the left and right logarithmic zero-forms
+  on the two punctured annuli is exactly the closed zero-form associated with
+  the locally constant annular angle transition.
+proof:
+  Evaluate both zero-forms at a point of the double overlap.  Their difference
+  is the difference of the two pole-logarithm imaginary parts, which equals
+  the annular angle transition by the radial transition identity.
+-/
 theorem annularPoleLogZeroForms_difference_eq_transition
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -1896,9 +2544,21 @@ theorem annularPoleLogZeroForms_difference_eq_transition
     smoothRealFunctionToZeroForm,
     smoothRealFunctionOfIsLocallyConstant, y] using htransition
 
-/-- On the inner punctured pole disk, the conjugate differential is the
-pullback of its annular-coordinate representative from the negative
-half-cylinder. -/
+/--
+%%handwave
+name:
+  Green conjugate on the inner pole disk in negative annular coordinates
+statement:
+  On the part of the punctured pole disk inside the chosen closed coordinate
+  disk, the punctured Green-conjugate one-form is the pullback, through the
+  side-preserving radial coordinate, of its annular representative restricted
+  to the negative half-cylinder.
+proof:
+  Both sides are successive restrictions and pullbacks of the same punctured
+  conjugate form.  Expand the inclusion and radial coordinate maps; the
+  side-preserving restriction identifies their point maps, and the chain rule
+  identifies the induced tangent pullbacks.
+-/
 theorem puncturedConjugate_restrict_innerPoleDisk_eq_pullback_negativeAnnular
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -2071,8 +2731,22 @@ noncomputable def greenConjugateAnnularConnectingData
     · simpa [deRhamMayerVietorisSmoothRestriction] using
         D.greenConjugateAnnularClosedForm_restrict_right C v
 
-/-- In a radial pole coordinate, the Green conjugate class is the angular
-class multiplied by the logarithmic transition coefficient. -/
+/--
+%%handwave
+name:
+  Cohomology class of the Green conjugate in a radial pole coordinate
+statement:
+  On the annular cylinder around the pole, the de Rham class of the Green
+  conjugate one-form is
+  \([\omega_G]=c_v[\omega_{\mathrm{ang}}]\), where \(c_v\) is the coefficient
+  of the transition between the two logarithmic branches determined by the cut
+  direction \(v\).
+proof:
+  The local logarithmic imaginary parts are primitives whose difference is the
+  annular angle transition.  Mayer--Vietoris identifies the glued Green
+  conjugate with its connecting class, and the annular calculation makes this
+  \(c_v\) times the angular class.
+-/
 theorem greenConjugateAnnularClosedForm_class (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -2109,9 +2783,22 @@ theorem greenConjugateAnnularClosedForm_class (D :
             (annularAngularClosedForm v) := by
       exact annularAngleTransition_connecting_eq_angular_class v
 
-/-- On a surface with vanishing ambient first de Rham cohomology, the global
-class of the punctured Green conjugate is the local angular generator times
-its logarithmic transition coefficient. -/
+/--
+%%handwave
+name:
+  Global Green-conjugate class with a normalized local angular representative
+statement:
+  Suppose the ambient surface is noncompact and has vanishing first de Rham
+  cohomology.  Then there is a closed one-form \(\eta\) on the punctured
+  surface such that \([\omega_G]=c_v[\eta]\), whose restriction near the pole
+  is the standard cutoff angular form and which has period \(-1\) on a smooth
+  local cycle.
+proof:
+  Construct the punctured angular class from the exhaustion and coordinate
+  disk.  The local Green-conjugate class formula gives equality after
+  restriction; injectivity of punctured-disk restriction promotes it to the
+  global class.  Pull back the standard negative annular cycle for the period.
+-/
 theorem exists_puncturedAngularForm_greenConjugate_class_with_local
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -2288,9 +2975,19 @@ theorem exists_puncturedAngularForm_greenConjugate_class_with_local
         1 eta).1 = etaQ.1 by rfl, hetaQ]
     simpa [D₀, W, Q, phi, psi, betaQ, betaNeg] using hperiod
 
-/-- On a surface with vanishing ambient first de Rham cohomology, the global
-class of the punctured Green conjugate is the local angular generator times
-its logarithmic transition coefficient. -/
+/--
+%%handwave
+name:
+  Global Green-conjugate class and normalized angular cycle
+statement:
+  Under vanishing ambient first de Rham cohomology, there is a closed one-form
+  \(\eta\) on the punctured surface satisfying \([\omega_G]=c_v[\eta]\),
+  together with a local smooth cycle \(c\) around the pole such that
+  \(\partial c=0\) and \(\int_c\eta=-1\).
+proof:
+  Apply the stronger construction which also specifies the local restriction
+  of \(\eta\), and retain the global class identity and normalized cycle.
+-/
 theorem exists_puncturedAngularForm_greenConjugate_class
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -2322,8 +3019,19 @@ theorem exists_puncturedAngularForm_greenConjugate_class
       E C v with ⟨eta, hclass, _hlocal, hcycle⟩
   exact ⟨eta, hclass, hcycle⟩
 
-/-- The punctured Green conjugate is an angular residue term plus an exact
-one-form. -/
+/--
+%%handwave
+name:
+  Exact decomposition of the punctured Green conjugate
+statement:
+  Under vanishing ambient first de Rham cohomology, there are a closed
+  punctured angular one-form \(\eta\) and a smooth function \(\theta\) such
+  that \(\omega_G=c_v\eta+d\theta\).
+proof:
+  The global class identity says \([\omega_G-c_v\eta]=0\).  By the definition
+  of de Rham cohomology, the difference is exact and therefore equals
+  \(d\theta\).
+-/
 theorem exists_puncturedAngularForm_greenConjugate_exact_decomposition
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -2369,8 +3077,19 @@ theorem exists_puncturedAngularForm_greenConjugate_exact_decomposition
   rw [htheta]
   module
 
-/-- The angular term in the Green-conjugate decomposition may be chosen with
-a smooth local cycle of period `-1`. -/
+/--
+%%handwave
+name:
+  Normalized exact decomposition of the punctured Green conjugate
+statement:
+  The decomposition \(\omega_G=c_v\eta+d\theta\) may be chosen together with
+  a smooth local cycle \(c\) around the pole satisfying
+  \(\partial c=0\) and \(\int_c\eta=-1\).
+proof:
+  Use the global class construction with its normalized local cycle.  The
+  vanishing of \([\omega_G-c_v\eta]\) supplies \(\theta\); retain the cycle
+  and period from the same construction.
+-/
 theorem exists_puncturedAngularForm_greenConjugate_exact_decomposition_normalized
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -2428,8 +3147,19 @@ theorem exists_puncturedAngularForm_greenConjugate_exact_decomposition_normalize
   rw [htheta]
   module
 
-/-- Consequently the local residue coefficient is exactly (2\pi), up to the
-orientation convention of the chosen annular coordinate. -/
+/--
+%%handwave
+name:
+  The Green-conjugate residue is plus or minus two pi
+statement:
+  In a radial pole coordinate, the Green-conjugate class is either
+  \(2\pi[\omega_{\mathrm{ang}}]\) or
+  \(-2\pi[\omega_{\mathrm{ang}}]\).
+proof:
+  The local class is the angular class multiplied by the logarithmic
+  transition coefficient, and that coefficient is \(2\pi\) or \(-2\pi\),
+  according to orientation.
+-/
 theorem greenConjugateAnnularClosedForm_class_eq_two_pi_or_neg (D :
     CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]

@@ -28,7 +28,15 @@ def puncturedSurfaceOpen
   ⟨{x : X | x ≠ p}, isOpen_ne⟩
 
 /-- A Riemann surface remains a Riemann surface after
-removing one point. -/
+removing one point.
+
+%%handwave
+name: Riemann-surface structure on a punctured surface
+statement:
+  If $X$ is a Riemann surface and $p\in X$, then $X\setminus\{p\}$, with the induced open-submanifold charts, is a Riemann surface.
+proof:
+  A Riemann surface has another point besides $p$, and its punctured complement is connected. Restrict the complex atlas to this nonempty connected open subset.
+-/
 theorem puncturedSurfaceOpen_riemannSurface
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X) :

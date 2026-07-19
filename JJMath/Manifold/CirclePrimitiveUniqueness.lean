@@ -24,7 +24,19 @@ variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
 namespace SmoothCirclePrimitive
 
-/-- A smooth circle phase represents at most one real one-form. -/
+/--
+%%handwave
+name:
+  A smooth circle phase determines its one-form
+statement:
+  If two smooth circle primitives have the same phase
+  \(P:M\to S^1\), then the real one-forms they represent are equal.
+proof:
+  Around any point choose real arguments \(\theta\) and \(\psi\) for the two
+  primitives.  Equality of phases makes \(\theta-\psi\) locally constant, so
+  \(d\theta=d\psi\).  The represented forms therefore agree locally and hence
+  at every point.
+-/
 theorem oneForm_eq_of_phase_eq
     {omega eta : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -140,9 +152,19 @@ theorem oneForm_eq_of_phase_eq
     (mfderiv I I (fun y : W ↦ (y : M)) ⟨x, hxW⟩)
     (mfderiv_subtypeVal_surjective (I := I) W ⟨x, hxW⟩) hpoint
 
-/-- If one circle phase is obtained from another by multiplication by the
-exponential of a global real function, then their represented one-forms
-differ by the differential of that function. -/
+/--
+%%handwave
+name:
+  Changing a circle phase by a global argument adds an exact form
+statement:
+  Suppose circle primitives for one-forms \(\omega,\eta\) satisfy
+  \(P(x)=Q(x)e^{i\theta(x)}\) for a global smooth real function \(\theta\).
+  Then \(\omega=\eta+d\theta\).
+proof:
+  Multiplying the primitive \(Q\) by \(e^{i\theta}\) produces a primitive for
+  \(\eta+d\theta\) with the same phase as \(P\).  Uniqueness of the one-form
+  represented by a phase gives the equality.
+-/
 theorem oneForm_eq_addExact_of_phase_eq
     {omega eta : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -156,7 +178,18 @@ theorem oneForm_eq_addExact_of_phase_eq
   apply oneForm_eq_of_phase_eq I P (SmoothCirclePrimitive.addExact I Q theta)
   exact hphase
 
-/-- A one-form admitting a smooth circle primitive is closed. -/
+/--
+%%handwave
+name:
+  A one-form with a smooth circle primitive is closed
+statement:
+  If a real one-form \(\omega\) admits a smooth circle primitive, then
+  \(d\omega=0\).
+proof:
+  Locally \(\omega=d\theta\) for a smooth real argument \(\theta\), hence
+  \(d\omega=d^2\theta=0\).  Restricting \(d\omega\) to such a neighborhood
+  around every point proves that it vanishes globally.
+-/
 theorem isClosed
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) :

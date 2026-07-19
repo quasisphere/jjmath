@@ -20,6 +20,17 @@ noncomputable section
 
 attribute [local instance] finrank_real_complex_fact'
 
+/--
+%%handwave
+name:
+  Pullback of a constant degree-zero de Rham class
+statement:
+  If \(\phi:M_1\to M_2\) is a diffeomorphism and \(c\in\mathbb R\), then
+  \(\phi^*[c]=[c]\) in degree-zero de Rham cohomology.
+proof:
+  Pullback of the constant zero-form \(c\) is again the constant zero-form
+  \(c\).
+-/
 theorem deRhamCohomologyPullbackDiffeomorph_constant
     {E₁ H₁ M₁ E₂ H₂ M₂ : Type*}
     [NormedAddCommGroup E₁] [NormedSpace ℝ E₁]
@@ -41,6 +52,19 @@ theorem deRhamCohomologyPullbackDiffeomorph_constant
   ext v
   rfl
 
+/--
+%%handwave
+name:
+  Degree-zero cohomology of a manifold diffeomorphic to a convex open set
+statement:
+  If \(M\) is diffeomorphic to a nonempty convex open subset of a
+  finite-dimensional real vector space, then every class in
+  \(H_{\mathrm{dR}}^0(M;\mathbb R)\) is represented by a constant \(c\).
+proof:
+  Transport the class to the convex open set, where degree-zero de Rham
+  cohomology consists of constants, and pull the resulting constant class
+  back along the diffeomorphism.
+-/
 theorem deRhamH0_eq_constant_of_diffeomorphic_convex
     {E₁ H₁ M₁ E₂ : Type*}
     [NormedAddCommGroup E₁] [NormedSpace ℝ E₁]
@@ -66,41 +90,17 @@ theorem deRhamH0_eq_constant_of_diffeomorphic_convex
     _ = deRhamConstantH0Class (I0 := I₁) (M0 := M₁) c :=
       deRhamCohomologyPullbackDiffeomorph_constant I₁ (𝓘(ℝ, E₂)) phi c
 
-private noncomputable def legacySmoothRealFunctionOfIsLocallyConstant
-    {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    (f : M → ℝ) (hf : IsLocallyConstant f) : C^∞⟮I, M; ℝ⟯ where
-  val := f
-  property := by
-    intro x
-    exact contMDiffAt_const.congr_of_eventuallyEq (hf.eventually_eq x)
-
-private theorem legacyDeRhamDifferential_locallyConstant_zeroForm_eq_zero
-    {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    (f : M → ℝ) (hf : IsLocallyConstant f) :
-    deRhamDifferential (I := I) (M := M) (A := ℝ) 0
-        (smoothRealFunctionToZeroForm (I0 := I)
-          (smoothRealFunctionOfIsLocallyConstant I f hf)) = 0 := by
-  apply DifferentialForm.ext
-  intro x
-  have heq : ∀ᶠ y in 𝓝 x,
-      (smoothRealFunctionToZeroForm (I0 := I)
-        (smoothRealFunctionOfIsLocallyConstant I f hf)).toFun y =
-      (smoothRealFunctionToZeroForm (I0 := I)
-        (smoothRealConstantFunction (I0 := I) (f x))).toFun y := by
-    filter_upwards [hf.eventually_eq x] with y hy
-    simp [smoothRealFunctionOfIsLocallyConstant, hy]
-  rw [deRhamDifferential_toFun_eq_of_eventuallyEq
-    (I := I)
-    (smoothRealFunctionToZeroForm (I0 := I)
-      (smoothRealFunctionOfIsLocallyConstant I f hf))
-    (smoothRealFunctionToZeroForm (I0 := I)
-      (smoothRealConstantFunction (I0 := I) (f x))) heq]
-  rw [deRhamDifferential_smoothRealFunctionToZeroForm_const]
-
+/--
+%%handwave
+name:
+  Equality of closed zero-forms in degree-zero cohomology
+statement:
+  Two closed smooth zero-forms define the same degree-zero de Rham class if
+  and only if they are equal.
+proof:
+  There are no differential forms of degree \(-1\), so the space of exact
+  zero-forms is zero and the quotient map is injective.
+-/
 theorem deRhamH0_mkQ_eq_iff
     {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -114,6 +114,17 @@ theorem deRhamH0_mkQ_eq_iff
   simp [DeRhamExactClosedForms, DeRhamExactForms, sub_eq_zero]
 
 set_option synthInstance.maxHeartbeats 100000 in
+/--
+%%handwave
+name:
+  Difference of constant degree-zero classes
+statement:
+  For \(c,d\in\mathbb R\), \([c]-[d]=[c-d]\) in
+  \(H_{\mathrm{dR}}^0(M;\mathbb R)\).
+proof:
+  The quotient map is linear and subtraction of the two constant zero-forms
+  is the constant zero-form \(c-d\).
+-/
 theorem deRhamConstantH0Class_sub
     {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -138,22 +149,64 @@ theorem deRhamConstantH0Class_sub
 def annularOpposite (v : Circle) : Circle :=
   (stereographic' 1 v).symm 0
 
+/--
+%%handwave
+name:
+  The antipodal chart point lies in the stereographic domain
+statement:
+  For \(v\in S^1\), the point whose stereographic coordinate relative to
+  the puncture \(v\) is \(0\) belongs to the stereographic chart domain.
+proof:
+  The coordinate \(0\) lies in the chart target, so its inverse image lies in
+  the source.
+-/
 theorem annularOpposite_mem_source (v : Circle) :
     annularOpposite v ∈ (stereographic' 1 v).source := by
   apply (stereographic' 1 v).map_target
   simp
 
+/--
+%%handwave
+name:
+  Stereographic coordinate of the antipodal chart point
+statement:
+  For \(v\in S^1\), the distinguished opposite point has stereographic
+  coordinate \(0\) in the chart punctured at \(v\).
+proof:
+  It is defined as the inverse stereographic image of \(0\).
+-/
 theorem annularPunctureChart_opposite (v : Circle) :
     stereographic' 1 v (annularOpposite v) = 0 := by
   apply (stereographic' 1 v).right_inv
   simp
 
+/--
+%%handwave
+name:
+  Distinctness of a circle point and its stereographic opposite
+statement:
+  For every \(v\in S^1\), the point with stereographic coordinate \(0\)
+  relative to \(v\) is different from \(v\).
+proof:
+  The stereographic chart source omits \(v\), while the opposite point belongs
+  to that source.
+-/
 theorem annularOpposite_ne (v : Circle) : annularOpposite v ≠ v := by
   intro h
   have := annularOpposite_mem_source v
   rw [stereographic'_source] at this
   exact this h
 
+/--
+%%handwave
+name:
+  Vanishing criterion in one-dimensional Euclidean space
+statement:
+  A vector \(x\in\mathbb R^{\{0\}}\) is zero if and only if its unique
+  coordinate \(x_0\) is zero.
+proof:
+  Equality of vectors is coordinatewise and there is only one coordinate.
+-/
 theorem euclideanFinOne_eq_zero_iff
     (x : EuclideanSpace ℝ (Fin 1)) : x = 0 ↔ x 0 = 0 := by
   constructor
@@ -166,6 +219,18 @@ theorem euclideanFinOne_eq_zero_iff
     fin_cases i
     exact h
 
+/--
+%%handwave
+name:
+  Zero stereographic coordinate characterizes the opposite point
+statement:
+  If \(x\) lies in the stereographic chart punctured at \(v\), then its
+  stereographic coordinate is zero if and only if \(x\) is the distinguished
+  opposite point.
+proof:
+  Injectivity of the stereographic chart compares \(x\) with the inverse image
+  of \(0\).
+-/
 theorem stereographic_eq_zero_iff (v x : Circle)
     (hx : x ∈ (stereographic' 1 v).source) :
     stereographic' 1 v x = 0 ↔ x = annularOpposite v := by
@@ -189,23 +254,61 @@ def annularNegativeTarget :
     ((PiLp.continuous_apply 2 (fun _ : Fin 1 => ℝ) 0).comp continuous_fst)
     continuous_const
 
+/--
+%%handwave
+name:
+  Convexity of the positive annular chart target
+statement:
+  The half-space
+  \(\{(x,t)\in\mathbb R\times\mathbb R:x>0\}\) is convex.
+proof:
+  It is an open half-space cut out by a linear functional.
+-/
 theorem annularPositiveTarget_convex :
     Convex ℝ (annularPositiveTarget : Set (EuclideanSpace ℝ (Fin 1) × ℝ)) := by
   change Convex ℝ {p : EuclideanSpace ℝ (Fin 1) × ℝ | 0 < p.1 0}
   apply convex_halfSpace_gt
   exact ⟨by intro x y; simp, by intro c x; simp⟩
 
+/--
+%%handwave
+name:
+  Convexity of the negative annular chart target
+statement:
+  The half-space
+  \(\{(x,t)\in\mathbb R\times\mathbb R:x<0\}\) is convex.
+proof:
+  It is an open half-space cut out by a linear functional.
+-/
 theorem annularNegativeTarget_convex :
     Convex ℝ (annularNegativeTarget : Set (EuclideanSpace ℝ (Fin 1) × ℝ)) := by
   change Convex ℝ {p : EuclideanSpace ℝ (Fin 1) × ℝ | p.1 0 < 0}
   apply convex_halfSpace_lt
   exact ⟨by intro x y; simp, by intro c x; simp⟩
 
+/--
+%%handwave
+name:
+  Nonemptiness of the positive annular chart target
+statement:
+  The half-space \(\{(x,t):x>0\}\) is nonempty.
+proof:
+  It contains \((1,0)\).
+-/
 theorem annularPositiveTarget_nonempty :
     (annularPositiveTarget : Set (EuclideanSpace ℝ (Fin 1) × ℝ)).Nonempty := by
   refine ⟨(WithLp.toLp 2 (fun _ : Fin 1 => (1 : ℝ)), 0), ?_⟩
   simp [annularPositiveTarget]
 
+/--
+%%handwave
+name:
+  Nonemptiness of the negative annular chart target
+statement:
+  The half-space \(\{(x,t):x<0\}\) is nonempty.
+proof:
+  It contains \((-1,0)\).
+-/
 theorem annularNegativeTarget_nonempty :
     (annularNegativeTarget : Set (EuclideanSpace ℝ (Fin 1) × ℝ)).Nonempty := by
   refine ⟨(WithLp.toLp 2 (fun _ : Fin 1 => (-1 : ℝ)), 0), ?_⟩
@@ -233,6 +336,18 @@ def annularNegativeComponent (v : Circle) :
     (deRham_boundarylessExtendedChart AnnularCylinderModel
       (annularPunctureChart v)).isOpen_inter_preimage annularNegativeTarget.2
 
+/--
+%%handwave
+name:
+  Membership in the positive component of a doubly punctured cylinder
+statement:
+  A point \(p=(z,t)\in S^1\times\mathbb R\) belongs to the positive component
+  determined by \(v\) if and only if \(z\ne v\) and the unique
+  stereographic coordinate of \(z\) relative to \(v\) is positive.
+proof:
+  Expand the component as the chart source intersected with the inverse image
+  of the positive half-space.
+-/
 theorem mem_annularPositiveComponent_iff (v : Circle) (p : Circle × ℝ) :
     p ∈ (annularPositiveComponent v : Set (Circle × ℝ)) ↔
       p.1 ≠ v ∧ 0 < (stereographic' 1 v p.1) 0 := by
@@ -250,6 +365,18 @@ theorem mem_annularPositiveComponent_iff (v : Circle) (p : Circle × ℝ) :
       exact ⟨by simpa using hpv, Set.mem_univ _⟩
     · exact Set.mem_univ _
 
+/--
+%%handwave
+name:
+  Membership in the negative component of a doubly punctured cylinder
+statement:
+  A point \(p=(z,t)\in S^1\times\mathbb R\) belongs to the negative component
+  determined by \(v\) if and only if \(z\ne v\) and the unique
+  stereographic coordinate of \(z\) relative to \(v\) is negative.
+proof:
+  Expand the component as the chart source intersected with the inverse image
+  of the negative half-space.
+-/
 theorem mem_annularNegativeComponent_iff (v : Circle) (p : Circle × ℝ) :
     p ∈ (annularNegativeComponent v : Set (Circle × ℝ)) ↔
       p.1 ≠ v ∧ (stereographic' 1 v p.1) 0 < 0 := by
@@ -267,6 +394,17 @@ theorem mem_annularNegativeComponent_iff (v : Circle) (p : Circle × ℝ) :
       exact ⟨by simpa using hpv, Set.mem_univ _⟩
     · exact Set.mem_univ _
 
+/--
+%%handwave
+name:
+  Membership in a punctured annular cylinder
+statement:
+  A point \(p=(z,t)\in S^1\times\mathbb R\) lies in the cylinder punctured
+  along \(\{v\}\times\mathbb R\) if and only if \(z\ne v\).
+proof:
+  The product chart source is
+  \((S^1\setminus\{v\})\times\mathbb R\).
+-/
 theorem mem_annularPunctureOpen_iff (v : Circle) (p : Circle × ℝ) :
     p ∈ (annularPunctureOpen v : Set (Circle × ℝ)) ↔ p.1 ≠ v := by
   simp only [annularPunctureOpen, annularPunctureChart,
@@ -279,6 +417,18 @@ def annularDoublePunctureOpen (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) :=
   annularPunctureOpen v ⊓ annularPunctureOpen (annularOpposite v)
 
+/--
+%%handwave
+name:
+  Components of the doubly punctured annular cylinder
+statement:
+  Removing the two distinguished circle points \(v\) and \(v^\ast\) from
+  \(S^1\times\mathbb R\) leaves the union of the positive and negative
+  stereographic-coordinate components.
+proof:
+  Away from \(v\), stereographic coordinates are defined; avoiding
+  \(v^\ast\) makes the coordinate nonzero, hence either positive or negative.
+-/
 theorem annularComponents_cover_doublePuncture (v : Circle) :
     annularPositiveComponent v ⊔ annularNegativeComponent v =
       annularDoublePunctureOpen v := by
@@ -332,6 +482,17 @@ theorem annularComponents_cover_doublePuncture (v : Circle) :
       show p ∈ (annularPositiveComponent v : Set (Circle × ℝ))
       exact (mem_annularPositiveComponent_iff v p).mpr ⟨hp'.1, hpos⟩
 
+/--
+%%handwave
+name:
+  Disjointness of the annular overlap components
+statement:
+  The positive and negative components of the doubly punctured annular
+  cylinder are disjoint.
+proof:
+  Their defining stereographic coordinate cannot be simultaneously positive
+  and negative.
+-/
 theorem annularComponents_disjoint (v : Circle) :
     annularPositiveComponent v ⊓ annularNegativeComponent v = ⊥ := by
   apply le_antisymm
@@ -347,11 +508,33 @@ theorem annularComponents_disjoint (v : Circle) :
     change p ∈ (∅ : Set (Circle × ℝ)) at hp
     exact hp.elim
 
+/--
+%%handwave
+name:
+  Positive component lies in the doubly punctured cylinder
+statement:
+  The positive stereographic component is contained in the cylinder punctured
+  at \(v\) and \(v^\ast\).
+proof:
+  It is one member of the two-component cover of the doubly punctured
+  cylinder.
+-/
 theorem annularPositiveComponent_le_doublePuncture (v : Circle) :
     annularPositiveComponent v ≤ annularDoublePunctureOpen v := by
   rw [← annularComponents_cover_doublePuncture v]
   exact le_sup_left
 
+/--
+%%handwave
+name:
+  Negative component lies in the doubly punctured cylinder
+statement:
+  The negative stereographic component is contained in the cylinder punctured
+  at \(v\) and \(v^\ast\).
+proof:
+  It is one member of the two-component cover of the doubly punctured
+  cylinder.
+-/
 theorem annularNegativeComponent_le_doublePuncture (v : Circle) :
     annularNegativeComponent v ≤ annularDoublePunctureOpen v := by
   rw [← annularComponents_cover_doublePuncture v]
@@ -361,6 +544,17 @@ def annularOverlapPositiveSet (v : Circle) :
     Set (annularDoublePunctureOpen v) :=
   {x | (x.1 : Circle × ℝ) ∈ (annularPositiveComponent v : Set (Circle × ℝ))}
 
+/--
+%%handwave
+name:
+  The positive overlap component is clopen
+statement:
+  Inside the doubly punctured annular cylinder, the positive component is
+  both open and closed.
+proof:
+  It is open by construction, and its complement is exactly the negative
+  component, which is also open.
+-/
 theorem annularOverlapPositiveSet_isClopen (v : Circle) :
     IsClopen (annularOverlapPositiveSet v) := by
   have hopen : IsOpen (annularOverlapPositiveSet v) :=
@@ -412,6 +606,17 @@ noncomputable def annularOverlapStepFunction (v : Circle)
     classical
     exact if x ∈ annularOverlapPositiveSet v then 1 else 0
 
+/--
+%%handwave
+name:
+  Local constancy of the annular overlap step
+statement:
+  The function on the doubly punctured cylinder that equals \(1\) on the
+  positive component and \(0\) on the negative component is locally constant.
+proof:
+  The positive component and its complement are both open, so the function is
+  constant on a neighborhood of every point.
+-/
 theorem annularOverlapStepFunction_isLocallyConstant (v : Circle) :
     IsLocallyConstant (annularOverlapStepFunction v) := by
   classical
@@ -444,6 +649,17 @@ noncomputable def annularOverlapStepClass (v : Circle) :
     (M := annularDoublePunctureOpen v) (A := ℝ) 0).mkQ
       (annularOverlapStepClosedForm v)
 
+/--
+%%handwave
+name:
+  Restriction of the annular overlap step to the positive component
+statement:
+  The locally constant closed zero-form defined by the annular overlap step
+  restricts to the constant zero-form \(1\) on the positive component.
+proof:
+  Every point of that component satisfies the positive branch of the step
+  function.
+-/
 theorem annularOverlapStepClosedForm_restrict_positive (v : Circle) :
     deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
         (annularPositiveComponent_le_doublePuncture v) 0
@@ -470,6 +686,17 @@ theorem annularOverlapStepClosedForm_restrict_positive (v : Circle) :
           annularOverlapPositiveSet v then 1 else 0) = 1
   simp [hx]
 
+/--
+%%handwave
+name:
+  Restriction of the annular overlap step to the negative component
+statement:
+  The annular overlap step zero-form restricts to the constant zero-form
+  \(0\) on the negative component.
+proof:
+  The positive and negative components are disjoint, so every point of the
+  negative component satisfies the zero branch.
+-/
 theorem annularOverlapStepClosedForm_restrict_negative (v : Circle) :
     deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
         (annularNegativeComponent_le_doublePuncture v) 0
@@ -506,6 +733,17 @@ theorem annularOverlapStepClosedForm_restrict_negative (v : Circle) :
           annularOverlapPositiveSet v then 1 else 0) = 0
   simp [hx]
 
+/--
+%%handwave
+name:
+  Positive restriction of the annular overlap step class
+statement:
+  The degree-zero cohomology class of the annular overlap step restricts to
+  the constant class \([1]\) on the positive component.
+proof:
+  Restriction commutes with passage to cohomology, and the representing
+  zero-form restricts to the constant form \(1\).
+-/
 theorem annularOverlapStepClass_restrict_positive (v : Circle) :
     deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
         (annularPositiveComponent_le_doublePuncture v) 0
@@ -522,6 +760,17 @@ theorem annularOverlapStepClass_restrict_positive (v : Circle) :
           (annularOverlapStepClosedForm v)) = _
   rw [annularOverlapStepClosedForm_restrict_positive]
 
+/--
+%%handwave
+name:
+  Negative restriction of the annular overlap step class
+statement:
+  The degree-zero cohomology class of the annular overlap step restricts to
+  the constant class \([0]\) on the negative component.
+proof:
+  Restriction commutes with passage to cohomology, and the representing
+  zero-form restricts to zero.
+-/
 theorem annularOverlapStepClass_restrict_negative (v : Circle) :
     deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
         (annularNegativeComponent_le_doublePuncture v) 0
@@ -538,6 +787,18 @@ theorem annularOverlapStepClass_restrict_negative (v : Circle) :
           (annularOverlapStepClosedForm v)) = _
   rw [annularOverlapStepClosedForm_restrict_negative]
 
+/--
+%%handwave
+name:
+  Positive annular overlap component as a half-space
+statement:
+  For every \(v\in S^1\), the positive component of the doubly punctured
+  annular cylinder is diffeomorphic to the half-space
+  \(\{(x,t)\in\mathbb R^2:x>0\}\).
+proof:
+  Restrict the product stereographic chart punctured at \(v\) to the inverse
+  image of the positive target half-space.
+-/
 theorem annularPositiveComponent_diffeomorph (v : Circle) :
     Nonempty
       (annularPositiveComponent v ≃ₘ⟮AnnularCylinderModel,
@@ -553,6 +814,18 @@ theorem annularPositiveComponent_diffeomorph (v : Circle) :
     simp [annularPunctureChart, AnnularCylinderModel]
     exact Set.mem_univ y
 
+/--
+%%handwave
+name:
+  Negative annular overlap component as a half-space
+statement:
+  For every \(v\in S^1\), the negative component of the doubly punctured
+  annular cylinder is diffeomorphic to
+  \(\{(x,t)\in\mathbb R^2:x<0\}\).
+proof:
+  Restrict the product stereographic chart punctured at \(v\) to the inverse
+  image of the negative target half-space.
+-/
 theorem annularNegativeComponent_diffeomorph (v : Circle) :
     Nonempty
       (annularNegativeComponent v ≃ₘ⟮AnnularCylinderModel,
@@ -568,18 +841,49 @@ theorem annularNegativeComponent_diffeomorph (v : Circle) :
     simp [annularPunctureChart, AnnularCylinderModel]
     exact Set.mem_univ y
 
+/--
+%%handwave
+name:
+  Nonemptiness of the positive annular overlap component
+statement:
+  The positive component of the doubly punctured annular cylinder is
+  nonempty.
+proof:
+  Its diffeomorphic positive half-space target contains \((1,0)\).
+-/
 theorem annularPositiveComponent_nonempty (v : Circle) :
     Nonempty (annularPositiveComponent v) := by
   rcases annularPositiveComponent_diffeomorph v with ⟨phi⟩
   exact ⟨phi.symm ⟨annularPositiveTarget_nonempty.choose,
     annularPositiveTarget_nonempty.choose_spec⟩⟩
 
+/--
+%%handwave
+name:
+  Nonemptiness of the negative annular overlap component
+statement:
+  The negative component of the doubly punctured annular cylinder is
+  nonempty.
+proof:
+  Its diffeomorphic negative half-space target contains \((-1,0)\).
+-/
 theorem annularNegativeComponent_nonempty (v : Circle) :
     Nonempty (annularNegativeComponent v) := by
   rcases annularNegativeComponent_diffeomorph v with ⟨phi⟩
   exact ⟨phi.symm ⟨annularNegativeTarget_nonempty.choose,
     annularNegativeTarget_nonempty.choose_spec⟩⟩
 
+/--
+%%handwave
+name:
+  Degree-zero cohomology of a singly punctured annular cylinder
+statement:
+  Every class in the degree-zero de Rham cohomology of
+  \((S^1\setminus\{v\})\times\mathbb R\) is a constant class \([c]\).
+proof:
+  The punctured cylinder is diffeomorphic to a nonempty convex open subset of
+  a Euclidean space, whose degree-zero cohomology consists of constants.
+-/
 theorem annularPuncture_H0_eq_constant (v : Circle)
     (alpha : DeRhamCohomology (I := AnnularCylinderModel)
       (M := annularPunctureOpen v) (A := ℝ) 0) :
@@ -590,6 +894,16 @@ theorem annularPuncture_H0_eq_constant (v : Circle)
   exact deRhamH0_eq_constant_of_diffeomorphic_convex
     AnnularCylinderModel V hconvex ⟨hne.choose, hne.choose_spec⟩ phi alpha
 
+/--
+%%handwave
+name:
+  Degree-zero cohomology of the positive annular component
+statement:
+  Every degree-zero de Rham class on the positive overlap component is a
+  constant class \([c]\).
+proof:
+  The component is diffeomorphic to a nonempty convex positive half-space.
+-/
 theorem annularPositiveComponent_H0_eq_constant (v : Circle)
     (alpha : DeRhamCohomology (I := AnnularCylinderModel)
       (M := annularPositiveComponent v) (A := ℝ) 0) :
@@ -600,6 +914,16 @@ theorem annularPositiveComponent_H0_eq_constant (v : Circle)
     AnnularCylinderModel annularPositiveTarget annularPositiveTarget_convex
     ⟨_, annularPositiveTarget_nonempty.choose_spec⟩ phi alpha
 
+/--
+%%handwave
+name:
+  Degree-zero cohomology of the negative annular component
+statement:
+  Every degree-zero de Rham class on the negative overlap component is a
+  constant class \([c]\).
+proof:
+  The component is diffeomorphic to a nonempty convex negative half-space.
+-/
 theorem annularNegativeComponent_H0_eq_constant (v : Circle)
     (alpha : DeRhamCohomology (I := AnnularCylinderModel)
       (M := annularNegativeComponent v) (A := ℝ) 0) :
@@ -611,6 +935,23 @@ theorem annularNegativeComponent_H0_eq_constant (v : Circle)
     ⟨_, annularNegativeTarget_nonempty.choose_spec⟩ phi alpha
 
 set_option synthInstance.maxHeartbeats 100000 in
+/--
+%%handwave
+name:
+  Degree-zero cohomology of the doubly punctured annular cylinder
+statement:
+  Every class \(\alpha\) on the doubly punctured cylinder has the form
+  \[
+    \alpha=[c]+d[s],
+  \]
+  where \(s\) is the locally constant function equal to \(1\) on the positive
+  component and \(0\) on the negative component.
+proof:
+  Restrict \(\alpha\) to the two components, obtaining constants
+  \(c_+\) and \(c_-\).  The class
+  \([c_-]+(c_+-c_-)[s]\) has the same restriction on both components, hence
+  equals \(\alpha\).
+-/
 theorem annularDoublePuncture_H0_eq_constant_add_smul_step
     (v : Circle)
     (alpha : DeRhamCohomology (I := AnnularCylinderModel)
@@ -749,6 +1090,16 @@ theorem annularDoublePuncture_H0_eq_constant_add_smul_step
       simpa only [deRhamConstantH0Class, annularOverlapStepClass,
         map_add, map_smul] using hquot
 
+/--
+%%handwave
+name:
+  Cover of the annular cylinder by two punctures
+statement:
+  The two open cylinders obtained by removing \(v\) and its distinguished
+  opposite \(v^\ast\) cover \(S^1\times\mathbb R\).
+proof:
+  Since \(v\ne v^\ast\), a circle point cannot equal both punctures.
+-/
 theorem annularPunctures_cover (v : Circle) :
     annularPunctureOpen v ⊔ annularPunctureOpen (annularOpposite v) = ⊤ := by
   ext p
@@ -776,6 +1127,20 @@ noncomputable def annularStepConnectingClass (v : Circle) :
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name:
+  Generation of annular first cohomology by the connecting step class
+statement:
+  Every class \(\alpha\in H_{\mathrm{dR}}^1(S^1\times\mathbb R;\mathbb R)\)
+  is a scalar multiple of the Mayer--Vietoris connecting class of the overlap
+  step function.
+proof:
+  On each singly punctured cylinder, first cohomology vanishes, so exactness
+  puts \(\alpha\) in the image of the connecting map.  Decompose its
+  degree-zero overlap preimage into a constant plus a multiple of the step;
+  exactness kills the constant part and leaves the asserted multiple.
+-/
 theorem annularCylinder_deRhamH1_eq_smul_stepConnecting
     (v : Circle)
     (alpha : DeRhamCohomology (I := AnnularCylinderModel)
@@ -860,6 +1225,20 @@ theorem annularCylinder_deRhamH1_eq_smul_stepConnecting
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name:
+  Nonvanishing of the annular connecting class
+statement:
+  The Mayer--Vietoris connecting class of the overlap step function is
+  nonzero in \(H_{\mathrm{dR}}^1(S^1\times\mathbb R;\mathbb R)\).
+proof:
+  If it vanished, exactness would express the overlap step as the difference
+  of two constant degree-zero classes on the singly punctured cylinders.
+  Restriction to the positive component would force their difference to be
+  \(1\), while restriction to the negative component would force it to be
+  \(0\), a contradiction.
+-/
 theorem annularStepConnectingClass_ne_zero (v : Circle) :
     annularStepConnectingClass v ≠ 0 := by
   intro hzero
@@ -915,6 +1294,19 @@ theorem annularStepConnectingClass_ne_zero (v : Circle) :
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name:
+  Every nonzero annular first cohomology class is a generator
+statement:
+  If \(0\ne\tau\in H_{\mathrm{dR}}^1(S^1\times\mathbb R;\mathbb R)\), then
+  every \(\alpha\) is of the form \(\alpha=c\tau\) for some
+  \(c\in\mathbb R\).
+proof:
+  Both \(\tau\) and \(\alpha\) are multiples of the nonzero connecting step
+  class.  The coefficient of \(\tau\) is nonzero, so divide the coefficient
+  of \(\alpha\) by it.
+-/
 theorem annularCylinder_deRhamH1_eq_smul_of_ne_zero
     (v : Circle)
     (tau : DeRhamCohomology (I := AnnularCylinderModel)
@@ -936,8 +1328,19 @@ theorem annularCylinder_deRhamH1_eq_smul_of_ne_zero
   rw [smul_smul]
   field_simp
 
-/-- First de Rham cohomology of any smooth annulus is generated by each of
-its nonzero classes. -/
+/--
+%%handwave
+name:
+  Every nonzero first cohomology class of a smooth annulus is a generator
+statement:
+  Let \(M\) be diffeomorphic to \(S^1\times\mathbb R\).  If
+  \(0\ne\tau\in H_{\mathrm{dR}}^1(M;\mathbb R)\), then every class
+  \(\alpha\) equals \(c\tau\) for some \(c\in\mathbb R\).
+proof:
+  Transport both classes to the standard annular cylinder, use that any
+  nonzero class generates its one-dimensional first cohomology, and pull the
+  resulting scalar relation back.
+-/
 theorem deRhamH1_eq_smul_of_diffeomorphic_annularCylinder
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -982,9 +1385,22 @@ theorem deRhamH1_eq_smul_of_diffeomorphic_annularCylinder
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- Two closed one-forms on a smooth annulus represent the same de Rham
-class if they have the same period on a cycle on which the second period is
-nonzero. -/
+/--
+%%handwave
+name:
+  Equality of annular de Rham classes from one nonzero period
+statement:
+  Let \(\alpha,\tau\) be closed one-forms on a smooth annulus and \(c\) a
+  one-cycle.  If
+  \[
+    \int_c\alpha=\int_c\tau\ne0,
+  \]
+  then \([\alpha]=[\tau]\) in first de Rham cohomology.
+proof:
+  Since \([\tau]\ne0\), it generates annular first cohomology, so
+  \([\alpha]=a[\tau]\).  The form \(\alpha-a\tau\) is exact and has zero
+  period on \(c\); the displayed equality and nonzero period force \(a=1\).
+-/
 theorem deRhamH1_class_eq_of_annular_eq_period
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -1065,8 +1481,20 @@ theorem deRhamH1_class_eq_of_annular_eq_period
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- On a smooth annulus, closed one-forms whose periods agree up to sign
-represent de Rham classes which agree up to the same sign. -/
+/--
+%%handwave
+name:
+  Annular de Rham classes from periods equal up to sign
+statement:
+  Let \(\alpha,\tau\) be closed one-forms on a smooth annulus and let \(c\)
+  be a one-cycle with \(\int_c\tau\ne0\).  If
+  \(\int_c\alpha=\int_c\tau\) or
+  \(\int_c\alpha=-\int_c\tau\), then respectively
+  \([\alpha]=[\tau]\) or \([\alpha]=-[\tau]\).
+proof:
+  Apply the equality-from-period theorem either to \(\tau\) or to
+  \(-\tau\).
+-/
 theorem deRhamH1_class_eq_or_neg_of_annular_period_eq_or_neg
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -1133,8 +1561,19 @@ theorem deRhamH1_class_eq_or_neg_of_annular_period_eq_or_neg
       I phi v alpha (-tau) c hcycle hnegPeriod hnegPeriod_ne
     simpa using hclass
 
-/-- A linear map onto the first de Rham cohomology of a smooth annulus is
-surjective as soon as its range contains one nonzero class. -/
+/--
+%%handwave
+name:
+  Surjectivity onto annular first cohomology from one nonzero range element
+statement:
+  Let \(L:X\to H_{\mathrm{dR}}^1(A;\mathbb R)\) be linear, where \(A\) is a
+  smooth annulus.  If the range of \(L\) contains a nonzero class \(\tau\),
+  then \(L\) is surjective.
+proof:
+  Every annular first cohomology class is a scalar multiple of \(\tau\), and
+  the range of a linear map contains all scalar multiples of each of its
+  elements.
+-/
 theorem deRhamH1_map_surjective_of_annular_nonzero_mem_range
     {E₁ H₁ M₁ E₂ H₂ M₂ : Type*}
     [NormedAddCommGroup E₁] [NormedSpace ℝ E₁]
@@ -1157,9 +1596,24 @@ theorem deRhamH1_map_surjective_of_annular_nonzero_mem_range
   refine ⟨c • beta, ?_⟩
   rw [map_smul, hbeta, ← hc]
 
-/-- For an annular inclusion, one closed form with a nonzero period after
-restriction already makes the restriction map on first de Rham cohomology
-surjective. -/
+/--
+%%handwave
+name:
+  Surjectivity of restriction to an annulus from a nonzero period
+statement:
+  Let \(W\subseteq V\) be open with \(W\) a smooth annulus.  If a closed
+  one-form on \(V\) restricts to a form having nonzero period on a cycle in
+  \(W\), then
+  \[
+    H_{\mathrm{dR}}^1(V;\mathbb R)\longrightarrow
+    H_{\mathrm{dR}}^1(W;\mathbb R)
+  \]
+  is surjective.
+proof:
+  The period criterion shows that the restricted class is nonzero.  It lies
+  in the range of restriction and, as a nonzero annular class, generates the
+  entire target.
+-/
 theorem deRhamCohomologyRestrictionOfLE_surjective_of_annular_nonzero_period
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -1192,9 +1646,25 @@ theorem deRhamCohomologyRestrictionOfLE_surjective_of_annular_nonzero_period
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- In a two-open cover, restriction from the left member to the
-intersection is injective in degree one when both the ambient space and the
-right member have trivial first de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Injectivity of one restriction in a two-open cover
+statement:
+  Let \(M=U\cup V\).  If
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)=0\) and
+  \(H_{\mathrm{dR}}^1(V;\mathbb R)=0\), then restriction
+  \[
+    H_{\mathrm{dR}}^1(U;\mathbb R)\longrightarrow
+    H_{\mathrm{dR}}^1(U\cap V;\mathbb R)
+  \]
+  is injective.
+proof:
+  If two classes have the same restriction, their difference paired with zero
+  on \(V\) lies in the kernel of the Mayer--Vietoris difference map.
+  Exactness lifts this pair from an ambient class, which is zero; hence the
+  difference on \(U\) is zero.
+-/
 theorem deRhamH1_left_restriction_injective_of_ambient_right_subsingleton
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
@@ -1259,9 +1729,22 @@ theorem deRhamH1_left_restriction_injective_of_ambient_right_subsingleton
 
 
 set_option synthInstance.maxHeartbeats 100000 in
-/-- In a two-open cover with annular overlap and trivial ambient first
-cohomology, nontrivial first cohomology on the left forces vanishing first
-cohomology on the right. -/
+/--
+%%handwave
+name:
+  Mayer--Vietoris vanishing across an annular overlap
+statement:
+  Let \(M=U\cup V\), suppose \(U\cap V\) is a smooth annulus and
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)=0\).  If
+  \(H_{\mathrm{dR}}^1(U;\mathbb R)\ne0\), then
+  \(H_{\mathrm{dR}}^1(V;\mathbb R)=0\).
+proof:
+  Choose a nonzero class on \(U\).  Exactness and ambient vanishing show that
+  its restriction to \(U\cap V\) is nonzero.  Since any nonzero annular class
+  generates the overlap cohomology, the left restriction is surjective.
+  The Mayer--Vietoris injectivity criterion then forces the right first
+  cohomology to vanish.
+-/
 theorem deRhamH1_subsingleton_of_mayerVietoris_annular_and_left_nontrivial
     {E H M : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]

@@ -17,8 +17,12 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
 
 /--
-Canonical-frame at-point persistence obtained from direct one-jet local
-stability for holomorphic local isometries.
+%%handwave
+name: Local persistence of a canonical first-order chart match
+statement:
+  Suppose one-jets of holomorphic local isometries are locally stable. If two hyperbolic charts $U,V$ and $A\in\operatorname{PSL}(2,\mathbb R)$ have matching canonical value and first-order frame at $y$, then some open neighborhood $W\ni y$ has $V(z)=A(U(z))$ and the same first-order match at every common-domain point $z\in W$.
+proof:
+  Local one-jet stability makes the one-jet equality locus open. Apply the general persistence theorem for a canonical first-order match at a point of that open locus.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_holomorphicLocalIsometryOneJetStability
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -577,9 +581,12 @@ def pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsClosedTheo
     hFirstClosed
 
 /--
-If value equality for a pointed comparison forces the oriented first-order
-frame match, then the corrected one-jet locus is the old value-equality
-locus.
+%%handwave
+name: Equality of value and one-jet coincidence loci
+statement:
+  Fix pointed hyperbolic charts $U,V$, a real Mobius map $A$, and a base-point one-jet match. If $V(x)=A(U(x))$ at any common-domain point forces equality of the oriented first-order frames there, then the value-coincidence locus equals the one-jet-coincidence locus.
+proof:
+  A one-jet match includes value equality. Conversely, apply the assumed value-to-first-order implication to any point in the value-equality locus.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySet_eq_equalitySet_of_valueEqualityForcesFirstOrder
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

@@ -47,6 +47,17 @@ noncomputable def smoothCurveAffineSimplex
           (hγ.comp hL.contMDiff).contMDiffOn,
           fun _ ↦ rfl⟩ }
 
+/--
+%%handwave
+name:
+  Value of an affine simplex along a smooth curve
+statement:
+  The simplex determined by a smooth curve \(\gamma\) and vertex parameters
+  \(a_i\) sends barycentric coordinates \(q\) to
+  \(\gamma(\sum_i q_i a_i)\).
+proof:
+  This is the defining evaluation formula.
+-/
 @[simp]
 theorem smoothCurveAffineSimplex_apply
     {k : ℕ} (γ : ℝ → X)
@@ -75,6 +86,17 @@ noncomputable def smoothCurveSubdivisionSimplex
       (I := SurfaceRealModel) (M := X) 2 ∞ :=
   smoothCurveAffineSimplex γ hγ ![a, b, c]
 
+/--
+%%handwave
+name:
+  Zeroth face of the curve-subdivision simplex
+statement:
+  The zeroth face of the degenerate two-simplex with curve parameters
+  \((a,b,c)\) is the oriented curve segment from \(b\) to \(c\).
+proof:
+  The zeroth face sets the first barycentric coordinate to zero, leaving the
+  affine combination of \(b\) and \(c\).
+-/
 theorem smoothCurveSubdivisionSimplex_face_zero
     (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -97,6 +119,16 @@ theorem smoothCurveSubdivisionSimplex_face_zero
   rw [hface]
   simp [Fin.sum_univ_succ]
 
+/--
+%%handwave
+name:
+  First face of the curve-subdivision simplex
+statement:
+  The first face of the degenerate two-simplex with parameters \((a,b,c)\)
+  is the curve segment from \(a\) to \(c\).
+proof:
+  The first face deletes the barycentric coordinate multiplying \(b\).
+-/
 theorem smoothCurveSubdivisionSimplex_face_one
     (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -119,6 +151,16 @@ theorem smoothCurveSubdivisionSimplex_face_one
   rw [hface]
   simp [Fin.sum_univ_succ]
 
+/--
+%%handwave
+name:
+  Second face of the curve-subdivision simplex
+statement:
+  The second face of the degenerate two-simplex with parameters \((a,b,c)\)
+  is the curve segment from \(a\) to \(b\).
+proof:
+  The second face sets the coordinate multiplying \(c\) to zero.
+-/
 theorem smoothCurveSubdivisionSimplex_face_two
     (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -146,9 +188,20 @@ theorem smoothCurveSubdivisionSimplex_face_two
   rw [hface]
   simp [Fin.sum_univ_succ]
 
-/-- Integration of a closed one-form along a smooth curve is additive under
-subdivision.  This is Stokes applied to a two-simplex which factors through the
-curve. -/
+/--
+%%handwave
+name:
+  Additivity of a closed one-form integral under curve subdivision
+statement:
+  For a closed one-form \(\omega\) and a smooth curve \(\gamma\),
+  \[
+    \int_a^c\gamma^*\omega=
+      \int_a^b\gamma^*\omega+\int_b^c\gamma^*\omega.
+  \]
+proof:
+  Apply Stokes' theorem to the degenerate two-simplex along \(\gamma\) with
+  vertices \(a,b,c\), and identify its three oriented faces.
+-/
 theorem integrate_smoothCurveSegmentSimplex_subdivision
     (omega : DeRhamClosedForms
       (I := SurfaceRealModel) (M := X) (A := ℝ) 1)
@@ -173,8 +226,17 @@ theorem integrate_smoothCurveSegmentSimplex_subdivision
   simp [integrateSmoothChain, integrateChain, integrateChainHom]
   linarith
 
-/-- A smooth map whose image lies in an open subset remains smooth when its
-codomain is restricted to that open subset. -/
+/--
+%%handwave
+name:
+  Smooth codomain restriction to an open subset
+statement:
+  If a smooth map \(f:M\to N\) has image in an open subset \(V\subseteq N\),
+  then the same map regarded as \(M\to V\) is smooth.
+proof:
+  Near each image point, use the smooth local retraction that returns points
+  of \(V\) unchanged; composing it with \(f\) gives the restricted map.
+-/
 theorem contMDiffCodRestrictOpen
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -214,8 +276,19 @@ noncomputable def fallbackCodRestrictOpen
   classical
   exact fun x ↦ if hx : f x ∈ V then ⟨f x, hx⟩ else qV
 
-/-- Restrict a globally smooth map to an open codomain on a set, using a
-fallback point away from that set. -/
+/--
+%%handwave
+name:
+  Smoothness of a fallback codomain restriction on its valid set
+statement:
+  Let \(f:M\to N\) be smooth, let \(V\subseteq N\) be open, and define a
+  map to \(V\) by using \(f(x)\) whenever it lies in \(V\) and a fixed point
+  otherwise.  On every set where \(f\) is known to lie in \(V\), this map is
+  smooth.
+proof:
+  Near each point of the valid set, the inverse image \(f^{-1}(V)\) is open
+  and the fallback map agrees with the ordinary smooth codomain restriction.
+-/
 theorem contMDiffOn_fallbackCodRestrictOpen
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -295,6 +368,17 @@ noncomputable def smoothCurveSegmentSimplexInOpen
             ⟨γ (∑ i : Fin 2, (q : SimplexAmbient 1) i * ![a, b] i), hsegment q⟩
           rw [dif_pos (hsegment q)]⟩ }
 
+/--
+%%handwave
+name:
+  Value of a curve-segment simplex in an open subset
+statement:
+  If a smooth curve segment lies in an open set \(U\), evaluating the simplex
+  regarded in \(U\) and then including into \(X\) gives the original
+  curve-segment simplex.
+proof:
+  Both evaluate the same affine curve parameter.
+-/
 @[simp]
 theorem smoothCurveSegmentSimplexInOpen_apply
     (U : TopologicalSpace.Opens X) (xU : U)
@@ -309,6 +393,17 @@ theorem smoothCurveSegmentSimplexInOpen_apply
   simp [smoothCurveSegmentSimplexInOpen, smoothCurveSegmentSimplex,
     smoothCurveAffineSimplex]
 
+/--
+%%handwave
+name:
+  Including an open-valued curve simplex recovers the ambient simplex
+statement:
+  The open inclusion of a curve-segment simplex whose image lies in \(U\)
+  equals the original simplex in the ambient manifold.
+proof:
+  The two simplices agree at every barycentric point by their evaluation
+  formulas.
+-/
 theorem smoothCurveSegmentSimplexInOpen_openInclusion
     (U : TopologicalSpace.Opens X) (xU : U)
     (γ : ℝ → X)
@@ -325,6 +420,17 @@ theorem smoothCurveSegmentSimplexInOpen_openInclusion
     smoothCurveSegmentSimplexInOpen, smoothCurveSegmentSimplex,
     smoothCurveAffineSimplex]
 
+/--
+%%handwave
+name:
+  Terminal face of a smooth curve segment
+statement:
+  The zeroth face of the oriented curve segment from parameter \(a\) to
+  parameter \(b\) is \(\gamma(b)\).
+proof:
+  The zeroth face of the standard one-simplex has barycentric coordinates
+  \((0,1)\).
+-/
 @[simp]
 theorem smoothCurveSegmentSimplex_face_zero_apply
     (γ : ℝ → X)
@@ -349,6 +455,16 @@ theorem smoothCurveSegmentSimplex_face_zero_apply
   rw [hface]
   simp [Fin.sum_univ_succ, hq]
 
+/--
+%%handwave
+name:
+  Initial face of a smooth curve segment
+statement:
+  The first face of the oriented curve segment from parameter \(a\) to
+  parameter \(b\) is \(\gamma(a)\).
+proof:
+  The first face has barycentric coordinates \((1,0)\).
+-/
 @[simp]
 theorem smoothCurveSegmentSimplex_face_one_apply
     (γ : ℝ → X)
@@ -373,8 +489,21 @@ theorem smoothCurveSegmentSimplex_face_one_apply
   rw [hface]
   simp [Fin.sum_univ_succ, hq]
 
-/-- On a segment contained in a primitive neighborhood, the integral is the
-terminal primitive value minus the initial primitive value. -/
+/--
+%%handwave
+name:
+  Integral of a one-form on a local primitive segment
+statement:
+  If a smooth curve segment from \(a\) to \(b\) lies in an open set where
+  \(\omega=d\theta\), then
+  \[
+    \int_{\gamma|_{[a,b]}}\omega=\theta(\gamma(b))-\theta(\gamma(a)).
+  \]
+proof:
+  Regard the simplex inside the primitive neighborhood, replace the form by
+  \(d\theta\), and apply the fundamental theorem for an exact one-form on a
+  one-simplex.
+-/
 theorem integrate_smoothCurveSegmentSimplex_eq_localPrimitive_sub
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
     (U : TopologicalSpace.Opens X)
@@ -408,8 +537,20 @@ theorem integrate_smoothCurveSegmentSimplex_eq_localPrimitive_sub
     exact smoothCurveSegmentSimplex_face_one_apply γ hγ a b
   rw [hterminal, hinitial]
 
-/-- Repeated subdivision of a smooth curve gives the sum of the integrals of
-its finitely many consecutive subsegments. -/
+/--
+%%handwave
+name:
+  Integral over a finite subdivision of a smooth curve
+statement:
+  For \(N>0\), the integral of a closed one-form along the curve segment from
+  \(t_0\) to \(t_N\) equals
+  \[
+    \sum_{j=0}^{N-1}\int_{t_j}^{t_{j+1}}\gamma^*\omega.
+  \]
+proof:
+  Induct on \(N\), applying the one-step subdivision identity at the last
+  intermediate parameter.
+-/
 theorem integrate_smoothCurveSegmentSimplex_eq_sum_subsegments
     (omega : DeRhamClosedForms
       (I := SurfaceRealModel) (M := X) (A := ℝ) 1)
@@ -431,8 +572,17 @@ theorem integrate_smoothCurveSegmentSimplex_eq_sum_subsegments
       rw [Finset.sum_range_succ]
       rw [ih (by omega)]
 
-/-- Evaluation of a restricted zero-form is evaluation of the original
-smooth function at the included point. -/
+/--
+%%handwave
+name:
+  Evaluation of a restricted smooth zero-form
+statement:
+  If \(V\subseteq U\) and a zero-form on \(U\) is induced by a smooth
+  function \(\theta\), then its restriction to \(V\) evaluates at
+  \(x\in V\) as \(\theta(x)\), viewed in \(U\).
+proof:
+  This is the definition of restriction for a zero-form.
+-/
 theorem restrict_smoothRealFunctionToZeroForm_apply
     {U V : TopologicalSpace.Opens X} (hVU : V ≤ U)
     (theta : C^∞⟮SurfaceRealModel, U; ℝ⟯) (x : V) :
@@ -442,9 +592,20 @@ theorem restrict_smoothRealFunctionToZeroForm_apply
       theta (TopologicalSpace.Opens.inclusion hVU x) := by
   rfl
 
-/-- Restricting an ambient form directly to a smaller open set agrees with
-first identifying its restriction on an intermediate open set and then
-restricting again. -/
+/--
+%%handwave
+name:
+  Two-stage restriction of an ambient differential form
+statement:
+  Let \(W\subseteq U\subseteq X\).  If the restriction of an ambient form
+  \(\omega\) to \(U\) is \(\alpha\), then the direct restriction of
+  \(\omega\) to \(W\) equals the restriction of \(\alpha\) from \(U\) to
+  \(W\).
+proof:
+  Evaluate both forms at a point of \(W\).  The derivative of the inclusion
+  \(W\hookrightarrow X\) factors through \(U\), so the pullback multilinear
+  maps agree.
+-/
 theorem restrictSmoothFormsToOpen_eq_restrictSmoothFormsOfLE_of_restrict_eq_surface
     (W U : TopologicalSpace.Opens X) (hWU : W ≤ U) {n : ℕ}
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ n)
@@ -484,8 +645,21 @@ theorem restrictSmoothFormsToOpen_eq_restrictSmoothFormsOfLE_of_restrict_eq_surf
     (fun eta : FormAt (I := SurfaceRealModel) (M := U) ℝ n xU ↦ eta (LWU ∘ v))
     hpoint'
 
-/-- Local primitives of the same one-form assign the same increment to the
-endpoints of a path contained in their overlap. -/
+/--
+%%handwave
+name:
+  Local primitives agree on endpoint increments along an overlap path
+statement:
+  If \(d\theta_U=d\theta_V=\omega\) and a path \(\rho:x\to y\) lies in
+  \(U\cap V\), then
+  \[
+    \theta_U(y)-\theta_U(x)=\theta_V(y)-\theta_V(x).
+  \]
+proof:
+  Restrict both primitives to the path component of \(x\) in \(U\cap V\).
+  Their difference has zero differential there and is constant on this
+  connected set, which contains the entire path and both endpoints.
+-/
 theorem localPrimitive_endpoint_sub_eq_of_path_in_overlap
     [RiemannSurface X]
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
@@ -608,8 +782,20 @@ theorem localPrimitive_endpoint_sub_eq_of_path_in_overlap
   rw [← hUy, ← hUx, ← hVy, ← hVx]
   linarith
 
-/-- The one-dimensional cancellation identity used in each row of a
-rectangular grid. -/
+/--
+%%handwave
+name:
+  Horizontal cancellation across a row of grid cells
+statement:
+  Suppose each cell in a finite row satisfies
+  \(b_j+r_j=t_j+\ell_j\), adjacent vertical contributions satisfy
+  \(r_j=\ell_{j+1}\), and the two outer vertical contributions vanish.  Then
+  \(\sum_j b_j=\sum_j t_j\).
+proof:
+  Sum the cell identities.  The right-edge sum equals the left-edge sum by
+  telescoping the adjacent matches and using the vanishing outer edges, so
+  these terms cancel.
+-/
 theorem sum_cell_bottom_eq_sum_cell_top
     (N : ℕ) (hN : 0 < N)
     (bottom right top left : ℕ → ℝ)
@@ -642,7 +828,18 @@ theorem sum_cell_bottom_eq_sum_cell_top
       omega)
   linarith
 
-/-- Sweep the row identity through a finite rectangular grid. -/
+/--
+%%handwave
+name:
+  Vertical cancellation across a rectangular grid
+statement:
+  If the sum along the bottom of each grid row equals the sum along its top,
+  and the top of every row agrees cellwise with the bottom of the next, then
+  the bottom sum of the first row equals the top sum of the last row.
+proof:
+  Induct upward through the rows, replacing each bottom sum by the matching
+  preceding top sum and then by the next row's bottom sum.
+-/
 theorem sum_grid_bottom_eq_sum_grid_top
     (N : ℕ) (hN : 0 < N)
     (bottom top : ℕ → ℕ → ℝ)
@@ -686,6 +883,16 @@ noncomputable def primitiveGridValue
   classical
   exact if hz : F z ∈ U then theta ⟨F z, hz⟩ else 0
 
+/--
+%%handwave
+name:
+  Grid primitive value inside its domain
+statement:
+  If a homotopy-grid point \(z\) maps into a primitive neighborhood \(U\),
+  then its grid value is \(\theta(F(z))\).
+proof:
+  The valid-domain branch of the defining case split applies.
+-/
 theorem primitiveGridValue_eq
     (F : unitInterval × unitInterval → X)
     (U : TopologicalSpace.Opens X)
@@ -694,8 +901,18 @@ theorem primitiveGridValue_eq
     primitiveGridValue F U theta z = theta ⟨F z, hz⟩ := by
   simp [primitiveGridValue, hz]
 
-/-- A horizontal subpath of a homotopy rectangle remains in every set which
-contains that rectangle. -/
+/--
+%%handwave
+name:
+  A horizontal subpath remains in its homotopy rectangle
+statement:
+  If a parameter rectangle maps into a set \(U\), then every point of a
+  horizontal subpath across that rectangle also maps into \(U\).
+proof:
+  Every point on the subpath has a horizontal parameter in the prescribed
+  interval; together with the fixed vertical parameter it lies in the
+  rectangle.
+-/
 theorem homotopy_horizontal_subpath_mem_of_rect
     {x₀ x₁ : X} {p q : Path x₀ x₁}
     (F : Path.Homotopy p q) (t : ℕ → unitInterval) (ht : Monotone t)
@@ -714,8 +931,18 @@ theorem homotopy_horizontal_subpath_mem_of_rect
   rw [← hsEq]
   exact hrect ⟨hr, hs⟩
 
-/-- A vertical subpath of a homotopy rectangle remains in every set which
-contains that rectangle. -/
+/--
+%%handwave
+name:
+  A vertical subpath remains in its homotopy rectangle
+statement:
+  If a parameter rectangle maps into a set \(U\), then every point of a
+  vertical subpath across that rectangle maps into \(U\).
+proof:
+  The variable vertical parameter lies in the row interval and the fixed
+  horizontal parameter lies in the column interval, so the corresponding
+  pair belongs to the rectangle.
+-/
 theorem homotopy_vertical_subpath_mem_of_rect
     {x₀ x₁ : X} {p q : Path x₀ x₁}
     (F : Path.Homotopy p q) (t : ℕ → unitInterval) (ht : Monotone t)
@@ -734,8 +961,22 @@ theorem homotopy_vertical_subpath_mem_of_rect
   rw [← hsEq]
   exact hrect ⟨hs, hr⟩
 
-/-- Fine-grid cancellation for local primitives along an endpoint-fixed
-homotopy. -/
+/--
+%%handwave
+name:
+  Boundary increment equality for a grid of local primitives
+statement:
+  Subdivide an endpoint-fixed path homotopy into finitely many rectangles,
+  each contained in a neighborhood where \(\omega=d\theta_{ij}\).  Then the
+  sum of primitive increments along the bottom boundary equals the
+  corresponding sum along the top boundary.
+proof:
+  On each cell the four oriented primitive increments sum to zero.  Along
+  shared edges, increments computed using neighboring local primitives agree.
+  Horizontal cancellation eliminates interior vertical edges and the fixed
+  side boundaries; sweeping through the rows eliminates interior horizontal
+  edges.
+-/
 theorem localPrimitive_grid_boundary_increments_eq
     [RiemannSurface X]
     {x₀ x₁ : X} {p q : Path x₀ x₁}
@@ -917,6 +1158,16 @@ def smoothCurveUnitPath
   source' := rfl
   target' := rfl
 
+/--
+%%handwave
+name:
+  Value of the unit path of a smooth curve
+statement:
+  The path obtained by restricting a smooth real curve \(\gamma\) to
+  \([0,1]\) has value \(\gamma(s)\) at every unit-interval parameter \(s\).
+proof:
+  This is its defining evaluation.
+-/
 @[simp]
 theorem smoothCurveUnitPath_apply
     (gamma : ℝ → X)
@@ -925,8 +1176,17 @@ theorem smoothCurveUnitPath_apply
     smoothCurveUnitPath gamma hgamma s = gamma s :=
   rfl
 
-/-- The barycentric parameter of a one-simplex with ordered real endpoints
-lies between those endpoints. -/
+/--
+%%handwave
+name:
+  An affine one-simplex parameter lies between its endpoints
+statement:
+  If \(a\le b\) and \((q_0,q_1)\) are barycentric coordinates on the standard
+  one-simplex, then \(q_0a+q_1b\in[a,b]\).
+proof:
+  Use \(q_0,q_1\ge0\) and \(q_0+q_1=1\) to bound the convex combination below
+  by \((q_0+q_1)a=a\) and above by \((q_0+q_1)b=b\).
+-/
 theorem oneSimplex_affine_parameter_mem_Icc_real
     (a b : ℝ) (hab : a ≤ b) (q : StandardSimplex 1) :
     ∑ i : Fin 2, (q : SimplexAmbient 1) i * ![a, b] i ∈ Icc a b := by
@@ -948,15 +1208,35 @@ theorem oneSimplex_affine_parameter_mem_Icc_real
       _ = (q.1 0 + q.1 1) * b := by ring
       _ = (b : ℝ) := by rw [hqsum]; ring
 
-/-- The unit-interval specialization of the affine-parameter bound. -/
+/--
+%%handwave
+name:
+  Affine parameter bound for unit-interval endpoints
+statement:
+  If \(a\le b\) in \([0,1]\), every barycentric affine combination of \(a\)
+  and \(b\) lies in the real interval \([a,b]\).
+proof:
+  Apply the real convex-combination bound to the underlying real numbers.
+-/
 theorem oneSimplex_affine_parameter_mem_Icc
     (a b : unitInterval) (hab : a ≤ b) (q : StandardSimplex 1) :
     ∑ i : Fin 2, (q : SimplexAmbient 1) i * ![(a : ℝ), (b : ℝ)] i ∈
       Icc (a : ℝ) (b : ℝ) :=
   oneSimplex_affine_parameter_mem_Icc_real (a : ℝ) (b : ℝ) hab q
 
-/-- Along the lower side of a primitive grid, a cell's primitive increment is
-the integral of the corresponding segment of the first boundary curve. -/
+/--
+%%handwave
+name:
+  Bottom grid increment equals the first boundary-curve integral
+statement:
+  For a bottom-row grid cell contained in a primitive neighborhood, the local
+  primitive increment between its horizontal endpoints equals the integral of
+  \(\omega\) along the corresponding segment of the lower boundary curve.
+proof:
+  The bottom edge of the homotopy is the first boundary curve, and the entire
+  affine segment lies in the cell's primitive neighborhood.  Apply the local
+  primitive integral formula and identify the two endpoint values.
+-/
 theorem primitiveGrid_bottom_increment_eq_integral_segment
     [RiemannSurface X]
     {x₀ x₁ : X} {p q : Path x₀ x₁}
@@ -1031,8 +1311,19 @@ theorem primitiveGrid_bottom_increment_eq_integral_segment
     omega.1 U theta hexact gamma hgamma (t j) (t (j + 1))
       hstart hend hsegment).symm
 
-/-- Along the upper side of a primitive grid, a cell's primitive increment is
-the integral of the corresponding segment of the second boundary curve. -/
+/--
+%%handwave
+name:
+  Top grid increment equals the second boundary-curve integral
+statement:
+  For a top-row grid cell contained in a primitive neighborhood, the local
+  primitive increment between its horizontal endpoints equals the integral of
+  \(\omega\) along the corresponding segment of the upper boundary curve.
+proof:
+  The top edge of the homotopy is the second boundary curve.  The rectangle
+  containment places its affine subsegment in the primitive neighborhood, so
+  the local primitive integral formula gives the equality.
+-/
 theorem primitiveGrid_top_increment_eq_integral_segment
     [RiemannSurface X]
     {x₀ x₁ : X} {p q : Path x₀ x₁}
@@ -1125,6 +1416,8 @@ proof:
   cancel around every rectangle and agree along shared edges; the fixed side
   edges contribute zero.  Subdivision of the two smooth boundary curves is
   justified by Stokes' theorem on degenerate two-simplices.
+tags:
+  milestone
 -/
 theorem integrate_smoothCurveSegmentSimplex_eq_of_pathHomotopy
     [RiemannSurface X]
@@ -1254,8 +1547,22 @@ theorem integrate_smoothCurveSegmentSimplex_eq_of_pathHomotopy
         (Finsupp.single (smoothCurveSegmentSimplex delta hdelta 0 1) (1 : ℤ)) :=
       hdeltaSubdivision'.symm
 
-/-- On a simply connected surface, the integral of a closed one-form along a
-globally smooth curve depends only on its endpoints. -/
+/--
+%%handwave
+name:
+  Endpoint invariance of closed one-form integrals on a simply connected surface
+statement:
+  If \(\gamma,\delta:\mathbb R\to X\) are smooth curves with the same values
+  at \(0\) and \(1\), and \(X\) is simply connected, then every closed real
+  one-form \(\omega\) satisfies
+  \[
+    \int_{\gamma|_{[0,1]}}\omega=\int_{\delta|_{[0,1]}}\omega.
+  \]
+proof:
+  Regard the restrictions as paths with common endpoints.  Simple
+  connectedness gives a path homotopy, and homotopy invariance of the integral
+  gives the equality.
+-/
 theorem integrate_smoothCurveSegmentSimplex_eq_of_simplyConnected
     [RiemannSurface X] [SimplyConnectedSpace X]
     (omega : DeRhamClosedForms
@@ -1279,8 +1586,18 @@ theorem integrate_smoothCurveSegmentSimplex_eq_of_simplyConnected
   · intro s
     simp [q, Path.cast_coe, smoothCurveUnitPath]
 
-/-- A segment on which a smooth curve is constant has zero integral against a
-closed one-form. -/
+/--
+%%handwave
+name:
+  A constant curve segment has zero closed-form integral
+statement:
+  If a smooth curve \(\gamma\) is constant on \([a,b]\), with \(a\le b\),
+  then the integral of any closed real one-form along that segment is zero.
+proof:
+  Choose a local primitive near the constant value.  The segment stays in its
+  domain, so the integral is the primitive's endpoint difference, which
+  vanishes because the endpoints coincide.
+-/
 theorem integrate_smoothCurveSegmentSimplex_eq_zero_of_constant
     [RiemannSurface X]
     (omega : DeRhamClosedForms
@@ -1313,6 +1630,20 @@ switch is made while both curves are constant. -/
 def smoothSittingJoin (gamma delta : ℝ → X) : ℝ → X := fun t ↦
   piecewise (Iic (2 : ℝ)) gamma (fun s ↦ delta (s - 3)) (4 * t)
 
+/--
+%%handwave
+name:
+  Smoothness of the sitting-curve join
+statement:
+  Let \(\gamma\) be smoothly constant at \(y\) for parameters at least one,
+  and let \(\delta\) be smoothly constant at \(y\) for nonpositive
+  parameters.  The rescaled piecewise curve that follows \(\gamma\) and then
+  a shifted \(\delta\) is smooth.
+proof:
+  Near the switching parameter both pieces equal \(y\), so smooth piecewise
+  gluing applies.  Composition with the affine rescaling preserves
+  smoothness.
+-/
 theorem smoothSittingJoin_contMDiff
     {y : X} (gamma delta : ℝ → X)
     (hgamma : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma)
@@ -1340,11 +1671,32 @@ theorem smoothSittingJoin_contMDiff
     rw [contMDiff_iff_contDiff]
     fun_prop)
 
+/--
+%%handwave
+name:
+  Left half of the sitting-curve join
+statement:
+  For \(t\le\tfrac12\), the joined curve has value \(\gamma(4t)\).
+proof:
+  In this range the rescaled parameter \(4t\) lies on the left side of the
+  piecewise switch.
+-/
 theorem smoothSittingJoin_eq_left
     (gamma delta : ℝ → X) (t : ℝ) (ht : t ≤ 1 / 2) :
     smoothSittingJoin gamma delta t = gamma (4 * t) := by
   simp [smoothSittingJoin, show 4 * t ≤ (2 : ℝ) by linarith]
 
+/--
+%%handwave
+name:
+  Right half of the sitting-curve join
+statement:
+  Under the sitting assumptions, for \(t\ge\tfrac12\) the joined curve has
+  value \(\delta(4t-3)\).
+proof:
+  Above the switch this is the right piece by definition.  At the switch both
+  curves equal their common sitting value.
+-/
 theorem smoothSittingJoin_eq_right
     {y : X} (gamma delta : ℝ → X)
     (hgamma_right : ∀ t, 1 ≤ t → gamma t = y)
@@ -1357,6 +1709,17 @@ theorem smoothSittingJoin_eq_right
     norm_num [smoothSittingJoin, hgamma_right, hdelta_left]
   · simp [smoothSittingJoin, hswitch]
 
+/--
+%%handwave
+name:
+  Simplex of the left half of a sitting-curve join
+statement:
+  The one-simplex traced by the joined curve on \([0,\tfrac12]\) equals the
+  simplex traced by \(\gamma\) on \([0,2]\).
+proof:
+  On the left half the join is \(\gamma(4t)\); the affine simplex parameter
+  rescales \([0,\tfrac12]\) to \([0,2]\).
+-/
 theorem smoothCurveSegmentSimplex_smoothSittingJoin_left
     (gamma delta : ℝ → X)
     (hgamma : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma)
@@ -1376,6 +1739,17 @@ theorem smoothCurveSegmentSimplex_smoothSittingJoin_left
   simp [Fin.sum_univ_two]
   ring
 
+/--
+%%handwave
+name:
+  Simplex of the right half of a sitting-curve join
+statement:
+  The one-simplex traced by the joined curve on \([\tfrac12,1]\) equals the
+  simplex traced by \(\delta\) on \([-1,1]\).
+proof:
+  On the right half the join is \(\delta(4t-3)\), and this affine map sends
+  \([\tfrac12,1]\) to \([-1,1]\).
+-/
 theorem smoothCurveSegmentSimplex_smoothSittingJoin_right
     {y : X} (gamma delta : ℝ → X)
     (hdelta : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ delta)
@@ -1403,8 +1777,18 @@ theorem smoothCurveSegmentSimplex_smoothSittingJoin_right
     _ = -q.1 0 + q.1 1 := by linarith
     _ = q.1 0 * (-1) + q.1 1 * 1 := by ring
 
-/-- Integration along the explicit smooth concatenation is the sum of the two
-integrals. -/
+/--
+%%handwave
+name:
+  Integral along a smooth sitting join
+statement:
+  If two sitting smooth curves meet at their common sitting value, then the
+  integral of a closed one-form along their smooth join is the sum of the
+  integrals along the original unit segments.
+proof:
+  Subdivide the join at \(1/2\), identify its halves with extended segments
+  of the two curves, and discard the constant tails, whose integrals vanish.
+-/
 theorem integrate_smoothSittingJoin_eq_add
     [RiemannSurface X]
     {y : X}
@@ -1471,12 +1855,32 @@ noncomputable def chosenSmoothSittingCurve
     rcases smoothSittingJoined_all_exists x y with ⟨gamma, hgamma, hleft, hright⟩
     exact ⟨⟨gamma, hgamma, hleft, hright⟩⟩)
 
+/--
+%%handwave
+name:
+  Source of the chosen sitting curve
+statement:
+  The chosen sitting smooth curve from \(x\) to \(y\) has value \(x\) at
+  parameter \(0\).
+proof:
+  It is constant at its source on the nonpositive half-line.
+-/
 @[simp]
 theorem chosenSmoothSittingCurve_source
     [ConnectedSpace X] (x y : X) :
     (chosenSmoothSittingCurve x y).curve 0 = x :=
   (chosenSmoothSittingCurve x y).eq_source 0 le_rfl
 
+/--
+%%handwave
+name:
+  Target of the chosen sitting curve
+statement:
+  The chosen sitting smooth curve from \(x\) to \(y\) has value \(y\) at
+  parameter \(1\).
+proof:
+  It is constant at its target from parameter one onward.
+-/
 @[simp]
 theorem chosenSmoothSittingCurve_target
     [ConnectedSpace X] (x y : X) :
@@ -1495,8 +1899,22 @@ noncomputable def closedOneFormPathPrimitive
     (Finsupp.single
       (smoothCurveSegmentSimplex gamma.curve gamma.contMDiff_curve 0 1) (1 : ℤ))
 
-/-- On a connected primitive neighborhood, the path-integral primitive is the
-local primitive plus a constant. -/
+/--
+%%handwave
+name:
+  The path-integral primitive differs locally by a constant
+statement:
+  Let \(d\theta=\omega\) on a connected open neighborhood \(V\).  For a fixed
+  basepoint \(x_0\) and any \(x,y\in V\), the path-integral function satisfies
+  \[
+    F(y)=\theta(y)+F(x)-\theta(x).
+  \]
+proof:
+  Join the chosen path from \(x_0\) to \(x\) to a sitting path inside \(V\)
+  from \(x\) to \(y\).  Path independence identifies this join with the
+  chosen path to \(y\), additivity splits its integral, and the local
+  primitive theorem evaluates the final piece as \(\theta(y)-\theta(x)\).
+-/
 theorem closedOneFormPathPrimitive_eq_localPrimitive_add_const
     [RiemannSurface X] [SimplyConnectedSpace X]
     (omega : DeRhamClosedForms
@@ -1573,8 +1991,18 @@ theorem closedOneFormPathPrimitive_eq_localPrimitive_add_const
   dsimp only [gammaX, closedOneFormPathPrimitive]
   ring
 
-/-- The path-integral primitive of a closed one-form on a simply connected
-surface is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the path-integral primitive
+statement:
+  On a simply connected Riemann surface, the function obtained by integrating
+  a closed real one-form from a fixed basepoint to each point is smooth.
+proof:
+  Around every point choose a connected local primitive neighborhood.  There
+  the path-integral function equals the smooth local primitive plus a
+  constant, so smoothness follows locally.
+-/
 theorem closedOneFormPathPrimitive_contMDiff
     [RiemannSurface X] [SimplyConnectedSpace X]
     (omega : DeRhamClosedForms
@@ -1627,8 +2055,21 @@ noncomputable def closedOneFormPathPrimitiveSmooth
   ⟨closedOneFormPathPrimitive omega x₀,
     closedOneFormPathPrimitive_contMDiff omega x₀⟩
 
-/-- The exterior derivative of the path-integral primitive is the original
-closed one-form. -/
+/--
+%%handwave
+name:
+  Differential of the path-integral primitive
+statement:
+  On a simply connected Riemann surface, if
+  \(F(x)=\int_{x_0}^x\omega\) for a closed real one-form \(\omega\), then
+  \[
+    dF=\omega.
+  \]
+proof:
+  On a connected local primitive neighborhood, \(F\) differs from a local
+  primitive \(\theta\) by a constant.  Hence \(dF=d\theta=\omega\) there.
+  Since this holds near every point, the global forms are equal.
+-/
 theorem deRhamDifferential_closedOneFormPathPrimitive_eq
     [RiemannSurface X] [SimplyConnectedSpace X]
     (omega : DeRhamClosedForms
@@ -1742,6 +2183,8 @@ proof:
   local primitive neighborhood the resulting function differs from the local
   primitive by a constant, so it is smooth and has the prescribed
   differential.
+tags:
+  milestone
 -/
 theorem simplyConnected_surface_closedOneForm_has_primitive
     [RiemannSurface X] [SimplyConnectedSpace X]
@@ -1755,8 +2198,17 @@ theorem simplyConnected_surface_closedOneForm_has_primitive
       (closedOneFormPathPrimitiveSmooth omega x₀),
     deRhamDifferential_closedOneFormPathPrimitive_eq omega x₀⟩
 
-/-- Direct degree-one de Rham consequence of simple connectedness, proved by
-the fine-grid integration argument. -/
+/--
+%%handwave
+name:
+  Vanishing of real smooth first de Rham cohomology on a simply connected surface
+statement:
+  If \(X\) is a simply connected Riemann surface, then
+  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\) for the real smooth structure.
+proof:
+  Every closed real one-form has the global path-integral primitive constructed
+  above, so every closed one-form is exact.
+-/
 theorem simplyConnected_surface_deRhamH1_zero_of_realSmooth
     [RiemannSurface X] [SimplyConnectedSpace X] :
     Subsingleton
@@ -1783,6 +2235,8 @@ proof:
   Use the canonical underlying real smooth structure.  The path-integral
   construction gives a smooth global primitive for every closed real
   one-form, so every degree-one cocycle is exact.
+tags:
+  milestone
 -/
 theorem simplyConnected_surface_deRhamH1_zero
     [RiemannSurface X] [SimplyConnectedSpace X] :

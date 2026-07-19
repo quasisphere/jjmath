@@ -536,6 +536,8 @@ statement:
   In the zero direction, smooth \(L^2\)-approximation of the values already
   gives smooth approximation in the directional graph norm, since both the
   classical and weak zero-direction derivatives vanish.
+proof:
+  Choose any smooth value approximation.  Differentiation in the zero direction gives zero for every smooth approximant, and the weak derivative evaluated at the zero vector is also zero by linearity.
 -/
 theorem scalarWeakSobolev_exists_local_smoothApprox_zero_direction_l2_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -569,6 +571,8 @@ statement:
   On the empty set, any smooth sequence approximates a weak Sobolev function
   in the directional graph norm, because all restricted \(L^2\) seminorms are
   zero.
+proof:
+  Choose a constant smooth sequence.  Every measure restricted to the empty set is zero, so both value and derivative approximation seminorms vanish identically.
 -/
 theorem scalarWeakSobolev_exists_local_smoothApprox_empty_l2
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -607,6 +611,19 @@ noncomputable def scalarWeakSobolevCutoffDerivative
     H → H →L[ℝ] ℝ :=
   fun z ↦ χ z • du z + u z • fderiv ℝ χ z
 
+/--
+%%handwave
+name:
+  Evaluation of the cutoff weak derivative
+statement:
+  For scalar functions \(\chi,u\), a covector field \(du\), and \(z,v\in H\),
+  \[
+    \bigl(\chi(z)\,du(z)+u(z)\,D\chi(z)\bigr)(v)
+    =\chi(z)du(z)(v)+u(z)D\chi(z)(v).
+  \]
+proof:
+  Evaluate the sum and scalar multiples of continuous linear maps at \(v\).
+-/
 @[simp]
 theorem scalarWeakSobolevCutoffDerivative_apply
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -648,6 +665,8 @@ name:
 statement:
   Since the cutoff is one and its differential is zero on \(Q\), the product
   derivative \(\chi\,du+u\,d\chi\) agrees with \(du\) on \(Q\).
+proof:
+  Expand the product derivative.  On the compact set the cutoff factor is one and its derivative is zero, leaving exactly the original derivative.
 -/
 theorem cutoffDerivative_eq_on
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -740,6 +759,8 @@ name:
 statement:
   Multiplying a locally integrable function by a smooth cutoff whose compact
   support is contained in the region gives a globally integrable function.
+proof:
+  The product is supported in the compact support of the cutoff.  Local integrability on a neighborhood of this compact set and boundedness of the smooth cutoff imply global integrability by domination.
 -/
 theorem scalarWeakSobolevCutoff_value_integrable
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -1070,6 +1091,8 @@ statement:
   graph-norm approximation to the localized pair
   \((\chi u,\chi\,du+u\,d\chi)\) on \(Q\) is also a smooth graph-norm
   approximation to \((u,du)\) on \(Q\).
+proof:
+  On the compact set, the localized value and derivative agree pointwise with the original pair.  Replace both targets in the two convergence statements by these equal functions.
 -/
 theorem scalarWeakSobolevLocalSmoothApprox_of_cutoff
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -1136,6 +1159,8 @@ name:
 statement:
   If the cutoff is equal to one on \(Q\), then multiplying by the cutoff does
   not change the \(L^2\) class on \(Q\).
+proof:
+  The cutoff-localized value equals the original value on the compact set.  Restricted \(L^2\)-membership is invariant under this almost-everywhere equality.
 -/
 theorem scalarWeakSobolevCutoff_value_memLp_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -1159,6 +1184,8 @@ name:
 statement:
   Since the cutoff derivative vanishes and the cutoff is one on \(Q\), the
   localized directional derivative agrees with the original one in \(L^2(Q)\).
+proof:
+  The localized derivative equals the original derivative on the compact set by the product rule and the cutoff plateau conditions.  Transfer \(L^2\)-membership across this equality.
 -/
 theorem scalarWeakSobolevCutoff_derivative_memLp_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -1197,6 +1224,16 @@ noncomputable def scalarWeakSobolevStandardMollifier
     have hpos : 0 < (((n : ℝ) + 1)⁻¹) := by positivity
     nlinarith
 
+/--
+%%handwave
+name:
+  Shrinking radii of the standard mollifiers
+statement:
+  The outer radius \(r_n=1/(n+1)\) of the standard mollifier sequence tends
+  to \(0\) as \(n\to\infty\).
+proof:
+  This is the standard convergence \(1/(n+1)\to0\).
+-/
 theorem scalarWeakSobolevStandardMollifier_rOut_tendsto_zero
     (H : Type) [NormedAddCommGroup H] [NormedSpace ℝ H] :
     Filter.Tendsto
@@ -1205,6 +1242,17 @@ theorem scalarWeakSobolevStandardMollifier_rOut_tendsto_zero
   simpa [scalarWeakSobolevStandardMollifier, one_div] using
     (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
 
+/--
+%%handwave
+name:
+  Fixed inner-to-outer radius ratio of the standard mollifiers
+statement:
+  For every standard mollifier, the outer radius is twice its inner radius:
+  \(r_{\mathrm{out}}=2r_{\mathrm{in}}\).
+proof:
+  Substitute \(r_{\mathrm{in}}=1/(2(n+1))\) and
+  \(r_{\mathrm{out}}=1/(n+1)\).
+-/
 theorem scalarWeakSobolevStandardMollifier_fixed_ratio
     (H : Type) [NormedAddCommGroup H] [NormedSpace ℝ H] (n : ℕ) :
     (scalarWeakSobolevStandardMollifier H n).rOut =
@@ -1212,6 +1260,16 @@ theorem scalarWeakSobolevStandardMollifier_fixed_ratio
   simp [scalarWeakSobolevStandardMollifier]
   ring
 
+/--
+%%handwave
+name:
+  A set lies in every region containing a positive closed thickening
+statement:
+  If \(\overline N_\delta(Q)\subseteq P\) for some \(\delta>0\), then
+  \(Q\subseteq P\).
+proof:
+  Every point of \(Q\) belongs to its closed \(\delta\)-thickening.
+-/
 theorem subset_of_exists_cthickening_subset
     {H : Type} [PseudoMetricSpace H] {Q P : Set H}
     (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P) :
@@ -1219,6 +1277,19 @@ theorem subset_of_exists_cthickening_subset
   rcases hQP with ⟨δ, _hδ_pos, hδ⟩
   exact (Metric.self_subset_cthickening Q).trans hδ
 
+/--
+%%handwave
+name:
+  A normalized bump has unit mass
+statement:
+  For a normalized smooth bump \(k\) on a finite-dimensional real vector
+  space,
+  \(\int^\infty \operatorname{ofReal}(k(t))\,dt=1\).
+proof:
+  The normalized bump is nonnegative and integrable, so its Lebesgue integral
+  of the nonnegative lift equals its ordinary integral, which is \(1\) by
+  normalization.
+-/
 private theorem normedBump_lintegral_ofReal_eq_one
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -1237,6 +1308,21 @@ private theorem normedBump_lintegral_ofReal_eq_one
   rw [← h, φ.integral_normed (μ := μ)]
   simp
 
+/--
+%%handwave
+name:
+  Translation bound for a restricted squared \(L^2\) integral
+statement:
+  If translation by \(-h\) sends \(K\) into \(Q\), then
+  \[
+    \int_K^\infty \lVert f(z-h)\rVert_{\mathrm e}^2\,dz
+    \le \int_Q^\infty \lVert f(z)\rVert_{\mathrm e}^2\,dz.
+  \]
+proof:
+  Translation preserves volume and is a measurable embedding.  Change
+  variables from \(K\) to its translated image, then enlarge that image to
+  \(Q\).
+-/
 private theorem lintegral_enorm_sq_comp_sub_right_restrict_le_of_mapsTo
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -1270,6 +1356,20 @@ private theorem lintegral_enorm_sq_comp_sub_right_restrict_le_of_mapsTo
     _ = ∫⁻ z in Q, ‖f z‖ₑ ^ (2 : ℝ)
         ∂(MeasureTheory.volume : Measure H) := rfl
 
+/--
+%%handwave
+name:
+  Translation bound for a restricted \(L^1\) integral
+statement:
+  If translation by \(-h\) sends \(K\) into \(Q\), then
+  \[
+    \int_K^\infty \lVert f(z-h)\rVert_{\mathrm e}\,dz
+    \le \int_Q^\infty \lVert f(z)\rVert_{\mathrm e}\,dz.
+  \]
+proof:
+  Use volume preservation to change variables to the translated image of
+  \(K\), and then use its inclusion in \(Q\).
+-/
 private theorem lintegral_enorm_comp_sub_right_restrict_le_of_mapsTo
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -1303,6 +1403,19 @@ private theorem lintegral_enorm_comp_sub_right_restrict_le_of_mapsTo
     _ = ∫⁻ z in Q, ‖f z‖ₑ
         ∂(MeasureTheory.volume : Measure H) := rfl
 
+/--
+%%handwave
+name:
+  Translation by a point in the mollifier support stays in the thickened region
+statement:
+  Suppose \(\overline N_{r_{\mathrm{out}}}(Q)\subseteq P\).  If a normalized
+  bump of outer radius \(r_{\mathrm{out}}\) is nonzero at \(t\), then
+  \(z-t\in P\) for every \(z\in Q\).
+proof:
+  Nonvanishing puts \(t\) in the open ball of radius \(r_{\mathrm{out}}\).
+  Hence \(z-t\) is within that radius of \(z\in Q\), so it lies in the closed
+  thickening and therefore in \(P\).
+-/
 private theorem normedBump_sub_right_mapsTo_of_ne_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -1334,6 +1447,21 @@ private theorem normedBump_sub_right_mapsTo_of_ne_zero
     exact hlt.le
   exact hQP (Metric.mem_cthickening_of_dist_le (z - t) z φ.rOut Q hzQ hdist)
 
+/--
+%%handwave
+name:
+  Squared norm of an integral over a probability measure
+statement:
+  If \(\mu(\alpha)=1\) and \(g\) is strongly measurable, then
+  \[
+    \left\lVert\int g\,d\mu\right\rVert_{\mathrm e}^{2}
+    \le\int^\infty \lVert g\rVert_{\mathrm e}^{2}\,d\mu .
+  \]
+proof:
+  Bound the norm of the integral by the \(L^1\)-norm, apply Hölder with
+  exponents \(2,2\), and use that the constant function \(1\) has
+  \(L^2\)-norm one.
+-/
 private theorem enorm_integral_sq_le_lintegral_enorm_sq_of_probability_mass_one
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {g : α → ℝ} (hμ : μ Set.univ = 1)
@@ -1433,6 +1561,22 @@ private theorem normedBump_convolution_pointwise_enorm_sq_le_kernel_lintegral_sq
   rw [← hweighted_integral, ← hlintegral]
   exact hJ
 
+/--
+%%handwave
+name:
+  Pointwise norm bound for convolution with a normalized bump
+statement:
+  If \(k\) is a normalized bump and \(f\) is integrable, then for every \(z\),
+  \[
+    \lVert(k*f)(z)\rVert_{\mathrm e}
+    \le\int^\infty \operatorname{ofReal}(k(t))
+      \lVert f(z-t)\rVert_{\mathrm e}\,dt.
+  \]
+proof:
+  Regard the normalized bump as the density of a probability measure.
+  Rewrite the convolution as its Bochner integral and apply the norm bound
+  for an integral, then expand the density.
+-/
 private theorem normedBump_convolution_pointwise_enorm_le_kernel_lintegral
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -3053,8 +3197,7 @@ statement:
       \quad\text{in }L^2(Q).
   \]
 proof:
-  Use [mollification commutes with the weak directional derivative on
-  \(Q\)](lean:JJMath.Uniformization.scalarWeakSobolev_mollifier_directionalDerivative_ae_eq_convolution_weakDerivative_on_compact),
+  Use [mollification commutes with the weak directional derivative on \(Q\)](lean:JJMath.Uniformization.scalarWeakSobolev_mollifier_directionalDerivative_ae_eq_convolution_weakDerivative_on_compact),
   then apply [standard mollifiers converge in \(L^2(Q)\)](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_value_eLpNorm_tendsto_zero_of_global_integrable)
   to \(dg(\cdot)h\).
 -/
@@ -3158,8 +3301,7 @@ statement:
   \]
 proof:
   Combine [standard mollifiers converge to the value](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_value_eLpNorm_tendsto_zero_of_global_integrable)
-  with [standard mollifier derivatives converge to the weak directional
-  derivative](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_directionalDerivative_eLpNorm_tendsto_zero_of_global_integrable_pair).
+  with [standard mollifier derivatives converge to the weak directional derivative](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_directionalDerivative_eLpNorm_tendsto_zero_of_global_integrable_pair).
 -/
 theorem scalarWeakSobolev_standardMollifier_graph_eLpNorm_tendsto_zero_of_global_integrable_pair
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3213,8 +3355,7 @@ statement:
     \|D_h(\rho*g)-dg(\cdot)h\|_{L^2(Q)}\le\varepsilon .
   \]
 proof:
-  Extract a large enough scale from [convergence in the local graph
-  norm](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_graph_eLpNorm_tendsto_zero_of_global_integrable_pair).
+  Extract a large enough scale from [convergence in the local graph norm](lean:JJMath.Uniformization.scalarWeakSobolev_standardMollifier_graph_eLpNorm_tendsto_zero_of_global_integrable_pair).
 -/
 theorem scalarWeakSobolev_exists_mollifier_graph_approx_of_global_integrable_pair
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3285,8 +3426,7 @@ statement:
     \|D_hv-dg(\cdot)h\|_{L^2(Q)}\le\varepsilon .
   \]
 proof:
-  Choose the mollifier supplied by [graph \(L^2\) control at one
-  scale](lean:JJMath.Uniformization.scalarWeakSobolev_exists_mollifier_graph_approx_of_global_integrable_pair)
+  Choose the mollifier supplied by [graph \(L^2\) control at one scale](lean:JJMath.Uniformization.scalarWeakSobolev_exists_mollifier_graph_approx_of_global_integrable_pair)
   and set \(v=\rho*g\).
 -/
 theorem scalarWeakSobolev_exists_local_contDiff_graph_approx_of_global_integrable_pair
@@ -3336,8 +3476,7 @@ statement:
   \(L^2(Q)\) tolerance.
 proof:
   The cutoff makes the localized value and derivative globally integrable and
-  \(L^2(P)\).  Apply [one-step smooth graph approximation for a globally
-  integrable weak pair](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_global_integrable_pair)
+  \(L^2(P)\).  Apply [one-step smooth graph approximation for a globally integrable weak pair](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_global_integrable_pair)
   to \((\chi u,\chi\,du+u\,d\chi)\).
 -/
 theorem scalarWeakSobolev_exists_local_contDiff_graph_approx_of_cutoff_localization
@@ -3403,8 +3542,7 @@ statement:
   the region where the weak derivative identity holds.
 proof:
   Choose a cutoff equal to one on \(Q\), use the product rule for the
-  localized weak pair, apply [one-step approximation after cutoff
-  localization](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_cutoff_localization),
+  localized weak pair, apply [one-step approximation after cutoff localization](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_cutoff_localization),
   and then remove the cutoff on \(Q\).
 -/
 theorem scalarWeakSobolev_exists_local_contDiff_graph_approx_of_locallyIntegrable
@@ -3478,8 +3616,7 @@ statement:
 proof:
   In a nonzero direction, the weak derivative identity implies local
   integrability of the function and of the chosen directional derivative.
-  Then apply [one-step approximation for locally integrable weak
-  pairs](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_locallyIntegrable).
+  Then apply [one-step approximation for locally integrable weak pairs](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_of_locallyIntegrable).
 -/
 theorem scalarWeakSobolev_exists_local_contDiff_graph_approx_nonzero_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3523,8 +3660,7 @@ statement:
 proof:
   In the zero direction this is ordinary smooth density in \(L^2(Q)\), since
   both the classical and weak directional derivatives vanish.  In a nonzero
-  direction, use [one-step approximation in a nonzero
-  direction](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_nonzero_on_compact).
+  direction, use [one-step approximation in a nonzero direction](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_contDiff_graph_approx_nonzero_on_compact).
 -/
 theorem scalarWeakSobolev_exists_local_contDiff_graph_approx_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3777,8 +3913,7 @@ statement:
   \((u,du)\) can be approximated on \(Q\) by smooth functions \(v_n\) with
   \(v_n\to u\) and \(D_hv_n\to du(\cdot)h\) in \(L^2(Q)\).
 proof:
-  Choose a cutoff equal to one on \(Q\), use [smooth graph-density after
-  cutoff localization](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_cutoff_graph_density),
+  Choose a cutoff equal to one on \(Q\), use [smooth graph-density after cutoff localization](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_cutoff_graph_density),
   and then remove the cutoff on \(Q\).
 -/
 theorem scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact_core
@@ -3814,8 +3949,7 @@ statement:
   directional \(L^2\)-graph norm.
 proof:
   First derive local integrability of \(u\) and \(du(\cdot)h\) from the weak
-  derivative identity.  Then apply [smooth graph-density in a nonzero
-  direction](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact_core).
+  derivative identity.  Then apply [smooth graph-density in a nonzero direction](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact_core).
 -/
 theorem scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3854,8 +3988,7 @@ statement:
   \]
 proof:
   If \(Q=\varnothing\) the claim is trivial.  If \(h=0\), use ordinary smooth
-  density in \(L^2(Q)\).  Otherwise apply [nonzero-direction smooth Sobolev
-  approximation](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact).
+  density in \(L^2(Q)\).  Otherwise apply [nonzero-direction smooth Sobolev approximation](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_nonzero_direction_l2_on_compact).
 -/
 theorem scalarWeakSobolev_exists_local_smoothApprox_direction_l2_on_compact
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -3982,6 +4115,22 @@ noncomputable def aclSegmentIntegralAbs {H : Type}
     (f : H → ℝ) (h z : H) : ℝ :=
   ∫ t in Set.Icc (0 : ℝ) 1, ‖f (z + t • h)‖ ∂MeasureTheory.volume
 
+/--
+%%handwave
+name:
+  Jensen bound for a scalar integral over a probability measure
+statement:
+  If \(\mu(\alpha)=1\) and \(g:\alpha\to\mathbb R\) is strongly measurable,
+  then
+  \[
+    \left\lVert\int g\,d\mu\right\rVert_{\mathrm e}^{2}
+    \le\int^\infty\lVert g\rVert_{\mathrm e}^{2}\,d\mu .
+  \]
+proof:
+  Apply the integral norm inequality followed by Hölder with exponents
+  \(2\) and \(2\); the probability-mass hypothesis makes the \(L^2\)-norm of
+  the constant function one equal to one.
+-/
 private theorem acl_enorm_integral_sq_le_lintegral_enorm_sq_of_measure_univ_eq_one
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {g : α → ℝ} (hμ : μ Set.univ = 1)
@@ -4004,6 +4153,22 @@ private theorem acl_enorm_integral_sq_le_lintegral_enorm_sq_of_measure_univ_eq_o
   exact (ENNReal.le_rpow_inv_iff (by norm_num : 0 < (2 : ℝ))).1
     (hnorm.trans hholder)
 
+/--
+%%handwave
+name:
+  \(L^2\) bound for translated slices of line segments
+statement:
+  Suppose \(x+th\in Q\) for every \(x\in K\) and \(0\le t\le1\).  Then
+  \[
+    \int_0^1\!\int_K^\infty
+      \lVert f(x+th)\rVert_{\mathrm e}^2\,dx\,dt
+    \le\int_Q^\infty\lVert f\rVert_{\mathrm e}^2.
+  \]
+proof:
+  For fixed \(t\), translation by \(th\) preserves volume and maps \(K\) into
+  \(Q\), giving the slice bound.  Integrate it over the unit interval, whose
+  volume is one.
+-/
 theorem aclSegmentIntegral_iterated_lintegral_sq_le_of_segments
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -4052,6 +4217,22 @@ theorem aclSegmentIntegral_iterated_lintegral_sq_le_of_segments
     _ = ∫⁻ z in Q, F z ∂MeasureTheory.volume := by
           simp [Real.volume_Icc]
 
+/--
+%%handwave
+name:
+  \(L^2\) norm of absolute segment integrals
+statement:
+  Under the same segment-containment hypothesis, for a strongly measurable
+  \(f\) on \(Q\),
+  \[
+    \int_K^\infty\left(\int_0^1|f(x+th)|\,dt\right)^2dx
+    \le\int_0^1\!\int_K^\infty|f(x+th)|^2\,dx\,dt.
+  \]
+proof:
+  For almost every \(x\), apply the probability-measure Jensen bound on
+  \([0,1]\).  Integrate over \(K\) and use Tonelli to exchange the two
+  nonnegative integrals.
+-/
 theorem aclSegmentIntegral_lintegral_sq_le_iterated_lintegral_sq
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -4108,6 +4289,20 @@ theorem aclSegmentIntegral_lintegral_sq_le_iterated_lintegral_sq
           ∂MeasureTheory.volume := by
           simp [μK, μI, G]
 
+/--
+%%handwave
+name:
+  \(L^2\) estimate for absolute segment integrals
+statement:
+  If every segment \(x+[0,1]h\) with \(x\in K\) lies in \(Q\), then
+  \[
+    \int_K^\infty\left(\int_0^1|f(x+th)|\,dt\right)^2dx
+    \le\int_Q^\infty|f|^2.
+  \]
+proof:
+  First apply Jensen on each segment and Tonelli, then apply the
+  volume-preserving translation bound to every time slice.
+-/
 theorem aclSegmentIntegral_lintegral_sq_le_of_segments
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -4131,6 +4326,20 @@ theorem aclSegmentIntegral_lintegral_sq_le_of_segments
           aclSegmentIntegral_iterated_lintegral_sq_le_of_segments
             hsegments
 
+/--
+%%handwave
+name:
+  \(L^2\)-norm estimate for absolute segment integrals
+statement:
+  If \(x+[0,1]h\subseteq Q\) for all \(x\in K\), then
+  \[
+    \left\lVert x\mapsto\int_0^1|f(x+th)|\,dt\right\rVert_{L^2(K)}
+    \le\lVert f\rVert_{L^2(Q)}.
+  \]
+proof:
+  Use the preceding inequality between the squared nonnegative integrals and
+  take the monotone square root in the formula for the \(L^2\)-norm.
+-/
 theorem aclSegmentIntegral_eLpNorm_le_of_segments
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -4831,8 +5040,7 @@ statement:
   \]
   in \(L^2(K)\).
 proof:
-  Start with [local smooth approximation in the directional graph norm on
-  \(Q\)](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_direction_l2_on_compact).
+  Start with [local smooth approximation in the directional graph norm on \(Q\)](lean:JJMath.Uniformization.scalarWeakSobolev_exists_local_smoothApprox_direction_l2_on_compact).
   Translation of endpoints and Fubini along the segment family transfer the
   two graph-norm convergences to \(L^2(K)\).
 -/
@@ -4991,8 +5199,7 @@ statement:
   \]
   for almost every \(x\in K\).
 proof:
-  Combine [almost-everywhere smooth approximation along
-  segments](lean:JJMath.Uniformization.scalarWeakSobolev_exists_geometric_smoothApprox_direction_on_compact)
+  Combine [almost-everywhere smooth approximation along segments](lean:JJMath.Uniformization.scalarWeakSobolev_exists_geometric_smoothApprox_direction_on_compact)
   with [the limit-passing form of the segment fundamental theorem](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_of_smoothApproxData).
 -/
 theorem scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen

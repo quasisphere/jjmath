@@ -29,8 +29,22 @@ noncomputable def surfaceCoordinateVectorField
   ((trivializationAt ℂ (TangentSpace SurfaceRealModel) x)
     (⟨y, V y⟩ : TangentBundle SurfaceRealModel X)).2
 
-/-- At the center of the chosen chart, the coordinate vector field is the
-original tangent vector. -/
+/--
+%%handwave
+name:
+  A surface vector field in coordinates at the chart center
+statement:
+  Let \(V\) be a surface vector field and let \(v_x\) be its expression in
+  the chart centered at \(x\).  Then
+  \[
+    v_x(\phi_x(x))=V_x,
+  \]
+  under the tangent-space identification supplied by that chart.
+proof:
+  Expanding the tangent trivialization applies the chart derivative to
+  \(V_x\).  At the centered point, the chart and inverse-chart derivatives
+  cancel.
+-/
 theorem surfaceCoordinateVectorField_apply_center
     (V : (x : X) → TangentSpace SurfaceRealModel x) (x : X) :
     surfaceCoordinateVectorField V x
@@ -43,8 +57,20 @@ theorem surfaceCoordinateVectorField_apply_center
   have happ := congrArg (fun L : ℂ →L[ℝ] ℂ => L (V x)) hround
   simpa [SurfaceRealModel] using happ
 
-/-- The coordinate vector field is the tangent-coordinate change from the
-chart centered at the current point to the fixed chart. -/
+/--
+%%handwave
+name:
+  Coordinate-change formula for a surface vector field
+statement:
+  Fix \(x\in X\), write \(y=\phi_x^{-1}(z)\), and express \(V_y\) in the
+  chart centered at \(x\).  Then
+  \[
+    v_x(z)=d(\phi_x\circ\phi_y^{-1})_{\phi_y(y)}(V_y).
+  \]
+proof:
+  This is the tangent-coordinate-change formula encoded by the fixed
+  tangent-bundle trivialization.
+-/
 theorem surfaceCoordinateVectorField_eq_tangentCoordChange
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (x : X) (z : ℂ) :
@@ -57,8 +83,26 @@ theorem surfaceCoordinateVectorField_eq_tangentCoordChange
   simp only [TangentBundle.trivializationAt_apply]
   rfl
 
-/-- A Euclidean solution of a fixed-chart coordinate field becomes a
-manifold integral curve after applying the inverse chart. -/
+/--
+%%handwave
+name:
+  Coordinate ODE solutions give manifold integral curves
+statement:
+  Suppose \(z(t)\) remains in the target of the chart \(\phi_x\) and
+  satisfies
+  \[
+    z'(t)=v_x(z(t)).
+  \]
+  Then \(\gamma(t)=\phi_x^{-1}(z(t))\) satisfies
+  \[
+    \gamma'(t)=V_{\gamma(t)}
+  \]
+  as a manifold derivative.
+proof:
+  Apply the manifold chain rule to the inverse chart.  Its derivative changes
+  tangent coordinates back to the moving point, cancelling the coordinate
+  change used to define \(v_x\).
+-/
 theorem hasMFDerivAt_extChartAt_symm_of_hasDerivAt_surfaceCoordinateVectorField
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (x : X) (z : ℝ → ℂ) (t : ℝ)
@@ -108,8 +152,22 @@ theorem hasMFDerivAt_extChartAt_symm_of_hasDerivAt_surfaceCoordinateVectorField
     _ = a • V y := congrArg (a • ·) hbase
     _ = _ := rfl
 
-/-- The coordinate expression of a smooth surface vector field is smooth on
-the target of the centered chart. -/
+/--
+%%handwave
+name:
+  Smoothness of a surface vector field in fixed coordinates
+statement:
+  If \(V\) is a smooth surface vector field, then for every \(x\in X\) its
+  coordinate expression
+  \[
+    z\longmapsto v_x(z)
+  \]
+  is smooth on the target of the chart centered at \(x\).
+proof:
+  Compose the smooth tangent-bundle section \(y\mapsto(y,V_y)\) with the
+  smooth inverse chart and the tangent trivialization, then project to the
+  fiber coordinate.
+-/
 theorem surfaceCoordinateVectorField_contDiffOn
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -144,8 +202,19 @@ theorem surfaceCoordinateVectorField_contDiffOn
   simpa [surfaceCoordinateVectorField, e, s, Function.comp_def] using
     hcomp.contDiffOn
 
-/-- Near any point, the coordinate expression of a smooth surface vector
-field agrees with a globally smooth Euclidean field. -/
+/--
+%%handwave
+name:
+  Global smooth extension of a local coordinate vector field
+statement:
+  For every \(x\in X\), there is a globally smooth
+  \(f:\mathbb C\to\mathbb C\) which agrees near \(\phi_x(x)\) with the
+  coordinate expression \(v_x\) of \(V\).
+proof:
+  The coordinate field is smooth on the open chart target containing
+  \(\phi_x(x)\).  Extend this local smooth map to a global Euclidean map
+  after shrinking around the center.
+-/
 theorem exists_contDiff_surfaceCoordinateVectorField_eventuallyEq
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -160,8 +229,23 @@ theorem exists_contDiff_surfaceCoordinateVectorField_eventuallyEq
   · exact mem_extChartAt_target x
   · exact surfaceCoordinateVectorField_contDiffOn V hV x
 
-/-- In a chart centered at any point, a smooth surface vector field has a
-local flow germ smooth jointly in its initial coordinate and time. -/
+/--
+%%handwave
+name:
+  Jointly smooth local coordinate flow of a surface vector field
+statement:
+  At each \(x\in X\), there are \(\varepsilon>0\), a globally smooth
+  extension \(f:\mathbb C\to\mathbb C\) of \(v_x\), and local curves
+  \(\psi_y\) for \(y\) near \(\phi_x(x)\) satisfying
+  \[
+    \psi_y(0)=y,\qquad
+    \psi_y(t)=y+\int_0^t f(\psi_y(s))\,ds,
+  \]
+  with \((y,t)\mapsto\psi_y(t)\) smooth for \(|t|<\varepsilon\).
+proof:
+  Extend the coordinate vector field globally and apply the Euclidean
+  Picard theorem with smooth joint dependence on initial value and time.
+-/
 theorem exists_surfaceCoordinateLocalFlow
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -193,10 +277,19 @@ theorem exists_surfaceCoordinateLocalFlow
     ⟨ε, hε, ψ, hψ0, hinitψ, hfixedψ, hsmoothψ⟩
   exact ⟨f, hf, hfeq, ε, hε, ψ, hψ0, hinitψ, hfixedψ, hsmoothψ⟩
 
-/-- Integral curves of a smooth surface vector field are smooth.  The
-definition of an integral curve only records a first derivative, so we use
-the jointly smooth Picard flow locally and uniqueness to obtain the full
-regularity. -/
+/--
+%%handwave
+name:
+  Integral curves of a smooth surface vector field are smooth
+statement:
+  If \(V\) is smooth and \(\gamma:\mathbb R\to X\) satisfies
+  \(\gamma'(t)=V_{\gamma(t)}\) for every \(t\), then \(\gamma\) is smooth.
+proof:
+  At each time \(t_0\), construct the jointly smooth Picard flow in a chart
+  centered at \(\gamma(t_0)\).  Its curve through the same initial point
+  solves the same ODE, so local uniqueness identifies it with \(\gamma\)
+  near \(t_0\).  Hence \(\gamma\) is smooth at every time.
+-/
 theorem IsMIntegralCurve.contMDiff_of_surfaceVectorField
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -302,8 +395,20 @@ theorem IsMIntegralCurve.contMDiff_of_surfaceVectorField
       (hgamma.isMIntegralCurveAt t₀) heta_curve heta_at.symm
   exact heta_smooth.congr_of_eventuallyEq heq
 
-/-- After shrinking a coordinate flow germ, one obtains one time interval
-which works for every initial coordinate in a neighborhood of the center. -/
+/--
+%%handwave
+name:
+  Uniform coordinate-time existence near one initial point
+statement:
+  For every \(x\in X\), there are \(\delta>0\) and a neighborhood \(U\) of
+  \(\phi_x(x)\) such that every \(y\in U\) is the initial coordinate of a
+  manifold integral curve of \(V\) on \((-\delta,\delta)\).
+proof:
+  Joint continuity of the Picard flow lets one choose a product neighborhood
+  of \((\phi_x(x),0)\) on which the curves remain in the chart, satisfy the
+  coordinate ODE, and retain their initial values.  Choose a symmetric time
+  interval contained in its time factor and apply the inverse chart.
+-/
 theorem exists_surfaceIntegralCurvesOn_uniform_coordinateNeighborhood
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -416,8 +521,19 @@ theorem exists_surfaceIntegralCurvesOn_uniform_coordinateNeighborhood
     (hasMFDerivAt_extChartAt_symm_of_hasDerivAt_surfaceCoordinateVectorField
       V x (fun s => F (y, s)) t hg.2.2.2.1 hode).hasMFDerivWithinAt
 
-/-- Uniform local existence persists for every initial point in a surface
-neighborhood of the chosen center. -/
+/--
+%%handwave
+name:
+  Uniform local existence on a surface neighborhood
+statement:
+  For every \(x\in X\), there are \(\delta>0\) and a neighborhood \(W\) of
+  \(x\) such that each \(y\in W\) admits an integral curve of \(V\) through
+  \(y\) on \((-\delta,\delta)\).
+proof:
+  Pull the uniform coordinate neighborhood back through the centered chart.
+  The chart inverse sends each coordinate initial value to the corresponding
+  surface point.
+-/
 theorem exists_surfaceIntegralCurvesOn_uniform_neighborhood
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -443,8 +559,19 @@ theorem exists_surfaceIntegralCurvesOn_uniform_neighborhood
   rw [hgamma0]
   exact e.left_inv hy.1
 
-/-- A compact nonempty set admits one positive time interval on which an
-integral curve exists from every one of its points. -/
+/--
+%%handwave
+name:
+  Uniform integral-curve time on a compact set
+statement:
+  If \(K\subseteq X\) is nonempty and compact, then there is
+  \(\varepsilon>0\) such that every \(x\in K\) admits an integral curve of
+  \(V\) through \(x\) on \((-\varepsilon,\varepsilon)\).
+proof:
+  Cover \(K\) by finitely many neighborhoods carrying local existence times.
+  The minimum of those finitely many positive times is positive and works
+  for every point of the cover.
+-/
 theorem exists_surfaceIntegralCurvesOn_uniform_time_of_isCompact
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -485,8 +612,24 @@ theorem exists_surfaceIntegralCurvesOn_uniform_time_of_isCompact
   refine ⟨gamma, hgamma0, hgamma.mono ?_⟩
   exact Ioo_subset_Ioo (neg_le_neg (hεle q hq)) (hεle q hq)
 
-/-- The uniform-time completeness argument only needs local existence on an
-invariant subset, provided the initial point belongs to that subset. -/
+/--
+%%handwave
+name:
+  Completeness from uniform local existence on an invariant set
+statement:
+  Let \(K\subseteq X\) be invariant under integral-curve segments of a
+  continuously differentiable vector field \(V\).  Suppose some
+  \(\varepsilon>0\) works as a local existence time for every initial point
+  of \(K\).  Then every \(x\in K\) lies on an integral curve
+  \(\gamma:\mathbb R\to X\) of \(V\) with \(\gamma(0)=x\).
+proof:
+  If the symmetric existence intervals through \(x\) had a finite supremum,
+  invariance would keep points near both ends inside \(K\).  Attach
+  \(\varepsilon\)-length local solutions there and use uniqueness to glue
+  them to the original curve, extending beyond the supremum.  This
+  contradiction makes the available radii unbounded and yields a global
+  integral curve.
+-/
 theorem exists_isMIntegralCurve_of_isMIntegralCurveOn_invariant
     [T2Space X]
     (V : (x : X) → TangentSpace SurfaceRealModel x)

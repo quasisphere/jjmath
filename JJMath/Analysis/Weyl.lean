@@ -45,6 +45,19 @@ noncomputable def surfaceMetricWeakGradientCoordinatePairingInChart {X : Type}
       ξ (surfaceChartTangentMap e z (complexCoordinateVector i)) *
         dη (complexCoordinateVector j)
 
+/--
+%%handwave
+name:
+  Additivity of the coordinate weak-gradient pairing
+statement:
+  In a surface chart, the inverse-metric contraction is additive in its
+  cotangent argument:
+  \(\langle\xi_1+\xi_2,d\eta\rangle_g
+    =\langle\xi_1,d\eta\rangle_g+\langle\xi_2,d\eta\rangle_g\).
+proof:
+  Expand the finite inverse-metric contraction, use linearity of the
+  cotangent vectors, and distribute both finite sums.
+-/
 private theorem surfaceMetricWeakGradientCoordinatePairingInChart_add_left
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X)
@@ -132,6 +145,19 @@ theorem IsIntrinsicLocalSobolevH1OnSurface.mono_set {X : Type}
   intro K hK hKV
   exact hlocal.2 K hK (hKV.trans hVU)
 
+/--
+%%handwave
+name:
+  Addition of square-integrable surface cotangent fields
+statement:
+  If two measurable cotangent fields on a Riemannian surface have
+  square-integrable Hilbert--Schmidt norm with respect to \(\mu\), then their
+  pointwise sum does as well.
+proof:
+  Regard the fields as sections of the Hilbert bundle of differentials. Their
+  coordinate-field sum is fiberwise addition, and \(L^2\) Hilbert-bundle
+  sections are closed under addition.
+-/
 private theorem surfaceCotangentFieldMemHilbertSchmidtL2_add
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -443,6 +469,8 @@ name:
   Weakly harmonic regions are open
 statement:
   The region in the definition of weak harmonicity is open.
+proof:
+  This is the openness component stored in the definition of weak harmonicity.
 -/
 theorem IsWeaklyHarmonicOnSurface.isOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -459,6 +487,8 @@ name:
 statement:
   A weakly harmonic function carries a chosen locally \(W^{1,2}\) weak
   gradient satisfying the zero-source test identity.
+proof:
+  This is the locally Sobolev weak-gradient field and zero-source identity supplied by the definition of weak harmonicity.
 -/
 theorem IsWeaklyHarmonicOnSurface.exists_localSobolev_gradient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -562,6 +592,8 @@ name:
   Euclidean weakly harmonic regions are open
 statement:
   The region in the Euclidean weak-harmonicity definition is open.
+proof:
+  This is the openness condition in the Euclidean weak-harmonicity data.
 -/
 theorem IsEuclideanWeaklyHarmonicOn.isOpen
     {Ω : Set ℂ} {u : ℂ → ℝ}
@@ -576,6 +608,8 @@ name:
 statement:
   A Euclidean weakly harmonic function carries a weak derivative satisfying
   the zero-divergence identity.
+proof:
+  Extract the weak derivative field and its vanishing distributional Laplacian identity from the Euclidean weak-harmonicity hypothesis.
 -/
 theorem IsEuclideanWeaklyHarmonicOn.exists_weakDerivative
     {Ω : Set ℂ} {u : ℂ → ℝ}
@@ -811,6 +845,19 @@ theorem euclideanMollification_directionalDerivative_eq_convolution_weakDerivati
           ℂ → ℝ) z) := by
           simpa [k] using hkernel
 
+/--
+%%handwave
+name:
+  Integral formula for a derivative-kernel convolution
+statement:
+  For \(g\in L^1(\mathbb C)\), a normalized smooth compactly supported kernel
+  \(k\), and \(z,v\in\mathbb C\),
+  \[((Dk)*g)(z)(v)=\int_{\mathbb C}Dk(z-y)(v)g(y)\,dy.\]
+proof:
+  Compact support and continuity of \(Dk\) give existence of the convolution.
+  Swap the convolution factors, commute evaluation at \(v\) with the Bochner
+  integral, and unfold convolution.
+-/
 private theorem euclidean_derivativeKernel_convolution_apply_eq_integral
     (φ : ContDiffBump (0 : ℂ)) {g : ℂ → ℝ}
     (hg_int : Integrable g (MeasureTheory.volume : Measure ℂ))
@@ -843,6 +890,17 @@ private theorem euclidean_derivativeKernel_convolution_apply_eq_integral
   rw [ContinuousLinearMap.integral_apply hleft_exists.integrable_swap v]
   rfl
 
+/--
+%%handwave
+name:
+  Derivative of convolution with a smooth compactly supported kernel
+statement:
+  If \(g\in L^1(\mathbb C)\) and \(k\) is normalized, smooth, and compactly
+  supported, then \(D(k*g)(z)(v)=((Dk)*g)(z)(v)\).
+proof:
+  Apply differentiation under convolution for a smooth compactly supported
+  left factor, then evaluate the resulting linear map at \(v\).
+-/
 private theorem euclidean_fderiv_normed_convolution_apply_eq_derivativeKernel
     (φ : ContDiffBump (0 : ℂ)) {g : ℂ → ℝ}
     (hg_int : Integrable g (MeasureTheory.volume : Measure ℂ))
@@ -868,6 +926,16 @@ private theorem euclidean_fderiv_normed_convolution_apply_eq_derivativeKernel
         (lsmul ℝ ℝ) φ.contDiff_normed hg_int.locallyIntegrable z).fderiv
   rw [hclassical]
 
+/--
+%%handwave
+name:
+  Derivative of a reflected convolution kernel
+statement:
+  For a smooth kernel \(k\), \(D_y[k(z-y)](v)=-Dk(z-y)(v)\).
+proof:
+  Apply the chain rule to \(y\mapsto z-y\), whose derivative is
+  \(-\operatorname{id}\), and use linearity of \(Dk(z-y)\).
+-/
 private theorem euclidean_reflectedKernel_fderiv_apply
     (φ : ContDiffBump (0 : ℂ)) (z y v : ℂ) :
     fderiv ℝ
@@ -891,6 +959,17 @@ private theorem euclidean_reflectedKernel_fderiv_apply
   rw [hcomp.fderiv]
   simp
 
+/--
+%%handwave
+name:
+  Integrability of a derivative kernel times an integrable function
+statement:
+  If \(g\in L^1(\mathbb C)\) and \(k\) is smooth and compactly supported, then
+  \(y\mapsto Dk(z-y)(v)g(y)\) is integrable for all \(z,v\in\mathbb C\).
+proof:
+  The continuous-linear-map-valued convolution integrand is Bochner
+  integrable; applying evaluation at \(v\) preserves integrability.
+-/
 private theorem euclidean_derivativeKernel_mul_integrable
     (φ : ContDiffBump (0 : ℂ)) {g : ℂ → ℝ}
     (hg_int : Integrable g (MeasureTheory.volume : Measure ℂ))
@@ -925,6 +1004,17 @@ private theorem euclidean_derivativeKernel_mul_integrable
   have happ := hclm.apply_continuousLinearMap v
   simpa [k, smul_eq_mul] using happ
 
+/--
+%%handwave
+name:
+  Vanishing of the derivative kernel outside a thickened set
+statement:
+  If \(z\in Q\) and \(y\) lies outside the closed
+  \(r_{\mathrm{out}}\)-neighborhood of \(Q\), then \(Dk(z-y)(v)=0\).
+proof:
+  The support of \(Dk(\,\cdot\,)(v)\) lies in the support ball of \(k\).
+  Otherwise \(\operatorname{dist}(y,z)\le r_{\mathrm{out}}\), a contradiction.
+-/
 private theorem euclidean_derivativeKernel_zero_of_notMem_cthickening
     {Q : Set ℂ} (φ : ContDiffBump (0 : ℂ)) {z y v : ℂ}
     (hzQ : z ∈ Q) (hy : y ∉ Metric.cthickening φ.rOut Q) :
@@ -1332,6 +1422,17 @@ theorem euclideanWeakHarmonic_mollifiedCutoffWeakGradient_divergence_eq_zero
           rw [integral_add hint_one hint_I]
     _ = 0 := hsum_zero
 
+/--
+%%handwave
+name:
+  Divergence of the Euclidean gradient equals the Laplacian
+statement:
+  If \(F:\mathbb C\to\mathbb R\) is twice differentiable at \(z\), then
+  \[D[w\mapsto DF(w)(1)]_z(1)+D[w\mapsto DF(w)(i)]_z(i)=\Delta F(z).\]
+proof:
+  Differentiate evaluation of \(DF\) at the orthonormal vectors \(1,i\), then
+  identify the diagonal second derivatives with the trace defining \(\Delta\).
+-/
 private theorem euclidean_gradientDivergence_eq_laplacian
     (F : ℂ → ℝ) {z : ℂ} (hF : ContDiffAt ℝ 2 F z) :
     fderiv ℝ (fun w : ℂ ↦ fderiv ℝ F w (1 : ℂ)) z (1 : ℂ) +
@@ -3093,6 +3194,8 @@ name:
 statement:
   At any point belonging to the carriers of two local Weyl representatives
   of the same weak solution, the two representative values are equal.
+proof:
+  Both local representatives agree almost everywhere with the same weak function and are harmonic, hence continuous.  Their difference is continuous and vanishes almost everywhere on the common open neighborhood, so it vanishes at the given point.
 -/
 theorem eq_of_mem_inter
     {Ω : Set ℂ} {u : ℂ → ℝ} {z w x : ℂ}
@@ -3290,6 +3393,8 @@ name:
 statement:
   A function with a pointwise Euclidean Weyl representative is harmonic on
   the region.
+proof:
+  At each point, use its local representative and the fact that harmonicity is local.  The representative agrees pointwise with the given function on its carrier, so the local harmonicity transfers.
 -/
 theorem harmonicOnNhd_of_pointwiseEuclideanWeylRepresentative
     {Ω : Set ℂ} {u : ℂ → ℝ}
@@ -3304,6 +3409,8 @@ name:
   Harmonic functions have pointwise Weyl representatives
 statement:
   A harmonic function has itself as a pointwise Euclidean Weyl representative.
+proof:
+  At each point take the function itself on a sufficiently small open neighborhood.  Its harmonicity is inherited by restriction, and all compatibility and equality conditions are immediate.
 -/
 theorem pointwiseEuclideanWeylRepresentative_of_harmonicOn
     {Ω : Set ℂ} {u : ℂ → ℝ}
@@ -3539,6 +3646,8 @@ name:
 statement:
   If two indexed families of functions agree pointwise, then equicontinuity of
   one family on a set implies equicontinuity of the other family on that set.
+proof:
+  Given an equicontinuity neighborhood for the first family, rewrite both function values using the pointwise equality.  The same neighborhood and estimate then work for the second family.
 -/
 theorem equicontinuousOn_congr_pointwise
     {ι X Y : Type} [TopologicalSpace X] [UniformSpace Y]
@@ -3746,6 +3855,18 @@ theorem harmonic_eLpNorm_one_closedBall_toReal_eq_integral_abs
     _ = ∫ z in Metric.closedBall x.1 r, |f z| ∂MeasureTheory.volume := by
             simp [μ, K, Real.norm_eq_abs]
 
+/--
+%%handwave
+name:
+  Radial description of a planar annulus
+statement:
+  For every \(r\in\mathbb R\),
+  \[\{z:r/2\le\lVert z\rVert\le r\}
+    =\overline B(0,r)\setminus B(0,r/2).\]
+proof:
+  Unfold membership in the two balls and use
+  \(\operatorname{dist}(z,0)=\lVert z\rVert\).
+-/
 private theorem annulusRadialSet_eq_zero {r : ℝ} :
     {z : ℂ | ‖z‖ ∈ Set.Icc (r / 2) r} =
       Metric.closedBall (0 : ℂ) r \ Metric.ball (0 : ℂ) (r / 2) := by
@@ -3757,6 +3878,17 @@ private theorem annulusRadialSet_eq_zero {r : ℝ} :
   · intro hz
     exact ⟨hz.2, hz.1⟩
 
+/--
+%%handwave
+name:
+  Polar-coordinate formula for an annular integral
+statement:
+  For \(r>0\), the integral of \(|f|\) over
+  \(\overline B(0,r)\setminus B(0,r/2)\) equals the polar integral of
+  \(\rho|f(\rho e^{i\theta})|\) times the indicator of the radial interval.
+proof:
+  Replace the set integral by its radial indicator using [the radial description of the annulus](lean:annulusRadialSet_eq_zero), then apply polar change of variables.
+-/
 private theorem annulus_polar_indicator_zero
     {r : ℝ} (_hr : 0 < r) {f : ℂ → ℝ} :
     (∫ z in (Metric.closedBall (0 : ℂ) r \ Metric.ball (0 : ℂ) (r / 2)),
@@ -3785,6 +3917,18 @@ private theorem annulus_polar_indicator_zero
           simpa [smul_eq_mul, Complex.polarCoord_target,
             Complex.polarCoord_symm_apply] using hpolar.symm
 
+/--
+%%handwave
+name:
+  Restricting the polar annulus integral to a rectangle
+statement:
+  For \(r>0\), the polar integral with the radial annulus indicator equals
+  \[\int_{[r/2,r]\times(-\pi,\pi)}
+    \rho|f(\rho e^{i\theta})|\,d\rho\,d\theta.\]
+proof:
+  On the polar target the radial indicator is the indicator of
+  \([r/2,r]\); intersecting the two domains gives the displayed rectangle.
+-/
 private theorem annulus_polar_indicator_to_product
     {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ} :
       ∫ p in Complex.polarCoord.target,
@@ -3863,6 +4007,18 @@ private theorem annulus_polar_indicator_to_product
           · exact ⟨hp.1, trivial⟩
       rw [hset]
 
+/--
+%%handwave
+name:
+  Fubini formula on a polar annulus rectangle
+statement:
+  If \(f\) is continuous on \(\overline B(0,r)\) and \(r>0\), then
+  \[\int_{[r/2,r]\times(-\pi,\pi)}\rho|f(\rho e^{i\theta})|
+    =\int_{r/2}^{r}\int_{-\pi}^{\pi}\rho|f(\rho e^{i\theta})|\,d\theta\,d\rho.\]
+proof:
+  The integrand is continuous on a containing compact rectangle and hence
+  integrable. Apply Fubini for the product measure.
+-/
 private theorem annulus_product_fubini
     {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ}
     (hf : ContinuousOn f (Metric.closedBall (0 : ℂ) r)) :
@@ -3920,10 +4076,32 @@ private theorem annulus_product_fubini
     setIntegral_prod (μ := MeasureTheory.volume) (ν := MeasureTheory.volume)
       (f := F) hF_int
 
+/--
+%%handwave
+name:
+  Polar coordinates as the circle parametrization
+statement:
+  For \(\rho,\theta\in\mathbb R\), the inverse polar map is
+  \(z(\rho,\theta)=\rho e^{i\theta}\), the standard circle parametrization.
+proof:
+  Expand both definitions and use the complex exponential formula.
+-/
 private theorem polarCoord_symm_eq_circleMap (ρ θ : ℝ) :
     Complex.polarCoord.symm (ρ, θ) = circleMap (0 : ℂ) ρ θ := by
   simp [Complex.polarCoord_symm_apply, circleMap, Complex.exp_mul_I]
 
+/--
+%%handwave
+name:
+  Angular integral in terms of a circle average
+statement:
+  For every \(\rho\in\mathbb R\),
+  \[\int_{-\pi}^{\pi}\rho|f(\rho e^{i\theta})|\,d\theta
+    =(2\pi\rho)\operatorname{Avg}_{|z|=\rho}|f(z)|.\]
+proof:
+  Shift the angle interval to \((0,2\pi)\), use the circle parametrization,
+  and unfold the normalized circle average.
+-/
 private theorem angular_integral_eq_circleAverage (ρ : ℝ) (f : ℂ → ℝ) :
     ∫ θ in Set.Ioo (-Real.pi) Real.pi,
         ρ * |f (Complex.polarCoord.symm (ρ, θ))| ∂MeasureTheory.volume =
@@ -3981,6 +4159,18 @@ private theorem angular_integral_eq_circleAverage (ρ : ℝ) (f : ℂ → ℝ) :
     _ = Real.circleAverage (fun z : ℂ ↦ |f z|) 0 ρ *
         (2 * Real.pi * ρ) := by ring
 
+/--
+%%handwave
+name:
+  Annular integral as an integral of circle averages
+statement:
+  If \(r>0\) and \(f\) is continuous on \(\overline B(0,r)\), then
+  \[\int_{\overline B(0,r)\setminus B(0,r/2)}|f|
+    =\int_{r/2}^{r}(2\pi\rho)\operatorname{Avg}_{|z|=\rho}|f(z)|\,d\rho.\]
+proof:
+  Pass to the polar rectangle, use Fubini, and replace each angular integral
+  by [the circumference times the circle average](lean:angular_integral_eq_circleAverage). Endpoints have measure zero.
+-/
 private theorem annulus_integral_abs_eq_setIntegral_circleAverage_mul_radius_zero
     {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ}
     (hf : ContinuousOn f (Metric.closedBall (0 : ℂ) r)) :
@@ -4582,6 +4772,18 @@ theorem harmonic_circleAverage_poissonKernel_mul_eq_of_mem_ball
     (InnerProductSpace.HarmonicOnNhd.circleAverage_poissonKernel_smul
       (c := y.1) (R := ρ) hf_closed hw)
 
+/--
+%%handwave
+name:
+  Derivative at the origin of the Poisson line quotient
+statement:
+  If \(\rho>0\), then
+  \[\left.\frac d{dt}\frac{\rho^2-t^2V}
+    {\rho^2-2tI+t^2V}\right|_{t=0}=\frac{2I}{\rho^2}.\]
+proof:
+  Differentiate numerator and denominator, apply the quotient rule at zero,
+  and simplify using \(\rho\ne0\).
+-/
 private theorem deriv_poissonKernel_line_quotient_at_zero
     (I V ρ : ℝ) (hρ_pos : 0 < ρ) :
     deriv
@@ -4713,6 +4915,18 @@ theorem poissonKernel_center_directionalFderiv_eq_two_mul_real_inner_div_radius_
     deriv_poissonKernel_line_quotient_at_zero
       (inner ℝ (z - c) v) (‖v‖ ^ 2) ρ hρ_pos
 
+/--
+%%handwave
+name:
+  Poisson kernel along an affine line
+statement:
+  If \(\lVert z-c\rVert=\rho\), then
+  \[P(c,c+tv,z)=\frac{\rho^2-t^2\lVert v\rVert^2}
+    {\rho^2-2t\langle z-c,v\rangle+t^2\lVert v\rVert^2}.\]
+proof:
+  Substitute \(c+tv\) in the Poisson kernel and expand
+  \(\lVert(z-c)-tv\rVert^2\) by the real inner-product identity.
+-/
 private theorem poissonKernel_line_eq_quotient
     (c z v : ℂ) {ρ : ℝ} (hz : z ∈ Metric.sphere c ρ) :
     (fun t : ℝ ↦ poissonKernel c (c + t • v) z) =
@@ -4756,6 +4970,19 @@ private noncomputable def poissonLineQuotDeriv (ρ I V t : ℝ) : ℝ :=
       (ρ ^ 2 - t ^ 2 * V) * (-2 * I + 2 * t * V)) /
     (ρ ^ 2 - 2 * t * I + t ^ 2 * V) ^ 2
 
+/--
+%%handwave
+name:
+  Derivative of the Poisson line quotient
+statement:
+  If \(\rho^2-2tI+t^2V\ne0\), then the derivative at \(t\) of
+  \((\rho^2-s^2V)/(\rho^2-2sI+s^2V)\) is
+  \[\frac{(-2tV)(\rho^2-2tI+t^2V)
+    -(\rho^2-t^2V)(-2I+2tV)}
+    {(\rho^2-2tI+t^2V)^2}.\]
+proof:
+  Differentiate both quadratic polynomials and apply the quotient rule.
+-/
 private theorem poissonLineQuot_hasDerivAt
     {ρ I V t : ℝ}
     (hden : ρ ^ 2 - 2 * t * I + t ^ 2 * V ≠ 0) :
@@ -4790,6 +5017,17 @@ private theorem poissonLineQuot_hasDerivAt
       ((hasDerivAt_const (x := t) (c := ρ ^ 2)).sub hlinear).add hs2V
   simpa [div_eq_mul_inv, mul_comm, mul_left_comm, mul_assoc] using hn.div hd hden
 
+/--
+%%handwave
+name:
+  Nonvanishing of the Poisson denominator inside the circle
+statement:
+  If \(\lVert z-c\rVert=\rho\) and \(\lVert tv\rVert<\rho\), then
+  \[\rho^2-2t\langle z-c,v\rangle+t^2\lVert v\rVert^2\ne0.\]
+proof:
+  The expression is \(\lVert(z-c)-tv\rVert^2\). Its vector cannot vanish,
+  since that would force \(\rho=\lVert tv\rVert\).
+-/
 private theorem poissonLine_den_ne_of_sphere_of_norm_smul_lt
     {c z v : ℂ} {ρ t : ℝ} (hz : z ∈ Metric.sphere c ρ)
     (ht : ‖t • v‖ < ρ) :
@@ -4827,6 +5065,17 @@ private theorem poissonLine_den_ne_of_sphere_of_norm_smul_lt
   rw [hden_norm]
   exact (sq_pos_of_pos (norm_pos_iff.mpr hvec_ne)).ne'
 
+/--
+%%handwave
+name:
+  Differentiability of the Poisson kernel along an interior line
+statement:
+  If \(\lVert z-c\rVert=\rho\) and \(\lVert tv\rVert<\rho\), then the
+  derivative at \(t\) of \(s\mapsto P(c,c+sv,z)\) is the quotient-rule
+  derivative of its explicit rational line formula.
+proof:
+  Use [the line formula for the Poisson kernel](lean:poissonKernel_line_eq_quotient), apply the quotient rule, and invoke [nonvanishing of the denominator inside the circle](lean:poissonLine_den_ne_of_sphere_of_norm_smul_lt).
+-/
 private theorem hasDerivAt_poissonKernel_line_of_sphere
     (c z v : ℂ) {ρ t : ℝ} (hz : z ∈ Metric.sphere c ρ)
     (ht : ‖t • v‖ < ρ) :
@@ -4837,6 +5086,17 @@ private theorem hasDerivAt_poissonKernel_line_of_sphere
     (poissonLine_den_ne_of_sphere_of_norm_smul_lt
       (c := c) (z := z) (v := v) hz ht)
 
+/--
+%%handwave
+name:
+  Uniform interior bound on a closed interval
+statement:
+  If \(\varepsilon\lVert v\rVert<\rho\) and
+  \(t\in[-\varepsilon,\varepsilon]\), then \(\lVert tv\rVert<\rho\).
+proof:
+  Use \(|t|\le\varepsilon\), multiply by \(\lVert v\rVert\ge0\), and note
+  \(\lVert tv\rVert=|t|\lVert v\rVert\).
+-/
 private theorem norm_smul_lt_of_mem_Icc
     {v : ℂ} {ε ρ t : ℝ}
     (hεv : ε * ‖v‖ < ρ) (ht : t ∈ Set.Icc (-ε) ε) :
@@ -4851,6 +5111,18 @@ private theorem norm_smul_lt_of_mem_Icc
       mul_le_mul_of_nonneg_right habs (norm_nonneg v)
     _ < ρ := hεv
 
+/--
+%%handwave
+name:
+  Continuity of the Poisson line derivative on a compact strip
+statement:
+  If \(0\le\varepsilon\) and \(\varepsilon\lVert v\rVert<\rho\), then the
+  quotient-rule derivative of the Poisson kernel is continuous for
+  \((t,\theta)\in[-\varepsilon,\varepsilon]\times[0,2\pi]\).
+proof:
+  Its numerator and denominator are continuous. The uniform interior bound
+  and the circle equation make the denominator nonzero throughout the strip.
+-/
 private theorem continuousOn_poissonLineQuotDeriv_circle_strip
     (c v : ℂ) {ρ ε : ℝ} (hε_nonneg : 0 ≤ ε)
     (hεv : ε * ‖v‖ < ρ) :
@@ -4879,6 +5151,19 @@ private theorem continuousOn_poissonLineQuotDeriv_circle_strip
         (v := v) (ρ := ρ) (t := p.1) hsphere ht_norm
     exact pow_ne_zero 2 hden
 
+/--
+%%handwave
+name:
+  Continuity of the Poisson integrand on a circle
+statement:
+  If \(f\) is continuous on \(\lVert z-c\rVert=\rho>0\) and
+  \(\lVert tv\rVert<\rho\), then
+  \[\theta\mapsto P(c,c+tv,c+\rho e^{i\theta})f(c+\rho e^{i\theta})\]
+  is continuous on \([0,2\pi]\).
+proof:
+  The rational line formula for the Poisson factor has nonzero denominator
+  inside the circle. Multiply it by the continuous restriction of \(f\).
+-/
 private theorem continuousOn_poissonKernel_line_mul_circle
     (c v : ℂ) {ρ t : ℝ} (hρ_pos : 0 < ρ)
     (ht : ‖t • v‖ < ρ) {f : ℂ → ℝ}
@@ -4928,6 +5213,17 @@ private theorem continuousOn_poissonKernel_line_mul_circle
     (hf_cont.comp (continuous_circleMap c ρ).continuousOn
       (fun θ _ ↦ hsphere θ))).congr hF_eq
 
+/--
+%%handwave
+name:
+  Uniform interior bound in a ball
+statement:
+  If \(\varepsilon\lVert v\rVert<\rho\) and \(|t|<\varepsilon\), then
+  \(\lVert tv\rVert<\rho\).
+proof:
+  The ball condition places \(t\) in \([-\varepsilon,\varepsilon]\), so apply
+  [the closed-interval estimate](lean:norm_smul_lt_of_mem_Icc).
+-/
 private theorem norm_smul_lt_of_mem_ball
     {v : ℂ} {ε ρ t : ℝ} (hεv : ε * ‖v‖ < ρ)
     (ht : t ∈ Metric.ball (0 : ℝ) ε) :
@@ -4939,6 +5235,21 @@ private theorem norm_smul_lt_of_mem_ball
     exact ⟨(abs_lt.mp ht_abs).1.le, (abs_lt.mp ht_abs).2.le⟩
   exact norm_smul_lt_of_mem_Icc hεv htIcc
 
+/--
+%%handwave
+name:
+  Differentiating a Poisson circle average along a line
+statement:
+  For \(\rho>0\) and \(f\) continuous on \(\lVert z-c\rVert=\rho\), the
+  derivative at \(t=0\) of
+  \[\operatorname{Avg}_{|z-c|=\rho}P(c,c+tv,z)f(z)\]
+  is the circle average of the quotient-rule derivative at \(t=0\), multiplied
+  pointwise by \(f(z)\).
+proof:
+  Restrict \(t\) to a compact interval strictly inside the circle. The
+  integrand and its line derivative are jointly continuous there, so
+  differentiate under the angular integral.
+-/
 private theorem hasDerivAt_circleAverage_poissonKernel_line
     (c v : ℂ) {ρ : ℝ} (hρ_pos : 0 < ρ) {f : ℂ → ℝ}
     (hf_cont : ContinuousOn f (Metric.sphere c ρ)) :
@@ -6528,6 +6839,19 @@ theorem chartRegion_isOpen_of_weaklyHarmonicOnSurface
     IsOpen (e.target ∩ e.symm ⁻¹' U) :=
   e.isOpen_inter_preimage_symm hweak.isOpen
 
+/--
+%%handwave
+name:
+  Weak derivative of a local Sobolev function in surface coordinates
+statement:
+  If \(u\) is intrinsically locally \(W^{1,2}\) on \(U\), with weak cotangent
+  field \(du\), then in every holomorphic chart the coordinate pullback
+  \(u\circ e^{-1}\) has weak derivative equal to the chart pullback of \(du\).
+proof:
+  Turn a compactly supported Euclidean test function into a compactly
+  supported coordinate test function. The intrinsic weak-gradient identity
+  then expands to the Euclidean weak-derivative identity.
+-/
 theorem surface_localSobolev_chartPullback_isWeakDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
@@ -6553,6 +6877,18 @@ theorem surface_localSobolev_chartPullback_isWeakDerivative
     SurfaceCotangentField.evalChart, SurfaceCotangentField.ofCoordinateField,
     smul_eq_mul, mul_comm, mul_left_comm, mul_assoc] using h
 
+/--
+%%handwave
+name:
+  Conformal cancellation of cotangent pairing and volume density
+statement:
+  For a conformal surface metric,
+  \[\langle\xi,\eta\rangle_g(z)\rho_g(z)
+    =\langle\xi\circ De^{-1},\eta\circ De^{-1}\rangle_{\mathbb R^2}.\]
+proof:
+  Conformality says that volume density times the inverse Gram matrix is the
+  identity. Substitution leaves only the two diagonal Euclidean terms.
+-/
 private theorem surfaceMetricCoordinateCotangentPairingInChart_mul_volumeDensity_eq_euclidean
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -6595,6 +6931,18 @@ private theorem surfaceMetricCoordinateCotangentPairingInChart_mul_volumeDensity
           (η.comp (surfaceChartTangentMap e z)) := by
           simp [euclideanCotangentPairing, Xc, Yc, A]
 
+/--
+%%handwave
+name:
+  Conformal cancellation for the weak-gradient coordinate pairing
+statement:
+  For a conformal background metric,
+  \[\langle\xi,d\eta\rangle_g(z)\rho_g(z)
+    =\langle\xi\circ De^{-1},d\eta\rangle_{\mathbb R^2}.\]
+proof:
+  Multiply the inverse-metric coordinate contraction by the volume density.
+  Conformality turns the weighted inverse Gram matrix into the identity.
+-/
 theorem surfaceMetricWeakGradientCoordinatePairingInChart_mul_volumeDensity_eq_euclidean
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X)
@@ -7001,6 +7349,8 @@ statement:
   A compatible family of harmonic chart representatives glues to a global
   harmonic representative which agrees almost everywhere with the original
   weak function in every chart.
+proof:
+  Define the global value using any chart representative containing the point.  Pairwise compatibility makes this well-defined; local harmonicity gives global harmonicity, while the chartwise almost-everywhere agreements give agreement with the original weak function.
 -/
 theorem surfaceWeylHarmonicRepresentative_of_chartRepresentativeFamily
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]

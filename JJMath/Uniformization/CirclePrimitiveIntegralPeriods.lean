@@ -24,6 +24,14 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
+/--
+%%handwave
+name: Integral over a negated smooth one-chain
+statement:
+  For every smooth one-form $\omega$ and smooth singular one-chain $c$, one has $\int_{-c}\omega=-\int_c\omega$.
+proof:
+  Integration is a homomorphism from singular chains to $\mathbb R$, hence preserves additive inverses.
+-/
 theorem integrateSmoothChain_neg_one
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
     (c : SingularChain (I := SurfaceRealModel) (M := X) 1 ∞) :
@@ -31,6 +39,14 @@ theorem integrateSmoothChain_neg_one
       -integrateSmoothChain (I := SurfaceRealModel) omega c := by
   simp [integrateSmoothChain, integrateChain, integrateChainHom]
 
+/--
+%%handwave
+name: Integral over a difference of smooth one-chains
+statement:
+  For every smooth one-form $\omega$ and smooth singular one-chains $c,d$, one has $\int_{c-d}\omega=\int_c\omega-\int_d\omega$.
+proof:
+  Write $c-d=c+(-d)$ and use additivity together with the formula for a negated chain.
+-/
 theorem integrateSmoothChain_sub_one
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
     (c d : SingularChain (I := SurfaceRealModel) (M := X) 1 ∞) :
@@ -43,7 +59,15 @@ theorem integrateSmoothChain_sub_one
 
 /-- A closed one-form on a smooth complex surface has a real primitive on a
 full-plane coordinate neighborhood.  The neighborhood also comes with smooth
-chains from its marked point to all of its points. -/
+chains from its marked point to all of its points.
+
+%%handwave
+name: Coordinate primitive with smooth chain connectivity
+statement:
+  Let $\omega$ be a closed smooth real one-form on a Riemann surface and let $x$ be a point. There is a full-plane coordinate neighborhood $U\ni x$ and a smooth real function $\theta$ on $U$ such that $\omega|_U=d\theta$, and every point of $U$ can be joined to $x$ by a smooth singular one-chain with the expected boundary.
+proof:
+  Choose a full-plane coordinate chart around $x$. Pull $\omega$ to the convex plane, apply the Poincaré lemma, and pull the primitive back. The chart domain is connected, so smooth-chain connectivity supplies the required chains.
+-/
 theorem exists_coordinateOpen_realPrimitive_and_smoothChains
     (omega : DeRhamClosedForms
       (I := SurfaceRealModel) (M := X) (A := ℝ) 1)

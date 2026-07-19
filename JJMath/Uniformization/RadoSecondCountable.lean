@@ -29,6 +29,18 @@ open scoped Manifold Topology
 
 namespace Uniformization
 
+/--
+%%handwave
+name:
+  Equicontinuity is invariant under pointwise equality of families
+statement:
+  Let \(F_i,G_i:X\to Y\) satisfy \(F_i(x)=G_i(x)\) for every \(i,x\).
+  If the family \((F_i)\) is equicontinuous on \(S\), then so is
+  \((G_i)\).
+proof:
+  Substitute the pointwise equalities at the base point and the varying
+  point in the entourage formulation of equicontinuity.
+-/
 private theorem equicontinuousOn_congr_pointwise_for_rado_ascoli
     {ι X Y : Type} [TopologicalSpace X] [UniformSpace Y]
     {S : Set X} {F G : ι → X → Y}
@@ -39,8 +51,21 @@ private theorem equicontinuousOn_congr_pointwise_for_rado_ascoli
   filter_upwards [hF x hx U hU] with y hy i
   simpa [hFG i x, hFG i y] using hy i
 
-/-- Arzelà--Ascoli extraction in the compact-open topology for continuous
-maps into a second-countable Hausdorff uniform space. -/
+/--
+%%handwave
+name:
+  Compact-open Arzelà--Ascoli extraction along a compact exhaustion
+statement:
+  Let \(X\) be locally compact, sigma-compact, and second countable, and let
+  \(Y\) be a second-countable Hausdorff uniform space.  If
+  \(G_n:X\to Y\) is pointwise relatively compact and equicontinuous on every
+  member of a compact exhaustion, then some strictly increasing subsequence
+  converges in the compact-open topology to a continuous map \(g:X\to Y\).
+proof:
+  Arzelà--Ascoli makes the closure of the sequence compact in the compact-open
+  function space.  That space is second countable, so compactness yields a
+  convergent subsequence.
+-/
 theorem uniformContinuousMap_subsequence_tendsto_of_equicontinuousOn_compactExhaustion
     {X Y : Type} [TopologicalSpace X] [LocallyCompactSpace X]
     [SigmaCompactSpace X] [SecondCountableTopology X]
@@ -101,8 +126,19 @@ theorem uniformContinuousMap_subsequence_tendsto_of_equicontinuousOn_compactExha
     ⟨g, _hg, φ, hφ, hφ_tendsto⟩
   exact ⟨φ, hφ, g, by simpa [Function.comp_def] using hφ_tendsto⟩
 
-/-- The generic compact-open Arzelà--Ascoli subsequence converges locally
-uniformly. -/
+/--
+%%handwave
+name:
+  Locally uniform Arzelà--Ascoli extraction along a compact exhaustion
+statement:
+  Under the preceding hypotheses, some strictly increasing subsequence
+  \(G_{\phi(n)}\) converges locally uniformly on \(X\) to a continuous map
+  \(g:X\to Y\).
+proof:
+  Extract a compact-open convergent subsequence.  On a locally compact
+  domain, compact-open convergence of continuous maps is equivalent to local
+  uniform convergence.
+-/
 theorem uniformContinuousMap_subsequence_tendstoLocallyUniformly_of_equicontinuousOn_compactExhaustion
     {X Y : Type} [TopologicalSpace X] [LocallyCompactSpace X]
     [SigmaCompactSpace X] [SecondCountableTopology X]
@@ -316,6 +352,20 @@ theorem functions_subsequence_tendstoUniformlyOn_of_compact_equicontinuousOn
   have hx : (⟨x, hxK⟩ : K) ∈ (Set.univ : Set K) := by trivial
   simpa [G, f, hxK] using hn ⟨x, hxK⟩ hx
 
+/--
+%%handwave
+name:
+  Uniform Arzelà--Ascoli extraction for real functions on a compact set
+statement:
+  Let \(K\) be compact in a second-countable Hausdorff space.  A sequence of
+  real-valued functions that is continuous on \(K\), pointwise relatively
+  compact there, and equicontinuous there has a subsequence converging
+  uniformly on \(K\).
+proof:
+  Restrict the sequence to the compact subtype \(K\), apply locally uniform
+  Arzelà--Ascoli there, and use compactness to upgrade local uniform
+  convergence to uniform convergence on all of \(K\).
+-/
 theorem realFunctions_subsequence_tendstoUniformlyOn_of_compact_equicontinuousOn
     {X : Type} [TopologicalSpace X] [T2Space X] [SecondCountableTopology X]
     {K : Set X} (hK : IsCompact K)
@@ -405,6 +455,19 @@ theorem functions_tail_subsequence_tendstoUniformlyOn_of_compact_equicontinuousO
     exact Nat.add_lt_add_left (hψ hab) N
   · simpa [φ, Nat.add_comm, Nat.add_left_comm, Nat.add_assoc] using hf
 
+/--
+%%handwave
+name:
+  Uniform extraction from a tail of real functions on a compact set
+statement:
+  If a tail \((F_{N+n})\) of real-valued functions is continuous,
+  pointwise relatively compact, and equicontinuous on a compact set \(K\),
+  then the original sequence has a strictly increasing subsequence converging
+  uniformly on \(K\).
+proof:
+  Apply compact Arzelà--Ascoli to the shifted sequence and add \(N\) to the
+  selected indices.
+-/
 theorem realFunctions_tail_subsequence_tendstoUniformlyOn_of_compact_equicontinuousOn
     {X : Type} [TopologicalSpace X] [T2Space X] [SecondCountableTopology X]
     {K : Set X} (hK : IsCompact K)
@@ -447,8 +510,23 @@ theorem tendstoUniformlyOn_of_compactExhaustion
   rcases Kex.exists_superset_of_isCompact hK with ⟨n, hKn⟩
   exact (hconv n).mono hKn
 
-/-- Uniform limits named separately on the members of a compact exhaustion
-glue to one global limit. -/
+/--
+%%handwave
+name:
+  Gluing uniform limits along a compact exhaustion
+statement:
+  Let \(Y\) be Hausdorff.  If \(F_n:X\to Y\) converges uniformly on each
+  exhaustion member \(K_m\) to a possibly different function \(g_m\), then
+  there is a single \(f:X\to Y\) such that
+  \[
+    F_n\longrightarrow f\quad\text{uniformly on every }K_m.
+  \]
+proof:
+  At any point in two exhaustion members, both values are limits of the same
+  sequence, so Hausdorff uniqueness gives equality.  Define \(f(x)\) using
+  the first exhaustion member containing \(x\), then replace each \(g_m\) by
+  this equal global function on \(K_m\).
+-/
 theorem tendstoUniformlyOn_compactExhaustion_glue
     {X Y : Type} [TopologicalSpace X] [UniformSpace Y] [T2Space Y]
     (Kex : CompactExhaustion X)
@@ -649,6 +727,19 @@ theorem functions_subsequence_tendstoUniformlyOn_compactExhaustion_of_subsequenc
     ⟨f, hf⟩
   exact ⟨diag, hdiag_strict, f, hf⟩
 
+/--
+%%handwave
+name:
+  Diagonal compact-exhaustion extraction for real functions
+statement:
+  Suppose every subsequence of a real function sequence has, on each
+  exhaustion member, a further uniformly convergent subsequence.  Then one
+  subsequence converges uniformly on every member of the compact exhaustion
+  to a single real-valued function.
+proof:
+  Apply the general diagonal compact-exhaustion extraction theorem with
+  target \(\mathbb R\).
+-/
 theorem realFunctions_subsequence_tendstoUniformlyOn_compactExhaustion_of_subsequence_extractions
     {X : Type} [TopologicalSpace X]
     (Kex : CompactExhaustion X)
@@ -666,8 +757,19 @@ theorem realFunctions_subsequence_tendstoUniformlyOn_compactExhaustion_of_subseq
   functions_subsequence_tendstoUniformlyOn_compactExhaustion_of_subsequence_extractions
     Kex hextract
 
-/-- A diagonal subsequence which converges uniformly on a compact exhaustion
-converges locally uniformly on the ambient locally compact space. -/
+/--
+%%handwave
+name:
+  Compact-exhaustion diagonal convergence is locally uniform
+statement:
+  On a locally compact space, if every subsequence admits further uniform
+  extraction on each exhaustion member, then one subsequence converges
+  locally uniformly on the whole space.
+proof:
+  The diagonal extraction gives uniform convergence on every exhaustion
+  member.  Every compact subset is contained in one such member, which is
+  the compact-set characterization of local uniform convergence.
+-/
 theorem functions_subsequence_tendstoLocallyUniformly_of_compactExhaustion_subsequence_extractions
     {X Y : Type} [TopologicalSpace X] [LocallyCompactSpace X]
     [UniformSpace Y] [T2Space Y]
@@ -693,9 +795,20 @@ theorem functions_subsequence_tendstoLocallyUniformly_of_compactExhaustion_subse
   intro K _hKuniv hK
   exact tendstoUniformlyOn_of_compactExhaustion Kex hf K hK
 
-/-- Local Arzelà--Ascoli hypotheses on a tail of every subsequence and every
-compact exhaustion member produce one locally uniformly convergent
-subsequence. -/
+/--
+%%handwave
+name:
+  Local uniform extraction from tailwise Arzelà--Ascoli hypotheses
+statement:
+  Suppose that for every subsequence and every compact exhaustion member,
+  some tail is continuous, pointwise relatively compact, and equicontinuous
+  there.  Then the original sequence has a strictly increasing subsequence
+  converging locally uniformly on \(X\).
+proof:
+  Compact Arzelà--Ascoli supplies the required further extraction on each
+  exhaustion member.  Apply the compact-exhaustion diagonal theorem and
+  convert its uniform-on-compacts conclusion to local uniform convergence.
+-/
 theorem functions_subsequence_tendstoLocallyUniformly_of_compactExhaustion_tail_equicontinuous
     {X Y : Type} [TopologicalSpace X] [T2Space X]
     [LocallyCompactSpace X] [SecondCountableTopology X]
@@ -1124,6 +1237,20 @@ private def unionRightPieceHomeomorph {X : Type} [TopologicalSpace X] (s t : Set
       (Continuous.subtype_mk continuous_subtype_val (fun x : t ↦ Or.inr x.2))
       (fun x : t ↦ x.2)
 
+/--
+%%handwave
+name:
+  A union of two open second-countable subspaces is second countable
+statement:
+  Let \(s,t\) be open subsets of a topological space.  If the subspaces
+  \(s\) and \(t\) are second countable, then the subspace \(s\cup t\) is
+  second countable.
+proof:
+  The two open pieces induced by \(s\) and \(t\) form a finite open cover of
+  \(s\cup t\), and each piece is homeomorphic to the corresponding original
+  subspace.  A countable base on each member of a countable open cover
+  combines into a countable base.
+-/
 private theorem secondCountableTopology_union {X : Type} [TopologicalSpace X]
     {s t : Set X} (hs : IsOpen s) (ht : IsOpen t)
     [SecondCountableTopology s] [SecondCountableTopology t] :
@@ -2399,8 +2526,7 @@ statement:
   \(W\).
 proof:
   Use
-  [a second-countable neighborhood whose boundary image is
-  avoided](lean:JJMath.Uniformization.nonconstant_holomorphicMap_exists_secondCountable_neighborhood_boundaryImage_avoids).
+  [a second-countable neighborhood whose boundary image is avoided](lean:JJMath.Uniformization.nonconstant_holomorphicMap_exists_secondCountable_neighborhood_boundaryImage_avoids).
   Since the frontier is compact, its image is closed in \(\mathbb C\).  Choose
   [a countable-basis element avoiding that image](lean:JJMath.Uniformization.exists_countableBasis_disjoint_frontier_preimage).
 -/
@@ -2473,8 +2599,7 @@ statement:
   pullback sheet.
 proof:
   Apply
-  [the local normal form gives a trapped second-countable pullback
-  component](lean:JJMath.Uniformization.nonconstant_holomorphicMap_trappedSecondCountablePullbackComponent)
+  [the local normal form gives a trapped second-countable pullback component](lean:JJMath.Uniformization.nonconstant_holomorphicMap_trappedSecondCountablePullbackComponent)
   and then package that component as a good pullback sheet.
 -/
 theorem nonconstant_holomorphicMap_goodPullbackSheets_local_refinement
@@ -2567,6 +2692,10 @@ name:
 statement:
   An open subset of a complex one-manifold, with its induced complex charts,
   is again a complex one-manifold.
+proof:
+  The induced charted-space structure on an open subtype inherits the complex
+  one-manifold compatibility and dimension instances from the ambient
+  manifold.
 -/
 theorem openSubset_complexOneManifold
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
@@ -3637,6 +3766,17 @@ theorem exists_first_last_expandedClosedDisk_hit [T2Space X]
   exact ⟨t₀, t₁, ht₀, ht₁, (fun t ht ↦ ht₀_min ht),
     (fun t ht ↦ ht₁_max ht)⟩
 
+/--
+%%handwave
+name:
+  An interior direction to the left inside an open subset of the unit interval
+statement:
+  If \(U\subseteq[0,1]\) is open, \(t\in U\), and \(t\ne0\), then there is
+  \(s\in U\) with \(s<t\).
+proof:
+  Choose a metric ball about \(t\) contained in \(U\), and subtract a
+  positive number smaller than both half its radius and \(t/2\).
+-/
 private theorem unitInterval_exists_mem_open_lt
     {U : Set unitInterval} (hU : IsOpen U) {t : unitInterval}
     (htU : t ∈ U) (ht_ne_zero : t ≠ 0) :
@@ -3674,6 +3814,17 @@ private theorem unitInterval_exists_mem_open_lt
     simpa [Metric.mem_ball, Subtype.dist_eq] using hdist_real
   exact ⟨s, hball hs_ball, hslt⟩
 
+/--
+%%handwave
+name:
+  An interior direction to the right inside an open subset of the unit interval
+statement:
+  If \(U\subseteq[0,1]\) is open, \(t\in U\), and \(t\ne1\), then there is
+  \(s\in U\) with \(t<s\).
+proof:
+  Choose a metric ball about \(t\) contained in \(U\), and add a positive
+  number smaller than both half its radius and \((1-t)/2\).
+-/
 private theorem unitInterval_exists_mem_open_gt
     {U : Set unitInterval} (hU : IsOpen U) {t : unitInterval}
     (htU : t ∈ U) (ht_ne_one : t ≠ 1) :
@@ -4065,6 +4216,10 @@ name:
 statement:
   The coordinate \(c+r\) of the positive-real boundary point lies in the chart
   target.
+proof:
+  Its distance from the chart center \(c\) is the closed radius \(r\), which
+  is strictly smaller than the open chart radius.  Hence it lies in the chart
+  ball contained in the target.
 -/
 theorem positiveRealBoundaryPoint_coordinate_mem_target (D : ClosedCoordinateDisk X) :
     D.openDisk.center + (D.closedRadius : ℂ) ∈ D.openDisk.chart.target := by
@@ -4088,6 +4243,9 @@ name:
   The distinguished boundary point lies in the chart source
 statement:
   The positive-real boundary point lies in the source of its coordinate chart.
+proof:
+  The point is the inverse-chart image of \(c+r\), which lies in the chart
+  target; inverse charts map their targets into their sources.
 -/
 theorem positiveRealBoundaryPoint_mem_source (D : ClosedCoordinateDisk X) :
     D.positiveRealBoundaryPoint ∈ D.openDisk.chart.source := by
@@ -4101,6 +4259,8 @@ name:
 statement:
   The coordinate of the positive-real boundary point is the center plus the
   closed radius.
+proof:
+  Apply the chart's right-inverse identity to the target point \(c+r\).
 -/
 theorem chart_positiveRealBoundaryPoint (D : ClosedCoordinateDisk X) :
     D.openDisk.chart D.positiveRealBoundaryPoint =
@@ -4677,7 +4837,18 @@ theorem closedCoordinateDisks_complement_nonempty_of_noncompact
   rw [hcompl_empty] at hx_compl
   exact hx_compl
 
-/-- Pairwise path-joinability inside a set implies preconnectedness. -/
+/--
+%%handwave
+name:
+  Pairwise path-joinability implies preconnectedness
+statement:
+  If every two points of a set \(S\) can be joined by a path whose image lies
+  in \(S\), then \(S\) is preconnected.
+proof:
+  For any two points, the range of a joining path is a connected subset of
+  \(S\) containing both.  This is the pairwise connected-subset criterion
+  for preconnectedness.
+-/
 theorem isPreconnected_of_forall_joinedIn
     {X : Type} [TopologicalSpace X] {s : Set X}
     (h : ∀ x ∈ s, ∀ y ∈ s, JoinedIn s x y) :
@@ -4889,15 +5060,13 @@ proof:
   Choose an expanded closed coordinate disk whose radius is still below the
   ambient coordinate radius and whose expanded closed disk still misses the
   endpoints; this uses
-  [an intermediate expanded radius below the endpoint coordinate
-  radii](lean:JJMath.Uniformization.ClosedCoordinateDisk.exists_expandedRadius_lt_outerRadius_avoids_points).
+  [an intermediate expanded radius below the endpoint coordinate radii](lean:JJMath.Uniformization.ClosedCoordinateDisk.exists_expandedRadius_lt_outerRadius_avoids_points).
   If the path does not meet this expanded disk, keep the path.  Otherwise,
   compactness of the inverse image of the expanded disk gives a first and last
   hitting time.  The corresponding points lie on the expanded radius boundary
   circle.  Replace the intervening segment by the circular arc in that radius
   boundary circle.  Since this radius is larger than the original closed radius,
-  [the circle avoids the original closed coordinate
-  disk](lean:JJMath.Uniformization.ClosedCoordinateDisk.radiusBoundaryCircle_subset_compl_carrier).
+  [the circle avoids the original closed coordinate disk](lean:JJMath.Uniformization.ClosedCoordinateDisk.radiusBoundaryCircle_subset_compl_carrier).
 -/
 theorem path_can_be_pushed_off_closedCoordinateDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
@@ -5350,8 +5519,7 @@ statement:
   can be pushed off the first disk while still avoiding the second disk.
 proof:
   Use
-  [a thin exterior annulus around the first disk that misses the second
-  disk](lean:JJMath.Uniformization.ClosedCoordinateDisk.exists_exteriorAnnulusWithOuterRadius_disjoint).
+  [a thin exterior annulus around the first disk that misses the second disk](lean:JJMath.Uniformization.ClosedCoordinateDisk.exists_exteriorAnnulusWithOuterRadius_disjoint).
   Choose the expanded radius for the first-hit/last-hit construction below the
   annulus outer radius and below the endpoint coordinate radii, using
   [the endpoint-avoiding radius selection](lean:JJMath.Uniformization.ClosedCoordinateDisk.exists_expandedRadius_lt_outerRadius_avoids_points).
@@ -5467,8 +5635,7 @@ statement:
   The complement of two disjoint closed coordinate disks in a connected Riemann
   surface is preconnected.
 proof:
-  Since [any two complement points can be joined by a path that avoids the two
-  closed disks](lean:JJMath.Uniformization.disjoint_closedCoordinateDisks_complement_joinedIn),
+  Since [any two complement points can be joined by a path that avoids the two closed disks](lean:JJMath.Uniformization.disjoint_closedCoordinateDisks_complement_joinedIn),
   the range of such a path gives a connected subset of the complement joining
   any prescribed pair of points.  Pairwise joining by connected subsets implies
   preconnectedness.
@@ -5550,10 +5717,34 @@ def toPerronOpen (C : RadoTwoDiskCut X) : PerronOpen X where
     rcases (PathConnectedSpace.nonempty : Nonempty C.complement) with ⟨x⟩
     exact ⟨x, x.2⟩
 
-@[simp] theorem toPerronOpen_carrier (C : RadoTwoDiskCut X) :
+/--
+%%handwave
+name:
+  Carrier of the Perron-open twice-cut complement
+statement:
+  The Perron-open region associated with a twice-cut surface has as its carrier
+  precisely the complement of the two removed closed coordinate disks.
+proof:
+  The construction stores the twice-cut complement itself as the underlying
+  open set.
+-/
+@[simp]
+theorem toPerronOpen_carrier (C : RadoTwoDiskCut X) :
     C.toPerronOpen.carrier = (C.complement : Set X) := rfl
 
-@[simp] theorem toPerronOpen_boundary (C : RadoTwoDiskCut X) :
+/--
+%%handwave
+name:
+  Boundary of the Perron-open twice-cut complement
+statement:
+  The boundary of the Perron-open region associated with a twice-cut surface
+  is the frontier of the complement of the two removed disks.
+proof:
+  The boundary of an open region is its frontier, and its carrier is the
+  twice-cut complement.
+-/
+@[simp]
+theorem toPerronOpen_boundary (C : RadoTwoDiskCut X) :
     C.toPerronOpen.boundary = frontier (C.complement : Set X) := rfl
 
 /--
@@ -5883,10 +6074,8 @@ statement:
   The path-homotopy universal cover of a Riemann surface inherits a
   Riemann-surface structure.
 proof:
-  Combine [Hausdorffness of the path-homotopy
-  cover](lean:JJMath.Uniformization.pathHomotopyUniversalCover_t2Space)
-  with [the pulled-back complex manifold
-  atlas](lean:JJMath.Uniformization.pathHomotopyUniversalCover_isManifold).
+  Combine [Hausdorffness of the path-homotopy cover](lean:JJMath.Uniformization.pathHomotopyUniversalCover_t2Space)
+  with [the pulled-back complex manifold atlas](lean:JJMath.Uniformization.pathHomotopyUniversalCover_isManifold).
 -/
 theorem pathHomotopyUniversalCover_complexOneManifold
     {Y : Type} [TopologicalSpace Y] [ChartedSpace ℂ Y]
@@ -5906,8 +6095,7 @@ statement:
   The path-homotopy universal cover of a Riemann surface is locally
   simply connected.
 proof:
-  Apply [the local simple connectedness of complex charted
-  spaces](lean:JJMath.Uniformization.chartedSpace_complex_locallySimplyConnectedSpace)
+  Apply [the local simple connectedness of complex charted spaces](lean:JJMath.Uniformization.chartedSpace_complex_locallySimplyConnectedSpace)
   to the pulled-back complex charted structure on the cover.
 -/
 theorem pathHomotopyUniversalCover_locallySimplyConnected
@@ -5925,8 +6113,7 @@ statement:
   The path-homotopy universal cover of a Riemann surface inherits a
   Riemann-surface structure.
 proof:
-  Combine [the inherited Riemann-surface
-  structure](lean:JJMath.Uniformization.pathHomotopyUniversalCover_complexOneManifold),
+  Combine [the inherited Riemann-surface structure](lean:JJMath.Uniformization.pathHomotopyUniversalCover_complexOneManifold),
   with [path connectedness](lean:JJMath.Uniformization.pathHomotopyUniversalCover_pathConnected).
 -/
 theorem pathHomotopyUniversalCover_riemannSurface
@@ -6096,6 +6283,9 @@ name:
   The twice-cut boundary value is zero on the first disk
 statement:
   The twice-cut Perron boundary value is \(0\) on the first removed disk.
+proof:
+  Membership in the first disk selects the first branch of the piecewise
+  \(0/1\) boundary function.
 -/
 theorem radoTwoDiskBoundaryValue_eq_zero_on_closedDisk0
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -6110,6 +6300,9 @@ name:
   The twice-cut boundary value is one on the second disk
 statement:
   The twice-cut Perron boundary value is \(1\) on the second removed disk.
+proof:
+  Disjointness of the two disks excludes membership in the first disk, and
+  membership in the second selects the branch with value \(1\).
 -/
 theorem radoTwoDiskBoundaryValue_eq_one_on_closedDisk1
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -6327,6 +6520,21 @@ theorem radoTwoDiskBoundedPerronOpenEnvelope_harmonic_on_complement
   exact harmonicOnSurface_openSubtype_univ_of_ambient C.complement
     (radoTwoDiskBoundedPerronOpenEnvelope_harmonic C)
 
+/--
+%%handwave
+name:
+  A distinguished disk-boundary point lies on the twice-cut frontier
+statement:
+  Let \(D,E\) be disjoint closed coordinate disks and
+  \(\Omega=X\setminus(D\cup E)\).  Then the positive-real boundary point of
+  \(D\) belongs to \(\partial\Omega\).
+proof:
+  The point lies in \(D\), hence not in \(\Omega\), and disjointness keeps it
+  outside \(E\).  Every neighborhood contains chart points just beyond the
+  radius of \(D\); choosing them sufficiently close also avoids \(E\).
+  These points lie in \(\Omega\), so the distinguished point is in its
+  closure and therefore in its frontier.
+-/
 private theorem closedCoordinateDisk_positiveRealBoundaryPoint_mem_boundary_of_compl_union
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
     (D E : ClosedCoordinateDisk X) (hDE : Disjoint D.carrier E.carrier)
@@ -6916,8 +7124,7 @@ statement:
 proof:
   A boundary point of the twice-cut complement lies on one of the two removed
   disks.  On the first disk the boundary value is \(0\), so
-  [the envelope is eventually smaller than every positive
-  number](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_eventually_lt_of_zero_boundary_local_barrier)
+  [the envelope is eventually smaller than every positive number](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_eventually_lt_of_zero_boundary_local_barrier)
   and the zero subfunction gives the lower bound.  On the second disk the
   boundary value is \(1\), so
   [the envelope is eventually larger than \(1-\varepsilon\)](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_eventually_gt_of_one_boundary_local_barrier)
@@ -6964,6 +7171,21 @@ theorem radoTwoDiskBoundedPerronOpenEnvelope_tends_to_boundaryValue_of_local_bar
       rw [hp_value] at ha
       linarith
 
+/--
+%%handwave
+name:
+  A strict upper estimate occurs near a relative limit point
+statement:
+  Let \(p\in\overline S\) and suppose \(f(x)\to a\) as
+  \(x\to p\) within \(S\).  If \(a<b\), then some \(x\in S\) satisfies
+  \[
+    f(x)<b.
+  \]
+proof:
+  The inequality \(f<b\) holds eventually in the relative neighborhood
+  filter.  Since \(p\in\overline S\), that filter is nontrivial, so an
+  eventual point can be chosen in \(S\).
+-/
 theorem exists_mem_lt_of_tendsto_nhdsWithin_of_mem_closure
     {X : Type} [TopologicalSpace X] {s : Set X} {p : X} {f : X → ℝ}
     {a b : ℝ} (hp : p ∈ closure s)
@@ -6975,6 +7197,21 @@ theorem exists_mem_lt_of_tendsto_nhdsWithin_of_mem_closure
   rcases (hnear.and self_mem_nhdsWithin).exists with ⟨x, hxlt, hxs⟩
   exact ⟨x, hxs, hxlt⟩
 
+/--
+%%handwave
+name:
+  A strict lower estimate occurs near a relative limit point
+statement:
+  Let \(p\in\overline S\) and suppose \(f(x)\to a\) as
+  \(x\to p\) within \(S\).  If \(b<a\), then some \(x\in S\) satisfies
+  \[
+    b<f(x).
+  \]
+proof:
+  The inequality \(b<f\) holds eventually in the nontrivial relative
+  neighborhood filter at the closure point \(p\); choose one point where it
+  holds.
+-/
 theorem exists_mem_gt_of_tendsto_nhdsWithin_of_mem_closure
     {X : Type} [TopologicalSpace X] {s : Set X} {p : X} {f : X → ℝ}
     {a b : ℝ} (hp : p ∈ closure s)
@@ -7080,8 +7317,7 @@ statement:
   The bounded Perron-open envelope for the twice-cut problem is nonconstant on
   the complement.
 proof:
-  Since [the envelope takes two different
-  values](lean:JJMath.Uniformization.exists_radoTwoDiskBoundedPerronOpenEnvelope_pair_ne),
+  Since [the envelope takes two different values](lean:JJMath.Uniformization.exists_radoTwoDiskBoundedPerronOpenEnvelope_pair_ne),
   its range has at least two distinct points.
 -/
 theorem radoTwoDiskBoundedPerronOpenEnvelope_nonconstant
@@ -7110,10 +7346,8 @@ statement:
   function.
 proof:
   Regard the twice-cut complement as an open Perron region in the ambient
-  surface.  The [bounded Perron envelope is
-  harmonic](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_harmonic_on_complement),
-  and [the barrier argument gives two distinct
-  values](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_nonconstant).
+  surface.  The [bounded Perron envelope is harmonic](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_harmonic_on_complement),
+  and [the barrier argument gives two distinct values](lean:JJMath.Uniformization.radoTwoDiskBoundedPerronOpenEnvelope_nonconstant).
 -/
 theorem radoTwoDiskCut_has_harmonic_separator
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
@@ -7258,6 +7492,17 @@ namespace SurfaceHolomorphicRealPartBranch
 
 variable {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z] {u : Z → ℝ}
 
+/--
+%%handwave
+name:
+  A point in a real-part branch source lies in the chart source
+statement:
+  If \(x\) belongs to the surface source of a local holomorphic real-part
+  branch, then \(x\) belongs to the source of its coordinate chart.
+proof:
+  The branch source is defined as the intersection of the chart source with
+  the inverse image of the coordinate domain.
+-/
 theorem mem_chart_source_of_mem_source
     (B : SurfaceHolomorphicRealPartBranch Z u)
     {x : Z} (hx : x ∈ B.source) :
@@ -7265,6 +7510,17 @@ theorem mem_chart_source_of_mem_source
   rw [B.source_eq] at hx
   exact hx.1
 
+/--
+%%handwave
+name:
+  A branch-source point maps into the coordinate domain
+statement:
+  If \(x\) belongs to the source of a local holomorphic real-part branch,
+  then its chart coordinate lies in the branch's coordinate domain.
+proof:
+  This is the second condition in the defining intersection formula for the
+  branch source.
+-/
 theorem chart_mem_coordinateSource_of_mem_source
     (B : SurfaceHolomorphicRealPartBranch Z u)
     {x : Z} (hx : x ∈ B.source) :
@@ -7304,6 +7560,21 @@ theorem toSurfaceFunction_re_eq
 noncomputable def toSurfaceTotalFunction (B : SurfaceHolomorphicRealPartBranch Z u) : Z → ℂ :=
   fun x ↦ B.potential (B.chart x)
 
+/--
+%%handwave
+name:
+  The ambient branch function has the prescribed real part on its source
+statement:
+  Let \(B\) be a local holomorphic real-part branch for
+  \(u:Z\to\mathbb R\).  For every \(x\) in its source,
+  \[
+    \operatorname{Re}B(x)=u(x).
+  \]
+proof:
+  The coordinate potential has real part \(u\) after applying the inverse
+  chart.  Since \(x\) lies in the chart source, the inverse chart sends its
+  chart coordinate back to \(x\).
+-/
 theorem toSurfaceTotalFunction_re_eq
     (B : SurfaceHolomorphicRealPartBranch Z u)
     {x : Z} (hx : x ∈ B.source) :
@@ -7362,8 +7633,7 @@ statement:
   differ by an imaginary constant.
 proof:
   Both potentials have the same real part there, namely the value of the same
-  harmonic function at the same surface point.  Apply [the plane overlap
-  lemma](lean:JJMath.Uniformization.analyticOnNhd_eq_add_imaginary_constant_of_re_eq).
+  harmonic function at the same surface point.  Apply [the plane overlap lemma](lean:JJMath.Uniformization.analyticOnNhd_eq_add_imaginary_constant_of_re_eq).
 -/
 theorem potentials_eq_add_imaginary_constant_on_connected_coordinate_subset
     (B C : SurfaceHolomorphicRealPartBranch Z u)
@@ -7462,8 +7732,7 @@ statement:
 proof:
   Transport the second potential through the holomorphic chart transition.
   Both holomorphic functions then have the same real part: they both recover
-  the same harmonic function at the same surface point.  Apply [the plane
-  overlap lemma](lean:JJMath.Uniformization.analyticOnNhd_eq_add_imaginary_constant_of_re_eq).
+  the same harmonic function at the same surface point.  Apply [the plane overlap lemma](lean:JJMath.Uniformization.analyticOnNhd_eq_add_imaginary_constant_of_re_eq).
 -/
 theorem potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset
     [ComplexOneManifold Z]
@@ -7566,9 +7835,7 @@ statement:
   local transitions by imaginary translations.
 proof:
   Near an overlap point, shrink in one coordinate chart to a connected
-  coordinate disk contained in the overlap.  On that disk, [the transported
-  local potentials differ by an imaginary
-  constant](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset),
+  coordinate disk contained in the overlap.  On that disk, [the transported local potentials differ by an imaginary constant](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset),
   which is exactly an imaginary-translation transition.
 -/
 theorem holomorphicRealPartBranchSystem_hasLocalTransitions
@@ -7703,8 +7970,7 @@ statement:
 proof:
   Choose the complex chart at the point.  Since its target is open, choose a
   Euclidean ball in the chart target around the coordinate of the point.  The
-  local branch is supplied by [the chart-ball harmonic-conjugate
-  theorem](lean:JJMath.Uniformization.harmonicOnSurface_exists_analyticOnNhd_chart_ball_re_eq).
+  local branch is supplied by [the chart-ball harmonic-conjugate theorem](lean:JJMath.Uniformization.harmonicOnSurface_exists_analyticOnNhd_chart_ball_re_eq).
 -/
 theorem harmonicOnSurface_exists_local_holomorphicRealPartBranch
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
@@ -7747,21 +8013,13 @@ statement:
   Riemann surface, then they continue to a single global holomorphic function
   with the same real part.
 proof:
-  On an overlap, [the first potential and the transported second potential
-  differ by an imaginary
-  constant](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset).
-  These constants [add on triple
-  overlaps](lean:JJMath.Uniformization.imaginaryConstant_overlap_cocycle), so
+  On an overlap, [the first potential and the transported second potential differ by an imaginary constant](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset).
+  These constants [add on triple overlaps](lean:JJMath.Uniformization.imaginaryConstant_overlap_cocycle), so
   continuing branches along paths gives additive \(i\mathbb R\)-valued
-  transition constants.  The branches are organized as [a holomorphic local
-  branch
-  system](lean:JJMath.Uniformization.holomorphicRealPartBranchSystem), whose
+  transition constants.  The branches are organized as [a holomorphic local branch system](lean:JJMath.Uniformization.holomorphicRealPartBranchSystem), whose
   [local transitions](lean:JJMath.Uniformization.holomorphicRealPartBranchSystem_hasLocalTransitions)
-  feed into [the simply connected branch-continuation
-  principle](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_singleValuedContinuation_of_simplyConnected_localTransitions).
-  The resulting single-valued continuation is holomorphic because [local
-  agreement with transformed holomorphic branches implies
-  holomorphicity](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.SingleValuedContinuation.mdifferentiable),
+  feed into [the simply connected branch-continuation principle](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_singleValuedContinuation_of_simplyConnected_localTransitions).
+  The resulting single-valued continuation is holomorphic because [local agreement with transformed holomorphic branches implies holomorphicity](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.SingleValuedContinuation.mdifferentiable),
   and imaginary translations preserve real parts.
 -/
 theorem holomorphicRealPartBranches_continue_on_simplyConnected_surface
@@ -7801,9 +8059,7 @@ statement:
 proof:
   In each coordinate disk, Mathlib's plane harmonic-conjugate theorem gives a
   holomorphic function whose real part is the coordinate expression of the
-  harmonic function.  On chart overlaps, [the corresponding local potentials
-  differ by imaginary
-  constants](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset).
+  harmonic function.  On chart overlaps, [the corresponding local potentials differ by imaginary constants](lean:JJMath.Uniformization.SurfaceHolomorphicRealPartBranch.potentials_comp_transition_eq_add_imaginary_constant_on_connected_coordinate_subset).
   These constants form the periods of the harmonic conjugate.  Simply
   connectedness kills the periods, so the local holomorphic functions glue to a
   global holomorphic function with the prescribed real part.
@@ -7899,8 +8155,7 @@ statement:
   to the complex plane.
 proof:
   Apply
-  [the primitive theorem on the path-homotopy
-  cover](lean:JJMath.Uniformization.harmonicOn_univ_has_holomorphic_primitive_on_pathHomotopyUniversalCover).
+  [the primitive theorem on the path-homotopy cover](lean:JJMath.Uniformization.harmonicOn_univ_has_holomorphic_primitive_on_pathHomotopyUniversalCover).
   The real part of the primitive is the pullback of the given harmonic
   function.  Since the endpoint map is surjective,
   [nonconstancy of the real part forces nonconstancy of the primitive](lean:JJMath.Uniformization.nontrivial_range_of_real_part_eq_pathHomotopyUniversalCoverPullback).
@@ -7928,14 +8183,11 @@ statement:
   nonconstant holomorphic function to the complex plane.
 proof:
   First,
-  [Perron's method gives a nonconstant harmonic
-  separator](lean:JJMath.Uniformization.radoTwoDiskCut_has_harmonic_separator)
+  [Perron's method gives a nonconstant harmonic separator](lean:JJMath.Uniformization.radoTwoDiskCut_has_harmonic_separator)
   on the twice-cut complement.  Then
-  [the harmonic function has a holomorphic primitive on the path-homotopy
-  cover](lean:JJMath.Uniformization.harmonicOn_univ_has_holomorphic_primitive_on_pathHomotopyUniversalCover)
+  [the harmonic function has a holomorphic primitive on the path-homotopy cover](lean:JJMath.Uniformization.harmonicOn_univ_has_holomorphic_primitive_on_pathHomotopyUniversalCover)
   whose real part is the pulled-back harmonic function.  Since
-  [a primitive with nonconstant pulled-back real part is
-  nonconstant](lean:JJMath.Uniformization.nontrivial_range_of_real_part_eq_pathHomotopyUniversalCoverPullback),
+  [a primitive with nonconstant pulled-back real part is nonconstant](lean:JJMath.Uniformization.nontrivial_range_of_real_part_eq_pathHomotopyUniversalCoverPullback),
   this primitive is the desired holomorphic map.
 -/
 theorem radoTwoDiskCut_universalCover_has_nonconstant_holomorphicMap_to_complex
@@ -7958,14 +8210,10 @@ proof:
   First choose
   [a twice-cut Radó domain](lean:JJMath.Uniformization.exists_radoTwoDiskCut).
   Perron's method gives
-  [a nonconstant holomorphic function on the universal cover of the
-  complement](lean:JJMath.Uniformization.radoTwoDiskCut_universalCover_has_nonconstant_holomorphicMap_to_complex).
+  [a nonconstant holomorphic function on the universal cover of the complement](lean:JJMath.Uniformization.radoTwoDiskCut_universalCover_has_nonconstant_holomorphicMap_to_complex).
   The Poincare-Volterra mechanism makes that universal cover second countable.
-  Then [second countability descends along the endpoint
-  projection](lean:JJMath.Uniformization.secondCountable_of_secondCountable_pathHomotopyUniversalCover),
-  and [a finite open cover by the complement and two coordinate disks makes the
-  original surface second
-  countable](lean:JJMath.Uniformization.secondCountable_of_radoTwoDiskCut_complement).
+  Then [second countability descends along the endpoint projection](lean:JJMath.Uniformization.secondCountable_of_secondCountable_pathHomotopyUniversalCover),
+  and [a finite open cover by the complement and two coordinate disks makes the original surface second countable](lean:JJMath.Uniformization.secondCountable_of_radoTwoDiskCut_complement).
 
   This is the noncircular use of Perron's method in Radó's theorem: no countable
   exhaustion of the original surface is assumed.
@@ -8251,8 +8499,7 @@ statement:
   Riemann surface is the whole surface.
 proof:
   The maximal domain is open by definition and
-  [the maximal second-countable open domain is
-  closed](lean:JJMath.Uniformization.maximal_secondCountableOpenDomain_isClosed).
+  [the maximal second-countable open domain is closed](lean:JJMath.Uniformization.maximal_secondCountableOpenDomain_isClosed).
   A nonempty clopen subset of a connected space is the whole space.
 -/
 theorem maximal_secondCountableOpenDomain_eq_univ
@@ -8272,6 +8519,10 @@ name:
 statement:
   If a second-countable open domain has carrier equal to the whole surface,
   then the surface is second countable.
+proof:
+  The equality of the carrier with the whole space gives a homeomorphism from
+  the second-countable subspace to the surface.  Transport second countability
+  across this homeomorphism.
 -/
 theorem secondCountable_of_full_secondCountableOpenDomain
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -8349,8 +8600,7 @@ statement:
   Every Riemann surface is second countable.
 proof:
   Use
-  [the direct compact-or-Perron
-  split](lean:JJMath.Uniformization.rado_secondCountableTopology_riemannSurface_direct).
+  [the direct compact-or-Perron split](lean:JJMath.Uniformization.rado_secondCountableTopology_riemannSurface_direct).
   In the compact case a finite coordinate cover suffices.  In the noncompact
   case Perron's method on a twice-cut complement produces a nonconstant
   holomorphic function on the universal cover, and the countable basis of

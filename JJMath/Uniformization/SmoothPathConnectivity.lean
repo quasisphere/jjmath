@@ -30,9 +30,31 @@ def SmoothSittingJoined (x y : X) : Prop :=
       (∀ t, t ≤ 0 → gamma t = x) ∧
       (∀ t, 1 ≤ t → gamma t = y)
 
+/--
+%%handwave
+name:
+  Reflexivity of smooth sitting-path connectivity
+statement:
+  Every point is joined to itself by a smooth path that is constant on both
+  exterior half-lines.
+proof:
+  Use the constant path.
+-/
 theorem smoothSittingJoined_refl (x : X) : SmoothSittingJoined x x := by
   refine ⟨fun _ ↦ x, contMDiff_const, ?_, ?_⟩ <;> simp
 
+/--
+%%handwave
+name:
+  Reversal of a smooth sitting path
+statement:
+  If a globally smooth path joins \(x\) to \(y\), is constant for \(t\le0\),
+  and is constant for \(t\ge1\), then a path with the same properties joins
+  \(y\) to \(x\).
+proof:
+  Reparametrize the path by \(t\mapsto1-t\); this interchanges its two
+  constant half-lines.
+-/
 theorem smoothSittingJoined_symm {x y : X} :
     SmoothSittingJoined x y → SmoothSittingJoined y x := by
   rintro ⟨gamma, hgamma, hleft, hright⟩
@@ -45,6 +67,19 @@ theorem smoothSittingJoined_symm {x y : X} :
   · intro t ht
     exact hleft (1 - t) (by linarith)
 
+/--
+%%handwave
+name:
+  Concatenation of smooth sitting paths
+statement:
+  If \(x\) and \(y\), and then \(y\) and \(z\), are joined by globally smooth
+  paths constant outside \([0,1]\), then so are \(x\) and \(z\).
+proof:
+  Translate the second path so that the two paths agree with the constant
+  value \(y\) on a neighborhood of the joining time.  Glue them there by a
+  piecewise definition, then linearly rescale time so that the resulting path
+  is constant before \(0\) and after \(1\).
+-/
 theorem smoothSittingJoined_trans {x y z : X} :
     SmoothSittingJoined x y → SmoothSittingJoined y z →
       SmoothSittingJoined x z := by
@@ -83,8 +118,21 @@ theorem smoothSittingJoined_trans {x y z : X} :
       simp [joined, shiftedDelta, h4t]]
     exact hdelta_right (4 * t - 3) (by linarith)
 
-/-- Every point has an open neighborhood whose points can be joined to it by
-a smooth path with sitting half-lines. -/
+/--
+%%handwave
+name:
+  Local smooth sitting-path connectivity
+statement:
+  Every point \(x\) of a smooth surface has an open neighborhood \(W\) such
+  that each \(y\in W\) can be joined to \(x\) by a globally smooth path which
+  equals \(x\) for \(t\le0\) and \(y\) for \(t\ge1\).
+proof:
+  Choose a coordinate ball centered at \(x\).  Interpolate along the straight
+  segment from the coordinate of \(x\) to that of \(y\), using a smooth step
+  function that is zero before \(0\) and one after \(1\), and pull the segment
+  back through the chart.  Convexity keeps the path inside the coordinate
+  ball.
+-/
 theorem exists_open_smoothSittingJoined_from
     (x : X) : ∃ W : Set X, IsOpen W ∧ x ∈ W ∧
       ∀ y ∈ W, SmoothSittingJoined x y := by
@@ -147,8 +195,20 @@ theorem exists_open_smoothSittingJoined_from
     change e.symm (line t) = e.symm b
     rw [show line t = b by simp [line, hstep]]
 
-/-- Any two points of a connected smooth surface can be joined by a globally
-smooth path which is constant on the two exterior half-lines. -/
+/--
+%%handwave
+name:
+  Global smooth sitting paths on a connected surface
+statement:
+  Any two points \(x,y\) of a connected smooth surface can be joined by a
+  globally smooth path equal to \(x\) for \(t\le0\) and to \(y\) for
+  \(t\ge1\).
+proof:
+  Fix \(x\) and consider the set of points reachable from it by such paths.
+  Local smooth sitting paths and concatenation show that this set is open;
+  reversal and concatenation show that its complement is open.  It is
+  nonempty, so connectedness makes it the whole surface.
+-/
 theorem smoothSittingJoined_all [ConnectedSpace X] (x y : X) :
     SmoothSittingJoined x y := by
   let S : Set X := {z | SmoothSittingJoined x z}
@@ -175,6 +235,17 @@ theorem smoothSittingJoined_all [ConnectedSpace X] (x y : X) :
   rw [hS_univ]
   exact mem_univ y
 
+/--
+%%handwave
+name:
+  Existence form of global smooth sitting-path connectivity
+statement:
+  On a connected smooth surface, for any \(x,y\) there is a smooth map
+  \(\gamma:\mathbb R\to X\) with \(\gamma(t)=x\) for \(t\le0\) and
+  \(\gamma(t)=y\) for \(t\ge1\).
+proof:
+  Unpack the global smooth sitting-path connectivity theorem.
+-/
 theorem smoothSittingJoined_all_exists [ConnectedSpace X] (x y : X) :
     ∃ gamma : ℝ → X,
       ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma ∧

@@ -21,9 +21,23 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
-/-- When ambient first de Rham cohomology vanishes, the connected frontier of
-a complementary component is precisely the smooth frontier component through
-any incident point. -/
+/--
+%%handwave
+name:
+  Frontier of a complementary component equals its incident boundary component
+statement:
+  Let \(X\) be a noncompact Riemann surface with trivial first real de Rham
+  cohomology, let \(D\) be a nonempty preconnected smooth relatively compact
+  domain, and let \(V\) be a component of \(X\setminus\overline D\).  If
+  \(p\in\partial D\cap\partial V\), then \(\partial V\) is exactly the
+  connected component of \(p\) in \(\partial D\), viewed in \(X\).
+proof:
+  Vanishing first cohomology makes \(\partial V\) connected, and every point
+  of \(\partial V\) lies in \(\partial D\); hence it lies in the boundary
+  component through \(p\).  Conversely, incidence of \(V\) propagates from
+  \(p\) along the entire connected boundary component, giving the reverse
+  inclusion.
+-/
 theorem smoothBoundaryDomain_complement_component_frontier_eq_frontierComponentCarrier
     [Subsingleton
       (JJMath.Manifold.DeRhamCohomology
@@ -66,8 +80,21 @@ theorem smoothBoundaryDomain_complement_component_frontier_eq_frontierComponentC
     exact smoothBoundaryDomain_connected_boundary_component_subset_frontier_of_incident
       D p V hV hpV q hq
 
-/-- Every complementary component has a full side-preserving annular collar
-which contains its entire frontier. -/
+/--
+%%handwave
+name:
+  Side-preserving annular collar of a complementary component
+statement:
+  Under the same noncompactness and cohomological hypotheses, every component
+  \(V\) of \(X\setminus\overline D\) admits a boundary point \(p\) and an
+  annular collar \(\phi:W\to S^1\times\mathbb R\) containing all of
+  \(\partial V\), such that \(D\cap W\) is the region \(t<0\) and
+  \(W\setminus\overline D\) is the region \(t>0\).
+proof:
+  A complementary component has a frontier point on \(\partial D\).  Its
+  frontier is the whole connected boundary component through that point.
+  Apply the side-preserving annular-collar theorem to that boundary component.
+-/
 theorem exists_sidePreservingAnnularCollar_of_complementComponent
     [Subsingleton
       (JJMath.Manifold.DeRhamCohomology
@@ -101,8 +128,21 @@ theorem exists_sidePreservingAnnularCollar_of_complementComponent
   rw [hfrontierEq]
   exact hcomponentW
 
-/-- The exterior half of a side-preserving collar belongs to the complementary
-component incident to the chosen frontier point. -/
+/--
+%%handwave
+name:
+  The exterior half-collar lies in the incident complementary component
+statement:
+  Let an annular collar \(W\) identify \(W\setminus\overline D\) with the
+  positive half-cylinder.  If a component \(V\) of
+  \(X\setminus\overline D\) is incident to a point \(p\in W\cap\partial D\),
+  then \(W\setminus\overline D\subseteq V\).
+proof:
+  The positive half-cylinder is preconnected.  Since \(p\in\partial V\), it
+  contains points of \(V\) arbitrarily close to \(p\), hence meets \(V\).
+  A preconnected subset of the complement that meets the component \(V\) is
+  contained in \(V\).
+-/
 theorem sidePreservingAnnularCollar_exteriorSide_subset_component
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -131,8 +171,21 @@ theorem sidePreservingAnnularCollar_exteriorSide_subset_component
   rw [← hV.eq_connectedComponentIn_of_mem hxV] at hhalfComponent
   exact hhalfComponent
 
-/-- Inside a side-preserving collar, the incident complementary component is
-exactly the positive, exterior half. -/
+/--
+%%handwave
+name:
+  The incident component equals the exterior half inside the collar
+statement:
+  In a side-preserving annular collar \(W\), if \(V\) is the complementary
+  component incident to the chosen boundary point, then
+  \[
+    W\cap V=W\cap(X\setminus\overline D).
+  \]
+proof:
+  One inclusion follows because \(V\subseteq X\setminus\overline D\).  The
+  reverse inclusion is the containment of the exterior half-collar in the
+  incident component.
+-/
 theorem sidePreservingAnnularCollar_inter_component_eq_exteriorSide
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -151,8 +204,19 @@ theorem sidePreservingAnnularCollar_inter_component_eq_exteriorSide
       sidePreservingAnnularCollar_exteriorSide_subset_component
         D W phi hexteriorSide V hV p hpW hpV hx⟩
 
-/-- The zero slice of a side-preserving collar lies in the closure of its
-positive half. -/
+/--
+%%handwave
+name:
+  The collar zero slice is approached from the exterior side
+statement:
+  If \(y\) lies on the zero slice \(t=0\) of a side-preserving annular collar
+  \(\phi:W\to S^1\times\mathbb R\), then its ambient point lies in the closure
+  of \(W\setminus\overline D\), the positive half of the collar.
+proof:
+  In the annular cylinder, every point of \(S^1\times\{0\}\) lies in the
+  closure of \(S^1\times(0,\infty)\).  Pull this closure statement back through
+  the collar homeomorphism and then map it into the ambient surface.
+-/
 theorem sidePreservingAnnularCollar_zeroSlice_mem_closure_exteriorSide
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -188,8 +252,23 @@ theorem sidePreservingAnnularCollar_zeroSlice_mem_closure_exteriorSide
       exact ⟨mem_univ _, (hexteriorSide z).mp hxExterior⟩
   rwa [himage] at hyImageClosure
 
-/-- In an incident side-preserving collar, deleting the closure of the
-complementary component leaves exactly the domain half of the collar. -/
+/--
+%%handwave
+name:
+  Removing the incident component closure leaves the domain half-collar
+statement:
+  Let \(V\) be the complementary component incident to a side-preserving
+  annular collar \(W\).  Then
+  \[
+    W\cap(X\setminus\overline V)=W\cap D.
+  \]
+proof:
+  Classify a collar point by the sign of its transverse coordinate.  Negative
+  points are precisely the domain side; positive points lie in \(V\); and
+  zero-slice points lie in the closure of the positive half and hence in
+  \(\overline V\).  Conversely, a point of \(D\) cannot lie in \(\overline V\),
+  since the two open sets are disjoint.
+-/
 theorem sidePreservingAnnularCollar_compl_componentClosure_eq_domainSide
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -236,8 +315,19 @@ def complementComponentClosureOpen (V : Set X) :
     TopologicalSpace.Opens X :=
   ⟨(closure V)ᶜ, isClosed_closure.isOpen_compl⟩
 
-/-- A full collar of the component frontier, together with the component on
-one side and the complement of its closure on the other, covers the surface. -/
+/--
+%%handwave
+name:
+  Mayer--Vietoris cover from a full component collar
+statement:
+  Let \(V\subseteq X\) be open and suppose an open set \(W\) contains
+  \(\partial V\).  Then the two open sets \(W\cup V\) and
+  \(X\setminus\overline V\) cover \(X\).
+proof:
+  A point outside \(\overline V\) is in the second set.  A point of
+  \(\overline V\) is either in \(V\), or lies in \(\partial V\) and therefore
+  in \(W\); in either case it belongs to \(W\cup V\).
+-/
 theorem exteriorComponentCollarUnion_sup_complementComponentClosureOpen
     (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V)
     (hfrontierW : frontier V ⊆ (W : Set X)) :
@@ -255,8 +345,22 @@ theorem exteriorComponentCollarUnion_sup_complementComponentClosureOpen
       exact Or.inl (Or.inl (hfrontierW hxFrontier))
   · exact Or.inr hxClosure
 
-/-- The overlap of the complementary-side collar union with the open
-complement of the component closure is exactly the domain half-collar. -/
+/--
+%%handwave
+name:
+  Overlap of the component-collar Mayer--Vietoris cover
+statement:
+  For a complementary component \(V\) incident to a side-preserving collar
+  \(W\),
+  \[
+    (W\cup V)\cap(X\setminus\overline V)=W\cap D.
+  \]
+proof:
+  The intersection of \(W\) with the complement of \(\overline V\) is the
+  domain half-collar.  The alternative contribution from \(V\) is empty,
+  since \(V\subseteq\overline V\).  Combining these two observations gives
+  the stated equality.
+-/
 theorem exteriorComponentCollarUnion_inf_complementComponentClosureOpen
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,

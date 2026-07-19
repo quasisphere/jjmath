@@ -42,6 +42,16 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 def boundary (Ω : PerronOpen X) : Set X :=
   frontier Ω.carrier
 
+/--
+%%handwave
+name:
+  The boundary of an open Perron region is disjoint from the region
+statement:
+  If \(\Omega\) is a Perron open region and
+  \(x\in\partial\Omega\), then \(x\notin\Omega\).
+proof:
+  An open set is disjoint from its frontier.
+-/
 theorem not_mem_carrier_of_mem_boundary
     (Ω : PerronOpen X) {x : X} (hx : x ∈ Ω.boundary) :
     x ∉ Ω.carrier := by
@@ -265,8 +275,7 @@ statement:
   open-region.
 proof:
   Use
-  [the positive lower bound on the shrink
-  frontier](lean:JJMath.Uniformization.localPerronOpenBarrier_positive_floor_on_frontier)
+  [the positive lower bound on the shrink frontier](lean:JJMath.Uniformization.localPerronOpenBarrier_positive_floor_on_frontier)
   and choose a smaller positive truncation constant.  On the shrink the
   patched function is the minimum of the local barrier and that constant;
   outside it is the constant.  Near the frontier, the positive floor makes the
@@ -565,6 +574,8 @@ name:
 statement:
   The value of the Perron-open envelope at a point is the supremum of the
   Perron-open value set at that point.
+proof:
+  This is the defining formula for the Perron-open envelope.
 -/
 theorem perronOpenEnvelope_eq_sSup_valueSet
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -684,6 +695,9 @@ statement:
   If all Perron-open admissible subfunctions are bounded above by a common
   constant at a point, then the value set at that point is bounded above by
   the same constant.
+proof:
+  Every element of the value set is the value of an admissible subfunction,
+  so the assumed common bound applies to it.
 -/
 theorem perronOpenValueSet_bddAbove_of_family_bound
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1000,6 +1014,10 @@ name:
 statement:
   The bounded Perron-open envelope is the indexed supremum of all bounded
   admissible subfunctions.
+proof:
+  The bounded value set is exactly the range of evaluation on the type of
+  bounded admissible subfunctions, and the supremum of that range is the
+  corresponding indexed supremum.
 -/
 theorem boundedPerronOpenEnvelope_eq_iSup_subfunctions
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1050,6 +1068,9 @@ name:
 statement:
   If the bounded Perron-open family is nonempty, then every value set is
   nonempty.
+proof:
+  Choose one bounded admissible subfunction; its value at the given point is
+  an element of the value set.
 -/
 theorem boundedPerronOpenValueSet_nonempty_of_family_nonempty
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1068,6 +1089,9 @@ name:
 statement:
   At points of the open region, every bounded Perron-open value set is bounded
   above by the fixed bound.
+proof:
+  By bounded admissibility, every contributing subfunction has value at most
+  the fixed bound at each point of the region.
 -/
 theorem boundedPerronOpenValueSet_bddAbove
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1521,10 +1545,33 @@ def toPerronOpen (Ω : PerronDomain X) : PerronOpen X where
   isOpen := Ω.isOpen
   nonempty := Ω.nonempty
 
-@[simp] theorem toPerronOpen_carrier (Ω : PerronDomain X) :
+/--
+%%handwave
+name:
+  Forgetting relative compactness preserves the carrier
+statement:
+  The open region underlying a Perron domain has exactly the same carrier as
+  the original domain.
+proof:
+  This is immediate from the construction, which changes only the stored
+  geometric data and leaves the underlying set unchanged.
+-/
+@[simp]
+theorem toPerronOpen_carrier (Ω : PerronDomain X) :
     Ω.toPerronOpen.carrier = Ω.carrier := rfl
 
-@[simp] theorem toPerronOpen_boundary (Ω : PerronDomain X) :
+/--
+%%handwave
+name:
+  Forgetting relative compactness preserves the boundary
+statement:
+  The boundary of the open region underlying a Perron domain equals the
+  boundary of the original domain.
+proof:
+  Both boundaries are the frontier of the common carrier.
+-/
+@[simp]
+theorem toPerronOpen_boundary (Ω : PerronDomain X) :
     Ω.toPerronOpen.boundary = Ω.boundary := rfl
 
 /--
@@ -1561,13 +1608,36 @@ def ofOpenCompactClosure (U : Set X)
   nonempty := hU_nonempty
   compact_closure := hU_compact_closure
 
-@[simp] theorem ofOpenCompactClosure_carrier
+/--
+%%handwave
+name:
+  Carrier of the Perron domain constructed from an open set
+statement:
+  The Perron domain constructed from a nonempty open set \(U\) with compact
+  closure has carrier \(U\).
+proof:
+  The construction stores \(U\) itself as the carrier.
+-/
+@[simp]
+theorem ofOpenCompactClosure_carrier
     (U : Set X) (hU_open : IsOpen U) (hU_nonempty : U.Nonempty)
     (hU_compact_closure : IsCompact (closure U)) :
     (ofOpenCompactClosure U hU_open hU_nonempty hU_compact_closure).carrier =
       U := rfl
 
-@[simp] theorem ofOpenCompactClosure_boundary
+/--
+%%handwave
+name:
+  Boundary of the Perron domain constructed from an open set
+statement:
+  The boundary of the Perron domain constructed from a nonempty open set \(U\)
+  with compact closure is \(\partial U\).
+proof:
+  Its carrier is \(U\), and the boundary of a Perron domain is defined as the
+  frontier of its carrier.
+-/
+@[simp]
+theorem ofOpenCompactClosure_boundary
     (U : Set X) (hU_open : IsOpen U) (hU_nonempty : U.Nonempty)
     (hU_compact_closure : IsCompact (closure U)) :
     (ofOpenCompactClosure U hU_open hU_nonempty hU_compact_closure).boundary =
@@ -1587,10 +1657,33 @@ def ofSmoothBoundaryDomain (Ω : SmoothBoundaryDomain X) : PerronDomain X where
   nonempty := Ω.nonempty
   compact_closure := Ω.compact_closure
 
-@[simp] theorem ofSmoothBoundaryDomain_carrier (Ω : SmoothBoundaryDomain X) :
+/--
+%%handwave
+name:
+  Forgetting boundary smoothness preserves the carrier
+statement:
+  The Perron domain obtained from a smooth boundary domain has the same carrier
+  as the original domain.
+proof:
+  The construction forgets the smooth-boundary data without changing the
+  underlying set.
+-/
+@[simp]
+theorem ofSmoothBoundaryDomain_carrier (Ω : SmoothBoundaryDomain X) :
     (ofSmoothBoundaryDomain Ω).carrier = Ω.carrier := rfl
 
-@[simp] theorem ofSmoothBoundaryDomain_boundary (Ω : SmoothBoundaryDomain X) :
+/--
+%%handwave
+name:
+  Forgetting boundary smoothness preserves the boundary
+statement:
+  The Perron domain obtained from a smooth boundary domain has the same
+  boundary as the original domain.
+proof:
+  Both boundaries are the frontier of their common carrier.
+-/
+@[simp]
+theorem ofSmoothBoundaryDomain_boundary (Ω : SmoothBoundaryDomain X) :
     (ofSmoothBoundaryDomain Ω).boundary = Ω.boundary := rfl
 
 end PerronDomain
@@ -1785,6 +1878,8 @@ name:
 statement:
   The value of the Perron envelope at a point is the supremum of the Perron
   value set at that point.
+proof:
+  This is the defining formula for the Perron envelope.
 -/
 theorem perronEnvelope_eq_sSup_perronValueSet
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1836,6 +1931,21 @@ noncomputable def perronDirichletCandidate {X : Type}
     classical
     exact fun x ↦ if x ∈ Ω.carrier then perronEnvelope Ω φ x else φ x
 
+/--
+%%handwave
+name:
+  The Perron Dirichlet candidate equals the envelope inside the domain
+statement:
+  For every \(x\in\Omega\),
+  \[
+    U_\varphi(x)=\mathcal P_\varphi(x),
+  \]
+  where \(U_\varphi\) is the Perron Dirichlet candidate and
+  \(\mathcal P_\varphi\) the Perron envelope.
+proof:
+  This is the interior branch of the piecewise definition of
+  \(U_\varphi\).
+-/
 theorem perronDirichletCandidate_eq_envelope_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronDomain X) (φ : PerronBoundaryData Ω) {x : X}
@@ -1843,6 +1953,19 @@ theorem perronDirichletCandidate_eq_envelope_of_mem
     perronDirichletCandidate Ω φ x = perronEnvelope Ω φ x := by
   simp [perronDirichletCandidate, hx]
 
+/--
+%%handwave
+name:
+  The Perron Dirichlet candidate equals the boundary data outside the domain
+statement:
+  For every \(x\notin\Omega\),
+  \[
+    U_\varphi(x)=\varphi(x).
+  \]
+proof:
+  This is the exterior branch of the piecewise definition of the Dirichlet
+  candidate.
+-/
 theorem perronDirichletCandidate_eq_boundaryData_of_not_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronDomain X) (φ : PerronBoundaryData Ω) {x : X}
@@ -1850,6 +1973,17 @@ theorem perronDirichletCandidate_eq_boundaryData_of_not_mem
     perronDirichletCandidate Ω φ x = φ x := by
   simp [perronDirichletCandidate, hx]
 
+/--
+%%handwave
+name:
+  A Perron domain is disjoint from its boundary
+statement:
+  If \(x\in\partial\Omega\) for a Perron domain \(\Omega\), then
+  \(x\notin\Omega\).
+proof:
+  The carrier of a Perron domain is open, and every open set is disjoint
+  from its frontier.
+-/
 theorem PerronDomain.not_mem_carrier_of_mem_boundary
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronDomain X) {x : X} (hx : x ∈ Ω.boundary) :
@@ -2130,6 +2264,10 @@ name:
 statement:
   Every Perron barrier at a boundary point is also a local Perron barrier at
   that point.
+proof:
+  Take the local neighborhood to be the whole surface and restrict the
+  continuity, superharmonicity, zero, and positivity properties of the
+  global barrier.
 -/
 theorem hasLocalPerronBarrierAt_of_hasPerronBarrierAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2191,8 +2329,7 @@ proof:
   The frontier is a closed subset of the compact closure of the shrunken
   neighborhood, hence compact.  It does not contain the marked point because
   the shrunken neighborhood is open and contains that point.  Therefore
-  [the local barrier has a positive compact
-  floor](lean:JJMath.Uniformization.localPerronBarrier_positive_floor_on_compact).
+  [the local barrier has a positive compact floor](lean:JJMath.Uniformization.localPerronBarrier_positive_floor_on_compact).
 -/
 theorem localPerronBarrier_positive_floor_on_frontier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2232,8 +2369,7 @@ statement:
   point, and positive everywhere else on the closed domain.
 proof:
   Use
-  [the positive lower bound on the shrink
-  frontier](lean:JJMath.Uniformization.localPerronBarrier_positive_floor_on_frontier)
+  [the positive lower bound on the shrink frontier](lean:JJMath.Uniformization.localPerronBarrier_positive_floor_on_frontier)
   and choose a smaller positive truncation constant.  On the shrink the
   patched function is the minimum of the local barrier and that constant;
   outside it is the constant.  Near the frontier, the positive floor makes the
@@ -2419,8 +2555,7 @@ proof:
   First obtain
   [a compactly patched representative](lean:JJMath.Uniformization.localPerronBarrierAt_exists_global_locally_superharmonic_patch)
   of the local barrier.  Its local superharmonicity globalizes because
-  [locally superharmonic functions are
-  superharmonic](lean:JJMath.Uniformization.superharmonicOnSurface_of_locally).
+  [locally superharmonic functions are superharmonic](lean:JJMath.Uniformization.superharmonicOnSurface_of_locally).
 -/
 theorem localPerronBarrierAt_globalizes
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2454,6 +2589,9 @@ name:
 statement:
   Every boundary point of a Perron-regular domain admits a local Perron
   barrier.
+proof:
+  Regularity supplies a global Perron barrier at each boundary point, and
+  every global barrier is a local one.
 -/
 theorem perronRegularBoundary_hasLocalBarriers
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2805,6 +2943,19 @@ noncomputable def harmonicReplacementPatch {X : Type}
     classical
     exact fun x ↦ if x ∈ V.carrier then h x else v x
 
+/--
+%%handwave
+name:
+  A harmonic replacement patch equals the replacement inside
+statement:
+  If \(x\in V\), then the patch formed from an original function \(v\) and
+  its harmonic replacement \(h\) satisfies
+  \[
+    \widetilde v(x)=h(x).
+  \]
+proof:
+  This is the interior branch of the patch's piecewise definition.
+-/
 theorem harmonicReplacementPatch_eq_replacement_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (V : PerronDomain X) (v h : X → ℝ) {x : X}
@@ -2812,6 +2963,18 @@ theorem harmonicReplacementPatch_eq_replacement_of_mem
     harmonicReplacementPatch V v h x = h x := by
   simp [harmonicReplacementPatch, hx]
 
+/--
+%%handwave
+name:
+  A harmonic replacement patch equals the original function outside
+statement:
+  If \(x\notin V\), then
+  \[
+    \widetilde v(x)=v(x).
+  \]
+proof:
+  This is the exterior branch of the patch's piecewise definition.
+-/
 theorem harmonicReplacementPatch_eq_original_of_not_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (V : PerronDomain X) (v h : X → ℝ) {x : X}
@@ -2908,8 +3071,7 @@ proof:
   chart on the disk.  Harmonicity follows because
   [analytic precomposition preserves harmonicity](lean:JJMath.Uniformization.harmonicAt_comp_analyticAt)
   and [surface coordinate changes are analytic](lean:JJMath.Uniformization.chartTransition_analyticAt).
-  Continuity up to the boundary uses that [the closure of the coordinate disk
-  stays in the chart](lean:JJMath.Uniformization.coordinate_disk_closure_subset_chart_source);
+  Continuity up to the boundary uses that [the closure of the coordinate disk stays in the chart](lean:JJMath.Uniformization.coordinate_disk_closure_subset_chart_source);
   the boundary equality is the transported Euclidean boundary equality.
 -/
 theorem coordinate_euclidean_solution_solves_surface_dirichlet
@@ -3144,6 +3306,10 @@ name:
 statement:
   The patched harmonic replacement is pointwise at least the original
   subfunction on the Perron domain.
+proof:
+  Inside the replacement domain, compare the subharmonic original function
+  with its harmonic replacement using their equal boundary values.  Outside,
+  the patch equals the original function.
 -/
 theorem harmonicReplacementPatch_ge_original
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3293,8 +3459,7 @@ statement:
   by that test function throughout the test domain.
 proof:
   The boundary hypothesis gives
-  [the same boundary bound for the original
-  subfunction](lean:JJMath.Uniformization.harmonicReplacementPatch_frontier_bound_original).
+  [the same boundary bound for the original subfunction](lean:JJMath.Uniformization.harmonicReplacementPatch_frontier_bound_original).
   The result then follows from the subharmonic comparison principle for the
   original Perron-admissible subfunction.
 -/
@@ -3400,6 +3565,8 @@ name:
   The overlap is open
 statement:
   The overlap of an open test domain with a replacement domain is open.
+proof:
+  It is the intersection of two open sets.
 -/
 theorem harmonicReplacement_overlap_isOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3580,8 +3747,7 @@ statement:
 proof:
   First apply the comparison principle for the original subfunction to the
   outer test domain, using
-  [the patch boundary bound to compare the original subfunction inside the test
-  domain](lean:JJMath.Uniformization.original_le_test_harmonic_of_patch_frontier_bound).
+  [the patch boundary bound to compare the original subfunction inside the test domain](lean:JJMath.Uniformization.original_le_test_harmonic_of_patch_frontier_bound).
   This gives the desired comparison away from the smaller replacement domain.
   On the overlap with the replacement domain, compare the harmonic replacement
   with the test harmonic function using the assumed componentwise
@@ -3685,8 +3851,7 @@ proof:
   The patched function is
   [continuous on the closed outer domain](lean:JJMath.Uniformization.harmonicReplacementPatch_continuousOn_closedDomain),
   [subharmonic on the outer domain](lean:JJMath.Uniformization.harmonicReplacementPatch_subharmonicOn),
-  and [satisfies the same outer boundary
-  bound](lean:JJMath.Uniformization.harmonicReplacementPatch_boundary_le).
+  and [satisfies the same outer boundary bound](lean:JJMath.Uniformization.harmonicReplacementPatch_boundary_le).
   The subharmonicity step uses the explicit componentwise maximum-principle
   geometry for overlaps with connected comparison domains.
 -/
@@ -3724,6 +3889,10 @@ statement:
   If a Perron-open admissible subfunction is harmonically replaced on a
   compact domain contained in the open region, then the original subfunction
   is bounded above by its harmonic replacement inside the smaller domain.
+proof:
+  Apply the admissible subfunction's comparison principle on the replacement
+  domain, using harmonicity and continuity of the replacement and equality
+  of the two functions on its boundary.
 -/
 theorem harmonic_replacement_dominates_original_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3754,6 +3923,9 @@ name:
 statement:
   The patched harmonic replacement of a Perron-open admissible subfunction is
   pointwise at least the original subfunction in the open region.
+proof:
+  Inside the replacement domain, use domination by the harmonic replacement.
+  Outside it, the patch equals the original function.
 -/
 theorem harmonicReplacementPatch_ge_original_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3779,6 +3951,10 @@ name:
 statement:
   A patched harmonic replacement satisfies the same outer boundary bound as
   the original Perron-open admissible subfunction.
+proof:
+  The compactly contained replacement domain does not meet the outer
+  frontier.  There the patch equals the original function, which already
+  satisfies the prescribed boundary inequality.
 -/
 theorem harmonicReplacementPatch_boundary_le_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3802,6 +3978,10 @@ name:
 statement:
   The patched harmonic replacement is continuous on the closure of the outer
   Perron-open region.
+proof:
+  The replacement and original functions are continuous on the two closed
+  pieces cut out by the replacement domain and agree on its frontier.
+  The piecewise continuity lemma therefore glues them continuously.
 -/
 theorem harmonicReplacementPatch_continuousOn_closedOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3835,6 +4015,9 @@ name:
 statement:
   The patched harmonic replacement is upper semicontinuous in the outer
   Perron-open region.
+proof:
+  Its continuity on the closure of the outer region restricts to continuity,
+  hence upper semicontinuity, on the region itself.
 -/
 theorem harmonicReplacementPatch_upperSemicontinuousOn_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3852,6 +4035,23 @@ theorem harmonicReplacementPatch_upperSemicontinuousOn_open
     hcont_closed.mono subset_closure
   exact hcont.upperSemicontinuousOn
 
+/--
+%%handwave
+name:
+  A boundary bound for a harmonic patch bounds the original subfunction
+statement:
+  Let \(V\Subset\Omega\), let \(v\) be Perron-admissible on \(\Omega\), and
+  let \(\widetilde v\) be its harmonic-replacement patch on \(V\).  If
+  \(\widetilde v\le g\) on \(\partial W\), where
+  \(\overline W\subseteq\Omega\), then
+  \[
+    v\le g\quad\text{on }\partial W.
+  \]
+proof:
+  Harmonic replacement dominates the original admissible subfunction
+  throughout \(\Omega\).  Every point of \(\partial W\) lies in \(\Omega\),
+  so \(v\le\widetilde v\le g\) there.
+-/
 theorem harmonicReplacementPatch_frontier_bound_original_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronOpen X) (V : PerronDomain X) (φ : PerronOpenBoundaryData Ω)
@@ -3870,6 +4070,22 @@ theorem harmonicReplacementPatch_frontier_bound_original_open
       hV_preconnected hV_frontier_nonempty hv hh x hxΩ).trans
     (hbd x hxW)
 
+/--
+%%handwave
+name:
+  Comparison of the original subfunction with a harmonic test function
+statement:
+  In the preceding setting, suppose \(W\Subset\Omega\) is open,
+  preconnected, and has nonempty frontier, and \(g\) is harmonic on \(W\)
+  and continuous on \(\overline W\).  If the harmonic-replacement patch is
+  at most \(g\) on \(\partial W\), then
+  \[
+    v\le g\quad\text{on }W.
+  \]
+proof:
+  The boundary hypothesis first implies \(v\le g\) on \(\partial W\).
+  Apply the comparison property in the Perron admissibility of \(v\).
+-/
 theorem original_le_test_harmonic_of_patch_frontier_bound_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronOpen X) (V : PerronDomain X) (φ : PerronOpenBoundaryData Ω)
@@ -3894,6 +4110,23 @@ theorem original_le_test_harmonic_of_patch_frontier_bound_open
     (harmonicReplacementPatch_frontier_bound_original_open Ω V φ hVΩ
       hV_preconnected hV_frontier_nonempty hv hh hWΩ hbd)
 
+/--
+%%handwave
+name:
+  Boundary comparison on the overlap of two replacement regions
+statement:
+  Under the same hypotheses,
+  \[
+    h\le g\quad\text{on }\partial(W\cap V),
+  \]
+  where \(h\) is the harmonic replacement on \(V\).
+proof:
+  A point of \(\partial(W\cap V)\) lies either on \(\partial W\) or on
+  \(\partial V\).  On \(\partial W\), use the assumed patch bound when the
+  point lies in \(V\), and otherwise use \(h=v\) on \(\partial V\).
+  On \(\partial V\), replace \(h\) by \(v\) and use either the interior or
+  frontier comparison for \(v\) against \(g\).
+-/
 theorem harmonicReplacement_overlap_frontier_le_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronOpen X) (V : PerronDomain X) (φ : PerronOpenBoundaryData Ω)
@@ -3947,6 +4180,21 @@ theorem harmonicReplacement_overlap_frontier_le_open
         exact ⟨hxW_closure, hxW⟩
       exact horig_frontier x hxW_frontier
 
+/--
+%%handwave
+name:
+  Harmonic comparison on the replacement overlap
+statement:
+  If every component of \(W\cap V\) has the required maximum-principle
+  geometry, then the preceding boundary inequality implies
+  \[
+    h(x)\le g(x)\qquad(x\in W\cap V).
+  \]
+proof:
+  Both \(h\) and \(g\) are harmonic on the overlap and continuous up to the
+  relevant boundary.  Apply the componentwise harmonic comparison principle
+  using \(h\le g\) on \(\partial(W\cap V)\).
+-/
 theorem harmonicReplacement_le_test_harmonic_on_overlap_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -3976,6 +4224,24 @@ theorem harmonicReplacement_le_test_harmonic_on_overlap_open
       hW_open hW_preconnected hW_frontier_nonempty
       hW_subset hW_compact hWΩ hg_harmonic hg_continuous hbd)
 
+/--
+%%handwave
+name:
+  Comparison principle for a harmonic replacement patch
+statement:
+  Let \(V\Subset\Omega\), and assume the componentwise maximum-principle
+  geometry for \(W\cap V\) whenever \(W\Subset\Omega\) is an admissible test
+  region.  If \(g\) is harmonic on \(W\), continuous on \(\overline W\),
+  and
+  \[
+    \widetilde v\le g\quad\text{on }\partial W,
+  \]
+  then \(\widetilde v\le g\) throughout \(W\).
+proof:
+  On \(W\cap V\), the patch equals \(h\) and harmonic comparison on the
+  overlap applies.  On \(W\setminus V\), it equals \(v\), which is bounded
+  by \(g\) by the original Perron comparison property.
+-/
 theorem harmonicReplacementPatch_comparison_principle_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -4023,6 +4289,19 @@ theorem harmonicReplacementPatch_comparison_principle_open
       hW_open hW_preconnected hW_frontier_nonempty hW_subset hW_compact hWΩ
       hg_harmonic hg_continuous hbd x hxW
 
+/--
+%%handwave
+name:
+  Subharmonicity of a harmonic replacement patch
+statement:
+  Under the harmonic-replacement and overlap-geometry hypotheses, the
+  patched function \(\widetilde v\) is subharmonic on \(\Omega\).
+proof:
+  The patch is upper semicontinuous on \(\Omega\), and it satisfies the
+  defining comparison inequality against every harmonic test function on
+  compactly contained test regions.  These are precisely the two
+  subharmonicity conditions.
+-/
 theorem harmonicReplacementPatch_subharmonicOn_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -4085,6 +4364,22 @@ theorem harmonic_replacement_preserves_open_admissibility
       hV_preconnected hV_frontier_nonempty hOverlap_geometry hv hh,
     harmonicReplacementPatch_boundary_le_open Ω V φ hVΩ hv⟩
 
+/--
+%%handwave
+name:
+  A harmonic replacement preserves an ambient upper bound
+statement:
+  Let \(V\Subset\Omega\), and suppose \(v\le M\) on \(\Omega\).  If \(h\) is
+  the harmonic replacement of \(v\) on \(V\), then
+  \[
+    h\le M\quad\text{on }V.
+  \]
+proof:
+  The harmonic function \(h-M\) is continuous on \(\overline V\) and is
+  nonpositive on \(\partial V\), because \(h=v\) there and
+  \(\partial V\subseteq\Omega\).  The maximum principle gives
+  \(h-M\le0\) in \(V\).
+-/
 theorem harmonicReplacement_le_constant_of_boundary_original_le_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -4116,6 +4411,19 @@ theorem harmonicReplacement_le_constant_of_boundary_original_le_open
   intro x hx
   linarith [hnonpos x hx]
 
+/--
+%%handwave
+name:
+  A harmonic replacement patch preserves an upper bound
+statement:
+  Under the preceding hypotheses,
+  \[
+    \widetilde v\le M\quad\text{on }\Omega.
+  \]
+proof:
+  Inside \(V\), the patch is \(h\le M\) by the maximum principle.  Outside
+  \(V\), it is the original function \(v\le M\).
+-/
 theorem harmonicReplacementPatch_le_constant_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -4703,6 +5011,9 @@ statement:
   If all Perron-admissible subfunctions are bounded above by a common constant
   at a point, then the Perron value set at that point is bounded above by the
   same constant.
+proof:
+  Each member of the value set is the value of some admissible subfunction,
+  so it is bounded by the assumed constant.
 -/
 theorem perronValueSet_bddAbove_of_family_bound
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4768,8 +5079,7 @@ statement:
   envelope throughout the Perron domain.
 proof:
   Every Perron-admissible subfunction is bounded by the constant by
-  [the boundary maximum
-  principle](lean:JJMath.Uniformization.perron_admissible_le_boundary_upper_bound),
+  [the boundary maximum principle](lean:JJMath.Uniformization.perron_admissible_le_boundary_upper_bound),
   and then the supremum is bounded by the same constant.
 -/
 theorem perronEnvelope_le_boundary_upper_bound
@@ -4927,6 +5237,10 @@ statement:
   At each interior point and for every positive epsilon, some
   Perron-admissible subfunction has value within epsilon of the envelope from
   below.
+proof:
+  Apply the strict approximation property of the supremum to
+  \(\mathcal P_\varphi(x)-\varepsilon<\mathcal P_\varphi(x)\), using
+  nonemptiness and local boundedness of the admissible family.
 -/
 theorem exists_perronAdmissible_envelope_sub_lt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5425,6 +5739,10 @@ statement:
   The overlap of a coordinate Perron disk with a connected relatively compact
   comparison domain inside a Perron-open region has the componentwise geometry
   needed by the maximum principle.
+proof:
+  The comparison region and coordinate disk are open.  The general
+  componentwise-geometry theorem for intersecting a preconnected relatively
+  compact open set with another open set applies.
 -/
 theorem coordinate_perron_disk_overlap_geometry_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5456,8 +5774,7 @@ proof:
   The restriction of the subfunction to the closed coordinate disk is
   continuous because the disk closure lies in the outer domain.  Solve the
   coordinate-disk Dirichlet problem to get the harmonic replacement.  The
-  patched function stays admissible by [harmonic replacement preserves Perron
-  admissibility](lean:JJMath.Uniformization.harmonic_replacement_preserves_admissibility).
+  patched function stays admissible by [harmonic replacement preserves Perron admissibility](lean:JJMath.Uniformization.harmonic_replacement_preserves_admissibility).
 -/
 theorem perronAdmissible_has_admissible_harmonic_replacement
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5500,8 +5817,7 @@ statement:
   the replacement disk whenever the patched replacement is admissible.
 proof:
   The patched replacement is admissible, hence lies below the envelope by
-  [local boundedness of the Perron
-  family](lean:JJMath.Uniformization.perronAdmissible_le_perronEnvelope_of_locally_bounded).
+  [local boundedness of the Perron family](lean:JJMath.Uniformization.perronAdmissible_le_perronEnvelope_of_locally_bounded).
   Inside the coordinate disk the patch is exactly the harmonic replacement.
 -/
 theorem harmonicReplacement_le_perronEnvelope_of_patch_admissible
@@ -5530,6 +5846,10 @@ statement:
   On a compactly contained coordinate disk, every bounded Perron-open
   admissible subfunction has a harmonic replacement whose patch is again
   bounded Perron-open admissible.
+proof:
+  Solve the Dirichlet problem on the coordinate disk using the original
+  function as boundary data.  Harmonic replacement preserves Perron-open
+  admissibility, and the maximum principle preserves the fixed upper bound.
 -/
 theorem boundedPerronOpenAdmissible_has_admissible_harmonic_replacement
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5805,6 +6125,9 @@ name:
 statement:
   If the harmonic minorant family is nonempty, then the corresponding index
   type is nonempty.
+proof:
+  Choose a function in the minorant family and pair it with its membership
+  proof.
 -/
 theorem nonempty (hH_nonempty : H.Nonempty) :
     Nonempty (HarmonicMinorantIndex V H) := by
@@ -5818,6 +6141,10 @@ name:
 statement:
   If the harmonic minorant family is directed by pointwise domination on the
   coordinate region, then the corresponding index order is directed.
+proof:
+  Given two indexed minorants, choose a third family member dominating both.
+  With its membership proof, it is a common upper bound in the pointwise
+  order.
 -/
 theorem isDirectedOrder
     (hH_directed :
@@ -5944,6 +6271,10 @@ name:
 statement:
   Every point of an open disk has a positive-radius closed disk around it that
   is still contained in the original disk.
+proof:
+  If \(z\in B(c,R)\), take
+  \(r=(R-d(z,c))/2>0\).  The triangle inequality shows that every point of
+  \(\overline B(z,r)\) remains at distance less than \(R\) from \(c\).
 -/
 theorem exists_pos_radius_closedBall_subset_ball
     {c z : ℂ} {R : ℝ} (hz : z ∈ Metric.ball c R) :
@@ -5970,9 +6301,7 @@ statement:
 proof:
   The harmonic functions satisfy the Poisson formula on the closed subdisk.
   Local uniform convergence on the ambient disk gives uniform convergence on
-  the boundary circle of the subdisk.  Since [Poisson extensions of uniformly
-  close boundary functions are uniformly
-  close](lean:JJMath.Uniformization.abs_poissonDiskExtension_sub_poissonDiskExtension_le_of_boundaryData),
+  the boundary circle of the subdisk.  Since [Poisson extensions of uniformly close boundary functions are uniformly close](lean:JJMath.Uniformization.abs_poissonDiskExtension_sub_poissonDiskExtension_le_of_boundaryData),
   the Poisson extensions converge to the Poisson extension of the limiting
   boundary values.  The pointwise limit is unique, so the Poisson formula
   passes to the limit.
@@ -6066,8 +6395,7 @@ statement:
   On a disk, a locally uniform limit of harmonic functions is harmonic.
 proof:
   Around each point, choose a closed subdisk contained in the original disk.
-  By [the limit has the Poisson representation on that
-  subdisk](lean:JJMath.Uniformization.locallyUniformLimit_harmonicOnNhd_eq_poissonDiskExtension_of_closedBall_subset),
+  By [the limit has the Poisson representation on that subdisk](lean:JJMath.Uniformization.locallyUniformLimit_harmonicOnNhd_eq_poissonDiskExtension_of_closedBall_subset),
   it agrees locally with a Poisson extension.  Since Poisson extensions of
   continuous boundary data are harmonic, the limit is harmonic at the point.
 -/
@@ -6170,8 +6498,7 @@ statement:
 proof:
   Around each point of the open set, choose a disk contained in the open set.
   Restrict the locally uniform convergence and the eventual harmonicity to
-  that disk, then apply that [the limit is harmonic on the disk when harmonic
-  functions converge locally uniformly](lean:JJMath.Uniformization.harmonicOnNhd_of_tendstoLocallyUniformlyOn_ball).
+  that disk, then apply that [the limit is harmonic on the disk when harmonic functions converge locally uniformly](lean:JJMath.Uniformization.harmonicOnNhd_of_tendstoLocallyUniformlyOn_ball).
 -/
 theorem harmonicOnNhd_of_tendstoLocallyUniformlyOn
     {ι : Type} {l : Filter ι} [l.NeBot]
@@ -6204,8 +6531,7 @@ proof:
   Check harmonicity in a complex chart.  Locally uniform convergence on the
   surface composes with the inverse chart to give locally uniform convergence
   on the chart image.  The coordinate functions are harmonic eventually, so
-  [plane harmonic functions are closed under locally uniform
-  limits](lean:JJMath.Uniformization.harmonicOnNhd_of_tendstoLocallyUniformlyOn).
+  [plane harmonic functions are closed under locally uniform limits](lean:JJMath.Uniformization.harmonicOnNhd_of_tendstoLocallyUniformlyOn).
 -/
 theorem harmonicOnSurface_of_tendstoLocallyUniformlyOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7562,11 +7888,9 @@ statement:
   and the resulting function is lower semicontinuous.
 proof:
   The directed harmonic minorants
-  [converge locally uniformly to their pointwise
-  supremum](lean:JJMath.Uniformization.harnack_directed_harmonic_minorants_tendstoLocallyUniformlyOn)
+  [converge locally uniformly to their pointwise supremum](lean:JJMath.Uniformization.harnack_directed_harmonic_minorants_tendstoLocallyUniformlyOn)
   by Harnack compactness.  Since
-  [surface harmonic functions are closed under locally uniform
-  limits](lean:JJMath.Uniformization.harmonicOnSurface_of_tendstoLocallyUniformlyOn),
+  [surface harmonic functions are closed under locally uniform limits](lean:JJMath.Uniformization.harmonicOnSurface_of_tendstoLocallyUniformlyOn),
   the supremum is harmonic.
 -/
 theorem pointwise_sSup_directed_harmonic_family_harmonicOn_coordinate_disk
@@ -7613,8 +7937,7 @@ proof:
   First identify \(P\) with the pointwise supremum of the family by
   [epsilon-cofinality](lean:JJMath.Uniformization.directed_harmonic_minorants_pointwise_sSup).
   Then apply the Harnack regularity theorem saying that
-  [pointwise suprema of directed locally bounded harmonic families are
-  harmonic](lean:JJMath.Uniformization.pointwise_sSup_directed_harmonic_family_harmonicOn_coordinate_disk).
+  [pointwise suprema of directed locally bounded harmonic families are harmonic](lean:JJMath.Uniformization.pointwise_sSup_directed_harmonic_family_harmonicOn_coordinate_disk).
 -/
 theorem directed_harmonic_minorants_sup_harmonicOn_coordinate_disk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7927,6 +8250,8 @@ proof:
   Every point has a compactly contained coordinate Perron disk.  On each such
   disk the bounded Perron-open envelope is harmonic by the coordinate-disk
   lifting theorem, and harmonicity is local.
+tags:
+  milestone
 -/
 theorem boundedPerronOpenEnvelope_is_harmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -8089,8 +8414,7 @@ proof:
   are directed, and the envelope is
   [lower semicontinuous](lean:JJMath.Uniformization.perronEnvelope_lowerSemicontinuousOn).
   Harmonic replacement on the coordinate disk stays in the Perron family by
-  [the harmonic replacement
-  theorem](lean:JJMath.Uniformization.harmonic_replacement_preserves_admissibility).
+  [the harmonic replacement theorem](lean:JJMath.Uniformization.harmonic_replacement_preserves_admissibility).
   The Perron lifting principle combines these regularity facts to identify
   the envelope with its harmonic lifting on the disk.
 -/
@@ -9018,8 +9342,7 @@ statement:
   is continuous on the closed domain.
 proof:
   Interior continuity follows from
-  [harmonic functions are continuous on surface
-  regions](lean:JJMath.Uniformization.harmonicOnSurface_continuousOn).  At a
+  [harmonic functions are continuous on surface regions](lean:JJMath.Uniformization.harmonicOnSurface_continuousOn).  At a
   boundary point, the candidate is equal to the boundary data on the boundary
   side and has the prescribed limit from inside the domain; continuity of the
   boundary data combines these two one-sided controls on the closed domain.
@@ -9102,6 +9425,9 @@ name:
 statement:
   The Perron Dirichlet candidate agrees with the prescribed boundary data on
   the boundary of the domain.
+proof:
+  Boundary points do not belong to the open domain, so the exterior branch
+  of the candidate's definition applies.
 -/
 theorem perronDirichletCandidate_boundary_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -9121,8 +9447,7 @@ statement:
   continuous boundary value.
 proof:
   [The Perron envelope is harmonic](lean:JJMath.Uniformization.perron_envelope_is_harmonic)
-  in the interior.  [Perron barriers recover boundary
-  values](lean:JJMath.Uniformization.perron_envelope_tends_to_boundary_value)
+  in the interior.  [Perron barriers recover boundary values](lean:JJMath.Uniformization.perron_envelope_tends_to_boundary_value)
   at each boundary point.  Together with the interior continuity of harmonic
   functions and the boundary continuity supplied by the barriers, this gives a
   continuous solution on the closed domain.
@@ -9193,8 +9518,7 @@ proof:
   The barrier is \(x\mapsto \log |e(x)-c|-\log R\).  The exterior-disk
   inequalities make it continuous up to the local closed domain, zero at the
   touching point, and positive at every other local closed-domain point.
-  [Logarithmic distance in the chart is
-  harmonic](lean:JJMath.Uniformization.coordinateLogDistance_harmonicOnSurface),
+  [Logarithmic distance in the chart is harmonic](lean:JJMath.Uniformization.coordinateLogDistance_harmonicOnSurface),
   hence superharmonic, in the local interior.
 -/
 theorem exteriorTangentDisk_logPotential_has_local_perron_barrier
@@ -9273,8 +9597,7 @@ proof:
   relatively compact Perron domains.  The barrier is
   \(x\mapsto \log |e(x)-c|-\log R\).  The exterior-disk inequalities give
   continuity, vanishing, and strict positivity, while
-  [logarithmic distance in the chart is
-  harmonic](lean:JJMath.Uniformization.coordinateLogDistance_harmonicOnSurface).
+  [logarithmic distance in the chart is harmonic](lean:JJMath.Uniformization.coordinateLogDistance_harmonicOnSurface).
 -/
 theorem exteriorTangentDisk_logPotential_has_local_perronOpen_barrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -9744,6 +10067,20 @@ theorem smoothComplexZeroSet_verticalDerivative_has_local_implicit_graph_at_orig
   · intro hEq
     exact hw.mpr hEq.symm
 
+/--
+%%handwave
+name:
+  Derivative along a vertical complex line
+statement:
+  If \(F:\mathbb C\to\mathbb R\) is Fréchet differentiable at
+  \(x+iy\) with derivative \(dF\), then
+  \[
+    \frac{d}{dt}\Big|_{t=y}F(x+it)=dF(i).
+  \]
+proof:
+  The parametrization \(t\mapsto x+it\) has derivative \(i\).  Apply the
+  chain rule.
+-/
 private theorem HasFDerivAt.hasDerivAt_verticalLine
     {F : ℂ → ℝ} {dF : ℂ →L[ℝ] ℝ} {x y : ℝ}
     (hF : HasFDerivAt F dF ((x : ℂ) + (y : ℂ) * Complex.I)) :
@@ -9756,6 +10093,24 @@ private theorem HasFDerivAt.hasDerivAt_verticalLine
     HasFDerivAt.comp_hasDerivAt (l := F)
       (f := fun t : ℝ => (x : ℂ) + (t : ℂ) * Complex.I) y hF hline
 
+/--
+%%handwave
+name:
+  Persistence of a positive vertical derivative near the origin
+statement:
+  Suppose \(F:\mathbb C\to\mathbb R\) is smooth near \(0\) and
+  \[
+    dF_0(w)=L\,\operatorname{Im}w
+    \quad\text{with }L>0.
+  \]
+  Then for every \(z\) sufficiently near \(0\),
+  \[
+    dF_z(i)>0.
+  \]
+proof:
+  Smoothness makes \(z\mapsto dF_z(i)\) continuous at the origin, where its
+  value is \(L>0\).  Positivity persists on a neighborhood.
+-/
 private theorem eventually_positive_vertical_fderiv_at_origin
     {F : ℂ → ℝ}
     (hF_smooth : ContDiffAt ℝ ∞ F 0)
@@ -9770,6 +10125,18 @@ private theorem eventually_positive_vertical_fderiv_at_origin
     simp [V, hF_deriv.fderiv, hdF_vertical]
   exact hV_cont.eventually (isOpen_Ioi.mem_nhds (by simpa [hV_zero] using hLpos))
 
+/--
+%%handwave
+name:
+  Infinite smoothness near a point implies local first-order smoothness
+statement:
+  If \(F:\mathbb C\to\mathbb R\) is smooth to all orders at \(0\), then
+  \(F\) is continuously differentiable at every point in some neighborhood
+  of \(0\).
+proof:
+  Infinite smoothness at a point includes eventual smoothness of every
+  finite order; specialize to order one.
+-/
 private theorem eventually_contDiffAt_one_at_origin
     {F : ℂ → ℝ} (hF_smooth : ContDiffAt ℝ ∞ F 0) :
     ∀ᶠ z in 𝓝 (0 : ℂ), ContDiffAt ℝ 1 F z := by
@@ -9778,6 +10145,23 @@ private theorem eventually_contDiffAt_one_at_origin
       change ((1 : ℕ∞) : WithTop ℕ∞) ≤ ((⊤ : ℕ∞) : WithTop ℕ∞)
       exact WithTop.coe_le_coe.mpr le_top)).eventually (by simp)
 
+/--
+%%handwave
+name:
+  Positive vertical derivative gives strict vertical monotonicity
+statement:
+  Let \(F:\mathbb C\to\mathbb R\) be continuously differentiable on a set
+  \(S\), with \(dF_z(i)>0\) there.  If the vertical segment
+  \(\{x+iy:a\le y\le b\}\) lies in \(S\), then
+  \[
+    y\longmapsto F(x+iy)
+  \]
+  is strictly increasing on \([a,b]\).
+proof:
+  The chain rule identifies the derivative along the vertical line with
+  \(dF_{x+iy}(i)>0\).  The one-variable positive-derivative criterion gives
+  strict monotonicity on the interval.
+-/
 private theorem strictMonoOn_verticalLine_of_fderiv_pos
     {F : ℂ → ℝ} {S : Set ℂ} {x a b : ℝ}
     (hF_smooth : ∀ z ∈ S, ContDiffAt ℝ 1 F z)
@@ -9808,6 +10192,23 @@ private theorem strictMonoOn_verticalLine_of_fderiv_pos
     have hyIcc : y ∈ Set.Icc a b := interior_subset hy
     exact hpos _ (hseg y hyIcc)
 
+/--
+%%handwave
+name:
+  A small vertical segment lies in a prescribed complex ball
+statement:
+  Let \(R>0\).  If
+  \[
+    |x|<R/4,\qquad |a|<R/4,\qquad |b|<R/4,
+  \]
+  then every \(y\in[a,b]\) satisfies
+  \[
+    |x+iy|<R.
+  \]
+proof:
+  The interval bounds give \(|y|<R/4\).  Hence
+  \(|x+iy|\le|x|+|y|<R/2<R\).
+-/
 private theorem vertical_segment_mem_ball_of_abs_bounds
     {R x a b y : ℝ} (hRpos : 0 < R)
     (hx : |x| < R / 4) (ha : |a| < R / 4) (hb : |b| < R / 4)
@@ -10033,12 +10434,10 @@ statement:
   below a graph tangent to the horizontal axis and bounded above by \(A x^2\).
 proof:
   First
-  [the vertical differential gives a local implicit sublevel
-  graph](lean:JJMath.Uniformization.smoothPlaneSublevelSet_verticalDerivative_has_local_implicit_graph).
+  [the vertical differential gives a local implicit sublevel graph](lean:JJMath.Uniformization.smoothPlaneSublevelSet_verticalDerivative_has_local_implicit_graph).
   The resulting graph is smooth, passes through the origin, and has zero first
   derivative there.  Hence
-  [a smooth real graph with zero tangent has a quadratic upper
-  bound](lean:JJMath.Uniformization.smoothRealFunction_tangent_zero_has_quadratic_upper_bound).
+  [a smooth real graph with zero tangent has a quadratic upper bound](lean:JJMath.Uniformization.smoothRealFunction_tangent_zero_has_quadratic_upper_bound).
 -/
 theorem smoothPlaneSublevelSet_verticalDerivative_has_quadratic_graph_bound
     {r : ℂ → ℝ} {z₀ : ℂ} {T : ℂ ≃ₗᵢ[ℝ] ℂ}
@@ -10071,11 +10470,9 @@ statement:
   at the origin is horizontal and whose height is quadratically bounded.
 proof:
   First use that
-  [a nonzero real differential has adapted orthonormal
-  coordinates](lean:JJMath.Uniformization.realLinearFunctional_has_adapted_isometry).
+  [a nonzero real differential has adapted orthonormal coordinates](lean:JJMath.Uniformization.realLinearFunctional_has_adapted_isometry).
   In those coordinates,
-  [the vertical differential gives a quadratically bounded implicit
-  graph](lean:JJMath.Uniformization.smoothPlaneSublevelSet_verticalDerivative_has_quadratic_graph_bound).
+  [the vertical differential gives a quadratically bounded implicit graph](lean:JJMath.Uniformization.smoothPlaneSublevelSet_verticalDerivative_has_quadratic_graph_bound).
 -/
 theorem smoothPlaneSublevelSet_has_adapted_quadratic_graph_bound
     {r : ℂ → ℝ} {z₀ : ℂ}
@@ -10285,8 +10682,7 @@ proof:
   First use the local defining-function description to see that, near the
   boundary point, the closed domain lies in the closed sublevel side
   \(r\le0\).  The planar result that
-  [smooth sublevel sets have exterior tangent
-  disks](lean:JJMath.Uniformization.smoothPlaneSublevelSet_has_exterior_tangent_disk)
+  [smooth sublevel sets have exterior tangent disks](lean:JJMath.Uniformization.smoothPlaneSublevelSet_has_exterior_tangent_disk)
   gives a disk in the chart.  Pull the chart neighborhood back to the surface.
 -/
 theorem smoothBoundaryDefiningFunction_has_exterior_tangent_disk
@@ -10375,8 +10771,7 @@ proof:
   function theorem, or equivalently find
   [an exterior tangent disk](lean:JJMath.Uniformization.smoothBoundaryDefiningFunction_has_exterior_tangent_disk)
   in the coordinate plane.  Then
-  [the logarithmic potential of that disk is a local Perron
-  barrier](lean:JJMath.Uniformization.exteriorTangentDisk_logPotential_has_local_perron_barrier).
+  [the logarithmic potential of that disk is a local Perron barrier](lean:JJMath.Uniformization.exteriorTangentDisk_logPotential_has_local_perron_barrier).
 -/
 theorem smoothBoundaryDefiningFunction_has_local_perron_barrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -10409,8 +10804,7 @@ statement:
 proof:
   In a complex boundary chart, smoothness gives a smooth defining function
   with nonzero differential.  Then
-  [the smooth defining function gives a local Perron
-  barrier](lean:JJMath.Uniformization.smoothBoundaryDefiningFunction_has_local_perron_barrier).
+  [the smooth defining function gives a local Perron barrier](lean:JJMath.Uniformization.smoothBoundaryDefiningFunction_has_local_perron_barrier).
 -/
 theorem smoothBoundaryDomain_boundary_points_have_local_barriers
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -10437,13 +10831,13 @@ statement:
 proof:
   Choose a complex coordinate in which the boundary is a smooth curve and the
   domain lies on one side.
-  [Every smooth boundary point has a local Perron
-  barrier](lean:JJMath.Uniformization.smoothBoundaryDomain_boundary_points_have_local_barriers)
+  [Every smooth boundary point has a local Perron barrier](lean:JJMath.Uniformization.smoothBoundaryDomain_boundary_points_have_local_barriers)
   by using a small exterior tangent disk or a local defining function and
   transporting the barrier through the coordinate chart.  Then
-  [a local Perron barrier extends to a global Perron
-  barrier](lean:JJMath.Uniformization.localPerronBarrierAt_globalizes)
+  [a local Perron barrier extends to a global Perron barrier](lean:JJMath.Uniformization.localPerronBarrierAt_globalizes)
   by compactness of the closed domain.
+tags:
+  milestone
 -/
 theorem smoothBoundaryDomain_boundary_points_have_barriers
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -10465,8 +10859,7 @@ statement:
   maximum-principle geometry has Perron-regular boundary.
 proof:
   The geometry hypothesis gives the maximum-principle part of regularity, and
-  [each smooth boundary point has a Perron
-  barrier](lean:JJMath.Uniformization.smoothBoundaryDomain_boundary_points_have_barriers).
+  [each smooth boundary point has a Perron barrier](lean:JJMath.Uniformization.smoothBoundaryDomain_boundary_points_have_barriers).
 -/
 theorem smoothBoundaryDomain_perronRegular
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -10487,11 +10880,11 @@ statement:
   Riemann surface has a harmonic Dirichlet solution when the domain has the
   componentwise geometry needed for the maximum principle.
 proof:
-  [Every smooth boundary domain is
-  Perron-regular](lean:JJMath.Uniformization.smoothBoundaryDomain_perronRegular),
-  and [the Perron Dirichlet candidate solves the Dirichlet
-  problem](lean:JJMath.Uniformization.perron_envelope_solves_dirichlet) on
+  [Every smooth boundary domain is Perron-regular](lean:JJMath.Uniformization.smoothBoundaryDomain_perronRegular),
+  and [the Perron Dirichlet candidate solves the Dirichlet problem](lean:JJMath.Uniformization.perron_envelope_solves_dirichlet) on
   every regular Perron domain.
+tags:
+  milestone
 -/
 theorem perron_dirichlet_solution_on_smooth_boundary_domain
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -10518,8 +10911,7 @@ statement:
   If the boundary data takes two distinct values at two regular boundary
   points, then the Perron solution is nonconstant.
 proof:
-  [The Perron Dirichlet candidate solves the Dirichlet
-  problem](lean:JJMath.Uniformization.perron_envelope_solves_dirichlet), so it
+  [The Perron Dirichlet candidate solves the Dirichlet problem](lean:JJMath.Uniformization.perron_envelope_solves_dirichlet), so it
   assumes the prescribed values at both boundary points.  Since those values
   are different, the range of the solution contains at least two points.
 -/

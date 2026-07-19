@@ -158,6 +158,15 @@ def PointedRealMobiusTransitionEqualitySetContinuityTheorem : Prop :=
 /--
 Continuity of the compared branch maps makes the equality locus closed in the
 overlap.
+
+
+%%handwave
+name:
+  The value-equality locus of two continuous branches is closed
+statement:
+  Let F₁ and F₂ be upper-half-plane developing branches, let A be a real Möbius transformation, and let W be their common domain. If F₂ and A ∘ F₁ are continuous on W, then {z ∈ W | F₂(z) = A(F₁(z))} is closed in W.
+proof:
+  The equality locus is the equalizer of two continuous maps, hence is closed.
 -/
 theorem pointedRealMobiusTransitionEqualitySetIsClosedTheorem_of_continuity
     (hCont : PointedRealMobiusTransitionEqualitySetContinuityTheorem) :
@@ -209,6 +218,15 @@ def LocalUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem : 
 /--
 Continuity of the stored affine derivative gives continuity of the actual
 complex derivative of the upper-half-plane branch.
+
+
+%%handwave
+name:
+  Continuity of the stored affine derivative gives continuity of the actual derivative
+statement:
+  If the stored affine derivative F₁ of an upper-half-plane developing branch F is continuous on its domain and F′ = F₁ there, then the actual complex derivative F′ is continuous on that domain.
+proof:
+  Replace the actual derivative pointwise by the stored affine derivative and use its continuity.
 -/
 theorem localUpperHalfPlaneDevelopingMapComplexDerivativeContinuousOnDomainTheorem_of_affineDerivativeContinuous
     (hAffine :
@@ -239,6 +257,15 @@ def PointedRealMobiusTransitionPostcompositionDerivativeContinuityTheorem : Prop
 /--
 Branch derivative continuity and postcomposition derivative continuity give
 the derivative-continuity target for the one-jet equality locus.
+
+
+%%handwave
+name:
+  The two derivatives in a Möbius one-jet comparison are continuous
+statement:
+  Let F₁ and F₂ be developing branches and A a real Möbius transformation. If F₂′ and (A ∘ F₁)′ are continuous on the common domain, then the derivative components of their one-jet comparison are continuous there.
+proof:
+  Restrict both assumed derivative-continuity statements to the common domain.
 -/
 theorem pointedRealMobiusTransitionOneJetDerivativeContinuityTheorem_of_branch_and_postcomposition
     (hBranchDeriv : LocalUpperHalfPlaneDevelopingMapComplexDerivativeContinuousOnDomainTheorem)
@@ -263,6 +290,15 @@ theorem pointedRealMobiusTransitionOneJetDerivativeContinuityTheorem_of_branch_a
 /--
 Value continuity and derivative continuity make the one-jet equality locus
 closed in the overlap.
+
+
+%%handwave
+name:
+  The one-jet equality locus of two continuous one-jets is closed
+statement:
+  Let W be the common domain of developing branches F₁ and F₂, and let A be a real Möbius transformation. If F₂, A ∘ F₁ and their first derivatives are continuous on W, then {z ∈ W | F₂(z) = A(F₁(z)) and F₂′(z) = (A ∘ F₁)′(z)} is closed in W.
+proof:
+  Both component equality loci are closed equalizers of continuous maps, and their intersection is closed.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySetIsClosedTheorem_of_continuity
     (hValue : PointedRealMobiusTransitionEqualitySetContinuityTheorem)
@@ -310,6 +346,15 @@ def LocalUpperHalfPlaneDevelopingMapComplexContDiffOnDomainTheorem : Prop :=
 /--
 Complex-valued continuity of a branch on its domain gives continuity of the
 upper-half-plane-valued restricted branch.
+
+
+%%handwave
+name:
+  Complex continuity gives upper-half-plane-valued continuity
+statement:
+  If the complex-valued function underlying an upper-half-plane developing branch F is continuous on its domain, then F is continuous there as a map into the upper half plane.
+proof:
+  Use continuity into the subtype exactly when the ambient complex-valued map is continuous and already lands in the subtype.
 -/
 theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem_of_complexContinuousOn
     (hComplex : LocalUpperHalfPlaneDevelopingMapComplexContinuousOnDomainTheorem) :
@@ -321,7 +366,16 @@ theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem_of_complexCont
   exact continuous_induced_rng.mpr (by
     simpa [Function.comp_def, f, Set.restrict] using hf)
 
-/-- `C¹` regularity of branches gives branch-domain continuity. -/
+/-- `C¹` regularity of branches gives branch-domain continuity.
+
+%%handwave
+name:
+  Complex differentiability gives continuity of an upper-half-plane branch
+statement:
+  If an upper-half-plane developing branch F is complex differentiable on its open domain, then F is continuous there as an upper-half-plane-valued map.
+proof:
+  Complex differentiability implies ambient continuity, which transfers to the upper-half-plane-valued branch.
+-/
 theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem_of_complexContDiffOn
     (hContDiff : LocalUpperHalfPlaneDevelopingMapComplexContDiffOnDomainTheorem) :
     LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem :=
@@ -333,6 +387,15 @@ theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem_of_complexCont
 /--
 The actual nonzero derivative stored by every upper-half-plane developing
 branch gives branch-domain continuity.
+
+
+%%handwave
+name:
+  Every upper-half-plane developing branch is continuous as a complex-valued map
+statement:
+  The complex-valued function underlying every local upper-half-plane developing branch is continuous on its domain.
+proof:
+  The stored nonzero complex derivative makes the branch complex differentiable at every domain point, hence continuous there.
 -/
 theorem localUpperHalfPlaneDevelopingMapComplexContinuousOnDomainTheorem :
     LocalUpperHalfPlaneDevelopingMapComplexContinuousOnDomainTheorem := by
@@ -344,7 +407,16 @@ theorem localUpperHalfPlaneDevelopingMapComplexContinuousOnDomainTheorem :
     exact Complex.normSq_pos.mp hpos
   exact ((differentiableAt_of_deriv_ne_zero hf_ne).hasDerivAt).continuousAt.continuousWithinAt
 
-/-- Upper-half-plane developing branches are continuous on their domains. -/
+/-- Upper-half-plane developing branches are continuous on their domains.
+
+%%handwave
+name:
+  Every upper-half-plane developing branch is continuous
+statement:
+  Every local upper-half-plane developing branch is continuous on its domain as a map into the upper half plane.
+proof:
+  First prove continuity of the underlying complex-valued map from its derivative, then transfer continuity to the upper-half-plane subtype.
+-/
 theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem :
     LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem :=
   localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem_of_complexContinuousOn
@@ -354,7 +426,16 @@ theorem localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem :
 def RealMobiusRepresentativeActionContinuousTheorem : Prop :=
   ∀ A : RealMobiusRepresentative, Continuous (realMobiusRepresentativeAction A)
 
-/-- Fixed real-Mobius actions are continuous on the upper half-plane. -/
+/-- Fixed real-Mobius actions are continuous on the upper half-plane.
+
+%%handwave
+name:
+  Real Möbius transformations act continuously on the upper half plane
+statement:
+  For every real Möbius transformation A, the map z ↦ A(z) is continuous on the upper half plane.
+proof:
+  The denominator of a real Möbius transformation is nonzero on the upper half plane, so continuity follows from the quotient formula.
+-/
 theorem realMobiusRepresentativeActionContinuousTheorem :
     RealMobiusRepresentativeActionContinuousTheorem :=
   realMobiusRepresentativeAction_continuous
@@ -362,6 +443,15 @@ theorem realMobiusRepresentativeActionContinuousTheorem :
 /--
 Domain continuity of branches and continuity of real-Mobius actions imply the
 overlap-continuity target for the equality locus.
+
+
+%%handwave
+name:
+  Branch continuity makes a Möbius comparison continuous
+statement:
+  Let F₁ and F₂ be upper-half-plane developing branches and A a real Möbius transformation. If the branches and the action of A are continuous, then F₂ and A ∘ F₁ are continuous on their common domain.
+proof:
+  Restrict F₂ to the overlap and compose the restriction of F₁ with the continuous action of A.
 -/
 theorem pointedRealMobiusTransitionEqualitySetContinuityTheorem_of_branch_and_action_continuity
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -390,6 +480,15 @@ theorem pointedRealMobiusTransitionEqualitySetContinuityTheorem_of_branch_and_ac
 /--
 Branch-domain continuity plus real-Mobius action continuity make the pointed
 equality locus closed in the overlap.
+
+
+%%handwave
+name:
+  Continuous branches have a closed Möbius equality locus
+statement:
+  For continuous upper-half-plane developing branches F₁ and F₂ and a continuous real Möbius transformation A, the locus F₂ = A ∘ F₁ in their common domain is closed.
+proof:
+  Obtain continuity of both compared maps and apply closedness of their equalizer.
 -/
 theorem pointedRealMobiusTransitionEqualitySetIsClosedTheorem_of_branch_and_action_continuity
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -402,6 +501,15 @@ theorem pointedRealMobiusTransitionEqualitySetIsClosedTheorem_of_branch_and_acti
 /--
 Branch-domain continuity alone makes the pointed equality locus closed, since
 fixed real-Mobius actions are continuous.
+
+
+%%handwave
+name:
+  The Möbius equality locus of developing branches is closed
+statement:
+  If upper-half-plane developing branches F₁ and F₂ are continuous on their domains, then for every real Möbius transformation A the locus F₂ = A ∘ F₁ is closed in their common domain.
+proof:
+  Real Möbius transformations are continuous, so the preceding continuous-equalizer argument applies.
 -/
 theorem pointedRealMobiusTransitionEqualitySetIsClosedTheorem_of_branch_continuity
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem) :
@@ -412,6 +520,15 @@ theorem pointedRealMobiusTransitionEqualitySetIsClosedTheorem_of_branch_continui
 /--
 Branch-domain continuity and stored affine derivative continuity imply
 continuity of the derivative of a real-Mobius postcomposition on the overlap.
+
+
+%%handwave
+name:
+  The derivative of a real Möbius postcomposition is continuous
+statement:
+  Let F be an upper-half-plane developing branch and A(z) = (az+b)/(cz+d) a real Möbius map. If F and its affine derivative F′ are continuous, then (A ∘ F)′ = (ad-bc)F′/(cF+d)² is continuous on the branch domain.
+proof:
+  Use the displayed chain-rule formula; its numerator is continuous and its denominator never vanishes on the upper half plane.
 -/
 theorem pointedRealMobiusTransitionPostcompositionDerivativeContinuityTheorem_of_branch_continuity
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -480,6 +597,15 @@ theorem pointedRealMobiusTransitionPostcompositionDerivativeContinuityTheorem_of
 /--
 Branch-domain continuity and stored affine derivative continuity make the
 one-jet equality locus closed.
+
+
+%%handwave
+name:
+  Developing branches have a closed Möbius one-jet equality locus
+statement:
+  If developing branches F₁ and F₂ and their affine derivatives are continuous, then the locus where F₂ = A ∘ F₁ and F₂′ = (A ∘ F₁)′ is closed in their common domain for every real Möbius transformation A.
+proof:
+  Branch continuity closes the value equality locus, while the chain-rule formula and affine-derivative continuity close the derivative equality locus.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySetIsClosedTheorem_of_branch_continuity
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -570,6 +696,15 @@ def MetricRecoveringUpperHalfPlaneBranchesHaveSameSchwarzianCoefficientOnOverlap
 /--
 Metric-Schwarzian identifications for two branches over the same conformal
 factor imply coefficient agreement on their overlap.
+
+
+%%handwave
+name:
+  Branches recovering the same metric have equal Schwarzian coefficients
+statement:
+  Let F₁ and F₂ be local developing branches for the same conformal factor u. If each stored Schwarzian coefficient is identified with 2(u_{zz} − u_z²), then their coefficients agree at every point of the common domain.
+proof:
+  Both coefficients equal the same metric Schwarzian expression pointwise.
 -/
 theorem sameSchwarzianCoefficientOnOverlap_of_originalMetricIdentifications
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -750,6 +885,15 @@ def LocalUpperHalfPlaneDevelopingMapDensitySqDerivativeFormulaTheorem :
 /--
 The squared-density derivative formula implies the logarithmic
 first-Wirtinger formula.
+
+
+%%handwave
+name:
+  The derivative of the squared density gives the first Wirtinger formula
+statement:
+  For an upper-half-plane branch F, set ρ² = |F′|²/(Im F)² and v = ½ log ρ². If ρ² has its explicit complex derivative and is positive, then ∂v = ½ F″/F′ + iF′/(2 Im F).
+proof:
+  Apply the logarithmic chain rule to v = ½ log ρ² and simplify the explicit derivative of ρ².
 -/
 theorem localUpperHalfPlaneDevelopingMapPullbackFirstWirtingerFormulaTheorem_of_densitySqDerivative
     (hρ :
@@ -1009,7 +1153,16 @@ structure LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 
 namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 
-/-- Fixed-branch projective first-derivative regularity gives actual first-derivative regularity. -/
+/-- Fixed-branch projective first-derivative regularity gives actual first-derivative regularity.
+
+%%handwave
+name:
+  Projective regularity identifies the derivative of the branch derivative
+statement:
+  If an upper-half-plane branch F has stored projective derivatives through third order, then at every domain point the actual derivative F′ has derivative equal to the stored second derivative F₂.
+proof:
+  Identify F′ with the stored first derivative locally and use the stored identity F₁′ = F₂.
+-/
 theorem firstDerivative_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {H : LocalUpperHalfPlaneDevelopingMap S}
@@ -1030,6 +1183,15 @@ theorem firstDerivative_hasDerivAt
 /--
 Fixed-branch projective derivative regularity gives actual second-derivative
 regularity.
+
+
+%%handwave
+name:
+  Projective regularity identifies the third derivative of a branch
+statement:
+  If an upper-half-plane branch F has stored projective derivatives through third order, then at every domain point the actual second derivative has derivative equal to the stored third derivative F₃.
+proof:
+  Identify the actual first and second derivatives with the stored branches and use F₂′ = F₃.
 -/
 theorem secondDerivative_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1053,6 +1215,15 @@ theorem secondDerivative_hasDerivAt
 /--
 Fixed-branch projective derivative regularity gives the differentiability
 interface for the actual derivative branch.
+
+
+%%handwave
+name:
+  Projective regularity makes the actual derivative differentiable
+statement:
+  Under projective derivative regularity, the actual derivative F′ of an upper-half-plane branch is complex differentiable at every point of its domain, with derivative F″.
+proof:
+  Use the pointwise derivative identity for F′ and rewrite its value as the actual second derivative.
 -/
 theorem derivative_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1068,7 +1239,16 @@ theorem derivative_hasDerivAt
   convert h using 1
   exact h.deriv
 
-/-- Fixed-branch derivative regularity gives continuity of the stored affine derivative. -/
+/-- Fixed-branch derivative regularity gives continuity of the stored affine derivative.
+
+%%handwave
+name:
+  Projective regularity makes the affine derivative continuous
+statement:
+  If the stored affine derivative F₁ of a developing branch satisfies F₁′ = F₂ throughout the domain, then F₁ is continuous there.
+proof:
+  Pointwise complex differentiability implies continuity on the domain.
+-/
 theorem affineDerivative_continuousOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {H : LocalUpperHalfPlaneDevelopingMap S}
@@ -1129,6 +1309,15 @@ def PointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndP
 /--
 Fixed-pair projective derivative regularity makes the one-jet equality locus
 closed on the overlap.
+
+
+%%handwave
+name:
+  Projective derivative regularity closes the Möbius one-jet equality locus
+statement:
+  Let F₁ and F₂ be upper-half-plane branches with projective derivative regularity, and let A be a real Möbius transformation. Then the locus where F₂ = A ∘ F₁ and F₂′ = (A ∘ F₁)′ is closed in their common domain.
+proof:
+  Projective regularity gives continuity of both branches and their affine derivatives; apply the closed one-jet equalizer theorem.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySet_isClosed_of_pairProjectiveDerivative
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -1259,6 +1448,15 @@ theorem pointedRealMobiusTransitionOneJetEqualitySet_isClosed_of_pairProjectiveD
 /--
 For one fixed pair of branches, coefficient agreement and the pair-shaped
 local uniqueness theorem make the one-jet equality locus open.
+
+
+%%handwave
+name:
+  Coefficient agreement and local uniqueness open the one-jet equality locus
+statement:
+  Let F₁ and F₂ be projectively regular developing branches with equal Schwarzian coefficients on their overlap. If equal one-jets imply local equality for such a pair, then the locus where F₂ and A ∘ F₁ have equal one-jets is open in the overlap.
+proof:
+  At each point of the equality locus, apply the pairwise Schwarzian uniqueness hypothesis to obtain an open neighborhood contained in the locus.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_pairProjectiveDerivative_coefficientAgreement
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -1289,6 +1487,15 @@ theorem pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_pairProjectiveDer
 /--
 Fixed-pair connected-overlap extension from projective derivative regularity,
 coefficient agreement, and the pair-shaped local uniqueness theorem.
+
+
+%%handwave
+name:
+  A pointed Möbius comparison extends across a preconnected overlap
+statement:
+  Let F₁ and F₂ be projectively regular developing branches on a preconnected overlap W with equal Schwarzian coefficients. If they have the same one-jet at z₀ after a real Möbius postcomposition and equal one-jets imply local equality, then F₂ = A ∘ F₁ throughout W.
+proof:
+  The one-jet equality locus contains z₀, is closed by derivative regularity, and is open by local uniqueness; preconnectedness forces it to be all of W.
 -/
 theorem pointedRealMobiusTransition_extendsOnPreconnectedOverlap_of_pairProjectiveDerivative_coefficientAgreement
     (hUnique :
@@ -1396,6 +1603,15 @@ theorem pointedRealMobiusTransition_oneJetExtendsOnPreconnectedOverlap_of_pairPr
 /--
 Projective-symbolic first-derivative regularity implies the actual
 first-derivative regularity of the upper-half-plane branch.
+
+
+%%handwave
+name:
+  Stored projective derivatives identify the derivative of the actual branch derivative
+statement:
+  If a developing branch F has actual derivative equal to its stored first projective derivative F₁ and F₁′ = F₂, then the actual derivative F′ is differentiable with (F′)′ = F₂ throughout the branch domain.
+proof:
+  Near each domain point, F′ equals F₁; transfer the pointwise derivative F₁′ = F₂ across this local equality.
 -/
 theorem localUpperHalfPlaneDevelopingMapFirstDerivativeHasDerivAtTheorem_of_projectiveFirstDerivative
     (hProjFirst :
@@ -1414,6 +1630,15 @@ theorem localUpperHalfPlaneDevelopingMapFirstDerivativeHasDerivAtTheorem_of_proj
 Projective-symbolic second-derivative regularity, together with the
 projective-symbolic first-derivative bridge, implies actual second-derivative
 regularity of the upper-half-plane branch.
+
+
+%%handwave
+name:
+  Stored projective derivatives identify the third derivative of the branch
+statement:
+  If F′ = F₁, F₁′ = F₂, and F₂′ = F₃ on the branch domain, then the actual second derivative F″ is differentiable and (F″)′ = F₃ there.
+proof:
+  First identify F″ locally with F₂, then transfer the stored derivative identity F₂′ = F₃.
 -/
 theorem localUpperHalfPlaneDevelopingMapSecondDerivativeHasDerivAtTheorem_of_projectiveFirstSecondDerivative
     (hProjFirst :
@@ -1438,6 +1663,15 @@ theorem localUpperHalfPlaneDevelopingMapSecondDerivativeHasDerivAtTheorem_of_pro
 The stronger first-derivative regularity package implies the derivative
 branch differentiability interface used in the real-Mobius second-order chain
 rule.
+
+
+%%handwave
+name:
+  Differentiability of the branch derivative gives its actual derivative value
+statement:
+  If the actual derivative F′ of a developing branch is differentiable at every domain point with derivative F₂, then it has pointwise derivative equal to its ordinary complex derivative F″.
+proof:
+  Use the given pointwise derivative and rewrite its derivative value by the defining property of the ordinary complex derivative.
 -/
 theorem localUpperHalfPlaneDevelopingMapDerivativeHasDerivAtTheorem_of_firstDerivative
     (hFirst :
@@ -1451,6 +1685,15 @@ theorem localUpperHalfPlaneDevelopingMapDerivativeHasDerivAtTheorem_of_firstDeri
 /--
 First-derivative regularity makes the stored affine derivative continuous on
 the branch domain.
+
+
+%%handwave
+name:
+  Differentiability makes the stored affine derivative continuous
+statement:
+  If the actual derivative F′ of a developing branch is differentiable on its domain and equals the stored affine derivative F₁, then F₁ is continuous on that domain.
+proof:
+  Differentiability makes F′ continuous, and the pointwise equality F′ = F₁ transfers continuity.
 -/
 theorem localUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem_of_firstDerivative
     (hFirst :
@@ -1469,6 +1712,15 @@ theorem localUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheore
 /--
 The second-order real-Mobius branch chain rule follows from differentiability
 of the branch derivative.
+
+
+%%handwave
+name:
+  The second-order chain rule holds for real Möbius postcomposition
+statement:
+  Let M be a real Möbius transformation and F an upper-half-plane developing branch. If F′ is differentiable, then (M ∘ F)″ = M″(F)(F′)² + M′(F)F″ throughout the branch domain.
+proof:
+  Differentiate (M ∘ F)′ = M′(F)F′ by the chain and product rules.
 -/
 theorem realMobiusBranchPostcompositionSecondDerivativeChainRuleTheorem_of_branchDerivativeHasDerivAt
     (hBranchDeriv :
@@ -1532,6 +1784,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity gives the second-order chain
 rule for postcomposition by a real Mobius transformation.
+
+
+%%handwave
+name:
+  Projective branch regularity gives the second-order Möbius chain rule
+statement:
+  For a projectively regular upper-half-plane branch F and real Möbius transformation M, one has (M ∘ F)″ = M″(F)(F′)² + M′(F)F″ at every point of the branch domain.
+proof:
+  Projective regularity makes F′ differentiable, so the ordinary second-order chain rule applies.
 -/
 theorem realMobiusPostcompositionSecondDerivativeChainRule
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1617,6 +1878,15 @@ end LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 The third-order real-Mobius branch chain rule follows from first- and
 second-derivative regularity of the upper-half-plane branch.
+
+
+%%handwave
+name:
+  The third-order chain rule holds for real Möbius postcomposition
+statement:
+  Let M be a real Möbius transformation and F an upper-half-plane developing branch. If F′ and F″ are differentiable, then (M ∘ F)‴ = M‴(F)(F′)³ + 3M″(F)F′F″ + M′(F)F‴.
+proof:
+  Differentiate the second-order chain rule, using the chain and product rules and collecting the two mixed terms.
 -/
 theorem realMobiusBranchPostcompositionThirdDerivativeChainRuleTheorem_of_first_secondDerivative
     (hFirst :
@@ -1725,6 +1995,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity gives the third-order chain rule
 for postcomposition by a real Mobius transformation.
+
+
+%%handwave
+name:
+  Projective branch regularity gives the third-order Möbius chain rule
+statement:
+  For a projectively regular upper-half-plane branch F and real Möbius transformation M, one has (M ∘ F)‴ = M‴(F)(F′)³ + 3M″(F)F′F″ + M′(F)F‴ throughout the branch domain.
+proof:
+  Projective regularity supplies differentiability through F″; apply the third-order chain rule.
 -/
 theorem realMobiusPostcompositionThirdDerivativeChainRule
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1872,6 +2151,15 @@ end LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 First derivative regularity for a real-Mobius postcomposition of an
 upper-half-plane branch.
+
+
+%%handwave
+name:
+  A real Möbius postcomposition has a differentiable first derivative
+statement:
+  If F′ is differentiable for an upper-half-plane developing branch F and M is a real Möbius transformation, then (M ∘ F)′ is differentiable, with derivative M″(F)(F′)² + M′(F)F″.
+proof:
+  Differentiate the first-order chain-rule product M′(F)F′.
 -/
 theorem realMobiusPostcompositionFirstDerivativeHasDerivAt_of_firstDerivative
     (hFirst :
@@ -1954,6 +2242,15 @@ theorem realMobiusPostcompositionFirstDerivativeHasDerivAt_of_firstDerivative
 /--
 Second derivative regularity for a real-Mobius postcomposition of an
 upper-half-plane branch.
+
+
+%%handwave
+name:
+  A real Möbius postcomposition has a differentiable second derivative
+statement:
+  If F′ and F″ are differentiable for an upper-half-plane developing branch F and M is a real Möbius transformation, then (M ∘ F)″ is differentiable, with derivative given by the third-order chain rule.
+proof:
+  Differentiate M″(F)(F′)² + M′(F)F″ and identify the result with (M ∘ F)‴.
 -/
 theorem realMobiusPostcompositionSecondDerivativeHasDerivAt_of_first_secondDerivative
     (hFirst :
@@ -2083,6 +2380,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity gives first-derivative
 regularity for a real-Mobius postcomposition.
+
+
+%%handwave
+name:
+  Projective regularity makes the first derivative of a Möbius postcomposition differentiable
+statement:
+  For a projectively regular upper-half-plane branch F and real Möbius map M, the derivative (M ∘ F)′ is complex differentiable at every point of the branch domain.
+proof:
+  Projective regularity supplies F′′; differentiate M′(F)F′ and identify the result with the actual second derivative.
 -/
 theorem realMobiusPostcomposition_firstDerivativeHasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2160,6 +2466,15 @@ theorem realMobiusPostcomposition_firstDerivativeHasDerivAt
 /--
 Fixed-branch projective derivative regularity gives second-derivative
 regularity for a real-Mobius postcomposition.
+
+
+%%handwave
+name:
+  Projective regularity makes the second derivative of a Möbius postcomposition differentiable
+statement:
+  For a projectively regular upper-half-plane branch F and real Möbius map M, the second derivative (M ∘ F)″ is complex differentiable at every point of the branch domain.
+proof:
+  Projective regularity supplies derivatives through F‴; differentiate the second-order chain-rule expression and identify the result with the actual third derivative.
 -/
 theorem realMobiusPostcomposition_secondDerivativeHasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2320,6 +2635,17 @@ def RealMobiusFirstWirtingerDenominatorAlgebraTheorem : Prop :=
         Complex.I * (δ ^ 2)⁻¹ / (y / (Complex.normSq δ : ℂ)) =
       Complex.I / y
 
+/--
+The real and imaginary parts of a Möbius denominator satisfy the required rational identity.
+
+%%handwave
+name:
+  The real-imaginary Möbius denominator identity
+statement:
+  For real a,c,y with y ≠ 0 and δ = a+icy ≠ 0, one has (−2c/δ³)/(δ⁻²) + iδ⁻²/(y/|δ|²) = i/y.
+proof:
+  Clear the nonzero denominators, use |δ|²=a²+c²y² and i²=−1, and simplify the resulting polynomial identity.
+-/
 private theorem realMobius_firstWirtinger_denominator_algebra_of_re_im
     (a c y : ℝ) (hy : (y : ℂ) ≠ 0)
     (hδ : (a : ℂ) + (c : ℂ) * (y : ℂ) * Complex.I ≠ 0) :
@@ -2339,7 +2665,16 @@ private theorem realMobius_firstWirtinger_denominator_algebra_of_re_im
   push_cast
   ring_nf
 
-/-- Real Mobius transformations satisfy the denominator algebra identity. -/
+/-- Real Mobius transformations satisfy the denominator algebra identity.
+
+%%handwave
+name:
+  The Möbius denominator satisfies the Poincare multiplier identity
+statement:
+  For a real Möbius map M(z) = (az+b)/(cz+d), a point p in the upper half plane, δ = cp+d, and y = Im p, one has (−2c/δ³)/(δ⁻²) + iδ⁻²/(y/|δ|²) = i/y.
+proof:
+  Write δ = a₀ + icy with real a₀,c,y, clear the nonzero denominators, use |δ|² = a₀²+c²y², and simplify.
+-/
 theorem realMobiusFirstWirtingerDenominatorAlgebraTheorem :
     RealMobiusFirstWirtingerDenominatorAlgebraTheorem := by
   intro A p
@@ -2369,6 +2704,15 @@ theorem realMobiusFirstWirtingerDenominatorAlgebraTheorem :
 /--
 The denominator algebra identity implies the scalar real-Mobius multiplier
 identity.
+
+
+%%handwave
+name:
+  The denominator identity gives the first-Wirtinger Möbius multiplier identity
+statement:
+  For every real Möbius map M and p in the upper half plane, M″(p)/M′(p) + iM′(p)/Im M(p) = i/Im p.
+proof:
+  Substitute M′(p)=δ⁻², M″(p)=−2cδ⁻³, and Im M(p)=Im p/|δ|² into the denominator identity.
 -/
 theorem realMobiusFirstWirtingerMultiplierIdentityTheorem_of_denominatorAlgebra
     (hAlg : RealMobiusFirstWirtingerDenominatorAlgebraTheorem) :
@@ -2407,12 +2751,32 @@ theorem realMobiusFirstWirtingerMultiplierIdentityTheorem_of_denominatorAlgebra
   rw [hα, hβ, hIm]
   simpa [δ, c, y] using hAlg A p
 
-/-- Real Mobius transformations satisfy the scalar first-Wirtinger multiplier identity. -/
+/-- Real Mobius transformations satisfy the scalar first-Wirtinger multiplier identity.
+
+%%handwave
+name:
+  Real Möbius maps satisfy the first-Wirtinger multiplier identity
+statement:
+  For every real Möbius map M and p in the upper half plane, M″(p)/M′(p) + iM′(p)/Im M(p) = i/Im p.
+proof:
+  Apply the proved denominator algebra identity to the explicit derivatives and imaginary-part transformation formula.
+-/
 theorem realMobiusFirstWirtingerMultiplierIdentityTheorem :
     RealMobiusFirstWirtingerMultiplierIdentityTheorem :=
   realMobiusFirstWirtingerMultiplierIdentityTheorem_of_denominatorAlgebra
     realMobiusFirstWirtingerDenominatorAlgebraTheorem
 
+/--
+Algebraic form of invariance of the first-Wirtinger expression.
+
+%%handwave
+name:
+  The first-Wirtinger chain-rule algebra
+statement:
+  Let α,β,F₁,F₂,Yp,Yq be complex numbers with α,F₁,Yp,Yq nonzero. If β/α+iα/Yq=i/Yp, then ((βF₁²+αF₂)/(αF₁)+iαF₁/Yq)/2 = (F₂/F₁+iF₁/Yp)/2.
+proof:
+  Split the left side into F₂/F₁+(β/α+iα/Yq)F₁, substitute the assumed multiplier identity, and clear the nonzero denominators.
+-/
 private theorem realMobiusPostcomposition_firstWirtinger_algebra
     {α β F₁ F₂ Yp Yq : ℂ}
     (hα : α ≠ 0) (hF₁ : F₁ ≠ 0) (hYp : Yp ≠ 0) (hYq : Yq ≠ 0)
@@ -2438,6 +2802,15 @@ private theorem realMobiusPostcomposition_firstWirtinger_algebra
 /--
 The second-order chain rule and the real-Mobius multiplier identity imply
 invariance of the first-Wirtinger expression.
+
+
+%%handwave
+name:
+  The first-Wirtinger expression is invariant under real Möbius postcomposition
+statement:
+  For an upper-half-plane branch F and real Möbius map M, the second-order chain rule together with M″/M′ + iM′/Im M = i/Im implies ½((M∘F)″/(M∘F)′ + i(M∘F)′/Im(M∘F)) = ½(F″/F′ + iF′/Im F).
+proof:
+  Insert the first- and second-order chain rules, factor F′, and simplify with the Möbius multiplier identity.
 -/
 theorem realMobiusPostcompositionFirstWirtingerExpressionInvariantTheorem_of_secondChainRule_multiplierIdentity
     (hSecondChain :
@@ -2515,6 +2888,15 @@ theorem realMobiusPostcompositionFirstWirtingerExpressionInvariantTheorem_of_sec
 /--
 The real-Mobius multiplier identity is now proved, so expression invariance
 only needs the second-order branch chain rule.
+
+
+%%handwave
+name:
+  The second-order chain rule implies invariance of the first-Wirtinger expression
+statement:
+  For an upper-half-plane branch F and real Möbius map M satisfying the second-order chain rule, the expression ½(F″/F′ + iF′/Im F) is unchanged by replacing F with M ∘ F.
+proof:
+  Combine the chain rule with the proved Möbius multiplier identity.
 -/
 theorem realMobiusPostcompositionFirstWirtingerExpressionInvariantTheorem_of_secondChainRule
     (hSecondChain :
@@ -2528,6 +2910,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity gives pointwise invariance of
 the first-Wirtinger expression under real Mobius postcomposition.
+
+
+%%handwave
+name:
+  Projective regularity gives pointwise invariance of the first-Wirtinger expression
+statement:
+  For a projectively regular upper-half-plane branch F, every real Möbius map M, and every domain point z, ½((M∘F)″/(M∘F)′ + i(M∘F)′/Im(M∘F)) equals ½(F″/F′ + iF′/Im F) at z.
+proof:
+  Use the second-order chain rule supplied by projective regularity and the Möbius multiplier identity.
 -/
 theorem realMobiusPostcomposition_firstWirtingerExpression
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2609,6 +3000,15 @@ end LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Expression invariance under real Mobius postcomposition gives preservation of
 the branch first-Wirtinger pullback formula.
+
+
+%%handwave
+name:
+  Real Möbius postcomposition preserves the pullback first-Wirtinger formula
+statement:
+  If ∂u = ½(F″/F′ + iF′/Im F) for an upper-half-plane branch F and the expression on the right is invariant under real Möbius postcomposition, then the same formula holds with F replaced by M ∘ F.
+proof:
+  Replace the postcomposed expression by the original one and apply the branch formula.
 -/
 theorem realMobiusPostcompositionPreservesPullbackFirstWirtingerFormulaTheorem_of_expressionInvariant
     (hInv :
@@ -2674,6 +3074,15 @@ def PointedRealMobiusTransitionPullbackFirstWirtingerFormulaTheorem :
 /--
 The broad comparison first-Wirtinger formula follows from a branch-level
 pullback formula and real-Mobius invariance of that formula.
+
+
+%%handwave
+name:
+  Compared branches satisfy the same first-Wirtinger formula
+statement:
+  Suppose F₁ and F₂ recover the same conformal factor u and have a pointed real Möbius comparison F₂ = M ∘ F₁ to first order. If each branch satisfies ∂u = ½(F″/F′ + iF′/Im F) and this formula is Möbius invariant, then the displayed formula holds for both F₂ and M ∘ F₁.
+proof:
+  Apply the branch formula to F₂ and Möbius invariance to F₁.
 -/
 theorem pointedRealMobiusTransitionPullbackFirstWirtingerFormulaTheorem_of_branchFormula_postcomposition
     (hBranch :
@@ -2698,6 +3107,15 @@ The first-Wirtinger pullback formula gives the metric second-jet bridge.
 Once the two compared maps have the same value and first derivative, the two
 displayed formulas for `u_z` differ only in the second-derivative term.  Since
 the first derivative is nonzero, the second derivatives agree.
+
+
+%%handwave
+name:
+  A metric one-jet comparison determines the second derivative
+statement:
+  Let F₂ and M ∘ F₁ recover the same conformal factor and have equal values and nonzero first derivatives at z₀. If both satisfy ∂u = ½(F″/F′ + iF′/Im F), then F₂″(z₀) = (M ∘ F₁)″(z₀).
+proof:
+  At z₀ the two first-Wirtinger formulas have identical left sides, values, and first-derivative terms; cancel the nonzero common first derivative to identify the second derivatives.
 -/
 theorem pointedRealMobiusTransitionMetricOneJetDeterminesSecondJetTheorem_of_pullbackFirstWirtingerFormula
     (hFormula :
@@ -2973,6 +3391,15 @@ On a small ball, the quotient `f' / g'` has zero derivative.  It is therefore
 constant by mathlib's derivative-zero identity principle; the initial first
 derivative makes that constant equal to one, and a second application of the
 same identity principle to `f` and `g` gives local equality.
+
+
+%%handwave
+name:
+  Equal pre-Schwarzians and one initial one-jet determine a holomorphic map locally
+statement:
+  Let f and g be locally univalent holomorphic functions on an open set U, with f″/f′ = g″/g′ on U. If f(z₀)=g(z₀) and f′(z₀)=g′(z₀), then f=g on some neighborhood of z₀ contained in U.
+proof:
+  The quotient f′/g′ has zero derivative, hence is constant on a small ball; its initial value is one. Thus f′=g′ there, and a second derivative-zero identity argument with the initial value gives f=g.
 -/
 theorem scalarPreSchwarzianValueDerivativeLocalUniquenessTheorem_of_derivativeQuotient :
     ScalarPreSchwarzianValueDerivativeLocalUniquenessTheorem := by
@@ -3091,6 +3518,15 @@ def ScalarPreSchwarzianRiccatiPrimitiveBallExistenceTheorem : Prop :=
 /--
 A local primitive gives a nonvanishing local integrating factor by
 `μ = exp(-A)`.
+
+
+%%handwave
+name:
+  A local primitive produces a nonvanishing integrating factor
+statement:
+  If a complex coefficient a has a primitive A on a neighborhood of z₀, then μ=exp(−A) is nonzero there and satisfies μ′=−aμ.
+proof:
+  Differentiate the exponential by the chain rule and use that the complex exponential never vanishes.
 -/
 theorem scalarPreSchwarzianRiccatiIntegratingFactorBallExistenceTheorem_of_primitive
     (hPrim :
@@ -3111,6 +3547,15 @@ theorem scalarPreSchwarzianRiccatiIntegratingFactorBallExistenceTheorem_of_primi
 /--
 Mathlib's disk primitive theorem gives a primitive on a small ball for every
 coefficient which is complex differentiable on the ambient open set.
+
+
+%%handwave
+name:
+  A holomorphic coefficient has a primitive on a small disk
+statement:
+  If a is complex differentiable on an open set U and z₀∈U, then some disk B(z₀,r) lies in U and carries a holomorphic primitive A with A′=a.
+proof:
+  Choose a disk contained in U and apply the existence theorem for primitives on convex disks.
 -/
 theorem scalarPreSchwarzianRiccatiPrimitiveBallExistence_of_differentiableOn
     {a : ℂ → ℂ} {U : Set ℂ} {z : ℂ}
@@ -3130,6 +3575,15 @@ An integrating factor proves zero-uniqueness for the scalar Riccati/linear
 equation.  The product `μ α` has zero derivative on a small ball, hence is
 constant; since `α` vanishes at the base point and `μ` is nonzero, `α`
 vanishes throughout the ball.
+
+
+%%handwave
+name:
+  A linear first-order equation has local zero uniqueness
+statement:
+  Let α satisfy α′=aα on an open set and α(z₀)=0. If a admits a nonvanishing local integrating factor μ with μ′=−aμ, then α vanishes on a neighborhood of z₀.
+proof:
+  The product rule gives (μα)′=0, so μα is constant on a small connected disk; it is zero at z₀, and μ never vanishes.
 -/
 theorem scalarPreSchwarzianRiccatiZeroLocalUniquenessTheorem_of_integratingFactor
     (hIF :
@@ -3176,6 +3630,15 @@ theorem scalarPreSchwarzianRiccatiZeroLocalUniquenessTheorem_of_integratingFacto
 Zero-uniqueness for `α' = a α` when the coefficient is complex
 differentiable on the ambient open set.  This combines mathlib's primitive
 theorem on balls with the integrating-factor argument.
+
+
+%%handwave
+name:
+  A holomorphic linear equation has local zero uniqueness
+statement:
+  Let a be complex differentiable on an open set U and let α′=aα on U. If α(z₀)=0, then α vanishes on some neighborhood of z₀ contained in U.
+proof:
+  Construct a primitive of a on a small disk, exponentiate its negative to obtain a nonvanishing integrating factor, and apply the product-rule argument.
 -/
 theorem scalarPreSchwarzianRiccatiZeroLocalUniqueness_of_differentiableCoefficient
     {a α : ℂ → ℂ} {U : Set ℂ} {z : ℂ}
@@ -3238,6 +3701,15 @@ theorem scalarPreSchwarzianRiccatiZeroLocalUniqueness_of_differentiableCoefficie
 /--
 Derivative formula for the scalar pre-Schwarzian:
 `(f'' / f')' = S(f) + (1 / 2) (f'' / f')^2`.
+
+
+%%handwave
+name:
+  The derivative of the pre-Schwarzian satisfies the Schwarzian Riccati equation
+statement:
+  For a locally univalent C³ function f, the pre-Schwarzian P_f=f″/f′ satisfies P_f′ = S(f) + ½P_f².
+proof:
+  Differentiate the quotient f″/f′, substitute S(f)=f‴/f′−(3/2)(f″/f′)², and simplify using f′≠0.
 -/
 theorem scalarPreSchwarzian_hasDerivAt
     {f : ℂ → ℂ} {z : ℂ}
@@ -3273,6 +3745,15 @@ theorem scalarPreSchwarzian_hasDerivAt
 /--
 Equal Schwarzians give the Riccati equation for the pre-Schwarzian
 difference.
+
+
+%%handwave
+name:
+  Equal Schwarzians give a linear equation for the pre-Schwarzian difference
+statement:
+  If locally univalent C³ functions f and g satisfy S(f)=S(g), then α=P_f−P_g satisfies α′=½(P_f+P_g)α.
+proof:
+  Subtract the two Riccati identities P′=S+½P² and factor P_f²−P_g².
 -/
 theorem scalarPreSchwarzian_difference_hasDerivAt_of_actualSchwarzian_eq
     {f g : ℂ → ℂ} {z : ℂ}
@@ -3311,6 +3792,15 @@ theorem scalarPreSchwarzian_difference_hasDerivAt_of_actualSchwarzian_eq
 /--
 The algebraic Riccati equation plus zero-uniqueness implies the
 pre-Schwarzian equality step.
+
+
+%%handwave
+name:
+  Equal Schwarzians and one pre-Schwarzian value determine the pre-Schwarzian locally
+statement:
+  Let f and g be locally univalent C³ functions on an open set U with S(f)=S(g). If f″(z₀)/f′(z₀)=g″(z₀)/g′(z₀), then their pre-Schwarzians agree on a neighborhood of z₀.
+proof:
+  Their difference satisfies α′=½(P_f+P_g)α and vanishes at z₀; apply local zero uniqueness for the resulting linear equation.
 -/
 theorem scalarSchwarzianC3ToPreSchwarzianLocalUniquenessTheorem_of_riccatiZero
     (hZero :
@@ -3389,6 +3879,15 @@ theorem scalarSchwarzianC3ToPreSchwarzianLocalUniquenessTheorem_proved :
 /--
 The Riccati pre-Schwarzian reduction plus the final integration step imply
 the regular scalar Schwarzian two-jet uniqueness theorem.
+
+
+%%handwave
+name:
+  Equal Schwarzians and an equal two-jet determine a regular map locally
+statement:
+  Let f and g be locally univalent C³ functions on an open set U. If S(f)=S(g) on U and f, f′, and f″ agree with g, g′, and g″ at z₀, then f=g on some neighborhood of z₀.
+proof:
+  The equal two-jet gives equal pre-Schwarzians at z₀; Riccati uniqueness makes them equal nearby, and the derivative-quotient argument integrates this equality using the common value and first derivative.
 -/
 theorem scalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem_of_preSchwarzian
     (hPre :
@@ -3420,7 +3919,16 @@ theorem scalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem_of_preSchwarzian
     ⟨V, hVopen, hzV, hVsubsetW, hVeq⟩
   exact ⟨V, hVopen, hzV, fun w hw ↦ hWsubset (hVsubsetW hw), hVeq⟩
 
-/-- The broad scalar uniqueness theorem implies the explicit-regularity version. -/
+/-- The broad scalar uniqueness theorem implies the explicit-regularity version.
+
+%%handwave
+name:
+  Scalar Schwarzian two-jet uniqueness applies under explicit C³ regularity
+statement:
+  If a scalar Schwarzian identity principle is known for locally univalent maps, then two explicitly C³ maps with equal Schwarzians and the same value, first derivative, and second derivative at z₀ agree near z₀.
+proof:
+  Discard the explicit derivative witnesses after using them to meet the regularity hypotheses of the scalar identity principle.
+-/
 theorem scalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem_of_scalar
     (hScalar : ScalarSchwarzianTwoJetValueLocalUniquenessTheorem) :
     ScalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem := by
@@ -3473,6 +3981,15 @@ def LocalUpperHalfPlaneDevelopingMapThirdDerivativeIdentificationTheorem : Prop 
 /--
 First-derivative regularity gives the second-derivative identification by
 taking Lean's `deriv`.
+
+
+%%handwave
+name:
+  The stored second derivative is the actual second derivative
+statement:
+  If an upper-half-plane developing branch satisfies F′=F₁ and F₁′=F₂ throughout its domain, then the ordinary second derivative satisfies F″=F₂ there.
+proof:
+  Take the ordinary derivative of the locally identified first derivative and use F₁′=F₂.
 -/
 theorem localUpperHalfPlaneDevelopingMapSecondDerivativeIdentificationTheorem_of_firstDerivative
     (hFirst :
@@ -3484,6 +4001,15 @@ theorem localUpperHalfPlaneDevelopingMapSecondDerivativeIdentificationTheorem_of
 /--
 Second-derivative regularity gives the third-derivative identification by
 taking Lean's `deriv`.
+
+
+%%handwave
+name:
+  The stored third derivative is the actual third derivative
+statement:
+  If an upper-half-plane developing branch satisfies F″=F₂ and F₂′=F₃ throughout its domain, then the ordinary third derivative satisfies F‴=F₃ there.
+proof:
+  Take the ordinary derivative of the locally identified second derivative and use F₂′=F₃.
 -/
 theorem localUpperHalfPlaneDevelopingMapThirdDerivativeIdentificationTheorem_of_secondDerivative
     (hSecond :
@@ -3495,6 +4021,15 @@ theorem localUpperHalfPlaneDevelopingMapThirdDerivativeIdentificationTheorem_of_
 /--
 The branch actual-Schwarzian equation follows from the usual second- and
 third-derivative identifications against the symbolic projective fields.
+
+
+%%handwave
+name:
+  Stored second and third derivatives give the actual Schwarzian equation
+statement:
+  Let F be a locally univalent developing branch whose actual second and third derivatives equal the stored fields F₂ and F₃. Then S(F)=F₃/F′−(3/2)(F₂/F′)² equals the branch’s stored Schwarzian coefficient.
+proof:
+  Substitute the two derivative identifications into the projective Schwarzian equation.
 -/
 theorem localUpperHalfPlaneDevelopingMapActualSchwarzianEquationTheorem_of_second_third
     (hSecond :
@@ -3512,6 +4047,15 @@ theorem localUpperHalfPlaneDevelopingMapActualSchwarzianEquationTheorem_of_secon
 /--
 The branch actual-Schwarzian equation follows from first- and second-derivative
 regularity with the stored symbolic second and third derivatives.
+
+
+%%handwave
+name:
+  Projective derivative regularity gives the actual Schwarzian equation
+statement:
+  If a developing branch satisfies F′=F₁, F₁′=F₂, and F₂′=F₃, then its actual Schwarzian equals its stored Schwarzian coefficient throughout the domain.
+proof:
+  Identify the actual second and third derivatives with F₂ and F₃, then substitute them in the projective Schwarzian equation.
 -/
 theorem localUpperHalfPlaneDevelopingMapActualSchwarzianEquationTheorem_of_first_second_derivative
     (hFirst :
@@ -3530,6 +4074,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity identifies the actual Schwarzian
 of that branch with its stored symbolic Schwarzian coefficient.
+
+
+%%handwave
+name:
+  A projectively regular developing branch has its prescribed Schwarzian
+statement:
+  For every projectively regular developing branch F with coefficient q, S(F)(z)=q(z) at every point z of its domain.
+proof:
+  Replace F″ and F‴ by the stored projective derivative fields and use their defining Schwarzian relation.
 -/
 theorem actualSchwarzian_eq_coefficient
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3590,7 +4143,16 @@ def RealMobiusActualSchwarzianZeroTheorem : Prop :=
           ((UpperHalfPlane.ofComplex : ℂ → ℍ) w) : ℂ))
       p = 0
 
-/-- Real Mobius transformations have zero actual Schwarzian. -/
+/-- Real Mobius transformations have zero actual Schwarzian.
+
+%%handwave
+name:
+  Every real Möbius transformation has zero Schwarzian
+statement:
+  For M(z)=(az+b)/(cz+d) with ad−bc≠0, one has S(M)=M‴/M′−(3/2)(M″/M′)²=0 at every point of the upper half plane.
+proof:
+  Insert the explicit first three derivatives of M, cancel the nonzero denominator, and simplify.
+-/
 theorem realMobiusActualSchwarzianZeroTheorem :
     RealMobiusActualSchwarzianZeroTheorem := by
   intro A p
@@ -3614,6 +4176,17 @@ theorem realMobiusActualSchwarzianZeroTheorem :
   field_simp [hδ_ne]
   ring
 
+/--
+Algebraic cancellation behind Schwarzian invariance under postcomposition.
+
+%%handwave
+name:
+  The third-order Schwarzian chain-rule cancellation
+statement:
+  Let α,β,γ be the first three derivatives of an outer map and F₁,F₂,F₃ those of an inner map, with αF₁ ≠ 0. If γ/α−(3/2)(β/α)²=0, then the Schwarzian expression formed from αF₁, βF₁²+αF₂, and γF₁³+3βF₁F₂+αF₃ equals F₃/F₁−(3/2)(F₂/F₁)².
+proof:
+  Expand the left side, isolate the outer Schwarzian factor (γ/α−(3/2)(β/α)²)F₁², and use its vanishing.
+-/
 private theorem actualSchwarzian_postcomposition_algebra
     {α β γ F₁ F₂ F₃ : ℂ}
     (hα : α ≠ 0) (hF₁ : F₁ ≠ 0)
@@ -3635,6 +4208,15 @@ private theorem actualSchwarzian_postcomposition_algebra
 /--
 Actual Schwarzian invariance is reduced to the ordinary third-order chain
 rule and the fact that real Mobius maps have zero Schwarzian.
+
+
+%%handwave
+name:
+  The Schwarzian is invariant under real Möbius postcomposition
+statement:
+  If the chain rule holds through third order and S(M)=0 for real Möbius maps M, then S(M∘F)=S(F) for every locally univalent upper-half-plane branch F.
+proof:
+  Substitute the second- and third-order chain rules into S(M∘F); the terms involving M combine to S(M)(F)(F′)² and vanish.
 -/
 theorem realMobiusPostcompositionActualSchwarzianInvariantTheorem_of_thirdChainRule_zero
     (hSecondChain :
@@ -3686,6 +4268,15 @@ namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Fixed-branch projective derivative regularity proves actual-Schwarzian
 invariance under postcomposition by a real Mobius transformation.
+
+
+%%handwave
+name:
+  Projective regularity proves Möbius invariance of the actual Schwarzian
+statement:
+  For a projectively regular upper-half-plane branch F and every real Möbius map M, S(M∘F)(z)=S(F)(z) throughout the branch domain.
+proof:
+  Use projective regularity to justify the second- and third-order chain rules, then apply the vanishing Schwarzian of M.
 -/
 theorem realMobiusPostcomposition_actualSchwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3739,6 +4330,15 @@ theorem realMobiusPostcomposition_actualSchwarzian
 /--
 Fixed-branch projective derivative regularity gives the Schwarzian equation
 for a real-Mobius postcomposition of a metric-recovering branch.
+
+
+%%handwave
+name:
+  A Möbius postcomposition satisfies the same Schwarzian equation
+statement:
+  If a projectively regular developing branch F has Schwarzian coefficient q and M is real Möbius, then S(M∘F)=q throughout the branch domain.
+proof:
+  Combine S(M∘F)=S(F) with S(F)=q.
 -/
 theorem realMobiusPostcomposition_actualSchwarzian_eq_coefficient
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3758,6 +4358,15 @@ end LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 /--
 Actual-Schwarzian invariance plus the branch actual-Schwarzian equation gives
 the postcomposition actual-Schwarzian equation.
+
+
+%%handwave
+name:
+  Möbius invariance preserves the developing Schwarzian equation
+statement:
+  If every developing branch F satisfies S(F)=q and actual Schwarzian is invariant under real Möbius postcomposition, then S(M∘F)=q for every real Möbius map M.
+proof:
+  Rewrite S(M∘F) as S(F) by invariance and apply the branch Schwarzian equation.
 -/
 theorem realMobiusPostcompositionActualSchwarzianEquationTheorem_of_invariant
     (hBranch :
@@ -3773,6 +4382,15 @@ theorem realMobiusPostcompositionActualSchwarzianEquationTheorem_of_invariant
 The scalar Schwarzian uniqueness theorem implies the value-only pointed
 real-Mobius local uniqueness statement, once both compared branches are known
 to satisfy the corresponding actual Schwarzian equations.
+
+
+%%handwave
+name:
+  Equal branch Schwarzians and an equal two-jet force local equality
+statement:
+  Let F₂ and M∘F₁ be locally univalent developing branches on an overlap. If both actual Schwarzians equal the same coefficient and their values, first derivatives, and second derivatives agree at z₀, then F₂=M∘F₁ on a neighborhood of z₀.
+proof:
+  Apply scalar Schwarzian two-jet uniqueness to the two complex-valued branches on their open overlap.
 -/
 theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgreementTheorem_of_actualSchwarzian
     (hBranch :
@@ -3839,6 +4457,15 @@ Version of the value-local real-transition uniqueness bridge using the
 regular scalar Schwarzian identity principle.  The required C³ hypotheses are
 supplied by the branch first/second-derivative packages and the corresponding
 real-Mobius postcomposition regularity lemmas.
+
+
+%%handwave
+name:
+  C³ Schwarzian two-jet uniqueness applies to developing branches
+statement:
+  Let F₂ and M∘F₁ be C³ locally univalent developing branches with the same Schwarzian coefficient on their overlap. Equality of their values and first two derivatives at z₀ implies local equality.
+proof:
+  Branch derivative regularity and the Möbius chain rules supply the explicit C³ hypotheses; apply regular scalar Schwarzian two-jet uniqueness.
 -/
 theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgreementTheorem_of_actualSchwarzian_c3
     (hBranch :
@@ -3943,6 +4570,15 @@ theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgre
 /--
 Version of the value-local real-transition uniqueness bridge using the pure
 actual-Schwarzian invariance theorem for real-Mobius postcomposition.
+
+
+%%handwave
+name:
+  Schwarzian invariance reduces branch uniqueness to scalar two-jet uniqueness
+statement:
+  Suppose developing branches satisfy S(F_j)=q_j, real Möbius postcomposition preserves actual Schwarzian, and q₁=q₂ on the overlap. If F₂ and M∘F₁ have the same two-jet at z₀, then they agree locally.
+proof:
+  Coefficient agreement and invariance show that the two compared scalar maps have equal Schwarzians; apply scalar two-jet uniqueness.
 -/
 theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgreementTheorem_of_actualSchwarzian_invariant
     (hBranch :
@@ -3962,6 +4598,15 @@ theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgre
 The value-only two-jet identity principle implies the one-jet version used by
 the clopen propagation argument.  Derivative equality follows from local
 equality on the open neighborhood.
+
+
+%%handwave
+name:
+  Local value equality gives local one-jet equality
+statement:
+  If equality of the two-jets of F₂ and M∘F₁ at z₀ implies F₂=M∘F₁ on a neighborhood, then it also implies equality of their values and first derivatives throughout a possibly smaller neighborhood.
+proof:
+  Differentiate the local value equality at each point of the open neighborhood.
 -/
 theorem pointedRealMobiusTransitionTwoJetLocalUniquenessWithCoefficientAgreementTheorem_of_value
     (hValue :
@@ -3986,6 +4631,15 @@ theorem pointedRealMobiusTransitionTwoJetLocalUniquenessWithCoefficientAgreement
 Metric second-jet recovery plus two-jet Schwarzian uniqueness gives the
 coefficient-aware one-jet local uniqueness theorem used by the clopen
 real-transition argument.
+
+
+%%handwave
+name:
+  A metric one-jet comparison gives local Möbius equality
+statement:
+  Let F₁ and F₂ recover the same hyperbolic metric and have equal Schwarzian coefficients. If equality of the value and first derivative of F₂ and M∘F₁ determines their second derivatives, then Schwarzian two-jet uniqueness implies local equality of their one-jets.
+proof:
+  Recover the second derivative from the common first-Wirtinger formula, then apply two-jet Schwarzian uniqueness.
 -/
 theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_metricSecondJet_twoJetUniqueness
     (hSecond :
@@ -4000,6 +4654,15 @@ theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreement
 /--
 Coefficient agreement plus the coefficient-aware local uniqueness theorem
 gives the broad local one-jet uniqueness target.
+
+
+%%handwave
+name:
+  Metric coefficient agreement removes the explicit Schwarzian hypothesis
+statement:
+  If metric-recovering branches have equal Schwarzian coefficients on every overlap and coefficient-aware equal one-jets imply local Möbius equality, then equal one-jets of any two metric-recovering branches imply local equality.
+proof:
+  Supply coefficient agreement from the common recovered metric and apply the coefficient-aware uniqueness theorem.
 -/
 theorem pointedRealMobiusTransitionOneJetLocalUniquenessTheorem_of_coefficientAgreement
     (hCoeff :
@@ -4013,6 +4676,15 @@ theorem pointedRealMobiusTransitionOneJetLocalUniquenessTheorem_of_coefficientAg
 /--
 Ambient local uniqueness of one-jet comparisons implies openness of the
 one-jet equality locus in the overlap.
+
+
+%%handwave
+name:
+  Local one-jet uniqueness makes the equality locus open
+statement:
+  If equal one-jets of F₂ and M∘F₁ at any overlap point imply equality on a neighborhood, then the locus where their one-jets agree is open in the overlap.
+proof:
+  For each point of the locus, intersect the local uniqueness neighborhood with the overlap; this gives an open neighborhood contained in the locus.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_localUniqueness
     (hLocal : PointedRealMobiusTransitionOneJetLocalUniquenessTheorem) :
@@ -4034,6 +4706,15 @@ theorem pointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_localUnique
 For one fixed pair of branches, coefficient agreement and the
 coefficient-aware local uniqueness theorem make the one-jet equality locus
 open.
+
+
+%%handwave
+name:
+  Coefficient-aware uniqueness opens a fixed one-jet equality locus
+statement:
+  For developing branches F₁,F₂ with equal Schwarzian coefficients on their overlap, coefficient-aware one-jet uniqueness makes {z | F₂(z)=M(F₁(z)), F₂′(z)=(M∘F₁)′(z)} open in the overlap.
+proof:
+  At each point of the locus, apply coefficient-aware local uniqueness using the supplied pointwise coefficient equality.
 -/
 theorem pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_coefficientAgreement
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -4059,7 +4740,16 @@ theorem pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_coefficientAgreem
   intro y hy
   exact hUeq (y : ℂ) hy
 
-/-- Closedness plus openness gives the clopen equality-locus target. -/
+/-- Closedness plus openness gives the clopen equality-locus target.
+
+%%handwave
+name:
+  The Möbius value-equality locus is clopen
+statement:
+  For developing branches F₁,F₂ and a real Möbius map M, if the locus {z | F₂(z)=M(F₁(z))} is both closed and open in the overlap, then it is clopen there.
+proof:
+  Combine the assumed closedness and openness.
+-/
 theorem pointedRealMobiusTransitionEqualitySetIsClopenTheorem_of_closed_open
     (hClosed : PointedRealMobiusTransitionEqualitySetIsClosedTheorem)
     (hOpen : PointedRealMobiusTransitionEqualitySetIsOpenTheorem) :
@@ -4067,7 +4757,16 @@ theorem pointedRealMobiusTransitionEqualitySetIsClopenTheorem_of_closed_open
   intro u S₁ S₂ H₁ H₂ A z₀ hu hpoint
   exact ⟨hClosed H₁ H₂ A z₀ hu hpoint, hOpen H₁ H₂ A z₀ hu hpoint⟩
 
-/-- Closedness plus openness gives the clopen one-jet equality-locus target. -/
+/-- Closedness plus openness gives the clopen one-jet equality-locus target.
+
+%%handwave
+name:
+  The Möbius one-jet equality locus is clopen
+statement:
+  For developing branches F₁,F₂ and a real Möbius map M, if the locus where F₂=M∘F₁ and F₂′=(M∘F₁)′ is both closed and open in the overlap, then it is clopen there.
+proof:
+  Combine the assumed closedness and openness.
+-/
 theorem pointedRealMobiusTransitionOneJetEqualitySetIsClopenTheorem_of_closed_open
     (hClosed : PointedRealMobiusTransitionOneJetEqualitySetIsClosedTheorem)
     (hOpen : PointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem) :
@@ -4078,6 +4777,15 @@ theorem pointedRealMobiusTransitionOneJetEqualitySetIsClopenTheorem_of_closed_op
 /--
 If the pointed equality locus is clopen in the overlap, then preconnectedness
 propagates the pointed one-jet comparison across the whole overlap.
+
+
+%%handwave
+name:
+  A clopen value comparison extends across a preconnected overlap
+statement:
+  Let F₁,F₂ be developing branches on a preconnected overlap W and suppose F₂=M∘F₁ at a base point. If their value-equality locus is clopen in W, then F₂=M∘F₁ throughout W.
+proof:
+  The equality locus is nonempty at the base point; a nonempty clopen subset of a preconnected space is the whole space.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_equalitySetClopen
     (hClopen : PointedRealMobiusTransitionEqualitySetIsClopenTheorem) :
@@ -4102,6 +4810,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_equali
 If the pointed one-jet equality locus is clopen in the overlap, then
 preconnectedness propagates the pointed one-jet comparison across the whole
 overlap.
+
+
+%%handwave
+name:
+  A clopen one-jet comparison extends across a preconnected overlap
+statement:
+  Let F₁,F₂ be developing branches on a preconnected overlap W and suppose their one-jets agree at a base point after real Möbius postcomposition. If the one-jet equality locus is clopen in W, then F₂=M∘F₁ throughout W.
+proof:
+  The one-jet locus is nonempty at the base point, so preconnectedness forces the clopen locus to equal W; retain its value equality.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJetEqualitySetClopen
     (hClopen : PointedRealMobiusTransitionOneJetEqualitySetIsClopenTheorem) :
@@ -4125,6 +4842,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJet
 /--
 Closedness and openness of the pointed equality locus imply connected-overlap
 extension.
+
+
+%%handwave
+name:
+  Closed and open value equality propagates across a preconnected overlap
+statement:
+  If the Möbius value-equality locus of two pointed developing branches is closed and open in their preconnected overlap, then the pointed equality extends throughout the overlap.
+proof:
+  Form the clopen equality locus and apply propagation from its base point.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_equalitySet_closed_open
     (hClosed : PointedRealMobiusTransitionEqualitySetIsClosedTheorem)
@@ -4137,6 +4863,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_equali
 /--
 Closedness and openness of the pointed one-jet equality locus imply
 connected-overlap extension.
+
+
+%%handwave
+name:
+  Closed and open one-jet equality propagates across a preconnected overlap
+statement:
+  If the Möbius one-jet equality locus of two pointed developing branches is closed and open in their preconnected overlap, then the pointed equality extends throughout the overlap.
+proof:
+  Form the clopen one-jet locus and use preconnectedness, retaining the value equality on the whole overlap.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJetEqualitySet_closed_open
     (hClosed : PointedRealMobiusTransitionOneJetEqualitySetIsClosedTheorem)
@@ -4148,6 +4883,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJet
 
 /--
 Closedness plus local one-jet uniqueness imply connected-overlap extension.
+
+
+%%handwave
+name:
+  Closedness and local uniqueness propagate a pointed Möbius comparison
+statement:
+  Let two developing branches have a pointed real Möbius one-jet comparison on a preconnected overlap. If the one-jet equality locus is closed and equal one-jets imply local equality, then the comparison extends throughout the overlap.
+proof:
+  Local uniqueness makes the one-jet locus open; combine with closedness and propagate the nonempty clopen locus.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJetEqualitySet_closed_localUniqueness
     (hClosed : PointedRealMobiusTransitionOneJetEqualitySetIsClosedTheorem)
@@ -4161,6 +4905,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_oneJet
 /--
 Branch regularity plus local one-jet uniqueness imply connected-overlap
 extension.
+
+
+%%handwave
+name:
+  Branch regularity and local uniqueness extend pointed Möbius comparisons
+statement:
+  Let F₁,F₂ be developing branches with continuous values and affine derivatives on a preconnected overlap. If equal one-jets imply local equality, then any pointed real Möbius comparison F₂=M∘F₁ extends throughout the overlap.
+proof:
+  Regularity makes the one-jet equality locus closed, local uniqueness makes it open, and preconnectedness propagates it from the base point.
 -/
 theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_branch_continuity_localUniqueness
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -4176,6 +4929,15 @@ theorem pointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem_of_branch
 /--
 Fixed-pair connected-overlap extension from branch regularity, coefficient
 agreement, and the coefficient-aware one-jet uniqueness theorem.
+
+
+%%handwave
+name:
+  Coefficient-aware one-jet uniqueness extends a fixed Möbius comparison
+statement:
+  Let F₁,F₂ be continuous developing branches with continuous affine derivatives, equal Schwarzian coefficients, and a pointed real Möbius one-jet comparison on a preconnected overlap. If coefficient-aware equal one-jets imply local equality, then F₂=M∘F₁ throughout the overlap.
+proof:
+  Coefficient agreement supplies local uniqueness, branch regularity closes the one-jet locus, and the clopen argument propagates it.
 -/
 theorem pointedRealMobiusTransition_extendsOnPreconnectedOverlap_of_branch_continuity_coefficientAgreement
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -4222,6 +4984,15 @@ theorem pointedRealMobiusTransition_extendsOnPreconnectedOverlap_of_branch_conti
 /--
 Pointed real-Mobius one-jet normalization plus connected-overlap extension
 give the nonempty-overlap branch real-transition theorem.
+
+
+%%handwave
+name:
+  Pointed Möbius normalization gives real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Choose a real Möbius map matching the two branch one-jets at one overlap point, then extend the comparison across the preconnected overlap.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_pointed
     (hPoint :
@@ -4237,6 +5008,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 Pointed one-jet transitivity from equal hyperbolic derivative norms, together
 with connected-overlap extension, gives the nonempty-overlap branch
 real-transition theorem.
+
+
+%%handwave
+name:
+  Equal hyperbolic derivative norms give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  The common recovered metric makes the two derivatives have equal hyperbolic norm. Real Möbius one-jet transitivity matches them at an overlap point, and connected-overlap extension propagates the match.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_hyperbolicDerivativeNorm
     (hNorm :
@@ -4251,6 +5031,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 /--
 Value transitivity, stabilizer tangent transitivity, and connected-overlap
 extension give the nonempty-overlap branch real-transition theorem.
+
+
+%%handwave
+name:
+  Value and stabilizer transitivity give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  First map one branch value to the other by a real Möbius transformation, then use its stabilizer to match the tangent vector, and finally extend this pointed one-jet comparison.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -4266,6 +5055,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 With value transitivity proved explicitly, stabilizer tangent transitivity and
 connected-overlap extension give the nonempty-overlap branch real-transition
 theorem.
+
+
+%%handwave
+name:
+  Stabilizer transitivity gives real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Use real Möbius value transitivity to align the branch values, stabilizer transitivity to align their derivatives, and connected-overlap extension to propagate equality.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem)
@@ -4278,6 +5076,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 Rotation tangent transitivity at `i`, transport to arbitrary stabilizers, and
 connected-overlap extension give the nonempty-overlap branch real-transition
 theorem.
+
+
+%%handwave
+name:
+  Rotation transitivity gives real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Transport tangent rotations at i to the stabilizer of the chosen upper-half-plane value, match the branch one-jets, and extend across the overlap.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_rotations
     (hRot : RealMobiusRotationAtITangentTransitivityTheorem)
@@ -4291,6 +5098,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 The unit-complex rotation multiplier theorem, transport to arbitrary
 stabilizers, and connected-overlap extension give the nonempty-overlap branch
 real-transition theorem.
+
+
+%%handwave
+name:
+  Unit complex multipliers give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Realize the unit ratio of the equal-norm tangent vectors by a rotation, transport it to the required stabilizer, and extend the resulting pointed comparison.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_unitMultiplier
     (hUnit : UnitComplexRotationMultiplierTheorem)
@@ -4305,6 +5121,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 Since rotation tangent transitivity at `i` is proved, stabilizer transport and
 connected-overlap extension give the nonempty-overlap branch real-transition
 theorem.
+
+
+%%handwave
+name:
+  Transported rotations give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Use rotation transitivity at i and the assumed transport to arbitrary upper-half-plane stabilizers to match one-jets, then extend across the overlap.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem)
@@ -4316,6 +5141,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 /--
 After the pointed theorem is proved, connected-overlap extension is the only
 remaining input for the nonempty-overlap branch real-transition theorem.
+
+
+%%handwave
+name:
+  Pointed comparisons and extension give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  At one overlap point choose the proved real Möbius one-jet comparison and apply the assumed preconnected-overlap extension.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_extension
     (hExtend : PointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem) :
@@ -4327,6 +5161,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 /--
 Branch regularity and local one-jet uniqueness give real-Mobius transitions on
 nonempty preconnected overlaps.
+
+
+%%handwave
+name:
+  Branch regularity and local uniqueness give real transitions on nonempty overlaps
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a nonempty preconnected overlap W. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Choose a pointed real Möbius comparison, use regularity and local uniqueness to extend it across the preconnected overlap, and retain the value equality.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_branch_continuity_localUniqueness
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -4341,6 +5184,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonempt
 /--
 The nonempty-overlap branch uniqueness target implies the older branch-level
 target; empty overlaps are discharged by vacuity.
+
+
+%%handwave
+name:
+  Real transitions on nonempty overlaps imply the all-overlaps theorem
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  If W is nonempty, apply the nonempty-overlap theorem; if W is empty, any real Möbius transformation satisfies the vacuous equality.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_nonemptyOverlap
     (h :
@@ -4357,6 +5209,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 /--
 The pointed normalization and extension formulation implies the older
 branch-level real-transition theorem.
+
+
+%%handwave
+name:
+  Pointed normalization and extension give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Reduce nonempty overlaps to a pointed one-jet comparison followed by extension, then handle empty overlaps vacuously.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_pointed
     (hPoint :
@@ -4370,6 +5231,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 /--
 Branch regularity and local one-jet uniqueness imply the older branch-level
 real-transition theorem.
+
+
+%%handwave
+name:
+  Branch regularity and local uniqueness give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  On a nonempty overlap, choose a pointed comparison and propagate it using the closed-open one-jet argument; empty overlaps are vacuous.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_branch_continuity_localUniqueness
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -4385,6 +5255,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 The equal-hyperbolic-derivative-norm one-jet transitivity theorem plus
 connected-overlap extension implies the older branch-level real-transition
 theorem.
+
+
+%%handwave
+name:
+  Equal hyperbolic derivative norms give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Use equal-norm one-jet transitivity and connected-overlap extension when the overlap is nonempty, and use vacuity otherwise.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_hyperbolicDerivativeNorm
     (hNorm :
@@ -4398,6 +5277,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 /--
 Value transitivity, stabilizer tangent transitivity, and connected-overlap
 extension imply the older branch-level real-transition theorem.
+
+
+%%handwave
+name:
+  Value and stabilizer transitivity give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  On nonempty overlaps align values and derivatives by real Möbius transformations and extend; empty overlaps require no comparison.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -4412,6 +5300,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 With value transitivity proved explicitly, stabilizer tangent transitivity and
 connected-overlap extension imply the older branch-level real-transition
 theorem.
+
+
+%%handwave
+name:
+  Stabilizer tangent transitivity gives real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Combine value transitivity with stabilizer tangent transitivity and extension on nonempty overlaps, then discharge empty overlaps vacuously.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem)
@@ -4424,6 +5321,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 Rotation tangent transitivity at `i`, transport to arbitrary stabilizers, and
 connected-overlap extension imply the older branch-level real-transition
 theorem.
+
+
+%%handwave
+name:
+  Transported tangent rotations give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Realize and transport the required tangent rotation, extend the pointed comparison on nonempty overlaps, and use vacuity on empty overlaps.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_rotations
     (hRot : RealMobiusRotationAtITangentTransitivityTheorem)
@@ -4437,6 +5343,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 The unit-complex rotation multiplier theorem, transport to arbitrary
 stabilizers, and connected-overlap extension imply the older branch-level
 real-transition theorem.
+
+
+%%handwave
+name:
+  Unit multipliers give real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Realize the unit tangent multiplier by a rotation, transport it to the target stabilizer, extend on nonempty overlaps, and use vacuity otherwise.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_unitMultiplier
     (hUnit : UnitComplexRotationMultiplierTheorem)
@@ -4451,6 +5366,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 Since rotation tangent transitivity at `i` is proved, stabilizer transport and
 connected-overlap extension imply the older branch-level real-transition
 theorem.
+
+
+%%handwave
+name:
+  Rotation transport gives real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Use rotation transitivity at i, transport to arbitrary values, and connected-overlap extension in the nonempty case; the empty case is vacuous.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem)
@@ -4462,6 +5386,15 @@ theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_o
 /--
 For the older branch-level real-transition theorem, connected-overlap
 extension is now the only remaining input.
+
+
+%%handwave
+name:
+  Pointed comparison extension gives real transitions on every overlap
+statement:
+  Let F₁ and F₂ be metric-recovering upper-half-plane branches of a Liouville solution on a preconnected overlap W, which may be empty. Then there is a real Möbius transformation M such that F₂=M∘F₁ throughout W.
+proof:
+  Use the proved pointed comparison at a point of every nonempty overlap and extend it; choose any real Möbius map when the overlap is empty.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_extension
     (hExtend : PointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem) :

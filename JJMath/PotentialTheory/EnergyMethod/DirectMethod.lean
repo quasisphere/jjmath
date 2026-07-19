@@ -56,6 +56,16 @@ def WeaklyTendstoInGreenSobolevH10 [NormedSpace ℝ V]
   ∀ ℓ : V →L[ℝ] ℝ,
     Filter.Tendsto (fun n : ℕ ↦ ℓ (H n)) Filter.atTop (𝓝 (ℓ u))
 
+/--
+%%handwave
+name:
+  Weak convergence tested by a continuous functional
+statement:
+  If \(H_n\rightharpoonup u\) in a real normed space, then for every continuous
+  linear functional \(\ell\), one has \(\ell(H_n)\to\ell(u)\).
+proof:
+  This is the defining universal property of weak convergence.
+-/
 theorem WeaklyTendstoInGreenSobolevH10.apply [NormedSpace ℝ V]
     {H : ℕ → V} {u : V}
     (hweak : WeaklyTendstoInGreenSobolevH10 H u)
@@ -94,6 +104,16 @@ def IsGreenSobolevH10EnergyMinimizer
   Finite u ∧ ∀ w : V, Finite w → energy u ≤ energy w
 
 omit [NormedAddCommGroup V] in
+/--
+%%handwave
+name:
+  A minimizer has finite energy
+statement:
+  If \(u\) minimizes an energy among elements satisfying the finiteness
+  predicate, then \(u\) itself satisfies that predicate.
+proof:
+  This is the first conjunct in the definition of an energy minimizer.
+-/
 theorem IsGreenSobolevH10EnergyMinimizer.finite
     {energy : V → ℝ} {Finite : V → Prop} {u : V}
     (hmin : IsGreenSobolevH10EnergyMinimizer energy Finite u) :
@@ -101,6 +121,16 @@ theorem IsGreenSobolevH10EnergyMinimizer.finite
   hmin.1
 
 omit [NormedAddCommGroup V] in
+/--
+%%handwave
+name:
+  A minimizer has no larger energy than any competitor
+statement:
+  If \(u\) minimizes \(E\) on the finite-energy class and \(w\) belongs to that
+  class, then \(E(u)\le E(w)\).
+proof:
+  Apply the comparison clause in the definition of a minimizer to \(w\).
+-/
 theorem IsGreenSobolevH10EnergyMinimizer.energy_le
     {energy : V → ℝ} {Finite : V → Prop} {u w : V}
     (hmin : IsGreenSobolevH10EnergyMinimizer energy Finite u)
@@ -125,6 +155,19 @@ def HasGreenSobolevH10EnergyMinimizingSequence
       ∀ w : V, Finite w → a ≤ energy w
 
 omit [NormedAddCommGroup V] in
+/--
+%%handwave
+name:
+  A bounded-below energy admits a minimizing sequence
+statement:
+  Let \(E:V\to\mathbb R\) be bounded below on a nonempty finite-energy class.
+  Then there are finite-energy elements \(H_n\) and a lower bound \(a\) for all
+  competitors such that \(E(H_n)\to a\).
+proof:
+  Take \(a\) to be the infimum of \(E\) on the finite-energy subtype.  Choose
+  \(H_n\) with \(E(H_n)<a+1/(n+1)\), and squeeze the energies between \(a\) and
+  this upper bound.
+-/
 theorem greenSobolevH10Energy_has_minimizing_sequence_of_boundedBelow
     (energy : V → ℝ) (Finite : V → Prop)
     (hbounded : IsBoundedBelowGreenSobolevH10Energy energy Finite)
@@ -199,6 +242,18 @@ def HasWeaklyConvergentGreenSobolevH10EnergyMinimizingSequence [NormedSpace ℝ 
       Filter.Tendsto (fun n : ℕ ↦ energy (H n)) Filter.atTop (𝓝 a) ∧
       ∀ w : V, Finite w → a ≤ energy w
 
+/--
+%%handwave
+name:
+  Compactness upgrades a minimizing sequence to a weakly convergent one
+statement:
+  Suppose \(H_n\) is a finite-energy minimizing sequence with
+  \(E(H_n)\to a\), and every such sequence has a finite-energy weak limit.
+  Then \(H_n\) together with that limit is a weakly convergent minimizing sequence.
+proof:
+  Unpack the minimizing sequence, apply the compactness hypothesis to obtain
+  \(u\) with \(H_n\rightharpoonup u\), and retain the original energy and lower-bound data.
+-/
 theorem HasGreenSobolevH10EnergyMinimizingSequence.hasWeaklyConvergent
     [NormedSpace ℝ V]
     {energy : V → ℝ} {Finite : V → Prop}
@@ -213,6 +268,18 @@ theorem HasGreenSobolevH10EnergyMinimizingSequence.hasWeaklyConvergent
   rcases hcompact H a hH_finite henergy hlower with ⟨u, hu_finite, hweak⟩
   exact ⟨H, u, a, hH_finite, hu_finite, hweak, henergy, hlower⟩
 
+/--
+%%handwave
+name:
+  A weakly convergent minimizing sequence yields a minimizer
+statement:
+  If \(E\) is weakly lower semicontinuous and a finite-energy minimizing
+  sequence satisfies \(H_n\rightharpoonup u\) and \(E(H_n)\to a\), then \(u\)
+  minimizes \(E\) among all finite-energy competitors.
+proof:
+  Lower semicontinuity gives \(E(u)\le a\), while the minimizing property gives
+  \(a\le E(w)\) for every finite-energy \(w\).
+-/
 theorem greenSobolevH10Energy_has_minimizer_of_weakly_convergent_minimizing_sequence
     [NormedSpace ℝ V]
     (energy : V → ℝ) (Finite : V → Prop)
@@ -233,6 +300,8 @@ statement:
   If a pure \(H^1_0\) energy is coercive, then every finite-energy
   minimizing sequence whose energies converge to a finite level is
   eventually bounded in the pure Dirichlet norm.
+proof:
+  A minimizing sequence is eventually below any fixed energy level above the infimum.  Apply coercivity at that level to obtain the uniform squared-norm bound.
 -/
 theorem greenSobolevH10Energy_minimizing_sequence_eventually_normSq_le_of_coercive
     (energy : V → ℝ) (Finite : V → Prop)
@@ -271,6 +340,18 @@ def HasWeakCompactnessForEventuallyBoundedGreenSobolevH10MinimizingSequences
           (∃ R : ℝ, ∀ᶠ n in Filter.atTop, ‖H n‖ ^ (2 : ℕ) ≤ R) →
             ∃ u : V, Finite u ∧ WeaklyTendstoInGreenSobolevH10 H u
 
+/--
+%%handwave
+name:
+  Direct method with boundedness below and weak compactness
+statement:
+  A weakly lower semicontinuous energy on a nonempty finite-energy class has a
+  minimizer if it is bounded below and every minimizing sequence has a
+  finite-energy weak limit.
+proof:
+  Construct a minimizing sequence from the infimum, use weak compactness to
+  obtain a weakly convergent minimizing sequence, and apply [a weakly convergent minimizing sequence yields a minimizer](lean:JJMath.Uniformization.greenSobolevH10Energy_has_minimizer_of_weakly_convergent_minimizing_sequence).
+-/
 theorem greenSobolevH10Energy_has_minimizer_of_boundedBelow_and_weak_compactness
     [NormedSpace ℝ V]
     (energy : V → ℝ) (Finite : V → Prop)
@@ -289,6 +370,19 @@ theorem greenSobolevH10Energy_has_minimizer_of_boundedBelow_and_weak_compactness
   exact greenSobolevH10Energy_has_minimizer_of_weakly_convergent_minimizing_sequence
     energy Finite hlsc (hseq.hasWeaklyConvergent hcompact)
 
+/--
+%%handwave
+name:
+  Coercive weak direct method for pure \(H^1_0\)
+statement:
+  Let \(E\) be bounded below, coercive, and weakly lower semicontinuous on a
+  nonempty finite-energy class.  If every eventually norm-bounded minimizing
+  sequence has a finite-energy weak limit, then \(E\) has a minimizer.
+proof:
+  Coercivity makes every minimizing sequence eventually bounded in squared
+  norm.  Feed this bound to the assumed weak compactness and apply the direct
+  method with boundedness below and weak compactness.
+-/
 theorem greenSobolevH10Energy_has_minimizer_of_boundedBelow_coercive_lsc_and_weak_compactness
     [NormedSpace ℝ V]
     (energy : V → ℝ) (Finite : V → Prop)
@@ -357,6 +451,8 @@ statement:
   On a real Hilbert space, the energy
   \(u\mapsto\frac12\|u\|^2-L(u)\) associated to a continuous linear
   functional \(L\) is weakly lower semicontinuous.
+proof:
+  The squared Hilbert norm is weakly lower semicontinuous, while a continuous linear source functional is weakly continuous; their difference has the required lower-semicontinuity inequality.
 -/
 theorem pureDirichletGreenSobolevH10Energy_weaklyLowerSemicontinuous
     [InnerProductSpace ℝ V]
@@ -407,6 +503,8 @@ name:
   The Riesz representative evaluates the source
 statement:
   The source functional is the inner product with its Riesz representative.
+proof:
+  This is the defining Riesz representation identity for the continuous source functional.
 -/
 theorem greenSobolevH10RieszRepresentative_source_eq_inner
     [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -425,6 +523,8 @@ statement:
   The quadratic-minus-linear pure Dirichlet energy equals a square centered
   at the Riesz representative, up to the constant
   \(-\frac12\|r\|^2\).
+proof:
+  Substitute the Riesz identity for the source term and expand the squared norm of the difference from the Riesz representative.
 -/
 theorem pureDirichletGreenSobolevH10Energy_eq_square_sub_const
     [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -451,6 +551,8 @@ name:
 statement:
   The Riesz representative of the source functional minimizes the
   quadratic-minus-linear pure Dirichlet energy on the whole Hilbert space.
+proof:
+  The completed-square formula is a nonnegative squared distance plus a constant, minimized when that distance is zero.
 -/
 theorem pureDirichletGreenSobolevH10Energy_rieszRepresentative_minimizer
     [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -479,6 +581,8 @@ name:
 statement:
   A quadratic-minus-linear pure Dirichlet energy with continuous source
   functional has a minimizer on the whole Hilbert space.
+proof:
+  Represent the continuous source by the Riesz theorem and use its representative as the minimizer supplied by the completed-square identity.
 -/
 theorem pureDirichletGreenSobolevH10Energy_has_minimizer_of_continuous_source
     [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -500,6 +604,8 @@ statement:
     \langle u,\eta\rangle=L(\eta)
   \]
   for every test direction \(\eta\).
+proof:
+  Replace the source by its Riesz inner product and use symmetry of the Hilbert inner product to obtain the Euler identity.
 -/
 theorem pureDirichletGreenSobolevH10Energy_rieszRepresentative_eulerLagrange
     [InnerProductSpace ℝ V] [CompleteSpace V]
@@ -659,6 +765,8 @@ name:
 statement:
   The completed pure Dirichlet energy has the standard quadratic-minus-linear
   form on its finite-energy domain.
+proof:
+  Unfold the concrete or completed energy and identify its quadratic term with the squared pure Dirichlet norm.
 -/
 theorem greenSobolevH10CompletionEnergy_isPureDirichlet {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -679,6 +787,8 @@ name:
 statement:
   The extended source pairing on pure \(H^1_0\) is bounded by its operator
   norm times the \(H^1_0\) norm.
+proof:
+  Apply Cauchy--Schwarz to the differential pairing and the established norm bound for the fixed source data.
 -/
 theorem greenSobolevH10CompletionSource_boundedByNorm {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -703,6 +813,8 @@ name:
 statement:
   The pure Dirichlet energy on the completed \(H^1_0\) space is bounded below
   whenever the source pairing is continuous on the Dirichlet core.
+proof:
+  Bound the linear source term by a constant times the norm and complete the scalar square to obtain a uniform lower bound.
 -/
 theorem greenSobolevH10CompletionEnergy_boundedBelow {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -723,6 +835,8 @@ name:
 statement:
   The pure Dirichlet energy on the completed \(H^1_0\) space is coercive
   whenever the source pairing is continuous on the Dirichlet core.
+proof:
+  The positive quadratic norm term dominates the linearly bounded source term as the norm tends to infinity.
 -/
 theorem greenSobolevH10CompletionEnergy_coercive {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -743,6 +857,8 @@ name:
 statement:
   The quadratic-minus-linear energy induced by a continuous source functional
   on a completed Dirichlet core is weakly lower semicontinuous.
+proof:
+  The squared Hilbert norm is weakly lower semicontinuous and the continuous linear source term is weakly continuous.
 -/
 theorem greenSobolevH10CompletionEnergy_weaklyLowerSemicontinuous {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -767,6 +883,8 @@ statement:
   If bounded minimizing sequences in the completed pure \(H^1_0\) model have
   weakly convergent finite-energy subsequences, then the completed
   quadratic-minus-linear energy has a minimizer.
+proof:
+  Choose a bounded minimizing sequence by coercivity, extract a weakly convergent subsequence, and apply weak lower semicontinuity to its limit.
 -/
 theorem greenSobolevH10CompletionEnergy_has_minimizer_of_weak_compactness {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -798,6 +916,8 @@ name:
 statement:
   The Riesz representative of the extended source functional minimizes the
   completed pure Dirichlet energy.
+proof:
+  Represent the source by its Riesz vector and complete the square; the energy is minimized at that vector.
 -/
 theorem greenSobolevH10CompletionEnergy_rieszRepresentative_minimizer {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -826,6 +946,8 @@ name:
 statement:
   The completed pure Dirichlet energy associated to any continuous source
   functional on the core has a minimizer.
+proof:
+  Use continuity of the source to obtain its Riesz representative, then apply the completed-square minimizer formula.
 -/
 theorem greenSobolevH10CompletionEnergy_has_riesz_minimizer {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -846,6 +968,8 @@ name:
 statement:
   The completed Riesz minimizer represents the extended source functional by
   the pure Dirichlet inner product.
+proof:
+  Insert the Riesz representation identity and simplify the Hilbert inner products to the Euler equation.
 -/
 theorem greenSobolevH10CompletionEnergy_rieszRepresentative_eulerLagrange
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -996,6 +1120,8 @@ name:
 statement:
   The energy induced by a continuous source functional on the concrete
   Dirichlet core has the pure quadratic-minus-linear form.
+proof:
+  Unfold the concrete or completed energy and identify its quadratic term with the squared pure Dirichlet norm.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_isPureDirichlet {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1018,6 +1144,8 @@ name:
 statement:
   The extended source pairing on the concrete pure \(H^1_0\) space is
   bounded by its operator norm times the \(H^1_0\) norm.
+proof:
+  Apply Cauchy--Schwarz to the differential pairing and the established norm bound for the fixed source data.
 -/
 theorem greenSobolevH10SmoothCompactSupportSource_boundedByNorm {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1039,6 +1167,8 @@ name:
 statement:
   The concrete pure Dirichlet energy is bounded below for every continuous
   source functional on the smooth Dirichlet core.
+proof:
+  Bound the linear source term by a constant times the norm and complete the scalar square to obtain a uniform lower bound.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_boundedBelow {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1060,6 +1190,8 @@ name:
 statement:
   The concrete pure Dirichlet energy is coercive for every continuous source
   functional on the smooth Dirichlet core.
+proof:
+  The positive quadratic norm term dominates the linearly bounded source term as the norm tends to infinity.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_coercive {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1082,6 +1214,8 @@ statement:
   The quadratic-minus-linear energy on the concrete smooth compactly
   supported Dirichlet completion is weakly lower semicontinuous for every
   continuous source functional on the core.
+proof:
+  The squared Hilbert norm is weakly lower semicontinuous and the continuous linear source term is weakly continuous.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_weaklyLowerSemicontinuous {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1103,6 +1237,8 @@ statement:
   If bounded minimizing sequences in the concrete smooth compactly supported
   Dirichlet completion have weakly convergent subsequences, then the
   quadratic-minus-linear energy on that completion has a minimizer.
+proof:
+  Choose a bounded minimizing sequence by coercivity, extract a weakly convergent subsequence, and apply weak lower semicontinuity to its limit.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_has_minimizer_of_weak_compactness
     {X : Type}
@@ -1130,6 +1266,8 @@ name:
 statement:
   The Riesz representative of the extended smooth-core source functional
   minimizes the concrete pure Dirichlet energy.
+proof:
+  Represent the source by its Riesz vector and complete the square; the energy is minimized at that vector.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_rieszRepresentative_minimizer
     {X : Type}
@@ -1154,6 +1292,8 @@ name:
 statement:
   The concrete pure Dirichlet energy associated to any continuous source
   functional on the smooth compactly supported core has a minimizer.
+proof:
+  Use continuity of the source to obtain its Riesz representative, then apply the completed-square minimizer formula.
 -/
 theorem greenSobolevH10SmoothCompactSupportEnergy_has_riesz_minimizer
     {X : Type}

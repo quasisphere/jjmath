@@ -20,10 +20,40 @@ noncomputable def surfaceTangentQuarterTurn
 noncomputable def complexQuarterTurnCLM : ℂ →L[ℝ] ℂ :=
   (ContinuousLinearMap.mulLeftRight ℝ ℂ Complex.I) 1
 
-@[simp] theorem complexQuarterTurnCLM_apply (z : ℂ) :
+/--
+%%handwave
+name:
+  The complex quarter-turn map is multiplication by \(i\)
+statement:
+  For every \(z\in\mathbb C\), the real-linear quarter-turn map satisfies
+  \[
+    J(z)=iz.
+  \]
+proof:
+  This is the evaluation formula for the continuous linear map defined by
+  left multiplication by \(i\).
+-/
+@[simp]
+theorem complexQuarterTurnCLM_apply (z : ℂ) :
     complexQuarterTurnCLM z = Complex.I * z := by
   simp [complexQuarterTurnCLM, ContinuousLinearMap.mulLeftRight_apply]
 
+/--
+%%handwave
+name:
+  Smoothness of the quarter-turn of a surface vector field
+statement:
+  If \(V\) is a smooth vector field on a Riemann surface, then the field
+  \[
+    x\longmapsto J V_x=iV_x
+  \]
+  is smooth.
+proof:
+  In a complex-linear tangent trivialization, multiplication by \(i\)
+  commutes with the coordinate change.  Thus the coordinate coefficients of
+  \(JV\) are obtained by applying the fixed real-linear quarter-turn map to
+  the smooth coefficients of \(V\).
+-/
 theorem surfaceTangentQuarterTurn_contMDiff
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (hV : ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -74,6 +104,17 @@ noncomputable def smoothFrontierQuarterTurnVectorField
     TangentSpace SurfaceRealModel x :=
   surfaceTangentQuarterTurn (smoothFrontierTransverseVectorField D) x
 
+/--
+%%handwave
+name:
+  Smoothness of the rotated transverse frontier field
+statement:
+  The quarter-turn \(JV\) of the chosen smooth transverse frontier field
+  \(V\) is a smooth vector field on the surface.
+proof:
+  Apply smoothness of quarter-turning a vector field to the chosen smooth
+  transverse field.
+-/
 theorem smoothFrontierQuarterTurnVectorField_contMDiff
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -82,6 +123,22 @@ theorem smoothFrontierQuarterTurnVectorField_contMDiff
   surfaceTangentQuarterTurn_contMDiff _
     (smoothFrontierTransverseVectorField_contMDiff D)
 
+/--
+%%handwave
+name:
+  Smoothness of the transverse derivative to all orders
+statement:
+  If \(s\) is the global signed boundary coordinate and \(V\) the chosen
+  transverse field, then
+  \[
+    x\longmapsto ds_x(V_x)
+  \]
+  is smooth.
+proof:
+  The tangent map of the smooth function \(s\) is smooth to all orders.
+  Compose it with the smooth tangent section \(x\mapsto(x,V_x)\) and project
+  to the scalar fiber coordinate.
+-/
 theorem smoothFrontierTransverseDerivative_contMDiff_top
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel 𝓘(ℝ) ∞
@@ -107,6 +164,20 @@ noncomputable def smoothFrontierAngularDerivative
     (⟨x, smoothFrontierQuarterTurnVectorField D x⟩ :
       TangentBundle SurfaceRealModel X) |>.2
 
+/--
+%%handwave
+name:
+  Smoothness of the angular derivative of the signed coordinate
+statement:
+  The function
+  \[
+    x\longmapsto ds_x(JV_x)
+  \]
+  is smooth on the surface.
+proof:
+  Compose the smooth tangent map of \(s\) with the smooth section
+  \(x\mapsto(x,JV_x)\), then take the real fiber coordinate.
+-/
 theorem smoothFrontierAngularDerivative_contMDiff
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel 𝓘(ℝ) ∞
@@ -134,6 +205,21 @@ noncomputable def smoothFrontierTangentVectorField
     smoothFrontierAngularDerivative D x •
       smoothFrontierTransverseVectorField D x
 
+/--
+%%handwave
+name:
+  Smoothness of the oriented frontier tangent field
+statement:
+  The vector field
+  \[
+    T_x=ds_x(V_x)\,JV_x-ds_x(JV_x)\,V_x
+  \]
+  is smooth.
+proof:
+  Both scalar coefficient functions and both vector fields in the formula
+  are smooth.  Smooth sections are closed under scalar multiplication and
+  subtraction.
+-/
 theorem smoothFrontierTangentVectorField_contMDiff
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel SurfaceRealModel.tangent ∞
@@ -145,7 +231,21 @@ theorem smoothFrontierTangentVectorField_contMDiff
   · exact (smoothFrontierAngularDerivative_contMDiff D).smul_section
       (smoothFrontierTransverseVectorField_contMDiff D)
 
-@[simp] theorem smoothFrontierAngularDerivative_apply
+/--
+%%handwave
+name:
+  Evaluation formula for the angular derivative
+statement:
+  For every \(x\in X\), the angular derivative is
+  \[
+    \alpha_D(x)=ds_x(JV_x).
+  \]
+proof:
+  The scalar component of the tangent map of \(s\) at \((x,JV_x)\) is the
+  manifold derivative \(ds_x\) applied to \(JV_x\).
+-/
+@[simp]
+theorem smoothFrontierAngularDerivative_apply
     (D : SmoothBoundaryDomain X) (x : X) :
     smoothFrontierAngularDerivative D x =
       (show ℝ from mfderiv SurfaceRealModel 𝓘(ℝ)
@@ -153,7 +253,20 @@ theorem smoothFrontierTangentVectorField_contMDiff
         (smoothFrontierQuarterTurnVectorField D x)) := by
   simp [smoothFrontierAngularDerivative]
 
-/-- The oriented field is tangent to every level of the signed coordinate. -/
+/--
+%%handwave
+name:
+  The oriented frontier field is tangent to the signed-coordinate levels
+statement:
+  For every \(x\in X\),
+  \[
+    ds_x(T_x)=0.
+  \]
+proof:
+  Substitute
+  \(T_x=ds_x(V_x)JV_x-ds_x(JV_x)V_x\) and use linearity:
+  the two resulting scalar products are equal and cancel.
+-/
 theorem smoothFrontierTangentVectorField_mfderiv_eq_zero
     (D : SmoothBoundaryDomain X) (x : X) :
     (show ℝ from mfderiv SurfaceRealModel 𝓘(ℝ)
@@ -177,7 +290,18 @@ theorem smoothFrontierTangentVectorField_mfderiv_eq_zero
           (smoothFrontierTransverseVectorField D x)) = 0
   ring
 
-/-- The oriented tangent field never vanishes on the frontier. -/
+/--
+%%handwave
+name:
+  Nonvanishing of the oriented tangent field on the frontier
+statement:
+  If \(x\in\partial D\), then \(T_x\ne0\).
+proof:
+  Write \(a=ds_x(V_x)>0\) and \(b=ds_x(JV_x)\).  If
+  \(T_x=aJV_x-bV_x\) vanished, then in the complex tangent line
+  \((ai-b)V_x=0\).  Transversality implies \(V_x\ne0\), while \(a>0\)
+  prevents \(ai-b\) from vanishing.
+-/
 theorem smoothFrontierTangentVectorField_ne_zero
     (D : SmoothBoundaryDomain X) {x : X}
     (hx : x ∈ frontier D.carrier) :
@@ -208,8 +332,20 @@ theorem smoothFrontierTangentVectorField_ne_zero
   simp at him
   exact ha.ne' him
 
-/-- The signed coordinate has zero ordinary derivative along an integral
-curve of the oriented tangent field. -/
+/--
+%%handwave
+name:
+  Zero derivative of the signed coordinate along tangent flow
+statement:
+  If \(\gamma\) is an integral curve of \(T\) at time \(t\), then
+  \[
+    \frac{d}{du}\Big|_{u=t}s(\gamma(u))=0.
+  \]
+proof:
+  The manifold chain rule gives
+  \((s\circ\gamma)'(t)=ds_{\gamma(t)}(T_{\gamma(t)})\), and the tangent-field
+  construction makes the latter zero.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_hasDerivAt_zero_along_tangentIntegralCurve
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X} {t : ℝ}
     (hgamma : IsMIntegralCurveAt gamma
@@ -240,8 +376,21 @@ theorem smoothBoundaryGlobalSignedCoordinate_hasDerivAt_zero_along_tangentIntegr
       smoothFrontierTangentVectorField_mfderiv_eq_zero D (gamma t)
   simpa only [Function.comp_apply, h, hc] using hordinary
 
-/-- On a connected time interval, the signed boundary coordinate is constant
-along every integral curve of the oriented tangent field. -/
+/--
+%%handwave
+name:
+  Constancy of the signed coordinate along a tangent integral curve
+statement:
+  If \(\gamma\) is an integral curve of \(T\) on an interval
+  \((a,b)\), then for all \(s,t\in(a,b)\),
+  \[
+    s_D(\gamma(s))=s_D(\gamma(t)).
+  \]
+proof:
+  The derivative of the composite signed coordinate is zero at every point
+  of the interval.  A differentiable real function with zero derivative on
+  a connected interval is constant.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_eq_along_tangentIntegralCurveOn_Ioo
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X} {a b s t : ℝ}
     (hgamma : IsMIntegralCurveOn gamma
@@ -263,8 +412,23 @@ theorem smoothBoundaryGlobalSignedCoordinate_eq_along_tangentIntegralCurveOn_Ioo
   exact isOpen_Ioo.is_const_of_deriv_eq_zero
     (ordConnected_Ioo.isPreconnected) hdiff hderiv hs ht
 
-/-- An integral curve of the oriented tangent field which meets the frontier
-stays in the frontier throughout its connected time interval. -/
+/--
+%%handwave
+name:
+  Tangent integral curves preserve the frontier
+statement:
+  Let \(\gamma\) be an integral curve of \(T\) on \((a,b)\).  If
+  \(\gamma(t_0)\in\partial D\) for some \(t_0\in(a,b)\), then
+  \[
+    \gamma(t)\in\partial D\qquad(t\in(a,b)).
+  \]
+proof:
+  The signed coordinate is constant along the curve and equals zero at
+  \(t_0\).  Locally in the global boundary-coordinate neighborhood, its
+  zero set is exactly the frontier.  Thus the set of times at which the
+  curve lies in the frontier is both open and closed in the connected
+  interval and is nonempty, hence is the whole interval.
+-/
 theorem tangentIntegralCurveOn_Ioo_mem_frontier
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X} {a b t₀ : ℝ}
     (hgamma : IsMIntegralCurveOn gamma

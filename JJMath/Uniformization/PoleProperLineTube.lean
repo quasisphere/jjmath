@@ -27,8 +27,18 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
   {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
   {P : CompactSuperlevelGreenFunctionPoleExponentialBranch X G}
 
-/-- Away from the pole, the closed half-radius coordinate disk lies in the
-doubled punctured pole disk. -/
+/--
+%%handwave
+name:
+  The punctured closed pole disk lies in the doubled pole disk
+statement:
+  Every point \(x\ne p\) of the closed coordinate disk of radius \(r/2\)
+  belongs to the punctured coordinate disk of radius \(r\).
+proof:
+  The point lies in the chart source and its coordinate distance from the
+  pole is at most \(r/2<r\); together with \(x\ne p\), these are precisely the
+  defining conditions of the punctured pole disk.
+-/
 theorem CompactSuperlevelGreenFunctionPoleCoordinateLogData.closedDisk_mem_puncturedPoleDisk
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     {x : X} (hxp : x ≠ p) (hx : x ∈ D.closedDisk.carrier) :
@@ -52,6 +62,17 @@ def puncturedClosedPoleDisk
     Set (puncturedSurfaceOpen p) :=
   {x | (x : X) ∈ D.closedDisk.carrier}
 
+/--
+%%handwave
+name:
+  Closedness of the punctured closed pole disk
+statement:
+  The closed pole-coordinate disk with its center removed is closed relative
+  to the punctured surface.
+proof:
+  It is the inverse image of the compact, hence closed, coordinate disk under
+  the continuous inclusion of the punctured surface into \(X\).
+-/
 theorem puncturedClosedPoleDisk_isClosed
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     IsClosed (puncturedClosedPoleDisk D) := by
@@ -66,12 +87,34 @@ noncomputable def puncturedClosedPoleDiskToPuncturedPoleDisk
     D.closedDisk_mem_puncturedPoleDisk
       (x : puncturedSurfaceOpen p).2 x.2⟩
 
+/--
+%%handwave
+name:
+  Continuity of the inclusion into the punctured pole disk
+statement:
+  The natural inclusion of the punctured closed half-radius disk into the
+  doubled punctured pole disk is continuous.
+proof:
+  Its underlying map is the composite of the two continuous subtype
+  inclusions.
+-/
 theorem continuous_puncturedClosedPoleDiskToPuncturedPoleDisk
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P) :
     Continuous (puncturedClosedPoleDiskToPuncturedPoleDisk D) := by
   exact (continuous_subtype_val.comp continuous_subtype_val).subtype_mk _
 
-/-- Radial position is nonpositive on the closed inner coordinate disk. -/
+/--
+%%handwave
+name:
+  Nonpositive radial coordinate on the closed inner disk
+statement:
+  Every point of the punctured closed inner coordinate disk has radial collar
+  coordinate at most zero.
+proof:
+  A positive radial coordinate characterizes the exterior of the closure of
+  the inner disk.  Such exterior membership contradicts that the point lies
+  in the closed disk.
+-/
 theorem puncturedClosedPoleDisk_radial_second_nonpos
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X]
@@ -93,8 +136,21 @@ theorem puncturedClosedPoleDisk_radial_second_nonpos
   rw [D.closedDisk.closure_expandedOpenDisk_closedRadius]
   exact x.2
 
-/-- Radial position is nonpositive exactly on the closed inner coordinate
-disk. -/
+/--
+%%handwave
+name:
+  Radial characterization of the closed inner pole disk
+statement:
+  For a point \(y\) in the doubled punctured pole disk,
+  \[
+    \Phi(y)_2\le0\quad\Longleftrightarrow\quad
+    y\text{ lies in the closed inner coordinate disk}.
+  \]
+proof:
+  The side-preserving radial collar identifies positive second coordinate
+  exactly with the complement of the closed disk.  Negating this strict
+  characterization gives the stated equivalence.
+-/
 theorem radialDiffeomorph_second_nonpos_iff_mem_closedDisk
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (y : D.puncturedPoleDisk) :
@@ -149,6 +205,17 @@ noncomputable def puncturedSurfacePoleRadialLineTubeDiffeomorph
   (D.annularLeftCutToPuncturedCutDiffeomorph v).symm.trans
     (annularRadialLineTubeDiffeomorph v)
 
+/--
+%%handwave
+name:
+  Formula for the punctured-surface radial tube coordinate
+statement:
+  The pole-coordinate radial tube map on the punctured surface is the
+  annular radial tube map applied after transporting the point back to the
+  annular slit.
+proof:
+  This is the defining composition of the two diffeomorphisms.
+-/
 @[simp]
 theorem puncturedSurfacePoleRadialLineTubeDiffeomorph_apply
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
@@ -168,8 +235,19 @@ noncomputable def puncturedPoleRadialLineTubeDiffeomorph
   (D.radialPreimageDiffeomorph (annularPunctureOpen v)).trans
     (annularRadialLineTubeDiffeomorph v)
 
-/-- The pole-coordinate transition strip is the radial preimage of the
-closed annular transition strip. -/
+/--
+%%handwave
+name:
+  The pole-coordinate tube core is the radial pullback of the annular core
+statement:
+  The transition core of the pole-coordinate line tube is exactly the inverse
+  image, under radial coordinates, of the transition core of the standard
+  annular line tube.
+proof:
+  Expand both cores as inverse images of the same closed rectangle.  The
+  radial preimage diffeomorphism and its inverse cancel, so membership on
+  either side is equivalent.
+-/
 theorem puncturedPoleRadialLineTubeCore_eq_preimage
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -216,9 +294,22 @@ theorem puncturedPoleRadialLineTubeCore_eq_preimage
     rw [hr]
     exact hqeq
 
-/-- In radial coordinates, the inverse tube coordinate keeps its first
-coordinate as radial position and applies inverse stereographic projection
-to its transverse coordinate. -/
+/--
+%%handwave
+name:
+  Radial coordinates of the inverse pole tube map
+statement:
+  For tube coordinates \((s,t)\in\mathbb R^2\), the radial coordinates of the
+  inverse pole-tube point are
+  \[
+    \bigl(\sigma_v^{-1}(t),s\bigr),
+  \]
+  where \(\sigma_v^{-1}\) is inverse stereographic projection from the cut
+  direction \(v\).
+proof:
+  The pole radial diffeomorphism cancels its inverse, reducing the formula to
+  the explicit inverse of the standard annular radial tube map.
+-/
 theorem puncturedPoleRadialLineTubeDiffeomorph_symm_radial
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) (s t : ℝ) :
@@ -254,6 +345,18 @@ noncomputable def puncturedSurfacePoleRadialNegativeTailMap
     D.puncturedPoleDisk_le_puncturedSurfaceOpen
       (puncturedPoleRadialNegativeTailMap D v q).2⟩
 
+/--
+%%handwave
+name:
+  The negative tube tail lies in the closed pole disk
+statement:
+  Every point of the negative transition tail of the pole-coordinate tube
+  lies in the closed inner coordinate disk.
+proof:
+  Its tube radial parameter is nonpositive.  The inverse-tube coordinate
+  formula makes this the second radial coordinate, and the radial
+  characterization then places the point in the closed disk.
+-/
 theorem puncturedSurfacePoleRadialNegativeTailMap_mem_closedDisk
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle)
@@ -294,6 +397,17 @@ def puncturedClosedPoleDiskRadialCore
       (puncturedClosedPoleDiskToPuncturedPoleDisk D x)).1 ∈
     annularRadialCoreAngleSet v}
 
+/--
+%%handwave
+name:
+  Closedness of the angular core in the punctured pole disk
+statement:
+  Inside the punctured closed pole disk, the subset whose radial angle lies
+  in the closed annular core arc is closed.
+proof:
+  It is the inverse image of the closed core arc under the continuous angular
+  component of the radial coordinate map.
+-/
 theorem puncturedClosedPoleDiskRadialCore_isClosed
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -303,6 +417,19 @@ theorem puncturedClosedPoleDiskRadialCore_isClosed
       (D.radialDiffeomorph.continuous.comp
         (continuous_puncturedClosedPoleDiskToPuncturedPoleDisk D)))
 
+/--
+%%handwave
+name:
+  Range of the negative radial transition tail
+statement:
+  The negative transition-tail map has image exactly the angular core strip
+  inside the punctured closed pole disk.
+proof:
+  A tail point has arbitrary nonpositive radial coordinate and transverse
+  coordinate in \([-1,1]\), hence its angle lies on the core arc.  Conversely,
+  combine the radial coordinate of a core point with a parameter of its core
+  angle to construct a unique tail point mapping to it.
+-/
 theorem puncturedClosedPoleDiskRadialNegativeTailMap_range
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -382,6 +509,19 @@ theorem puncturedClosedPoleDiskRadialNegativeTailMap_range
       Subtype.ext hX
     exact Subtype.ext hsurface
 
+/--
+%%handwave
+name:
+  The negative radial tail is embedded in the closed pole disk
+statement:
+  The negative transition-tail map into the punctured closed pole disk is a
+  topological embedding.
+proof:
+  The tail inclusion into \(\mathbb R^2\) is an embedding, as are the inverse
+  tube diffeomorphism and all successive subtype inclusions.  Their composite
+  remains an embedding, and codomain restriction to the closed disk preserves
+  this property.
+-/
 theorem puncturedClosedPoleDiskRadialNegativeTailMap_isEmbedding
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -413,8 +553,16 @@ theorem puncturedClosedPoleDiskRadialNegativeTailMap_isEmbedding
   simpa only [puncturedClosedPoleDiskRadialNegativeTailMap,
     Set.codRestrict] using hcod
 
-/-- The negative radial transition tail is a closed embedding in the
-punctured closed pole disk. -/
+/--
+%%handwave
+name:
+  The negative radial tail is a closed embedding
+statement:
+  The negative transition tail is a closed topologically embedded subset of
+  the punctured closed pole disk.
+proof:
+  The map is an embedding and its range is the closed angular core strip.
+-/
 theorem puncturedClosedPoleDiskRadialNegativeTailMap_isClosedEmbedding
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -424,8 +572,18 @@ theorem puncturedClosedPoleDiskRadialNegativeTailMap_isClosedEmbedding
   rw [puncturedClosedPoleDiskRadialNegativeTailMap_range]
   exact puncturedClosedPoleDiskRadialCore_isClosed D v
 
-/-- The pole-coordinate negative transition tail is proper in the punctured
-surface. -/
+/--
+%%handwave
+name:
+  Properness of the negative radial tail in the punctured surface
+statement:
+  The negative pole-coordinate transition-tail map into the full punctured
+  surface is proper.
+proof:
+  It factors as a closed embedding into the punctured closed pole disk,
+  followed by the closed embedding of that disk into the punctured surface.
+  A composite closed embedding is proper.
+-/
 theorem puncturedSurfacePoleRadialNegativeTailMap_isProper
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -438,7 +596,17 @@ theorem puncturedSurfacePoleRadialNegativeTailMap_isProper
     (puncturedClosedPoleDisk_isClosed D).isClosedEmbedding_subtypeVal
   exact (hi.comp hc).isProperMap
 
-/-- The exact negative tail of the ambient pole tube is proper. -/
+/--
+%%handwave
+name:
+  Properness of the negative tail of the ambient pole tube
+statement:
+  The negative transition tail obtained from the inverse ambient radial tube
+  diffeomorphism is a proper map into the punctured surface.
+proof:
+  It is the same map as the previously constructed proper negative radial
+  tail, after unfolding the two equivalent tube descriptions.
+-/
 theorem puncturedSurfacePoleRadialLineTube_negativeTail_isProper
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -450,8 +618,17 @@ theorem puncturedSurfacePoleRadialLineTube_negativeTail_isProper
           puncturedSurfaceOpen p)) := by
   convert puncturedSurfacePoleRadialNegativeTailMap_isProper D v using 1
 
-/-- The radial transition strip is closed in the punctured pole-coordinate
-disk. -/
+/--
+%%handwave
+name:
+  Closedness of the pole-coordinate radial transition core
+statement:
+  The transition core of the radial line tube is closed in the punctured
+  pole-coordinate disk.
+proof:
+  It is the inverse image under the continuous radial diffeomorphism of the
+  closed transition core of the standard annular tube.
+-/
 theorem puncturedPoleRadialLineTubeCore_isClosed
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -472,7 +649,19 @@ noncomputable def puncturedSurfacePoleRadialLine
     D.puncturedPoleDisk_le_puncturedSurfaceOpen
       (D.radialDiffeomorph.symm (v, t)).2⟩
 
-/-- The central radial pole line is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the central radial pole line
+statement:
+  Fixing an angular direction \(v\in S^1\), the curve obtained by varying the
+  radial coordinate through all \(t\in\mathbb R\) is a smooth curve in the
+  punctured surface.
+proof:
+  The map \(t\mapsto(v,t)\) is smooth, as is the inverse radial
+  diffeomorphism.  Compose them and restrict the resulting ambient curve to
+  the punctured surface.
+-/
 theorem contMDiff_puncturedSurfacePoleRadialLine
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -492,8 +681,17 @@ theorem contMDiff_puncturedSurfacePoleRadialLine
   exact ContMDiff.codRestrict_open hambient (puncturedSurfaceOpen p)
     (fun t => D.puncturedPoleDisk_le_puncturedSurfaceOpen (radial t).2)
 
-/-- Distinct radial parameters give distinct points of the punctured
-surface. -/
+/--
+%%handwave
+name:
+  Injectivity of the central radial pole line
+statement:
+  For fixed \(v\in S^1\), distinct radial parameters determine distinct
+  points on the central pole-coordinate radial line.
+proof:
+  Equality of two curve values gives equality after applying the injective
+  inverse radial diffeomorphism, hence \((v,s)=(v,t)\) and therefore \(s=t\).
+-/
 theorem injective_puncturedSurfacePoleRadialLine
     (D : CompactSuperlevelGreenFunctionPoleCoordinateLogData X G P)
     [IsManifold SurfaceRealModel ∞ X] (v : Circle) :
@@ -507,12 +705,25 @@ theorem injective_puncturedSurfacePoleRadialLine
     D.radialDiffeomorph.symm.injective hpole
   exact congrArg Prod.snd hpair
 
-/-- The radial pole collar and the exterior-component escape ray combine to
-give a proper continuous line in the punctured surface which agrees exactly
-with the central radial line on the pole-side half.  This theorem isolates the
-remaining geometric upgrade: smoothing and removing self-intersections on a
-bounded region and on the exterior ray, relative to the already smooth radial
-half. -/
+/--
+%%handwave
+name:
+  A proper line with prescribed negative radial half
+statement:
+  On a noncompact Riemann surface with a Green pole coordinate, for every
+  \(v\in S^1\) there is a proper continuous line
+  \(\ell:\mathbb R\to X\setminus\{p\}\) satisfying
+  \[
+    \ell(t)=\Phi^{-1}(v,t)\qquad(t\le0),
+  \]
+  where \(\Phi\) is the radial pole-coordinate diffeomorphism.
+proof:
+  The zero-radius point lies on the frontier of the closed inner disk.  Join
+  the negative radial collar ray there to a proper escape ray in the exterior
+  component supplied by the exhaustion theorem.  The collar–exterior union
+  is the whole punctured surface, and its canonical identification preserves
+  properness and the prescribed negative ray.
+-/
 theorem exists_proper_continuous_line_puncturedSurface_with_negativeRadial
     [NoncompactSpace X]
     (E : SmoothRelativelyCompactExhaustion X)
@@ -617,8 +828,17 @@ theorem exists_proper_continuous_line_puncturedSurface_with_negativeRadial
   rw [Real.coe_toNNReal _ hneg]
   ring
 
-/-- The radial pole collar and an exterior-component escape ray combine to
-give a proper continuous line in the punctured surface. -/
+/--
+%%handwave
+name:
+  Existence of a proper line in the punctured surface
+statement:
+  A noncompact Riemann surface equipped with the Green pole coordinate admits
+  a proper continuous map \(\ell:\mathbb R\to X\setminus\{p\}\).
+proof:
+  Use the proper line constructed by gluing the negative radial pole ray to
+  an exterior escape ray, and forget its prescribed-half property.
+-/
 theorem exists_proper_continuous_line_puncturedSurface
     [NoncompactSpace X]
     (E : SmoothRelativelyCompactExhaustion X)

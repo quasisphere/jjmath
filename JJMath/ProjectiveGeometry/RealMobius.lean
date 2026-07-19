@@ -59,8 +59,16 @@ def realMobiusRepresentativeToMobiusGroup :
     realMobiusRepresentativeAsMobiusRepresentative
 
 /--
-The complexification of a central real Mobius representative is central in
-`GL(2, ℂ)`.
+%%handwave
+name:
+  Complexification preserves central Möbius representatives
+statement:
+  If \(g\in\operatorname{SL}_2(\mathbb R)\) is central, then its scalar
+  extension to \(\operatorname{GL}_2(\mathbb C)\) is also central.
+proof:
+  A central special-linear matrix is scalar, say \(g=rI\) with \(r^2=1\).
+  Extending the scalar unit \(r\) from \(\mathbb R\) to \(\mathbb C\) gives
+  the same scalar-matrix description after complexification.
 -/
 theorem realMobiusRepresentativeAsMobiusRepresentative_mem_center
     {g : RealMobiusRepresentative}
@@ -95,7 +103,16 @@ theorem realMobiusRepresentativeAsMobiusRepresentative_mem_center
       Matrix.diagonal_apply_ne (fun _ : Fin 2 ↦ (r : ℂ)) hij] at hentry ⊢
     exact_mod_cast hentry
 
-/-- Central real Mobius representatives become trivial in complex projective holonomy. -/
+/--
+%%handwave
+name:
+  Central real representatives have trivial complex projective class
+statement:
+  If \(g\) lies in the center of \(\operatorname{SL}_2(\mathbb R)\), then its
+  image in \(\operatorname{PGL}_2(\mathbb C)\) is the identity.
+proof:
+  By [a central real representative complexifies to a central matrix](lean:JJMath.realMobiusRepresentativeAsMobiusRepresentative_mem_center), the complexified matrix is scalar, hence belongs to the kernel of the projective quotient.
+-/
 theorem realMobiusRepresentativeToMobiusGroup_eq_one_of_mem_center
     {g : RealMobiusRepresentative}
     (hg : g ∈ Subgroup.center RealMobiusRepresentative) :
@@ -118,6 +135,17 @@ def realMobiusToMobiusGroup : RealMobiusGroup →* MobiusGroup :=
 def psl2rMobiusSubgroup : Subgroup MobiusGroup :=
   MonoidHom.range realMobiusToMobiusGroup
 
+/--
+%%handwave
+name:
+  Compatibility of real and complex projectivization
+statement:
+  For \(g\in\operatorname{SL}_2(\mathbb R)\), complexifying its class in
+  \(\operatorname{PSL}_2(\mathbb R)\) gives the same
+  \(\operatorname{PGL}_2(\mathbb C)\)-class as complexifying \(g\) first.
+proof:
+  This is the defining compatibility equation for the quotient lift.
+-/
 @[simp]
 theorem realMobiusToMobiusGroup_realMobiusProjection
     (g : RealMobiusRepresentative) :
@@ -125,11 +153,31 @@ theorem realMobiusToMobiusGroup_realMobiusProjection
       realMobiusRepresentativeToMobiusGroup g := by
   rfl
 
+/--
+%%handwave
+name:
+  The identity representative acts trivially
+statement:
+  For every \(z\in\mathbb H\), the identity matrix in
+  \(\operatorname{SL}_2(\mathbb R)\) satisfies \(1\cdot z=z\).
+proof:
+  This is the identity law for the standard matrix action.
+-/
 @[simp]
 theorem realMobiusRepresentativeAction_one (z : ℍ) :
     realMobiusRepresentativeAction 1 z = z := by
   simp [realMobiusRepresentativeAction]
 
+/--
+%%handwave
+name:
+  Multiplicativity of the representative action
+statement:
+  For \(g,h\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\),
+  \((gh)\cdot z=g\cdot(h\cdot z)\).
+proof:
+  This is the multiplication law for the standard group action.
+-/
 @[simp]
 theorem realMobiusRepresentativeAction_mul
     (g h : RealMobiusRepresentative) (z : ℍ) :
@@ -138,8 +186,15 @@ theorem realMobiusRepresentativeAction_mul
   simpa [realMobiusRepresentativeAction] using (mul_smul g h z)
 
 /--
-Central `SL(2, ℝ)` representatives act trivially on the upper half-plane, so
-the representative action descends to `PSL(2, ℝ)`.
+%%handwave
+name:
+  Central real representatives act trivially on the upper half-plane
+statement:
+  If \(g\) is central in \(\operatorname{SL}_2(\mathbb R)\), then
+  \(g\cdot z=z\) for every \(z\in\mathbb H\).
+proof:
+  Write \(g=rI\) with \(r^2=1\), so \(r\ne0\).  Substitution into the
+  fractional-linear formula gives \((rz)/r=z\).
 -/
 theorem realMobiusRepresentativeAction_eq_self_of_mem_center
     {g : RealMobiusRepresentative}
@@ -190,6 +245,17 @@ def realMobiusActionHom : RealMobiusGroup →* Equiv.Perm ℍ :=
 def realMobiusAction (g : RealMobiusGroup) (z : ℍ) : ℍ :=
   realMobiusActionHom g z
 
+/--
+%%handwave
+name:
+  The projective action agrees with a representative
+statement:
+  For \(g\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\), the action
+  of the class \([g]\in\operatorname{PSL}_2(\mathbb R)\) equals the standard
+  representative action: \([g]\cdot z=g\cdot z\).
+proof:
+  This is the defining equation of the quotient action.
+-/
 @[simp]
 theorem realMobiusAction_realMobiusProjection
     (g : RealMobiusRepresentative) (z : ℍ) :
@@ -197,11 +263,32 @@ theorem realMobiusAction_realMobiusProjection
       realMobiusRepresentativeAction g z := by
   rfl
 
+/--
+%%handwave
+name:
+  The identity projective transformation acts trivially
+statement:
+  For every \(z\in\mathbb H\), the identity in
+  \(\operatorname{PSL}_2(\mathbb R)\) satisfies \(1\cdot z=z\).
+proof:
+  Apply the identity law for the action homomorphism.
+-/
 @[simp]
 theorem realMobiusAction_one (z : ℍ) :
     realMobiusAction 1 z = z := by
   simp [realMobiusAction]
 
+/--
+%%handwave
+name:
+  Multiplicativity of the real projective action
+statement:
+  For \(g,h\in\operatorname{PSL}_2(\mathbb R)\) and \(z\in\mathbb H\),
+  \((gh)\cdot z=g\cdot(h\cdot z)\).
+proof:
+  The quotient action is a group homomorphism into the permutation group of
+  \(\mathbb H\), so it preserves products.
+-/
 @[simp]
 theorem realMobiusAction_mul (g h : RealMobiusGroup) (z : ℍ) :
     realMobiusAction (g * h) z =
@@ -211,34 +298,84 @@ theorem realMobiusAction_mul (g h : RealMobiusGroup) (z : ℍ) :
   rw [map_mul]
   rfl
 
-/-- A fixed real Mobius representative acts continuously on the upper half-plane. -/
+/--
+%%handwave
+name:
+  Real Möbius representatives act continuously
+statement:
+  For every \(g\in\operatorname{SL}_2(\mathbb R)\), the map
+  \(z\mapsto g\cdot z\) is continuous on \(\mathbb H\).
+proof:
+  This is the standard continuity theorem for the
+  \(\operatorname{GL}_2(\mathbb R)\)-action on the upper half-plane.
+-/
 theorem realMobiusRepresentativeAction_continuous
     (g : RealMobiusRepresentative) :
     Continuous (realMobiusRepresentativeAction g) := by
   change Continuous fun z : ℍ => ((g : GL (Fin 2) ℝ) • z)
   exact continuous_const_smul (g : GL (Fin 2) ℝ)
 
-/-- A fixed real Mobius representative acts smoothly on the upper half-plane. -/
+/--
+%%handwave
+name:
+  Real Möbius representatives act smoothly
+statement:
+  For every \(g\in\operatorname{SL}_2(\mathbb R)\) and every differentiability
+  order \(n\), the map \(z\mapsto g\cdot z\) is \(C^n\) on \(\mathbb H\).
+proof:
+  Apply the smoothness theorem for the upper-half-plane action of an invertible
+  real matrix; a special-linear matrix has positive determinant.
+-/
 theorem realMobiusRepresentativeAction_contMDiff
     (g : RealMobiusRepresentative) {n : WithTop ℕ∞} :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (realMobiusRepresentativeAction g) := by
   change ContMDiff 𝓘(ℂ) 𝓘(ℂ) n fun z : ℍ => ((g : GL (Fin 2) ℝ) • z)
   exact UpperHalfPlane.contMDiff_smul (g := (g : GL (Fin 2) ℝ)) (by simp)
 
-/-- A fixed real Mobius representative acts holomorphically on the upper half-plane. -/
+/--
+%%handwave
+name:
+  Real Möbius representatives act holomorphically
+statement:
+  For every \(g\in\operatorname{SL}_2(\mathbb R)\), the map
+  \(z\mapsto g\cdot z\) is holomorphic on \(\mathbb H\).
+proof:
+  Infinite smoothness of the representative action implies manifold
+  differentiability for the complex structure.
+-/
 theorem realMobiusRepresentativeAction_mdifferentiable
     (g : RealMobiusRepresentative) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (realMobiusRepresentativeAction g) :=
   (realMobiusRepresentativeAction_contMDiff (n := (⊤ : WithTop ℕ∞)) g).mdifferentiable
     (by simp)
 
-/-- Pointwise holomorphicity of the representative action. -/
+/--
+%%handwave
+name:
+  Pointwise holomorphicity of the real Möbius action
+statement:
+  For \(g\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\), the map
+  \(w\mapsto g\cdot w\) is holomorphic at \(z\).
+proof:
+  Evaluate the global holomorphicity theorem at \(z\).
+-/
 theorem realMobiusRepresentativeAction_mdifferentiableAt
     (g : RealMobiusRepresentative) (z : ℍ) :
     MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) (realMobiusRepresentativeAction g) z :=
   (realMobiusRepresentativeAction_mdifferentiable g) z
 
-/-- Ambient complex differentiability of the representative action in the standard `ℍ` chart. -/
+/--
+%%handwave
+name:
+  Complex differentiability in the standard upper-half-plane chart
+statement:
+  For \(g\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\), the
+  standard-coordinate expression \(w\mapsto g\cdot w\) is complex
+  differentiable at the coordinate of \(z\).
+proof:
+  Apply the standard analyticity theorem for the fractional-linear
+  upper-half-plane action and take its differentiability consequence.
+-/
 theorem realMobiusRepresentativeAction_differentiableAt
     (g : RealMobiusRepresentative) (z : ℍ) :
     DifferentiableAt ℂ
@@ -249,7 +386,18 @@ theorem realMobiusRepresentativeAction_differentiableAt
     (z : ℂ)
   exact (UpperHalfPlane.analyticAt_smul (g := (g : GL (Fin 2) ℝ)) (by simp) z).differentiableAt
 
-/-- The derivative of a real Mobius representative action is nonzero in the standard chart. -/
+/--
+%%handwave
+name:
+  The derivative of a real Möbius action is nonzero
+statement:
+  For \(g\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\), the
+  derivative at \(z\) of the standard complex-coordinate expression of
+  \(w\mapsto g\cdot w\) is nonzero.
+proof:
+  Apply the nonvanishing-derivative theorem for the upper-half-plane action of
+  an invertible matrix.
+-/
 theorem realMobiusRepresentativeAction_standardChart_deriv_ne_zero
     (g : RealMobiusRepresentative) (z : ℍ) :
     deriv
@@ -261,11 +409,17 @@ theorem realMobiusRepresentativeAction_standardChart_deriv_ne_zero
   exact UpperHalfPlane.deriv_smul_ne_zero (g := (g : GL (Fin 2) ℝ)) (by simp) z
 
 /--
-If an `SL(2, ℝ)` representative fixes three distinct points of the upper
-half-plane, then it is central.  Algebraically, a fixed point satisfies the
-quadratic equation
-`c z^2 + (d - a) z - b = 0`; three distinct roots force `b = c = 0` and
-`d = a`, and determinant one gives `a^2 = 1`.
+%%handwave
+name:
+  A real Möbius representative fixing three points is central
+statement:
+  Let \(A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in
+  \operatorname{SL}_2(\mathbb R)\).  If \(A\) fixes three pairwise distinct
+  points \(z_1,z_2,z_3\in\mathbb H\), then \(A\) is central.
+proof:
+  Every fixed point satisfies \(cz^2+(d-a)z-b=0\).  Subtracting the equations
+  for three distinct roots gives \(c=0\), then \(d=a\) and \(b=0\).
+  Finally \(\det A=1\) yields \(a^2=1\), so \(A=aI\) is central.
 -/
 theorem realMobiusRepresentative_mem_center_of_fix_three
     (A : RealMobiusRepresentative) {z₁ z₂ z₃ : ℍ}
@@ -402,7 +556,16 @@ theorem realMobiusRepresentative_mem_center_of_fix_three
     fin_cases i <;> fin_cases j <;>
       simp [Matrix.scalar_apply, a, b, c, d, hb, hc, hd]
 
-/-- A PSL element fixing three distinct points of `ℍ` is the identity. -/
+/--
+%%handwave
+name:
+  A real projective transformation fixing three points is the identity
+statement:
+  If \(g\in\operatorname{PSL}_2(\mathbb R)\) fixes three pairwise distinct
+  points \(z_1,z_2,z_3\in\mathbb H\), then \(g=1\).
+proof:
+  Choose an \(\operatorname{SL}_2(\mathbb R)\)-representative.  By [a representative fixing three distinct upper-half-plane points is central](lean:JJMath.realMobiusRepresentative_mem_center_of_fix_three), it lies in the kernel of the quotient to \(\operatorname{PSL}_2(\mathbb R)\).
+-/
 theorem realMobiusAction_eq_one_of_fix_three
     (g : RealMobiusGroup) {z₁ z₂ z₃ : ℍ}
     (hz₁₂ : z₁ ≠ z₂) (hz₁₃ : z₁ ≠ z₃) (hz₂₃ : z₂ ≠ z₃)
@@ -421,7 +584,17 @@ theorem realMobiusAction_eq_one_of_fix_three
     (realMobiusRepresentative_mem_center_of_fix_three A
       hz₁₂ hz₁₃ hz₂₃ h₁ h₂ h₃)
 
-/-- Three distinct upper-half-plane points determine a PSL action. -/
+/--
+%%handwave
+name:
+  Three points determine a real projective transformation
+statement:
+  Let \(g,h\in\operatorname{PSL}_2(\mathbb R)\).  If their actions agree on
+  three pairwise distinct points \(z_1,z_2,z_3\in\mathbb H\), then \(g=h\).
+proof:
+  The element \(h^{-1}g\) fixes all three points, hence is the identity by
+  [a projective transformation fixing three distinct points is the identity](lean:JJMath.realMobiusAction_eq_one_of_fix_three).  Multiplying by \(h\) gives \(g=h\).
+-/
 theorem realMobiusAction_determined_by_three_points
     (g h : RealMobiusGroup) (z₁ z₂ z₃ : ℍ)
     (hz₁₂ : z₁ ≠ z₂) (hz₁₃ : z₁ ≠ z₃) (hz₂₃ : z₂ ≠ z₃)

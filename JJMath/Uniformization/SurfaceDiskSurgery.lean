@@ -197,6 +197,9 @@ name:
 statement:
   The image of the frontier preimage of a homotopy square lies in the
   frontier of \(F\).
+proof:
+  Every point of the image has a preimage that, by definition, is mapped to
+  the frontier of \(F\).
 -/
 theorem pathHomotopy_frontierImage_subset_frontier
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -230,6 +233,9 @@ name:
 statement:
   The image of the frontier preimage is contained in the intersection of the
   homotopy-square image with the frontier of \(F\).
+proof:
+  Such an image point lies in the range of the homotopy by construction and
+  lies on the frontier by the defining condition on its preimage.
 -/
 theorem pathHomotopy_frontierImage_subset_range_inter_frontier
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -914,6 +920,10 @@ name:
 statement:
   If a closure-valued homotopy square has empty frontier preimage, then it is
   already a homotopy whose image lies in \(F\).
+proof:
+  A value in \(\overline F\) that is not on the frontier of the open set \(F\)
+  must lie in \(F\).  Apply this pointwise to the original homotopy and take
+  that homotopy itself.
 -/
 theorem pathHomotopy_in_closure_pushes_into_open_of_frontierPreimage_empty
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -934,6 +944,9 @@ name:
 statement:
   If a path homotopy square already has image in \(F\), then it is itself the
   required pushed-off homotopy.
+proof:
+  Choose the original homotopy; the asserted image condition is exactly the
+  given hypothesis.
 -/
 theorem pathHomotopy_pushes_off_of_mapsTo
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -950,6 +963,8 @@ name:
 statement:
   If a path homotopy square has image in \(\overline F\), then its exterior
   preimage is empty.
+proof:
+  No parameter can map both into \(\overline F\) and into its complement.
 -/
 theorem pathHomotopyExteriorSet_eq_empty_of_mapsTo_closure
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -971,6 +986,9 @@ name:
 statement:
   If the exterior preimage of a path homotopy square is empty, then the
   homotopy has image in \(\overline F\).
+proof:
+  Otherwise a parameter whose value lies outside \(\overline F\) would belong
+  to the exterior preimage, contradicting its emptiness.
 -/
 theorem pathHomotopy_mapsTo_closure_of_exteriorSet_eq_empty
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -991,6 +1009,9 @@ name:
 statement:
   If the exterior preimage of a path homotopy square is empty, then the
   original homotopy already has image in \(\overline F\).
+proof:
+  The empty-exterior condition implies pointwise membership in \(\overline F\);
+  choose the original homotopy with this property.
 -/
 theorem pathHomotopy_pushes_to_closure_of_exteriorSet_eq_empty
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1072,6 +1093,9 @@ name:
   Regular closed parameter disks are closed parameter disks
 statement:
   A regular closed parameter disk is, in particular, a closed parameter disk.
+proof:
+  Being a closed parameter disk is one of the defining pieces of regular-disk
+  data.
 -/
 theorem IsRegularClosedParamDisk.isClosedParamDisk
     {D : Set (unitInterval × unitInterval)}
@@ -1160,6 +1184,9 @@ name:
 statement:
   Finite exterior-excursion data has zero disks exactly when its index set is
   empty.
+proof:
+  The disk count is the cardinality of the finite index set, and a finite type
+  has cardinality zero exactly when it is empty.
 -/
 theorem finiteExteriorExcursionDataCard_eq_zero_iff
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1175,6 +1202,9 @@ name:
 statement:
   Finite exterior-excursion data has positive disk count exactly when its
   index set is nonempty.
+proof:
+  The disk count is the cardinality of the finite index set, which is positive
+  exactly when the index set is inhabited.
 -/
 theorem finiteExteriorExcursionDataCard_pos_iff
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1274,6 +1304,8 @@ name:
 statement:
   The selected exterior-excursion disk lies away from the boundary of the
   homotopy square.
+proof:
+  This containment is part of the data attached to the selected disk.
 -/
 theorem selectedExteriorExcursionDisk_subset_squareInterior
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1336,6 +1368,9 @@ name:
 statement:
   The interior of the selected exterior-excursion disk is contained in the
   exterior preimage of the homotopy square.
+proof:
+  The selected-disk data states that every interior point maps outside
+  \(\overline F\), which is precisely membership in the exterior preimage.
 -/
 theorem selectedExteriorExcursionDisk_interior_subset_exteriorSet
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1419,6 +1454,8 @@ name:
 statement:
   The frontier of the selected exterior-excursion disk maps to the frontier
   of \(F\).
+proof:
+  This mapping property is part of the data attached to the selected disk.
 -/
 theorem selectedExteriorExcursionDisk_frontier_maps_to_frontier
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1436,6 +1473,9 @@ name:
 statement:
   The frontier of the selected exterior-excursion disk is contained in the
   frontier preimage of the homotopy square.
+proof:
+  Every point on the selected disk frontier maps to the frontier of \(F\), by
+  the selected-disk data.
 -/
 theorem selectedExteriorExcursionDisk_frontier_subset_frontierPreimage
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1505,6 +1545,9 @@ name:
   Selected exterior disk frontier images lie on the smooth frontier
 statement:
   The image of the selected disk frontier lies in the frontier of \(F\).
+proof:
+  Represent an image point by a frontier parameter and apply the recorded
+  frontier mapping property.
 -/
 theorem selectedExteriorExcursionDisk_frontierImage_subset_frontier
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1523,6 +1566,9 @@ name:
 statement:
   The image of the selected disk frontier is contained in the image of the
   global frontier preimage.
+proof:
+  The selected disk frontier is contained in the global frontier preimage, so
+  applying the homotopy to both sets preserves the inclusion.
 -/
 theorem selectedExteriorExcursionDisk_frontierImage_subset_pathHomotopy_frontierImage
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1632,6 +1678,9 @@ name:
 statement:
   Finite boundary-chart general-position data immediately gives finite
   exterior-excursion position.
+proof:
+  The required finite exterior-excursion position is the sole field of the
+  general-position data.
 -/
 theorem FiniteBoundaryChartGeneralPositionData.exists_position
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -1931,6 +1980,9 @@ name:
 statement:
   The frontier of every nonselected exterior-excursion disk is contained in
   the retained frontier set.
+proof:
+  The retained frontier set is the union of precisely these frontiers, so each
+  individual frontier lies in the corresponding term of the union.
 -/
 theorem retainedExteriorExcursionDisk_frontier_subset_retainedFrontierSet
     {X : Type} [TopologicalSpace X] {F : Set X}
@@ -4940,6 +4992,10 @@ statement:
   Compatible closed-side fillings of the collar strip and the finitely many
   complementary regions immediately give the corresponding
   \(\overline F\)-valued filling of the selected parameter disk.
+proof:
+  Take the pasted filling recorded in the compatible piece-filling data.  Its
+  recorded trace identity gives the prescribed frontier values on the
+  protected trace.
 -/
 theorem SelectedExteriorExcursionDiskProtectedTraceClosedSidePieceFillingData.exists_extension
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5586,6 +5642,8 @@ name:
 statement:
   At an attachment point, the one-region attachment trace is exactly the
   closed-side strip filling evaluated at the same selected-disk point.
+proof:
+  This is the defining evaluation rule for the attachment trace.
 -/
 theorem selectedExteriorExcursionDiskProtectedTrace_oneRegionStripAttachmentTraceMap_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5731,6 +5789,10 @@ name:
 statement:
   Coercing the frontier-valued attachment trace to \(\overline F\) gives the
   closed-side attachment trace.
+proof:
+  The frontier-valued map was obtained by restricting the codomain of the
+  closed-side trace.  After both are viewed in \(\overline F\), their
+  underlying values are therefore identical.
 -/
 theorem selectedExteriorExcursionDiskProtectedTrace_oneRegionStripAttachmentFrontierTraceMap_toClosure_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5885,6 +5947,9 @@ name:
 statement:
   One-region attachment-trace extension data immediately gives the
   corresponding \(\overline F\)-valued filling of the compact region.
+proof:
+  Choose the recorded region filling; the accompanying field is exactly its
+  agreement with the attachment trace.
 -/
 theorem SelectedExteriorExcursionDiskProtectedTraceOneRegionAttachmentTraceExtensionData.exists_extension
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7017,6 +7082,9 @@ name:
 statement:
   Closed-side extension data immediately supplies the corresponding
   \(\overline F\)-valued filling of the selected parameter disk.
+proof:
+  Choose the filling recorded in the extension data together with its recorded
+  equality on the protected trace.
 -/
 theorem SelectedExteriorExcursionDiskProtectedTraceClosedSideExtensionData.exists_extension
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7547,6 +7615,9 @@ name:
 statement:
   If a finite collar family covers the frontier preimage, then its support
   contains the frontier preimage.
+proof:
+  The finite support is defined as the same union of local collar
+  neighborhoods that appears in the covering hypothesis.
 -/
 theorem smoothRelativelyCompactOpen_frontierPreimage_subset_finiteLocalFrontierCollarSupport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7672,6 +7743,9 @@ name:
 statement:
   Supported finite collar deformation data immediately gives a homotopy
   between the original paths whose image lies in \(F\).
+proof:
+  Choose the homotopy stored in the deformation data; its second field states
+  that every value lies in \(F\).
 -/
 theorem SmoothRelativelyCompactOpenSupportedFiniteCollarDeformationData.exists_homotopy
     {X : Type} [TopologicalSpace X]

@@ -77,6 +77,14 @@ noncomputable def SurfaceHolomorphicRealPartBranch.imaginaryDifferential
     (smoothRealFunctionToZeroForm (I0 := 𝓘(ℝ, ℂ))
       B.imaginarySmoothFunction)
 
+/--
+%%handwave
+name: Agreement of conjugate differentials under an imaginary translation
+statement:
+  Suppose two holomorphic functions with the same real part are defined on overlapping surface charts and differ on an open subset by the constant $ic$, with $c\in\mathbb R$. Then the differentials of their imaginary parts agree on that subset.
+proof:
+  Their imaginary parts differ by the constant $c$. Differentiate this equality; the differential of a constant is zero, and restriction commutes with the de Rham differential.
+-/
 theorem SurfaceHolomorphicRealPartBranch.imaginaryDifferential_restrict_eq
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -128,6 +136,14 @@ theorem SurfaceHolomorphicRealPartBranch.imaginaryDifferential_restrict_eq
   rw [htheta, map_add,
     deRhamDifferential_smoothRealFunctionToZeroForm_const, add_zero]
 
+/--
+%%handwave
+name: Pointwise agreement of compatible open-set forms
+statement:
+  Let $W\subseteq U\cap V$. If smooth $n$-forms on $U$ and $V$ have equal restrictions to $W$, then their ambiently interpreted values agree at every $x\in W$.
+proof:
+  Precompose both ambient form values with the surjective tangent map of $W\hookrightarrow Z$. The resulting alternating maps are the pointwise values of the two restricted forms, hence equal; surjectivity permits cancellation.
+-/
 theorem smoothFormOpenExtensionValue_eq_of_restrict_eq
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -155,6 +171,14 @@ theorem smoothFormOpenExtensionValue_eq_of_restrict_eq
   exact congrArg (fun omega : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := W) ℝ n =>
     omega.toFun x) heq
 
+/--
+%%handwave
+name: Transitivity of restriction for smooth forms
+statement:
+  Let $W\subseteq U\subseteq Z$. If an ambient smooth form $\omega$ restricts to $\alpha$ on $U$, then $\omega|_W$ equals the restriction of $\alpha$ from $U$ to $W$.
+proof:
+  Evaluate at a point of $W$ and factor the tangent map $W\hookrightarrow Z$ through $U$. The assumed equality on $U$ then gives equality after composition with the inclusion differential.
+-/
 theorem restrictSmoothFormsToOpen_eq_restrictSmoothFormsOfLE_of_restrict_eq
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -203,6 +227,14 @@ structure HarmonicConjugateDifferentialData
         (⟨B.source, B.source_open⟩ : TopologicalSpace.Opens Z) 1 omega =
       B.imaginaryDifferential
 
+/--
+%%handwave
+name: Global conjugate differential from local holomorphic real parts
+statement:
+  Suppose a real function $u$ on a complex one-manifold is locally the real part of a holomorphic function around every point. Then the differentials of the local imaginary parts glue to a global smooth real one-form $\omega$.
+proof:
+  Choose one local branch at each point and define $\omega_x$ from its imaginary differential. On overlaps, two branches with the same real part differ locally by a purely imaginary constant, so their imaginary differentials agree. This independence makes the pointwise form smooth and gives the required restriction identity for every branch.
+-/
 theorem exists_harmonicConjugateDifferentialData
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -281,6 +313,14 @@ theorem exists_harmonicConjugateDifferentialData
   exact smoothFormOpenExtensionValue_restrict
     (I := 𝓘(ℝ, ℂ)) (A := ℝ) (U B) (alpha B) x
 
+/--
+%%handwave
+name: Closedness of the global conjugate differential
+statement:
+  The global one-form obtained by gluing differentials of local harmonic conjugates is closed.
+proof:
+  Near any point, restrict to a local holomorphic real-part branch. There the form is $d\theta$ for the branch's imaginary part, so its differential is $d^2\theta=0$. Surjectivity of the tangent map from the open chart transfers this local vanishing to the ambient two-form.
+-/
 theorem HarmonicConjugateDifferentialData.closed
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]

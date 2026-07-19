@@ -161,10 +161,11 @@ degree-one holomorphic disk map is biholomorphic.
 
 @include{lean:JJMath.Uniformization.compactSuperlevelGreenFunction_biholomorphic_unitDisc_of_deRhamH1Zero}
 
-Consequently all exhaustion members can be uniformized simultaneously by
-pointed biholomorphisms to the unit disk.
+Consequently one can simultaneously choose bijective holomorphic maps from
+all exhaustion members to the unit disk, carrying the common base point to
+zero.
 
-@include{lean:JJMath.Uniformization.PointedH1ZeroSmoothRelativelyCompactExhaustion.has_biholomorphic_openCarriers_unitDisc}
+@include{lean:JJMath.Uniformization.PointedH1ZeroSmoothRelativelyCompactExhaustion.has_bijective_pointedDiskMaps}
 
 ## Normalized exhaustion maps
 

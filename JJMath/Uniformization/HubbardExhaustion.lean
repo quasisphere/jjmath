@@ -448,8 +448,21 @@ theorem locallyUniformLimit_injective_of_eventuallyInjectiveOn_compacts
   exact hy_not_P (hzy ▸ hzP)
 
 
-/-- Arzelà--Ascoli on the tails of all compact restrictions, followed by a
-diagonal extraction and the eventual-domain Weierstrass theorem. -/
+/--
+%%handwave
+name:
+  Montel extraction from equicontinuous exhaustion tails
+statement:
+  Let \(F_n:X\to\mathbb C\) be eventually holomorphic near every point.  If
+  every subsequence has, on each member of a compact exhaustion, a tail that
+  is continuous, pointwise relatively compact, and equicontinuous, then some
+  subsequence converges locally uniformly to a holomorphic map \(X\to\mathbb C\).
+proof:
+  Apply Arzelà–Ascoli successively on the compact exhaustion and take a
+  diagonal subsequence.  The resulting subsequence converges locally
+  uniformly, and eventual local holomorphicity passes to it; the
+  eventual-domain Weierstrass theorem makes the limit holomorphic.
+-/
 theorem eventualDomain_montel_of_tail_equicontinuous
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [SecondCountableTopology X]
@@ -486,8 +499,22 @@ theorem eventualDomain_montel_of_tail_equicontinuous
       (fun n : ℕ ↦ F (φ n)) f hconv hholo_sub,
     hconv⟩
 
-/-- A uniformly bounded holomorphic family has a common coordinate
-Lipschitz estimate on a smaller coordinate disk. -/
+/--
+%%handwave
+name:
+  Coordinate Lipschitz estimate for bounded holomorphic maps
+statement:
+  Suppose \(|F_n|\le B\) on an open set containing a coordinate disk of radius
+  \(R\) centered at \(x\).  If \(y\) lies in that disk, then
+  \[
+    |F_n(x)-F_n(y)|\le \frac{2B}{R},|z(x)-z(y)|
+  \]
+  for every \(n\).
+proof:
+  In the coordinate disk, translate each \(F_n\) by its value at the center;
+  its image lies in the closed disk of radius \(2B\).  The Schwarz derivative
+  estimate gives the stated radial Lipschitz bound.
+-/
 theorem holomorphicMaps_chart_dist_le_of_norm_le
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -551,8 +578,19 @@ theorem holomorphicMaps_chart_dist_le_of_norm_le
   rw [hy_eq, hx_eq] at hschwarz
   simpa [e, dist_comm] using hschwarz
 
-/-- A family which is holomorphic and uniformly bounded on an open set is
-equicontinuous on every subset of that open set. -/
+/--
+%%handwave
+name:
+  Equicontinuity of a uniformly bounded holomorphic family
+statement:
+  A family of holomorphic maps uniformly bounded by \(B>0\) on an open set
+  \(V\) is equicontinuous on every subset \(K\subseteq V\).
+proof:
+  Around each \(x\in K\), choose a coordinate disk compactly contained in
+  \(V\).  The common coordinate Lipschitz estimate bounds all variations by
+  \(2B/R\) times coordinate distance; continuity of the chart then supplies a
+  uniform neighborhood for any prescribed tolerance.
+-/
 theorem boundedHolomorphicMaps_equicontinuousOn
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -704,8 +742,17 @@ theorem eventualDomain_montel_of_eventually_boundedOn_exhaustion_neighborhoods
     exact Filter.eventually_atTop.2 ⟨N, fun n hn ↦ (hlate n hn).1⟩
   exact eventualDomain_montel_of_tail_equicontinuous X Kex F htail hholo
 
-/-- A holomorphic transition map between centered disks which fixes the
-origin and has derivative one cannot decrease the radius. -/
+/--
+%%handwave
+name:
+  A normalized disk transition cannot decrease radius
+statement:
+  If a holomorphic map sends \(B(0,r)\) into \(B(0,s)\), fixes zero, and has
+  derivative one at zero, with \(r>0\), then \(r\le s\).
+proof:
+  Schwarz's derivative estimate gives
+  \(1=|f'(0)|\le s/r\); multiply by the positive radius \(r\).
+-/
 theorem normalized_transition_source_radius_le_target_radius
     {r s : ℝ} (hr : 0 < r) {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 r))
@@ -723,8 +770,18 @@ theorem normalized_transition_source_radius_le_target_radius
     (le_div_iff₀ hr).mp (by simpa using hschwarz)
   linarith
 
-/-- If the normalized transition between two centered disks is not the
-identity on its source, then the target radius is strictly larger. -/
+/--
+%%handwave
+name:
+  A nonidentity normalized disk transition strictly increases radius
+statement:
+  Under the same hypotheses, if \(f\) is not the identity on \(B(0,r)\), then
+  \(r<s\).
+proof:
+  The weak inequality \(r\le s\) is already known.  Equality would make
+  Schwarz's derivative bound sharp, and its equality case forces \(f(z)=z\)
+  throughout the disk, contradicting the hypothesis.
+-/
 theorem normalized_transition_source_radius_lt_target_radius
     {r s : ℝ} (hr : 0 < r) {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 r))
@@ -751,8 +808,20 @@ theorem normalized_transition_source_radius_lt_target_radius
   have hz_eq := haffine hz
   simpa [hzero, hone] using hz_eq
 
-/-- An omitted value of a normalized univalent function on the unit disk has
-reciprocal norm at most four. -/
+/--
+%%handwave
+name:
+  Reciprocal bound for an omitted value of a normalized univalent map
+statement:
+  Let \(f\) be injective and holomorphic on the unit disk, with
+  \(f(0)=0\) and \(f'(0)=1\).  If \(w\notin f(\mathbb D)\), then
+  \[
+    |w^{-1}|\le4.
+  \]
+proof:
+  Koebe's quarter theorem gives \(B(0,1/4)\subseteq f(\mathbb D)\), so an
+  omitted value satisfies \(|w|\ge1/4\).  Taking reciprocals yields the bound.
+-/
 theorem koebe_omitted_value_reciprocal_norm_le_four
     {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -774,11 +843,22 @@ theorem koebe_omitted_value_reciprocal_norm_le_four
   norm_num at hw_norm ⊢
   exact hw_norm
 
-/-- Suppose a normalized univalent disk map parametrizes a subset of the
-image of an injective map on a larger set.  At every point of the larger set
-outside the parametrized core, the reciprocal of the latter map is bounded
-by four.  This is the estimate applied to `1 / φₘ` in Hubbard's exhaustion
-argument. -/
+/--
+%%handwave
+name:
+  Koebe reciprocal bound outside a parametrized core
+statement:
+  Suppose a normalized univalent disk map \(f\) satisfies
+  \(f(\mathbb D)\subseteq\phi(C)\), where \(C\subseteq L\) and \(\phi\) is
+  injective on \(L\).  If \(x\in L\setminus C\), then
+  \[
+    |\phi(x)^{-1}|\le4.
+  \]
+proof:
+  Injectivity shows that \(\phi(x)\) cannot belong to \(f(\mathbb D)\), since
+  any preimage there would come from a point of \(C\) and hence equal \(x\).
+  Apply the omitted-value reciprocal bound.
+-/
 theorem koebe_reciprocal_norm_le_four_outside_core
     {X : Type*} {core larger : Set X} {f : ℂ → ℂ} {φ : X → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -797,8 +877,23 @@ theorem koebe_reciprocal_norm_le_four_outside_core
   have hyx : y = x := hφinj hy_larger hx hy
   exact hxcore (hyx ▸ hycore)
 
-/-- The analytic quotient `f(z) / z` of a disk self-map fixing the origin has
-norm at most one.  At the origin the quotient is interpreted as `f'(0)`. -/
+/--
+%%handwave
+name:
+  Schwarz bound for the normalized quotient of a disk self-map
+statement:
+  If \(f:\mathbb D\to\mathbb D\) is holomorphic and \(f(0)=0\), then the
+  holomorphic extension of \(f(z)/z\), taking value \(f'(0)\) at zero,
+  satisfies
+  \[
+    \left|\frac{f(z)}z\right|\le1
+  \]
+  throughout the unit disk.
+proof:
+  Schwarz's divided-difference estimate bounds the slope between zero and
+  \(z\) by one.  Away from zero this slope is \(f(z)/z\), and at zero it is
+  \(f'(0)\).
+-/
 theorem diskSelfMap_diskNormalizedQuotient_norm_le_one
     {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -821,9 +916,23 @@ theorem diskSelfMap_diskNormalizedQuotient_norm_le_one
         simp [slope_def_module, hzero, div_eq_mul_inv, mul_comm]
       _ ≤ 1 := by simpa using hq
 
-/-- A disk self-map fixing the origin and having positive real derivative
-`a` is close to the identity on compact subdisks when `a` is close to one.
-This is the Borel--Carathéodory estimate applied to `f(z) / z - a`. -/
+/--
+%%handwave
+name:
+  Quotient estimate for a nearly normalized disk self-map
+statement:
+  Let \(f:\mathbb D\to\mathbb D\) be holomorphic with \(f(0)=0\) and
+  (f'\(0\)=a\in\(0,1]\).  Then for \(|z|<1\),
+  \[
+    \left|\frac{f(z)}z-1\right|
+    \le \frac{2(1-a)|z|}{1-|z|}+(1-a),
+  \]
+  with the quotient interpreted holomorphically at zero.
+proof:
+  The normalized quotient has modulus at most one, so its real part minus
+  \(a\) is at most \(1-a\).  Apply the Borel–Carathéodory estimate to that
+  quotient minus \(a\), which vanishes at zero, and then add \(|a-1|=1-a\).
+-/
 theorem normalized_diskSelfMap_quotient_sub_one_norm_le
     {f : ℂ → ℂ} {a : ℝ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -882,7 +991,20 @@ theorem normalized_diskSelfMap_quotient_sub_one_norm_le
               ring]
         gcongr
 
-/-- The corresponding pointwise estimate for the self-map itself. -/
+/--
+%%handwave
+name:
+  Pointwise identity estimate for a nearly normalized disk self-map
+statement:
+  Under the preceding hypotheses,
+  \[
+    |f(z)-z|\le |z|
+      \left(\frac{2(1-a)|z|}{1-|z|}+(1-a)\right).
+  \]
+proof:
+  Factor \(f(z)-z=z(f(z)/z-1)\) using the holomorphic normalized quotient and
+  multiply its estimate by \(|z|\).
+-/
 theorem normalized_diskSelfMap_sub_id_norm_le
     {f : ℂ → ℂ} {a : ℝ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -903,8 +1025,21 @@ theorem normalized_diskSelfMap_sub_id_norm_le
         (normalized_diskSelfMap_quotient_sub_one_norm_le
           hf hmaps hzero hderiv ha0 ha1 hz) (norm_nonneg z)
 
-/-- A univalent disk map which is uniformly close to the identity on a
-closed disk assumes the value at the center somewhere in that disk. -/
+/--
+%%handwave
+name:
+  A disk map close to the identity covers the center
+statement:
+  Let \(f\) be univalent on the unit disk.  If
+  \(\overline B(w,\delta)\subset\mathbb D\), \(\delta>0\), and
+  \(|f(z)-z|<\delta/8\) on that closed disk, then
+  \(w\in f(\overline B(w,\delta))\).
+proof:
+  On the boundary, closeness to the identity gives a positive lower bound for
+  \(|f(z)-f(w)|\), while \(w\) lies close to \(f(w)\).  The quantitative open
+  mapping theorem therefore places \(w\) in the image of the closed disk;
+  injectivity rules out local constancy.
+-/
 theorem diskMap_mem_image_closedBall_of_closeToIdentity
     {f : ℂ → ℂ} {w : ℂ} {δ : ℝ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -968,8 +1103,21 @@ theorem diskMap_mem_image_closedBall_of_closeToIdentity
     simpa [norm_sub_rev] using lt_of_lt_of_le hwclose (by linarith)
   exact hdiffCl.ball_subset_image_closedBall hδ hboundary hfrequent hwtarget
 
-/-- Disk self-maps fixing the origin whose positive real derivatives tend to
-one eventually cover every prescribed point of the disk. -/
+/--
+%%handwave
+name:
+  Nearly identity normalized disk maps eventually cover compact points
+statement:
+  Let \(F_n:\mathbb D\to\mathbb D\) be univalent, fix zero, and satisfy
+  (F_n'\(0\)=a_n\in\(0,1]\) with \(a_n\to1\).  Then every fixed
+  \(w\in\mathbb D\) belongs to \(F_n(\mathbb D)\) for all sufficiently large
+  \(n\).
+proof:
+  Choose a small closed disk around \(w\) inside \(\mathbb D\).  The preceding
+  estimate makes \(F_n\) uniformly close to the identity there once \(a_n\)
+  is close enough to one.  The center-covering lemma then produces a preimage
+  of \(w\) in that disk.
+-/
 theorem normalized_diskSelfMaps_eventually_mem_image
     (F : ℕ → ℂ → ℂ) (a : ℕ → ℝ)
     (hF : ∀ n : ℕ, AnalyticOnNhd ℂ (F n) (ball 0 1))
@@ -1160,8 +1308,18 @@ theorem normalized_diskSelfMap_mem_image_of_deriv_close
       hf hinj hδ hclosed hclose with ⟨z, hz, hzw⟩
   exact ⟨z, hclosed hz, hzw⟩
 
-/-- A univalent analytic function has nonzero derivative at every point of
-its domain. -/
+/--
+%%handwave
+name:
+  A univalent holomorphic function has no critical points
+statement:
+  If \(f\) is holomorphic and injective on the unit disk, then
+  \(f'(z)\ne0\) for every \(z\in\mathbb D\).
+proof:
+  Regard the disk as a Riemann surface.  The surface theorem that an injective
+  holomorphic map has nonzero complex derivative applies in local identity
+  coordinates, where that derivative is the ordinary derivative of \(f\).
+-/
 theorem analyticOnNhd_deriv_ne_zero_of_injOn
     {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -1209,9 +1367,22 @@ theorem analyticOnNhd_deriv_ne_zero_of_injOn
       TopologicalSpace.Opens.chartAt_eq, chartAt_self_eq] using hne
   rwa [heq.deriv_eq] at hraw
 
-/-- The Bieberbach second-coefficient estimate, applied after recentering at
-an arbitrary point, gives a crude pre-Schwarzian bound for a univalent map of
-the disk.  This form is sufficient for compact-local normality. -/
+/--
+%%handwave
+name:
+  Second-derivative bound for a univalent disk map
+statement:
+  If \(f\) is univalent and holomorphic on the unit disk, then for every
+  \(z\in\mathbb D\),
+  \[
+    |f''(z)|\le \frac4{1-|z|},|f'(z)|.
+  \]
+proof:
+  Recenter at \(z\) on the disk of radius \(1-|z|\), and normalize by
+  \((1-|z|)f'(z)\), which is nonzero.  The resulting univalent unit-disk map
+  fixes zero with derivative one.  Bieberbach's second-coefficient estimate
+  bounds its second derivative by four; rescaling gives the formula.
+-/
 theorem univalent_disk_second_derivative_norm_le
     {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))
@@ -1321,9 +1492,22 @@ theorem univalent_disk_second_derivative_norm_le
       (4 * ‖d‖) / δ by simp [δ, d]; ring]
   exact (le_div_iff₀ hδ).2 (by simpa [mul_comm] using hmul)
 
-/-- A crude Koebe growth estimate.  The precise classical constant is not
-needed here; this exponential bound already makes normalized univalent maps
-compact-locally bounded. -/
+/--
+%%handwave
+name:
+  Exponential growth bound for normalized univalent disk maps
+statement:
+  If \(f\) is univalent on the unit disk with \(f(0)=0\) and \(f'(0)=1\), then
+  for \(0\le\rho<1\) and \(|z|\le\rho\),
+  \[
+    |f(z)|\le \rho\exp\!\left(\frac{4\rho}{1-\rho}\right).
+  \]
+proof:
+  Along the radial segment \(tz\), the second-derivative estimate bounds the
+  logarithmic growth of \(|f'|\).  Grönwall's inequality gives
+  \(|f'(tz)|\le\exp(4\rho/(1-\rho))\); integrate this derivative bound from
+  zero to \(z\).
+-/
 theorem univalent_disk_normalized_norm_le_exp
     {f : ℂ → ℂ}
     (hf : AnalyticOnNhd ℂ f (ball 0 1))

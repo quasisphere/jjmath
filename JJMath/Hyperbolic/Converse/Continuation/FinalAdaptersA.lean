@@ -1004,97 +1004,6 @@ def SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotone
     PathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple
       g (chosenLocalModels g)
 
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem_of_subpathMerge
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact
-    pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple_of_subpathMerge
-      (hMerge g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem_of_unitSplit
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hUnit :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact
-    pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple_of_unitSplit
-      (hUnit g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact pathLocalTransitionBasedWeakHandoffInteriorUnitSplitBranchDataWitnessPrinciple
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem_of_interior
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hInterior :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact
-    pathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple_of_interior
-      (hInterior g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem_of_interiorUnitSplit
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hInterior :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-      X chosenLocalModels :=
-  selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem_of_unitSplit
-    (selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem_of_interior
-      hInterior)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem_of_prefixedSubpathMerge
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffPrefixedSubpathMergeValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact
-    pathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple_of_prefixedSubpathMerge
-      (hMerge g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem_of_monotoneSubpathMergeBranchData
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
-      X chosenLocalModels := by
-  intro g
-  exact
-    pathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple_of_monotoneSubpathMergeBranchData
-      (hMerge g)
 
 /-- Selected endpoint-normalization boundary from raw cut paths to public cuts. -/
 def SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
@@ -1107,115 +1016,6 @@ def SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopy
     PathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple
       x₀ g (chosenLocalModels g)
 
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem_unconditional
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple_unconditional
-      x₀ g (chosenLocalModels g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessTheorem_of_subpathMerge
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels)
-    (hPrefMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffPrefixedSubpathMergeValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_subpathMerge
-      (hMerge g) (hPrefMerge g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessTheorem_of_monotoneSubpathMerge
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels)
-    (hPrefMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_monotoneSubpathMerge
-      (hMerge g) (hPrefMerge g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem_of_subpathMerge_and_endpointNormalization
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels)
-    (hPrefMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffPrefixedSubpathMergeValueWitnessTheorem
-        X chosenLocalModels)
-    (hNormalize :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_subpathMerge_and_endpointNormalization
-      (hMerge g) (hPrefMerge g) (hNormalize x₀ g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem_of_monotoneSubpathMerge_and_endpointNormalization
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
-        X chosenLocalModels)
-    (hPrefMerge :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
-        X chosenLocalModels)
-    (hNormalize :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple_of_monotoneSubpathMerge_and_endpointNormalization
-      (hMerge g) (hPrefMerge g) (hNormalize x₀ g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem_of_explicitValueWitness
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hExplicit :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple_of_explicitValueWitness_unconditional
-      (hExplicit x₀ g)
-
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem_unconditional
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessPrinciple_unconditional
-      x₀ g (chosenLocalModels g)
 
 /--
 Selected one-column chart-grid replacement principle for based weak handoff
@@ -1322,19 +1122,6 @@ def SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffTerminal
     PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionExistencePrinciple
       x₀ g (chosenLocalModels g)
 
-/-- The explicit terminal-extension skeleton proves selected existential local extension. -/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffTerminalSheetLocalExtensionExistenceTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffTerminalSheetLocalExtensionExistenceTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionExistencePrinciple
-      x₀ g (chosenLocalModels g)
 
 /--
 Selected same-path terminal-value uniqueness for based weak handoff skeletons.
@@ -1889,73 +1676,33 @@ def SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonica
       (PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaNonemptyOpenAgreementDataPSL
         agreementContinuation)
 
-/--
-The selected terminal-coordinate nonempty-open boundary is unconditional for
-terminal-sheet agreement data.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaNonemptyOpenAgreementTheoremPSL
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaNonemptyOpenAgreementTheoremPSL
-      X chosenLocalModels := by
-  intro x₀ g agreementContinuation
-  exact
-    ⟨agreementContinuation.toTerminalFormulaNonemptyOpenAgreementDataPSL⟩
 
-/--
-The selected terminal-coordinate three-point-richness boundary is
-unconditional for terminal-sheet agreement data.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaThreePointRichnessTheoremPSL
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaThreePointRichnessTheoremPSL
-      X chosenLocalModels := by
-  intro x₀ g agreementContinuation
-  exact
-    ⟨agreementContinuation.toTerminalFormulaThreePointRichnessDataPSL⟩
 
-/--
-The selected terminal-coordinate PSL action-faithfulness boundary is
-unconditional for terminal-sheet agreement data.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaActionFaithfulnessTheoremPSL
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaActionFaithfulnessTheoremPSL
-      X chosenLocalModels := by
-  intro x₀ g agreementContinuation
-  exact
-    ⟨agreementContinuation.toTerminalFormulaActionFaithfulnessDataPSL⟩
 
-/--
-The selected terminal-formula PSL projection-faithfulness boundary is
-unconditional for terminal-sheet agreement data.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionFaithfulnessTheoremPSL
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionFaithfulnessTheoremPSL
-      X chosenLocalModels := by
-  intro x₀ g agreementContinuation
-  exact
-    ⟨agreementContinuation.toTerminalFormulaProjectionFaithfulnessDataPSL⟩
 
 /--
 The selected terminal-formula projection-rigidity boundary is unconditional
 for terminal-sheet agreement data.
+
+%%handwave
+name:
+  Deck equivariance determines the projected terminal transition
+statement:
+  Fix a based Riemann surface, a hyperbolic metric, selected local
+  upper-half-plane models, and terminal-sheet continuation data. If the
+  continued map $D$ is equivariant for a real holonomy representation $\rho$,
+  then for every loop class $\gamma$, representative loop $\ell$, path $p$,
+  and identification $[\ell]=\gamma^{-1}$, one has
+  $$[M_{\ell*p}T_{\gamma,\ell,p}]=
+  \rho(\gamma)[M_p]\quad\text{in }\mathrm{PSL}_2(\mathbb R),$$
+  where $M_p$ and $M_{\ell*p}$ are the terminal Möbius transformations and
+  $T_{\gamma,\ell,p}$ is the terminal transition representative.
+proof:
+  The terminal-sheet agreement data canonically compare the two terminal
+  coordinate formulas. Deck equivariance identifies the adjusted formula
+  after following $\ell*p$ with the $\rho(\gamma)$-translate of the formula
+  after following $p$; projecting the resulting Möbius identity gives the
+  displayed equality.
 -/
 theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityTheoremPSL
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2095,81 +1842,9 @@ def selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopy
     pathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple_of_elementaryGridMoveWalkPrinciple
       (hElementary x₀ g basedWeakHandoffAlong)
 
-/--
-Selected decomposed one-column witnesses plus selected cut-reparameterization
-transfer imply the selected public one-column value-witness theorem.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem_of_selectedDecomposed_and_selectedCutReparam
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hDecomp :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem
-        X chosenLocalModels)
-    (hCut :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnValueWitnessPrinciple_of_decomposed_and_cutReparam
-      (hDecomp x₀ g) (hCut x₀ g)
 
-/--
-Selected one-column value witnesses imply selected one-column grid moves;
-same-path terminal-value uniqueness is already unconditional.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem_of_selectedHomotopyChartStripColumnValueWitness
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hValue :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem
-      X chosenLocalModels := by
-  intro x₀ g basedWeakHandoffAlong
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple_of_valueWitness_unconditional
-      (basedWeakHandoffAlong := basedWeakHandoffAlong)
-      (hValue x₀ g)
 
-/--
-Selected one-column replacement implies selected one-strip replacement by
-finite concatenation across the path-parameter subdivision.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem_of_selectedHomotopyChartStripColumnMove
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hColumn :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem
-      X chosenLocalModels := by
-  intro x₀ g basedWeakHandoffAlong
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartStripMovePrinciple_of_columnMovePrinciple
-      (hColumn x₀ g basedWeakHandoffAlong)
 
-/--
-Selected one-strip replacement implies selected chart-grid replacement by
-finite concatenation of strips.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem_of_selectedHomotopyChartStripMove
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hStrip :
-      SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem
-        X chosenLocalModels) :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem
-      X chosenLocalModels := by
-  intro x₀ g basedWeakHandoffAlong
-  exact
-    pathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple_of_stripMovePrinciple
-      (hStrip x₀ g basedWeakHandoffAlong)
 
 /--
 Selected chart-grid local replacement implies selected elementary grid-move
@@ -2374,85 +2049,6 @@ def selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVe
     pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_of_ownSplitParameterAlignment
       (hAlign x₀ g)
 
-/--
-The selected own-split parameter-permutation theorem is unconditional: it is
-only finite parameter-list bookkeeping for the chosen local-transition atlas.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationPrinciple
-
-/--
-The selected own-split parameter-alignment theorem is unconditional.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentPrinciple_unconditional
-
-/--
-The selected common aligned mutual-refinement theorem is unconditional.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_unconditional
-
-/--
-The selected mutual vertex-refinement terminal-value theorem is unconditional.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementTerminalValueTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffMutualVertexRefinementTerminalValueTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePrinciple_unconditional
-
-/--
-The selected same-path terminal-value uniqueness theorem is unconditional.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem
-      X chosenLocalModels := by
-  intro x₀ g
-  exact
-    pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_unconditional
-
-/--
-The selected terminal-sheet local-extension theorem is unconditional for any
-chosen coherent based weak handoff skeletons.
--/
-theorem selectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffTerminalSheetLocalExtensionPrincipleTheorem
-    {chosenLocalModels :
-      ∀ (g : HyperbolicMetric X),
-        HyperbolicLocalModelLocalTransitionAtlas X g} :
-    SelectedLocalTransitionModelAnalyticContinuationPathBasedWeakHandoffTerminalSheetLocalExtensionPrincipleTheorem
-      X chosenLocalModels := by
-  intro x₀ g basedWeakHandoffAlong
-  exact
-    pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_unconditional
 
 /--
 Selected own-split parameter permutations imply selected own-split parameter

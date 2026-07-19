@@ -112,6 +112,14 @@ noncomputable def surfaceComplexDerivativeInCoordinate {X : Type}
     (χ : PointedSurfaceCoordinate X p) (f : X → ℂ) : ℂ :=
   deriv (fun z : ℂ ↦ f (χ.chart.symm z)) (χ.chart p)
 
+/--
+%%handwave
+name: Holomorphic maps in a surface coordinate
+statement:
+  Let $f:X\to\mathbb C$ be holomorphic on a complex one-manifold, and let $\chi$ be a complex coordinate whose source contains $p$. Then $z\mapsto f(\chi^{-1}(z))$ is complex differentiable throughout the target of $\chi$.
+proof:
+  The inverse chart is holomorphic on its target. Compose it with $f$ and translate manifold differentiability in the complex model to ordinary complex differentiability.
+-/
 theorem differentiableOn_surfaceCoordinate_symm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {f : X → ℂ} (hf : HolomorphicMap X ℂ f)
@@ -126,6 +134,14 @@ theorem differentiableOn_surfaceCoordinate_symm
   rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at hz'
   exact hz'
 
+/--
+%%handwave
+name: Holomorphicity of a disk-valued map from its complex coordinate
+statement:
+  A map $F:X\to\mathbb D$ is holomorphic whenever its composite with the inclusion $\mathbb D\hookrightarrow\mathbb C$ is holomorphic.
+proof:
+  The disk is an open complex submanifold of $\mathbb C$. Compose the complex-valued map with the holomorphic inverse of this open embedding; the composite is pointwise $F$.
+-/
 theorem holomorphicMap_unitDisc_of_coe
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {F : X → Complex.UnitDisc}
@@ -163,6 +179,9 @@ name:
   The unit disk inclusion is holomorphic
 statement:
   The inclusion of the unit disk into the complex plane is holomorphic.
+proof:
+  The unit disk is an open complex submanifold of the plane, and its inclusion
+  is the open embedding that defines this induced complex structure.
 -/
 theorem holomorphicMap_unitDisc_coe :
     HolomorphicMap Complex.UnitDisc ℂ (fun z : Complex.UnitDisc ↦ (z : ℂ)) := by
@@ -176,6 +195,14 @@ theorem holomorphicMap_unitDisc_coe :
         (I := 𝓘(ℂ)) (n := (1 : WithTop ℕ∞)) hOpen)
   exact h.mdifferentiable one_ne_zero
 
+/--
+%%handwave
+name: Smoothness of the unit-disk inclusion
+statement:
+  The inclusion $\mathbb D\hookrightarrow\mathbb C$ is continuously differentiable as a map of complex manifolds.
+proof:
+  It is the open embedding that defines the induced manifold structure on the disk.
+-/
 private theorem contMDiff_unitDisc_coe :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) (1 : WithTop ℕ∞)
       (fun z : Complex.UnitDisc ↦ (z : ℂ)) := by
@@ -233,11 +260,22 @@ name:
   The upper half-plane inclusion is holomorphic
 statement:
   The inclusion of the upper half-plane into the complex plane is holomorphic.
+proof:
+  The upper half-plane is an open complex submanifold of the plane, so its
+  defining open embedding is holomorphic.
 -/
 theorem holomorphicMap_upperHalfPlane_coe :
     HolomorphicMap UpperHalfPlane ℂ (fun z : UpperHalfPlane ↦ (z : ℂ)) := by
   exact UpperHalfPlane.mdifferentiable_coe
 
+/--
+%%handwave
+name: Smoothness of the upper-half-plane inclusion
+statement:
+  The inclusion $\mathbb H\hookrightarrow\mathbb C$ is continuously differentiable as a map of complex manifolds.
+proof:
+  The upper half-plane carries the manifold structure induced by this open embedding.
+-/
 private theorem contMDiff_upperHalfPlane_coe :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) (1 : WithTop ℕ∞)
       (fun z : UpperHalfPlane ↦ (z : ℂ)) := by
@@ -252,6 +290,9 @@ name:
   Holomorphic maps are continuous
 statement:
   A holomorphic map between complex manifolds is continuous.
+proof:
+  Holomorphicity is complex differentiability in manifold charts, and every
+  differentiable map between manifolds is continuous.
 -/
 theorem HolomorphicMap.continuous
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -268,6 +309,8 @@ name:
 statement:
   The composite of two holomorphic maps between complex manifolds is
   holomorphic.
+proof:
+  Apply the chain rule for complex differentiable manifold maps.
 -/
 theorem HolomorphicMap.comp
     {X Y Z : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -302,8 +345,7 @@ statement:
   The composite of two biholomorphic equivalences is biholomorphic.
 proof:
   Compose the underlying homeomorphisms.  The forward and inverse holomorphic
-  maps are obtained by [composition of holomorphic
-  maps](lean:JJMath.Uniformization.HolomorphicMap.comp).
+  maps are obtained by [composition of holomorphic maps](lean:JJMath.Uniformization.HolomorphicMap.comp).
 -/
 noncomputable def Biholomorphic.trans
     {X Y Z : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -666,11 +708,9 @@ statement:
   A bijective pointed holomorphic disk map with nonvanishing coordinate
   derivative everywhere is a biholomorphic equivalence onto the unit disk.
 proof:
-  By [the inverse function theorem, an unbranched pointed disk map is a local
-  homeomorphism](lean:JJMath.Uniformization.unbranched_pointedDiskMap_isLocalHomeomorph).
+  By [the inverse function theorem, an unbranched pointed disk map is a local homeomorphism](lean:JJMath.Uniformization.unbranched_pointedDiskMap_isLocalHomeomorph).
   A bijective local homeomorphism is a homeomorphism.  The forward map is
-  holomorphic by assumption, and [the inverse homeomorphism is
-  holomorphic](lean:JJMath.Uniformization.bijective_unbranched_pointedDiskMap_inverse_holomorphic)
+  holomorphic by assumption, and [the inverse homeomorphism is holomorphic](lean:JJMath.Uniformization.bijective_unbranched_pointedDiskMap_inverse_holomorphic)
   because it agrees locally with the holomorphic inverse branches.
 -/
 theorem biholomorphicSurfaces_of_bijective_unbranched_pointedDiskMap
@@ -969,8 +1009,7 @@ statement:
   Being biholomorphic to the open unit disk implies being biholomorphic to the
   upper half-plane.
 proof:
-  Compose the disk equivalence with [the Cayley biholomorphism from the disk
-  to the upper half-plane](lean:JJMath.Uniformization.unitDisc_biholomorphicSurfaces_upperHalfPlane).
+  Compose the disk equivalence with [the Cayley biholomorphism from the disk to the upper half-plane](lean:JJMath.Uniformization.unitDisc_biholomorphicSurfaces_upperHalfPlane).
 -/
 theorem biholomorphicToUpperHalfPlane_of_biholomorphicSurfaces_unitDisc
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]

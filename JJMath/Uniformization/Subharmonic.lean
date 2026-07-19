@@ -49,6 +49,9 @@ name:
   Constant functions are harmonic on surface regions
 statement:
   Constant real-valued functions are harmonic on every surface region.
+proof:
+  In every complex coordinate chart the pullback is constant, and constant
+  functions on the plane are harmonic.
 -/
 theorem harmonicOnSurface_const
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -64,6 +67,9 @@ name:
 statement:
   A harmonic function on a surface region remains harmonic on every smaller
   region.
+proof:
+  For each coordinate chart, restrict the planar set on which the coordinate
+  representative is harmonic from the larger region to the smaller one.
 -/
 theorem harmonicOnSurface_mono
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -203,6 +209,9 @@ name:
 statement:
   The difference of two harmonic functions on the same surface region is
   harmonic.
+proof:
+  In each complex coordinate chart, take the difference of the two harmonic
+  coordinate representatives; harmonic functions are closed under subtraction.
 -/
 theorem harmonicOnSurface_sub
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -218,6 +227,9 @@ name:
   Sums of harmonic functions are harmonic
 statement:
   The sum of two harmonic functions on the same surface region is harmonic.
+proof:
+  In each complex coordinate chart, take the sum of the two harmonic coordinate
+  representatives; harmonic functions are closed under addition.
 -/
 theorem harmonicOnSurface_add
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -233,6 +245,9 @@ name:
   Negatives of harmonic functions are harmonic
 statement:
   The negative of a harmonic function on a surface region is harmonic.
+proof:
+  In every complex coordinate chart, negate the harmonic coordinate
+  representative.
 -/
 theorem harmonicOnSurface_neg
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -249,6 +264,9 @@ name:
 statement:
   A real scalar multiple of a harmonic function on a surface region is
   harmonic.
+proof:
+  In every complex coordinate chart, multiply the harmonic coordinate
+  representative by the given real scalar.
 -/
 theorem harmonicOnSurface_const_mul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -355,8 +373,7 @@ statement:
 proof:
   Pass to a complex coordinate around the point.  The coordinate expression is
   harmonic in the complex plane and has a local maximum, so
-  [it is locally constant near that
-  point](lean:JJMath.Uniformization.harmonicAt_eventually_eq_of_isLocalMax).
+  [it is locally constant near that point](lean:JJMath.Uniformization.harmonicAt_eventually_eq_of_isLocalMax).
   Pull the resulting local equality back through the chart.
 -/
 theorem harmonicOnSurface_eventually_eq_of_isLocalMax
@@ -398,8 +415,7 @@ statement:
   maximum in the region is constant on the region.
 proof:
   The set where the function takes the maximum value is nonempty.  It is open
-  because [surface harmonic functions are locally constant at local
-  maxima](lean:JJMath.Uniformization.harmonicOnSurface_eventually_eq_of_isLocalMax),
+  because [surface harmonic functions are locally constant at local maxima](lean:JJMath.Uniformization.harmonicOnSurface_eventually_eq_of_isLocalMax),
   and its complement inside the region is open by continuity.  Preconnectedness
   forces the complement to be empty.
 -/
@@ -615,6 +631,10 @@ name:
 statement:
   A relatively compact connected open set with nonempty boundary has
   componentwise maximum-principle geometry.
+proof:
+  At every point choose the original set itself as the required connected
+  subregion; all openness, compactness, boundary, and inclusion properties are
+  then exactly the hypotheses.
 -/
 theorem hasComponentwiseMaximumPrincipleGeometry_of_preconnected
     {X : Type} [TopologicalSpace X] {U : Set X}
@@ -721,6 +741,10 @@ name:
 statement:
   A function satisfying harmonic comparison on a plane domain satisfies the same
   comparison principle on every smaller plane domain.
+proof:
+  Upper semicontinuity restricts to the smaller domain.  Every relatively
+  compact comparison region in the smaller domain is also such a region in the
+  larger domain, so the original comparison principle applies.
 -/
 theorem subharmonicByPlaneComparisonOn_mono
     {U V : Set ℂ} {u : ℂ → ℝ}
@@ -741,6 +765,11 @@ name:
 statement:
   If two functions agree on a plane domain, then comparison-subharmonicity of
   one on that domain implies comparison-subharmonicity of the other.
+proof:
+  Transfer upper semicontinuity through the pointwise equality.  On each test
+  region, rewrite the boundary inequality and the desired interior inequality
+  using the same equality, then apply harmonic comparison for the first
+  function.
 -/
 theorem subharmonicByPlaneComparisonOn_congr_on
     {U : Set ℂ} {u v : ℂ → ℝ}
@@ -801,6 +830,22 @@ noncomputable def upperCircleAverageERealWithBound
       (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
       (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ)))) : EReal)
 
+/--
+%%handwave
+name:
+  A constant passes through a normalized nonnegative integral
+statement:
+  For a finite nonzero measure \(\mu\), a constant \(a\ge0\), and a
+  nonnegative extended-valued function \(f\),
+  \[
+    \operatorname{Avg}_\mu(a+f)
+      =a+\operatorname{Avg}_\mu(f).
+  \]
+proof:
+  Expand the normalized lower average as the lower integral divided by
+  \(\mu(\alpha)\), use additivity of the lower integral with a measurable
+  constant, and cancel the finite nonzero measure factor.
+-/
 private theorem laverage_add_const_left
     {α : Type*} [MeasurableSpace α]
     (μ : MeasureTheory.Measure α) [MeasureTheory.IsFiniteMeasure μ] [NeZero μ]
@@ -811,6 +856,21 @@ private theorem laverage_add_const_left
   rw [MeasureTheory.lintegral_add_left measurable_const, MeasureTheory.lintegral_const]
   simp
 
+/--
+%%handwave
+name:
+  Additivity of normalized nonnegative integrals
+statement:
+  If \(f\) is almost everywhere measurable, then
+  \[
+    \operatorname{Avg}_\mu(f+g)
+      =\operatorname{Avg}_\mu(f)+\operatorname{Avg}_\mu(g)
+  \]
+  for nonnegative extended-valued functions \(f,g\).
+proof:
+  Use additivity of the lower integral and distributivity of division by the
+  total measure.
+-/
 private theorem laverage_add_left_of_aemeasurable
     {α : Type*} [MeasurableSpace α]
     {μ : MeasureTheory.Measure α} {f g : α → ENNReal}
@@ -820,6 +880,23 @@ private theorem laverage_add_left_of_aemeasurable
   rw [MeasureTheory.laverage_eq, MeasureTheory.laverage_eq, MeasureTheory.laverage_eq]
   rw [MeasureTheory.lintegral_add_left' hf, ENNReal.add_div]
 
+/--
+%%handwave
+name:
+  Measurability of an upper-semicontinuous circle trace
+statement:
+  Let \(u\) be upper semicontinuous on \(U\), and suppose
+  \(\overline B(c,r)\subseteq U\) with \(r>0\).  Then
+  \[
+    \theta\longmapsto u(c+re^{i\theta})
+  \]
+  is almost everywhere measurable on one full angular interval.
+proof:
+  The circle parametrization is continuous and maps the angular interval
+  into \(U\).  Its composite with \(u\) is upper semicontinuous there, hence
+  measurable on the interval and almost everywhere measurable for the
+  restricted volume measure.
+-/
 private theorem upperSemicontinuousOn_circleTrace_aemeasurable
     {U : Set ℂ} {u : ℂ → ℝ} {c : ℂ} {r : ℝ}
     (hu : UpperSemicontinuousOn u U)
@@ -846,6 +923,21 @@ private theorem upperSemicontinuousOn_circleTrace_aemeasurable
   exact aemeasurable_restrict_of_measurable_subtype
     (μ := MeasureTheory.volume) (s := s) measurableSet_uIoc htrace_meas
 
+/--
+%%handwave
+name:
+  Measurability of the nonnegative circle deficit
+statement:
+  Under the preceding hypotheses, for every \(M\in\mathbb R\) the function
+  \[
+    \theta\longmapsto (M-u(c+re^{i\theta}))_+
+  \]
+  is almost everywhere measurable on the angular interval.
+proof:
+  The circle trace is almost everywhere measurable.  Subtract it from the
+  measurable constant \(M\), then apply the measurable nonnegative-real
+  embedding.
+-/
 private theorem upperSemicontinuousOn_circleTraceSub_aemeasurable
     {U : Set ℂ} {u : ℂ → ℝ} {c : ℂ} {r M : ℝ}
     (hu : UpperSemicontinuousOn u U)
@@ -857,6 +949,22 @@ private theorem upperSemicontinuousOn_circleTraceSub_aemeasurable
   exact (aemeasurable_const.sub
     (upperSemicontinuousOn_circleTrace_aemeasurable hu hr hclosed)).ennreal_ofReal
 
+/--
+%%handwave
+name:
+  Shifting both terms of an extended-real subtraction
+statement:
+  For \(M,d\in\mathbb R\) with \(d\ge0\) and
+  \(L\in[0,\infty]\),
+  \[
+    M-L=(M+d)-(d+L)
+  \]
+  in the extended real line.
+proof:
+  If \(L=\infty\), both sides are \(-\infty\).  Otherwise reduce to ordinary
+  real arithmetic; nonnegativity identifies the embedded value of \(d\)
+  with \(d\) itself.
+-/
 private theorem ereal_sub_add_coe_cancel_ennreal
     {M d : ℝ} (hd : 0 ≤ d) (L : ENNReal) :
     (M : EReal) - (L : EReal) =
@@ -874,6 +982,22 @@ private theorem ereal_sub_add_coe_cancel_ennreal
     norm_cast
     ring
 
+/--
+%%handwave
+name:
+  Additivity of finite-minus-nonnegative extended differences
+statement:
+  For real \(M_u,M_v\) and \(L_u,L_v\in[0,\infty]\),
+  \[
+    (M_u+M_v)-(L_u+L_v)
+      =(M_u-L_u)+(M_v-L_v)
+  \]
+  in the extended real line.
+proof:
+  If either nonnegative term is infinite, both sides are \(-\infty\).
+  Otherwise all quantities are finite and the identity is ordinary
+  arithmetic.
+-/
 private theorem ereal_sub_ennreal_add_eq_add_sub_ennreal
     (Mu Mv : ℝ) (Lu Lv : ENNReal) :
     ((Mu + Mv : ℝ) : EReal) -
@@ -897,6 +1021,20 @@ private theorem ereal_sub_ennreal_add_eq_add_sub_ennreal
   rw [NNReal.coe_add]
   ring_nf
 
+/--
+%%handwave
+name:
+  A nonnegative subtraction cannot increase a finite real number
+statement:
+  If \(a\in\mathbb R\), \(L\in[0,\infty]\), and
+  \[
+    a\le a-L
+  \]
+  in the extended real line, then \(L=0\).
+proof:
+  The case \(L=\infty\) would give \(a\le-\infty\), impossible.  In the
+  finite case, ordinary subtraction and \(L\ge0\) force \(L=0\).
+-/
 private theorem laverage_eq_zero_of_self_le_sub_laverage
     {a : ℝ} {L : ENNReal}
     (h : (a : EReal) ≤ (a : EReal) - (L : EReal)) :
@@ -916,6 +1054,19 @@ private theorem laverage_eq_zero_of_self_le_sub_laverage
     apply Subtype.ext
     exact hLreal
 
+/--
+%%handwave
+name:
+  A nonnegative function with zero normalized average vanishes almost everywhere
+statement:
+  Let \(f\) be a nonnegative extended-valued almost everywhere measurable
+  function on a finite measure space.  If
+  \(\operatorname{Avg}_\mu f=0\), then \(f=0\) almost everywhere.
+proof:
+  Multiplying the zero normalized average by the total measure shows that the
+  lower integral of \(f\) is zero.  A measurable nonnegative function has
+  zero lower integral exactly when it vanishes almost everywhere.
+-/
 private theorem ae_eq_zero_of_laverage_eq_zero
     {α : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
     [MeasureTheory.IsFiniteMeasure μ] {f : α → ENNReal}
@@ -926,6 +1077,18 @@ private theorem ae_eq_zero_of_laverage_eq_zero
     rw [← MeasureTheory.measure_mul_laverage μ f, havg, mul_zero]
   exact (MeasureTheory.lintegral_eq_zero_iff' hf).mp hint
 
+/--
+%%handwave
+name:
+  Positive-measure nonvanishing contradicts almost-everywhere vanishing
+statement:
+  Let \(A\subseteq S\) have positive measure.  If \(f\ne0\) at every point
+  of \(A\), then \(f\) cannot vanish almost everywhere on \(S\).
+proof:
+  Almost-everywhere vanishing makes the restricted measure of
+  \(\{f\ne0\}\) zero.  Since \(A\subseteq S\cap\{f\ne0\}\), monotonicity
+  would force \(\mu(A)=0\), contradicting positivity.
+-/
 private theorem ae_eq_zero_false_of_pos_measure_subset_ne_zero
     {α : Type*} [MeasurableSpace α] {μ : MeasureTheory.Measure α}
     {f : α → ENNReal} {A s : Set α}
@@ -944,6 +1107,21 @@ private theorem ae_eq_zero_false_of_pos_measure_subset_ne_zero
       _ = 0 := hzero
   exact hApos.ne' hA_zero
 
+/--
+%%handwave
+name:
+  A neighborhood has positive measure inside a nondegenerate half-open interval
+statement:
+  If \(a<b\), \(\theta\in(a,b]\), and \(N\) is a neighborhood of
+  \(\theta\), then
+  \[
+    \operatorname{vol}\bigl(N\cap(a,b]\bigr)>0.
+  \]
+proof:
+  Choose a small metric interval about \(\theta\) contained in \(N\).  If
+  \(\theta<b\), a two-sided subinterval lies in the intersection; if
+  \(\theta=b\), use a left-hand subinterval.  Both have positive length.
+-/
 private theorem volume_inter_Ioc_pos_of_mem_nhds_of_mem_Ioc
     {N : Set ℝ} {θ a b : ℝ}
     (hab : a < b) (hθ : θ ∈ Set.Ioc a b) (hN : N ∈ 𝓝 θ) :
@@ -1016,6 +1194,20 @@ private theorem volume_inter_Ioc_pos_of_mem_nhds_of_mem_Ioc
       exact ENNReal.ofReal_pos.mpr (by linarith [hδpos])
     exact hIpos.trans_le (MeasureTheory.measure_mono hsub)
 
+/--
+%%handwave
+name:
+  A neighborhood has positive measure inside an unoriented half-open interval
+statement:
+  If \(a<b\), \(\theta\) belongs to the unoriented interval from \(a\) to
+  \(b\), and \(N\) is a neighborhood of \(\theta\), then
+  \[
+    \operatorname{vol}\bigl(N\cap(a,b]\bigr)>0.
+  \]
+proof:
+  For \(a\le b\), the unoriented interval is exactly \((a,b]\); apply the
+  preceding positive-measure neighborhood lemma.
+-/
 private theorem volume_inter_uIoc_pos_of_mem_nhds_of_mem_uIoc
     {N : Set ℝ} {θ a b : ℝ}
     (hab : a < b) (hθ : θ ∈ Set.uIoc a b) (hN : N ∈ 𝓝 θ) :
@@ -1023,6 +1215,21 @@ private theorem volume_inter_uIoc_pos_of_mem_nhds_of_mem_uIoc
   rw [Set.uIoc_of_le hab.le] at hθ ⊢
   exact volume_inter_Ioc_pos_of_mem_nhds_of_mem_Ioc hab hθ hN
 
+/--
+%%handwave
+name:
+  Raising a circle upper bound shifts the average deficit
+statement:
+  Suppose \(u(c+re^{i\theta})\le M\le N\) on the circle.  Then
+  \[
+    \operatorname{Avg}\bigl((N-u)_+\bigr)
+      =(N-M)+\operatorname{Avg}\bigl((M-u)_+\bigr).
+  \]
+proof:
+  Both \(N-M\) and \(M-u\) are nonnegative, so pointwise
+  \((N-u)_+=(N-M)+(M-u)_+\).  Pass the constant through the normalized
+  nonnegative integral.
+-/
 private theorem laverage_circleTraceSub_eq_add_of_le
     {u : ℂ → ℝ} {c : ℂ} {r M N : ℝ}
     (hM : CircleTraceUpperBound u c r M) (hMN : M ≤ N) :
@@ -1080,6 +1287,21 @@ private theorem laverage_circleTraceSub_eq_add_of_le
             (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
             (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ))) := rfl
 
+/--
+%%handwave
+name:
+  The extended circle average is independent of the chosen upper bound
+statement:
+  If \(M\le N\) are both upper bounds for the circle trace of \(u\), then
+  \[
+    M-\operatorname{Avg}\bigl((M-u)_+\bigr)
+      =N-\operatorname{Avg}\bigl((N-u)_+\bigr).
+  \]
+proof:
+  Raising the bound from \(M\) to \(N\) adds \(N-M\) to the averaged
+  deficit.  Shifting both terms of the extended-real subtraction by this
+  same nonnegative amount leaves the difference unchanged.
+-/
 private theorem upperCircleAverageERealWithBound_eq_of_bounds_of_le
     {u : ℂ → ℝ} {c : ℂ} {r M N : ℝ}
     (hM : CircleTraceUpperBound u c r M) (hMN : M ≤ N) :
@@ -1215,8 +1437,7 @@ statement:
 proof:
   The upper bound for the larger trace is also an upper bound for the smaller
   trace.  Replace the smaller trace's chosen bound by that common bound using
-  [independence of the finite upper
-  bound](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_of_bounds),
+  [independence of the finite upper bound](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_of_bounds),
   then apply monotonicity with a common bound.
 -/
 theorem upperCircleAverageERealWithBound_mono_of_bounds
@@ -1243,13 +1464,14 @@ name:
   Lower average of an upper-bounded integrable circle trace
 statement:
   If an ordinarily integrable circle trace is bounded above by \(M\), then the
-  nonnegative average of \(M-u\) is \(\operatorname{ofReal}(M-\fint u)\).
+  nonnegative average of \(M-u\) is the nonnegative-real embedding of
+  \(M-\fint u\).
 proof:
   The function \(M-u\) is nonnegative on the parametrizing interval and
   integrable because the trace of \(u\) is integrable.  Apply the standard
-  identity relating the lower integral of `ofReal` to the Bochner average of a
-  nonnegative integrable function, and use linearity of ordinary averages to
-  rewrite \(\fint(M-u)\) as \(M-\fint u\).
+  identity relating the lower integral after the nonnegative-real embedding to
+  the Bochner average of a nonnegative integrable function, and use linearity
+  of ordinary averages to rewrite \(\fint(M-u)\) as \(M-\fint u\).
 -/
 theorem laverage_ofReal_circleTraceSub_eq_ofReal_sub_circleAverage
     {u : ℂ → ℝ} {c : ℂ} {r M : ℝ}
@@ -1354,8 +1576,7 @@ statement:
   independent of the finite upper bound used to present it.
 proof:
   For each upper bound,
-  [the extended average agrees with the ordinary circle
-  average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
+  [the extended average agrees with the ordinary circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
 -/
 theorem upperCircleAverageERealWithBound_eq_of_bounds_of_circleIntegrable
     {u : ℂ → ℝ} {c : ℂ} {r M N : ℝ}
@@ -1426,6 +1647,10 @@ name:
 statement:
   A function satisfying the extended circle-mean subharmonicity condition on a
   plane domain satisfies the same condition on every smaller plane domain.
+proof:
+  Upper semicontinuity restricts to the smaller domain.  A closed disk contained
+  in the smaller domain is contained in the larger domain, so the same
+  extended circle-mean inequality applies.
 -/
 theorem subharmonicByExtendedCircleAverageOn_mono
     {U V : Set ℂ} {u : ℂ → ℝ}
@@ -1446,8 +1671,7 @@ statement:
   most the ordinary circle average of that trace.
 proof:
   Use the finite upper bound supplied by the extended circle-mean condition.
-  For an integrable trace, [the extended average agrees with the ordinary
-  circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
+  For an integrable trace, [the extended average agrees with the ordinary circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
 -/
 theorem subharmonicByExtendedCircleAverageOn_le_circleAverage
     {U : Set ℂ} {u : ℂ → ℝ}
@@ -1561,11 +1785,9 @@ proof:
   Upper semicontinuity is preserved by addition.  On each compactly contained
   circle, take finite upper bounds for the two traces; their sum is an upper
   bound for the summed trace.  The center inequalities add, and
-  [extended circle averages commute with
-  sums](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_add_of_upperSemicontinuousOn).
+  [extended circle averages commute with sums](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_add_of_upperSemicontinuousOn).
   If the target presentation uses a different upper bound, replace it using
-  [independence of the finite upper
-  bound](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_of_bounds).
+  [independence of the finite upper bound](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_of_bounds).
 -/
 theorem subharmonicByExtendedCircleAverageOn_add
     {U : Set ℂ} {u v : ℂ → ℝ}
@@ -1663,8 +1885,7 @@ statement:
 proof:
   The negative of a harmonic function is harmonic, hence extended circle-mean
   subharmonic.  Then use
-  [extended circle-mean subharmonicity is closed under
-  sums](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
+  [extended circle-mean subharmonicity is closed under sums](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
 -/
 theorem subharmonicByExtendedCircleAverageOn_sub_harmonic
     {U : Set ℂ} {u h : ℂ → ℝ}
@@ -1807,8 +2028,7 @@ statement:
   domain.
 proof:
   The set where the function equals the interior maximum is open by
-  [local constancy at an interior
-  maximum](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_eventually_eq_of_isMaxOn).
+  [local constancy at an interior maximum](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_eventually_eq_of_isMaxOn).
   Its complement inside the domain is also open by upper semicontinuity.
   Preconnectedness forces the equality set to be the whole domain.
 -/
@@ -1935,8 +2155,7 @@ proof:
   The boundary majorization gives a pointwise inequality of circle traces.
   Monotonicity of the extended circle average compares the original trace with
   the continuous one.  Since continuous boundary data is circle-integrable,
-  [the extended average agrees with the ordinary circle
-  average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage)
+  [the extended average agrees with the ordinary circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage)
   for the majorant.
 -/
 theorem upperCircleAverageERealWithBound_le_circleAverage_of_continuous_majorant
@@ -2005,8 +2224,7 @@ statement:
   bound for all ordinary circle averages of continuous boundary functions
   lying above the trace and below the chosen finite upper bound.
 proof:
-  Apply [continuous majorants dominate the extended circle
-  average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_le_circleAverage_of_continuous_majorant)
+  Apply [continuous majorants dominate the extended circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_le_circleAverage_of_continuous_majorant)
   to each member of the defining family, then use the universal lower-bound
   property of the infimum.
 -/
@@ -2221,8 +2439,9 @@ statement:
 proof:
   The trace is integrable because the boundary data is continuous on the
   circle, and it is nonnegative by hypothesis.  The standard relation between
-  the lower integral of `ofReal` and the Bochner integral of a nonnegative
-  integrable function identifies the lower average with the ordinary average.
+  the lower integral after the nonnegative-real embedding and the Bochner
+  integral of a nonnegative integrable function identifies the lower average
+  with the ordinary average.
 -/
 theorem laverage_ofReal_circleTrace_eq_ofReal_circleAverage
     {ψ : ℂ → ℝ} {c : ℂ} {r : ℝ}
@@ -2377,8 +2596,7 @@ proof:
   superlevel set \(\{u\ge a\}\) is closed, and Urysohn's lemma separates it
   from \(x\), producing a continuous majorant whose value at \(x\) is below
   \(b\).  Then apply the theorem saying that
-  [a countable subfamily has the same lower
-  envelope](lean:exists_countable_upperSemicontinuous_isGLB).
+  [a countable subfamily has the same lower envelope](lean:exists_countable_upperSemicontinuous_isGLB).
 
   References include Ransford, *Potential Theory in the Complex Plane*,
   Theorem 2.1.3, and Bourbaki, *General Topology*, Chapter IX, §1.
@@ -2873,11 +3091,9 @@ statement:
   average is still below that threshold.
 proof:
   On the compact boundary circle,
-  [upper semicontinuous functions are decreasing limits of continuous
-  majorants](lean:JJMath.Uniformization.upperSemicontinuousOn_compact_exists_antitone_continuous_bounded_majorants).
+  [upper semicontinuous functions are decreasing limits of continuous majorants](lean:JJMath.Uniformization.upperSemicontinuousOn_compact_exists_antitone_continuous_bounded_majorants).
   After imposing the upper bound \(M\),
-  [their averages converge to the extended circle
-  average](lean:JJMath.Uniformization.tendsto_circleAverage_of_antitone_continuous_bounded_majorants).
+  [their averages converge to the extended circle average](lean:JJMath.Uniformization.tendsto_circleAverage_of_antitone_continuous_bounded_majorants).
   A finite threshold below the limit is therefore eventually satisfied.
 -/
 theorem exists_continuous_majorant_circleAverage_lt_of_upperCircleAverage_lt
@@ -2920,8 +3136,7 @@ statement:
   the extended circle average computed from any finite upper bound.
 proof:
   If the infimum were strictly above the extended average, then
-  [a continuous majorant would have ordinary average below that
-  infimum](lean:JJMath.Uniformization.exists_continuous_majorant_circleAverage_lt_of_upperCircleAverage_lt),
+  [a continuous majorant would have ordinary average below that infimum](lean:JJMath.Uniformization.exists_continuous_majorant_circleAverage_lt_of_upperCircleAverage_lt),
   contradicting the defining lower-bound property of the infimum.
 -/
 theorem sInf_continuous_majorants_le_upperCircleAverageERealWithBound
@@ -2964,8 +3179,7 @@ statement:
 proof:
   One inequality follows because the extended circle average is a lower bound
   for every continuous majorant average.  For the reverse inequality,
-  [a continuous majorant can be chosen below every strict finite
-  threshold](lean:JJMath.Uniformization.exists_continuous_majorant_circleAverage_lt_of_upperCircleAverage_lt),
+  [a continuous majorant can be chosen below every strict finite threshold](lean:JJMath.Uniformization.exists_continuous_majorant_circleAverage_lt_of_upperCircleAverage_lt),
   and the \(+\infty\) threshold is handled by the constant majorant.
 -/
 theorem upperCircleAverageERealWithBound_eq_sInf_continuous_majorants
@@ -3057,8 +3271,7 @@ statement:
 proof:
   Upper semicontinuity supplies a finite upper bound for every compactly
   contained circle, and
-  [comparison gives the extended circle-mean
-  inequality](lean:JJMath.Uniformization.planeComparisonSubharmonic_le_upperCircleAverageERealWithBound)
+  [comparison gives the extended circle-mean inequality](lean:JJMath.Uniformization.planeComparisonSubharmonic_le_upperCircleAverageERealWithBound)
   for any such bound.
 -/
 theorem subharmonicByPlaneComparisonOn_to_extendedCircleAverageOn
@@ -3126,10 +3339,8 @@ statement:
   harmonic-comparison subharmonicity are equivalent.
 proof:
   This combines the two directions:
-  [comparison gives extended circle
-  means](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_to_extendedCircleAverageOn)
-  and [extended circle means give
-  comparison](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_to_planeComparisonOn).
+  [comparison gives extended circle means](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_to_extendedCircleAverageOn)
+  and [extended circle means give comparison](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_to_planeComparisonOn).
 -/
 theorem subharmonicByPlaneComparisonOn_iff_extendedCircleAverageOn
     {U : Set ℂ} {u : ℂ → ℝ} (hU_open : IsOpen U) :
@@ -3147,12 +3358,10 @@ statement:
   domain is comparison-subharmonic.
 proof:
   By
-  [extended circle means and comparison are
-  equivalent](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_iff_extendedCircleAverageOn),
+  [extended circle means and comparison are equivalent](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_iff_extendedCircleAverageOn),
   it suffices to prove the statement for extended circle means, where it
   follows from
-  [additivity of extended circle
-  averages](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
+  [additivity of extended circle averages](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
 -/
 theorem subharmonicByPlaneComparisonOn_add
     {U : Set ℂ} {u v : ℂ → ℝ} (hU_open : IsOpen U)
@@ -3544,6 +3753,9 @@ name:
 statement:
   If a function is subharmonic on a surface region, then adding a real
   constant on the right is subharmonic on the same region.
+proof:
+  Commute the two summands and apply preservation of subharmonicity under
+  addition of a constant on the left.
 -/
 theorem subharmonicOnSurface_add_const
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3604,6 +3816,9 @@ name:
 statement:
   If \(u\) is subharmonic and \(h\) is harmonic on the same open surface
   region, then \(u+h\) is subharmonic.
+proof:
+  The negative of \(h\) is harmonic.  Apply preservation of subharmonicity under
+  subtraction of a harmonic function to \(u-(-h)=u+h\).
 -/
 theorem subharmonicOnSurface_add_harmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3625,6 +3840,9 @@ name:
 statement:
   A harmonic real-valued function on an open surface region is subharmonic on
   that region.
+proof:
+  The zero function is subharmonic, and adding the given harmonic function to
+  zero preserves subharmonicity.
 -/
 theorem harmonicOnSurface_subharmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3637,6 +3855,23 @@ theorem harmonicOnSurface_subharmonic
     subharmonicOnSurface_const U 0
   simpa using subharmonicOnSurface_add_harmonic hU_open hzero hh
 
+/--
+%%handwave
+name:
+  A subharmonic function is locally constant at an interior maximum
+statement:
+  Let \(U\) be open and \(u\) subharmonic on \(U\).  If
+  \(x\in U\) and \(u(x)\) is a maximum of \(u\) on \(U\), then
+  \[
+    u(y)=u(x)
+  \]
+  for every \(y\) in some neighborhood of \(x\).
+proof:
+  Pass to a complex chart at \(x\), where surface subharmonicity becomes the
+  extended circle-average condition.  The local strong maximum principle for
+  that condition makes the coordinate function constant near the chart
+  point.  Pull the equality back through the chart.
+-/
 private theorem subharmonicOnSurface_eventually_eq_of_isMaxOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -3675,6 +3910,20 @@ private theorem subharmonicOnSurface_eventually_eq_of_isMaxOn
   filter_upwards [hback, e.open_source.mem_nhds hxsource] with y hy hysource
   simpa [e.left_inv hysource, e.left_inv hxsource] using hy
 
+/--
+%%handwave
+name:
+  Upper semicontinuity is local on open neighborhoods
+statement:
+  Suppose that for every \(x\in U\) there is an open neighborhood \(N\) of
+  \(x\) such that \(u\) is upper semicontinuous on \(U\cap N\).  Then \(u\)
+  is upper semicontinuous on \(U\).
+proof:
+  At each \(x\), the relative neighborhood filter within \(U\cap N\) agrees
+  locally with the one within \(U\), because \(N\) is a neighborhood of
+  \(x\).  Transfer the local upper-semicontinuity inequality through this
+  filter identity.
+-/
 private theorem upperSemicontinuousOn_of_locally_open_aux
     {X : Type} [TopologicalSpace X] {U : Set X} {u : X → ℝ}
     (hlocal : ∀ x ∈ U, ∃ N : Set X, IsOpen N ∧ x ∈ N ∧
@@ -3691,6 +3940,24 @@ private theorem upperSemicontinuousOn_of_locally_open_aux
   intro y hy
   simpa [nhdsWithin_inter_of_mem' hN_mem] using hwithin y hy
 
+/--
+%%handwave
+name:
+  The subharmonic comparison principle is local
+statement:
+  Let \(U\) be open and suppose every \(x\in U\) has an open neighborhood
+  \(N\) on which \(u\) is subharmonic on \(U\cap N\).  Then \(u\) satisfies
+  the global subharmonic comparison principle on every preconnected
+  relatively compact open \(V\Subset U\).
+proof:
+  For a harmonic test function \(h\), maximize the upper-semicontinuous
+  difference \(u-h\) on \(\overline V\).  If its positive maximum occurred
+  inside \(V\), local subharmonicity and the strong maximum principle would
+  make the maximal set open.  The strictly smaller set is also open, so
+  preconnectedness forces \(u-h\) to be constant on \(V\); upper
+  semicontinuity at a frontier point then contradicts the nonpositive
+  boundary values.
+-/
 private theorem subharmonicComparisonPrinciple_of_locally_aux
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -3808,6 +4075,19 @@ private theorem subharmonicComparisonPrinciple_of_locally_aux
   have hwb_le : w b ≤ 0 := hw_boundary b hbfrontier
   exact not_lt_of_ge (hwc_le_wb.trans hwb_le) hwc_pos
 
+/--
+%%handwave
+name:
+  Subharmonicity is local on a surface
+statement:
+  Let \(U\) be open.  If every \(x\in U\) has an open neighborhood \(N\)
+  such that \(u\) is subharmonic on \(U\cap N\), then \(u\) is subharmonic
+  on \(U\).
+proof:
+  Local upper semicontinuity globalizes by the open-neighborhood locality
+  lemma, and the preceding argument globalizes the harmonic comparison
+  principle.  Together these are the definition of surface subharmonicity.
+-/
 private theorem subharmonicOnSurface_of_locally_aux
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -3830,11 +4110,9 @@ statement:
   subharmonic.
 proof:
   Work locally in a complex coordinate disc.  There,
-  [extended circle means and comparison are
-  equivalent](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_iff_extendedCircleAverageOn).
+  [extended circle means and comparison are equivalent](lean:JJMath.Uniformization.subharmonicByPlaneComparisonOn_iff_extendedCircleAverageOn).
   The circle-mean statement is closed under sums because
-  [extended circle means are closed under
-  sums](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
+  [extended circle means are closed under sums](lean:JJMath.Uniformization.subharmonicByExtendedCircleAverageOn_add).
   Transport the resulting local comparison statement back through the
   coordinate chart and globalize by locality.
 -/
@@ -3982,6 +4260,11 @@ statement:
   If every point of a set has an open neighborhood on which a function is
   upper semicontinuous relative to the set, then the function is upper
   semicontinuous on the whole set.
+proof:
+  At each point, intersect a witnessing neighborhood for the local upper
+  semicontinuity with the ambient set.  Because the neighborhood is open, this
+  local relative condition is equivalent to upper semicontinuity relative to
+  the whole set at that point.
 -/
 theorem upperSemicontinuousOn_of_locally_open
     {X : Type} [TopologicalSpace X] {U : Set X} {u : X → ℝ}
@@ -4036,8 +4319,7 @@ statement:
   neighborhood of every point of the region is subharmonic on the whole
   region.
 proof:
-  [Upper semicontinuity is local on open
-  neighborhoods](lean:JJMath.Uniformization.upperSemicontinuousOn_of_locally_open).
+  [Upper semicontinuity is local on open neighborhoods](lean:JJMath.Uniformization.upperSemicontinuousOn_of_locally_open).
   The comparison principle globalizes by
   [local subharmonic comparison](lean:JJMath.Uniformization.subharmonicComparisonPrinciple_of_locally).
 -/
@@ -4152,6 +4434,9 @@ name:
 statement:
   A superharmonic function on a surface region remains superharmonic on every
   smaller region.
+proof:
+  Negating the function turns superharmonicity into subharmonicity, which
+  restricts to every smaller region.
 -/
 theorem superharmonicOnSurface_mono
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4167,6 +4452,9 @@ name:
   Constant functions are superharmonic
 statement:
   Constant real-valued functions are superharmonic on every surface region.
+proof:
+  The negative of a constant is constant and hence subharmonic, which is exactly
+  the definition of superharmonicity.
 -/
 theorem superharmonicOnSurface_const
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4182,6 +4470,9 @@ name:
 statement:
   A harmonic real-valued function on an open surface region is superharmonic
   on that region.
+proof:
+  The negative of a harmonic function is harmonic and therefore subharmonic;
+  by definition this makes the original function superharmonic.
 -/
 theorem harmonicOnSurface_superharmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4200,6 +4491,9 @@ name:
 statement:
   If a function is superharmonic on a surface region, then adding a constant
   to it is superharmonic on the same region.
+proof:
+  After negation, the asserted sum becomes the sum of the subharmonic function
+  \(-u\) and the constant \(-c\), which remains subharmonic.
 -/
 theorem superharmonicOnSurface_const_add
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4218,6 +4512,9 @@ name:
 statement:
   If a function is superharmonic on a surface region, then adding a constant
   on the right is superharmonic on the same region.
+proof:
+  Commute the summands and apply preservation of superharmonicity under adding a
+  constant on the left.
 -/
 theorem superharmonicOnSurface_add_const
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4233,6 +4530,9 @@ name:
 statement:
   If \(u\) is superharmonic and \(h\) is harmonic on the same open surface
   region, then \(u+h\) is superharmonic.
+proof:
+  The negative of \(u+h\) is \((-u)-h\).  Since \(-u\) is subharmonic and \(h\)
+  is harmonic, subtraction of \(h\) preserves subharmonicity.
 -/
 theorem superharmonicOnSurface_add_harmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4255,6 +4555,9 @@ name:
 statement:
   If \(u\) is superharmonic and \(h\) is harmonic on the same open surface
   region, then \(u-h\) is superharmonic.
+proof:
+  The negative of \(h\) is harmonic, and \(u-h=u+(-h)\).  Apply preservation of
+  superharmonicity under addition of a harmonic function.
 -/
 theorem superharmonicOnSurface_sub_harmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4275,6 +4578,9 @@ name:
   Nonnegative scalar multiples of superharmonic functions are superharmonic
 statement:
   If \(u\) is superharmonic and \(c\ge0\), then \(cu\) is superharmonic.
+proof:
+  The function \(-u\) is subharmonic.  Multiplication by the nonnegative scalar
+  \(c\) preserves subharmonicity, and \(c(-u)=-(cu)\).
 -/
 theorem superharmonicOnSurface_const_mul_nonneg
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4321,6 +4627,9 @@ name:
 statement:
   The pointwise minimum of a superharmonic function and a constant is
   superharmonic.
+proof:
+  Constant functions are superharmonic, and the pointwise minimum of two
+  superharmonic functions is superharmonic.
 -/
 theorem superharmonicOnSurface_inf_const
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4338,6 +4647,9 @@ name:
 statement:
   The pointwise minimum of a constant and a superharmonic function is
   superharmonic.
+proof:
+  Commute the two arguments of the pointwise minimum and apply preservation of
+  superharmonicity under taking the minimum with a constant.
 -/
 theorem superharmonicOnSurface_const_inf
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4354,6 +4666,10 @@ name:
 statement:
   If a compact subset of a Riemann surface lies in an open set, then it has an
   open neighborhood whose closure is compact and still lies in that open set.
+proof:
+  A Riemann surface is locally compact and regular.  The standard compact
+  shrinking lemma therefore supplies an intermediate open set whose closure is
+  compact and contained in the prescribed open set.
 -/
 theorem exists_surface_open_between_and_isCompact_closure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4370,6 +4686,9 @@ name:
 statement:
   Every point of an open set in a Riemann surface has an open neighborhood
   whose closure is compact and contained in the original open set.
+proof:
+  Apply the compact-neighborhood result to the singleton consisting of the
+  given point, which is compact and contained in the prescribed open set.
 -/
 theorem exists_surface_open_nhds_isCompact_closure_subset
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

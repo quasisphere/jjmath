@@ -124,14 +124,30 @@ def postcompositionNormalFormMatrix
   !![p * κ + B, p - (p * κ + B) * a;
      κ, 1 - κ * a]
 
-/-- The required first derivative of the postcomposition is nonzero. -/
+/--
+%%handwave
+name:
+  The required first derivative of the postcomposition is nonzero
+statement:
+  The required first derivative of the postcomposition is nonzero.
+proof:
+  The required derivative is the quotient of the nonzero target and source first derivatives, so it is nonzero.
+-/
 theorem postcompositionFirstDeriv_ne_zero
     (source target : NondegenerateFiniteTwoJet) :
     source.postcompositionFirstDeriv target ≠ 0 := by
   rw [postcompositionFirstDeriv]
   exact div_ne_zero target.firstDeriv_ne_zero source.firstDeriv_ne_zero
 
-/-- The chosen first derivative reconstructs the target first derivative. -/
+/--
+%%handwave
+name:
+  The chosen first derivative reconstructs the target first derivative
+statement:
+  The chosen first derivative reconstructs the target first derivative.
+proof:
+  Substitute the quotient defining the required derivative and cancel the nonzero source first derivative.
+-/
 theorem postcompositionFirstDeriv_mul_source
     (source target : NondegenerateFiniteTwoJet) :
     source.postcompositionFirstDeriv target * source.firstDeriv =
@@ -140,8 +156,14 @@ theorem postcompositionFirstDeriv_mul_source
   field_simp [source.firstDeriv_ne_zero]
 
 /--
-The required second derivative of the postcomposition is exactly the value
-which makes the second-order chain rule recover the target two-jet.
+%%handwave
+name:
+  The required second derivative of the postcomposition is exactly the value which makes the second-order chain rule recover the target two-jet
+statement:
+  The required second derivative of the postcomposition is exactly the value
+  which makes the second-order chain rule recover the target two-jet.
+proof:
+  Substitute the prescribed second derivative, cancel the square of the nonzero source derivative, and rearrange.
 -/
 theorem postcompositionSecondDeriv_chain_rule
     (source target : NondegenerateFiniteTwoJet) :
@@ -153,8 +175,14 @@ theorem postcompositionSecondDeriv_chain_rule
   ring
 
 /--
-The normal-form denominator parameter has the prescribed second derivative:
-for `w ↦ p + B (w-a)/(1+κ(w-a))`, the second derivative at `a` is `-2Bκ`.
+%%handwave
+name:
+  The normal-form denominator parameter has the prescribed second derivative: for \(w ↦ p + B (w-a)/(1+κ(w-a))\), the second derivative at \(a\) is \(-2Bκ\)
+statement:
+  The normal-form denominator parameter has the prescribed second derivative:
+  for \(w ↦ p + B (w-a)/(1+κ(w-a))\), the second derivative at \(a\) is \(-2Bκ\).
+proof:
+  Insert the definition of the denominator parameter and cancel the nonzero factor \(2B\).
 -/
 theorem postcompositionDenominatorParameter_spec
     (source target : NondegenerateFiniteTwoJet) :
@@ -166,15 +194,29 @@ theorem postcompositionDenominatorParameter_spec
     source.postcompositionFirstDeriv_ne_zero target
   field_simp [hB]
 
-/-- The normal-form postcomposition sends the source value to the target value. -/
+/--
+%%handwave
+name:
+  The normal-form postcomposition sends the source value to the target value
+statement:
+  The normal-form postcomposition sends the source value to the target value.
+proof:
+  At the source value the displacement vanishes, so the fractional term is zero.
+-/
 theorem postcompositionNormalForm_apply_source
     (source target : NondegenerateFiniteTwoJet) :
     source.postcompositionNormalForm target source.value = target.value := by
   simp [postcompositionNormalForm]
 
 /--
-The explicit first-derivative function of the normal form has value `B` at the
-source value.
+%%handwave
+name:
+  The explicit first-derivative function of the normal form has value \(B\) at the source value
+statement:
+  The explicit first-derivative function of the normal form has value \(B\) at the
+  source value.
+proof:
+  At the source value the denominator is \(1\), leaving the first-derivative parameter \(B\).
 -/
 theorem postcompositionNormalFormDeriv_apply_source
     (source target : NondegenerateFiniteTwoJet) :
@@ -183,8 +225,14 @@ theorem postcompositionNormalFormDeriv_apply_source
   simp [postcompositionNormalFormDeriv]
 
 /--
-The explicit second-derivative function of the normal form has the prescribed
-value at the source point.
+%%handwave
+name:
+  The explicit second-derivative function of the normal form has the prescribed value at the source point
+statement:
+  The explicit second-derivative function of the normal form has the prescribed
+  value at the source point.
+proof:
+  At the source value the denominator is \(1\); the defining relation \(-2B\kappa=C\) gives the prescribed second derivative.
 -/
 theorem postcompositionNormalFormSecondDeriv_apply_source
     (source target : NondegenerateFiniteTwoJet) :
@@ -193,14 +241,30 @@ theorem postcompositionNormalFormSecondDeriv_apply_source
   simpa [postcompositionNormalFormSecondDeriv] using
     source.postcompositionDenominatorParameter_spec target
 
-/-- The normal-form denominator is nonzero at the source value. -/
+/--
+%%handwave
+name:
+  The normal-form denominator is nonzero at the source value
+statement:
+  The normal-form denominator is nonzero at the source value.
+proof:
+  At the source value the displacement is zero, so the denominator equals \(1\).
+-/
 theorem postcompositionNormalForm_denominator_source_ne_zero
     (source target : NondegenerateFiniteTwoJet) :
     1 + source.postcompositionDenominatorParameter target *
         (source.value - source.value) ≠ 0 := by
   simp
 
-/-- The normal-form denominator has the expected derivative at the source value. -/
+/--
+%%handwave
+name:
+  The normal-form denominator has the expected derivative at the source value
+statement:
+  The normal-form denominator has the expected derivative at the source value.
+proof:
+  Differentiate the affine denominator: the displacement has derivative \(1\), multiplication by \(\kappa\) gives derivative \(\kappa\), and adding \(1\) changes nothing.
+-/
 theorem postcompositionNormalForm_denominator_hasDerivAt_source
     (source target : NondegenerateFiniteTwoJet) :
     HasDerivAt
@@ -214,7 +278,15 @@ theorem postcompositionNormalForm_denominator_hasDerivAt_source
     (HasDerivAt.const_mul
       (source.postcompositionDenominatorParameter target) hsub).const_add 1
 
-/-- The normal-form denominator is continuous at the source value. -/
+/--
+%%handwave
+name:
+  The normal-form denominator is continuous at the source value
+statement:
+  The normal-form denominator is continuous at the source value.
+proof:
+  Differentiability of the affine denominator at the source implies continuity there.
+-/
 theorem postcompositionNormalForm_denominator_continuousAt_source
     (source target : NondegenerateFiniteTwoJet) :
     ContinuousAt
@@ -225,8 +297,14 @@ theorem postcompositionNormalForm_denominator_continuousAt_source
   (source.postcompositionNormalForm_denominator_hasDerivAt_source target).continuousAt
 
 /--
-After shrinking to a metric ball around the source value, the normal-form
-denominator is nonzero everywhere on the ball.
+%%handwave
+name:
+  After shrinking to a metric ball around the source value, the normal-form denominator is nonzero everywhere on the ball
+statement:
+  After shrinking to a metric ball around the source value, the normal-form
+  denominator is nonzero everywhere on the ball.
+proof:
+  Continuity and the nonzero value at the source make the inverse image of \(mathbb Csetminus{0}\) a neighborhood of the source; choose a metric ball inside it.
 -/
 theorem exists_ball_postcompositionNormalForm_denominator_ne_zero
     (source target : NondegenerateFiniteTwoJet) :
@@ -247,8 +325,14 @@ theorem exists_ball_postcompositionNormalForm_denominator_ne_zero
   exact ⟨r, hr_pos, fun w hw => hr_subset hw⟩
 
 /--
-The normal-form postcomposition is analytic on any set where its denominator
-does not vanish.
+%%handwave
+name:
+  The normal-form postcomposition is analytic on any set where its denominator does not vanish
+statement:
+  The normal-form postcomposition is analytic on any set where its denominator
+  does not vanish.
+proof:
+  The numerator and denominator are affine analytic functions. Their quotient is analytic where the denominator is nonzero, and adding the target constant preserves analyticity.
 -/
 theorem postcompositionNormalForm_analyticOnNhd
     (source target : NondegenerateFiniteTwoJet) {U : Set ℂ}
@@ -280,8 +364,14 @@ theorem postcompositionNormalForm_analyticOnNhd
     (analyticOnNhd_const.add hfrac)
 
 /--
-There is a metric ball around the source value on which the normal-form
-postcomposition is analytic and its denominator is nonzero.
+%%handwave
+name:
+  There is a metric ball around the source value on which the normal-form postcomposition is analytic and its denominator is nonzero
+statement:
+  There is a metric ball around the source value on which the normal-form
+  postcomposition is analytic and its denominator is nonzero.
+proof:
+  Choose a ball on which the denominator is nonzero and apply analyticity of the normal form on every such set.
 -/
 theorem exists_ball_postcompositionNormalForm_analyticOnNhd
     (source target : NondegenerateFiniteTwoJet) :
@@ -297,8 +387,14 @@ theorem exists_ball_postcompositionNormalForm_analyticOnNhd
     source.postcompositionNormalForm_analyticOnNhd target hden_ne, hden_ne⟩
 
 /--
-The normal-form postcomposition has the prescribed first derivative at the
-source value.
+%%handwave
+name:
+  The normal-form postcomposition has the prescribed first derivative at the source value
+statement:
+  The normal-form postcomposition has the prescribed first derivative at the
+  source value.
+proof:
+  Apply the quotient rule to \(B(w-a)/(1+\kappa(w-a))\) at \(w=a\); the denominator equals \(1\) and the derivative simplifies to \(B\).
 -/
 theorem postcompositionNormalForm_hasDerivAt_source
     (source target : NondegenerateFiniteTwoJet) :
@@ -322,8 +418,14 @@ theorem postcompositionNormalForm_hasDerivAt_source
     (hnum.fun_div hden hden_ne).const_add p
 
 /--
-Away from its pole, the normal-form postcomposition has derivative
-`B/(1+κ(w-a))^2`.
+%%handwave
+name:
+  Away from its pole, the normal-form postcomposition has derivative \(B/(1+κ(w-a))^2\)
+statement:
+  Away from its pole, the normal-form postcomposition has derivative
+  \(B/(1+κ(w-a))^2\).
+proof:
+  Apply the quotient rule to the affine numerator and denominator, then simplify the result to \(B/(1+\kappa(w-a))^2\).
 -/
 theorem postcompositionNormalForm_hasDerivAt
     (source target : NondegenerateFiniteTwoJet) {w : ℂ}
@@ -349,8 +451,14 @@ theorem postcompositionNormalForm_hasDerivAt
   ring
 
 /--
-Away from the pole, the explicit first derivative of the normal form is
-nonzero.
+%%handwave
+name:
+  Away from the pole, the explicit first derivative of the normal form is nonzero
+statement:
+  Away from the pole, the explicit first derivative of the normal form is
+  nonzero.
+proof:
+  The numerator \(B\) is nonzero and the assumed nonzero denominator remains nonzero after squaring.
 -/
 theorem postcompositionNormalFormDeriv_ne_zero
     (source target : NondegenerateFiniteTwoJet) {w : ℂ}
@@ -363,8 +471,14 @@ theorem postcompositionNormalFormDeriv_ne_zero
     (pow_ne_zero 2 hden_ne)
 
 /--
-The explicit first derivative of the normal form has derivative `-2Bκ` at the
-source value.
+%%handwave
+name:
+  The explicit first derivative of the normal form has derivative \(-2Bκ\) at the source value
+statement:
+  The explicit first derivative of the normal form has derivative \(-2Bκ\) at the
+  source value.
+proof:
+  Differentiate \(B/(1+\kappa(w-a))^2\) by the quotient and power rules and evaluate at \(w=a\).
 -/
 theorem postcompositionNormalFormDeriv_hasDerivAt_source_aux
     (source target : NondegenerateFiniteTwoJet) :
@@ -390,8 +504,14 @@ theorem postcompositionNormalFormDeriv_hasDerivAt_source_aux
   ring
 
 /--
-The explicit first derivative of the normal form has the prescribed second
-derivative at the source value.
+%%handwave
+name:
+  The explicit first derivative of the normal form has the prescribed second derivative at the source value
+statement:
+  The explicit first derivative of the normal form has the prescribed second
+  derivative at the source value.
+proof:
+  Combine the explicit derivative \(-2Bkappa\) with the defining equation for the prescribed second derivative.
 -/
 theorem postcompositionNormalFormDeriv_hasDerivAt_source
     (source target : NondegenerateFiniteTwoJet) :
@@ -401,8 +521,14 @@ theorem postcompositionNormalFormDeriv_hasDerivAt_source
   exact (source.postcompositionDenominatorParameter_spec target).symm
 
 /--
-Away from the pole, the explicit first derivative of the normal form has the
-explicit second derivative.
+%%handwave
+name:
+  Away from the pole, the explicit first derivative of the normal form has the explicit second derivative
+statement:
+  Away from the pole, the explicit first derivative of the normal form has the
+  explicit second derivative.
+proof:
+  Differentiate the reciprocal square of the affine denominator and simplify, using its nonvanishing.
 -/
 theorem postcompositionNormalFormDeriv_hasDerivAt
     (source target : NondegenerateFiniteTwoJet) {w : ℂ}
@@ -433,8 +559,14 @@ theorem postcompositionNormalFormDeriv_hasDerivAt
   ring
 
 /--
-Away from the pole, the explicit second derivative of the normal form has the
-explicit third derivative.
+%%handwave
+name:
+  Away from the pole, the explicit second derivative of the normal form has the explicit third derivative
+statement:
+  Away from the pole, the explicit second derivative of the normal form has the
+  explicit third derivative.
+proof:
+  Differentiate the reciprocal cube of the affine denominator and simplify to the stated third derivative.
 -/
 theorem postcompositionNormalFormSecondDeriv_hasDerivAt
     (source target : NondegenerateFiniteTwoJet) {w : ℂ}
@@ -465,7 +597,15 @@ theorem postcompositionNormalFormSecondDeriv_hasDerivAt
   field_simp [hden_ne]
   ring
 
-/-- The determinant of the normal-form Mobius matrix is the parameter `B`. -/
+/--
+%%handwave
+name:
+  The determinant of the normal-form Möbius matrix is the parameter \(B\)
+statement:
+  The determinant of the normal-form Möbius matrix is the parameter \(B\).
+proof:
+  Expand the determinant of the displayed two-by-two matrix; all terms involving the source and target values cancel, leaving \(B\).
+-/
 theorem postcompositionNormalFormMatrix_det
     (source target : NondegenerateFiniteTwoJet) :
     Matrix.det (source.postcompositionNormalFormMatrix target) =
@@ -486,9 +626,15 @@ def postcompositionNormalFormRepresentative
       exact source.postcompositionFirstDeriv_ne_zero target)
 
 /--
-The projective action of the normal-form representative agrees with the
-explicit affine normal-form function wherever the affine denominator is
-nonzero.
+%%handwave
+name:
+  The projective action of the normal-form representative agrees with the explicit affine normal-form function wherever the affine denominator is nonzero
+statement:
+  The projective action of the normal-form representative agrees with the
+  explicit affine normal-form function wherever the affine denominator is
+  nonzero.
+proof:
+  Use the affine formula for the projective matrix action. The matrix denominator is the normal-form denominator, so the nonvanishing hypothesis selects the finite branch; clearing that denominator proves equality with the explicit fraction.
 -/
 theorem postcompositionNormalFormRepresentative_smul_coe
     (source target : NondegenerateFiniteTwoJet) {w : ℂ}
@@ -534,8 +680,14 @@ theorem postcompositionNormalFormRepresentative_smul_coe
   ring_nf
 
 /--
-At the source finite point, the normal-form representative sends the source
-value to the target value in the Riemann sphere.
+%%handwave
+name:
+  At the source finite point, the normal-form representative sends the source value to the target value in the Riemann sphere
+statement:
+  At the source finite point, the normal-form representative sends the source
+  value to the target value in the Riemann sphere.
+proof:
+  Apply the finite-point action formula at the source, where the denominator is \(1\), and use that the explicit normal form takes the target value there.
 -/
 theorem postcompositionNormalFormRepresentative_smul_source
     (source target : NondegenerateFiniteTwoJet) :
@@ -585,7 +737,13 @@ structure PostcompositionNormalFormRealizesTarget
       (target.value : RiemannSphere)
 
 /--
-The explicit normal form realizes every nondegenerate target finite two-jet.
+%%handwave
+name:
+  The explicit normal form realizes every nondegenerate target finite two-jet
+statement:
+  The explicit normal form realizes every nondegenerate target finite two-jet.
+proof:
+  Assemble the previously proved value, first-derivative, second-derivative, and projective-action identities.
 -/
 theorem postcompositionNormalForm_realizesTarget
     (source target : NondegenerateFiniteTwoJet) :
@@ -663,12 +821,18 @@ def LocalProjectiveDevelopingMap.normalFormPostcompositionAffineMapThirdDeriv
         D.affineMapDeriv z ^ 3
 
 /--
-The symbolic Schwarzian expression is invariant under explicit normal-form
-Mobius postcomposition.
+%%handwave
+name:
+  The symbolic Schwarzian expression is invariant under explicit normal-form Möbius postcomposition
+statement:
+  The symbolic Schwarzian expression is invariant under explicit normal-form
+  Möbius postcomposition.
 
-This is the project-local chain-rule algebra: after substituting the explicit
-first, second, and third derivative fields for `M ∘ f`, all terms involving
-the normal-form parameters cancel and the original Schwarzian remains.
+  This is the project-local chain-rule algebra: after substituting the explicit
+  first, second, and third derivative fields for \(M ∘ f\), all terms involving
+  the normal-form parameters cancel and the original Schwarzian remains.
+proof:
+  Substitute the chain-rule expressions for the first three derivatives of the composite. After clearing the nonzero normal-form denominator and first derivatives, the terms containing \(B\) and \(\kappa\) cancel, leaving the original Schwarzian expression.
 -/
 theorem LocalProjectiveDevelopingMap.schwarzianExpression_normalFormPostcomposition_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -714,9 +878,15 @@ theorem LocalProjectiveDevelopingMap.schwarzianExpression_normalFormPostcomposit
   ring
 
 /--
-The explicit normal-form postcomposition is continuous wherever the original
-affine developing coordinate is continuous and the normal-form denominator is
-nonzero.
+%%handwave
+name:
+  The explicit normal-form postcomposition is continuous wherever the original affine developing coordinate is continuous and the normal-form denominator is nonzero
+statement:
+  The explicit normal-form postcomposition is continuous wherever the original
+  affine developing coordinate is continuous and the normal-form denominator is
+  nonzero.
+proof:
+  Continuity of the original affine coordinate gives continuity of the affine numerator and denominator. Divide using the denominator nonvanishing at the point and add the target constant.
 -/
 theorem LocalProjectiveDevelopingMap.normalFormPostcompositionAffineMap_continuousAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -793,7 +963,15 @@ def targetSecondDeriv {u : LocalConformalFactor} {z₀ : ℂ}
     (J : HyperbolicSchwarzianBaseJet u z₀) : ℂ :=
   J.targetDeriv * (2 * J.uZ - Complex.I * J.targetDeriv)
 
-/-- The hyperbolic target first derivative is nonzero. -/
+/--
+%%handwave
+name:
+  The hyperbolic target first derivative is nonzero
+statement:
+  The hyperbolic target first derivative is nonzero.
+proof:
+  The target derivative is the complex embedding of a real exponential, and an exponential is never zero.
+-/
 theorem targetDeriv_ne_zero {u : LocalConformalFactor} {z₀ : ℂ}
     (J : HyperbolicSchwarzianBaseJet u z₀) :
     J.targetDeriv ≠ 0 := by
@@ -809,7 +987,15 @@ def toNondegenerateFiniteTwoJet {u : LocalConformalFactor} {z₀ : ℂ}
   secondDeriv := J.targetSecondDeriv
   firstDeriv_ne_zero := J.targetDeriv_ne_zero
 
-/-- The base-jet derivative is the canonical Frechet-Wirtinger derivative. -/
+/--
+%%handwave
+name:
+  The base-jet derivative is the canonical Fréchet-Wirtinger derivative
+statement:
+  The base-jet derivative is the canonical Fréchet-Wirtinger derivative.
+proof:
+  This is exactly the agreement condition included in the hyperbolic base-jet data.
+-/
 theorem uZ_eq_wirtingerZ {u : LocalConformalFactor} {z₀ : ℂ}
     (J : HyperbolicSchwarzianBaseJet u z₀) :
     J.uZ = u.wirtingerZ z₀ :=
@@ -900,8 +1086,14 @@ def normalFormRepresentative {u : LocalConformalFactor} {S : LocalSchwarzianData
   N.sourceTwoJet.postcompositionNormalFormRepresentative target
 
 /--
-The packaged normal-form representative acts on finite affine points by the
-packaged normal-form function wherever the denominator is nonzero.
+%%handwave
+name:
+  The normal-form Möbius representative acts on finite affine points by the normal-form function wherever the denominator is nonzero
+statement:
+  The normal-form Möbius representative acts on finite affine points by the
+  normal-form function wherever the denominator is nonzero.
+proof:
+  The finite-point action formula for the explicit normal-form matrix is valid whenever its denominator is nonzero, and it is exactly the displayed normal-form function.
 -/
 theorem normalFormRepresentative_smul_coe {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -915,8 +1107,14 @@ theorem normalFormRepresentative_smul_coe {u : LocalConformalFactor}
       (by simpa [denominatorParameter, sourceTwoJet] using hden_ne)
 
 /--
-At the base finite value, the packaged normal-form representative sends the
-source point to the target point in the Riemann sphere.
+%%handwave
+name:
+  At the base finite value, the normal-form Möbius representative sends the source point to the target point in the Riemann sphere
+statement:
+  At the base finite value, the normal-form Möbius representative sends the
+  source point to the target point in the Riemann sphere.
+proof:
+  The denominator at the source value is one. Apply the finite-point action formula and the fact that the explicit normal form sends the source value to the target value.
 -/
 theorem normalFormRepresentative_smul_sourceValue {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -938,8 +1136,14 @@ theorem normalFormRepresentative_smul_sourceValue {u : LocalConformalFactor}
           simp [hvalue]
 
 /--
-If a packaged normalization uses the explicit normal-form representative, then
-its recorded postcomposition sends the source finite point to the target point.
+%%handwave
+name:
+  If a two-jet normalization uses the explicit normal-form representative, then its postcomposition sends the source finite point to the target point
+statement:
+  If a two-jet normalization uses the explicit normal-form representative, then
+  its postcomposition sends the source finite point to the target point.
+proof:
+  The assumed equality identifies the postcomposition with the representative whose source-to-target action was just computed.
 -/
 theorem postcomposition_smul_sourceValue_of_eq_normalFormRepresentative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -951,7 +1155,15 @@ theorem postcomposition_smul_sourceValue_of_eq_normalFormRepresentative
       (target.value : RiemannSphere) := by
   simpa [hpost] using N.normalFormRepresentative_smul_sourceValue
 
-/-- The concrete normal form sends the source finite value to the target value. -/
+/--
+%%handwave
+name:
+  The concrete normal form sends the source finite value to the target value
+statement:
+  The concrete normal form sends the source finite value to the target value.
+proof:
+  This is the source-value formula for the explicit normal form determined by the underlying finite two-jet.
+-/
 theorem normalForm_apply_sourceValue {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
     {z₀ : ℂ} {target : NondegenerateFiniteTwoJet}
@@ -960,7 +1172,15 @@ theorem normalForm_apply_sourceValue {u : LocalConformalFactor}
   simpa [normalForm, sourceTwoJet] using
     N.sourceTwoJet.postcompositionNormalForm_apply_source target
 
-/-- The concrete normal form has the target first derivative at the source finite value. -/
+/--
+%%handwave
+name:
+  The concrete normal form has the target first derivative at the source finite value
+statement:
+  The concrete normal form has the target first derivative at the source finite value.
+proof:
+  This is the source derivative formula for the explicit normal form determined by the underlying finite two-jet.
+-/
 theorem normalForm_hasDerivAt_sourceValue {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
     {z₀ : ℂ} {target : NondegenerateFiniteTwoJet}
@@ -971,8 +1191,13 @@ theorem normalForm_hasDerivAt_sourceValue {u : LocalConformalFactor}
     N.sourceTwoJet.postcompositionNormalForm_hasDerivAt_source target
 
 /--
-Away from the pole, the concrete normal form has the packaged explicit
-derivative.
+%%handwave
+name:
+  Away from the pole, the concrete normal form has the explicit derivative
+statement:
+  Away from the pole, the concrete normal form has the explicit derivative.
+proof:
+  The quotient-rule derivative formula for the explicit normal form holds precisely when the stated denominator does not vanish.
 -/
 theorem normalForm_hasDerivAt {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -985,8 +1210,14 @@ theorem normalForm_hasDerivAt {u : LocalConformalFactor}
       (by simpa [denominatorParameter, sourceTwoJet] using hden_ne)
 
 /--
-The explicit first derivative of the concrete normal form has the prescribed
-second derivative at the source value.
+%%handwave
+name:
+  The explicit first derivative of the concrete normal form has the prescribed second derivative at the source value
+statement:
+  The explicit first derivative of the concrete normal form has the prescribed
+  second derivative at the source value.
+proof:
+  This is the explicit normal form’s second-derivative formula at the source value.
 -/
 theorem normalFormDeriv_hasDerivAt_sourceValue {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -998,8 +1229,14 @@ theorem normalFormDeriv_hasDerivAt_sourceValue {u : LocalConformalFactor}
     N.sourceTwoJet.postcompositionNormalFormDeriv_hasDerivAt_source target
 
 /--
-The concrete normal-form Mobius map attached to a packaged normalization
-realizes the target finite two-jet at the base value.
+%%handwave
+name:
+  The concrete normal-form Möbius map associated with a two-jet normalization realizes the target finite two-jet at the base value
+statement:
+  The concrete normal-form Möbius map associated with a two-jet normalization
+  realizes the target finite two-jet at the base value.
+proof:
+  The value, first-derivative, and second-derivative formulas for the underlying source two-jet are exactly the three required target identities.
 -/
 theorem normalForm_realizesTarget {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -1009,8 +1246,14 @@ theorem normalForm_realizesTarget {u : LocalConformalFactor}
   exact N.sourceTwoJet.postcompositionNormalForm_realizesTarget target
 
 /--
-The concrete normal form attached to a two-jet normalization is analytic on
-some metric ball around the original finite value.
+%%handwave
+name:
+  The concrete normal form attached to a two-jet normalization is analytic on some metric ball around the original finite value
+statement:
+  The concrete normal form attached to a two-jet normalization is analytic on
+  some metric ball around the original finite value.
+proof:
+  The explicit normal form is analytic on a sufficiently small ball about the source value on which its denominator remains nonzero; the same ball gives the asserted normal form.
 -/
 theorem exists_ball_normalForm_analyticOnNhd {u : LocalConformalFactor}
     {S : LocalSchwarzianData u} {D : LocalProjectiveDevelopingMap S}
@@ -1120,8 +1363,14 @@ def toMobiusTwoJetNormalization
           (D.finiteTwoJet hz₀).postcompositionSecondDeriv_chain_rule target
 
 /--
-The normalization produced from normal-form postcomposition data uses exactly
-the explicit normal-form representative.
+%%handwave
+name:
+  The normalization produced from normal-form postcomposition data uses exactly the explicit normal-form representative
+statement:
+  The normalization produced from normal-form postcomposition data uses exactly
+  the explicit normal-form representative.
+proof:
+  By construction, the chosen postcomposition is the explicit normal-form representative.
 -/
 theorem toMobiusTwoJetNormalization_postcomposition
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1162,8 +1411,14 @@ structure LocalProjectiveNormalFormPoleAvoidingShrink
 namespace LocalProjectiveNormalFormPoleAvoidingShrink
 
 /--
-The pole-avoiding shrink exists as soon as the original affine coordinate is
-continuous at the base point.
+%%handwave
+name:
+  The pole-avoiding shrink exists as soon as the original affine coordinate is continuous at the base point
+statement:
+  The pole-avoiding shrink exists as soon as the original affine coordinate is
+  continuous at the base point.
+proof:
+  The denominator is continuous and equals one at the base point, so its nonzero locus is a neighborhood there. Intersect this neighborhood with the original domain, choose a contained metric ball, and restrict the explicit normal-form postcomposition to it.
 -/
 theorem exists_of_affineMap_continuousAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1345,8 +1600,14 @@ def toPostcompositionData
     rw [hderiv, hsecond]
 
 /--
-The affine coordinate of explicit normal-form postcomposition data is
-continuous at every point where the original affine coordinate is continuous.
+%%handwave
+name:
+  The affine coordinate of explicit normal-form postcomposition data is continuous at every point where the original affine coordinate is continuous
+statement:
+  The affine coordinate of explicit normal-form postcomposition data is
+  continuous at every point where the original affine coordinate is continuous.
+proof:
+  The constructed affine map agrees locally with the continuous explicit normal-form composite, so continuity transfers at every point of its domain.
 -/
 theorem affineMap_continuousAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1360,8 +1621,14 @@ theorem affineMap_continuousAt
     (E.denominator_ne_zero z hz)
 
 /--
-Explicit normal-form postcomposition preserves `C^3` regularity of the affine
-coordinate on the pole-avoiding domain.
+%%handwave
+name:
+  Explicit normal-form postcomposition preserves \(C^3\) regularity of the affine coordinate on the pole-avoiding domain
+statement:
+  Explicit normal-form postcomposition preserves \(C^3\) regularity of the affine
+  coordinate on the pole-avoiding domain.
+proof:
+  Write the postcomposition as a constant plus an affine numerator divided by its denominator. The numerator and denominator are of class \(C^3\), and the pole-avoidance hypothesis makes division preserve that regularity.
 -/
 theorem affineMap_contDiffOn_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1404,9 +1671,15 @@ theorem affineMap_contDiffOn_of_original
     source, κ, a, B, p, div_eq_mul_inv]
 
 /--
-Explicit normal-form postcomposition preserves `C^3` regularity of the
-symbolic first derivative branch, assuming `C^3` regularity of the original
-affine coordinate and its first derivative branch.
+%%handwave
+name:
+  Explicit normal-form postcomposition preserves \(C^3\) regularity of the symbolic first derivative branch, assuming \(C^3\) regularity of the original affine coordinate and its first derivative branch
+statement:
+  Explicit normal-form postcomposition preserves \(C^3\) regularity of the
+  symbolic first derivative branch, assuming \(C^3\) regularity of the original
+  affine coordinate and its first derivative branch.
+proof:
+  The symbolic derivative is the product of the original derivative branch with the inverse square of the normal-form denominator. Each factor is of class \(C^3\), and the denominator never vanishes on the restricted domain.
 -/
 theorem affineMapDeriv_contDiffOn_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1448,11 +1721,17 @@ theorem affineMapDeriv_contDiffOn_of_original
     source, κ, a, B, div_eq_mul_inv, mul_assoc] using hres
 
 /--
-The explicit normal-form postcomposition has the expected actual derivative
-whenever the original affine developing coordinate does.
+%%handwave
+name:
+  The explicit normal-form postcomposition has the expected actual derivative whenever the original affine developing coordinate does
+statement:
+  The explicit normal-form postcomposition has the expected actual derivative
+  whenever the original affine developing coordinate does.
 
-This is the analytic chain-rule bridge between the projective Mobius algebra
-and the still-local Frobenius differentiability input.
+  This is the analytic chain-rule bridge between the projective Möbius algebra
+  and the still-local Frobenius differentiability input.
+proof:
+  Differentiate the explicit normal form at the current affine value and compose with the prescribed derivative of the original affine branch. The complex chain rule gives exactly the specified derivative branch.
 -/
 theorem affineMap_hasDerivAt_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1486,9 +1765,15 @@ theorem affineMap_hasDerivAt_of_original
     source] using hcomp
 
 /--
-Derivative equality for explicit normal-form postcomposition follows from the
-corresponding actual derivative statement for the original affine developing
-coordinate.
+%%handwave
+name:
+  Derivative equality for explicit normal-form postcomposition follows from the corresponding actual derivative statement for the original affine developing coordinate
+statement:
+  Derivative equality for explicit normal-form postcomposition follows from the
+  corresponding actual derivative statement for the original affine developing
+  coordinate.
+proof:
+  Apply uniqueness of the complex derivative to the preceding derivative statement.
 -/
 theorem deriv_eq_affineMapDeriv_of_original_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1502,9 +1787,15 @@ theorem deriv_eq_affineMapDeriv_of_original_hasDerivAt
   (E.affineMap_hasDerivAt_of_original hz hD).deriv
 
 /--
-The explicit first-derivative branch of the normal-form postcomposition has
-the expected actual derivative whenever the original affine coordinate and its
-first symbolic derivative have their expected actual derivatives.
+%%handwave
+name:
+  The explicit first-derivative branch of the normal-form postcomposition has the expected actual derivative whenever the original affine coordinate and its first symbolic derivative have their expected actual derivatives
+statement:
+  The explicit first-derivative branch of the normal-form postcomposition has
+  the expected actual derivative whenever the original affine coordinate and its
+  first symbolic derivative have their expected actual derivatives.
+proof:
+  Differentiate the product of the normal-form derivative evaluated on the original branch and the original first-derivative branch. The chain and product rules yield the specified second-derivative expression.
 -/
 theorem affineMapDeriv_hasDerivAt_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1552,8 +1843,14 @@ theorem affineMapDeriv_hasDerivAt_of_original
     ring
 
 /--
-Derivative equality for the explicit first-derivative branch follows from the
-corresponding actual derivative statements for the original affine branch.
+%%handwave
+name:
+  Derivative equality for the explicit first-derivative branch follows from the corresponding actual derivative statements for the original affine branch
+statement:
+  Derivative equality for the explicit first-derivative branch follows from the
+  corresponding actual derivative statements for the original affine branch.
+proof:
+  Apply uniqueness of the complex derivative to the derivative formula for the first-derivative branch.
 -/
 theorem deriv_affineMapDeriv_eq_affineMapSecondDeriv_of_original_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1569,9 +1866,15 @@ theorem deriv_affineMapDeriv_eq_affineMapSecondDeriv_of_original_hasDerivAt
   (E.affineMapDeriv_hasDerivAt_of_original hz hD hD').deriv
 
 /--
-The explicit second-derivative branch of the normal-form postcomposition has
-the expected actual derivative whenever the original affine branch has its
-expected actual derivatives through the second derivative branch.
+%%handwave
+name:
+  The explicit second-derivative branch of the normal-form postcomposition has the expected actual derivative whenever the original affine branch has its expected actual derivatives through the second derivative branch
+statement:
+  The explicit second-derivative branch of the normal-form postcomposition has
+  the expected actual derivative whenever the original affine branch has its
+  expected actual derivatives through the second derivative branch.
+proof:
+  Differentiate the two chain-rule terms defining the second-derivative branch. The derivative formulas for the first two normal-form derivatives and for the original branch combine to the specified third-derivative expression.
 -/
 theorem affineMapSecondDeriv_hasDerivAt_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1667,8 +1970,14 @@ theorem affineMapSecondDeriv_hasDerivAt_of_original
   ring
 
 /--
-Derivative equality for the explicit second-derivative branch follows from
-the corresponding actual derivative statements for the original affine branch.
+%%handwave
+name:
+  Derivative equality for the explicit second-derivative branch follows from the corresponding actual derivative statements for the original affine branch
+statement:
+  Derivative equality for the explicit second-derivative branch follows from
+  the corresponding actual derivative statements for the original affine branch.
+proof:
+  Apply uniqueness of the complex derivative to the derivative formula for the second-derivative branch.
 -/
 theorem deriv_affineMapSecondDeriv_eq_affineMapThirdDeriv_of_original_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1689,8 +1998,14 @@ theorem deriv_affineMapSecondDeriv_eq_affineMapThirdDeriv_of_original_hasDerivAt
   (E.affineMapSecondDeriv_hasDerivAt_of_original hz hD hD' hD'' hthird).deriv
 
 /--
-The explicit normal-form postcomposition sends the base point to the target
-finite value.
+%%handwave
+name:
+  The explicit normal-form postcomposition sends the base point to the target finite value
+statement:
+  The explicit normal-form postcomposition sends the base point to the target
+  finite value.
+proof:
+  The constructed postcomposition data already realize the target two-jet; its value equation is precisely the asserted base-point identity.
 -/
 theorem affineMap_eq_targetValue_base
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1701,13 +2016,19 @@ theorem affineMap_eq_targetValue_base
   simpa using E.toPostcompositionData.toMobiusTwoJetNormalization.value_eq
 
 /--
-If the target finite value is `i`, then explicit normal-form postcomposition
-lands in the upper half-plane after shrinking to a small metric ball around the
-base point.
+%%handwave
+name:
+  If the target finite value is \(i\), then explicit normal-form postcomposition lands in the upper half-plane after shrinking to a small metric ball around the base point
+statement:
+  If the target finite value is \(i\), then explicit normal-form postcomposition
+  lands in the upper half-plane after shrinking to a small metric ball around the
+  base point.
 
-This proves the topological landing part from mathlib continuity and openness
-of `{w : ℂ | 0 < w.im}`; the separate analytic derivative-equality obligations
-in `LocalUpperHalfPlaneProjectiveNormalization` remain outside this lemma.
+  This is the topological landing assertion obtained from continuity and the
+  openness of \(\{w\in\mathbb C: \operatorname{Im}w>0\}\); no derivative identities are
+  needed.
+proof:
+  The postcomposed affine map is continuous at the base point and takes the value \(i\), whose imaginary part is positive. Pull back the open upper half-plane and choose a metric ball contained in the resulting neighborhood.
 -/
 theorem exists_ball_mapsTo_upperHalfPlane_of_targetValue_eq_I
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1737,8 +2058,14 @@ theorem exists_ball_mapsTo_upperHalfPlane_of_targetValue_eq_I
     exact hr_subset hz⟩
 
 /--
-If the target finite value is `i`, the upper-half-plane landing ball can be
-chosen inside the explicit postcomposition domain.
+%%handwave
+name:
+  If the target finite value is \(i\), the upper-half-plane landing ball can be chosen inside the explicit postcomposition domain
+statement:
+  If the target finite value is \(i\), the upper-half-plane landing ball can be
+  chosen inside the explicit postcomposition domain.
+proof:
+  Intersect the open upper-half-plane preimage neighborhood with the postcomposition domain, then choose a metric ball contained in that intersection.
 -/
 theorem exists_ball_subset_domain_mapsTo_upperHalfPlane_of_targetValue_eq_I
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1835,7 +2162,15 @@ noncomputable def upperHalfPlaneMapOfLanding
     else
       ⟨Complex.I, by simp⟩
 
-/-- On the landing ball, the constructed `ℍ`-lift agrees with the affine branch. -/
+/--
+%%handwave
+name:
+  On the landing ball, the constructed \(\mathbb H\)-lift agrees with the affine branch
+statement:
+  On the landing ball, the constructed \(\mathbb H\)-lift agrees with the affine branch.
+proof:
+  On the landing ball the defining conditional selects the proof that the affine value has positive imaginary part, so coercing the resulting upper-half-plane point returns that affine value.
+-/
 theorem upperHalfPlaneMapOfLanding_eq_affine
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ} {hz₀ : z₀ ∈ D.domain}
@@ -1853,8 +2188,14 @@ theorem upperHalfPlaneMapOfLanding_eq_affine
   simp [hz]
 
 /--
-The coerced `ℍ`-lift is locally equal to the affine branch at every point of
-the landing ball.
+%%handwave
+name:
+  The coerced \(\mathbb H\)-lift is locally equal to the affine branch at every point of the landing ball
+statement:
+  The coerced \(\mathbb H\)-lift is locally equal to the affine branch at every point of
+  the landing ball.
+proof:
+  Because the landing ball is open, every point in it has a neighborhood still contained in the ball; the pointwise coercion identity therefore holds eventually.
 -/
 theorem upperHalfPlaneMapOfLanding_eventuallyEq_affine
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1872,8 +2213,14 @@ theorem upperHalfPlaneMapOfLanding_eventuallyEq_affine
   exact E.upperHalfPlaneMapOfLanding_eq_affine hmaps hw
 
 /--
-The explicit upper-half-plane lift is `C^3` on the landing ball whenever the
-underlying affine normal-form branch is `C^3` there.
+%%handwave
+name:
+  The explicit upper-half-plane lift is \(C^3\) on the landing ball whenever the underlying affine normal-form branch is \(C^3\) there
+statement:
+  The explicit upper-half-plane lift is \(C^3\) on the landing ball whenever the
+  underlying affine normal-form branch is \(C^3\) there.
+proof:
+  At each point of the landing ball, the coerced lift agrees locally with the affine branch. Transfer the \(C^3\) germ from the affine branch and assemble the pointwise germs into regularity on the ball.
 -/
 theorem upperHalfPlaneMapOfLanding_contDiffOn_of_affineMap_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2239,7 +2586,16 @@ def toCanonicalExplicitData
         _ = S.coefficient w :=
               D.schwarzian_eq_coefficient w (P.domain_subset_original hw))
 
-/-- The canonical explicit data stores the explicit normal-form third derivative. -/
+/--
+%%handwave
+name:
+  The canonical pole-avoiding normal-form postcomposition has the explicit chain-rule third derivative
+statement:
+  The third-derivative branch of the canonical pole-avoiding normal-form
+  postcomposition is the explicit chain-rule third derivative of the composite.
+proof:
+  The construction chooses the displayed chain-rule expression as its third-derivative branch.
+-/
 theorem toCanonicalExplicitData_affineMapThirdDeriv_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ} {hz₀ : z₀ ∈ D.domain}
@@ -2296,7 +2652,15 @@ def domain {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (N : LocalUpperHalfPlaneProjectiveNormalization D) : Set ℂ :=
   N.projective.domain
 
-/-- The complex-valued normalized upper-half-plane branch is differentiable at domain points. -/
+/--
+%%handwave
+name:
+  The complex-valued normalized upper-half-plane branch is differentiable at domain points
+statement:
+  The complex-valued normalized upper-half-plane branch is differentiable at domain points.
+proof:
+  The upper-half-plane branch is holomorphic on the local domain, hence complex differentiable at each of its points.
+-/
 theorem differentiableAt_upperHalfPlaneMap
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S}
@@ -2365,7 +2729,15 @@ def domain {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) : Set ℂ :=
   N.normalized.domain
 
-/-- The normalization's base-jet derivative is the canonical derivative of `u`. -/
+/--
+%%handwave
+name:
+  The normalization's base-jet derivative is the canonical derivative of \(u\)
+statement:
+  The normalization's base-jet derivative is the canonical derivative of \(u\).
+proof:
+  The prescribed base jet was defined from the conformal factor’s canonical Wirtinger derivative, so the two quantities agree by construction.
+-/
 theorem jet_uZ_eq_wirtingerZ {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
     (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) :
@@ -2391,7 +2763,15 @@ def pullbackLogDensity {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) (z : ℂ) : ℝ :=
   (1 / 2 : ℝ) * Real.log (N.pullbackDensitySq z)
 
-/-- The upper-half-plane branch has positive imaginary part everywhere. -/
+/--
+%%handwave
+name:
+  The upper-half-plane branch has positive imaginary part everywhere
+statement:
+  The upper-half-plane branch has positive imaginary part everywhere.
+proof:
+  Every value of the normalized branch lies in the upper half-plane, whose defining property is positivity of the imaginary part.
+-/
 theorem upperHalfPlaneMap_im_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2399,7 +2779,15 @@ theorem upperHalfPlaneMap_im_pos
     0 < (N.normalized.upperHalfPlaneMap z : ℂ).im :=
   (N.normalized.upperHalfPlaneMap z).im_pos
 
-/-- The Poincare denominator is positive for the normalized branch. -/
+/--
+%%handwave
+name:
+  The Poincaré denominator is positive for the normalized branch
+statement:
+  The Poincaré denominator is positive for the normalized branch.
+proof:
+  Square the strictly positive imaginary part of the upper-half-plane value.
+-/
 theorem upperHalfPlaneMap_im_sq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2407,7 +2795,15 @@ theorem upperHalfPlaneMap_im_sq_pos
     0 < (N.normalized.upperHalfPlaneMap z : ℂ).im ^ 2 :=
   sq_pos_of_pos (N.upperHalfPlaneMap_im_pos z)
 
-/-- The normalized projective derivative has positive squared norm on the domain. -/
+/--
+%%handwave
+name:
+  The normalized projective derivative has positive squared norm on the domain
+statement:
+  The normalized projective derivative has positive squared norm on the domain.
+proof:
+  The projective derivative is nonzero on the domain, so its complex squared norm is strictly positive.
+-/
 theorem affineDerivativeNormSq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2416,7 +2812,15 @@ theorem affineDerivativeNormSq_pos
     0 < Complex.normSq (N.normalized.projective.affineMapDeriv z) :=
   Complex.normSq_pos.mpr (N.normalized.projective.affineMapDeriv_ne_zero z hz)
 
-/-- The canonical Poincare pullback squared density is positive on the domain. -/
+/--
+%%handwave
+name:
+  The canonical Poincaré pullback squared density is positive on the domain
+statement:
+  The canonical Poincaré pullback squared density is positive on the domain.
+proof:
+  The numerator and denominator of the pullback density are both strictly positive, hence so is their quotient.
+-/
 theorem pullbackDensitySq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2426,8 +2830,14 @@ theorem pullbackDensitySq_pos
   exact div_pos (N.affineDerivativeNormSq_pos hz) (N.upperHalfPlaneMap_im_sq_pos z)
 
 /--
-The canonical logarithmic pullback density exponentiates to the Poincare
-pullback squared density.
+%%handwave
+name:
+  The canonical logarithmic pullback density exponentiates to the Poincaré pullback squared density
+statement:
+  The canonical logarithmic pullback density exponentiates to the Poincaré
+  pullback squared density.
+proof:
+  Twice one half of the logarithm is the logarithm itself; exponentiating and using positivity of the squared density recovers that density.
 -/
 theorem exp_two_pullbackLogDensity_eq_pullbackDensitySq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2443,11 +2853,17 @@ theorem exp_two_pullbackLogDensity_eq_pullbackDensitySq
   rw [pullbackLogDensity, htwo, Real.exp_log hpos]
 
 /--
-At the normalized base point, the canonical Poincare pullback squared density
-matches the original conformal squared density.
+%%handwave
+name:
+  At the normalized base point, the canonical Poincaré pullback squared density matches the original conformal squared density
+statement:
+  At the normalized base point, the canonical Poincaré pullback squared density
+  matches the original conformal squared density.
 
-This is only the algebra of the prescribed hyperbolic two-jet:
-`F(z₀)=i`, `F'(z₀)=exp(u(z₀))`.
+  This is only the algebra of the prescribed hyperbolic two-jet:
+  \(F(z_0)=i\), \(F'(z_0)=e^{u(z_0)}\).
+proof:
+  Insert the normalized conditions \(F(z_0)=i\) and \(F'(z_0)=e^{u(z_0)}\). The denominator becomes one and the squared norm of the real exponential is \(e^{2u(z_0)}\).
 -/
 theorem pullbackDensitySq_base_eq_densitySq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2464,8 +2880,14 @@ theorem pullbackDensitySq_base_eq_densitySq
   ring_nf
 
 /--
-At the normalized base point, the canonical logarithmic pullback density has
-the same squared density as the original conformal factor.
+%%handwave
+name:
+  At the normalized base point, the canonical logarithmic pullback density has the same squared density as the original conformal factor
+statement:
+  At the normalized base point, the canonical logarithmic pullback density has
+  the same squared density as the original conformal factor.
+proof:
+  Combine the exponential identity for the logarithmic pullback density with the base-point equality of squared densities.
 -/
 theorem exp_two_pullbackLogDensity_base_eq_densitySq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2476,8 +2898,14 @@ theorem exp_two_pullbackLogDensity_base_eq_densitySq
     N.pullbackDensitySq_base_eq_densitySq]
 
 /--
-The canonical logarithmic pullback density itself agrees with the original
-log-density at the normalized base point.
+%%handwave
+name:
+  The canonical logarithmic pullback density itself agrees with the original log-density at the normalized base point
+statement:
+  The canonical logarithmic pullback density itself agrees with the original
+  log-density at the normalized base point.
+proof:
+  The preceding result gives equality after applying the injective exponential to twice both logarithmic densities; cancel the factor two.
 -/
 theorem pullbackLogDensity_base_eq_logDensity
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2495,14 +2923,20 @@ theorem pullbackLogDensity_base_eq_logDensity
   linarith
 
 /--
-The normalized hyperbolic two-jet recovers the prescribed canonical
-Wirtinger derivative from the first two derivatives of the normalized branch.
+%%handwave
+name:
+  The normalized hyperbolic two-jet recovers the prescribed canonical Wirtinger derivative from the first two derivatives of the normalized branch
+statement:
+  The normalized hyperbolic two-jet recovers the prescribed canonical
+  Wirtinger derivative from the first two derivatives of the normalized branch.
 
-Classically, for an `ℍ`-valued local isometry one has at the normalized base
-point
-`v_z = (F'' / F' + i F') / 2`.  This theorem proves the purely algebraic
-two-jet part: after substituting the prescribed hyperbolic second derivative,
-that expression is exactly the base jet field `N.jet.uZ`.
+  Classically, for an \(\mathbb H\)-valued local isometry one has at the normalized base
+  point
+  \(v_z=(F''/F'+iF')/2\).  This is the purely algebraic
+  two-jet part: after substituting the prescribed hyperbolic second derivative,
+  that expression is exactly the prescribed base-jet derivative.
+proof:
+  Substitute the prescribed first and second derivatives of the normalized hyperbolic two-jet into the displayed expression and simplify; the remaining term is the prescribed base-jet Wirtinger derivative.
 -/
 theorem base_uZ_eq_of_twoJet_formula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2536,8 +2970,14 @@ def PullbackDensitySqBaseNumeratorDerivativeFormula
         N.normalized.projective.affineMapDeriv z₀)
 
 /--
-A genuine complex derivative for the derivative branch implies
-differentiability of the numerator `|F'|²` at the base point.
+%%handwave
+name:
+  A genuine complex derivative for the derivative branch implies differentiability of the numerator \(\lvert F'\rvert^2\) at the base point
+statement:
+  A genuine complex derivative for the derivative branch implies
+  differentiability of the numerator \(\lvert F'\rvert^2\) at the base point.
+proof:
+  A complex derivative makes the derivative branch real differentiable. Composing its real and imaginary parts, squaring, and adding proves differentiability of its squared norm.
 -/
 theorem numerator_differentiableAt_base_of_affineMapDeriv_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2558,8 +2998,14 @@ theorem numerator_differentiableAt_base_of_affineMapDeriv_hasDerivAt
         (Complex.imCLM.differentiableAt.comp z₀ hFR))
 
 /--
-A genuine complex derivative for the derivative branch implies the numerator
-derivative formula.
+%%handwave
+name:
+  A genuine complex derivative for the derivative branch implies the numerator derivative formula
+statement:
+  A genuine complex derivative for the derivative branch implies the numerator
+  derivative formula.
+proof:
+  Compute the Wirtinger derivative of the squared complex norm using the real Fréchet derivative supplied by the complex derivative of the branch; it simplifies to the conjugate first derivative times the second derivative.
 -/
 theorem numerator_base_derivative_formula_of_affineMapDeriv_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2601,8 +3047,14 @@ def PullbackDensitySqBaseDenominatorDerivativeFormula
     -Complex.I * N.normalized.projective.affineMapDeriv z₀
 
 /--
-A genuine complex derivative for the upper-half-plane branch implies
-differentiability of the denominator `(Im F)^2` at the base point.
+%%handwave
+name:
+  A genuine complex derivative for the upper-half-plane branch implies differentiability of the denominator \((\operatorname{Im}F)^2\) at the base point
+statement:
+  A genuine complex derivative for the upper-half-plane branch implies
+  differentiability of the denominator \((\operatorname{Im}F)^2\) at the base point.
+proof:
+  A complex derivative makes the branch real differentiable. Its imaginary part and the square of that real-valued function are therefore differentiable.
 -/
 theorem denominator_differentiableAt_base_of_upperHalfPlaneMap_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2620,8 +3072,14 @@ theorem denominator_differentiableAt_base_of_upperHalfPlaneMap_hasDerivAt
       (Complex.imCLM.differentiableAt.comp z₀ hFR))
 
 /--
-A genuine complex derivative for the upper-half-plane branch implies the
-denominator derivative formula.
+%%handwave
+name:
+  A genuine complex derivative for the upper-half-plane branch implies the denominator derivative formula
+statement:
+  A genuine complex derivative for the upper-half-plane branch implies the
+  denominator derivative formula.
+proof:
+  Differentiate the squared imaginary part through the real Fréchet derivative of the holomorphic branch; the Wirtinger component simplifies to \(-i \operatorname{Im}(F)F'\).
 -/
 theorem denominator_base_derivative_formula_of_upperHalfPlaneMap_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2638,8 +3096,14 @@ theorem denominator_base_derivative_formula_of_upperHalfPlaneMap_hasDerivAt
       simp [HyperbolicSchwarzianBaseJet.targetValue])
 
 /--
-Smoothness of the derivative branch gives smoothness of the numerator
-`|F'|²`.
+%%handwave
+name:
+  Smoothness of the derivative branch gives smoothness of the numerator \(\lvert F'\rvert^2\)
+statement:
+  Smoothness of the derivative branch gives smoothness of the numerator
+  \(\lvert F'\rvert^2\).
+proof:
+  Express the squared norm as the sum of the squares of the real and imaginary parts. Smoothness is preserved by these projections, products, and sums.
 -/
 theorem numerator_contDiffOn_of_affineMapDeriv_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2662,8 +3126,14 @@ theorem numerator_contDiffOn_of_affineMapDeriv_contDiffOn
   simpa [Complex.normSq_apply] using hRe.mul hRe |>.add (hIm.mul hIm)
 
 /--
-Smoothness of the upper-half-plane branch gives smoothness of the denominator
-`(Im F)²`.
+%%handwave
+name:
+  Smoothness of the upper-half-plane branch gives smoothness of the denominator \((\operatorname{Im}F)^2\)
+statement:
+  Smoothness of the upper-half-plane branch gives smoothness of the denominator
+  \((\operatorname{Im}F)^2\).
+proof:
+  The imaginary-part projection is smooth, and squaring preserves smoothness on the domain.
 -/
 theorem denominator_contDiffOn_of_upperHalfPlaneMap_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2681,8 +3151,14 @@ theorem denominator_contDiffOn_of_upperHalfPlaneMap_contDiffOn
   simpa [pow_two] using hIm.mul hIm
 
 /--
-Smoothness of the two branch ingredients gives smoothness of the Poincare
-pullback squared density.
+%%handwave
+name:
+  Smoothness of the two branch ingredients gives smoothness of the Poincaré pullback squared density
+statement:
+  Smoothness of the two branch ingredients gives smoothness of the Poincaré
+  pullback squared density.
+proof:
+  The numerator and denominator are smooth by the preceding two constructions, and the denominator is positive on the upper half-plane; smooth division gives the result.
 -/
 theorem pullbackDensitySq_contDiffOn_of_branch_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2704,8 +3180,14 @@ theorem pullbackDensitySq_contDiffOn_of_branch_contDiffOn
   simpa [pullbackDensitySq] using hNum.fun_div hDen hDen_ne
 
 /--
-Smoothness of the two branch ingredients gives smoothness of the canonical
-logarithmic Poincare pullback density.
+%%handwave
+name:
+  Smoothness of the two branch ingredients gives smoothness of the canonical logarithmic Poincaré pullback density
+statement:
+  Smoothness of the two branch ingredients gives smoothness of the canonical
+  logarithmic Poincaré pullback density.
+proof:
+  The squared density is smooth and positive, so composing it with the logarithm and multiplying by one half preserves smoothness.
 -/
 theorem pullbackLogDensity_contDiffOn_of_branch_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2955,7 +3437,15 @@ def PullbackMixedWirtingerExpressionDerivativeFormula
     frechetDBarValue N.pullbackFirstWirtingerExpression z =
       (1 / 4 : ℂ) * (N.pullbackDensitySq z : ℂ)
 
-/-- Algebra for differentiating the explicit first pullback Wirtinger expression. -/
+/--
+%%handwave
+name:
+  Algebra for differentiating the explicit first pullback Wirtinger expression
+statement:
+  Algebra for differentiating the explicit first pullback Wirtinger expression.
+proof:
+  Clear the nonzero factors involving \(F'\) and \(\operatorname{Im}F\), expand both sides, and verify the resulting polynomial identity.
+-/
 theorem pullbackSecondWirtingerExpressionDerivativeFormula_algebra
     (F₁ F₂ F₃ y : ℂ) (hF₁ : F₁ ≠ 0) (hy : y ≠ 0) :
     (((F₃ * F₁ - F₂ * F₂) / F₁ ^ 2) +
@@ -2967,7 +3457,15 @@ theorem pullbackSecondWirtingerExpressionDerivativeFormula_algebra
   rw [Complex.I_sq]
   ring
 
-/-- Algebra for the mixed derivative of the explicit first pullback expression. -/
+/--
+%%handwave
+name:
+  Algebra for the mixed derivative of the explicit first pullback expression
+statement:
+  Algebra for the mixed derivative of the explicit first pullback expression.
+proof:
+  Clear the nonzero imaginary-part denominator, expand conjugates and products, and simplify the resulting algebraic identity.
+-/
 theorem pullbackMixedWirtingerExpressionDerivativeFormula_algebra
     (F₁ y : ℂ) (hy : y ≠ 0) :
     (Complex.I * ((0 * y - F₁ * (Complex.I * star F₁ / 2)) / y ^ 2)) / 2 =
@@ -2981,8 +3479,14 @@ theorem pullbackMixedWirtingerExpressionDerivativeFormula_algebra
   ring_nf
 
 /--
-Actual derivative identities for `F`, `F'`, and `F''` imply the explicit
-Frechet derivative formula for the first pullback Wirtinger expression.
+%%handwave
+name:
+  Actual derivative identities for \(F\), \(F'\), and \(F''\) imply the explicit Fréchet derivative formula for the first pullback Wirtinger expression
+statement:
+  Actual derivative identities for \(F\), \(F'\), and \(F''\) imply the explicit
+  Fréchet derivative formula for the first pullback Wirtinger expression.
+proof:
+  At a domain point, differentiate the quotient and product terms in the first Wirtinger expression using the stated complex derivatives of \(F\), \(F'\), and \(F''\). Evaluate the \(z\)-Fréchet component and finish with the algebraic identity.
 -/
 theorem pullbackSecondWirtingerExpressionDerivativeFormula_of_branch_hasDerivAt_on
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3115,8 +3619,14 @@ theorem pullbackSecondWirtingerExpressionDerivativeFormula_of_branch_hasDerivAt_
     (by exact_mod_cast (N.upperHalfPlaneMap_im_pos z).ne')
 
 /--
-Actual derivative identities for `F`, `F'`, and `F''` imply the explicit
-mixed Frechet derivative formula for the first pullback Wirtinger expression.
+%%handwave
+name:
+  Actual derivative identities for \(F\), \(F'\), and \(F''\) imply the explicit mixed Fréchet derivative formula for the first pullback Wirtinger expression
+statement:
+  Actual derivative identities for \(F\), \(F'\), and \(F''\) imply the explicit
+  mixed Fréchet derivative formula for the first pullback Wirtinger expression.
+proof:
+  Use the same branch derivatives to compute the conjugate Wirtinger component of the first expression. The holomorphic terms vanish in that component, and the remaining imaginary-part contribution reduces by the mixed algebraic identity.
 -/
 theorem pullbackMixedWirtingerExpressionDerivativeFormula_of_branch_hasDerivAt_on
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3227,8 +3737,14 @@ theorem pullbackMixedWirtingerExpressionDerivativeFormula_of_branch_hasDerivAt_o
     (by exact_mod_cast (N.upperHalfPlaneMap_im_pos z).ne')
 
 /--
-The pointwise first Wirtinger formula gives local equality with the explicit
-first expression on the open normalized domain.
+%%handwave
+name:
+  The pointwise first Wirtinger formula gives local equality with the explicit first expression on the open normalized domain
+statement:
+  The pointwise first Wirtinger formula gives local equality with the explicit
+  first expression on the open normalized domain.
+proof:
+  The normalized domain is open. Restrict to a neighborhood contained in it and apply the assumed pointwise first Wirtinger formula at every point of that neighborhood.
 -/
 theorem pullbackFirstWirtingerEventuallyEqExpression_of_firstWirtingerFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3252,9 +3768,15 @@ theorem pullbackFirstWirtingerEventuallyEqExpression_of_firstWirtingerFormula
   exact hZ w hw
 
 /--
-Once the first derivative has been identified locally with its explicit branch
-expression, the derivative formula for that expression implies the old second
-Wirtinger formula.
+%%handwave
+name:
+  Once the first derivative has been identified locally with its explicit branch expression, the derivative formula for that expression implies the old second Wirtinger formula
+statement:
+  Once the first derivative has been identified locally with its explicit branch
+  expression, the derivative formula for that expression implies the old second
+  Wirtinger formula.
+proof:
+  Locally equal functions have equal real Fréchet derivatives. Replace the derivative of the first Wirtinger field by that of its explicit expression, then take the \(z\)-component supplied by the assumed derivative formula.
 -/
 theorem pullbackSecondWirtingerFormula_of_first_eventuallyEq_and_expressionDerivative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3284,8 +3806,14 @@ theorem pullbackSecondWirtingerFormula_of_first_eventuallyEq_and_expressionDeriv
   exact hDeriv z hz
 
 /--
-The first Wirtinger formula plus the explicit Frechet derivative calculation
-for its right-hand side imply the second Wirtinger formula.
+%%handwave
+name:
+  The first Wirtinger formula plus the explicit Fréchet derivative calculation for its right-hand side imply the second Wirtinger formula
+statement:
+  The first Wirtinger formula plus the explicit Fréchet derivative calculation
+  for its right-hand side imply the second Wirtinger formula.
+proof:
+  First turn the pointwise first Wirtinger identity into a local equality on the open domain, then apply the preceding transfer from the expression derivative to the second Wirtinger formula.
 -/
 theorem pullbackSecondWirtingerFormula_of_firstWirtingerFormula_and_expressionDerivative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3306,9 +3834,15 @@ theorem pullbackSecondWirtingerFormula_of_firstWirtingerFormula_and_expressionDe
     hDeriv
 
 /--
-Once the first Wirtinger derivative has been identified locally with its
-explicit branch expression, the mixed derivative calculation for that
-expression implies the mixed-Wirtinger Poincare Laplacian formula.
+%%handwave
+name:
+  Once the first Wirtinger derivative has been identified locally with its explicit branch expression, the mixed derivative calculation for that expression implies the mixed-Wirtinger Poincaré Laplacian formula
+statement:
+  Once the first Wirtinger derivative has been identified locally with its
+  explicit branch expression, the mixed derivative calculation for that
+  expression implies the mixed-Wirtinger Poincaré Laplacian formula.
+proof:
+  Local equality identifies the real Fréchet derivatives of the first Wirtinger field and its explicit expression. Taking the conjugate Wirtinger component and using the assumed derivative calculation gives the Poincaré Laplacian formula.
 -/
 theorem pullbackMixedWirtingerLaplacianFormula_of_first_eventuallyEq_and_mixedExpressionDerivative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3339,8 +3873,14 @@ theorem pullbackMixedWirtingerLaplacianFormula_of_first_eventuallyEq_and_mixedEx
   exact hDeriv z hz
 
 /--
-The first Wirtinger formula plus the explicit mixed derivative calculation for
-its right-hand side imply the mixed-Wirtinger Poincare Laplacian formula.
+%%handwave
+name:
+  The first Wirtinger formula plus the explicit mixed derivative calculation for its right-hand side imply the mixed-Wirtinger Poincaré Laplacian formula
+statement:
+  The first Wirtinger formula plus the explicit mixed derivative calculation for
+  its right-hand side imply the mixed-Wirtinger Poincaré Laplacian formula.
+proof:
+  Promote the pointwise first Wirtinger identity to local equality on the open domain, then use the mixed-derivative transfer argument.
 -/
 theorem pullbackMixedWirtingerLaplacianFormula_of_firstWirtingerFormula_and_mixedExpressionDerivative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3362,12 +3902,18 @@ theorem pullbackMixedWirtingerLaplacianFormula_of_firstWirtingerFormula_and_mixe
     hDeriv
 
 /--
-Actual differentiability of the affine projective branch gives actual
-differentiability of the upper-half-plane-valued lift.
+%%handwave
+name:
+  Actual differentiability of the affine projective branch gives actual differentiability of the upper-half-plane-valued lift
+statement:
+  Actual differentiability of the affine projective branch gives actual
+  differentiability of the upper-half-plane-valued lift.
 
-The proof is pure locality: on the open normalized domain, the `ℍ`-valued
-branch agrees with the affine coordinate as a complex-valued function, so
-mathlib's `HasDerivAt.congr_of_eventuallyEq` transfers the derivative.
+  On the open normalized domain, the \(\mathbb H\)-valued branch agrees locally
+  with the affine coordinate as a complex-valued function, so local congruence
+  transfers the complex derivative.
+proof:
+  On the open normalized domain, the coerced upper-half-plane branch agrees locally with the affine projective branch. Local congruence for complex derivatives therefore transfers the prescribed derivative.
 -/
 theorem upperHalfPlaneMap_hasDerivAt_of_affineMap_hasDerivAt_on
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3392,8 +3938,14 @@ theorem upperHalfPlaneMap_hasDerivAt_of_affineMap_hasDerivAt_on
   exact (hAffine z hz).congr_of_eventuallyEq hEq
 
 /--
-Complex differentiability plus an identified value of `deriv` gives the
-corresponding `HasDerivAt` statement.
+%%handwave
+name:
+  Complex differentiability plus an identified value of the complex derivative gives the corresponding prescribed derivative
+statement:
+  Complex differentiability plus an identified value of the complex derivative gives the
+  corresponding prescribed complex derivative.
+proof:
+  Complex differentiability supplies a derivative statement with the canonical complex derivative; the assumed equality identifies that derivative with the prescribed value.
 -/
 theorem hasDerivAt_of_differentiableAt_deriv_eq
     {f : ℂ → ℂ} {z f' : ℂ}
@@ -3402,10 +3954,16 @@ theorem hasDerivAt_of_differentiableAt_deriv_eq
   simpa [hderiv] using hf.hasDerivAt
 
 /--
-The first and second Wirtinger formulas imply the core Schwarzian identity.
+%%handwave
+name:
+  The first and second Wirtinger formulas imply the core Schwarzian identity
+statement:
+  The first and second Wirtinger formulas imply the core Schwarzian identity.
 
-The proof is only the classical cancellation
-`2 (v_zz - v_z^2) = F'''/F' - (3/2) (F''/F')^2`.
+  The proof is only the classical cancellation
+  \(2 (v_zz - v_z^2) = F'''/F' - (3/2) (F''/F')^2\).
+proof:
+  Substitute the first and second Wirtinger formulas into the metric Schwarzian. After using nonvanishing of \(F'\) and positivity of \(\operatorname{Im}F\), clear denominators; the remaining identity is \(2(v_{zz}-v_z^2)=F'''/F' - \tfrac32(F''/F')^2\).
 -/
 theorem metricSchwarzian_eq_branchSchwarzian_of_wirtinger_formulas
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3448,8 +4006,14 @@ theorem metricSchwarzian_eq_branchSchwarzian_of_wirtinger_formulas
   ring_nf
 
 /--
-The core Schwarzian identity, together with the projective branch's stored
-Schwarzian equation, gives compatibility with the original coefficient.
+%%handwave
+name:
+  The core Schwarzian identity and the projective branch equation give compatibility with the original coefficient
+statement:
+  The core Schwarzian identity, together with the projective branch’s
+  Schwarzian equation, gives compatibility with the original coefficient.
+proof:
+  The metric Schwarzian equals the branch Schwarzian, which equals the original coefficient by the projective developing equation.
 -/
 theorem pullbackSchwarzianCompatibility_of_metricSchwarzian_eq_branchSchwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3491,10 +4055,16 @@ def PullbackDensitySqDerivativeFormula
             ((N.normalized.upperHalfPlaneMap z : ℂ).im : ℂ))
 
 /--
-Algebra behind the pointwise first derivative of the Poincare squared density.
+%%handwave
+name:
+  Algebra behind the pointwise first derivative of the Poincaré squared density
+statement:
+  Algebra behind the pointwise first derivative of the Poincaré squared density.
 
-If `ρ = |F₁|² / y²`, `∂z |F₁|² = \bar F₁ F₂`, and
-`∂z y² = -i y F₁`, then `∂z ρ = ρ (F₂/F₁ + iF₁/y)`.
+  If \(ρ = |F₁|² / y²\), \(∂z |F₁|² = \bar F₁ F₂\), and
+  \(∂z y² = -i y F₁\), then \(∂z ρ = ρ (F₂/F₁ + iF₁/y)\).
+proof:
+  Express the squared norm as \(\overline{F'}F'\), cast the real quotient to the complex numbers, clear the nonzero factors \(F'\) and \(y\), and expand.
 -/
 theorem pullbackDensitySqDerivativeFormula_algebra
     (F₁ F₂ : ℂ) {y : ℝ}
@@ -3516,8 +4086,14 @@ theorem pullbackDensitySqDerivativeFormula_algebra
   ring_nf
 
 /--
-First-derivative regularity proves the squared-density derivative formula for
-a metric-recovering upper-half-plane branch.
+%%handwave
+name:
+  First-derivative regularity proves the squared-density derivative formula for a metric-recovering upper-half-plane branch
+statement:
+  First-derivative regularity proves the squared-density derivative formula for
+  a metric-recovering upper-half-plane branch.
+proof:
+  Use the actual derivatives of the branch and its first-derivative branch to differentiate \(\lvert F' \rvert^2\) and \((\operatorname{Im}F)^2\). Apply the real quotient rule for their ratio and simplify with the algebraic density identity.
 -/
 theorem localUpperHalfPlaneDevelopingMapDensitySqDerivativeFormulaTheorem_of_firstDerivative
     (hFirst :
@@ -3612,8 +4188,14 @@ theorem localUpperHalfPlaneDevelopingMapDensitySqDerivativeFormulaTheorem_of_fir
   rw [hDensity_z, hDeriv_z, hSecondDeriv_z]
 
 /--
-The pointwise squared-density derivative formula implies the first Wirtinger
-formula for the canonical logarithmic pullback.
+%%handwave
+name:
+  The pointwise squared-density derivative formula implies the first Wirtinger formula for the canonical logarithmic pullback
+statement:
+  The pointwise squared-density derivative formula implies the first Wirtinger
+  formula for the canonical logarithmic pullback.
+proof:
+  Write the logarithmic density as one half the logarithm of the positive squared density. The Fréchet–Wirtinger chain rule turns its derivative into the squared-density derivative divided by twice the density, and the assumed formula cancels that factor.
 -/
 theorem pullbackFirstWirtingerFormula_of_densitySqDerivativeFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3650,8 +4232,14 @@ theorem pullbackFirstWirtingerFormula_of_densitySqDerivativeFormula
   field_simp [hρ_ne]
 
 /--
-Actual complex derivatives of the normalized branch and its derivative branch
-imply the pointwise squared-density derivative formula.
+%%handwave
+name:
+  Actual complex derivatives of the normalized branch and its derivative branch imply the pointwise squared-density derivative formula
+statement:
+  Actual complex derivatives of the normalized branch and its derivative branch
+  imply the pointwise squared-density derivative formula.
+proof:
+  At each domain point the assumed complex derivatives make the squared-norm numerator and squared-imaginary-part denominator real differentiable. Differentiate their quotient, insert the two component formulas, and use the algebraic density identity.
 -/
 theorem pullbackDensitySqDerivativeFormula_of_branch_hasDerivAt_on
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3704,8 +4292,14 @@ theorem pullbackDensitySqDerivativeFormula_of_branch_hasDerivAt_on
     (by exact_mod_cast (N.upperHalfPlaneMap_im_pos z).ne')
 
 /--
-Actual complex derivatives of the normalized branch and its derivative branch
-give differentiability of the Poincare pullback squared density.
+%%handwave
+name:
+  Actual complex derivatives of the normalized branch and its derivative branch give differentiability of the Poincaré pullback squared density
+statement:
+  Actual complex derivatives of the normalized branch and its derivative branch
+  give differentiability of the Poincaré pullback squared density.
+proof:
+  The branch derivatives make both the squared-norm numerator and squared-imaginary-part denominator real differentiable. The latter is nonzero in the upper half-plane, so their quotient is differentiable.
 -/
 theorem pullbackDensitySq_differentiableAt_of_branch_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3765,11 +4359,17 @@ def PullbackDensitySqBaseDerivativeFormula
         Complex.I * N.normalized.projective.affineMapDeriv z₀)
 
 /--
-The numerator and denominator base derivative formulas imply the full
-squared-density base derivative formula.
+%%handwave
+name:
+  The numerator and denominator base derivative formulas imply the full squared-density base derivative formula
+statement:
+  The numerator and denominator base derivative formulas imply the full
+  squared-density base derivative formula.
 
-This is the blue quotient-calculus bridge for the Poincare density
-`|F'|² / (Im F)²`.
+  This is the blue quotient-calculus bridge for the Poincaré density
+  \(|F'|² / (Im F)²\).
+proof:
+  Apply the real Fréchet quotient rule to \(\lvert F' \rvert^2/(\operatorname{Im}F)^2\), substitute the assumed base derivatives of numerator and denominator, and use \(F(z_0)=i\) to simplify.
 -/
 theorem pullbackDensitySq_base_derivativeFormula_of_num_den
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3837,8 +4437,14 @@ def PullbackLogDensityBaseDerivativeFormula
       Complex.I * N.normalized.projective.affineMapDeriv z₀) / 2
 
 /--
-The analytic base derivative formula implies agreement with the prescribed
-canonical base value `u_z`.
+%%handwave
+name:
+  The analytic base derivative formula implies agreement with the prescribed canonical base value \(u_z\)
+statement:
+  The analytic base derivative formula implies agreement with the prescribed
+  canonical base value \(u_z\).
+proof:
+  The assumed logarithmic-density formula and the two-jet calculation identify the base derivative with the prescribed Wirtinger derivative.
 -/
 theorem pullbackLogDensity_base_uZ_eq_of_derivativeFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3851,11 +4457,17 @@ theorem pullbackLogDensity_base_uZ_eq_of_derivativeFormula
   exact N.base_uZ_eq_of_twoJet_formula
 
 /--
-The squared-density base derivative formula implies the logarithmic base
-derivative formula.
+%%handwave
+name:
+  The squared-density base derivative formula implies the logarithmic base derivative formula
+statement:
+  The squared-density base derivative formula implies the logarithmic base
+  derivative formula.
 
-This is now a mathlib-backed chain-rule reduction: the only remaining
-calculus is the derivative of the squared Poincare pullback density itself.
+  The logarithmic derivative follows by the chain rule once the derivative of
+  the squared Poincaré pullback density is known.
+proof:
+  Differentiate one half the logarithm of the positive squared density by the Fréchet–Wirtinger chain rule, substitute the assumed squared-density derivative, and cancel the nonzero density.
 -/
 theorem pullbackLogDensity_base_derivativeFormula_of_densitySqDerivative
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3879,8 +4491,14 @@ theorem pullbackLogDensity_base_derivativeFormula_of_densitySqDerivative
 end LocalHyperbolicTwoJetUpperHalfPlaneNormalization
 
 /--
-Global alias for the squared-density derivative formula of a
-metric-recovering upper-half-plane branch.
+%%handwave
+name:
+  First-derivative regularity gives the squared-density derivative formula for a metric-recovering upper-half-plane branch
+statement:
+  For a metric-recovering upper-half-plane branch, first-derivative regularity
+  gives the pointwise derivative formula for its pullback squared density.
+proof:
+  Use the actual derivatives of the branch and its first-derivative branch to differentiate \(\lvert F' \rvert^2\) and \((\operatorname{Im}F)^2\). Apply the real quotient rule for their ratio and simplify with the algebraic density identity.
 -/
 theorem localUpperHalfPlaneDevelopingMapDensitySqDerivativeFormulaTheorem_of_firstDerivative
     (hFirst :
@@ -3892,8 +4510,14 @@ theorem localUpperHalfPlaneDevelopingMapDensitySqDerivativeFormulaTheorem_of_fir
 namespace LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 
 /--
-Fixed-branch projective derivative regularity proves the pointwise
-squared-density derivative formula for that metric-recovering branch.
+%%handwave
+name:
+  Fixed-branch projective derivative regularity proves the pointwise squared-density derivative formula for that metric-recovering branch
+statement:
+  Fixed-branch projective derivative regularity proves the pointwise
+  squared-density derivative formula for that metric-recovering branch.
+proof:
+  Differentiate the squared norm of the projective derivative and the squared imaginary part of the branch using the fixed branch’s derivative regularity. The quotient rule and the algebraic density identity give the stated pointwise formula.
 -/
 theorem densitySqDerivativeFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3992,8 +4616,14 @@ theorem densitySqDerivativeFormula
   rw [hDensity_z, hDeriv_z, hSecondDeriv_z]
 
 /--
-Fixed-branch projective derivative regularity proves the first-Wirtinger
-formula for that metric-recovering branch.
+%%handwave
+name:
+  Fixed-branch projective derivative regularity proves the first-Wirtinger formula for that metric-recovering branch
+statement:
+  Fixed-branch projective derivative regularity proves the first-Wirtinger
+  formula for that metric-recovering branch.
+proof:
+  Metric recovery identifies the conformal squared density with the branch pullback density. Differentiate one half of its logarithm, substitute the fixed-branch squared-density derivative formula, and simplify.
 -/
 theorem pullbackFirstWirtingerFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -4027,9 +4657,15 @@ theorem pullbackFirstWirtingerFormula
 end LocalUpperHalfPlaneDevelopingMapProjectiveDerivativeRegularity
 
 /--
-Fixed-pair projective derivative regularity gives the metric second-jet step:
-a pointed real-Mobius one-jet match forces equality of the actual second
-derivatives at the point.
+%%handwave
+name:
+  Fixed-pair projective derivative regularity gives the metric second-jet step: a pointed real-Möbius one-jet match forces equality of the actual second derivatives at the point
+statement:
+  Fixed-pair projective derivative regularity gives the metric second-jet step:
+  a pointed real-Möbius one-jet match forces equality of the actual second
+  derivatives at the point.
+proof:
+  Apply the first Wirtinger formula to both metric-recovering branches. Real Möbius invariance gives the same formula for the postcomposed first branch; equality of values and first derivatives then forces equality of second derivatives.
 -/
 theorem pointedRealMobiusTransition_metricOneJetDeterminesSecondJet_of_pairProjectiveDerivative
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -4128,8 +4764,14 @@ theorem pointedRealMobiusTransition_metricOneJetDeterminesSecondJet_of_pairProje
   simpa [F'', G''] using hsecond
 
 /--
-Fixed-pair projective derivative regularity gives the value part of the local
-two-jet Schwarzian identity principle.
+%%handwave
+name:
+  Fixed-pair projective derivative regularity gives the value part of the local two-jet Schwarzian identity principle
+statement:
+  Fixed-pair projective derivative regularity gives the value part of the local
+  two-jet Schwarzian identity principle.
+proof:
+  The metric one-jet hypothesis first determines the second derivative. Thus the two branches have the same two-jet, while Möbius invariance and coefficient agreement give the same Schwarzian; scalar Schwarzian uniqueness yields local equality of values and first derivatives.
 -/
 theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgreement_of_pairProjectiveDerivative
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -4260,15 +4902,15 @@ theorem pointedRealMobiusTransitionTwoJetValueLocalUniquenessWithCoefficientAgre
 name:
   Local uniqueness of normalized hyperbolic branches
 statement:
-  Let $F_1,F_2$ be regular local maps to $\mathbb H$ which recover the same
+  Let \(F_1,F_2\) be regular local maps to \(\mathbb H\) which recover the same
   hyperbolic metric, and suppose their Schwarzian coefficients agree on an
-  overlap. Fix $A\in\mathrm{PSL}_2(\mathbb R)$ which matches their one-jets at
-  a base point $z_0$. If $F_2$ and $A\circ F_1$ also have the same value and
-  first derivative at a point $z$ of the overlap, then they, together with
-  their first derivatives, agree on a neighborhood of $z$.
+  overlap. Fix \(A\in\mathrm{PSL}_2(\mathbb R)\) which matches their one-jets at
+  a base point \(z_0\). If \(F_2\) and \(A\circ F_1\) also have the same value and
+  first derivative at a point \(z\) of the overlap, then they, together with
+  their first derivatives, agree on a neighborhood of \(z\).
 proof:
   Differentiating the common Poincaré pullback formula shows that equality of
-  the first jets forces equality of the second jets. [Two locally univalent maps with the same Schwarzian and the same two-jet agree locally](lean:JJMath.scalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem_of_preSchwarzian). Möbius invariance identifies the Schwarzian of $A\circ F_1$ with that of $F_1$; differentiating the resulting local equality also gives equality of first derivatives.
+  the first jets forces equality of the second jets. [Two locally univalent maps with the same Schwarzian and the same two-jet agree locally](lean:JJMath.scalarSchwarzianTwoJetC3ValueLocalUniquenessTheorem_of_preSchwarzian). Möbius invariance identifies the Schwarzian of \(A\circ F_1\) with that of \(F_1\); differentiating the resulting local equality also gives equality of first derivatives.
 -/
 theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndPairProjectiveDerivativeTheorem_proved :
     PointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndPairProjectiveDerivativeTheorem := by
@@ -4306,10 +4948,16 @@ theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreement
     simpa [F, G] using hEq.deriv_eq
 
 /--
-Projective-symbolic derivative regularity closes the coefficient-aware local
-one-jet uniqueness input: the first-Wirtinger formula, real-Mobius
-postcomposition invariance, actual-Schwarzian equations, and scalar
-Schwarzian identity principle are all supplied by proved reductions.
+%%handwave
+name:
+  Projective-symbolic derivative regularity closes the coefficient-aware local one-jet uniqueness input: the first-Wirtinger formula, real-Möbius postcomposition invariance, actual-Schwarzian equations, and scalar Schwarzian identity principle are all supplied by proved reductions
+statement:
+  Projective-symbolic derivative regularity closes the coefficient-aware local
+  one-jet uniqueness input: the first-Wirtinger formula, real-Möbius
+  postcomposition invariance, actual-Schwarzian equations, and scalar
+  Schwarzian identity principle are all supplied by proved reductions.
+proof:
+  Derive the actual first- and second-derivative statements from the projective derivative hypotheses. These supply the first Wirtinger formula, Möbius chain rules and invariance, the metric determination of the second jet, and finally scalar Schwarzian two-jet uniqueness.
 -/
 theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -4382,8 +5030,14 @@ theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreement
       hMetricSecond hTwoJet H₁ H₂ A z₀ hu hpoint hCoeff z hz₁ hz₂ hval hderiv
 
 /--
-The fixed-pair one-jet uniqueness interface is now closed directly from the
-two selected branches' projective derivative regularity.
+%%handwave
+name:
+  The fixed-pair one-jet uniqueness interface is now closed directly from the two selected branches' projective derivative regularity
+statement:
+  The fixed-pair one-jet uniqueness interface is now closed directly from the
+  two selected branches' projective derivative regularity.
+proof:
+  Apply the coefficient-aware one-jet uniqueness result after specializing its projective derivative hypotheses to the selected pair of branches.
 -/
 theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndPairProjectiveDerivativeTheorem_of_projectiveFirstSecondDerivative_scalarClosed
     (_hProjFirst :
@@ -4392,96 +5046,6 @@ theorem pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreement
       LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
     PointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndPairProjectiveDerivativeTheorem := by
   exact pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementAndPairProjectiveDerivativeTheorem_proved
-
-/--
-With coefficient agreement on overlaps, projective-symbolic derivative
-regularity makes the one-jet equality locus open.
--/
-theorem pointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-    (hCoeff :
-      MetricRecoveringUpperHalfPlaneBranchesHaveSameSchwarzianCoefficientOnOverlapTheorem)
-    (hProjFirst :
-      LocalUpperHalfPlaneDevelopingMapProjectiveFirstDerivativeHasDerivAtTheorem)
-    (hProjSecond :
-      LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
-    PointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem :=
-  pointedRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_localUniqueness
-    (pointedRealMobiusTransitionOneJetLocalUniquenessTheorem_of_coefficientAgreement
-      hCoeff
-      (pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-        hProjFirst hProjSecond))
-
-/--
-Fixed-pair version of the one-jet equality-locus openness theorem.
--/
-theorem pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_projectiveFirstSecondDerivative_scalarClosed
-    {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
-    (H₁ : LocalUpperHalfPlaneDevelopingMap S₁)
-    (H₂ : LocalUpperHalfPlaneDevelopingMap S₂)
-    (A : RealMobiusRepresentative) (z₀ : ℂ)
-    (hu : u.SolvesLiouvilleEquation)
-    (hpoint : H₁.HasPointedRealMobiusTransition H₂ A z₀)
-    (hCoeff :
-      ∀ z, z ∈ H₁.domain → z ∈ H₂.domain →
-        S₁.coefficient z = S₂.coefficient z)
-    (hProjFirst :
-      LocalUpperHalfPlaneDevelopingMapProjectiveFirstDerivativeHasDerivAtTheorem)
-    (hProjSecond :
-      LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
-    IsOpen (pointedRealMobiusTransitionOneJetEqualitySet H₁ H₂ A) :=
-  pointedRealMobiusTransitionOneJetEqualitySet_isOpen_of_coefficientAgreement
-    H₁ H₂ A z₀ hu hpoint hCoeff
-    (pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-      hProjFirst hProjSecond)
-
-/--
-With coefficient agreement on overlaps, projective-symbolic derivative
-regularity proves the nonempty-overlap branch real-transition theorem.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-    (hCoeff :
-      MetricRecoveringUpperHalfPlaneBranchesHaveSameSchwarzianCoefficientOnOverlapTheorem)
-    (hProjFirst :
-      LocalUpperHalfPlaneDevelopingMapProjectiveFirstDerivativeHasDerivAtTheorem)
-    (hProjSecond :
-      LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem := by
-  have hFirst :
-      LocalUpperHalfPlaneDevelopingMapFirstDerivativeHasDerivAtTheorem :=
-    localUpperHalfPlaneDevelopingMapFirstDerivativeHasDerivAtTheorem_of_projectiveFirstDerivative
-      hProjFirst
-  have hAffine :
-      LocalUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem :=
-    localUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem_of_firstDerivative
-      hFirst
-  have hLocal :
-      PointedRealMobiusTransitionOneJetLocalUniquenessTheorem :=
-    pointedRealMobiusTransitionOneJetLocalUniquenessTheorem_of_coefficientAgreement
-      hCoeff
-      (pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-        hProjFirst hProjSecond)
-  intro u S₁ S₂ H₁ H₂ hu hconn hne
-  exact
-    metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_branch_continuity_localUniqueness
-      localUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem hAffine hLocal
-      H₁ H₂ hu hconn hne
-
-/--
-With coefficient agreement on overlaps, projective-symbolic derivative
-regularity proves the ordinary branch real-transition theorem; empty overlaps
-are handled by vacuity.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-    (hCoeff :
-      MetricRecoveringUpperHalfPlaneBranchesHaveSameSchwarzianCoefficientOnOverlapTheorem)
-    (hProjFirst :
-      LocalUpperHalfPlaneDevelopingMapProjectiveFirstDerivativeHasDerivAtTheorem)
-    (hProjSecond :
-      LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem_of_nonemptyOverlap
-    (metricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem_of_projectiveFirstSecondDerivative_scalarClosed
-      hCoeff hProjFirst hProjSecond)
 
 namespace LocalProjectiveNormalFormUpperHalfPlaneLiftData
 

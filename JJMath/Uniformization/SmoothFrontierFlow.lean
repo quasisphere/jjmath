@@ -37,7 +37,23 @@ def smoothFrontierPositiveTangentCone
     0 < (show ℝ from mfderiv SurfaceRealModel 𝓘(ℝ)
       (smoothBoundaryGlobalSignedCoordinate D) x v)}
 
-/-- The allowed tangent vectors form a convex set in every tangent fiber. -/
+/--
+%%handwave
+name:
+  Convexity of the positive transverse tangent cone
+statement:
+  Let \(s\) be the global signed boundary coordinate of \(D\).  For every
+  \(x\in X\), the set
+  \[
+    C_x=\{v\in T_xX:x\in\partial D\Rightarrow ds_x(v)>0\}
+  \]
+  is convex over \(\mathbb R\).
+proof:
+  At a frontier point this is the strict half-space cut out by the linear
+  functional \(ds_x\), and positive convex combinations preserve strict
+  positivity.  Away from the frontier the condition is vacuous, so the cone
+  is the whole tangent space.
+-/
 theorem smoothFrontierPositiveTangentCone_convex
     (D : SmoothBoundaryDomain X) (x : X) :
     Convex ℝ (smoothFrontierPositiveTangentCone D x) := by
@@ -58,9 +74,23 @@ theorem smoothFrontierPositiveTangentCone_convex
   · simpa [smoothFrontierPositiveTangentCone, hx] using
       (convex_univ : Convex ℝ (Set.univ : Set (TangentSpace SurfaceRealModel x)))
 
-/-- At a frontier point, a positive tangent vector extends to a smooth local
-section which remains positive at every frontier point in a smaller
-neighborhood. -/
+/--
+%%handwave
+name:
+  Local smooth sections of the positive transverse tangent cone
+statement:
+  For every \(x\in X\), there are a neighborhood \(U\) of \(x\) and a smooth
+  tangent field \(V\) on \(U\) such that
+  \[
+    y\in U\cap\partial D\quad\Longrightarrow\quad ds_y(V_y)>0.
+  \]
+proof:
+  At a frontier point, choose and normalize a tangent vector on which
+  \(ds_x\) equals \(1\), extend it by a smooth local frame, and shrink the
+  neighborhood so that continuity preserves positivity.  Away from the
+  frontier, the zero field on the open complement satisfies the vacuous
+  condition.
+-/
 theorem exists_smoothLocalSection_mem_smoothFrontierPositiveTangentCone
     (D : SmoothBoundaryDomain X) (x : X) :
     ∃ U ∈ 𝓝 x,
@@ -211,8 +241,23 @@ noncomputable def smoothFrontierCoordinateVectorField
     (⟨y, smoothFrontierTransverseVectorField D y⟩ :
       TangentBundle SurfaceRealModel X)).2
 
-/-- At the center of the chosen chart, the coordinate vector field is the
-original tangent vector. -/
+/--
+%%handwave
+name:
+  The coordinate transverse field at the chart center
+statement:
+  Let \(V\) be the chosen transverse field and let \(v_x\) be its expression
+  in the surface chart centered at \(x\).  Then
+  \[
+    v_x(\phi_x(x))=V_x,
+  \]
+  under the canonical identification of \(T_xX\) with the model space
+  supplied by the centered chart.
+proof:
+  Expanding the tangent-bundle trivialization gives the derivative of the
+  chart applied to \(V_x\).  At the chart center the inverse-chart and chart
+  derivatives cancel, leaving \(V_x\).
+-/
 theorem smoothFrontierCoordinateVectorField_apply_center
     (D : SmoothBoundaryDomain X) (x : X) :
     smoothFrontierCoordinateVectorField D x
@@ -227,8 +272,21 @@ theorem smoothFrontierCoordinateVectorField_apply_center
     (fun L : ℂ →L[ℝ] ℂ => L (smoothFrontierTransverseVectorField D x)) hround
   simpa [SurfaceRealModel] using happ
 
-/-- The coordinate vector field is the tangent-coordinate change from the
-chart centered at the current point to the fixed chart centered at `x`. -/
+/--
+%%handwave
+name:
+  Coordinate expression of the transverse field
+statement:
+  Fix \(x\in X\), put \(y=\phi_x^{-1}(z)\), and let \(V\) be the chosen
+  transverse field.  Its expression in the chart centered at \(x\) is
+  \[
+    v_x(z)=d(\phi_x\circ\phi_y^{-1})_{\phi_y(y)}(V_y).
+  \]
+proof:
+  This is the definition of the tangent-bundle trivialization associated to
+  the fixed chart, written as the tangent coordinate change from the chart
+  centered at \(y\) to the chart centered at \(x\).
+-/
 theorem smoothFrontierCoordinateVectorField_eq_tangentCoordChange
     (D : SmoothBoundaryDomain X) (x : X) (z : ℂ) :
     smoothFrontierCoordinateVectorField D x z =
@@ -242,8 +300,20 @@ theorem smoothFrontierCoordinateVectorField_eq_tangentCoordChange
   rfl
 
 omit [RiemannSurface X] in
-/-- The derivative of a fixed inverse surface chart is the coordinate change
-from that fixed chart to the chart centered at the image point. -/
+/--
+%%handwave
+name:
+  Derivative of an inverse surface chart
+statement:
+  Let \(\phi_x\) be a surface chart, let \(z\) lie in its target, and put
+  \(y=\phi_x^{-1}(z)\).  The manifold derivative of \(\phi_x^{-1}\) at \(z\)
+  is the tangent coordinate change from the chart centered at \(x\) to the
+  chart centered at \(y\).
+proof:
+  The inverse chart is differentiable on its target.  Expressing its
+  manifold derivative in extended charts reduces directly to the derivative
+  defining the tangent coordinate change.
+-/
 theorem mfderivWithin_extChartAt_symm_eq_tangentCoordChange_surface
     (x : X) (z : ℂ)
     (hz : z ∈ (extChartAt SurfaceRealModel x).target) :
@@ -333,8 +403,23 @@ theorem hasMFDerivAt_extChartAt_symm_of_hasDerivAt_smoothFrontierCoordinateVecto
     _ = a • smoothFrontierTransverseVectorField D y := congrArg (a • ·) hbase
     _ = _ := rfl
 
-/-- In a centered surface chart, the ordinary derivative of the signed
-coordinate is its manifold derivative. -/
+/--
+%%handwave
+name:
+  Derivative of the signed coordinate in a centered chart
+statement:
+  Let \(s:X\to\mathbb R\) be the global signed boundary coordinate.  For
+  every \(x\in X\) and \(v\in\mathbb C\),
+  \[
+    D(s\circ\phi_x^{-1})_{\phi_x(x)}(v)=ds_x(v),
+  \]
+  where the centered chart identifies the model vector \(v\) with a tangent
+  vector at \(x\).
+proof:
+  Smoothness of \(s\) gives its manifold derivative at \(x\).  Unfolding
+  that derivative in the centered extended chart yields precisely the
+  ordinary derivative of \(s\circ\phi_x^{-1}\).
+-/
 theorem fderiv_smoothBoundaryGlobalSignedCoordinate_comp_extChartAt_symm
     (D : SmoothBoundaryDomain X) (x : X) (v : ℂ) :
     fderiv ℝ
@@ -638,8 +723,22 @@ theorem smoothFrontierTransverseVectorField_mfderiv_pos
       (smoothFrontierTransverseVectorField D x)) :=
   (Classical.choose_spec (exists_smoothFrontierTransverseVectorField D)).2 x hx
 
-/-- At a frontier point, the coordinate vector field is strictly transverse
-to the zero level of the signed coordinate. -/
+/--
+%%handwave
+name:
+  Positive coordinate derivative in the transverse direction
+statement:
+  For \(x\in\partial D\), let \(v_x\) be the coordinate expression of the
+  chosen transverse field in the chart centered at \(x\).  Then
+  \[
+    D(s\circ\phi_x^{-1})_{\phi_x(x)}
+      \bigl(v_x(\phi_x(x))\bigr)>0.
+  \]
+proof:
+  At the chart center, the coordinate field represents \(V_x\), and the
+  coordinate derivative of \(s\) is \(ds_x\).  The result is therefore the
+  defining inequality \(ds_x(V_x)>0\).
+-/
 theorem fderiv_smoothBoundaryGlobalSignedCoordinate_comp_extChartAt_symm_pos
     (D : SmoothBoundaryDomain X) (x : frontier D.carrier) :
     0 < fderiv ℝ
@@ -661,8 +760,22 @@ noncomputable def smoothFrontierTransverseDerivative
     (⟨x, smoothFrontierTransverseVectorField D x⟩ :
       TangentBundle SurfaceRealModel X) |>.2
 
-/-- The transverse derivative is continuously differentiable.  Thus the
-strict positivity known on the frontier persists on an open neighborhood. -/
+/--
+%%handwave
+name:
+  Smoothness of the transverse derivative
+statement:
+  The function
+  \[
+    x\longmapsto ds_x(V_x)
+  \]
+  is continuously differentiable on \(X\).
+proof:
+  The signed coordinate is twice continuously differentiable, so its tangent
+  map is continuously differentiable.  Compose this tangent map with the
+  smooth tangent-bundle section \(x\mapsto(x,V_x)\), then project to its
+  scalar fiber coordinate.
+-/
 theorem smoothFrontierTransverseDerivative_contMDiff
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel 𝓘(ℝ) 1
@@ -682,6 +795,19 @@ theorem smoothFrontierTransverseDerivative_contMDiff
   exact (contMDiff_snd_tangentBundle_modelSpace ℝ 𝓘(ℝ)).comp
     (htan.comp hsection)
 
+/--
+%%handwave
+name:
+  Evaluation formula for the transverse derivative
+statement:
+  For every \(x\in X\), the transverse derivative is
+  \[
+    \delta_D(x)=ds_x(V_x).
+  \]
+proof:
+  The second component of the tangent map of \(s\) at \((x,V_x)\) is, by
+  definition, the manifold derivative \(ds_x\) applied to \(V_x\).
+-/
 @[simp]
 theorem smoothFrontierTransverseDerivative_apply
     (D : SmoothBoundaryDomain X) (x : X) :
@@ -691,8 +817,20 @@ theorem smoothFrontierTransverseDerivative_apply
         (smoothFrontierTransverseVectorField D x)) := by
   simp [smoothFrontierTransverseDerivative]
 
-/-- On a nonempty frontier, compactness upgrades pointwise transversality to
-a uniform positive lower bound. -/
+/--
+%%handwave
+name:
+  Uniform positive lower bound for the transverse derivative
+statement:
+  If \(\partial D\) is nonempty, there is a constant \(c>0\) such that
+  \[
+    c\le ds_x(V_x)\qquad\text{for every }x\in\partial D.
+  \]
+proof:
+  The continuous function \(x\mapsto ds_x(V_x)\) attains its minimum on the
+  compact frontier.  Pointwise transversality makes that minimum positive;
+  half of it is a positive uniform lower bound.
+-/
 theorem exists_uniform_smoothFrontierTransverseDerivative_pos
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ c : ℝ, 0 < c ∧
@@ -745,8 +883,19 @@ theorem exists_open_smoothFrontierTransverseDerivative_uniformly_pos
   · intro x hx
     exact hx
 
-/-- Through every frontier point there is a local integral curve of the
-smooth transverse vector field. -/
+/--
+%%handwave
+name:
+  Local transverse integral curve through a frontier point
+statement:
+  For every \(x\in\partial D\), there is a curve
+  \(\gamma:\mathbb R\to X\) with \(\gamma(0)=x\) which is an integral curve
+  of the chosen transverse field \(V\) at time \(0\).
+proof:
+  The vector field is continuously differentiable near \(x\).  Local
+  existence for integral curves of a smooth vector field on a boundaryless
+  manifold supplies the required curve through \(x\).
+-/
 theorem exists_smoothFrontierTransverseIntegralCurveAt
     (D : SmoothBoundaryDomain X) (x : frontier D.carrier) :
     ∃ gamma : ℝ → X, gamma 0 = x ∧
@@ -757,8 +906,21 @@ theorem exists_smoothFrontierTransverseIntegralCurveAt
     (smoothFrontierTransverseVectorField_contMDiff D).contMDiffAt.of_le (by norm_num)
   exact exists_isMIntegralCurveAt_of_contMDiffAt_boundaryless 0 hV
 
-/-- The ordinary derivative of the signed coordinate along an integral curve
-is exactly its derivative in the chosen transverse direction. -/
+/--
+%%handwave
+name:
+  Derivative of the signed coordinate along a transverse integral curve
+statement:
+  Let \(\gamma\) be an integral curve of \(V\) at time \(t\).  Then
+  \[
+    \frac{d}{du}\Big|_{u=t}s(\gamma(u))
+      =ds_{\gamma(t)}(V_{\gamma(t)}).
+  \]
+proof:
+  Apply the manifold chain rule to \(s\circ\gamma\).  The derivative of the
+  integral curve at \(t\) is \(V_{\gamma(t)}\), so evaluating \(ds\) on it
+  gives the stated ordinary derivative.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_deriv_along_transverseIntegralCurve
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X} {t : ℝ}
     (hgamma : IsMIntegralCurveAt gamma
@@ -789,9 +951,20 @@ theorem smoothBoundaryGlobalSignedCoordinate_deriv_along_transverseIntegralCurve
   rw [hordinary.deriv]
   simp [c, h]
 
-/-- Along any integral curve of the transverse field through the frontier,
-the signed boundary coordinate has strictly positive derivative at the
-crossing time. -/
+/--
+%%handwave
+name:
+  Positive crossing derivative of a transverse integral curve
+statement:
+  Suppose \(x\in\partial D\), \(\gamma(0)=x\), and \(\gamma\) is an integral
+  curve of \(V\) at time \(0\).  Then
+  \[
+    \frac{d}{dt}\Big|_{t=0}s(\gamma(t))>0.
+  \]
+proof:
+  The chain rule identifies the derivative with \(ds_x(V_x)\), which is
+  strictly positive by transversality along the frontier.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_deriv_pos_along_transverseIntegralCurve
     (D : SmoothBoundaryDomain X) {x : X} (hx : x ∈ frontier D.carrier)
     {gamma : ℝ → X} (hgamma0 : gamma 0 = x)

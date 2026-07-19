@@ -18,8 +18,20 @@ namespace JJMath.Uniformization
 
 open JJMath.Manifold
 
-/-- Pulling a real two-form on the complex tangent line through a real-linear
-endomorphism multiplies its oriented coefficient by the determinant. -/
+/--
+%%handwave
+name:
+  Pullback of a planar top form multiplies by the determinant
+statement:
+  For a real alternating two-form \(\omega\) on \(\mathbb C\) and a real-linear
+  map \(L:\mathbb C\to\mathbb C\),
+  \[
+    (L^*\omega)(1,i)=\det(L)\,\omega(1,i).
+  \]
+proof:
+  Apply the determinant formula for an alternating form evaluated on the
+  image under \(L\) of the oriented basis \((1,i)\).
+-/
 theorem complexTopDegree_comp_apply_orientedBasis_det
     (omega : ℂ [⋀^Fin 2]→L[ℝ] ℝ) (L : ℂ →L[ℝ] ℂ) :
     omega.compContinuousLinearMap L complexPlanarOrientedBasis =
@@ -73,8 +85,21 @@ noncomputable def surfaceTwoFormDensityCoefficient
   omega.toFun x complexPlanarOrientedBasis /
     surfaceMetricVolumeDensityAt g x
 
-/-- In a real surface chart, the coordinate expression of a top form is its
-preferred-coordinate coefficient multiplied by the chart Jacobian. -/
+/--
+%%handwave
+name:
+  Coordinate coefficient of a surface two-form
+statement:
+  In a real surface chart \(e\), the oriented coordinate coefficient of a
+  two-form \(\omega\) at \(z\) is
+  \[
+    \det(de^{-1}_z)\,\omega_{e^{-1}(z)}(1,i).
+  \]
+proof:
+  The coordinate expression is the pullback of \(\omega\) by the tangent map
+  of the inverse chart.  Evaluate that pullback on the oriented basis and use
+  the determinant formula for planar top forms.
+-/
 theorem surfaceTwoFormCoefficientInChart_eq_det_mul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -99,8 +124,22 @@ theorem surfaceTwoFormCoefficientInChart_eq_det_mul
   exact complexTopDegree_comp_apply_orientedBasis_det
     (omega.toFun (e.symm z)) (surfaceChartTangentMap e z)
 
-/-- In a holomorphic coordinate, the intrinsic density coefficient times the
-metric area density is exactly the usual oriented coordinate coefficient. -/
+/--
+%%handwave
+name:
+  Intrinsic and coordinate densities of a surface two-form
+statement:
+  In an oriented complex chart, if \(f\) is the intrinsic coefficient of a
+  two-form \(\omega\) relative to the metric area form and \(\rho\) is the
+  coordinate area density, then
+  \[
+    f(e^{-1}(z))\rho(z)=\omega_e(z)(1,i).
+  \]
+proof:
+  Both the two-form coefficient and metric density acquire the same positive
+  Jacobian determinant under the chart; cancel the positive intrinsic metric
+  density.
+-/
 theorem surfaceTwoFormDensityCoefficient_mul_volumeDensityInChart
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X]
@@ -173,7 +212,17 @@ noncomputable def surfaceMetricVolumeForm
       hρ.smul contDiffOn_const
     exact hsmooth.congr (fun z hz ↦ hcoord z hz)
 
-/-- The metric area form has intrinsic density coefficient one. -/
+/--
+%%handwave
+name:
+  The metric area form has coefficient one
+statement:
+  Relative to itself, the positively oriented metric area form has intrinsic
+  density coefficient \(1\) at every point.
+proof:
+  Its value on the oriented basis is the metric volume density, since the
+  standard planar area form evaluates to one; divide by that positive density.
+-/
 @[simp]
 theorem surfaceTwoFormDensityCoefficient_surfaceMetricVolumeForm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -195,8 +244,17 @@ theorem surfaceTwoFormDensityCoefficient_surfaceMetricVolumeForm
   rw [harea, mul_one]
   exact div_self (surfaceMetricVolumeDensityAt_pos g x).ne'
 
-/-- Multiplying the metric area form by a smooth function makes that
-function its intrinsic density coefficient. -/
+/--
+%%handwave
+name:
+  Coefficient of a scalar multiple of the metric area form
+statement:
+  If \(\chi\) is smooth, then the intrinsic density coefficient of
+  \(\chi\,dA_g\) is \(\chi\) pointwise.
+proof:
+  Evaluate \(\chi\,dA_g\) on the oriented basis and divide by the positive
+  metric volume density; the density cancels.
+-/
 @[simp]
 theorem surfaceTwoFormDensityCoefficient_pointwiseSMul_volumeForm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -222,7 +280,17 @@ theorem surfaceTwoFormDensityCoefficient_pointwiseSMul_volumeForm
   rw [harea, mul_one]
   field_simp [(surfaceMetricVolumeDensityAt_pos g x).ne']
 
-/-- Every smooth two-form on a real surface is closed. -/
+/--
+%%handwave
+name:
+  Every two-form on a surface is closed
+statement:
+  On a real two-dimensional smooth manifold, the exterior derivative of
+  every smooth two-form is zero.
+proof:
+  The derivative is an alternating three-form, and any three tangent vectors
+  in a two-dimensional real vector space are linearly dependent.
+-/
 theorem surfaceTwoForm_deRhamDifferential_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -241,8 +309,18 @@ theorem surfaceTwoForm_deRhamDifferential_eq_zero
     (I := SurfaceRealModel) (M := X) (A := ℝ) 2 omega).toFun x).toAlternatingMap.map_linearDependent
       v hdep
 
-/-- The oriented coefficient of a smooth two-form is smooth in every surface
-chart. -/
+/--
+%%handwave
+name:
+  Smoothness of two-form coordinate coefficients
+statement:
+  The coefficient obtained by evaluating the coordinate expression of a
+  smooth surface two-form on the oriented basis \((1,i)\) is smooth throughout
+  the chart target.
+proof:
+  The coordinate expression of a smooth form is smooth, and evaluation on a
+  fixed ordered basis is continuous linear.
+-/
 theorem surfaceTwoFormCoefficientInChart_contDiffOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -257,7 +335,17 @@ theorem surfaceTwoFormCoefficientInChart_contDiffOn
     complexPlanarOrientedBasis).contDiff.contDiffOn.comp hform
       (fun _ _ ↦ Set.mem_univ _))
 
-/-- Each scalar component of a smooth one-form is smooth in a surface chart. -/
+/--
+%%handwave
+name:
+  Smoothness of one-form coordinate components
+statement:
+  In a surface chart, each scalar component of a smooth one-form with respect
+  to the coordinate basis \((1,i)\) is smooth on the chart target.
+proof:
+  Compose the smooth coordinate expression of the one-form with evaluation
+  on the corresponding fixed coordinate vector.
+-/
 theorem surfaceOneFormComponentInChart_contDiffOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -274,8 +362,21 @@ theorem surfaceOneFormComponentInChart_contDiffOn
       (fun _ _ ↦ Set.mem_univ _))
 
 set_option maxHeartbeats 800000 in
-/-- In oriented real coordinates, the coefficient of the exterior derivative
-of a one-form is `∂ₓ Q - ∂ᵧ P`. -/
+/--
+%%handwave
+name:
+  Coordinate formula for the exterior derivative on a surface
+statement:
+  If a one-form in oriented coordinates is \(P\,dx+Q\,dy\), then the oriented
+  coefficient of its exterior derivative is
+  \[
+    \partial_x Q-\partial_y P.
+  \]
+proof:
+  Apply the coordinate formula for the exterior derivative to the ordered
+  basis \((1,i)\).  The two alternating summands are the \(x\)-derivative of
+  the second component and minus the \(y\)-derivative of the first.
+-/
 theorem surfaceTwoFormCoefficientInChart_deRhamDifferential
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -329,8 +430,23 @@ theorem surfaceTwoFormCoefficientInChart_deRhamDifferential
   rw [htail, hremove]
   rfl
 
-/-- A compactly supported one-form in a surface chart has exterior derivative
-of zero total coordinate mass. -/
+/--
+%%handwave
+name:
+  Coordinate Stokes formula for a compactly supported one-form
+statement:
+  Let \(P\,dx+Q\,dy\) be a smooth one-form whose coordinate components vanish
+  outside a compact subset of a surface chart.  Then
+  \[
+    \int \bigl(\partial_xQ-\partial_yP\bigr)\,dx\,dy=0
+  \]
+  over the chart target.
+proof:
+  Choose a smooth cutoff equal to one on the support and compactly supported
+  inside the chart.  Euclidean integration by parts transfers the derivatives
+  to the cutoff; its derivative vanishes on the original support, while the
+  form vanishes off that support, so every remaining term is zero.
+-/
 theorem surfaceTwoFormCoefficientInChart_deRhamDifferential_integral_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -481,8 +597,17 @@ theorem surfaceTwoFormCoefficientInChart_deRhamDifferential_integral_eq_zero
     rw [hQ, hP]
     simp
 
-/-- The intrinsic coefficient of a smooth two-form relative to a smooth area
-density is a smooth real function on the surface. -/
+/--
+%%handwave
+name:
+  Smoothness of the intrinsic coefficient of a surface two-form
+statement:
+  The scalar function \(f\) determined by \(\omega=f\,dA_g\) is smooth on the
+  surface whenever \(\omega\) and the Riemannian metric \(g\) are smooth.
+proof:
+  In a complex chart, \(f\) is the quotient of the smooth coordinate
+  coefficient of \(\omega\) by the smooth positive metric area density.
+-/
 theorem surfaceTwoFormDensityCoefficient_isSmoothOnSurface
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -509,7 +634,17 @@ theorem surfaceTwoFormDensityCoefficient_isSmoothOnSurface
     exact surfaceTwoFormDensityCoefficient_mul_volumeDensityInChart
       g omega e he z hz)
 
-/-- The intrinsic coefficient of a smooth two-form is continuous. -/
+/--
+%%handwave
+name:
+  Continuity of the intrinsic coefficient of a surface two-form
+statement:
+  The scalar coefficient \(f\) in \(\omega=f\,dA_g\) is continuous on the
+  surface.
+proof:
+  The coefficient is smooth in every surface chart, hence defines a globally
+  smooth and therefore continuous function.
+-/
 theorem surfaceTwoFormDensityCoefficient_continuous
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -531,8 +666,18 @@ noncomputable def surfaceTwoFormIntegral
   ∫ x, surfaceTwoFormDensityCoefficient g omega x
     ∂measureGeometry.volume
 
-/-- A smooth positive Riemannian area measure is positive on every nonempty
-open subset of the surface. -/
+/--
+%%handwave
+name:
+  Positivity of smooth Riemannian area on open sets
+statement:
+  A smooth positive Riemannian area measure on a surface assigns positive
+  measure to every nonempty open set.
+proof:
+  Intersect the open set with a coordinate chart.  In that chart the measure
+  has a smooth strictly positive density with respect to planar Lebesgue
+  measure, and every nonempty planar open set has positive Lebesgue measure.
+-/
 theorem surfaceMetricMeasureGeometry_isOpenPosMeasure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X]
@@ -590,7 +735,18 @@ theorem surfaceMetricMeasureGeometry_isOpenPosMeasure
   rw [inter_eq_left.mpr hStarget] at hbasezero
   exact hSopen.measure_ne_zero MeasureTheory.volume hSne hbasezero
 
-/-- On a compact surface, every smooth two-form coefficient is integrable. -/
+/--
+%%handwave
+name:
+  Integrability of smooth two-form coefficients on compact surfaces
+statement:
+  On a compact surface, the intrinsic coefficient \(f\) of any smooth
+  two-form \(\omega=f\,dA_g\) is integrable with respect to the metric area
+  measure.
+proof:
+  The coefficient is continuous, hence integrable on the compact whole
+  surface for a measure finite on compact sets.
+-/
 theorem surfaceTwoFormDensityCoefficient_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X] [CompactSpace X]
@@ -607,8 +763,20 @@ theorem surfaceTwoFormDensityCoefficient_integrable
       (μ := measureGeometry.volume)
       (isCompact_univ : IsCompact (Set.univ : Set X))
 
-/-- Inside any nonempty open subset with compact closure one can choose a
-closed two-form of positive total integral supported in that compact set. -/
+/--
+%%handwave
+name:
+  A positive closed two-form supported in a prescribed compact set
+statement:
+  Let \(S\subseteq C\subseteq X\), where \(S\) is nonempty and open and \(C\)
+  is compact.  There exists a closed smooth two-form \(\omega\), supported in
+  \(C\), such that \(\int_X\omega>0\).
+proof:
+  Choose a nonnegative smooth bump function \(\chi\), supported in \(S\), that
+  equals one at a chosen point of \(S\).  Set \(\omega=\chi\,dA_g\).  Every
+  two-form on a surface is closed, its integral is positive because the area
+  measure is positive on open sets, and its support lies in \(C\).
+-/
 theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_compact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [RiemannSurface X] [CompactSpace X]
@@ -662,8 +830,19 @@ theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_compact
       exact closure_minimal hSC hCcompact.isClosed
     exact fun hx ↦ hxC (htsupport hx)
 
-/-- Inside a coordinate disk one can choose a closed two-form of positive
-total integral, supported in the corresponding closed disk. -/
+/--
+%%handwave
+name:
+  A positive closed two-form supported in a coordinate disk
+statement:
+  Given a point \(y\) in the open interior of a closed coordinate disk, there
+  exists a closed smooth two-form supported in that closed disk and having
+  positive total integral.
+proof:
+  Apply the compact-support construction to the expanded open disk of the
+  same radius, which is contained in the closed coordinate disk and contains
+  \(y\).
+-/
 theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_closedCoordinateDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [RiemannSurface X] [CompactSpace X]
@@ -686,7 +865,17 @@ theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_closedCoordinateDi
     exact ⟨hx.1, Metric.ball_subset_closedBall hx.2⟩
   · exact hy
 
-/-- The intrinsic coefficient is additive in the two-form. -/
+/--
+%%handwave
+name:
+  Additivity of intrinsic two-form coefficients
+statement:
+  If \(\omega=f\,dA_g\) and \(\eta=h\,dA_g\), then
+  \(\omega+\eta=(f+h)dA_g\) pointwise.
+proof:
+  Evaluation on the oriented basis is additive, and division by the common
+  metric area density distributes over addition.
+-/
 theorem surfaceTwoFormDensityCoefficient_add
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X)
@@ -701,7 +890,20 @@ theorem surfaceTwoFormDensityCoefficient_add
         surfaceMetricVolumeDensityAt g x = _
   ring
 
-/-- Surface integration is additive on a compact surface. -/
+/--
+%%handwave
+name:
+  Additivity of surface integration
+statement:
+  On a compact surface,
+  \[
+    \int_X(\omega+\eta)=\int_X\omega+\int_X\eta
+  \]
+  for smooth two-forms \(\omega,\eta\).
+proof:
+  Their intrinsic coefficients add pointwise and are integrable; apply
+  additivity of the Lebesgue integral.
+-/
 theorem surfaceTwoFormIntegral_add
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X] [CompactSpace X]
@@ -718,7 +920,16 @@ theorem surfaceTwoFormIntegral_add
     (surfaceTwoFormDensityCoefficient_integrable g measureGeometry omega)
     (surfaceTwoFormDensityCoefficient_integrable g measureGeometry eta)
 
-/-- The zero two-form has zero surface integral. -/
+/--
+%%handwave
+name:
+  Integral of the zero surface form
+statement:
+  The zero two-form has total integral zero.
+proof:
+  Its intrinsic density coefficient is identically zero, whose integral is
+  zero.
+-/
 @[simp]
 theorem surfaceTwoFormIntegral_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -733,7 +944,20 @@ theorem surfaceTwoFormIntegral_zero
     change (0 : ℝ) / surfaceMetricVolumeDensityAt g x = 0
     simp)
 
-/-- Surface integration commutes with finite sums on a compact surface. -/
+/--
+%%handwave
+name:
+  Surface integration of a finite sum
+statement:
+  On a compact surface, integration commutes with every finite sum of smooth
+  two-forms:
+  \[
+    \int_X\sum_{i\in F}\omega_i=\sum_{i\in F}\int_X\omega_i.
+  \]
+proof:
+  Induct on the finite set, using additivity of integration and the zero-form
+  case.
+-/
 theorem surfaceTwoFormIntegral_finset_sum
     {X ι : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X] [CompactSpace X]
@@ -750,8 +974,18 @@ theorem surfaceTwoFormIntegral_finset_sum
       rw [Finset.sum_insert hi, Finset.sum_insert hi,
         surfaceTwoFormIntegral_add, ih]
 
-/-- If a smooth form vanishes off a compact set, then so does its exterior
-derivative. -/
+/--
+%%handwave
+name:
+  Exterior differentiation preserves compact support
+statement:
+  If a smooth differential form vanishes outside a compact set \(C\), then
+  its exterior derivative also vanishes outside \(C\).
+proof:
+  At a point of the open complement of \(C\), the form agrees locally with
+  the zero form.  Locality of exterior differentiation therefore makes its
+  derivative zero there.
+-/
 theorem deRhamDifferential_toFun_eq_zero_of_not_mem_compact_ambient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [T2Space X] [IsManifold SurfaceRealModel ∞ X]
@@ -772,8 +1006,22 @@ theorem deRhamDifferential_toFun_eq_zero_of_not_mem_compact_ambient
     LinearMap.map_zero _
   simpa using congrArg (fun theta ↦ theta.toFun x) hd0
 
-/-- A compactly supported two-form contained in one chart can be integrated
-by integrating its oriented coordinate coefficient over that chart. -/
+/--
+%%handwave
+name:
+  Chart formula for a compactly supported surface integral
+statement:
+  If a smooth two-form \(\omega\) is supported in a compact subset of one
+  surface chart \(e\), then
+  \[
+    \int_X\omega=\int_{e(X)}\omega_e(z)(1,i)\,dz.
+  \]
+proof:
+  Restrict the global integral to the chart source, transport the metric area
+  measure through the chart, and write it using its coordinate density.  The
+  product of this density with the intrinsic coefficient of \(\omega\) is
+  exactly the oriented coordinate coefficient.
+-/
 theorem surfaceTwoFormIntegral_eq_chartCoefficientIntegral_of_compactSupport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X]
@@ -838,8 +1086,22 @@ theorem surfaceTwoFormIntegral_eq_chartCoefficientIntegral_of_compactSupport
       exact surfaceTwoFormDensityCoefficient_mul_volumeDensityInChart
         g omega e he z hz
 
-/-- Stokes' theorem for a one-form whose compact support lies in one surface
-chart. -/
+/--
+%%handwave
+name:
+  Stokes' theorem for support in one surface chart
+statement:
+  If a smooth one-form \(\eta\) is supported in a compact subset of a single
+  surface chart, then
+  \[
+    \int_X d\eta=0.
+  \]
+proof:
+  Its exterior derivative has the same compact support.  Use the chart
+  integral formula, identify the coordinate coefficient with
+  \(\partial_xQ-\partial_yP\), and apply the compactly supported Euclidean
+  integration-by-parts identity.
+-/
 theorem surfaceTwoFormIntegral_deRhamDifferential_eq_zero_of_chartSupport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X]
@@ -879,7 +1141,21 @@ theorem surfaceTwoFormIntegral_deRhamDifferential_eq_zero_of_chartSupport
   exact surfaceTwoFormCoefficientInChart_deRhamDifferential_integral_eq_zero
     eta e he K hKcompact hKtarget hcomponentZero
 
-/-- Stokes' theorem for one-forms on a compact Riemann surface. -/
+/--
+%%handwave
+name:
+  Stokes' theorem for one-forms on a compact surface
+statement:
+  For every smooth one-form \(\eta\) on a compact Riemann surface,
+  \[
+    \int_X d\eta=0.
+  \]
+proof:
+  Choose a finite partition of unity subordinate to surface charts and
+  decompose \(\eta\) into finitely many chart-supported one-forms.  The
+  chart-supported Stokes formula annihilates the integral of each exterior
+  derivative, and linearity finishes the sum.
+-/
 theorem surfaceTwoFormIntegral_deRhamDifferential_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X] [CompactSpace X]
@@ -936,8 +1212,17 @@ theorem surfaceTwoFormIntegral_deRhamDifferential_eq_zero
   intro i _hi
   exact hpiece i
 
-/-- A closed two-form on a compact surface with nonzero total integral
-represents a nonzero de Rham class. -/
+/--
+%%handwave
+name:
+  Nonzero integral detects a nonzero top-degree de Rham class
+statement:
+  A closed two-form \(\omega\) on a compact Riemann surface with
+  \(\int_X\omega\ne0\) represents a nonzero class in \(H^2_{\mathrm{dR}}(X)\).
+proof:
+  If its class vanished, then \(\omega=d\eta\) for some smooth one-form
+  \(\eta\).  Stokes' theorem would give \(\int_X\omega=0\), a contradiction.
+-/
 theorem surfaceTwoForm_deRhamClass_ne_zero_of_integral_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [ComplexOneManifold X] [CompactSpace X]

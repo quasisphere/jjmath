@@ -144,8 +144,13 @@ structure LocalLiouvilleSchwarzianCanonicalMetricRiccatiCalculusData
 namespace LocalLiouvilleSchwarzianCanonicalMetricRiccatiCalculusData
 
 /--
-Cancelling the metric-Schwarzian factor `2` gives equality of the unscaled
-half-Schwarzian expressions.
+%%handwave
+name:
+  Equality of half-Schwarzians from metric equality
+statement:
+  If \(2(V_{zz}-V_z²)=2(U_{zz}-U_z²)\) on \(Ω\), then \(V_{zz}-V_z²=U_{zz}-U_z²\) there.
+proof:
+  Cancel the nonzero complex factor \(2\).
 -/
 theorem same_half_schwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -216,8 +221,13 @@ structure LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiData
 namespace LocalLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiData
 
 /--
-The metric-scaled equality also gives equality of the unscaled
-half-Schwarzian expressions.
+%%handwave
+name:
+  Equality of half-Schwarzians in Wirtinger form
+statement:
+  For real log-densities \(U,V\) on \(Ω\), equality of their metric Schwarzians implies \(V_{zz}-V_z²=U_{zz}-U_z²\) on \(Ω\).
+proof:
+  Expand the metric coefficients and cancel \(2\).
 -/
 theorem same_half_schwarzian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -238,8 +248,13 @@ theorem same_half_schwarzian
   exact mul_left_cancel₀ (by norm_num : (2 : ℂ) ≠ 0) h
 
 /--
-The honest Wirtinger Riccati equation:
-`∂z (v_z - u_z) = (v_z - u_z) * (v_z + u_z)`.
+%%handwave
+name:
+  The Wirtinger Riccati equation
+statement:
+  For \(α=V_z-U_z\) and \(β=V_z+U_z\), equality of half-Schwarzians gives \(∂_zα=αβ\) on \(Ω\).
+proof:
+  Identify \(∂_zα\) with \(V_{zz}-U_{zz}\), subtract the half-Schwarzian identities, and factor the difference of squares.
 -/
 theorem alpha_frechetDZValue_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -317,7 +332,15 @@ structure LocalLiouvilleSchwarzianFirstOrderSystemData
 
 namespace LocalLiouvilleSchwarzianFirstOrderSystemData
 
-/-- The `z`-Riccati equation recorded by the first-order system. -/
+/--
+%%handwave
+name:
+  The Riccati equation carried by the first-order system
+statement:
+  The first-order Liouville–Schwarzian system satisfies \(∂_z(V_z-U_z)=(V_z-U_z)(V_z+U_z)\) on \(Ω\).
+proof:
+  Apply the Wirtinger Riccati equation included in the system.
+-/
 theorem alpha_frechetDZValue_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -348,7 +371,15 @@ def realExpTwoDividedDifference (u v : ℝ) : ℝ :=
 def realSinhc (x : ℝ) : ℝ :=
   if x = 0 then 1 else Real.sinh x / x
 
-/-- The removable singularity in `sinh x / x` is mathlib's `dslope` at `0`. -/
+/--
+%%handwave
+name:
+  The hyperbolic sine quotient as a divided slope
+statement:
+  The function equal to \(1\) at \(0\) and \(sinh(x)/x\) otherwise is the divided slope of \(sinh\) from \(0\) to \(x\).
+proof:
+  At zero use \(sinh'(0)=1\); away from zero unfold the divided slope and use \(sinh(0)=0\).
+-/
 theorem realSinhc_eq_dslope :
     realSinhc = dslope Real.sinh 0 := by
   funext x
@@ -358,7 +389,15 @@ theorem realSinhc_eq_dslope :
   · rw [realSinhc, if_neg hx, dslope_of_ne (f := Real.sinh) hx]
     simp [slope, Real.sinh_zero, div_eq_inv_mul]
 
-/-- The function `x ↦ sinh x / x`, with removable value `1` at `0`, is continuous. -/
+/--
+%%handwave
+name:
+  Continuity of the hyperbolic sine quotient
+statement:
+  The completion \(sinhc(0)=1\) and \(sinhc(x)=sinh(x)/x\) for \(x≠0\) is continuous on \(ℝ\).
+proof:
+  Express it as the divided slope of the differentiable function \(sinh\).
+-/
 theorem realSinhc_continuous : Continuous realSinhc := by
   rw [realSinhc_eq_dslope]
   rw [continuous_iff_continuousAt]
@@ -369,7 +408,15 @@ theorem realSinhc_continuous : Continuous realSinhc := by
   · exact (continuousAt_dslope_of_ne (f := Real.sinh) (a := 0) (b := x) hx).2
       Real.continuous_sinh.continuousAt
 
-/-- The elementary exponential difference identity used to remove the diagonal. -/
+/--
+%%handwave
+name:
+  A symmetric exponential-difference formula
+statement:
+  For all \(u,v∈ℝ\), \(e^{2v}-e^{2u}=2e^{u+v}sinh(v-u)\).
+proof:
+  Expand the hyperbolic sine and simplify using the exponential laws.
+-/
 theorem real_exp_two_sub_eq_sinh (u v : ℝ) :
     Real.exp (2 * v) - Real.exp (2 * u) =
       2 * Real.exp (u + v) * Real.sinh (v - u) := by
@@ -380,7 +427,15 @@ theorem real_exp_two_sub_eq_sinh (u v : ℝ) :
   rw [Real.exp_sub, Real.exp_add]
   field_simp [Real.exp_ne_zero]
 
-/-- The divided difference of `exp (2x)` as a manifestly continuous expression. -/
+/--
+%%handwave
+name:
+  The exponential divided difference in hyperbolic-sine form
+statement:
+  The completed divided difference of \(x↦e^{2x}\) between \(u\) and \(v\) equals \(2e^{u+v}sinhc(v-u)\).
+proof:
+  Treat \(u=v\) directly; otherwise substitute the exponential-difference formula and divide by \(v-u\).
+-/
 theorem realExpTwoDividedDifference_eq_exp_sinhc (u v : ℝ) :
     realExpTwoDividedDifference u v =
       2 * Real.exp (u + v) * realSinhc (v - u) := by
@@ -402,7 +457,15 @@ linearized potential.
 def RealExpTwoDividedDifferenceContinuityTheorem : Prop :=
   Continuous fun p : ℝ × ℝ ↦ realExpTwoDividedDifference p.1 p.2
 
-/-- The divided difference of `x ↦ exp (2x)` is continuous in both endpoints. -/
+/--
+%%handwave
+name:
+  Continuity of the exponential divided difference
+statement:
+  The function equal to \((e^{2v}-e^{2u})/(v-u)\) off the diagonal and \(2e^{2u}\) on it is continuous on \(ℝ²\).
+proof:
+  Rewrite it as \(2e^{u+v}sinhc(v-u)\).
+-/
 theorem realExpTwoDividedDifference_continuous :
     RealExpTwoDividedDifferenceContinuityTheorem := by
   have heq :
@@ -466,7 +529,15 @@ def linearizedPotential
         Real.exp (2 * u.logDensity z)) /
       (C.conformalFactor.logDensity z - u.logDensity z)
 
-/-- The linearized potential exactly recovers the nonlinear exponential difference. -/
+/--
+%%handwave
+name:
+  Exact linearization of the Liouville exponential
+statement:
+  For \(φ=V-U\) and the divided-difference potential \(a\), \(aφ=e^{2V}-e^{2U}\) pointwise.
+proof:
+  If \(φ=0\) both sides vanish; otherwise cancel \(φ\) in the quotient.
+-/
 theorem linearizedPotential_mul_phi_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -487,8 +558,13 @@ theorem linearizedPotential_mul_phi_eq
   · simp [linearizedPotential, hφ]
 
 /--
-The Liouville linearized potential is the divided difference of `x ↦ exp (2x)`
-applied to the two log-densities.
+%%handwave
+name:
+  The Liouville potential is an exponential divided difference
+statement:
+  At each \(z\), the linearized potential is the completed divided difference of \(x↦e^{2x}\) between \(U(z)\) and \(V(z)\).
+proof:
+  The two sides have identical piecewise definitions.
 -/
 theorem linearizedPotential_eq_realExpTwoDividedDifference
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -503,9 +579,13 @@ theorem linearizedPotential_eq_realExpTwoDividedDifference
   rfl
 
 /--
-Continuity of the pure real divided difference of `x ↦ exp (2x)` gives
-continuity of the scalar Liouville linearized potential on the normalized
-domain.
+%%handwave
+name:
+  Continuity of the linearized Liouville potential
+statement:
+  If the completed exponential divided difference is continuous on \(ℝ²\), then \(a(z)\) is continuous on \(Ω\).
+proof:
+  Compose it with the continuous map \(z↦(U(z),V(z))\).
 -/
 theorem linearizedPotential_continuousOn_of_realExpTwoDividedDifferenceContinuous
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -542,7 +622,15 @@ theorem linearizedPotential_continuousOn_of_realExpTwoDividedDifferenceContinuou
   exact hcomp.congr fun z _hz ↦
     (E.linearizedPotential_eq_realExpTwoDividedDifference z).symm
 
-/-- The normalized base data gives `φ z₀ = 0`. -/
+/--
+%%handwave
+name:
+  Vanishing of the density difference at the base point
+statement:
+  For \(φ=V-U\), the normalized data give \(φ(z₀)=0\).
+proof:
+  Use the base-value condition in the first-order system.
+-/
 theorem phi_base_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -553,7 +641,15 @@ theorem phi_base_eq_zero
     C.conformalFactor.logDensity z₀ - u.logDensity z₀ = 0 :=
   E.firstOrder.phi_base_eq_zero
 
-/-- The normalized base data gives `φ_z z₀ = 0`. -/
+/--
+%%handwave
+name:
+  Vanishing of the Wirtinger difference at the base point
+statement:
+  For \(α=V_z-U_z\), the normalized data give \(α(z₀)=0\).
+proof:
+  Use the base first-derivative condition in the first-order system.
+-/
 theorem phi_wirtingerZ_base_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -601,7 +697,15 @@ structure LocalLiouvilleSchwarzianLinearizedScalarDifferenceData
 
 namespace LocalLiouvilleSchwarzianLinearizedScalarDifferenceData
 
-/-- The normalized base data gives `φ z₀ = 0`. -/
+/--
+%%handwave
+name:
+  The linearized density difference vanishes initially
+statement:
+  The linearized scalar data satisfy \(V(z₀)-U(z₀)=0\).
+proof:
+  Project the base equality from the nonlinear scalar data.
+-/
 theorem phi_base_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -612,7 +716,15 @@ theorem phi_base_eq_zero
     C.conformalFactor.logDensity z₀ - u.logDensity z₀ = 0 :=
   E.scalar.phi_base_eq_zero
 
-/-- The normalized base data gives `φ_z z₀ = 0`. -/
+/--
+%%handwave
+name:
+  The linearized Wirtinger difference vanishes initially
+statement:
+  The linearized scalar data satisfy \(V_z(z₀)-U_z(z₀)=0\).
+proof:
+  Project the base first-derivative equality from the nonlinear scalar data.
+-/
 theorem phi_wirtingerZ_base_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -624,8 +736,13 @@ theorem phi_wirtingerZ_base_eq_zero
   E.scalar.phi_wirtingerZ_base_eq_zero
 
 /--
-The normalized first Wirtinger jet gives full real Cauchy data for
-`φ = V - U` at the base point.
+%%handwave
+name:
+  Zero real differential from zero Wirtinger derivative
+statement:
+  For real \(φ=V-U\), \(∂_zφ(z₀)=0\) implies \(Dφ(z₀)=0\).
+proof:
+  Wirtinger reconstruction determines the full real differential of a real function from \(∂_zφ\).
 -/
 theorem phi_fderiv_base_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -692,7 +809,15 @@ structure LocalLiouvilleSchwarzianLinearEllipticCauchyData
 
 namespace LocalLiouvilleSchwarzianLinearEllipticCauchyData
 
-/-- The linear scalar equation carried by the Cauchy-data package. -/
+/--
+%%handwave
+name:
+  The linear elliptic equation carried by the Cauchy data
+statement:
+  For \(φ=V-U\), \(Δφ(z)=a(z)φ(z)\) for every \(z∈Ω\).
+proof:
+  Project the linearized scalar equation.
+-/
 theorem phi_laplacian_linear_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -773,7 +898,15 @@ structure LocalLiouvilleSchwarzianClosedFirstOrderLinearSystemData
 
 namespace LocalLiouvilleSchwarzianClosedFirstOrderLinearSystemData
 
-/-- The closed first-order system still carries the scalar linearized equation. -/
+/--
+%%handwave
+name:
+  The scalar equation carried by the closed system
+statement:
+  The closed first-order system retains \(Δ(V-U)=a(V-U)\) throughout \(Ω\).
+proof:
+  Project the equation from its linearized scalar data.
+-/
 theorem phi_laplacian_linear_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -788,7 +921,15 @@ theorem phi_laplacian_linear_eq
           (C.conformalFactor.logDensity z - u.logDensity z) :=
   E.linearized.phi_laplacian_linear_eq
 
-/-- The coefficient `β = V_z + U_z` is continuous on the normalized domain. -/
+/--
+%%handwave
+name:
+  Continuity of the Riccati coefficient
+statement:
+  If \(β=V_z+U_z\) on \(Ω\), then \(β\) is continuous there.
+proof:
+  Add the two continuous first Wirtinger fields.
+-/
 theorem beta_continuousOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -808,8 +949,13 @@ theorem beta_continuousOn
   exact (hC.add hu).congr fun z hz ↦ E.beta_eq z hz
 
 /--
-The coefficient `γ = a/4` is continuous on the normalized domain whenever the
-linearized scalar potential `a` is continuous there.
+%%handwave
+name:
+  Continuity of the conjugate coefficient
+statement:
+  If \(a\) is continuous on \(Ω\) and \(γ=a/4\), then \(γ\) is continuous on \(Ω\).
+proof:
+  Complexification and multiplication by \(1/4\) preserve continuity.
 -/
 theorem gamma_continuousOn_of_potential_continuousOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -830,9 +976,13 @@ theorem gamma_continuousOn_of_potential_continuousOn
   exact hgamma.congr fun z hz ↦ E.gamma_eq z hz
 
 /--
-For the real scalar difference `φ = V - U`, the stored equation `∂z φ = α`
-also determines `∂bar φ`: since `φ` is real-valued, the two complexified
-Wirtinger derivatives are conjugate.
+%%handwave
+name:
+  The conjugate Wirtinger derivative of the density difference
+statement:
+  For real \(φ=V-U\) with \(∂_zφ=α\), \(∂_{bar z}φ=overline α\) on \(Ω\).
+proof:
+  The Wirtinger derivatives of a real differentiable function are conjugates.
 -/
 theorem phi_frechetDBarValue_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -872,12 +1022,13 @@ theorem phi_frechetDBarValue_eq
           rw [E.phi_frechetDZValue_eq z hz]
 
 /--
-The closed first-order system gives the ordinary real directional derivative
-of `φ = V - U`.
-
-This is the scalar companion to `alpha_fderiv_apply_eq`, and is the form needed
-when the two-dimensional system is restricted to a real path with velocity
-`ξ`.
+%%handwave
+name:
+  Directional derivative of the density difference
+statement:
+  For \(α=V_z-U_z\) and \(ξ∈ℂ\), \(D(V-U)_z(ξ)=Re(ξ)(α+overline α)+Im(ξ)i(α-overline α)\).
+proof:
+  Reconstruct the real directional derivative from the two Wirtinger derivatives.
 -/
 theorem phi_fderiv_apply_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -901,11 +1052,13 @@ theorem phi_fderiv_apply_eq
   rw [E.phi_frechetDZValue_eq z hz, E.phi_frechetDBarValue_eq z hz]
 
 /--
-The closed first-order system gives the ordinary real directional derivative
-of `α = V_z - U_z`.
-
-This is the form needed when the two-dimensional system is restricted to a
-real path with velocity `ξ`.
+%%handwave
+name:
+  Directional derivative of the derivative difference
+statement:
+  If \(∂_zα=αβ\) and \(∂_{bar z}α=γφ\), then \(Dα_z(ξ)=Re(ξ)(αβ+γφ)+Im(ξ)i(αβ-γφ)\).
+proof:
+  Apply Fréchet–Wirtinger reconstruction.
 -/
 theorem alpha_fderiv_apply_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -947,6 +1100,15 @@ def closedFirstOrderPathVectorField (β γ : ℝ → ℂ) (ξ : ℂ) :
       (ξ.re : ℂ) * (x.2 * β t + γ t * x.1) +
         (ξ.im : ℂ) * Complex.I * (x.2 * β t - γ t * x.1))
 
+/--
+%%handwave
+name:
+  The zero state is stationary
+statement:
+  For every \(t,β,γ,ξ\), the path vector field sends \(0∈ℂ²\) to \(0\).
+proof:
+  Substitute the zero components into the linear formula.
+-/
 @[simp]
 theorem closedFirstOrderPathVectorField_zero
     (β γ : ℝ → ℂ) (ξ : ℂ) (t : ℝ) :
@@ -987,6 +1149,15 @@ def closedFirstOrderPathContinuousLinearMap (β γ ξ : ℂ) :
           (complexLeftMulContinuousLinearMap γ).comp fstMap)
   firstComponent.prod secondComponent
 
+/--
+%%handwave
+name:
+  Action of the path-system operator
+statement:
+  For \(x=(φ,α)\), the operator has components \(Re(ξ)(α+overline α)+Im(ξ)i(α-overline α)\) and \(Re(ξ)(αβ+γφ)+Im(ξ)i(αβ-γφ)\).
+proof:
+  Expand the projections, conjugation, and scalar multiplications.
+-/
 @[simp]
 theorem closedFirstOrderPathContinuousLinearMap_apply
     (β γ ξ : ℂ) (x : ℂ × ℂ) :
@@ -998,6 +1169,15 @@ theorem closedFirstOrderPathContinuousLinearMap_apply
   simp [closedFirstOrderPathContinuousLinearMap, complexLeftMulContinuousLinearMap,
     mul_add, sub_eq_add_neg, mul_assoc, mul_left_comm, mul_comm]
 
+/--
+%%handwave
+name:
+  The path operator realizes the vector field
+statement:
+  The fixed-coefficient operator at \(β(t),γ(t),ξ\) equals the path vector field at time \(t\) on every \(x∈ℂ²\).
+proof:
+  Compare their component formulas.
+-/
 @[simp]
 theorem closedFirstOrderPathContinuousLinearMap_apply_path
     (β γ : ℝ → ℂ) (ξ : ℂ) (t : ℝ) (x : ℂ × ℂ) :
@@ -1006,12 +1186,13 @@ theorem closedFirstOrderPathContinuousLinearMap_apply_path
   simp [closedFirstOrderPathVectorField, mul_assoc]
 
 /--
-A coarse operator-norm bound for the path-restricted continuous linear map in
-terms of the fixed coefficient values.
-
-The constant is intentionally generous.  Its role is to turn ordinary bounded
-coefficient estimates along a path into the uniform operator-norm hypothesis
-used for ODE uniqueness.
+%%handwave
+name:
+  An operator-norm estimate for the path system
+statement:
+  For \(β,γ,ξ∈ℂ\), \(‖L_{β,γ,ξ}‖≤4(‖ξ‖+1)(‖β‖+‖γ‖+1)\).
+proof:
+  Use triangle inequalities and bound coordinate norms by the product norm.
 -/
 theorem closedFirstOrderPathContinuousLinearMap_opNorm_le (β γ ξ : ℂ) :
     ‖closedFirstOrderPathContinuousLinearMap β γ ξ‖ ≤
@@ -1130,8 +1311,13 @@ theorem closedFirstOrderPathContinuousLinearMap_opNorm_le (β γ ξ : ℂ) :
   exact max_le hfirst hsecond
 
 /--
-Uniform coefficient bounds along a real path give a uniform operator-norm
-bound for the path-restricted continuous linear maps.
+%%handwave
+name:
+  Coefficient bounds give an operator bound
+statement:
+  If \(‖β(t)‖≤B\) and \(‖γ(t)‖≤G\), then \(‖L_t‖≤4(‖ξ‖+1)(B+G+1)\) uniformly.
+proof:
+  Apply the pointwise operator estimate and monotonicity.
 -/
 theorem closedFirstOrderPathContinuousLinearMap_nnnorm_le_of_coeff_bound
     {β γ : ℝ → ℂ} {ξ : ℂ} {B G : NNReal}
@@ -1155,12 +1341,13 @@ theorem closedFirstOrderPathContinuousLinearMap_nnnorm_le_of_coeff_bound
       · exact hγ t
 
 /--
-A coefficient path that is continuous on `[0,1]` and obtained from its
-restriction there by clamping is globally bounded.
-
-The clamping hypothesis is a convenient way to adapt the local path ODE,
-which only matters on `[0,1]`, to mathlib's global-in-time Lipschitz
-formulation.
+%%handwave
+name:
+  A clamped continuous path is globally bounded
+statement:
+  If \(f:ℝ→ℂ\) is continuous on \([0,1]\) and \(f(t)=f(proj_{[0,1]}t)\), then \(‖f(t)‖≤B\) globally for some \(B≥0\).
+proof:
+  Compactness bounds \(f\) on the interval; clamping reduces every argument to it.
 -/
 theorem exists_nnnorm_bound_of_continuousOn_Icc_of_eq_projIcc
     {f : ℝ → ℂ}
@@ -1183,8 +1370,13 @@ theorem exists_nnnorm_bound_of_continuousOn_Icc_of_eq_projIcc
         (Set.projIcc (0 : ℝ) 1 zero_le_one t).2
 
 /--
-An operator-norm bound for the fixed-coefficient continuous linear maps gives
-the uniform Lipschitz hypothesis required by the Grönwall uniqueness theorem.
+%%handwave
+name:
+  An operator bound gives a Lipschitz vector field
+statement:
+  If \(‖L_t‖≤K\), then \(x↦L_tx\) is \(K\)-Lipschitz.
+proof:
+  Apply the operator-norm estimate to \(L_t(x-y)\).
 -/
 theorem closedFirstOrderPathVectorField_lipschitz_of_opNorm_bound
     {β γ : ℝ → ℂ} {ξ : ℂ} {K : NNReal}
@@ -1206,8 +1398,13 @@ theorem closedFirstOrderPathVectorField_lipschitz_of_opNorm_bound
           exact hK t
 
 /--
-Uniform operator-norm boundedness of the path-restricted continuous linear
-maps is enough to supply the Lipschitz datum used by the ODE uniqueness bridge.
+%%handwave
+name:
+  Existence of a Lipschitz bound from operator boundedness
+statement:
+  A uniformly bounded family of path-system operators has a common Lipschitz constant.
+proof:
+  Choose the operator bound and apply the pointwise estimate.
 -/
 theorem closedFirstOrderPathVectorField_exists_lipschitz_of_opNorm_bound
     {β γ : ℝ → ℂ} {ξ : ℂ}
@@ -1220,12 +1417,13 @@ theorem closedFirstOrderPathVectorField_exists_lipschitz_of_opNorm_bound
   exact ⟨K, closedFirstOrderPathVectorField_lipschitz_of_opNorm_bound hK⟩
 
 /--
-Grönwall/Picard uniqueness for the path-restricted closed first-order system.
-
-Once a path restriction has been identified as an integral curve of the
-linear vector field above, and that vector field is Lipschitz in the state,
-mathlib's ODE uniqueness theorem forces the zero-initial-state solution to be
-identically zero on `[0,1]`.
+%%handwave
+name:
+  Zero initial data force the path state to vanish
+statement:
+  If \(X:[0,1]→ℂ²\) solves \(X'=F_t(X)\), the fields share a Lipschitz constant, \(F_t(0)=0\), and \(X(0)=0\), then \(X(1)=0\).
+proof:
+  The zero curve is a solution with the same initial value; ODE uniqueness identifies it with \(X\).
 -/
 theorem closedFirstOrderPath_state_eq_zero_of_ODE_unique
     {β γ : ℝ → ℂ} {ξ : ℂ} {state : ℝ → ℂ × ℂ}
@@ -1304,8 +1502,13 @@ structure LocalLiouvilleSchwarzianClosedFirstOrderPathData
 namespace LocalLiouvilleSchwarzianClosedFirstOrderPathData
 
 /--
-A path certificate for the closed first-order system forces equality of the
-two log-densities at the endpoint.
+%%handwave
+name:
+  Endpoint equality from a path solution
+statement:
+  If the normalized state \(X=(V-U,V_z-U_z)\) solves the Lipschitz path system from \(z₀\) to \(z\), then \(U(z)=V(z)\).
+proof:
+  ODE uniqueness gives \(X(1)=0\); read its first component.
 -/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1329,8 +1532,13 @@ theorem logDensity_eq
   linarith
 
 /--
-A path certificate for the closed first-order system also forces equality of
-the Wirtinger derivatives at the endpoint.
+%%handwave
+name:
+  Endpoint derivative equality from a path solution
+statement:
+  Under the same hypotheses, \(V_z(z)-U_z(z)=0\).
+proof:
+  Read the second component of \(X(1)=0\).
 -/
 theorem alpha_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1424,6 +1632,15 @@ def toPathData
   state_continuousOn := P.state_continuousOn
   state_hasDerivWithinAt := P.state_hasDerivWithinAt
 
+/--
+%%handwave
+name:
+  Log-density equality from operator-bounded paths
+statement:
+  If the normalized path state solves the system and its operators are uniformly bounded, then \(U(z)=V(z)\).
+proof:
+  The bound gives a Lipschitz path, so endpoint uniqueness applies.
+-/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1525,6 +1742,15 @@ def toPathData
     LocalLiouvilleSchwarzianClosedFirstOrderPathData E z :=
   P.toOperatorBoundPathData.toPathData
 
+/--
+%%handwave
+name:
+  Log-density equality from bounded coefficients
+statement:
+  If the normalized path state solves the system and \(β,γ\) are uniformly bounded, then \(U(z)=V(z)\).
+proof:
+  Coefficient bounds give an operator bound and hence path uniqueness.
+-/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1549,30 +1775,73 @@ ODE proof only uses the unclamped segment on `[0,1]`.
 def closedFirstOrderClampedAffinePath (z₀ z : ℂ) (t : ℝ) : ℂ :=
   AffineMap.lineMap z₀ z (Set.projIcc (0 : ℝ) 1 zero_le_one t : ℝ)
 
+/--
+%%handwave
+name:
+  Initial point of the clamped affine path
+statement:
+  For the clamped affine path \(c\) from \(z₀\) to \(z\), \(c(0)=z₀\).
+proof:
+  Projection fixes \(0\) and the affine line starts at \(z₀\).
+-/
 @[simp]
 theorem closedFirstOrderClampedAffinePath_zero (z₀ z : ℂ) :
     closedFirstOrderClampedAffinePath z₀ z 0 = z₀ := by
   simp [closedFirstOrderClampedAffinePath]
 
+/--
+%%handwave
+name:
+  Endpoint of the clamped affine path
+statement:
+  For the clamped affine path \(c\) from \(z₀\) to \(z\), \(c(1)=z\).
+proof:
+  Projection fixes \(1\) and the affine line ends at \(z\).
+-/
 @[simp]
 theorem closedFirstOrderClampedAffinePath_one (z₀ z : ℂ) :
     closedFirstOrderClampedAffinePath z₀ z 1 = z := by
   simp [closedFirstOrderClampedAffinePath]
 
+/--
+%%handwave
+name:
+  Clamping invariance of the affine path
+statement:
+  For every \(t∈ℝ\), \(c(t)=c(proj_{[0,1]}t)\).
+proof:
+  Projection onto \([0,1]\) is idempotent.
+-/
 theorem closedFirstOrderClampedAffinePath_eq_projIcc (z₀ z : ℂ) (t : ℝ) :
     closedFirstOrderClampedAffinePath z₀ z t =
       closedFirstOrderClampedAffinePath z₀ z
         (Set.projIcc (0 : ℝ) 1 zero_le_one t : ℝ) := by
   simp [closedFirstOrderClampedAffinePath]
 
-/-- The clamped affine path is continuous. -/
+/--
+%%handwave
+name:
+  Continuity of the clamped affine path
+statement:
+  The affine path from \(z₀\) to \(z\), extended by clamping, is continuous on \(ℝ\).
+proof:
+  Compose the continuous affine line with interval projection.
+-/
 theorem continuous_closedFirstOrderClampedAffinePath (z₀ z : ℂ) :
     Continuous (closedFirstOrderClampedAffinePath z₀ z) := by
   simpa [closedFirstOrderClampedAffinePath] using
     (AffineMap.lineMap_continuous (p := z₀) (q := z)).comp
       (continuous_subtype_val.comp continuous_projIcc)
 
-/-- The unclamped affine path stays in a ball-shaped normalized domain. -/
+/--
+%%handwave
+name:
+  Segments remain in the normalized ball
+statement:
+  If \(Ω\) is a Euclidean ball and \(z₀,z∈Ω\), then \((1-t)z₀+tz∈Ω\) for \(t∈[0,1]\).
+proof:
+  Euclidean balls are convex.
+-/
 theorem localHyperbolicTwoJet_segment_mem_of_ballDomain
     (hBallDomain : HyperbolicTwoJetNormalizationHasBallDomainTheorem)
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1609,8 +1878,13 @@ def closedFirstOrderAffineState
       C.conformalFactor.wirtingerZ w - u.wirtingerZ w)
 
 /--
-The canonical state along the affine segment is continuous as soon as the
-segment remains in the normalized domain.
+%%handwave
+name:
+  Continuity of the canonical affine state
+statement:
+  If \(w(t)=(1-t)z₀+tz\) stays in \(Ω\), then \(X(t)=(V(w(t))-U(w(t)),V_z(w(t))-U_z(w(t)))\) is continuous.
+proof:
+  Compose the continuous fields with the segment, then pair their differences.
 -/
 theorem closedFirstOrderAffineState_continuousOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1668,8 +1942,13 @@ theorem closedFirstOrderAffineState_continuousOn
   simpa [path, Complex.ofReal_sub] using hphi.prodMk halpha
 
 /--
-The canonical state along the affine segment solves the restricted real ODE
-whenever the segment point lies in the normalized domain.
+%%handwave
+name:
+  The affine state solves the restricted system
+statement:
+  Whenever \(w(t)∈Ω\), the canonical state along \(w(t)\) has derivative \(F_t(X(t))\) with velocity \(z-z₀\).
+proof:
+  Apply the chain rule to both components and substitute their directional equations.
 -/
 theorem closedFirstOrderAffineState_hasDerivWithinAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2081,6 +2360,15 @@ def toPathData
     LocalLiouvilleSchwarzianClosedFirstOrderPathData E z :=
   P.toCoefficientBoundPathData.toPathData
 
+/--
+%%handwave
+name:
+  Log-density equality from continuous clamped coefficients
+statement:
+  If clamped coefficients are continuous on \([0,1]\) and the state solves the path system, then \(U(z)=V(z)\).
+proof:
+  Compactness bounds the coefficients, and bounded-coefficient uniqueness applies.
+-/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2149,6 +2437,15 @@ def toContinuousCoefficientPathData
     simpa [closedFirstOrderPathVectorField, closedFirstOrderClampedAffinePath, hproj] using
       P.state_hasDerivWithinAt t ht
 
+/--
+%%handwave
+name:
+  Log-density equality along a straight segment
+statement:
+  If the segment state has continuous coefficients, is continuous, and solves the system, then \(U(z)=V(z)\).
+proof:
+  Clamp the segment and apply pathwise ODE uniqueness.
+-/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2161,6 +2458,15 @@ theorem logDensity_eq
     u.logDensity z = C.conformalFactor.logDensity z :=
   P.toContinuousCoefficientPathData.logDensity_eq
 
+/--
+%%handwave
+name:
+  Derivative equality along a straight segment
+statement:
+  Under the same segment hypotheses, \(V_z(z)-U_z(z)=0\).
+proof:
+  The clamped path state vanishes; read its second endpoint component.
+-/
 theorem alpha_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2177,6 +2483,15 @@ end LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathData
 
 namespace LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathData
 
+/--
+%%handwave
+name:
+  Log-density equality from analytic segment data
+statement:
+  If the coefficients and state are continuous along the segment to \(z∈Ω\) and solve the system, then \(U(z)=V(z)\).
+proof:
+  Convexity supplies segment membership, reducing to the preceding result.
+-/
 theorem logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2190,6 +2505,15 @@ theorem logDensity_eq
     u.logDensity z = C.conformalFactor.logDensity z :=
   (P.toAffineSegmentPathData hz).logDensity_eq
 
+/--
+%%handwave
+name:
+  Derivative equality from analytic segment data
+statement:
+  Under the analytic segment hypotheses, \(V_z(z)-U_z(z)=0\).
+proof:
+  Add automatic segment membership and use endpoint uniqueness.
+-/
 theorem alpha_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2368,8 +2692,13 @@ def LocalLiouvilleSchwarzianClosedFirstOrderPotentialContinuityTheorem : Prop :=
       ContinuousOn E.linearized.potential N.domain
 
 /--
-Domain-level potential continuity supplies the potential-core path data for
-every target point in the normalized domain.
+%%handwave
+name:
+  Potential continuity supplies potential-core data
+statement:
+  If \(a\) is continuous on \(Ω\), then every \(z∈Ω\) has the corresponding potential-core straight-segment data.
+proof:
+  Use the assumed domainwise continuity as the sole required datum.
 -/
 theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPotentialPathDataTheorem_of_potentialContinuity
     (hPotential :
@@ -2378,6 +2707,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPotentialPathDataTh
   intro u S D z₀ N C data E z hz
   exact ⟨{ potential_continuousOn := hPotential S N C data E }⟩
 
+/--
+%%handwave
+name:
+  Potential-core data supply differential data
+statement:
+  Potential-core segment data for every \(z∈Ω\) yield differential segment data.
+proof:
+  Continuity of \(a\) gives continuity of \(γ=a/4\); \(β\) is continuous and the chain rule supplies the state equation.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentDifferentialPathDataTheorem_of_potentialPathData
     (hPath :
       LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentPotentialPathDataTheorem) :
@@ -2386,6 +2724,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentDifferentialPathDat
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toAffineSegmentDifferentialPathData hz⟩
 
+/--
+%%handwave
+name:
+  Differential data supply analytic data
+statement:
+  Differential segment data for every \(z∈Ω\) yield analytic segment data.
+proof:
+  Regularity of the fields makes the canonical state continuous.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathDataTheorem_of_differentialPathData
     (hPath :
       LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentDifferentialPathDataTheorem) :
@@ -2394,6 +2741,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathDataThe
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toAffineSegmentAnalyticPathData hz⟩
 
+/--
+%%handwave
+name:
+  Analytic data supply full segment data
+statement:
+  Analytic segment data for every \(z∈Ω\) yield full segment data.
+proof:
+  Convexity of the normalized ball supplies segment membership.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathDataTheorem_of_analyticPathData
     (hPath :
       LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathDataTheorem) :
@@ -2402,6 +2758,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathDataTheorem_of_
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toAffineSegmentPathData hz⟩
 
+/--
+%%handwave
+name:
+  Segment data give continuous clamped paths
+statement:
+  Full segment data for all \(z∈Ω\) yield continuous-coefficient clamped paths.
+proof:
+  Clamp the affine path and coefficients outside \([0,1]\).
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderContinuousCoefficientPathDataTheorem_of_affineSegmentPathData
     (hPath :
       LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathDataTheorem) :
@@ -2410,6 +2775,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderContinuousCoefficientPathDataThe
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toContinuousCoefficientPathData⟩
 
+/--
+%%handwave
+name:
+  Continuous clamped paths give bounded coefficients
+statement:
+  Continuous clamped coefficient paths yield bounded-coefficient paths.
+proof:
+  Compactness gives bounds on \([0,1]\) and clamping extends them globally.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem_of_continuousCoefficientPathData
     (hPath :
       LocalLiouvilleSchwarzianClosedFirstOrderContinuousCoefficientPathDataTheorem) :
@@ -2418,6 +2792,15 @@ theorem localLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem_
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toCoefficientBoundPathData⟩
 
+/--
+%%handwave
+name:
+  Bounded coefficients give operator-bounded paths
+statement:
+  Bounded-coefficient paths yield operator-bounded paths.
+proof:
+  Apply the operator-norm estimate with the coefficient bounds.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem_of_coefficientBoundPathData
     (hPath : LocalLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem) :
     LocalLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem := by
@@ -2425,67 +2808,21 @@ theorem localLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem_of_
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toOperatorBoundPathData⟩
 
+/--
+%%handwave
+name:
+  Operator-bounded paths give Lipschitz paths
+statement:
+  Operator-bounded paths yield uniformly Lipschitz paths.
+proof:
+  A uniform operator norm is a uniform Lipschitz constant.
+-/
 theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_operatorBoundPathData
     (hPath : LocalLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem) :
     LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem := by
   intro u S D z₀ N C data E z hz
   rcases hPath S N C data E z hz with ⟨P⟩
   exact ⟨P.toPathData⟩
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_coefficientBoundPathData
-    (hPath : LocalLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_operatorBoundPathData
-    (localLiouvilleSchwarzianClosedFirstOrderOperatorBoundPathDataTheorem_of_coefficientBoundPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_continuousCoefficientPathData
-    (hPath :
-      LocalLiouvilleSchwarzianClosedFirstOrderContinuousCoefficientPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_coefficientBoundPathData
-    (localLiouvilleSchwarzianClosedFirstOrderCoefficientBoundPathDataTheorem_of_continuousCoefficientPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentPathData
-    (hPath :
-      LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_continuousCoefficientPathData
-    (localLiouvilleSchwarzianClosedFirstOrderContinuousCoefficientPathDataTheorem_of_affineSegmentPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentAnalyticPathData
-    (hPath :
-      LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentPathData
-    (localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPathDataTheorem_of_analyticPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentDifferentialPathData
-    (hPath :
-      LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentDifferentialPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentAnalyticPathData
-    (localLiouvilleSchwarzianClosedFirstOrderAffineSegmentAnalyticPathDataTheorem_of_differentialPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentPotentialPathData
-    (hPath :
-      LocalLiouvilleSchwarzianClosedFirstOrderAffineSegmentPotentialPathDataTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentDifferentialPathData
-    (localLiouvilleSchwarzianClosedFirstOrderAffineSegmentDifferentialPathDataTheorem_of_potentialPathData
-      hPath)
-
-theorem localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_potentialContinuity
-    (hPotential :
-      LocalLiouvilleSchwarzianClosedFirstOrderPotentialContinuityTheorem) :
-    LocalLiouvilleSchwarzianClosedFirstOrderPathDataTheorem :=
-  localLiouvilleSchwarzianClosedFirstOrderPathDataTheorem_of_affineSegmentPotentialPathData
-    (localLiouvilleSchwarzianClosedFirstOrderAffineSegmentPotentialPathDataTheorem_of_potentialContinuity
-      hPotential)
 
 /--
 The linearized scalar package gives the closed first-order linear system by
@@ -2795,8 +3132,13 @@ def localLiouvilleSchwarzianCanonicalMetricWirtingerRiccatiData_of_canonicalPull
 namespace LocalLiouvilleSchwarzianCanonicalRiccatiCalculusData
 
 /--
-For the canonical first Wirtinger fields, equality on the preconnected
-normalized domain implies equality of the real log-densities.
+%%handwave
+name:
+  Equality from equality of first Wirtinger derivatives
+statement:
+  Let \(Ω\) be open and preconnected. If real \(U,V\) have equal \(∂_z\) derivatives on \(Ω\) and \(U(z₀)=V(z₀)\), then \(U=V\) on \(Ω\).
+proof:
+  Equality of \(∂_z\) gives equality of full real differentials, so \(U-V\) is constant and vanishes at \(z₀\).
 -/
 theorem logDensity_eq_of_first_derivative_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2908,8 +3250,13 @@ structure LocalLiouvilleSchwarzianRiccatiDifferenceData
 namespace LocalLiouvilleSchwarzianRiccatiReductionCalculusData
 
 /--
-The derivative hypotheses in the concrete Riccati calculus package imply that
-the Riccati coefficient `V_z + U_z` is analytic on the open normalized domain.
+%%handwave
+name:
+  Analyticity of the Riccati coefficient
+statement:
+  If complex fields \(p,q\) are complex differentiable throughout open \(Ω\), then \(p+q\) is analytic on \(Ω\).
+proof:
+  Their sum is differentiable on the open set, hence analytic.
 -/
 theorem coefficient_analytic_on_domain
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3082,8 +3429,13 @@ structure PrimitiveData
 namespace IntegratingFactorData
 
 /--
-An integrating factor forces the Riccati difference to vanish when the initial
-value is zero.
+%%handwave
+name:
+  An integrating factor annihilates the Riccati solution
+statement:
+  If \(α(z₀)=0\) and nowhere-zero \(μ\) makes \(αμ\) constant on \(Ω\), then \(α=0\) there.
+proof:
+  The product equals \(α(z₀)μ(z₀)=0\); cancel \(μ(z)≠0\).
 -/
 theorem alpha_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3121,7 +3473,15 @@ def integratingFactor
     (P : PrimitiveData R) : ℂ → ℂ :=
   fun z ↦ Complex.exp (-(P.primitiveFun z))
 
-/-- The primitive integrating factor is nowhere zero. -/
+/--
+%%handwave
+name:
+  The exponential integrating factor never vanishes
+statement:
+  For every \(z∈ℂ\), \(μ(z)=e^{-A(z)}\) is nonzero.
+proof:
+  The complex exponential has no zeros.
+-/
 theorem integratingFactor_ne_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -3178,7 +3538,15 @@ structure ProductDerivativeZeroData
   product_deriv_eq_zero_on_domain :
     Set.EqOn (deriv (fun z ↦ R.alpha z * P.integratingFactor z)) 0 N.domain
 
-/-- The primitive integrating factor has derivative `-coefficient * μ`. -/
+/--
+%%handwave
+name:
+  Derivative of the primitive integrating factor
+statement:
+  If \(A'(z)=β(z)\), then \(μ=e^{-A}\) satisfies \(μ'=-βμ\).
+proof:
+  Apply the chain rule to \(e^{-A}\).
+-/
 theorem integratingFactor_hasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -3197,8 +3565,13 @@ theorem integratingFactor_hasDerivAt
   simpa [integratingFactor, mul_comm] using hexp
 
 /--
-The Riccati equation and a primitive of its coefficient imply the
-integrating-factor product has zero derivative.
+%%handwave
+name:
+  The integrating-factor product has zero derivative
+statement:
+  If \(α'=αβ\) and \(A'=β\), then \((αe^{-A})'=0\) on \(Ω\).
+proof:
+  Use the product rule and cancel the two terms.
 -/
 theorem product_hasDerivAt_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -3235,8 +3608,13 @@ def productDerivativeZeroData
     exact (P.product_hasDerivAt_zero hz).deriv
 
 /--
-If the primitive integrating-factor product has zero derivative, then it is
-constant on the preconnected normalized domain.
+%%handwave
+name:
+  Zero derivative makes the product constant
+statement:
+  If \(Ω\) is open and preconnected and \((αe^{-A})'=0\), then \(α(z)e^{-A(z)}=α(z₀)e^{-A(z₀)}\) for \(z∈Ω\).
+proof:
+  A differentiable function with zero derivative on an open preconnected set is constant.
 -/
 theorem product_constant_on_domain_of_deriv_eq_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}

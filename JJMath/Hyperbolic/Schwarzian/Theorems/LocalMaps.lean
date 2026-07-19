@@ -1135,8 +1135,12 @@ noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasT
     hAffineDeriv hLocal
 
 /--
-Frobenius two-jet normalizations plus metric recovery from the normalized
-two-jet give genuine local upper-half-plane developing maps.
+%%handwave
+name: Local developing maps from normalized Frobenius two-jets
+statement:
+  Suppose that for every hyperbolic Liouville factor $u$ and every $z$ in its coordinate domain, the Schwarzian Frobenius construction produces a normalized upper-half-plane two-jet branch through $z$, and that every such normalization recovers $e^{2u}|dz|^2$. Then there is a metric-recovering local map to $\mathbb H$ through every $z$.
+proof:
+  Choose the normalized Frobenius branch at $z$ and equip it with the assumed Poincare pullback identity; the normalization already contains $z$ in its domain.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_frobeniusTwoJetNormalizations
     (hNorm : HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem)
@@ -1148,9 +1152,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_f
     (hRecovery S N hu), hNz⟩
 
 /--
-The hyperbolic holomorphic-Schwarzian theorem, Frobenius existence, explicit
-normal-form Schwarzian invariance, upper-half-plane landing, and two-jet metric
-recovery give genuine local upper-half-plane developing maps.
+%%handwave
+name: Local developing maps from Schwarzian Frobenius landing
+statement:
+  Assume that a hyperbolic Liouville factor has a holomorphic Schwarzian, its linear Schwarzian equation has local Frobenius solution pairs, normalized Mobius postcomposition preserves the Schwarzian, the normalized branch lands in $\mathbb H$, and its two-jet normalization recovers the metric. Then every point lies in a metric-recovering local upper-half-plane developing map.
+proof:
+  The first four assumptions construct a normalized Frobenius two-jet branch at each point. Apply metric recovery to that branch and use the local-map construction from normalized two-jets.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_frobeniusSchwarzianLanding
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1166,9 +1173,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_f
     hRecovery
 
 /--
-The holomorphic-Schwarzian theorem, Frobenius existence, upper-half-plane
-landing, and two-jet metric recovery give genuine local upper-half-plane
-developing maps; explicit Schwarzian invariance is now proved internally.
+%%handwave
+name: Local developing maps from Frobenius landing
+statement:
+  If hyperbolic Liouville factors have holomorphic Schwarzians, the corresponding Schwarzian equation has local Frobenius pairs, the normalized projective branch lands in $\mathbb H$, and the normalized two-jet recovers the metric, then every point has a metric-recovering upper-half-plane developing neighborhood.
+proof:
+  Apply the preceding construction using the proved invariance of the Schwarzian under the normalizing Mobius postcomposition.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_frobeniusLanding
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1181,9 +1191,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_f
     hUpper hRecovery
 
 /--
-The sharper Frobenius route to genuine local upper-half-plane developing maps:
-the remaining upper-half-plane input is only the explicit normal-form lift and
-derivative-identification data on the landing ball.
+%%handwave
+name: Local developing maps from a Frobenius normal-form lift
+statement:
+  Suppose hyperbolic Liouville factors have holomorphic Schwarzians, local Frobenius pairs exist, the normalized Frobenius ratio admits its prescribed upper-half-plane lift on a ball, and the resulting two-jet normalization recovers the metric. Then every point has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  The Schwarzian, Frobenius, and lift hypotheses produce normalized Frobenius two-jet branches. Apply two-jet metric recovery and the normalized-branch local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_normalFormLift
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1197,10 +1210,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_n
     hRecovery
 
 /--
-The derivative-identification Frobenius route to genuine local upper-half-plane
-developing maps: after the landing/lift construction, actual derivative
-identification for the explicit normal-form affine branch supplies the
-normalization.
+%%handwave
+name: Local developing maps from normal-form derivative identification
+statement:
+  Suppose the hyperbolic Schwarzian is holomorphic, local Frobenius pairs exist, the affine normal form and its stated derivative functions agree by genuine complex differentiation, and normalized two-jets recover the metric. Then every point has a metric-recovering local upper-half-plane developing map.
+proof:
+  Derivative identification supplies the normalized upper-half-plane Frobenius two-jet at each point. Apply the metric-recovery hypothesis to turn it into the desired local map.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivativeIdentification
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1214,9 +1229,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
     hRecovery
 
 /--
-The canonical third-derivative Frobenius normal-form route gives genuine local
-upper-half-plane developing maps once metric recovery for the normalized
-two-jet is supplied.
+%%handwave
+name: Local developing maps from the canonical third derivative
+statement:
+  Assume holomorphic Schwarzian data and local Frobenius pairs for every hyperbolic Liouville factor. If the canonical normal form has the prescribed derivatives through third order and normalized two-jets recover the metric, then every point lies in a metric-recovering local developing map to $\mathbb H$.
+proof:
+  The canonical third-derivative identity yields the required normalized Frobenius two-jet branch. Apply the two-jet metric-recovery construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_canonicalThirdDerivativeIdentification
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1231,9 +1249,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_c
     hRecovery
 
 /--
-The sharp Frobenius route to genuine local upper-half-plane developing maps,
-expressed in terms of the intrinsic quotient-rule target for the Frobenius
-developing ratio.
+%%handwave
+name: Local developing maps from differentiability of the Frobenius ratio
+statement:
+  Assume holomorphic Schwarzian data and local Frobenius pairs. If the Frobenius developing ratio has the derivative supplied by the quotient rule and normalized two-jets recover the metric, then every point has a metric-recovering local upper-half-plane developing map.
+proof:
+  Differentiability of the affine Frobenius ratio supplies the normal-form two-jet normalization; metric recovery then turns its upper-half-plane branch into the desired local developing map.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_affineHasDerivAt
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1247,9 +1268,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_a
     hRecovery
 
 /--
-The proved Frobenius normal-form pipeline gives genuine local
-upper-half-plane developing maps once metric recovery for the normalized
-two-jet is supplied.
+%%handwave
+name: Local developing maps from the completed Frobenius normal form
+statement:
+  If hyperbolic Liouville factors have holomorphic Schwarzians, local Frobenius solution pairs exist, and every normalized two-jet branch recovers the metric, then every point has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  Invoke the proved canonical third-derivative identity for the Frobenius normal form and apply the preceding local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_provedNormalForm
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1262,11 +1286,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_p
     hRecovery
 
 /--
-Metric-Schwarzian data, Frobenius existence, the proved normal-form pipeline,
-and metric-Schwarzian two-jet recovery give local upper-half-plane developing
-maps.  This keeps the original metric-Schwarzian coefficient identification
-attached to the chosen Schwarzian coefficient, so metric recovery can use the
-canonical pullback formula route without an external corrected-Riccati input.
+%%handwave
+name: Local developing maps from the metric Schwarzian
+statement:
+  Suppose every hyperbolic Liouville factor $u$ carries its holomorphic metric Schwarzian, the associated Schwarzian equation has local Frobenius pairs, and normalized branches with that metric Schwarzian recover $e^{2u}|dz|^2$. Then every point lies in a metric-recovering local developing map to $\mathbb H$.
+proof:
+  At a point $z$, choose the metric Schwarzian and a centered Frobenius pair, construct its canonical normalized upper-half-plane two-jet, and apply metric recovery while retaining the identification with the Schwarzian of $u$.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian
     (hMetric : HyperbolicLiouvilleProducesMetricSchwarzianDataTheorem)
@@ -1293,10 +1318,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
       (hRecovery M N hu), hNz⟩
 
 /--
-The metric-Schwarzian local-map route with the canonical Poincare pullback
-formula as its only pullback-side input.  The corrected Wirtinger-Riccati
-uniqueness data are built internally from the formula package and the
-metric-Schwarzian coefficient identification.
+%%handwave
+name: Local developing maps from the canonical Poincare pullback formula
+statement:
+  If every normalized hyperbolic two-jet branch satisfies the canonical Poincare pullback Liouville formula, then every hyperbolic Liouville factor admits a metric-recovering local upper-half-plane developing map through each point.
+proof:
+  Use the canonical pullback formula and equality with the metric Schwarzian to obtain metric recovery for normalized branches, then apply the metric-Schwarzian Frobenius construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_canonicalPullbackLiouvilleFormula
     (hPullback : HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem) :
@@ -1308,9 +1335,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
       hPullback)
 
 /--
-The metric-Schwarzian local-map route fed by the derivative-identified
-canonical pullback package.  This bypasses the older separate corrected
-Riccati input by deriving the canonical Poincare pullback formula first.
+%%handwave
+name: Local developing maps from a derivative-identified pullback
+statement:
+  If normalized hyperbolic two-jet branches have the regularity, derivative identifications, and Laplacian identity needed for their canonical Poincare pullback, then every point of a hyperbolic Liouville factor has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  Convert the derivative-identified data into the canonical pullback Liouville formula and apply the metric-Schwarzian local-map theorem.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -1319,8 +1349,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
     (hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_derivIdentified hD)
 
 /--
-The metric-Schwarzian local-map route fed by derivative algebra for the
-normalized branch.
+%%handwave
+name: Local developing maps from normalized derivative algebra
+statement:
+  If normalized hyperbolic two-jet branches satisfy the canonical derivative algebra for the Poincare pullback, then every point of a hyperbolic Liouville factor lies in a metric-recovering local upper-half-plane developing map.
+proof:
+  The derivative algebra yields the derivative-identified pullback package; apply the corresponding metric-Schwarzian local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_derivativeAlgebra
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
@@ -1329,7 +1363,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
     (hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_derivativeAlgebra hAlg)
 
 /--
-The metric-Schwarzian local-map route fed by actual affine derivative algebra.
+%%handwave
+name: Local developing maps from affine derivative algebra
+statement:
+  If normalized two-jet branches have the stated genuine affine derivatives and these imply the canonical Poincare pullback identities, then every hyperbolic Liouville factor has metric-recovering local upper-half-plane developing maps through all of its points.
+proof:
+  Convert the affine derivative algebra into the core Poincare pullback formula, then apply the metric-Schwarzian Frobenius local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_affineDerivativeAlgebra
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
@@ -1339,8 +1378,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
       (hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_affineDerivativeAlgebra hA))
 
 /--
-The metric-Schwarzian local-map route fed by actual affine `HasDerivAt`
-pullback data.
+%%handwave
+name: Local developing maps from genuine affine derivatives
+statement:
+  If the normalized affine branch and its derivative branches have their prescribed genuine complex derivatives, then every point of a hyperbolic Liouville factor has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  The genuine derivative hypotheses imply the canonical derivative algebra, which gives the derivative-identified pullback and hence the metric-Schwarzian local-map conclusion.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_affineDerivative
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
@@ -1349,8 +1392,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
     (hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_affineDerivative hA)
 
 /--
-The metric-Schwarzian local-map route fed by regularity and the bundled
-derivative-identification package.
+%%handwave
+name: Local developing maps from regularity and derivative identification
+statement:
+  If normalized two-jet branches have the required smoothness and their affine branch derivatives agree with the prescribed first, second, and third derivative functions, then hyperbolic Liouville factors admit metric-recovering local upper-half-plane developing maps through every point.
+proof:
+  Combine regularity with the derivative-identification package to obtain the canonical derivative algebra, then apply the metric-Schwarzian local-map theorem.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_regularity_derivativeIdentification
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1361,9 +1408,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
       hReg hId)
 
 /--
-The metric-Schwarzian local-map route fed by regularity and the three concrete
-ordinary-derivative identifications for the affine branch and its first two
-derivative branches.
+%%handwave
+name: Local developing maps from three derivative identities
+statement:
+  Suppose normalized two-jet branches are sufficiently regular and the affine branch, its first derivative, and its second derivative have the prescribed complex derivatives. Then every point of a hyperbolic Liouville factor lies in a metric-recovering local developing map to $\mathbb H$.
+proof:
+  Bundle the three derivative identities with regularity to obtain the canonical derivative algebra, then use the metric-Schwarzian local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_metricSchwarzian_regularity_first_second_third
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1376,9 +1426,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_m
       hReg hFirst hSecond hThird)
 
 /--
-With the holomorphic-Schwarzian and Frobenius parts discharged, the sharp
-derivative-identified pullback/canonical-Riccati boundary alone gives genuine
-local upper-half-plane developing maps.
+%%handwave
+name: Local maps from the canonical Riccati boundary package
+statement:
+  Assume the canonical boundary package provides both the derivative-identified Poincare pullback calculation for normalized two-jet branches and the Riccati uniqueness argument identifying that pullback with the original Liouville factor. Then every point of a hyperbolic Liouville factor has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  The package supplies metric recovery for normalized two-jets. Combine this with the established holomorphic Schwarzian, local Frobenius existence, and canonical normal-form construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivIdentifiedCanonicalRiccatiBoundary
     (B : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalRiccatiBoundaryTheorems) :
@@ -1389,9 +1442,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
     B.recoversMetric
 
 /--
-With the holomorphic-Schwarzian and Frobenius parts discharged, the
-derivative-identified pullback/corrected-Wirtinger boundary gives genuine local
-upper-half-plane developing maps.
+%%handwave
+name: Local maps from the metric Wirtinger--Riccati boundary package
+statement:
+  If normalized two-jet branches satisfy the derivative-identified Poincare pullback formulas and the corrected metric Wirtinger--Riccati uniqueness theorem, then every point of a hyperbolic Liouville factor has a metric-recovering local map to $\mathbb H$.
+proof:
+  Use the boundary package to recover the original metric from each normalized two-jet, then apply the completed Schwarzian Frobenius normal-form construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivIdentifiedCanonicalMetricWirtingerRiccatiBoundary
     (B :
@@ -1403,9 +1459,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
     B.recoversMetric
 
 /--
-With the holomorphic-Schwarzian and Frobenius parts discharged, the two
-unbundled local-map inputs are exactly the derivative-identified Poincare
-pullback calculation and the corrected Frechet-Wirtinger Riccati theorem.
+%%handwave
+name: Local maps from pullback derivatives and Wirtinger--Riccati uniqueness
+statement:
+  Suppose normalized hyperbolic two-jet branches satisfy the derivative-identified canonical Poincare pullback calculation, and suppose the metric Schwarzian Riccati equation has the required Wirtinger uniqueness property. Then every point of a hyperbolic Liouville factor lies in a metric-recovering local upper-half-plane developing map.
+proof:
+  The two hypotheses give metric recovery for normalized branches. Combine that result with the proved hyperbolic Schwarzian, local analytic Frobenius solutions, and canonical third-derivative normal form.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivIdentified_and_wirtingerRiccati
     (hPullback : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem)
@@ -1419,9 +1478,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
       hPullback hRiccati)
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, actual affine
-`HasDerivAt` pullback data and corrected Frechet-Wirtinger Riccati data give
-local upper-half-plane developing maps.
+%%handwave
+name: Local maps from affine derivatives and Wirtinger--Riccati uniqueness
+statement:
+  If normalized branches have the prescribed genuine affine derivatives and the metric Schwarzian Riccati equation satisfies the corrected Wirtinger uniqueness theorem, then every hyperbolic Liouville factor admits metric-recovering local maps to $\mathbb H$ through all points.
+proof:
+  Genuine affine derivatives yield the derivative-identified canonical pullback package; combine it with Riccati uniqueness and apply the local-map theorem.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_affineDerivative_and_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem)
@@ -1432,9 +1494,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_a
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, actual affine
-derivative algebra, the Poincare Laplacian identity, and corrected
-Frechet-Wirtinger Riccati data give local upper-half-plane developing maps.
+%%handwave
+name: Local maps from affine derivative algebra and the Poincare Laplacian
+statement:
+  Suppose normalized branches satisfy the affine derivative algebra, the canonical pullback logarithmic density satisfies the Poincare Laplacian identity, and metric Schwarzians satisfy corrected Wirtinger--Riccati uniqueness. Then every point has a metric-recovering local upper-half-plane developing map.
+proof:
+  Derivative algebra together with the Laplacian identity gives the derivative-identified pullback package. Combine it with Riccati uniqueness and invoke the established local-map construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_affineDerivativeAlgebra_laplacian_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
@@ -1447,10 +1512,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_a
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, actual affine
-derivative algebra and corrected Frechet-Wirtinger Riccati data give local
-upper-half-plane developing maps.  The Poincare Laplacian calculation is
-provided by the explicit mixed-expression pullback proof.
+%%handwave
+name: Local maps from affine derivative algebra and Riccati uniqueness
+statement:
+  If normalized branches satisfy the actual affine derivative algebra and the metric Schwarzian Riccati equation satisfies corrected Wirtinger uniqueness, then every point of a hyperbolic Liouville factor has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  The affine derivative algebra supplies the derivative-identified pullback package, including the internally proved Poincare Laplacian formula. Combine it with Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_affineDerivativeAlgebra_and_wirtingerRiccati
     (hAffine : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
@@ -1462,9 +1529,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_a
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, the local map is
-obtained from derivative algebra for the normalized branch, the Poincare
-Laplacian identity, and corrected Frechet-Wirtinger Riccati data.
+%%handwave
+name: Local maps from normalized derivative algebra and the Laplacian
+statement:
+  Suppose normalized two-jet branches satisfy the canonical derivative algebra and Poincare Laplacian identity, and the metric Schwarzian Riccati equation has corrected Wirtinger uniqueness. Then hyperbolic Liouville factors admit metric-recovering local upper-half-plane maps through every point.
+proof:
+  Package the derivative algebra and Laplacian identity as the derivative-identified pullback calculation, then apply the pullback-and-Riccati local-map theorem.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivativeAlgebra_laplacian_wirtingerRiccati
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem)
@@ -1477,10 +1547,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, derivative algebra
-for the normalized branch and corrected Frechet-Wirtinger Riccati data give
-local upper-half-plane developing maps.  The Poincare Laplacian calculation is
-supplied internally through the affine-derivative algebra conversion.
+%%handwave
+name: Local maps from normalized derivative algebra and Riccati uniqueness
+statement:
+  If normalized branches satisfy the canonical Poincare derivative algebra and the metric Schwarzian Riccati equation satisfies corrected Wirtinger uniqueness, then every point of a hyperbolic Liouville factor lies in a metric-recovering local map to $\mathbb H$.
+proof:
+  Convert the derivative algebra into the derivative-identified pullback package, whose Laplacian identity is supplied internally, and combine it with Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_derivativeAlgebra_and_wirtingerRiccati
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem)
@@ -1491,10 +1563,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_d
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, the local map is
-obtained from regularity of the normalized branch, derivative identification
-for its affine branch, the Poincare Laplacian identity, and corrected
-Frechet-Wirtinger Riccati data.
+%%handwave
+name: Local maps from regularity, derivative identification, and the Laplacian
+statement:
+  Suppose normalized branches have the required regularity and derivative identifications, their pullback logarithmic density satisfies the Poincare Laplacian identity, and metric Schwarzians satisfy corrected Wirtinger--Riccati uniqueness. Then every point has a metric-recovering local map to $\mathbb H$.
+proof:
+  Regularity, derivative identification, and the Laplacian identity yield the derivative-identified pullback package; combine it with Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_regularity_derivativeIdentification_laplacian_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1508,10 +1582,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_r
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, regularity,
-derivative identification, and corrected Frechet-Wirtinger Riccati data give
-local upper-half-plane developing maps.  The Poincare Laplacian calculation is
-supplied internally by the derivative-algebra route.
+%%handwave
+name: Local maps from regularity and Wirtinger--Riccati uniqueness
+statement:
+  If normalized branches have the required regularity and bundled derivative identifications, and metric Schwarzians satisfy corrected Wirtinger--Riccati uniqueness, then every point of a hyperbolic Liouville factor has a metric-recovering local developing map into $\mathbb H$.
+proof:
+  The regularity and derivative identities give the derivative-identified pullback calculation, including its internal Laplacian proof; combine it with Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_regularity_derivativeIdentification_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1524,10 +1600,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_r
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, the local map is
-obtained from branch regularity, the three affine derivative-identification
-levels, the Poincare Laplacian identity, and corrected Frechet-Wirtinger
-Riccati data.
+%%handwave
+name: Local maps from three derivatives, regularity, and the Laplacian
+statement:
+  Suppose normalized branches are sufficiently regular, the affine branch and its first two derivative functions have their prescribed complex derivatives, the pullback logarithmic density satisfies the Poincare Laplacian identity, and metric Schwarzians satisfy corrected Wirtinger--Riccati uniqueness. Then every point has a metric-recovering local upper-half-plane map.
+proof:
+  Assemble the regularity, three derivative identities, and Laplacian formula into the derivative-identified pullback package, then apply Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_regularity_first_second_third_laplacian_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1543,10 +1621,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_r
     hRiccati
 
 /--
-With the Schwarzian/Frobenius/normal-form route discharged, branch regularity,
-the three affine derivative-identification levels, and corrected
-Frechet-Wirtinger Riccati data give local upper-half-plane developing maps.
-The Poincare Laplacian calculation is supplied internally.
+%%handwave
+name: Local maps from three derivatives and Wirtinger--Riccati uniqueness
+statement:
+  If normalized branches are sufficiently regular, their affine derivative hierarchy is genuine through third order, and metric Schwarzians satisfy corrected Wirtinger--Riccati uniqueness, then every point of a hyperbolic Liouville factor has a metric-recovering local map to $\mathbb H$.
+proof:
+  The regularity and three derivative identities give the derivative-identified canonical pullback calculation, including the internal Laplacian identity; combine it with Riccati uniqueness.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_regularity_first_second_third_wirtingerRiccati
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -1561,10 +1641,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_r
     hRiccati
 
 /--
-The sharper Frobenius route expressed in terms of the individual
-Frobenius-solution derivative theorem.  Mathlib's quotient rule then proves the
-developing-ratio derivative, and the normal-form chain-rule bridge handles the
-upper-half-plane normalization.
+%%handwave
+name: Local developing maps from derivatives of Frobenius solutions
+statement:
+  Suppose hyperbolic Liouville factors have holomorphic Schwarzians, local Frobenius solution pairs exist, each scalar Frobenius solution has its prescribed complex derivative, and normalized two-jet branches recover the metric. Then every point has a metric-recovering local upper-half-plane developing map.
+proof:
+  The quotient rule gives the derivative of the ratio of the two Frobenius solutions. Feed this affine derivative into the normal-form construction and apply two-jet metric recovery.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_solutionHasDerivAt
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1579,8 +1661,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_s
     hRecovery
 
 /--
-The sharp Frobenius route expressed in terms of the scalar termwise-derivative
-power-series boundary.
+%%handwave
+name: Local developing maps from termwise differentiation of Frobenius series
+statement:
+  Suppose hyperbolic Liouville factors have holomorphic Schwarzians, local Frobenius pairs exist, scalar power series may be differentiated term by term on their convergence balls, and normalized two-jets recover the metric. Then every point has a metric-recovering local developing map to $\mathbb H$.
+proof:
+  Termwise differentiation proves the required derivative theorem for each Frobenius solution; the quotient-rule and normal-form route then yields the local map.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_scalarFormalPowerSeriesDeriv
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1595,8 +1681,12 @@ theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_s
     hRecovery
 
 /--
-The canonical Frobenius route with scalar termwise differentiation already
-discharged inside the normal-form package.
+%%handwave
+name: Local developing maps from the canonical Frobenius pipeline
+statement:
+  If hyperbolic Liouville factors have holomorphic Schwarzians, local analytic Frobenius pairs exist, and normalized two-jet branches recover the metric, then every point has a metric-recovering local upper-half-plane developing map.
+proof:
+  Use the already proved canonical third-derivative identity for the Frobenius normal form and apply the normalized two-jet local-map theorem.
 -/
 theorem hyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem_of_termwiseDifferentiation
     (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
@@ -1642,8 +1732,12 @@ def hyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem_of_constantCurv
       ((u.solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one).mp hu)
 
 /--
-The hyperbolic Wirtinger package theorem now follows from the named analytic
-axioms by specializing the constant-curvature theorem to `K = -1`.
+%%handwave
+name: Wirtinger derivative package for the hyperbolic Liouville equation
+statement:
+  Every local conformal factor satisfying $\Delta u=e^{2u}$ has the Frechet--Wirtinger derivative identities obtained from the constant-curvature Liouville equation at curvature $K=-1$.
+proof:
+  Apply the constant-curvature Wirtinger theorem with $K=-1$ and use the equivalence between the curvature equation at $-1$ and $\Delta u=e^{2u}$.
 -/
 theorem hyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem :
     HyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem :=

@@ -24,7 +24,15 @@ noncomputable section
 
 /-- A circle-valued primitive of the conjugate differential of a harmonic
 function produces a global nonvanishing holomorphic function with the
-prescribed logarithmic modulus. -/
+prescribed logarithmic modulus.
+
+%%handwave
+name: Holomorphic exponential from a circle-valued conjugate primitive
+statement:
+  Let $u$ be a real harmonic function on a Riemann surface, let $\omega$ be the globally glued differential of its local harmonic conjugates, and let $P$ be a circle-valued primitive of $\omega$. Then there is a nowhere-vanishing holomorphic function $f$ such that $\log|f(z)|=u(z)$ for every $z$.
+proof:
+  Define $f=e^uP$. Locally lift $P$ to a real argument $\theta$. On a connected overlap with a holomorphic branch $u+iv$, equality $d\theta=dv$ makes $\theta-v$ constant, so $f$ is a constant unit multiple of $e^{u+iv}$. Hence $f$ is locally holomorphic, while $|P|=1$ gives nonvanishing and $\log|f|=u$.
+-/
 theorem harmonicConjugate_circlePrimitive_has_holomorphic_exp
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [RiemannSurface Z] [IsManifold SurfaceRealModel ∞ Z]

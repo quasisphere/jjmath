@@ -40,7 +40,17 @@ def normalizedBranch {u : LocalConformalFactor}
     LocalUpperHalfPlaneDevelopingMap (A.schwarzianAt z) :=
   (A.normalizationAt z).normalized
 
-/-- The normalized branches cover the coordinate domain. -/
+/--
+The normalized branches cover the coordinate domain.
+
+%%handwave
+name:
+  The chosen normalized branches cover their centers
+statement:
+  For every metric-recovering Schwarzian pre-atlas A and every center z in the coordinate domain, z belongs to the domain of the normalized upper-half-plane branch selected at z.
+proof:
+  This is exactly the base-point membership recorded when the branch was selected.
+-/
 theorem mem_normalizedBranch_domain {u : LocalConformalFactor}
     (A : LocalMetricRecoveringSchwarzianPreAtlas u)
     (z : u.coordinateDomain) :
@@ -73,7 +83,17 @@ def toPreAtlas {u : LocalConformalFactor}
     LocalMetricRecoveringSchwarzianPreAtlas u :=
   A.toLocalMetricRecoveringSchwarzianPreAtlas
 
-/-- The ball-domain witnesses imply preconnected overlaps by mathlib convexity. -/
+/--
+The ball-domain witnesses imply preconnected overlaps by mathlib convexity.
+
+%%handwave
+name:
+  Ball-domain normalized branches have preconnected overlaps
+statement:
+  In a metric-recovering Schwarzian pre-atlas whose selected branch domains are metric balls, every pairwise intersection of branch domains is preconnected.
+proof:
+  Rewrite both domains as metric balls. Each ball is convex, their intersection is convex, and every convex set is preconnected.
+-/
 theorem overlap_preconnected {u : LocalConformalFactor}
     (A : LocalMetricRecoveringSchwarzianBallPreAtlas u) :
     ∀ z w : u.coordinateDomain, IsPreconnected
@@ -146,7 +166,17 @@ def normalizedBranch {u : LocalConformalFactor}
     LocalUpperHalfPlaneDevelopingMap (A.schwarzianAt z) :=
   (A.normalizationAt z).normalized
 
-/-- The normalized branches cover the coordinate domain. -/
+/--
+The normalized branches cover the coordinate domain.
+
+%%handwave
+name:
+  A normalized Schwarzian atlas covers its centers
+statement:
+  For every metric-recovering Schwarzian normalization atlas A and every center z, the selected normalized upper-half-plane branch at z is defined at z.
+proof:
+  Unpack the base-point coverage field of the normalization atlas.
+-/
 theorem mem_normalizedBranch_domain {u : LocalConformalFactor}
     (A : LocalMetricRecoveringSchwarzianNormalizationAtlas u)
     (z : u.coordinateDomain) :
@@ -156,6 +186,14 @@ theorem mem_normalizedBranch_domain {u : LocalConformalFactor}
 /--
 The local real-transition theorem supplies real Mobius transitions between all
 normalized branches in the atlas.
+
+%%handwave
+name:
+  Metric-recovering normalized branches have real Möbius transitions
+statement:
+  If metric-recovering upper-half-plane branches are unique up to real Möbius transformation on preconnected overlaps, then any two normalized branches in a Liouville Schwarzian atlas differ by a real Möbius map on their overlap.
+proof:
+  Apply branch-level uniqueness to the two selected branches and use the preconnectedness of their atlas overlap.
 -/
 theorem normalizedBranch_transition_realMobius
     (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem)
@@ -168,6 +206,14 @@ theorem normalizedBranch_transition_realMobius
 /--
 Equivalently, the chosen Mobius-normalized projective solutions have real
 Mobius transitions on overlaps.
+
+%%handwave
+name:
+  Metric-recovering normalizations have real Möbius transitions
+statement:
+  Under real Möbius uniqueness for metric-recovering upper-half-plane branches, any two Möbius-normalized projective solutions in a Liouville Schwarzian atlas differ by a real Möbius map on their overlap.
+proof:
+  Apply branch-level uniqueness to the normalized upper-half-plane maps and transfer the resulting transition to their normalization packages.
 -/
 theorem normalization_transition_realMobius
     (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem)
@@ -235,7 +281,17 @@ def toLocalMetricRecoveringSchwarzianNormalizationAtlas {u : LocalConformalFacto
   mem_normalized_domain := A.mem_normalized_domain
   overlap_preconnected := A.overlap_preconnected
 
-/-- The metric-Schwarzian witnesses make branch coefficient agreement formal. -/
+/--
+The metric-Schwarzian witnesses make branch coefficient agreement formal.
+
+%%handwave
+name:
+  Metric-Schwarzian branches have the same coefficient on overlaps
+statement:
+  For two normalized branches selected from metric-Schwarzian data for the same conformal factor u, their Schwarzian coefficients agree at every point in the overlap of their domains.
+proof:
+  Each chosen coefficient equals the canonical metric Schwarzian coefficient of u, so both sides equal the same value pointwise.
+-/
 theorem sameSchwarzianCoefficientOnOverlap {u : LocalConformalFactor}
     (A : LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas u)
     (z w : u.coordinateDomain) :
@@ -251,6 +307,14 @@ theorem sameSchwarzianCoefficientOnOverlap {u : LocalConformalFactor}
 For metric-data normalization atlases, branch regularity and the
 coefficient-aware Schwarzian one-jet uniqueness theorem give real Mobius
 transitions on nonempty overlaps.
+
+%%handwave
+name:
+  Real transitions from coefficient-aware one-jet uniqueness
+statement:
+  In a metric-Schwarzian normalization atlas for a Liouville solution, continuity of each branch and its affine derivative, together with coefficient-aware pointed one-jet uniqueness, implies that any two distinct branches with nonempty overlap differ there by one real Möbius transformation.
+proof:
+  Choose an overlap point and match the two metric-recovering branch one-jets there by a real Möbius map. Coefficient agreement and the uniqueness theorem make the equality set open and closed; preconnectedness propagates it across the overlap.
 -/
 theorem hasOverlappingOffDiagonalRealTransitions_of_branchContinuity_affineDerivative_oneJetUniqueness
     (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
@@ -282,6 +346,14 @@ package supplies the branch regularity and coefficient-aware one-jet uniqueness
 needed for real Mobius transitions on nonempty overlaps.  The coefficient
 agreement itself is supplied by the metric-Schwarzian witnesses stored in the
 atlas.
+
+%%handwave
+name:
+  Real transitions from projective derivative regularity
+statement:
+  In a metric-Schwarzian normalization atlas for a Liouville solution, actual derivative identities for the stored first and second projective derivatives imply a real Möbius transition between every pair of distinct branches with nonempty overlap.
+proof:
+  The projective derivative identities give branch and affine-derivative continuity and the coefficient-aware one-jet uniqueness principle; apply the preceding overlap propagation result.
 -/
 theorem hasOverlappingOffDiagonalRealTransitions_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -359,6 +431,14 @@ def normalizedBranch {u : LocalConformalFactor}
 /--
 Each normalized branch in a derivative-data atlas carries the fixed-branch
 projective derivative regularity package.
+
+%%handwave
+name:
+  Projective derivative regularity of each selected branch
+statement:
+  Every normalized branch in a derivative-data metric-Schwarzian atlas has actual derivatives f₁′ = f₂ and f₂′ = f₃ throughout its domain.
+proof:
+  Read the two derivative identities stored at the chosen center and transport them through the definition of the selected normalized branch.
 -/
 theorem normalizedBranch_projectiveDerivativeRegularity {u : LocalConformalFactor}
     (A : LocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlas u)
@@ -374,7 +454,17 @@ theorem normalizedBranch_projectiveDerivativeRegularity {u : LocalConformalFacto
     simpa [normalizedBranch, toMetricDataAtlas] using
       A.projectiveSecondDerivative_hasDerivAt z x hx
 
-/-- Coefficient agreement on overlaps is inherited from the metric-data atlas. -/
+/--
+Coefficient agreement on overlaps is inherited from the metric-data atlas.
+
+%%handwave
+name:
+  Overlapping developing branches have the same Schwarzian coefficient
+statement:
+  Any two branches in a derivative-data metric-Schwarzian atlas have equal Schwarzian coefficients at every point of their domain overlap.
+proof:
+  Forget the derivative fields and use the fact that both coefficients equal the canonical metric Schwarzian of the same conformal factor.
+-/
 theorem sameSchwarzianCoefficientOnOverlap {u : LocalConformalFactor}
     (A : LocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlas u)
     (z w : u.coordinateDomain) :
@@ -387,6 +477,14 @@ theorem sameSchwarzianCoefficientOnOverlap {u : LocalConformalFactor}
 /--
 The derivative-data atlas reduces nonempty-overlap real transitions to the
 pair-shaped coefficient-aware local uniqueness theorem.
+
+%%handwave
+name:
+  Off-diagonal overlapping branches admit a real Möbius one-jet comparison
+statement:
+  For distinct selected normalized branches F and G with nonempty overlap, there is a real Möbius map M such that G = M ∘ F and G′ = (M ∘ F)′ throughout the overlap.
+proof:
+  Match the two branches at one overlap point, then use their stored projective derivative regularity, common Schwarzian coefficient, and preconnectedness to propagate equality of values and derivatives.
 -/
 theorem hasOverlappingOffDiagonalRealTransitionOneJets_of_pairProjectiveDerivativeUniqueness
     (hUnique :
@@ -431,6 +529,14 @@ comparisons between every pair of selected normalized branches.
 The diagonal case is the identity Mobius transformation, empty overlaps are
 vacuous, and the only genuine analytic case is the off-diagonal nonempty
 overlap handled by the fixed-pair one-jet clopen theorem.
+
+%%handwave
+name:
+  All branch pairs admit a real Möbius one-jet comparison
+statement:
+  For every pair of selected normalized branches F and G in a derivative-data atlas, there is a real Möbius map M such that G = M ∘ F and G′ = (M ∘ F)′ throughout their overlap.
+proof:
+  Use the identity map for equal branches, vacuity for empty overlaps, and coefficient-aware one-jet propagation on a nonempty off-diagonal overlap.
 -/
 theorem transition_realMobiusOneJets_of_pairProjectiveDerivativeUniqueness
     (hUnique :
@@ -472,6 +578,14 @@ theorem transition_realMobiusOneJets_of_pairProjectiveDerivativeUniqueness
 Derivative-data normalization atlases have value-level real-Mobius transitions
 between every pair of selected normalized branches, by forgetting the
 derivative component of the all-pairs one-jet comparison.
+
+%%handwave
+name:
+  All branch pairs admit a real Möbius transition
+statement:
+  For every pair of selected normalized branches F and G in a derivative-data atlas, there is a real Möbius map M with G = M ∘ F throughout their overlap.
+proof:
+  Obtain the real Möbius one-jet comparison and forget its derivative equality.
 -/
 theorem transition_realMobius_of_pairProjectiveDerivativeUniqueness
     (hUnique :
@@ -490,6 +604,14 @@ theorem transition_realMobius_of_pairProjectiveDerivativeUniqueness
 /--
 The derivative-data atlas reduces nonempty-overlap real transitions to the
 pair-shaped coefficient-aware local uniqueness theorem.
+
+%%handwave
+name:
+  Off-diagonal overlapping branches admit a real Möbius transition
+statement:
+  For distinct selected normalized branches F and G with nonempty overlap, there is a real Möbius map M with G = M ∘ F throughout their overlap.
+proof:
+  Obtain the real Möbius one-jet comparison and forget its derivative equality.
 -/
 theorem hasOverlappingOffDiagonalRealTransitions_of_pairProjectiveDerivativeUniqueness
     (hUnique :
@@ -509,6 +631,14 @@ theorem hasOverlappingOffDiagonalRealTransitions_of_pairProjectiveDerivativeUniq
 /--
 The derivative-data atlas can use the proved global projective-derivative
 Schwarzian uniqueness route through its pair-shaped transition interface.
+
+%%handwave
+name:
+  Off-diagonal overlapping branches admit a real Möbius transition
+statement:
+  For distinct selected normalized branches F and G with nonempty overlap, there is a real Möbius map M with G = M ∘ F throughout their overlap.
+proof:
+  Derive coefficient-aware pair uniqueness from the actual first and second projective derivative identities, then apply the corresponding atlas transition result.
 -/
 theorem hasOverlappingOffDiagonalRealTransitions_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -530,6 +660,14 @@ theorem hasOverlappingOffDiagonalRealTransitions_of_projectiveFirstSecondDerivat
 The derivative-data atlas can use the proved projective-derivative
 Schwarzian uniqueness route to propagate the full one-jet comparison on
 nonempty overlaps.
+
+%%handwave
+name:
+  Off-diagonal overlapping branches admit a real Möbius one-jet comparison
+statement:
+  For distinct selected normalized branches F and G with nonempty overlap, there is a real Möbius map M such that G = M ∘ F and G′ = (M ∘ F)′ throughout the overlap.
+proof:
+  The actual first and second projective derivative identities give the coefficient-aware pair uniqueness theorem; apply it to the stored regularity of the two branches.
 -/
 theorem hasOverlappingOffDiagonalRealTransitionOneJets_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -563,6 +701,14 @@ theorem hasOverlappingOffDiagonalRealTransitionOneJets_of_projectiveFirstSecondD
 The proved projective-derivative Schwarzian uniqueness route gives full
 one-jet real-Mobius comparisons between every pair of selected normalized
 branches in a derivative-data atlas.
+
+%%handwave
+name:
+  All branch pairs admit a real Möbius one-jet comparison
+statement:
+  For every pair of selected normalized branches F and G in a derivative-data atlas, there is a real Möbius map M such that G = M ∘ F and G′ = (M ∘ F)′ throughout their overlap.
+proof:
+  The actual first and second projective derivative identities give the coefficient-aware pair uniqueness theorem; apply it to the stored regularity of the two branches.
 -/
 theorem transition_realMobiusOneJets_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -595,6 +741,14 @@ theorem transition_realMobiusOneJets_of_projectiveFirstSecondDerivative_scalarCl
 The proved projective-derivative Schwarzian uniqueness route gives value-level
 real-Mobius transitions between every pair of selected normalized branches in a
 derivative-data atlas.
+
+%%handwave
+name:
+  All branch pairs admit a real Möbius transition
+statement:
+  For every pair of selected normalized branches F and G in a derivative-data atlas, there is a real Möbius map M with G = M ∘ F throughout their overlap.
+proof:
+  Derive coefficient-aware pair uniqueness from the actual first and second projective derivative identities, then apply the corresponding atlas transition result.
 -/
 theorem transition_realMobius_of_projectiveFirstSecondDerivative_scalarClosed
     (hProjFirst :
@@ -648,6 +802,14 @@ def MetricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTra
 /--
 The older branch-level real-transition uniqueness theorem implies the sharper
 atlas-level off-diagonal target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from real Möbius uniqueness for arbitrary metric-recovering branches
+statement:
+  Assuming real Möbius uniqueness for arbitrary metric-recovering branches, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Apply branch-level uniqueness to the two selected branches, using the preconnectedness of their atlas overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_branches
     (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem) :
@@ -658,6 +820,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 The branch-level real-transition uniqueness theorem also implies the
 overlapping-only off-diagonal target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from real Möbius uniqueness for arbitrary metric-recovering branches
+statement:
+  Assuming real Möbius uniqueness for arbitrary metric-recovering branches, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Apply branch-level uniqueness to the two selected branches, using the preconnectedness of their atlas overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_branches
     (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem) :
@@ -668,6 +838,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 The nonempty-overlap branch-level target gives the overlapping off-diagonal
 atlas target directly.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from real Möbius uniqueness for metric-recovering branches on nonempty preconnected overlaps
+statement:
+  Assuming real Möbius uniqueness for metric-recovering branches on nonempty preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Apply the branch-level result to the selected branches and the atlas overlap. For the unrestricted conclusion, use vacuity when the overlap is empty.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_branchNonemptyOverlap
     (h :
@@ -680,6 +858,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 Overlapping off-diagonal real-transition uniqueness gives the older
 off-diagonal target, since empty overlaps impose no transition condition.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from the corresponding result on nonempty off-diagonal overlaps
+statement:
+  Assuming the corresponding result on nonempty off-diagonal overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Split on whether the overlap is nonempty; apply the hypothesis in the nonempty case and choose the identity transformation in the empty case.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_overlappingOffDiagonal
     (hOverlap :
@@ -697,6 +883,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 The nonempty-overlap branch-level target also gives the off-diagonal atlas
 target, with empty overlaps handled formally.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from real Möbius uniqueness for metric-recovering branches on nonempty preconnected overlaps
+statement:
+  Assuming real Möbius uniqueness for metric-recovering branches on nonempty preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Apply the branch-level result to the selected branches and the atlas overlap. For the unrestricted conclusion, use vacuity when the overlap is empty.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_branchNonemptyOverlap
     (h :
@@ -709,6 +903,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 The pointed branch-level formulation gives the overlapping off-diagonal atlas
 target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from pointed real Möbius matching and extension across preconnected overlaps
+statement:
+  Assuming pointed real Möbius matching and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Choose a point in the nonempty overlap, match the two branch one-jets there by a real Möbius map, and extend equality across the preconnected overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_pointed
     (hPoint :
@@ -721,6 +923,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 
 /--
 The pointed branch-level formulation gives the off-diagonal atlas target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from pointed real Möbius matching and extension across preconnected overlaps
+statement:
+  Assuming pointed real Möbius matching and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Choose a point in the nonempty overlap, match the two branch one-jets there by a real Möbius map, and extend equality across the preconnected overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_pointed
     (hPoint :
@@ -734,6 +944,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 Equal-hyperbolic-derivative-norm one-jet transitivity plus connected-overlap
 extension gives the overlapping off-diagonal atlas target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from real Möbius one-jet transitivity for derivatives of equal hyperbolic norm and extension across preconnected overlaps
+statement:
+  Assuming real Möbius one-jet transitivity for derivatives of equal hyperbolic norm and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Metric recovery gives equality of hyperbolic derivative norms; match the one-jets and extend their equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_hyperbolicDerivativeNorm
     (hNorm :
@@ -747,6 +965,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 Equal-hyperbolic-derivative-norm one-jet transitivity plus connected-overlap
 extension gives the off-diagonal atlas target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from real Möbius one-jet transitivity for derivatives of equal hyperbolic norm and extension across preconnected overlaps
+statement:
+  Assuming real Möbius one-jet transitivity for derivatives of equal hyperbolic norm and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Metric recovery gives equality of hyperbolic derivative norms; match the one-jets and extend their equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_hyperbolicDerivativeNorm
     (hNorm :
@@ -760,6 +986,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 Value transitivity, stabilizer tangent transitivity, and connected-overlap
 extension give the overlapping off-diagonal atlas target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from real Möbius transitivity on values, stabilizer transitivity on derivatives, and extension across preconnected overlaps
+statement:
+  Assuming real Möbius transitivity on values, stabilizer transitivity on derivatives, and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Move the first branch value to the second, adjust its derivative by a stabilizer element, and extend the pointed equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -773,6 +1007,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 Value transitivity, stabilizer tangent transitivity, and connected-overlap
 extension give the off-diagonal atlas target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from real Möbius transitivity on values, stabilizer transitivity on derivatives, and extension across preconnected overlaps
+statement:
+  Assuming real Möbius transitivity on values, stabilizer transitivity on derivatives, and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Move the first branch value to the second, adjust its derivative by a stabilizer element, and extend the pointed equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -786,6 +1028,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 With value transitivity proved explicitly, stabilizer tangent transitivity and
 connected-overlap extension give the overlapping off-diagonal atlas target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from stabilizer transitivity on derivatives and extension across preconnected overlaps
+statement:
+  Assuming stabilizer transitivity on derivatives and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Use the explicit value-transitivity map, adjust the derivative within its stabilizer, and extend the pointed equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem)
@@ -797,6 +1047,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 With value transitivity proved explicitly, stabilizer tangent transitivity and
 connected-overlap extension give the off-diagonal atlas target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from stabilizer transitivity on derivatives and extension across preconnected overlaps
+statement:
+  Assuming stabilizer transitivity on derivatives and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Use the explicit value-transitivity map, adjust the derivative within its stabilizer, and extend the pointed equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem)
@@ -808,6 +1066,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 Since rotation tangent transitivity at `i` is proved, stabilizer transport and
 connected-overlap extension give the overlapping off-diagonal atlas target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from transport of rotation transitivity from i to arbitrary upper-half-plane values and extension across preconnected overlaps
+statement:
+  Assuming transport of rotation transitivity from i to arbitrary upper-half-plane values and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Transport rotation transitivity at i to the common pointed value, match the derivative, and extend the equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem)
@@ -820,6 +1086,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 Since rotation tangent transitivity at `i` is proved, stabilizer transport and
 connected-overlap extension give the off-diagonal atlas target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from transport of rotation transitivity from i to arbitrary upper-half-plane values and extension across preconnected overlaps
+statement:
+  Assuming transport of rotation transitivity from i to arbitrary upper-half-plane values and extension across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Transport rotation transitivity at i to the common pointed value, match the derivative, and extend the equality across the overlap.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem)
@@ -832,6 +1106,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 Connected-overlap extension alone now gives the overlapping off-diagonal atlas
 transition target.
+
+%%handwave
+name:
+  Overlapping off-diagonal atlas transitions from extension of pointed real Möbius comparisons across preconnected overlaps
+statement:
+  Assuming extension of pointed real Möbius comparisons across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w whose branch domains meet, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Use the established pointed one-jet matching at an overlap point and the assumed extension principle.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRealTransitionsTheorem_of_extension
     (hExtend : PointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem) :
@@ -843,6 +1125,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOverlappingOffDiagonalRea
 /--
 Connected-overlap extension alone now gives the off-diagonal atlas transition
 target.
+
+%%handwave
+name:
+  Off-diagonal atlas transitions from extension of pointed real Möbius comparisons across preconnected overlaps
+statement:
+  Assuming extension of pointed real Möbius comparisons across preconnected overlaps, for every Liouville solution u, metric-recovering normalized Schwarzian atlas A, and distinct centers z ≠ w, the two selected upper-half-plane branches differ on their overlap by one real Möbius transformation.
+proof:
+  Use the established pointed one-jet matching at an overlap point and the assumed extension principle.
 -/
 theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransitionsTheorem_of_extension
     (hExtend : PointedRealMobiusTransitionExtendsOnPreconnectedOverlapTheorem) :
@@ -854,6 +1144,14 @@ theorem metricRecoveringSchwarzianNormalizationAtlasHasOffDiagonalRealTransition
 /--
 Off-diagonal real-transition uniqueness gives all transitions in a local
 normalization atlas, since a branch has identity transition to itself.
+
+%%handwave
+name:
+  Off-diagonal uniqueness gives all atlas transitions
+statement:
+  If distinct centers in every metric-recovering normalized Schwarzian atlas have real Möbius transitions, then every pair of centers has a real Möbius transition.
+proof:
+  For equal centers use the identity Möbius transformation; for distinct centers apply the assumed off-diagonal result.
 -/
 theorem localMetricRecoveringSchwarzianNormalizationAtlas_transition_realMobius_of_offDiagonal
     (hOff :
@@ -874,6 +1172,14 @@ theorem localMetricRecoveringSchwarzianNormalizationAtlas_transition_realMobius_
 Overlapping off-diagonal real-transition uniqueness gives all transitions in a
 local normalization atlas.  The diagonal case is identity, and the
 off-diagonal empty-overlap case is vacuous.
+
+%%handwave
+name:
+  Overlapping off-diagonal uniqueness gives all atlas transitions
+statement:
+  If distinct branches with nonempty overlap in every metric-recovering normalized Schwarzian atlas have real Möbius transitions, then every pair of branches has a real Möbius transition.
+proof:
+  First extend the hypothesis to all distinct branches by vacuity on empty overlaps, then use the identity transformation on the diagonal.
 -/
 theorem localMetricRecoveringSchwarzianNormalizationAtlas_transition_realMobius_of_overlappingOffDiagonal
     (hOverlap :
@@ -1023,7 +1329,17 @@ def HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheore
     u.SolvesLiouvilleEquation →
       Nonempty (LocalMetricRecoveringSchwarzianBallPreAtlas u)
 
-/-- Ball pre-atlases forget to ordinary metric-recovering pre-atlases. -/
+/--
+Ball pre-atlases forget to ordinary metric-recovering pre-atlases.
+
+%%handwave
+name:
+  Ball pre-atlases give metric-recovering pre-atlases
+statement:
+  If every Liouville solution admits pointwise metric-recovering normalized Schwarzian branches with ball domains, then it admits such a pre-atlas without retaining the ball witnesses.
+proof:
+  Forget the ball-domain witnesses and retain the chosen Schwarzian coefficients, projective solutions, normalized branches, and base-point coverage.
+-/
 theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianPreAtlasTheorem_of_ballPreAtlas
     (hBallPre :
       HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem) :
@@ -1062,6 +1378,14 @@ def MetricRecoveringSchwarzianPreAtlasHasBallDomainsTheorem : Prop :=
 Ball-shaped normalized domains give preconnected overlaps.  The proof is
 entirely mathlib: balls in a normed vector space are convex, intersections of
 convex sets are convex, and convex sets are preconnected.
+
+%%handwave
+name:
+  Ball branch domains have preconnected overlaps
+statement:
+  If every normalized branch domain in a metric-recovering Schwarzian pre-atlas is a complex metric ball, then every pairwise overlap of branch domains is preconnected.
+proof:
+  Metric balls in ℂ are convex, intersections of convex sets are convex, and convex sets are preconnected.
 -/
 theorem metricRecoveringSchwarzianPreAtlasHasPreconnectedOverlapsTheorem_of_ballDomains
     (hBall : MetricRecoveringSchwarzianPreAtlasHasBallDomainsTheorem) :
@@ -1086,6 +1410,14 @@ def HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlas
 /--
 Pre-atlases plus the overlap-shrinking target give the normalized-Schwarzian
 atlas target.
+
+%%handwave
+name:
+  Preconnected metric-recovering pre-atlases give normalization atlases
+statement:
+  If every Liouville solution admits a metric-recovering Schwarzian pre-atlas and every such pre-atlas has preconnected pairwise overlaps, then every solution admits a metric-recovering normalization atlas.
+proof:
+  Choose the pre-atlas and adjoin the assumed preconnectedness witness for every pair of branch domains.
 -/
 theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem_of_preAtlas
     (hPre : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianPreAtlasTheorem)
@@ -1098,6 +1430,14 @@ theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationA
 /--
 Ball pre-atlases upgrade directly to normalized Schwarzian atlases; the overlap
 preconnectedness is derived from the retained ball witnesses.
+
+%%handwave
+name:
+  Ball pre-atlases give normalized Schwarzian atlases
+statement:
+  If every Liouville solution admits a metric-recovering Schwarzian pre-atlas whose chosen branch domains are balls, then it admits a metric-recovering normalization atlas with preconnected overlaps.
+proof:
+  Forget to the underlying pre-atlas and use convexity of its ball domains to supply preconnected overlaps.
 -/
 theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem_of_ballPreAtlas
     (hBallPre :
@@ -1111,6 +1451,14 @@ theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationA
 /--
 Pre-atlases plus ball-shaped normalized branch domains give the
 normalized-Schwarzian atlas target.
+
+%%handwave
+name:
+  Ball-domain pre-atlases give normalized Schwarzian atlases
+statement:
+  If every Liouville solution admits a metric-recovering Schwarzian pre-atlas and all its normalized branch domains are balls, then it admits such an atlas with preconnected overlaps.
+proof:
+  Ball domains have preconnected pairwise intersections; adjoin these overlap witnesses to the pre-atlas.
 -/
 theorem hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem_of_preAtlasBallDomains
     (hPre : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianPreAtlasTheorem)
@@ -1133,6 +1481,14 @@ def HyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem :
 /--
 Metric-recovering Schwarzian normalization atlases plus the real-transition
 uniqueness theorem give atlases whose overlaps are real Mobius.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases and branch-level real-transition uniqueness
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and branch-level real-transition uniqueness, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Apply real-transition uniqueness to each pair of normalized branches in the metric-recovering atlas.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1145,6 +1501,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 /--
 Metric-recovering Schwarzian normalization atlases plus off-diagonal
 real-transition uniqueness give atlases whose overlaps are real Mobius.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases and real-transition uniqueness for distinct branches
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and real-transition uniqueness for distinct branches, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Use the assumed transition for distinct indices and the identity Möbius transformation on the diagonal.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_offDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1160,6 +1524,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 Metric-recovering Schwarzian normalization atlases plus overlapping
 off-diagonal real-transition uniqueness give atlases whose overlaps are real
 Mobius.  The diagonal case and empty-overlap off-diagonal case are formal.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases and real transitions for distinct branches with nonempty overlap
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and real transitions for distinct branches with nonempty overlap, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Use the assumed transition on nonempty off-diagonal overlaps; empty overlaps are vacuous and diagonal transitions are the identity.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_overlappingOffDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1175,6 +1547,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 Metric-recovering Schwarzian normalization atlases plus the branch-level
 nonempty-overlap transition theorem give atlases whose overlaps are real
 Mobius.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases and branch-level real transitions on nonempty overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and branch-level real transitions on nonempty overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Apply the nonempty-overlap transition to distinct branches, treating empty overlaps and equal indices formally.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_branchNonemptyOverlap
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1189,6 +1569,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 /--
 Metric-recovering Schwarzian normalization atlases plus pointed branch-level
 real-transition uniqueness give atlases whose overlaps are real Mobius.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases, pointed real transitions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, pointed real transitions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Choose a point in each nonempty overlap, match the two branch one-jets there by a real Möbius map, and extend the equality over the preconnected overlap.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_pointed
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1205,6 +1593,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 Metric-recovering Schwarzian normalization atlases plus equal-hyperbolic-norm
 one-jet transitivity and connected-overlap extension give real Mobius
 transitions.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases, real Möbius one-jet transitivity for equal hyperbolic derivative norm, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, real Möbius one-jet transitivity for equal hyperbolic derivative norm, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Metric recovery makes the two branch derivatives have equal hyperbolic norm. Match their one-jets by a real Möbius map and extend across the preconnected overlap.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_hyperbolicDerivativeNorm
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1221,6 +1617,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 Metric-recovering Schwarzian normalization atlases plus value transitivity,
 stabilizer tangent transitivity, and connected-overlap extension give real
 Mobius transitions.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases, transitivity on values, stabilizer transitivity on tangent directions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, transitivity on values, stabilizer transitivity on tangent directions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  First move one branch value to the other, then adjust the derivative by an element of the stabilizer, and finally extend the pointed equality across the overlap.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_value_stabilizer
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1237,6 +1641,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 With value transitivity proved explicitly, metric-recovering Schwarzian
 normalization atlases plus stabilizer tangent transitivity and
 connected-overlap extension give real Mobius transitions.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases, stabilizer transitivity on tangent directions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, stabilizer transitivity on tangent directions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Use the explicit real Möbius value-transitivity result, adjust the derivative within the stabilizer, and extend the pointed equality across the overlap.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_stabilizer
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1250,6 +1662,14 @@ theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_
 Once metric-recovering Schwarzian normalization atlases are constructed,
 connected-overlap extension is the only remaining input for real Mobius
 transitions.
+
+%%handwave
+name:
+  Real Möbius Schwarzian atlases from metric-recovering normalized Schwarzian atlases and extension of pointed transitions across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and extension of pointed transitions across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits an atlas of metric-recovering normalized upper-half-plane Schwarzian branches with preconnected overlaps and real Möbius transition maps.
+proof:
+  Use the proved real Möbius one-jet matching at an overlap point, then extend that equality throughout the preconnected overlap.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricRecovering_extension
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1273,6 +1693,14 @@ def HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem : Prop 
 /--
 Real Schwarzian normalization atlases forget to real upper-half-plane branch
 atlases.
+
+%%handwave
+name:
+  Real Schwarzian atlases give upper-half-plane branch atlases
+statement:
+  If every Liouville solution admits a metric-recovering Schwarzian normalization atlas with real Möbius transitions, then every such solution admits an upper-half-plane branch atlas with the same domains and transitions.
+proof:
+  Forget the chosen Schwarzian ODE and normalization provenance while retaining each upper-half-plane branch, its domain, and its real transition maps.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_realSchwarzian
     (h : HyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem) :
@@ -1284,6 +1712,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 /--
 Metric-recovering Schwarzian normalization atlases plus the real-transition
 uniqueness theorem give real upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases and branch-level real-transition uniqueness
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and branch-level real-transition uniqueness, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Apply real-transition uniqueness to each pair of normalized branches in the metric-recovering atlas. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1296,6 +1732,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 /--
 Metric-recovering Schwarzian normalization atlases plus off-diagonal
 real-transition uniqueness give real upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases and real-transition uniqueness for distinct branches
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and real-transition uniqueness for distinct branches, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Use the assumed transition for distinct indices and the identity Möbius transformation on the diagonal. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_offDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1310,6 +1754,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 Metric-recovering Schwarzian normalization atlases plus overlapping
 off-diagonal real-transition uniqueness give real upper-half-plane branch
 atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases and real transitions for distinct branches with nonempty overlap
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and real transitions for distinct branches with nonempty overlap, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Use the assumed transition on nonempty off-diagonal overlaps; empty overlaps are vacuous and diagonal transitions are the identity. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_overlappingOffDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1323,6 +1775,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 /--
 Metric-recovering Schwarzian normalization atlases plus the branch-level
 nonempty-overlap transition theorem give real upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases and branch-level real transitions on nonempty overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and branch-level real transitions on nonempty overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Apply the nonempty-overlap transition to distinct branches, treating empty overlaps and equal indices formally. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_branchNonemptyOverlap
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1336,6 +1796,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 /--
 Metric-recovering Schwarzian normalization atlases plus pointed branch-level
 real-transition uniqueness give real upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases, pointed real transitions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, pointed real transitions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Choose a point in each nonempty overlap, match the two branch one-jets there by a real Möbius map, and extend the equality over the preconnected overlap. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_pointed
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1351,6 +1819,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 Metric-recovering Schwarzian normalization atlases plus equal-hyperbolic-norm
 one-jet transitivity and connected-overlap extension give real
 upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases, real Möbius one-jet transitivity for equal hyperbolic derivative norm, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, real Möbius one-jet transitivity for equal hyperbolic derivative norm, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Metric recovery makes the two branch derivatives have equal hyperbolic norm. Match their one-jets by a real Möbius map and extend across the preconnected overlap. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_hyperbolicDerivativeNorm
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1366,6 +1842,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 Metric-recovering Schwarzian normalization atlases plus value transitivity,
 stabilizer tangent transitivity, and connected-overlap extension give real
 upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases, transitivity on values, stabilizer transitivity on tangent directions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, transitivity on values, stabilizer transitivity on tangent directions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  First move one branch value to the other, then adjust the derivative by an element of the stabilizer, and finally extend the pointed equality across the overlap. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_value_stabilizer
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1381,6 +1865,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 With value transitivity proved explicitly, metric-recovering Schwarzian
 normalization atlases plus stabilizer tangent transitivity and
 connected-overlap extension give real upper-half-plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases, stabilizer transitivity on tangent directions, and extension across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases, stabilizer transitivity on tangent directions, and extension across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Use the explicit real Möbius value-transitivity result, adjust the derivative within the stabilizer, and extend the pointed equality across the overlap. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_stabilizer
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1395,6 +1887,14 @@ theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_
 Once metric-recovering Schwarzian normalization atlases are constructed,
 connected-overlap extension is the only remaining input for real upper-half-
 plane branch atlases.
+
+%%handwave
+name:
+  Real upper-half-plane branch atlases from metric-recovering normalized Schwarzian atlases and extension of pointed transitions across preconnected overlaps
+statement:
+  Assuming metric-recovering normalized Schwarzian atlases and extension of pointed transitions across preconnected overlaps, every conformal factor u satisfying Δu = e^{2u} admits a covering by metric-recovering upper-half-plane branches whose pairwise transitions are real Möbius transformations.
+proof:
+  Use the proved real Möbius one-jet matching at an overlap point, then extend that equality throughout the preconnected overlap. Then forget the Schwarzian-normalization provenance.
 -/
 theorem hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricRecovering_extension
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1457,6 +1957,14 @@ def HyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem :
 /--
 Local real upper-half-plane branch atlases give coordinate Poincare pullback
 formula atlases on a global coordinate domain.
+
+%%handwave
+name:
+  Coordinate Poincare pullback formulas on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a coordinate atlas of Poincare pullback formulas.
+proof:
+  Convert each real upper-half-plane branch into its Poincare pullback formula and retain the real Möbius overlap compatibility.
 -/
 theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasOnUnivTheorem_of_realBranches
     (h : HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem) :
@@ -1468,6 +1976,14 @@ theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasO
 /--
 Local real upper-half-plane branch atlases give local Liouville developing
 solution atlases on a global coordinate domain.
+
+%%handwave
+name:
+  Local Liouville developing solutions on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a local atlas of Liouville developing solutions.
+proof:
+  Restrict u to each branch domain, pair it with the upper-half-plane developing branch, and retain the Liouville equation and real transition maps.
 -/
 theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTheorem_of_realBranches
     (h : HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem) :
@@ -1479,6 +1995,14 @@ theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTh
 /--
 Local real upper-half-plane branch atlases give local upper-half-plane models
 on a global coordinate domain.
+
+%%handwave
+name:
+  Upper-half-plane local models on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits upper-half-plane local isometry models.
+proof:
+  Convert the real branch atlas to a local Liouville developing-solution atlas, then regard each branch as a local isometry into ℍ.
 -/
 theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_realBranches
     (h : HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem) :
@@ -1491,6 +2015,14 @@ theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_rea
 /--
 The local Liouville developing-solution consequence implies the coordinate
 pullback-formula consequence.
+
+%%handwave
+name:
+  Coordinate Poincare pullback formulas on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a coordinate atlas of Poincare pullback formulas.
+proof:
+  Forget the restricted Liouville-solution fields of each local developing chart and retain its Poincare pullback formula.
 -/
 theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasOnUnivTheorem_of_localLiouville
     (h : HyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTheorem) :
@@ -1502,6 +2034,14 @@ theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasO
 /--
 The local Liouville developing-solution consequence implies local
 upper-half-plane model existence.
+
+%%handwave
+name:
+  Upper-half-plane local models on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits upper-half-plane local isometry models.
+proof:
+  Each local Liouville developing solution is a local isometry to ℍ because its branch pulls back the Poincare metric to g.
 -/
 theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_localLiouville
     (h : HyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTheorem) :
@@ -1514,6 +2054,14 @@ theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_loc
 Metric-recovering Schwarzian normalization atlases plus real-transition
 uniqueness give the coordinate pullback-formula atlas on a global coordinate
 domain.
+
+%%handwave
+name:
+  Coordinate Poincare pullback formulas on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a coordinate atlas of Poincare pullback formulas.
+proof:
+  First use branch-level transition uniqueness to convert the metric-recovering Schwarzian atlas into a real upper-half-plane branch atlas, then apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasOnUnivTheorem_of_metricRecovering
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1527,6 +2075,14 @@ theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasO
 Metric-recovering Schwarzian normalization atlases plus real-transition
 uniqueness give the local Liouville developing-solution atlas on a global
 coordinate domain.
+
+%%handwave
+name:
+  Local Liouville developing solutions on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a local atlas of Liouville developing solutions.
+proof:
+  First use branch-level transition uniqueness to convert the metric-recovering Schwarzian atlas into a real upper-half-plane branch atlas, then apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTheorem_of_metricRecovering
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1539,6 +2095,14 @@ theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTh
 /--
 Metric-recovering Schwarzian normalization atlases plus real-transition
 uniqueness give local upper-half-plane models on a global coordinate domain.
+
+%%handwave
+name:
+  Upper-half-plane local models on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits upper-half-plane local isometry models.
+proof:
+  First use branch-level transition uniqueness to convert the metric-recovering Schwarzian atlas into a real upper-half-plane branch atlas, then apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_metricRecovering
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1552,6 +2116,14 @@ theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_met
 Metric-recovering Schwarzian normalization atlases plus overlapping
 off-diagonal real-transition uniqueness give the coordinate pullback-formula
 atlas on a global coordinate domain.
+
+%%handwave
+name:
+  Coordinate Poincare pullback formulas on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a coordinate atlas of Poincare pullback formulas.
+proof:
+  Complete the off-diagonal transitions by vacuity on empty overlaps and the identity on equal branches, form the real branch atlas, and apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasOnUnivTheorem_of_metricRecovering_overlappingOffDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1566,6 +2138,14 @@ theorem hyperbolicLiouvilleProducesCoordinateUpperHalfPlanePullbackFormulaAtlasO
 Metric-recovering Schwarzian normalization atlases plus overlapping
 off-diagonal real-transition uniqueness give the local Liouville
 developing-solution atlas on a global coordinate domain.
+
+%%handwave
+name:
+  Local Liouville developing solutions on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits a local atlas of Liouville developing solutions.
+proof:
+  Complete the off-diagonal transitions by vacuity on empty overlaps and the identity on equal branches, form the real branch atlas, and apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTheorem_of_metricRecovering_overlappingOffDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1580,6 +2160,14 @@ theorem hyperbolicLiouvilleProducesLocalLiouvilleDevelopingSolutionAtlasOnUnivTh
 Metric-recovering Schwarzian normalization atlases plus overlapping
 off-diagonal real-transition uniqueness give local upper-half-plane models on
 a global coordinate domain.
+
+%%handwave
+name:
+  Upper-half-plane local models on a global coordinate domain
+statement:
+  Let u solve Δu = e^{2u} on all of ℂ, and let a hyperbolic metric g have density e^{2u} in the identity coordinate. Under the stated atlas hypothesis, g admits upper-half-plane local isometry models.
+proof:
+  Complete the off-diagonal transitions by vacuity on empty overlaps and the identity on equal branches, form the real branch atlas, and apply the corresponding global-coordinate construction.
 -/
 theorem hyperbolicLiouvilleProducesUpperHalfPlaneLocalModelsOnUnivTheorem_of_metricRecovering_overlappingOffDiagonal
     (hAtlas : HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem)
@@ -1643,6 +2231,14 @@ def toLocalProjectiveDevelopingMap
 /--
 The projective developing map produced from a centered Frobenius pair has a
 continuous affine coordinate on its domain.
+
+%%handwave
+name:
+  Continuity of a Frobenius projective coordinate
+statement:
+  If f = y₁/y₂ is the projective coordinate determined by a centered normalized Frobenius pair, then f is continuous at every point of its ball domain.
+proof:
+  Identify the projective affine coordinate with the quotient of the two Frobenius solutions and use the established continuity of that quotient.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMap_continuousAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1660,6 +2256,14 @@ theorem toLocalProjectiveDevelopingMap_affineMap_continuousAt
 /--
 The projective developing map produced from a centered Frobenius pair has a
 `C^3` affine coordinate on its domain.
+
+%%handwave
+name:
+  Smoothness of a Frobenius projective coordinate
+statement:
+  If f = y₁/y₂ is the projective coordinate determined by a centered normalized Frobenius pair, then f is C³ on its ball domain.
+proof:
+  After identifying f with the Frobenius quotient, apply the proved C³ regularity of that quotient.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMap_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1677,6 +2281,14 @@ theorem toLocalProjectiveDevelopingMap_affineMap_contDiffOn
 /--
 The symbolic first derivative branch of the projective developing map produced
 from a centered Frobenius pair is `C^3` on its domain.
+
+%%handwave
+name:
+  Smoothness of the derivative of a Frobenius projective coordinate
+statement:
+  For a centered normalized Frobenius pair, the stored derivative f₁ of the projective quotient f is C³ on its ball domain.
+proof:
+  Rewrite f₁ by the Wronskian quotient formula and apply its established C³ regularity.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMapDeriv_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1697,6 +2309,14 @@ theorem toLocalProjectiveDevelopingMap_affineMapDeriv_contDiffOn
 The projective developing map produced from a centered Frobenius pair has the
 expected actual affine derivative, provided each individual centered solution
 has its stored actual derivative.
+
+%%handwave
+name:
+  The derivative of a Frobenius projective coordinate
+statement:
+  If the two centered Frobenius solutions have their prescribed actual derivatives, then the projective quotient f satisfies f′(z) = f₁(z) at every point z of its ball domain.
+proof:
+  Apply the quotient rule to f = y₁/y₂, using nonvanishing of the denominator and the assumed actual derivatives of the two solutions.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMap_hasDerivAt_of_solutionHasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1719,6 +2339,14 @@ theorem toLocalProjectiveDevelopingMap_affineMap_hasDerivAt_of_solutionHasDerivA
 The projective developing map produced from a centered Frobenius pair has the
 expected derivative of its first derivative branch, provided each centered
 solution has its stored first and second actual derivatives.
+
+%%handwave
+name:
+  The second derivative of a Frobenius projective coordinate
+statement:
+  If the centered Frobenius solutions have their prescribed first and second derivatives, then the stored derivative f₁ of their projective quotient satisfies f₁′(z) = f₂(z) throughout the ball domain.
+proof:
+  Differentiate the Wronskian quotient formula for f₁ using the assumed solution derivatives and the Schwarzian differential equation.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMapDeriv_hasDerivAt_of_solutionHasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1743,6 +2371,14 @@ theorem toLocalProjectiveDevelopingMap_affineMapDeriv_hasDerivAt_of_solutionHasD
 The projective developing map produced from a centered Frobenius pair has the
 expected derivative of its second derivative branch, provided each centered
 solution has its stored first and second actual derivatives.
+
+%%handwave
+name:
+  The third derivative of a Frobenius projective coordinate
+statement:
+  If the centered Frobenius solutions have their prescribed first and second derivatives, then the stored second derivative f₂ of their projective quotient satisfies f₂′(z) = f₃(z) throughout the ball domain.
+proof:
+  Differentiate the explicit formula for f₂ and simplify with the solution differential equation and the Wronskian formula.
 -/
 theorem toLocalProjectiveDevelopingMap_affineMapSecondDeriv_hasDerivAt_of_solutionHasDerivAt
     {u : LocalConformalFactor} {S : LocalSchwarzianData u} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -1807,7 +2443,17 @@ def HyperbolicSchwarzianBaseJetExistenceTheorem : Prop :=
     u.SolvesLiouvilleEquation → z ∈ u.coordinateDomain →
       Nonempty (HyperbolicSchwarzianBaseJet u z)
 
-/-- The base jet is obtained from the canonical Frechet-Wirtinger derivative. -/
+/--
+The base jet is obtained from the canonical Frechet-Wirtinger derivative.
+
+%%handwave
+name:
+  Existence of the hyperbolic Schwarzian base jet
+statement:
+  If u solves Δu = e^{2u} and z lies in its coordinate domain, then the finite two-jet with value i, first derivative e^{u(z)}, and second derivative e^{u(z)}(2u_z(z) − i e^{u(z)}) is defined and nondegenerate.
+proof:
+  Use the canonical Wirtinger derivative u_z(z); positivity of e^{u(z)} supplies nondegeneracy, and the compatibility field is immediate.
+-/
 theorem hyperbolicSchwarzianBaseJetExistenceTheorem :
     HyperbolicSchwarzianBaseJetExistenceTheorem := by
   intro u z _hu _hz
@@ -1952,6 +2598,14 @@ def LocalProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem : Pr
 /--
 The centered Frobenius construction gives projective developing maps with
 continuous affine coordinates.
+
+%%handwave
+name:
+  Continuity of every Frobenius projective coordinate
+statement:
+  Every projective coordinate f obtained as a quotient of a centered normalized Frobenius pair is continuous throughout its ball domain.
+proof:
+  Apply continuity of the quotient established directly for each centered Frobenius pair.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineContinuousAtTheorem :
     LocalProjectiveFrobeniusDevelopingMapAffineContinuousAtTheorem := by
@@ -1961,6 +2615,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineContinuousAtTheorem :
 /--
 The individual Frobenius-solution derivative theorem proves the quotient-rule
 boundary for Frobenius projective developing maps.
+
+%%handwave
+name:
+  The first derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f′ = f₁ throughout its ball domain.
+proof:
+  Apply the quotient rule using the assumed actual derivatives of the two Frobenius solutions.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem_of_solutionHasDerivAt
     (hSolDeriv : CenteredSchwarzianFrobeniusSolutionHasDerivAtTheorem) :
@@ -1972,6 +2634,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem_of_solution
 /--
 For Frobenius projective developing maps, the affine coordinate has the stored
 first derivative.
+
+%%handwave
+name:
+  The first derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f′ = f₁ throughout its ball domain.
+proof:
+  Apply the established scalar power-series differentiation theorem and the resulting quotient-rule identity.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem :
     LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem :=
@@ -1982,6 +2652,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem :
 The individual Frobenius-solution first- and second-derivative theorems prove
 the quotient-rule boundary for the first affine derivative of Frobenius
 projective developing maps.
+
+%%handwave
+name:
+  The second derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₁′ = f₂ throughout its ball domain.
+proof:
+  Differentiate the quotient and its first derivative using the assumed actual first and second derivatives of the Frobenius solutions.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem_of_solutionHasDerivAt
     (hSolDeriv : CenteredSchwarzianFrobeniusSolutionHasDerivAtTheorem)
@@ -1995,6 +2673,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem_of_sol
 /--
 The scalar power-series derivative bridge proves the first-derivative
 differentiability boundary for Frobenius projective developing maps.
+
+%%handwave
+name:
+  The second derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₁′ = f₂ throughout its ball domain.
+proof:
+  The scalar power-series differentiation theorem supplies the actual derivatives of the Frobenius solutions; substitute them into the corresponding quotient-rule calculation.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem) :
@@ -2008,6 +2694,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem_of_sca
 /--
 For Frobenius projective developing maps, the affine first-derivative field has
 the stored second derivative.
+
+%%handwave
+name:
+  The second derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₁′ = f₂ throughout its ball domain.
+proof:
+  Apply the established scalar power-series differentiation theorem and the resulting quotient-rule identity.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem :
     LocalProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem :=
@@ -2018,6 +2712,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineDerivHasDerivAtTheorem :
 The individual Frobenius-solution first- and second-derivative theorems also
 prove the quotient-rule boundary for the second affine derivative of Frobenius
 projective developing maps.
+
+%%handwave
+name:
+  The third derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₂′ = f₃ throughout its ball domain.
+proof:
+  Differentiate the quotient formulas through second order using the assumed actual first and second derivatives of the Frobenius solutions.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem_of_solutionHasDerivAt
     (hSolDeriv : CenteredSchwarzianFrobeniusSolutionHasDerivAtTheorem)
@@ -2031,6 +2733,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem_
 /--
 The scalar power-series derivative bridge proves the second-derivative
 differentiability boundary for Frobenius projective developing maps.
+
+%%handwave
+name:
+  The third derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₂′ = f₃ throughout its ball domain.
+proof:
+  The scalar power-series differentiation theorem supplies the actual derivatives of the Frobenius solutions; substitute them into the corresponding quotient-rule calculation.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem) :
@@ -2044,6 +2754,14 @@ theorem localProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem_
 /--
 For Frobenius projective developing maps, the affine second-derivative field
 has the stored third derivative.
+
+%%handwave
+name:
+  The third derivative of every Frobenius projective coordinate
+statement:
+  Every such projective coordinate satisfies f₂′ = f₃ throughout its ball domain.
+proof:
+  Apply the established scalar power-series differentiation theorem and the resulting quotient-rule identity.
 -/
 theorem localProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem :
     LocalProjectiveFrobeniusDevelopingMapAffineSecondDerivHasDerivAtTheorem :=
@@ -2074,6 +2792,14 @@ def LocalProjectiveNormalFormPostcompositionSchwarzianInvariantTheorem : Prop :=
 /--
 Explicit normal-form Mobius postcomposition preserves the symbolic Schwarzian
 coefficient.
+
+%%handwave
+name:
+  Möbius postcomposition preserves the Schwarzian
+statement:
+  Let f be a locally univalent projective coordinate with Schwarzian q, and let M be the explicit Möbius map matching a prescribed nondegenerate two-jet. On every pole-free shrink, S(M ∘ f) = S(f) = q.
+proof:
+  Use the explicit chain-rule derivatives through third order to cancel the Möbius terms in S(g) = g‴/g′ − 3(g″/g′)²/2, then apply S(f) = q.
 -/
 theorem localProjectiveNormalFormPostcompositionSchwarzianInvariantTheorem :
     LocalProjectiveNormalFormPostcompositionSchwarzianInvariantTheorem := by
@@ -2363,6 +3089,14 @@ def LocalProjectiveFrobeniusMobiusTwoJetTransitivityTheorem : Prop :=
 For Frobenius-produced projective maps, Schwarzian invariance alone gives the
 explicit normal-form postcomposition data: the continuity/pole-avoidance part
 is already proved from the convergent solution series.
+
+%%handwave
+name:
+  Equal Schwarzians give an explicit Möbius postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, there is a pole-free open shrink on which the explicit normal-form postcomposition M ∘ f has the prescribed value and first two derivatives and has the same Schwarzian as f.
+proof:
+  Use continuity of the Frobenius quotient for the pole-free shrink and the Schwarzian invariance of explicit Möbius postcomposition.
 -/
 theorem localProjectiveFrobeniusNormalFormPostcompositionExplicitDataTheorem_of_schwarzian
     (hSchwarzian :
@@ -2382,6 +3116,14 @@ theorem localProjectiveFrobeniusNormalFormPostcompositionExplicitDataTheorem_of_
 /--
 For Frobenius-produced projective maps, explicit normal-form postcomposition
 data is now available without an extra Schwarzian-invariance hypothesis.
+
+%%handwave
+name:
+  Frobenius normal forms admit explicit Möbius postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, there is a pole-free open shrink on which the explicit normal-form postcomposition M ∘ f has the prescribed value and first two derivatives and has the same Schwarzian as f.
+proof:
+  Use continuity of the Frobenius quotient for the pole-free shrink and the Schwarzian invariance of explicit Möbius postcomposition.
 -/
 theorem localProjectiveFrobeniusNormalFormPostcompositionExplicitDataTheorem :
     LocalProjectiveFrobeniusNormalFormPostcompositionExplicitDataTheorem :=
@@ -2392,6 +3134,14 @@ theorem localProjectiveFrobeniusNormalFormPostcompositionExplicitDataTheorem :
 For Frobenius-produced projective maps, the canonical explicit normal-form
 postcomposition data is available, and it stores the actual normal-form
 chain-rule third derivative.
+
+%%handwave
+name:
+  Canonical Frobenius normal forms have an explicit third-order Möbius postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, the explicit normal-form postcomposition M ∘ f is defined on a pole-free open shrink, has the target chain-rule jet, and carries its canonical third derivative.
+proof:
+  Continuity gives a neighborhood avoiding the unique Möbius pole. Use the explicit normal-form formulas for M, its first three derivatives, and the resulting Schwarzian identity.
 -/
 theorem localProjectiveFrobeniusNormalFormCanonicalPostcompositionExplicitDataTheorem :
     LocalProjectiveFrobeniusNormalFormCanonicalPostcompositionExplicitDataTheorem := by
@@ -2409,6 +3159,14 @@ theorem localProjectiveFrobeniusNormalFormCanonicalPostcompositionExplicitDataTh
 For Frobenius-produced maps, explicit normal-form Schwarzian invariance gives
 the topological upper-half-plane landing ball for the hyperbolic target
 normalization.
+
+%%handwave
+name:
+  Normal-form landing in the upper half plane
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and the hyperbolic target jet at z₀, there is r > 0 such that the explicit normal-form branch M ∘ f maps B(z₀,r) into ℍ.
+proof:
+  Construct the pole-free normal-form branch. Its value at z₀ is i, so continuity and openness of ℍ provide the required ball.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLandingTheorem_of_schwarzian
     (hSchwarzian :
@@ -2452,6 +3210,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLandingTheorem :
 For Frobenius-produced maps, the canonical explicit normal-form branch lands
 in the upper half-plane on a ball contained in its domain, and it keeps the
 canonical third-derivative field.
+
+%%handwave
+name:
+  Canonical normal-form landing in the upper half-plane
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and the hyperbolic target jet at z₀, the canonical normal-form branch M ∘ f maps a ball B(z₀,r) contained in its pole-free domain into ℍ and retains the canonical third derivative.
+proof:
+  Construct the canonical pole-free branch. Since its base value is i, continuity and openness of ℍ give a smaller ball mapping to ℍ; retain the canonical third-derivative formula.
 -/
 theorem localProjectiveFrobeniusNormalFormCanonicalLandingTheorem :
     LocalProjectiveFrobeniusNormalFormCanonicalLandingTheorem := by
@@ -2470,6 +3236,14 @@ theorem localProjectiveFrobeniusNormalFormCanonicalLandingTheorem :
 /--
 Derivative-identification data gives the full upper-half-plane lift boundary:
 the `ℍ`-valued map itself is built from the landing proof.
+
+%%handwave
+name:
+  An upper-half-plane lift of the normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair whose normal-form postcomposition maps a ball into ℍ and has its actual derivative identified, the branch restricts to a holomorphic ℍ-valued map on that ball with the prescribed projective coordinate and two-jet.
+proof:
+  Restrict the normal-form branch to the landing ball, use positivity of its imaginary part to regard it as ℍ-valued, and transfer the identified derivative.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem_of_derivativeIdentification
     (hDeriv : LocalProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem) :
@@ -2481,6 +3255,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem_of_derivativ
 /--
 The remaining derivative-identification data for the explicit normal-form
 branch follows from the actual derivative of the underlying Frobenius ratio.
+
+%%handwave
+name:
+  Derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball has actual derivative equal to its stored first chain-rule derivative.
+proof:
+  Apply the chain rule to M ∘ f using the actual derivative of f; if stronger derivative data are available, retain their first-order part.
 -/
 theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem_of_affineHasDerivAt
     (hBase : LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem) :
@@ -2503,6 +3285,14 @@ theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem_of_aff
 The second-derivative identification data for the explicit normal-form branch
 follows from the actual derivative of the underlying Frobenius ratio and of
 its first derivative.
+
+%%handwave
+name:
+  Second-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball has actual first and second derivatives equal to its stored chain-rule fields.
+proof:
+  Apply the chain rule twice, using the actual first and second derivatives of the underlying Frobenius quotient.
 -/
 theorem localProjectiveFrobeniusNormalFormSecondDerivativeIdentificationTheorem_of_affineHasDerivAt
     (hBase : LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem)
@@ -2517,6 +3307,14 @@ theorem localProjectiveFrobeniusNormalFormSecondDerivativeIdentificationTheorem_
 /--
 Second-derivative identification implies first-derivative identification by
 forgetting the derivative of the derivative branch.
+
+%%handwave
+name:
+  Derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball has actual derivative equal to its stored first chain-rule derivative.
+proof:
+  Forget the second-derivative identity and retain the first.
 -/
 theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem_of_secondDerivativeIdentification
     (hSecond : LocalProjectiveFrobeniusNormalFormSecondDerivativeIdentificationTheorem) :
@@ -2528,6 +3326,14 @@ theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem_of_sec
 /--
 For Frobenius-produced maps, the explicit normal-form derivative field agrees
 with the actual derivative on the landing ball.
+
+%%handwave
+name:
+  Derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball has actual derivative equal to its stored first chain-rule derivative.
+proof:
+  Apply the chain rule to M ∘ f using the actual derivative of f; if stronger derivative data are available, retain their first-order part.
 -/
 theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem :
     LocalProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem :=
@@ -2539,6 +3345,14 @@ theorem localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem :
 /--
 For Frobenius-produced maps, the explicit normal-form first-derivative branch
 also has the stored second derivative on the landing ball.
+
+%%handwave
+name:
+  Second-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball has actual first and second derivatives equal to its stored chain-rule fields.
+proof:
+  Apply the chain rule twice, using the actual first and second derivatives of the underlying Frobenius quotient.
 -/
 theorem localProjectiveFrobeniusNormalFormSecondDerivativeIdentificationTheorem :
     LocalProjectiveFrobeniusNormalFormSecondDerivativeIdentificationTheorem :=
@@ -2551,6 +3365,14 @@ The third-derivative identification data for explicit normal-form branches
 follows from the actual derivative of the underlying Frobenius ratio through
 its second derivative branch, once the stored third derivative is the explicit
 normal-form chain-rule field.
+
+%%handwave
+name:
+  Third-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball satisfies (M ∘ f)′, (M ∘ f)″, and (M ∘ f)‴ equal to the stored chain-rule derivative fields through third order.
+proof:
+  Apply the chain rule through third order to the actual derivatives f′ = f₁, f₁′ = f₂, and f₂′ = f₃, and use the explicit normal-form third derivative.
 -/
 theorem localProjectiveFrobeniusNormalFormThirdDerivativeIdentificationTheorem_of_affineHasDerivAt
     (hBase : LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem)
@@ -2570,6 +3392,14 @@ theorem localProjectiveFrobeniusNormalFormThirdDerivativeIdentificationTheorem_o
 For Frobenius-produced maps, normal-form branches with the explicit
 chain-rule third derivative identify actual derivatives through the second
 derivative branch on the landing ball.
+
+%%handwave
+name:
+  Third-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball satisfies (M ∘ f)′, (M ∘ f)″, and (M ∘ f)‴ equal to the stored chain-rule derivative fields through third order.
+proof:
+  Apply the chain rule through third order to the actual derivatives f′ = f₁, f₁′ = f₂, and f₂′ = f₃, and use the explicit normal-form third derivative.
 -/
 theorem localProjectiveFrobeniusNormalFormThirdDerivativeIdentificationTheorem :
     LocalProjectiveFrobeniusNormalFormThirdDerivativeIdentificationTheorem :=
@@ -2581,6 +3411,14 @@ theorem localProjectiveFrobeniusNormalFormThirdDerivativeIdentificationTheorem :
 /--
 The canonical explicit normal-form construction provides a landing ball and
 derivative identification through the second derivative branch.
+
+%%handwave
+name:
+  Third-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball satisfies (M ∘ f)′, (M ∘ f)″, and (M ∘ f)‴ equal to the stored chain-rule derivative fields through third order.
+proof:
+  Combine the canonical landing ball and canonical third derivative with the third-order derivative-identification result.
 -/
 theorem localProjectiveFrobeniusNormalFormCanonicalThirdDerivativeIdentificationTheorem :
     LocalProjectiveFrobeniusNormalFormCanonicalThirdDerivativeIdentificationTheorem := by
@@ -2595,6 +3433,14 @@ theorem localProjectiveFrobeniusNormalFormCanonicalThirdDerivativeIdentification
 /--
 For Frobenius-produced maps, the explicit normal-form upper-half-plane lift
 data is available on the landing ball.
+
+%%handwave
+name:
+  An upper-half-plane lift of the normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair whose normal-form postcomposition maps a ball into ℍ and has its actual derivative identified, the branch restricts to a holomorphic ℍ-valued map on that ball with the prescribed projective coordinate and two-jet.
+proof:
+  Restrict the normal-form branch to the landing ball, use positivity of its imaginary part to regard it as ℍ-valued, and transfer the identified derivative.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem :
     LocalProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem :=
@@ -2605,6 +3451,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem :
 The explicit-data construction, the strengthened landing ball inside the
 explicit domain, and the remaining lift data give the full Frobenius
 upper-half-plane two-jet normalization.
+
+%%handwave
+name:
+  Hyperbolic two-jet normalization of a Frobenius projective coordinate
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and the hyperbolic target jet at z₀, a Möbius postcomposition restricts to a ball as a holomorphic map F into ℍ with F(z₀)=i, F′(z₀)=e^(u(z₀)), and F″(z₀)=F′(z₀)(2u_z(z₀)−iF′(z₀)).
+proof:
+  Construct the explicit pole-free branch and landing ball, apply the assumed ℍ-valued lift, and package its target two-jet.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_lift
     (hLift : LocalProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem) :
@@ -2627,6 +3481,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_
 /--
 The Frobenius upper-half-plane normalization route expressed through actual
 derivative identification for the explicit normal-form affine branch.
+
+%%handwave
+name:
+  Hyperbolic two-jet normalization of a Frobenius projective coordinate
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and the hyperbolic target jet at z₀, a Möbius postcomposition restricts to a ball as a holomorphic map F into ℍ with F(z₀)=i, F′(z₀)=e^(u(z₀)), and F″(z₀)=F′(z₀)(2u_z(z₀)−iF′(z₀)).
+proof:
+  Obtain derivative identification for the normal-form branch, form the ℍ-valued lift on its landing ball, and package the prescribed two-jet.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_derivativeIdentification
     (hDeriv : LocalProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem) :
@@ -2639,6 +3501,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_
 Canonical third-derivative identification gives the full Frobenius
 upper-half-plane two-jet normalization by forgetting to the derivative
 identification needed for the `ℍ`-valued lift.
+
+%%handwave
+name:
+  Third-order derivative identification for a normal-form branch
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, the explicit normal-form branch on its landing ball satisfies (M ∘ f)′, (M ∘ f)″, and (M ∘ f)‴ equal to the stored chain-rule derivative fields through third order.
+proof:
+  Apply the chain rule through third order to the actual derivatives f′ = f₁, f₁′ = f₂, and f₂′ = f₃, and use the explicit normal-form third derivative.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_canonicalThirdDerivativeIdentification
     (hThird :
@@ -2654,6 +3524,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_
 /--
 The current sharp Frobenius upper-half-plane normalization route expressed in
 terms of the intrinsic derivative target for the Frobenius ratio itself.
+
+%%handwave
+name:
+  Hyperbolic two-jet normalization of a Frobenius projective coordinate
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and the hyperbolic target jet at z₀, a Möbius postcomposition restricts to a ball as a holomorphic map F into ℍ with F(z₀)=i, F′(z₀)=e^(u(z₀)), and F″(z₀)=F′(z₀)(2u_z(z₀)−iF′(z₀)).
+proof:
+  Obtain derivative identification for the normal-form branch, form the ℍ-valued lift on its landing ball, and package the prescribed two-jet.
 -/
 theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_affineHasDerivAt
     (hBase : LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem) :
@@ -2690,6 +3568,14 @@ theorem localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem :
 /--
 The Frobenius explicit-data construction implies the Frobenius sharp
 normal-form postcomposition theorem.
+
+%%handwave
+name:
+  Sharp Möbius two-jet postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, there is a pole-free Möbius postcomposition with exactly the explicit normal-form representative and the prescribed two-jet at the base point.
+proof:
+  Turn the explicit chain-rule data into a two-jet normalization and retain the equality with the normal-form Möbius representative.
 -/
 theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem_of_explicit
     (hExplicit :
@@ -2707,6 +3593,14 @@ theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem_of_explicit
 /--
 For Frobenius-produced projective maps, the proved Schwarzian-invariance
 calculation implies sharp normal-form postcomposition.
+
+%%handwave
+name:
+  Sharp Möbius two-jet postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, there is a pole-free Möbius postcomposition with exactly the explicit normal-form representative and the prescribed two-jet at the base point.
+proof:
+  Turn the explicit chain-rule data into a two-jet normalization and retain the equality with the normal-form Möbius representative.
 -/
 theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem_of_schwarzian
     (hSchwarzian :
@@ -2719,6 +3613,14 @@ theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem_of_schwarzian
 /--
 For Frobenius-produced projective maps, sharp normal-form postcomposition is
 now available without an extra Schwarzian-invariance hypothesis.
+
+%%handwave
+name:
+  Sharp Möbius two-jet postcomposition
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair and every nondegenerate target two-jet, there is a pole-free Möbius postcomposition with exactly the explicit normal-form representative and the prescribed two-jet at the base point.
+proof:
+  Turn the explicit chain-rule data into a two-jet normalization and retain the equality with the normal-form Möbius representative.
 -/
 theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem :
     LocalProjectiveFrobeniusNormalFormPostcompositionTheorem :=
@@ -2728,6 +3630,14 @@ theorem localProjectiveFrobeniusNormalFormPostcompositionTheorem :
 /--
 Sharp Frobenius normal-form postcomposition implies the older Frobenius
 finite two-jet transitivity statement.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem_of_normalFormPostcomposition
     (hPostcompose : LocalProjectiveFrobeniusNormalFormPostcompositionTheorem) :
@@ -2739,6 +3649,14 @@ theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem_of_normalFormPos
 /--
 For Frobenius-produced projective maps, Schwarzian invariance of explicit
 normal-form postcomposition implies finite two-jet transitivity.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem_of_schwarzian
     (hSchwarzian :
@@ -2752,6 +3670,14 @@ theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem_of_schwarzian
 For Frobenius-produced projective maps, finite two-jet transitivity by Mobius
 postcomposition is now available without an extra Schwarzian-invariance
 hypothesis.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every projective coordinate f obtained from a centered Frobenius pair, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem :
     LocalProjectiveFrobeniusMobiusTwoJetTransitivityTheorem :=
@@ -2761,6 +3687,14 @@ theorem localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem :
 /--
 Affine continuity plus explicit Schwarzian invariance gives the explicit
 normal-form postcomposition data theorem.
+
+%%handwave
+name:
+  Continuity and Schwarzian invariance give explicit Möbius postcomposition
+statement:
+  For every locally univalent projective coordinate f and every nondegenerate target two-jet, there is a pole-free open shrink on which the explicit normal-form postcomposition M ∘ f has the prescribed value and first two derivatives and has the same Schwarzian as f.
+proof:
+  Use continuity to choose a pole-free shrink, then supply the assumed Schwarzian invariance and the explicit chain-rule derivatives.
 -/
 theorem localProjectiveNormalFormPostcompositionExplicitDataTheorem_of_continuousAt_schwarzian
     (hCont : LocalProjectiveDevelopingMapAffineContinuousAtTheorem)
@@ -2775,6 +3709,14 @@ theorem localProjectiveNormalFormPostcompositionExplicitDataTheorem_of_continuou
 
 /--
 The explicit-data normal-form construction implies the data-level construction.
+
+%%handwave
+name:
+  Explicit normal-form branches retain their two-jet and Schwarzian
+statement:
+  For every locally univalent projective coordinate f and every nondegenerate target two-jet, the explicit normal-form branch on a pole-free shrink has the prescribed chain-rule jet and unchanged Schwarzian coefficient.
+proof:
+  Forget the canonical formula fields from the explicit construction and retain the branch, its base jet, and Schwarzian identity.
 -/
 theorem localProjectiveNormalFormPostcompositionDataTheorem_of_explicit
     (hExplicit : LocalProjectiveNormalFormPostcompositionExplicitDataTheorem) :
@@ -2786,6 +3728,14 @@ theorem localProjectiveNormalFormPostcompositionDataTheorem_of_explicit
 /--
 The data-level normal-form postcomposition construction implies the sharp
 normal-form postcomposition theorem.
+
+%%handwave
+name:
+  Sharp Möbius two-jet postcomposition
+statement:
+  For every locally univalent projective coordinate f and every nondegenerate target two-jet, there is a pole-free Möbius postcomposition with exactly the explicit normal-form representative and the prescribed two-jet at the base point.
+proof:
+  Turn the explicit chain-rule data into a two-jet normalization and retain the equality with the normal-form Möbius representative.
 -/
 theorem localProjectiveNormalFormPostcompositionTheorem_of_data
     (hData : LocalProjectiveNormalFormPostcompositionDataTheorem) :
@@ -2799,6 +3749,14 @@ theorem localProjectiveNormalFormPostcompositionTheorem_of_data
 /--
 The sharp normal-form postcomposition construction implies the older finite
 two-jet transitivity boundary.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every locally univalent projective coordinate f, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcomposition
     (hPostcompose : LocalProjectiveNormalFormPostcompositionTheorem) :
@@ -2810,6 +3768,14 @@ theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcomposit
 /--
 The data-level normal-form postcomposition construction implies the older
 finite two-jet transitivity boundary.
+
+%%handwave
+name:
+  Explicit normal-form branches imply Möbius two-jet transitivity
+statement:
+  For every locally univalent projective coordinate f, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Convert the explicit normal-form branch to the sharp postcomposition normalization and forget the displayed formula for the Möbius map.
 -/
 theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcompositionData
     (hData : LocalProjectiveNormalFormPostcompositionDataTheorem) :
@@ -2820,6 +3786,14 @@ theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcomposit
 /--
 The explicit-data normal-form postcomposition construction implies the older
 finite two-jet transitivity boundary.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every locally univalent projective coordinate f, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcompositionExplicit
     (hExplicit : LocalProjectiveNormalFormPostcompositionExplicitDataTheorem) :
@@ -2830,6 +3804,14 @@ theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_normalFormPostcomposit
 /--
 Affine continuity and Schwarzian invariance of explicit normal-form
 postcomposition imply the older finite two-jet transitivity boundary.
+
+%%handwave
+name:
+  Möbius transitivity on nondegenerate two-jets
+statement:
+  For every locally univalent projective coordinate f, every nondegenerate finite target two-jet is realized at the base point by a Möbius postcomposition defined on a neighborhood of that point.
+proof:
+  Apply the sharp normal-form construction and forget the displayed formula for the postcomposing Möbius map.
 -/
 theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_continuousAt_schwarzian
     (hCont : LocalProjectiveDevelopingMapAffineContinuousAtTheorem)
@@ -2843,6 +3825,14 @@ theorem localProjectiveMobiusTwoJetTransitivityTheorem_of_continuousAt_schwarzia
 /--
 A continuous complex-valued map whose imaginary part is positive at a base
 point maps a small metric ball into the upper half-plane.
+
+%%handwave
+name:
+  A positive-imaginary continuous map lands locally in the upper half plane
+statement:
+  If f : ℂ → ℂ is continuous at z₀ and Im f(z₀) > 0, then some ball B(z₀,r), with r > 0, is mapped by f into ℍ.
+proof:
+  The upper half plane is open, so its inverse image is a neighborhood of z₀; choose a metric ball contained in that neighborhood.
 -/
 theorem exists_ball_mapsTo_upperHalfPlane_of_continuousAt
     {f : ℂ → ℂ} {z₀ : ℂ}
@@ -2860,6 +3850,14 @@ theorem exists_ball_mapsTo_upperHalfPlane_of_continuousAt
 /--
 A continuous complex-valued map normalized to take value `i` maps a small
 metric ball into the upper half-plane.
+
+%%handwave
+name:
+  A continuous map taking the value i lands locally in the upper half plane
+statement:
+  If f : ℂ → ℂ is continuous at z₀ and f(z₀) = i, then some ball B(z₀,r), with r > 0, is mapped by f into ℍ.
+proof:
+  Since Im i = 1 > 0, apply the local upper-half-plane landing result for a point with positive imaginary part.
 -/
 theorem exists_ball_mapsTo_upperHalfPlane_of_continuousAt_eq_I
     {f : ℂ → ℂ} {z₀ : ℂ}
@@ -2912,6 +3910,14 @@ def HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem : Prop :=
 /--
 Base-jet existence, projective two-jet transitivity, and upper-half-plane
 landing imply the precise hyperbolic two-jet normalization theorem.
+
+%%handwave
+name:
+  Existence of hyperbolic two-jet normalization
+statement:
+  Let u solve Δu = e^{2u}, let f be a local projective solution of its metric Schwarzian equation, and let z lie in the domain of f. Then a Möbius postcomposition restricts near z to an ℍ-valued branch F with F(z)=i, F′(z)=e^{u(z)}, and F″(z)=F′(z)(2u_z(z)−iF′(z)).
+proof:
+  Construct the hyperbolic target jet, realize it by Möbius two-jet transitivity, and apply the assumed upper-half-plane landing theorem.
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem_of_projectiveTwoJet
     (hBase : HyperbolicSchwarzianBaseJetExistenceTheorem)
@@ -2928,6 +3934,14 @@ theorem hyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem_of_pro
 Projective two-jet transitivity and upper-half-plane landing imply the precise
 hyperbolic two-jet normalization theorem; the canonical base jet is constructed
 internally.
+
+%%handwave
+name:
+  Existence of hyperbolic two-jet normalization
+statement:
+  Let u solve Δu = e^{2u}, let f be a local projective solution of its metric Schwarzian equation, and let z lie in the domain of f. Then a Möbius postcomposition restricts near z to an ℍ-valued branch F with F(z)=i, F′(z)=e^{u(z)}, and F″(z)=F′(z)(2u_z(z)−iF′(z)).
+proof:
+  Use the canonical hyperbolic target jet, realize it by Möbius two-jet transitivity, and apply the upper-half-plane landing theorem.
 -/
 theorem hyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem_of_projectiveTwoJetLanding
     (hMobius : LocalProjectiveMobiusTwoJetTransitivityTheorem)
@@ -3099,14 +4113,6 @@ def HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem : Prop :=
     u.SolvesLiouvilleEquation →
       Nonempty (LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N)
 
-/-- The full affine-derivative theorem forgets to affine derivative algebra. -/
-theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toAffineDerivativeAlgebraData⟩
-
 /--
 Canonical pullback theorem for the regularity side of the normalized Poincare
 pullback calculation.
@@ -3165,6 +4171,14 @@ def HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem : Prop :=
 /--
 The three separate affine derivative-identification theorems give the bundled
 derivative-identification theorem.
+
+%%handwave
+name:
+  The first three affine derivative identities combine
+statement:
+  Let u solve Δu = e^{2u}, and let F be a two-jet-normalized local projective branch. If F, its stored first derivative F₁, and its stored second derivative F₂ are complex differentiable and satisfy F′ = F₁, F₁′ = F₂, and F₂′ = F₃ throughout the normalized domain, then all three derivative identities hold simultaneously there.
+proof:
+  Combine the differentiability and derivative equalities supplied at the three successive orders.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_first_second_third
     (hFirst : HyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem)
@@ -3177,34 +4191,7 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_firs
   rcases hThird S N hu with ⟨I₃⟩
   exact ⟨I₁.withSecondAndThird I₂ I₃⟩
 
-/-- The bundled derivative-identification theorem forgets to the first level. -/
-theorem hyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem_of_derivativeIdentification
-    (hId : HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem) :
-    HyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hId S N hu with ⟨I⟩
-  exact ⟨I.toFirstDerivativeIdentificationData⟩
-
-/-- The bundled derivative-identification theorem forgets to the second level. -/
-theorem hyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem_of_derivativeIdentification
-    (hId : HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem) :
-    HyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hId S N hu with ⟨I⟩
-  exact ⟨I.toSecondDerivativeIdentificationData⟩
-
-/-- The bundled derivative-identification theorem forgets to the third level. -/
-theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem_of_derivativeIdentification
-    (hId : HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem) :
-    HyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hId S N hu with ⟨I⟩
-  exact ⟨I.toThirdDerivativeIdentificationData⟩
-
-/--
-Canonical pullback theorem where affine branch derivatives are identified with
-mathlib's `deriv` operator.
--/
+/-- Canonical pullback regularity together with the first three affine derivative identities. -/
 def HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem : Prop :=
   ∀ {u : LocalConformalFactor} (S : LocalSchwarzianData u)
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -3214,6 +4201,14 @@ def HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem : Prop :=
 
 /--
 Regularity plus derivative identification give the derivative-algebra theorem.
+
+%%handwave
+name:
+  Regularity and affine derivative identities determine the derivative algebra
+statement:
+  Let u solve Δu = e^{2u}, and let F be a two-jet-normalized local projective branch. If F and F′ are C³, the logarithmic pullback density is twice differentiable, and the stored affine branches satisfy F′ = F₁, F₁′ = F₂, and F₂′ = F₃, then this regularity and all three identities hold simultaneously.
+proof:
+  Join the regularity assertions to the three complex derivative identities.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_regularity_and_derivativeIdentification
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3227,6 +4222,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_regularity_
 /--
 Regularity plus the three affine derivative-identification levels give the
 derivative-algebra theorem.
+
+%%handwave
+name:
+  Regularity and three successive derivative identities determine the derivative algebra
+statement:
+  Let u solve Δu = e^{2u}, and let F be a two-jet-normalized local projective branch. If the canonical C³ and twice-differentiability conclusions hold and the identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ are proved separately, then the branch satisfies the complete affine derivative algebra.
+proof:
+  Combine the three successive derivative identities and join them to the regularity assertions.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_regularity_first_second_third
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3239,15 +4242,17 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_regularity_
     (hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_first_second_third
       hFirst hSecond hThird)
 
-/-- The derivative-algebra theorem forgets to the regularity theorem. -/
-theorem hyperbolicTwoJetCanonicalPullbackRegularityTheorem_of_derivativeAlgebra
-    (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackRegularityTheorem := by
-  intro u S D z₀ N hu
-  rcases hAlg S N hu with ⟨A⟩
-  exact ⟨A.toRegularityData⟩
+/--
+The derivative-algebra theorem forgets to the derivative-identification theorem.
 
-/-- The derivative-algebra theorem forgets to the derivative-identification theorem. -/
+%%handwave
+name:
+  The affine derivative algebra contains all three derivative identities
+statement:
+  If a two-jet-normalized branch satisfies the canonical regularity and affine derivative algebra, then its stored branches satisfy F′ = F₁, F₁′ = F₂, and F₂′ = F₃ throughout the normalized domain.
+proof:
+  Retain the differentiability and derivative-equality components and discard only the regularity fields.
+-/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_derivativeAlgebra
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
     HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem := by
@@ -3256,21 +4261,18 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_deri
   exact ⟨A.toDerivativeIdentificationData⟩
 
 /--
-Actual affine derivative algebra implies the derivative-algebra theorem by
-identifying mathlib's `deriv` values from the supplied `HasDerivAt` proofs.
--/
-theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toDerivativeAlgebraData⟩
-
-/--
 Derivative algebra gives actual affine derivative algebra.  This removes the
 need to pair derivative algebra with a separate Poincare Laplacian theorem:
 after converting to actual `HasDerivAt` data, the mixed-expression calculation
 supplies that Laplacian field internally.
+
+%%handwave
+name:
+  Complex derivative identities give pointwise affine derivatives
+statement:
+  Let f be the affine representative of a two-jet-normalized projective branch. If f, f₁, and f₂ are complex differentiable with complex derivatives f₁, f₂, and f₃, then they satisfy the corresponding pointwise derivative identities, with the canonical regularity unchanged.
+proof:
+  Complex differentiability and each ordinary derivative equality yield the corresponding actual derivative statement.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem_of_derivativeAlgebra
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
@@ -3278,17 +4280,6 @@ theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem_of_deriv
   intro u S D z₀ N hu
   rcases hAlg S N hu with ⟨A⟩
   exact ⟨A.toAffineDerivativeAlgebraData⟩
-
-/--
-Actual affine derivative algebra directly supplies the regularity side of the
-canonical pullback derivative-algebra package.
--/
-theorem hyperbolicTwoJetCanonicalPullbackRegularityTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackRegularityTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toRegularityData⟩
 
 /--
 Canonical pullback theorem for the geometric Laplacian identity
@@ -3304,17 +4295,6 @@ def HyperbolicTwoJetCanonicalPullbackLaplacianTheorem : Prop :=
         N.pullbackDensitySq z
 
 /--
-Actual affine derivative algebra implies the Poincare Laplacian theorem via
-the explicit mixed-expression derivative calculation.
--/
-theorem hyperbolicTwoJetCanonicalPullbackLaplacianTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackLaplacianTheorem := by
-  intro u S D z₀ N hu z hz
-  rcases hA S N hu with ⟨A⟩
-  exact A.toCoreData.laplacian_eq_pullbackDensitySq z hz
-
-/--
 Canonical pullback theorem where affine branch derivatives are identified with
 mathlib's `deriv` operator and the Poincare Laplacian calculation is included.
 -/
@@ -3326,21 +4306,17 @@ def HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem : Prop :=
       Nonempty (LocalHyperbolicCanonicalPullbackDerivIdentifiedData N)
 
 /--
-Affine derivative algebra plus the geometric Laplacian identity give the full
-affine-derivative canonical pullback theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem_of_affineDerivativeAlgebra_and_laplacian
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
-    (hLap : HyperbolicTwoJetCanonicalPullbackLaplacianTheorem) :
-    HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.withLaplacian (hLap S N hu)⟩
-
-/--
 Actual affine derivative algebra gives the full affine-derivative canonical
 pullback theorem; the Poincare Laplacian field is supplied by the explicit
 mixed-expression calculation.
+
+%%handwave
+name:
+  Affine derivative identities imply the canonical pullback Laplacian formula
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If F and its first two affine derivative branches satisfy F′ = F₁, F₁′ = F₂, and F₂′ = F₃ with the canonical regularity, then Δv = |F′|²/(Im F)².
+proof:
+  Use the pointwise affine derivative identities in the mixed-Wirtinger calculation of the Poincare pullback density.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem_of_affineDerivativeAlgebra
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
@@ -3352,6 +4328,14 @@ theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem_of_affineDeriva
 /--
 Actual affine derivative algebra plus the geometric Laplacian identity give the
 derivative-identified canonical pullback theorem.
+
+%%handwave
+name:
+  Affine derivatives and the Laplacian formula identify all complex derivatives
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized branch F. If the pointwise identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ hold with the canonical regularity, and Δv = |F′|²/(Im F)², then the corresponding complex derivatives are identified and the Laplacian equality is retained.
+proof:
+  Convert each pointwise derivative assertion into complex differentiability with the displayed derivative, and adjoin the Laplacian equality.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivativeAlgebra_and_laplacian
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem)
@@ -3364,6 +4348,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivat
 /--
 Actual affine derivative algebra gives the derivative-identified canonical
 pullback theorem, with the Poincare Laplacian field obtained internally.
+
+%%handwave
+name:
+  Affine derivative identities determine the identified canonical pullback
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If the canonical regularity and the pointwise identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ hold, then the corresponding complex derivative identifications hold and Δv = |F′|²/(Im F)².
+proof:
+  Identify the three complex derivatives and obtain the Laplacian equality from the mixed-Wirtinger pullback calculation.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivativeAlgebra
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
@@ -3375,6 +4367,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivat
 /--
 Derivative algebra plus the geometric Laplacian identity give the
 derivative-identified canonical pullback theorem.
+
+%%handwave
+name:
+  The complex derivative algebra and the Laplacian formula combine
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized branch F. If the canonical regularity and the identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ hold in the complex derivative sense, and Δv = |F′|²/(Im F)², then all these conclusions hold simultaneously.
+proof:
+  Retain the derivative algebra and adjoin the assumed Laplacian equality.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_derivativeAlgebra_and_laplacian
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem)
@@ -3388,6 +4388,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_derivativeAlg
 Derivative algebra gives the derivative-identified canonical pullback theorem
 without a separate Poincare Laplacian input, by first converting to actual
 affine derivative algebra.
+
+%%handwave
+name:
+  The complex derivative algebra implies the canonical pullback Laplacian formula
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If the canonical regularity and complex derivative identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ hold, then Δv = |F′|²/(Im F)² and the derivative identities remain valid.
+proof:
+  Convert the complex derivative identities to pointwise affine derivatives and apply the mixed-Wirtinger pullback calculation.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_derivativeAlgebra
     (hAlg : HyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem) :
@@ -3397,8 +4405,251 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_derivativeAlg
       hAlg)
 
 /--
+Actual branch derivatives through `F''` imply the explicit first-expression
+derivative theorem.
+
+%%handwave
+name:
+  The derivative of the first Wirtinger expression from third-order branch derivative data
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized upper-half-plane branch F. If F′ = F₁, F₁′ = F₂, and F₂′ = F₃ pointwise and the Poincare Laplacian formula holds, then the explicit first Wirtinger expression for v has its prescribed Fréchet derivative.
+proof:
+  Differentiate the first Wirtinger expression using the actual derivatives of F, F′, and F″.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem_of_thirdDerivative
+    (hT : HyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem) :
+    HyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem := by
+  intro u S D z₀ N hu
+  rcases hT S N hu with ⟨T⟩
+  exact ⟨T.toSecondExpressionData⟩
+
+/--
+Canonical pullback theorem in which the upper-half-plane branch and its first
+affine derivative are identified with their actual complex derivatives.
+-/
+def HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem : Prop :=
+  ∀ {u : LocalConformalFactor} (S : LocalSchwarzianData u)
+    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
+    (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀),
+    u.SolvesLiouvilleEquation →
+      Nonempty (LocalHyperbolicCanonicalPullbackBranchDerivativeData N)
+
+/--
+The explicit first-expression derivative theorem implies the actual branch
+derivative theorem.
+
+%%handwave
+name:
+  Actual derivatives of the upper-half-plane branch from the first-expression derivative calculation
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized upper-half-plane branch F. If F and F′ have their prescribed derivatives and the explicit first Wirtinger expression has its calculated derivative, then the branch identities needed for the squared-density and second-Wirtinger calculations hold.
+proof:
+  Retain the branch derivative, first-expression derivative, regularity, and Laplacian identities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem_of_secondExpression
+    (hE : HyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem) :
+    HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem := by
+  intro u S D z₀ N hu
+  rcases hE S N hu with ⟨E⟩
+  exact ⟨E.toBranchDerivativeData⟩
+
+/--
+Actual branch derivative data imply the squared-density derivative theorem.
+
+%%handwave
+name:
+  The derivative of the squared pullback density from actual branch derivative data
+statement:
+  Let ρ² = |F′|²/(Im F)² for a two-jet-normalized upper-half-plane branch F. The actual derivative identities for F and F′ give the explicit pointwise derivative of ρ², together with the second Wirtinger and Poincare Laplacian formulas.
+proof:
+  Differentiate ρ² = |F′|²/(Im F)² using the actual branch derivatives and retain the second-Wirtinger and Laplacian fields.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem_of_branchDerivative
+    (hB : HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem) :
+    HyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem := by
+  intro u S D z₀ N hu
+  rcases hB S N hu with ⟨B⟩
+  exact ⟨B.toDensityDerivativeData⟩
+
+/--
+The squared-density derivative pullback theorem implies the explicit
+Wirtinger-formula theorem.
+
+%%handwave
+name:
+  The canonical pullback Wirtinger formulas from the squared-density derivative formula
+statement:
+  If ρ² = |F′|²/(Im F)² has its explicit derivative for a two-jet-normalized upper-half-plane branch F, then v = ½ log ρ² satisfies the explicit first and second Wirtinger formulas and Δv = ρ².
+proof:
+  Apply the logarithmic chain rule to the squared-density derivative to obtain the first Wirtinger formula, and retain the second formula and Laplacian identity.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem_of_densityDerivative
+    (hP : HyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem) :
+    HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem := by
+  intro u S D z₀ N hu
+  rcases hP S N hu with ⟨P⟩
+  exact ⟨P.toWirtingerFormulaData⟩
+
+/--
+The explicit Wirtinger-formula pullback theorem implies the canonical core
+theorem.
+
+%%handwave
+name:
+  The canonical Poincare pullback core from the two explicit Wirtinger formulas
+statement:
+  If v = ½ log(|F′|²/(Im F)²) satisfies its explicit first and second Wirtinger formulas for a two-jet-normalized upper-half-plane branch F, then Δv = |F′|²/(Im F)², the metric Schwarzian of v equals the Schwarzian of F, and the normalized base derivatives agree.
+proof:
+  Use the two Wirtinger formulas to identify the metric Schwarzian with the Schwarzian of F, retaining the Laplacian and base-derivative identities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_wirtingerFormula
+    (hW : HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem) :
+    HyperbolicTwoJetCanonicalPullbackCoreTheorem := by
+  intro u S D z₀ N hu
+  rcases hW S N hu with ⟨W⟩
+  exact ⟨W.toCoreData⟩
+
+/--
+The mixed-Wirtinger Laplacian pullback theorem implies the canonical core
+theorem by the general `∂_{\bar z} ∂_z = (1 / 4) Δ` bridge.
+
+%%handwave
+name:
+  The canonical Poincare pullback core from the mixed-Wirtinger Laplacian identity
+statement:
+  If v = ½ log(|F′|²/(Im F)²) satisfies ∂̄∂v = ¼|F′|²/(Im F)² for a two-jet-normalized upper-half-plane branch F, then Δv = |F′|²/(Im F)², the metric Schwarzian of v equals the Schwarzian of F, and the normalized base derivatives agree.
+proof:
+  Convert ∂̄∂v = ρ²/4 into Δv = ρ² by the Wirtinger–Laplacian identity, retaining the metric-Schwarzian and base-derivative fields.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedWirtingerLaplacian
+    (hM : HyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem) :
+    HyperbolicTwoJetCanonicalPullbackCoreTheorem := by
+  intro u S D z₀ N hu
+  rcases hM S N hu with ⟨M⟩
+  exact ⟨M.toCoreData⟩
+
+/--
+The explicit mixed-expression theorem implies the mixed-Wirtinger Laplacian
+theorem.
+
+%%handwave
+name:
+  The mixed-Wirtinger Laplacian identity from the mixed-expression derivative formula
+statement:
+  If the explicit first Wirtinger expression for v = ½ log(|F′|²/(Im F)²) has its calculated anti-holomorphic derivative, then ∂̄∂v = ¼|F′|²/(Im F)², with the metric-Schwarzian and normalized base-derivative identities.
+proof:
+  The assumed anti-holomorphic derivative of the first Wirtinger expression is precisely the mixed-Wirtinger Laplacian formula.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem_of_mixedExpression
+    (hM : HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem) :
+    HyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem := by
+  intro u S D z₀ N hu
+  rcases hM S N hu with ⟨M⟩
+  exact ⟨M.toMixedWirtingerLaplacianData⟩
+
+/--
+Actual affine derivative algebra proves the explicit mixed-expression pullback
+theorem.
+
+%%handwave
+name:
+  The mixed Wirtinger expression derivative from the actual affine derivative algebra
+statement:
+  If the affine representative of a two-jet-normalized upper-half-plane branch satisfies F′ = F₁, F₁′ = F₂, and F₂′ = F₃, then the explicit first Wirtinger expression for v = ½ log(|F′|²/(Im F)²) has the required anti-holomorphic derivative.
+proof:
+  Differentiate the explicit first Wirtinger expression using the three actual affine derivative identities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem_of_affineDerivativeAlgebra
+    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
+    HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem := by
+  intro u S D z₀ N hu
+  rcases hA S N hu with ⟨A⟩
+  exact ⟨A.toMixedExpressionData⟩
+
+/--
+The explicit mixed-expression theorem implies the canonical core theorem.
+
+%%handwave
+name:
+  The canonical Poincare pullback core from the mixed-expression derivative formula
+statement:
+  If the explicit first Wirtinger expression for v = ½ log(|F′|²/(Im F)²) has its calculated anti-holomorphic derivative, then Δv = |F′|²/(Im F)², the metric Schwarzian of v equals the Schwarzian of F, and the normalized base derivatives agree.
+proof:
+  The mixed-expression calculation gives the mixed-Wirtinger identity, which the Wirtinger–Laplacian bridge converts to the core Laplacian identity.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedExpression
+    (hM : HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem) :
+    HyperbolicTwoJetCanonicalPullbackCoreTheorem :=
+  hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedWirtingerLaplacian
+    (hyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem_of_mixedExpression hM)
+
+/--
+Actual affine derivative algebra implies the canonical core theorem; the
+Poincare Laplacian calculation is obtained from the explicit mixed-expression
+derivative calculation.
+
+%%handwave
+name:
+  The canonical Poincare pullback core from the actual affine derivative algebra
+statement:
+  If the affine representative of a two-jet-normalized upper-half-plane branch satisfies F′ = F₁, F₁′ = F₂, and F₂′ = F₃, then v = ½ log(|F′|²/(Im F)²) satisfies Δv = |F′|²/(Im F)², its metric Schwarzian equals the Schwarzian of F, and the normalized base derivatives agree.
+proof:
+  The affine derivatives prove the mixed-expression calculation; the mixed-Wirtinger bridge then gives the Laplacian and core identities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_affineDerivativeAlgebra
+    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
+    HyperbolicTwoJetCanonicalPullbackCoreTheorem :=
+  hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedExpression
+    (hyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem_of_affineDerivativeAlgebra hA)
+
+/--
+The core canonical pullback theorem implies the canonical pullback Liouville
+formula theorem.
+
+%%handwave
+name:
+  The canonical Poincare pullback formula from the canonical pullback core identities
+statement:
+  Let u solve Δu = e^{2u}, let F be its two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If Δv = |F′|²/(Im F)², the metric Schwarzian of v equals the Schwarzian of F, and the normalized base derivatives agree, then v is a Liouville solution with the same Schwarzian coefficient and normalized one-jet as u.
+proof:
+  The core Laplacian identity gives the Liouville equation; the Schwarzian identity and normalized two-jet give the coefficient and base-data equalities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_core
+    (hCore : HyperbolicTwoJetCanonicalPullbackCoreTheorem) :
+    HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem := by
+  intro u S D z₀ N hu
+  rcases hCore S N hu with ⟨C⟩
+  exact ⟨C.toFormulaData⟩
+
+/--
+The explicit Wirtinger-formula pullback theorem implies the canonical pullback
+Liouville formula theorem.
+
+%%handwave
+name:
+  The canonical Poincare pullback formula from the two explicit Wirtinger formulas
+statement:
+  Let u solve Δu = e^{2u}, let F be its two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If v satisfies the explicit first and second Wirtinger formulas, then v is a Liouville solution with the same Schwarzian coefficient as u and the same normalized value and first Wirtinger derivative at z₀.
+proof:
+  The core Laplacian identity gives the Liouville equation; the Schwarzian identity and normalized two-jet give the coefficient and base-data equalities.
+-/
+theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_wirtingerFormula
+    (hW : HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem) :
+    HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem :=
+  hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_core
+    (hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_wirtingerFormula hW)
+
+/--
 Regularity, derivative identification, and the geometric Laplacian identity
 give the derivative-identified canonical pullback theorem.
+
+%%handwave
+name:
+  Affine derivative identities and the Poincare Laplacian formula combine
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If F and F′ are C³, v is twice differentiable, the stored affine derivatives satisfy F′ = F₁, F₁′ = F₂, and F₂′ = F₃, and Δv = |F′|²/(Im F)², then all these canonical pullback conclusions hold together.
+proof:
+  Join the regularity and three derivative identities, then adjoin the assumed Laplacian formula.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_derivativeIdentification_and_laplacian
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3414,6 +4665,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_de
 Regularity and derivative identification give the derivative-identified
 canonical pullback theorem.  The Poincare Laplacian calculation is obtained
 internally from the resulting derivative algebra.
+
+%%handwave
+name:
+  Affine derivative identities imply the Poincare Laplacian formula
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If F and F′ are C³, v is twice differentiable, and F′ = F₁, F₁′ = F₂, and F₂′ = F₃ throughout the normalized domain, then Δv = |F′|²/(Im F)² and these identities hold simultaneously.
+proof:
+  Combine regularity with the derivative identities and apply the canonical Poincare pullback Laplacian calculation.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_derivativeIdentification
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3426,6 +4685,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_de
 /--
 Regularity, the three derivative-identification levels, and the geometric
 Laplacian identity give the derivative-identified canonical pullback theorem.
+
+%%handwave
+name:
+  Three successive derivative identities and the Laplacian formula combine
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If the regularity of F, F′, and v is known separately from the identities F′ = F₁, F₁′ = F₂, F₂′ = F₃ and Δv = |F′|²/(Im F)², then all these conclusions hold together.
+proof:
+  First combine the three successive derivative identities, then join them to the regularity and Laplacian conclusions.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_first_second_third_laplacian
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3444,6 +4711,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_fi
 Regularity and the three derivative-identification levels give the
 derivative-identified canonical pullback theorem.  The Poincare Laplacian
 calculation is supplied internally by the derivative-algebra route.
+
+%%handwave
+name:
+  Three successive derivative identities determine the canonical pullback Laplacian
+statement:
+  Let u solve Δu = e^{2u}, let F be a two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If F and F′ are C³, v is twice differentiable, and the three identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃ are proved separately, then Δv = |F′|²/(Im F)² and all four identities hold together.
+proof:
+  Combine the three derivative identities, adjoin regularity, and use the resulting derivative algebra in the Poincare pullback calculation.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_first_second_third
     (hReg : HyperbolicTwoJetCanonicalPullbackRegularityTheorem)
@@ -3459,6 +4734,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_regularity_fi
 /--
 The derivative-identified canonical pullback theorem forgets to the derivative
 algebra part.
+
+%%handwave
+name:
+  Canonical pullback identities retain their affine derivative algebra
+statement:
+  If a two-jet-normalized branch satisfies the canonical pullback regularity, the identities F′ = F₁, F₁′ = F₂, F₂′ = F₃, and the Poincare Laplacian formula, then it still satisfies the same regularity and three derivative identities after the Laplacian conclusion is discarded.
+proof:
+  Retain every regularity and derivative field and omit only the Laplacian equality.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3467,46 +4750,16 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_derivIdenti
   rcases hD S N hu with ⟨A⟩
   exact ⟨A.toDerivativeAlgebraData⟩
 
-/-- The derivative-identified theorem forgets to the regularity theorem. -/
-theorem hyperbolicTwoJetCanonicalPullbackRegularityTheorem_of_derivIdentified
-    (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
-    HyperbolicTwoJetCanonicalPullbackRegularityTheorem := by
-  intro u S D z₀ N hu
-  rcases hD S N hu with ⟨A⟩
-  exact ⟨A.toRegularityData⟩
-
-/-- The derivative-identified theorem forgets to the derivative-identification theorem. -/
-theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_derivIdentified
-    (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
-    HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hD S N hu with ⟨A⟩
-  exact ⟨A.toDerivativeIdentificationData⟩
-
-/--
-The derivative-identified canonical pullback theorem forgets to the geometric
-Laplacian identity.
--/
-theorem hyperbolicTwoJetCanonicalPullbackLaplacianTheorem_of_derivIdentified
-    (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
-    HyperbolicTwoJetCanonicalPullbackLaplacianTheorem := by
-  intro u S D z₀ N hu z hz
-  rcases hD S N hu with ⟨A⟩
-  exact A.laplacian_eq_pullbackDensitySq z hz
-
-/--
-Canonical pullback theorem where the first-derivative side is reduced to actual
-branch derivative statements.
--/
-def HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem : Prop :=
-  ∀ {u : LocalConformalFactor} (S : LocalSchwarzianData u)
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀),
-    u.SolvesLiouvilleEquation →
-      Nonempty (LocalHyperbolicCanonicalPullbackBranchDerivativeData N)
-
 /--
 Affine projective derivative data imply the third-derivative theorem.
+
+%%handwave
+name:
+  Affine branch derivatives give upper-half-plane branch derivatives through third order
+statement:
+  Let F be a two-jet-normalized upper-half-plane branch whose affine representative satisfies F′ = F₁, F₁′ = F₂, and F₂′ = F₃. Then the upper-half-plane-valued branch itself has derivative F₁, while the next two derivative identities and the Poincare Laplacian formula remain valid.
+proof:
+  The upper-half-plane branch agrees locally with its affine representative on the open normalized domain, so their derivatives coincide; retain the remaining identities.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem_of_affineDerivative
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
@@ -3517,6 +4770,14 @@ theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem_of_affineDerivat
 
 /--
 Derivative-identification data imply the affine-derivative theorem.
+
+%%handwave
+name:
+  Identified complex derivatives give affine derivative identities
+statement:
+  Let F be a two-jet-normalized local projective branch. If F, F₁, and F₂ are complex differentiable and their complex derivatives are F₁, F₂, and F₃, respectively, then they satisfy the corresponding pointwise affine derivative identities; all regularity and Poincare Laplacian conclusions are preserved.
+proof:
+  Convert each differentiability statement and equality for the complex derivative into the corresponding pointwise derivative assertion.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem_of_derivIdentified
     (hA : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3528,6 +4789,14 @@ theorem hyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem_of_derivIdentif
 /--
 Actual affine `HasDerivAt` data imply the derivative-identified theorem via
 mathlib's `HasDerivAt.deriv`.
+
+%%handwave
+name:
+  Affine derivative identities identify the complex derivatives
+statement:
+  Let F be a two-jet-normalized local projective branch satisfying the pointwise identities F′ = F₁, F₁′ = F₂, and F₂′ = F₃, together with the canonical regularity and Poincare Laplacian formula. Then F, F₁, and F₂ are complex differentiable and their complex derivatives are exactly F₁, F₂, and F₃.
+proof:
+  Each pointwise derivative assertion gives complex differentiability and identifies the complex derivative with the displayed value.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivative
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
@@ -3539,6 +4808,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivat
 /--
 Actual affine `HasDerivAt` data imply the derivative-algebra theorem by
 forgetting the Laplacian field.
+
+%%handwave
+name:
+  Affine derivative identities determine the complex derivative algebra
+statement:
+  If a two-jet-normalized local projective branch satisfies F′ = F₁, F₁′ = F₂, and F₂′ = F₃ pointwise, together with the canonical regularity and Poincare Laplacian formula, then it satisfies the same regularity and all three complex derivative identifications independently of the Laplacian conclusion.
+proof:
+  Identify the three complex derivatives from their pointwise derivative assertions and then discard the Laplacian equality.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_affineDerivative
     (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
@@ -3547,233 +4824,15 @@ theorem hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_affineDeriv
     (hyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem_of_affineDerivative hA)
 
 /--
-Actual affine `HasDerivAt` data imply the derivative-identification theorem by
-forgetting regularity and the Laplacian field.
--/
-theorem hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem :=
-  hyperbolicTwoJetCanonicalPullbackDerivativeIdentificationTheorem_of_derivativeAlgebra
-    (hyperbolicTwoJetCanonicalPullbackDerivativeAlgebraTheorem_of_affineDerivative hA)
+Identified affine derivatives imply the third-order branch theorem.
 
-/--
-Actual affine `HasDerivAt` data directly supply the regularity side of the
-canonical pullback derivative-algebra package.
--/
-theorem hyperbolicTwoJetCanonicalPullbackRegularityTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackRegularityTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toRegularityData⟩
-
-/--
-Actual affine `HasDerivAt` data give the first derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toFirstDerivativeIdentificationData⟩
-
-/--
-Actual affine `HasDerivAt` data give the second derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toSecondDerivativeIdentificationData⟩
-
-/--
-Actual affine `HasDerivAt` data give the third derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem_of_affineDerivative
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toThirdDerivativeIdentificationData⟩
-
-/--
-Actual affine derivative algebra gives the first derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackFirstDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toFirstDerivativeIdentificationData⟩
-
-/--
-Actual affine derivative algebra gives the second derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackSecondDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toSecondDerivativeIdentificationData⟩
-
-/--
-Actual affine derivative algebra gives the third derivative-identification
-theorem directly.
--/
-theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackThirdDerivativeIdentificationTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toThirdDerivativeIdentificationData⟩
-
-/--
-Actual branch derivatives through `F''` imply the explicit first-expression
-derivative theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem_of_thirdDerivative
-    (hT : HyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem := by
-  intro u S D z₀ N hu
-  rcases hT S N hu with ⟨T⟩
-  exact ⟨T.toSecondExpressionData⟩
-
-/--
-The explicit first-expression derivative theorem implies the actual branch
-derivative theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem_of_secondExpression
-    (hE : HyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem) :
-    HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem := by
-  intro u S D z₀ N hu
-  rcases hE S N hu with ⟨E⟩
-  exact ⟨E.toBranchDerivativeData⟩
-
-/--
-Actual branch derivative data imply the squared-density derivative theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem_of_branchDerivative
-    (hB : HyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem := by
-  intro u S D z₀ N hu
-  rcases hB S N hu with ⟨B⟩
-  exact ⟨B.toDensityDerivativeData⟩
-
-/--
-The squared-density derivative pullback theorem implies the explicit
-Wirtinger-formula theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem_of_densityDerivative
-    (hP : HyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem := by
-  intro u S D z₀ N hu
-  rcases hP S N hu with ⟨P⟩
-  exact ⟨P.toWirtingerFormulaData⟩
-
-/--
-The explicit Wirtinger-formula pullback theorem implies the canonical core
-theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_wirtingerFormula
-    (hW : HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem) :
-    HyperbolicTwoJetCanonicalPullbackCoreTheorem := by
-  intro u S D z₀ N hu
-  rcases hW S N hu with ⟨W⟩
-  exact ⟨W.toCoreData⟩
-
-/--
-The mixed-Wirtinger Laplacian pullback theorem implies the canonical core
-theorem by the general `∂_{\bar z} ∂_z = (1 / 4) Δ` bridge.
--/
-theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedWirtingerLaplacian
-    (hM : HyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem) :
-    HyperbolicTwoJetCanonicalPullbackCoreTheorem := by
-  intro u S D z₀ N hu
-  rcases hM S N hu with ⟨M⟩
-  exact ⟨M.toCoreData⟩
-
-/--
-The explicit mixed-expression theorem implies the mixed-Wirtinger Laplacian
-theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem_of_mixedExpression
-    (hM : HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem) :
-    HyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem := by
-  intro u S D z₀ N hu
-  rcases hM S N hu with ⟨M⟩
-  exact ⟨M.toMixedWirtingerLaplacianData⟩
-
-/--
-Actual affine derivative algebra proves the explicit mixed-expression pullback
-theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem := by
-  intro u S D z₀ N hu
-  rcases hA S N hu with ⟨A⟩
-  exact ⟨A.toMixedExpressionData⟩
-
-/--
-The explicit mixed-expression theorem implies the canonical core theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedExpression
-    (hM : HyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem) :
-    HyperbolicTwoJetCanonicalPullbackCoreTheorem :=
-  hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedWirtingerLaplacian
-    (hyperbolicTwoJetCanonicalPullbackMixedWirtingerLaplacianTheorem_of_mixedExpression hM)
-
-/--
-Actual affine derivative algebra implies the canonical core theorem; the
-Poincare Laplacian calculation is obtained from the explicit mixed-expression
-derivative calculation.
--/
-theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_affineDerivativeAlgebra
-    (hA : HyperbolicTwoJetCanonicalPullbackAffineDerivativeAlgebraTheorem) :
-    HyperbolicTwoJetCanonicalPullbackCoreTheorem :=
-  hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_mixedExpression
-    (hyperbolicTwoJetCanonicalPullbackMixedExpressionTheorem_of_affineDerivativeAlgebra hA)
-
-/--
-The core canonical pullback theorem implies the canonical pullback Liouville
-formula theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_core
-    (hCore : HyperbolicTwoJetCanonicalPullbackCoreTheorem) :
-    HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem := by
-  intro u S D z₀ N hu
-  rcases hCore S N hu with ⟨C⟩
-  exact ⟨C.toFormulaData⟩
-
-/--
-The explicit Wirtinger-formula pullback theorem implies the canonical pullback
-Liouville formula theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_wirtingerFormula
-    (hW : HyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem) :
-    HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem :=
-  hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_core
-    (hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_wirtingerFormula hW)
-
-/--
-The squared-density derivative pullback theorem implies the canonical pullback
-Liouville formula theorem.
--/
-theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_densityDerivative
-    (hP : HyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem) :
-    HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem :=
-  hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_wirtingerFormula
-    (hyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem_of_densityDerivative hP)
-
-/--
-Derivative-identified affine branch data imply the third-derivative pullback
-theorem.
+%%handwave
+name:
+  Identified affine derivatives determine the third branch derivative
+statement:
+  Let F be a two-jet-normalized upper-half-plane branch. If its affine representative and its first two stored derivative branches are complex differentiable with derivatives F₁, F₂, and F₃, and the canonical Poincare Laplacian formula holds, then the upper-half-plane branch has derivative F₁ and its stored derivatives satisfy F₁′ = F₂ and F₂′ = F₃.
+proof:
+  Turn the complex derivative identifications into affine pointwise derivative assertions, then transfer the first one from the affine representative to the locally equal upper-half-plane branch.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3784,6 +4843,14 @@ theorem hyperbolicTwoJetCanonicalPullbackThirdDerivativeTheorem_of_derivIdentifi
 /--
 Derivative-identified affine branch data imply the second-expression pullback
 theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine the first Wirtinger derivative
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized branch F. If F, F₁, and F₂ have complex derivatives F₁, F₂, and F₃, and Δv = |F′|²/(Im F)², then the explicit first Wirtinger expression for v has its prescribed Fréchet derivative.
+proof:
+  Differentiate the first Wirtinger expression using the actual derivatives of F, F′, and F″.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3794,6 +4861,14 @@ theorem hyperbolicTwoJetCanonicalPullbackSecondExpressionTheorem_of_derivIdentif
 /--
 Derivative-identified affine branch data imply the branch-derivative pullback
 theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine the upper-half-plane branch derivatives
+statement:
+  Let F be a two-jet-normalized upper-half-plane branch. If its affine representative and first two stored derivative branches have complex derivatives F₁, F₂, and F₃, and the Poincare pullback Laplacian formula holds, then F itself has derivative F₁ and satisfies the branch identities needed to differentiate the squared density and the second Wirtinger expression.
+proof:
+  Convert the complex derivative identities to pointwise derivatives, transfer the first identity to the locally equal upper-half-plane branch, and differentiate the first Wirtinger expression.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3804,6 +4879,14 @@ theorem hyperbolicTwoJetCanonicalPullbackBranchDerivativeTheorem_of_derivIdentif
 /--
 Derivative-identified affine branch data imply the squared-density derivative
 pullback theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine the squared-density derivative
+statement:
+  Let ρ² = |F′|²/(Im F)² for a two-jet-normalized upper-half-plane branch F. If the affine representative and its first two stored derivative branches have complex derivatives F₁, F₂, and F₃, then ρ² has its explicit pointwise derivative; the second Wirtinger and Laplacian formulas remain valid.
+proof:
+  Differentiate ρ² = |F′|²/(Im F)² using the actual branch derivatives and retain the second-Wirtinger and Laplacian fields.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3814,6 +4897,14 @@ theorem hyperbolicTwoJetCanonicalPullbackDensityDerivativeTheorem_of_derivIdenti
 /--
 Derivative-identified affine branch data imply the Wirtinger-formula pullback
 theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine both pullback Wirtinger formulas
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized upper-half-plane branch F. If the affine representative and its first two stored derivative branches have complex derivatives F₁, F₂, and F₃, then v satisfies the explicit first and second Wirtinger derivative formulas and Δv = |F′|²/(Im F)².
+proof:
+  Apply the logarithmic chain rule to the squared-density derivative to obtain the first Wirtinger formula, and retain the second formula and Laplacian identity.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3824,6 +4915,14 @@ theorem hyperbolicTwoJetCanonicalPullbackWirtingerFormulaTheorem_of_derivIdentif
 /--
 Derivative-identified affine branch data imply the canonical core pullback
 theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine the canonical Poincare pullback core
+statement:
+  Let v = ½ log(|F′|²/(Im F)²) for a two-jet-normalized upper-half-plane branch F. If the affine representative and its first two stored derivative branches have complex derivatives F₁, F₂, and F₃, then Δv = |F′|²/(Im F)², the metric Schwarzian of v equals the Schwarzian of F, and the normalized base derivatives agree.
+proof:
+  Derive the two Wirtinger formulas and use them to compute both the Laplacian and metric Schwarzian, retaining the normalized two-jet identities.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3834,6 +4933,14 @@ theorem hyperbolicTwoJetCanonicalPullbackCoreTheorem_of_derivIdentified
 /--
 Derivative-identified affine branch data imply the canonical pullback
 Liouville formula theorem.
+
+%%handwave
+name:
+  Identified affine derivatives determine the canonical Poincare pullback
+statement:
+  Let u solve Δu = e^{2u}, let F be its two-jet-normalized local projective branch, and set v = ½ log(|F′|²/(Im F)²). If the affine representative and its first two stored derivative branches have complex derivatives F₁, F₂, and F₃, then v is a Liouville solution with the same Schwarzian coefficient as u and the same normalized value and first Wirtinger derivative at z₀.
+proof:
+  The core Laplacian identity gives the Liouville equation; the Schwarzian identity and normalized two-jet give the coefficient and base-data equalities.
 -/
 theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_derivIdentified
     (hD : HyperbolicTwoJetCanonicalPullbackDerivIdentifiedTheorem) :
@@ -3844,6 +4951,14 @@ theorem hyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem_of_derivIdentif
 /--
 The canonical pullback formula theorem implies the older explicit formula
 theorem.
+
+%%handwave
+name:
+  The canonical pullback formula yields the explicit pullback formula
+statement:
+  For every Liouville solution u and normalized upper-half-plane branch F, the canonical density v = ½ log(|F′|²/(Im F)²) supplies an explicit Poincare pullback Liouville solution with the same Schwarzian coefficient and normalized base data.
+proof:
+  Forget that the logarithmic density was fixed canonically and retain the explicit pullback formula data.
 -/
 theorem hyperbolicTwoJetPullbackLiouvilleFormulaTheorem_of_canonical
     (hCanonical : HyperbolicTwoJetCanonicalPullbackLiouvilleFormulaTheorem) :
@@ -3871,6 +4986,14 @@ def HyperbolicTwoJetPullbackLiouvilleCandidateTheorem : Prop :=
 /--
 The explicit Poincare pullback formula theorem implies the older pullback
 candidate theorem.
+
+%%handwave
+name:
+  An explicit pullback formula gives a competing Liouville solution
+statement:
+  For every Liouville solution u and normalized upper-half-plane branch F, an explicit Poincare pullback formula produces a competing Liouville solution on the same domain with the same Schwarzian coefficient, base value, and first Wirtinger derivative.
+proof:
+  Package the conformal factor and comparison identities supplied by the explicit formula data.
 -/
 theorem hyperbolicTwoJetPullbackLiouvilleCandidateTheorem_of_formula
     (hFormula : HyperbolicTwoJetPullbackLiouvilleFormulaTheorem) :
@@ -3891,7 +5014,17 @@ def HyperbolicTwoJetNormalizationHasBallDomainTheorem : Prop :=
     (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀),
       ∃ c r, N.domain = Metric.ball c r
 
-/-- Two-jet normalizations are packaged after shrinking to metric balls. -/
+/--
+Two-jet normalizations are packaged after shrinking to metric balls.
+
+%%handwave
+name:
+  Two-jet normalizations have ball domains
+statement:
+  The domain of every normalized upper-half-plane branch obtained from a hyperbolic two-jet normalization is a complex metric ball.
+proof:
+  Unpack the ball-domain witness stored in the normalization and rewrite its domain by that equality.
+-/
 theorem hyperbolicTwoJetNormalizationHasBallDomainTheorem :
     HyperbolicTwoJetNormalizationHasBallDomainTheorem := by
   intro u S D z₀ N
@@ -3912,7 +5045,17 @@ def HyperbolicTwoJetNormalizationHasPreconnectedDomainTheorem : Prop :=
     (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀),
       IsPreconnected N.domain
 
-/-- Ball-shaped normalized domains are preconnected by mathlib. -/
+/--
+Ball-shaped normalized domains are preconnected by mathlib.
+
+%%handwave
+name:
+  Ball-shaped normalization domains are preconnected
+statement:
+  If every hyperbolic two-jet normalization has a metric-ball domain, then every such normalization domain is preconnected.
+proof:
+  Rewrite the domain as a metric ball and use preconnectedness of metric balls.
+-/
 theorem hyperbolicTwoJetNormalizationHasPreconnectedDomainTheorem_of_ballDomain
     (hBallDomain : HyperbolicTwoJetNormalizationHasBallDomainTheorem) :
     HyperbolicTwoJetNormalizationHasPreconnectedDomainTheorem := by

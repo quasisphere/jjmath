@@ -42,6 +42,18 @@ def BoundaryComponentTransition.stepExtension
     (T : BoundaryComponentTransition D p) : X → ℝ :=
   Subtype.val.extend T.step 0
 
+/--
+%%handwave
+name:
+  The set-theoretic step extension agrees with the step on its band
+statement:
+  At every point \(x\) of the transition band, extending the band step
+  function to the ambient surface by a default value leaves its value equal
+  to the original step at \(x\).
+proof:
+  The band inclusion is injective, so extension along it evaluates to the
+  original function on every point in its range.
+-/
 @[simp]
 theorem BoundaryComponentTransition.stepExtension_apply_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -63,7 +75,17 @@ noncomputable def BoundaryComponentTransition.exactPrimitiveFunction
   exact fun x => if hx : x ∈ (T.band : Set X) then T.step ⟨x, hx⟩
     else if x ∈ D.carrier then 0 else 1
 
-/-- The step extension is smooth at every point of its original band. -/
+/--
+%%handwave
+name:
+  Smoothness of the extended transition step along the band
+statement:
+  The ambient set-theoretic extension of the transition step is smooth at
+  every point of the open transition band.
+proof:
+  Corestrict to the band.  There the extension agrees pointwise with the
+  original smooth step function, so smoothness transfers by local agreement.
+-/
 theorem BoundaryComponentTransition.contMDiffAt_stepExtension_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -77,7 +99,24 @@ theorem BoundaryComponentTransition.contMDiffAt_stepExtension_of_mem
   exact Filter.Eventually.of_forall fun y => by
     exact T.stepExtension_apply_of_mem y.2
 
-/-- On the retained open region, the piecewise primitive is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the piecewise boundary-component primitive
+statement:
+  Let \(W=D\cup N\cup V\) be the union of a smooth domain, its transition
+  band, and an incident component of \(X\setminus\overline D\).  The function
+  equal to the transition step on \(N\), to \(0\) on the domain side outside
+  \(N\), and to \(1\) on the component side outside \(N\), is smooth on
+  \(W\).
+proof:
+  On the band it agrees locally with the smooth extended step.  Off the band,
+  a point lies on the domain side or in \(V\).  If it approaches the band
+  frontier, the signed-coordinate gap forces the step to be identically
+  \(0\) on the domain side or \(1\) on the exterior side nearby; away from the
+  band closure, openness gives the same local constancy directly.  Thus every
+  point has a neighborhood on which the piecewise function is smooth.
+-/
 theorem BoundaryComponentTransition.contMDiff_exactPrimitiveFunction_on_exactRegion
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -212,8 +251,20 @@ noncomputable def BoundaryComponentTransition.exactPrimitive
   val := fun x => T.exactPrimitiveFunction (x : X)
   property := T.contMDiff_exactPrimitiveFunction_on_exactRegion V hV
 
-/-- If a form on a larger open set restricts to zero on a smaller open set,
-then it vanishes at every point of the smaller set. -/
+/--
+%%handwave
+name:
+  Pointwise vanishing from a zero restriction of a differential form
+statement:
+  Let \(W\subseteq V\) be open and let \(\omega\) be a smooth \(n\)-form on
+  \(V\).  If \(\omega|_W=0\), then \(\omega_x=0\) for every \(x\in W\), when
+  \(x\) is viewed as a point of \(V\).
+proof:
+  Evaluate the zero restricted form at \(x\).  Restriction composes
+  \(\omega_x\) with the derivative of the open inclusion \(W\hookrightarrow
+  V\); this derivative is invertible, so precomposition with it is injective
+  and \(\omega_x\) itself must vanish.
+-/
 theorem smoothForms_toFun_eq_zero_of_restrictSmoothFormsOfLE_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -241,8 +292,19 @@ theorem smoothForms_toFun_eq_zero_of_restrictSmoothFormsOfLE_eq_zero
       (I := SurfaceRealModel) W V hWV xW).surjective)
     hpoint
 
-/-- The exact-region primitive restricts to the original transition step on
-the band. -/
+/--
+%%handwave
+name:
+  Restriction of the exact-region primitive to the transition band
+statement:
+  The zero-form of the piecewise primitive on \(D\cup N\cup V\), restricted
+  to the transition band \(N\), equals the zero-form of the original
+  transition step.
+proof:
+  Evaluate both zero-forms at a band point.  By definition the piecewise
+  primitive chooses its band branch there, which is exactly the transition
+  step.
+-/
 theorem BoundaryComponentTransition.restrict_exactPrimitive_zeroForm_band
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -264,8 +326,19 @@ theorem BoundaryComponentTransition.restrict_exactPrimitive_zeroForm_band
     BoundaryComponentTransition.exactPrimitive,
     BoundaryComponentTransition.exactPrimitiveFunction]
 
-/-- On the transition band, the restriction of the global form is the
-differential of the exact-region primitive. -/
+/--
+%%handwave
+name:
+  Exactness of the transition form on the band
+statement:
+  On the transition band, the restriction of the global boundary-component
+  one-form equals the restriction of the differential of the piecewise
+  primitive on \(D\cup N\cup V\).
+proof:
+  The global one-form restricts on the band to the differential of the
+  transition step.  Differentiation commutes with restriction, and the
+  exact-region primitive restricts to that step.
+-/
 theorem BoundaryComponentTransition.restrict_globalOneForm_exactRegion_band_eq_d
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -290,8 +363,21 @@ theorem BoundaryComponentTransition.restrict_globalOneForm_exactRegion_band_eq_d
   rw [T.restrict_exactPrimitive_zeroForm_band]
   rfl
 
-/-- Away from the transition band, the exact-region primitive is locally
-constant. -/
+/--
+%%handwave
+name:
+  Local constancy of the exact primitive off the transition band
+statement:
+  At every point of \(D\cup N\cup V\) outside the transition band, the
+  piecewise exact primitive agrees on a neighborhood with a constant: \(0\)
+  on the domain side and \(1\) on the chosen complementary side.
+proof:
+  If the point is away from the band closure, intersect its side with the open
+  complement of that closure.  If it lies on the band frontier, the signed
+  coordinate and the positive frontier gap put a neighborhood strictly below
+  \(-\varepsilon\) on the domain side or above \(\varepsilon\) on the
+  component side, where the transition step is respectively \(0\) or \(1\).
+-/
 theorem BoundaryComponentTransition.exactPrimitiveFunction_eventuallyEq_const_of_not_mem_band
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -395,8 +481,18 @@ theorem BoundaryComponentTransition.exactPrimitiveFunction_eventuallyEq_const_of
       simp [BoundaryComponentTransition.exactPrimitiveFunction,
         hyband, hynotD]
 
-/-- Off the transition band, the differential of the exact-region primitive
-vanishes. -/
+/--
+%%handwave
+name:
+  Vanishing of the exact-primitive differential off the band
+statement:
+  At every point outside the transition band, the differential of the
+  piecewise exact primitive on \(D\cup N\cup V\) is zero.
+proof:
+  The primitive agrees near the point with a constant.  Locality of the de
+  Rham differential identifies its derivative there with the derivative of
+  that constant function, which vanishes.
+-/
 theorem BoundaryComponentTransition.deRhamDifferential_exactPrimitive_toFun_eq_zero_of_not_mem_band
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -511,8 +607,19 @@ theorem BoundaryComponentTransition.restrict_globalOneForm_exactRegion_eq_d
         V hV x hxband
     rw [homegaW_zero, hdH_zero]
 
-/-- On the domain side and outside the compact transition core, the primitive
-has value zero. -/
+/--
+%%handwave
+name:
+  The exact primitive is zero on the domain side outside the core
+statement:
+  If \(x\in D\) lies outside the compact transition core, then the piecewise
+  primitive on \(D\cup N\cup V\) satisfies \(h(x)=0\).
+proof:
+  Outside the band this is its defining domain-side value.  Inside the band
+  but outside the core, the signed coordinate has magnitude greater than
+  \(\varepsilon\); its domain-side sign is negative, so it is at most
+  \(-\varepsilon\), where the transition step equals zero.
+-/
 theorem BoundaryComponentTransition.exactPrimitive_eq_zero_of_mem_domain_of_not_mem_core
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -540,8 +647,19 @@ theorem BoundaryComponentTransition.exactPrimitive_eq_zero_of_mem_domain_of_not_
   · simp [BoundaryComponentTransition.exactPrimitive,
       BoundaryComponentTransition.exactPrimitiveFunction, hxband, hxD]
 
-/-- On the chosen complementary side and outside the compact transition
-core, the primitive has value one. -/
+/--
+%%handwave
+name:
+  The exact primitive is one on the complementary side outside the core
+statement:
+  If \(x\in V\) lies outside the compact transition core, then the piecewise
+  primitive on \(D\cup N\cup V\) satisfies \(h(x)=1\).
+proof:
+  Outside the band this is its defining complementary-side value.  Inside the
+  band but outside the core, the signed coordinate is nonnegative and has
+  magnitude greater than \(\varepsilon\), hence is at least \(\varepsilon\),
+  where the transition step equals one.
+-/
 theorem BoundaryComponentTransition.exactPrimitive_eq_one_of_mem_component_of_not_mem_core
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -747,8 +865,19 @@ theorem BoundaryComponentTransition.not_subsingleton_deRhamH1_of_two_frontier_co
       hbridge]
   simp
 
-/-- The frontier of a component of the complement of a smooth-domain closure
-lies in the smooth frontier of the domain. -/
+/--
+%%handwave
+name:
+  Frontier of a complementary component lies in the domain boundary
+statement:
+  If \(V\) is a connected component of \(X\setminus\overline D\), where
+  \(D\) is a smooth domain, then \(\partial V\subseteq\partial D\).
+proof:
+  The frontier of a component of the open set
+  \(X\setminus\overline D\) lies in the frontier of that open set, which is
+  the frontier of \(\overline D\).  The latter is contained in
+  \(\partial D\).
+-/
 theorem IsComponentOf.frontier_subset_smoothBoundaryDomain_frontier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]

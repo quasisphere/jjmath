@@ -72,6 +72,14 @@ frames with the same squared hyperbolic norm.
 Move the base point of the first frame to the base point of the second, then
 use a conjugated rotation in the stabilizer of the second base point to match
 the transported tangent vector.
+
+%%handwave
+name:
+  Real Möbius transformations are transitive on equal-length tangent frames
+statement:
+  If pointed tangent frames \((p,v)\) and \((q,w)\) in the upper half-plane satisfy \(|v|^2/(\operatorname{Im}p)^2=|w|^2/(\operatorname{Im}q)^2\), then some \(A\in\mathrm{PSL}_2(\mathbb R)\) satisfies \(A(p)=q\) and \(A'(p)v=w\).
+proof:
+  First choose a real Möbius transformation sending \(p\) to \(q\). Transport both tangent vectors to \(i\); their Euclidean norms agree there, so a rotation about \(i\) matches them. Conjugate that rotation back to the stabilizer of \(q\) and compose, using the derivative chain rule.
 -/
 theorem realMobiusTangentFrameTransitivityTheorem :
     RealMobiusTangentFrameTransitivityTheorem := by
@@ -169,7 +177,16 @@ def hyperbolicLocalChartCoordinateDensitySqAt
     (chart_mem_atlas ℂ x₀)
     ((chartAt ℂ x₀) x₀)
 
-/-- The ambient chartwise density is positive at the pointed surface point. -/
+/-- The ambient chartwise density is positive at the pointed surface point.
+
+%%handwave
+name:
+  The coordinate density of a hyperbolic metric is positive
+statement:
+  For a hyperbolic local chart \(U\) and \(x_0\in U\), the squared density \(\rho^2(x_0)\) of the source metric in the ambient complex chart is strictly positive.
+proof:
+  The ambient coordinate of \(x_0\) lies in the chart target, where the squared density of a conformal metric is positive.
+-/
 theorem hyperbolicLocalChartCoordinateDensitySqAt_pos
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     (U : HyperbolicLocalChart X g) {x₀ : X} (_hx₀ : x₀ ∈ U.domain) :
@@ -248,6 +265,14 @@ stored in `U.local_isometry` to the ambient coordinate centered at `x₀`.
 Riemann-surface regularity supplies differentiability of that transition; the
 metric transition law and the chain rule then cancel the same transition
 derivative on both sides.
+
+%%handwave
+name:
+  A hyperbolic local chart pulls back the Poincaré density
+statement:
+  Let \(U\) be a hyperbolic local chart on a Riemann surface and \(x_0\in U\). If \(dU_{x_0}\) denotes its derivative in the ambient chart and \(\rho^2(x_0)\) the source squared density, then \(|dU_{x_0}|^2/(\operatorname{Im}U(x_0))^2=\rho^2(x_0)\).
+proof:
+  Write the ambient expression as the stored local isometry composed with the transition from the ambient chart to its own chart. The holomorphic chain rule factors the derivative norm, while the conformal-density transition law contributes the same transition factor. Substitute the stored Poincaré pullback identity and cancel.
 -/
 theorem hyperbolicLocalChart_pullbackSquaredDensityFormulaAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
@@ -351,6 +376,14 @@ theorem hyperbolicLocalChart_pullbackSquaredDensityFormulaAt
 /--
 Every hyperbolic local chart satisfies the concrete ambient-coordinate
 Poincare pullback squared-density formula on a Riemann surface.
+
+%%handwave
+name:
+  All hyperbolic local charts satisfy the Poincaré pullback formula
+statement:
+  On a Riemann surface, every hyperbolic local chart \(U\) and every \(x_0\in U\) satisfy \(|dU_{x_0}|^2/(\operatorname{Im}U(x_0))^2=\rho^2(x_0)\).
+proof:
+  Apply [the ambient-coordinate Poincaré pullback identity for a hyperbolic local chart](lean:JJMath.HyperbolicMetric.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt) at each point of its domain.
 -/
 theorem hyperbolicLocalChartPullbackSquaredDensityFormulaTheorem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X] :
@@ -371,6 +404,14 @@ def HyperbolicLocalChartCoordinateDerivativeNonzeroTheorem
 /--
 The Poincare pullback squared-density formula forces the coordinate
 derivative to be nonzero, since the source conformal density is positive.
+
+%%handwave
+name:
+  The Poincaré pullback identity forces a nonzero derivative
+statement:
+  If \(x_0\in U\) and \(|dU_{x_0}|^2/(\operatorname{Im}U(x_0))^2=\rho^2(x_0)\), then \(dU_{x_0}\ne0\).
+proof:
+  If the derivative vanished, the left side would be zero. The right side is the strictly positive source squared density, a contradiction.
 -/
 theorem HyperbolicLocalChartPullbackSquaredDensityFormulaAt.coordinateDerivative_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -415,6 +456,14 @@ def CoordinateUpperHalfPlanePullbackSquaredDensityFormulaAt
 /--
 A coordinate pullback formula immediately gives its stored coordinate-level
 Poincare squared-density identity.
+
+%%handwave
+name:
+  The stored coordinate formula is the Poincaré pullback identity
+statement:
+  For a coordinate pullback formula \((\kappa,f)\) and \(x_0\) in its surface domain, \(|f'(\kappa(x_0))|^2/(\operatorname{Im}f(\kappa(x_0)))^2\) equals the source metric squared density in the stored chart at \(\kappa(x_0)\).
+proof:
+  This is the defining stored pullback-density equality, read in the required orientation.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pullbackSquaredDensityFormulaAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -427,6 +476,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.pullbackSquaredDensityFormulaAt
 If the stored coordinate is locally the ambient chart at `x₀`, then the
 chartwise density used by a coordinate pullback formula agrees at `x₀` with
 the ambient `chartAt` density.
+
+%%handwave
+name:
+  Chart-compatible coordinates give the ambient density
+statement:
+  Let a coordinate pullback formula have coordinate \(\kappa\), stored chart \(e\), and let \(x_0\) lie in its domain. If \(\kappa=\varphi_{x_0}\) throughout that domain, then \(\rho_e^2(\kappa(x_0))=\rho_{\varphi_{x_0}}^2(\varphi_{x_0}(x_0))\).
+proof:
+  Near \(\varphi_{x_0}(x_0)\), the transition \(e\circ\varphi_{x_0}^{-1}\) is the identity because both charts equal \(\kappa\) on the domain. Its derivative is therefore one, and the conformal-density transition law gives the equality.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.densitySqInChart_eq_chartAt_of_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -476,6 +533,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.densitySqInChart_eq_chartAt_of_e
 /--
 For a coordinate pullback formula, the stored coordinate derivative is nonzero
 on the surface domain.
+
+%%handwave
+name:
+  The stored upper-half-plane coordinate has nonzero derivative
+statement:
+  For a coordinate pullback formula \((\kappa,f)\) and \(x_0\) in its domain, \(f'(\kappa(x_0))\ne0\).
+proof:
+  The local-map data explicitly asserts nonvanishing of the derivative throughout its coordinate domain.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.coordinateDerivative_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -555,6 +620,14 @@ def CoordinateUpperHalfPlanePullbackFormulaAmbientCoordinateEventuallyEqAt
 If the stored coordinate agrees with the ambient chart on the formula domain,
 then it is locally the ambient coordinate after passing through the inverse
 chart at any domain point.
+
+%%handwave
+name:
+  Domainwise chart compatibility gives local ambient coordinates
+statement:
+  If the stored coordinate \(\kappa\) equals the ambient chart \(\varphi_{x_0}\) on the formula domain containing \(x_0\), then \(\kappa(x_0)=\varphi_{x_0}(x_0)\) and \(\kappa\circ\varphi_{x_0}^{-1}\) is the identity near \(\varphi_{x_0}(x_0)\).
+proof:
+  The point equality is the hypothesis at \(x_0\). Openness of the domain makes its inverse-chart preimage a neighborhood, and on that neighborhood chart compatibility combines with the local inverse identity.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientCoordinateEventuallyEqAt_of_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -581,6 +654,14 @@ The local ambient-coordinate identity is enough to compare the stored
 chartwise density with the ambient `chartAt` density at the point.  This is
 the local replacement for requiring the stored coordinate to equal
 `chartAt x₀` on the whole formula domain.
+
+%%handwave
+name:
+  Local ambient coordinates identify chartwise densities
+statement:
+  Suppose \(x_0\) lies in a coordinate pullback formula and \(\kappa(x_0)=\varphi_{x_0}(x_0)\), with \(\kappa\circ\varphi_{x_0}^{-1}\) locally equal to the identity. Then the source squared density in the stored chart at \(\kappa(x_0)\) equals its density in \(\varphi_{x_0}\) at \(\varphi_{x_0}(x_0)\).
+proof:
+  The stored chart transition agrees locally with the identity and hence has derivative one. Substitute this into the conformal-density transition law.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.densitySqInChart_eq_chartAt_of_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -627,6 +708,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.densitySqInChart_eq_chartAt_of_c
 /--
 If the stored coordinate becomes the identity in the ambient chart, then the
 upper-half-plane coordinate expressions are eventually equal.
+
+%%handwave
+name:
+  Local coordinate identity gives local equality of map expressions
+statement:
+  If \(\kappa\circ\varphi_{x_0}^{-1}\) is locally the identity at \(\varphi_{x_0}(x_0)\), then \(f\circ\kappa\circ\varphi_{x_0}^{-1}\) is locally equal to \(f\) there.
+proof:
+  Postcompose the local coordinate equality by the stored upper-half-plane map \(f\).
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientExpressionEventuallyEqAt_of_coordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -641,6 +730,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientExpressionEventuallyEqAt_
 /--
 Eventual equality of the ambient expression with the stored coordinate map
 gives the ambient derivative-norm identification.
+
+%%handwave
+name:
+  Locally equal coordinate expressions have equal derivative norms
+statement:
+  If \(\kappa(x_0)=\varphi_{x_0}(x_0)\) and \(f\circ\kappa\circ\varphi_{x_0}^{-1}\) agrees locally with \(f\), then the squared norm of the induced chart derivative at \(x_0\) is \(|f'(\kappa(x_0))|^2\).
+proof:
+  Functions with the same germ have equal derivatives. Replace the ambient expression by \(f\) and use the base-point equality.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_eventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -664,6 +761,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_eve
 /--
 Eventual equality of the ambient expression with the stored coordinate map
 gives the actual ambient derivative identification.
+
+%%handwave
+name:
+  Locally equal coordinate expressions have equal derivatives
+statement:
+  If \(\kappa(x_0)=\varphi_{x_0}(x_0)\) and \(f\circ\kappa\circ\varphi_{x_0}^{-1}\) agrees locally with \(f\), then the induced chart derivative at \(x_0\) is \(f'(\kappa(x_0))\).
+proof:
+  The derivative depends only on the germ. Replace the ambient coordinate expression by \(f\), then identify the two base points.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -685,6 +790,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eventuall
 /--
 Actual ambient derivative identification immediately gives the corresponding
 derivative-norm identification.
+
+%%handwave
+name:
+  Derivative identification implies derivative-norm identification
+statement:
+  If the ambient derivative of the induced chart at \(x_0\) equals \(f'(\kappa(x_0))\), then its squared norm equals \(|f'(\kappa(x_0))|^2\).
+proof:
+  Apply the squared complex norm to the given derivative equality.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_ambientDerivativeAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -700,6 +813,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_amb
 /--
 The ambient-coordinate identity gives the ambient derivative-norm
 identification.
+
+%%handwave
+name:
+  Local ambient coordinates identify the derivative norm
+statement:
+  If \(\kappa(x_0)=\varphi_{x_0}(x_0)\) and \(\kappa\circ\varphi_{x_0}^{-1}\) is locally the identity, then the induced chart has derivative norm \(|f'(\kappa(x_0))|^2\) at \(x_0\).
+proof:
+  Postcomposition by \(f\) gives local equality of the ambient and stored expressions; equality of germs then gives equality of their derivative norms.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -715,6 +836,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_coo
 /--
 The ambient-coordinate identity gives the actual ambient derivative
 identification.
+
+%%handwave
+name:
+  Local ambient coordinates identify the derivative
+statement:
+  If \(\kappa(x_0)=\varphi_{x_0}(x_0)\) and \(\kappa\circ\varphi_{x_0}^{-1}\) is locally the identity, then the induced chart derivative at \(x_0\) is \(f'(\kappa(x_0))\).
+proof:
+  Postcompose the local coordinate identity by \(f\), then use invariance of the derivative under equality of germs and the base-point equality.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -731,6 +860,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_coordinat
 If the stored coordinate is the ambient chart on the formula domain, then the
 ambient derivative norm of the induced hyperbolic local chart is exactly the
 stored coordinate derivative norm.
+
+%%handwave
+name:
+  Chart-compatible coordinates identify the derivative norm
+statement:
+  If \(x_0\) lies in the formula domain and \(\kappa=\varphi_{x_0}\) on that domain, then the induced chart derivative has squared norm \(|f'(\kappa(x_0))|^2\).
+proof:
+  Domainwise chart compatibility yields the local ambient-coordinate identity, which identifies the two derivative norms.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -746,6 +883,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_eqO
 If the stored coordinate is the ambient chart on the formula domain, then the
 actual ambient derivative of the induced hyperbolic local chart is the stored
 coordinate derivative.
+
+%%handwave
+name:
+  Chart-compatible coordinates identify the derivative
+statement:
+  If \(x_0\) lies in the formula domain and \(\kappa=\varphi_{x_0}\) on that domain, then the induced chart derivative at \(x_0\) equals \(f'(\kappa(x_0))\).
+proof:
+  Domainwise chart compatibility yields the local ambient-coordinate identity, which identifies the two derivatives.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -811,6 +956,14 @@ def CoordinateUpperHalfPlanePullbackFormulaAtlasCoordinateEqOnChartAtCenters
 /--
 Aligned Liouville developing constructions inherit chart-compatibility of
 coordinates from their metric formula.
+
+%%handwave
+name:
+  An aligned developing construction inherits its surface coordinate
+statement:
+  Suppose the metric formula of an aligned Liouville developing construction uses the ambient chart \(\varphi_c\) on its domain. Then its induced coordinate pullback formula also uses \(\varphi_c\) throughout its domain.
+proof:
+  The pullback formula has the same coordinate as the metric formula, and its domain is contained in the metric-formula domain.
 -/
 theorem LocalLiouvilleDevelopingConstruction.pullbackFormula_coordinate_eqOn_chartAt_of_metricFormula
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -824,44 +977,6 @@ theorem LocalLiouvilleDevelopingConstruction.pullbackFormula_coordinate_eqOn_cha
   intro y hy
   rw [C.same_coordinate]
   exact hChart.2 (C.mem_metricFormula_domain hy)
-
-/--
-At the center of an aligned construction, metric-formula chart-compatibility
-gives the ambient derivative-norm identification for the pullback formula.
--/
-theorem LocalLiouvilleDevelopingConstruction.pullbackFormula_ambientDerivativeNormSqAt_of_metricFormula_charted
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-    (C : LocalLiouvilleDevelopingConstruction X g) {center : X}
-    (hcenter : center ∈ C.pullbackFormula.domain)
-    (hChart :
-      C.metricFormula.domain ⊆ (chartAt ℂ center).source ∧
-        Set.EqOn C.metricFormula.coordinate (chartAt ℂ center)
-          C.metricFormula.domain) :
-    CoordinateUpperHalfPlanePullbackFormulaAmbientDerivativeNormSqAt
-      C.pullbackFormula center :=
-  CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeNormSqAt_of_eqOn_chartAt
-    C.pullbackFormula hcenter
-    (LocalLiouvilleDevelopingConstruction.pullbackFormula_coordinate_eqOn_chartAt_of_metricFormula
-      C hChart)
-
-/--
-At the center of an aligned construction, metric-formula chart-compatibility
-gives the actual ambient derivative identification for the pullback formula.
--/
-theorem LocalLiouvilleDevelopingConstruction.pullbackFormula_ambientDerivativeAt_of_metricFormula_charted
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-    (C : LocalLiouvilleDevelopingConstruction X g) {center : X}
-    (hcenter : center ∈ C.pullbackFormula.domain)
-    (hChart :
-      C.metricFormula.domain ⊆ (chartAt ℂ center).source ∧
-        Set.EqOn C.metricFormula.coordinate (chartAt ℂ center)
-          C.metricFormula.domain) :
-    CoordinateUpperHalfPlanePullbackFormulaAmbientDerivativeAt
-      C.pullbackFormula center :=
-  CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eqOn_chartAt
-    C.pullbackFormula hcenter
-    (LocalLiouvilleDevelopingConstruction.pullbackFormula_coordinate_eqOn_chartAt_of_metricFormula
-      C hChart)
 
 /--
 A developing-construction atlas whose metric formulas are chart-compatible
@@ -946,6 +1061,14 @@ def coordinateUpperHalfPlanePullbackFormulaAmbientDerivativeTheorem_of_eqOn_char
 Once the ambient derivative norm is identified with the stored coordinate
 derivative norm, the hyperbolic local chart induced by a coordinate pullback
 formula satisfies the pointwise pullback squared-density formula.
+
+%%handwave
+name:
+  A coordinate pullback formula induces the Poincaré density identity
+statement:
+  Let \((\kappa,f)\) be a coordinate pullback formula at \(x_0\). If \(\kappa\) agrees with the ambient chart on the domain and the induced chart derivative has squared norm \(|f'(\kappa(x_0))|^2\), then the induced chart satisfies \(|d(f\circ\kappa)_{x_0}|^2/(\operatorname{Im}f(\kappa(x_0)))^2=\rho^2(x_0)\).
+proof:
+  Replace the ambient derivative norm by the stored derivative norm. The stored Poincaré pullback identity gives the density in the stored chart, and chart compatibility identifies that density with the ambient one.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -966,6 +1089,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSqu
 /--
 The local ambient-coordinate identity extracts the hyperbolic local-chart
 pullback formula from a coordinate pullback formula.
+
+%%handwave
+name:
+  A locally ambient coordinate formula induces the Poincaré density identity
+statement:
+  Let \((\kappa,f)\) be a coordinate pullback formula at \(x_0\). If \(\kappa\circ\varphi_{x_0}^{-1}\) is locally the identity with the correct base value, then the induced chart satisfies \(|d(f\circ\kappa)_{x_0}|^2/(\operatorname{Im}f(\kappa(x_0)))^2=\rho^2(x_0)\).
+proof:
+  Local coordinate identity identifies both the ambient derivative norm and the stored chart density. Substitute these identifications into the stored Poincaré pullback formula.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt_of_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -990,6 +1121,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSqu
 /--
 The same derivative norm identification also gives nonvanishing of the
 ambient local-chart derivative.
+
+%%handwave
+name:
+  Derivative-norm identification makes the induced chart regular
+statement:
+  Let \((\kappa,f)\) be a coordinate pullback formula at \(x_0\). If the squared norm of the induced chart derivative equals \(|f'(\kappa(x_0))|^2\), then that induced derivative is nonzero.
+proof:
+  The stored derivative norm is strictly positive on the formula domain. Hence the identified ambient derivative norm is positive and the derivative cannot vanish.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_coordinateDerivative_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1031,6 +1170,14 @@ surface.
 This uses the genuine chart-transition argument in
 `hyperbolicLocalChart_pullbackSquaredDensityFormulaAt`; no assumption that the
 stored coordinate is literally `chartAt x₀` is needed.
+
+%%handwave
+name:
+  An induced hyperbolic chart satisfies the Poincaré pullback identity
+statement:
+  On a Riemann surface, the hyperbolic local chart induced by any coordinate pullback formula satisfies the ambient-coordinate Poincaré squared-density identity at every point of its domain.
+proof:
+  Apply [the Poincaré pullback identity for every hyperbolic local chart](lean:JJMath.HyperbolicMetric.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt) to the induced chart.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt_from_chartTransition
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
@@ -1045,6 +1192,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSqu
 /--
 Coordinate pullback formulae give the hyperbolic local-chart pullback
 squared-density formula directly on a Riemann surface.
+
+%%handwave
+name:
+  Every coordinate pullback formula induces the Poincaré density identity
+statement:
+  On a Riemann surface, for every coordinate pullback formula and every point of its domain, the induced hyperbolic local chart satisfies the ambient-coordinate Poincaré squared-density formula.
+proof:
+  Apply [the induced chart satisfies the pullback identity pointwise](lean:JJMath.HyperbolicMetric.CoordinateUpperHalfPlanePullbackFormula.hyperbolicLocalChart_pullbackSquaredDensityFormulaAt_from_chartTransition) to each formula and point.
 -/
 theorem coordinateUpperHalfPlanePullbackFormulaHyperbolicLocalChartPullbackSquaredDensityTheorem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X] :
@@ -1190,6 +1345,14 @@ def CoordinateUpperHalfPlanePullbackFormula.toHyperbolicLocalChartPointedCoordin
 Pointed coordinate-derivative data for coordinate pullback formulae is
 available directly on a Riemann surface, with the chart-transition derivative
 handled by the already-proved hyperbolic local-chart pullback formula.
+
+%%handwave
+name:
+  Every coordinate pullback formula has a nonzero Poincare-normalized derivative
+statement:
+  On a Riemann surface, every coordinate pullback formula and every point \(x_0\) of its domain determine nonzero ambient coordinate derivative data satisfying the Poincaré pullback identity for the induced hyperbolic chart.
+proof:
+  The chart-transition pullback formula supplies the squared-density identity, and positivity of the source density makes its derivative nonzero. Package these facts with the domain membership.
 -/
 theorem coordinateUpperHalfPlanePullbackFormulaPointedCoordinateDerivativeDataTheorem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X] :
@@ -1235,6 +1398,14 @@ def coordinateUpperHalfPlanePullbackFormulaPointedCoordinateDerivativeDataTheore
 
 /--
 The normalized coordinate derivative is nonzero.
+
+%%handwave
+name:
+  The normalized chart derivative is nonzero
+statement:
+  Let \(U\) be a hyperbolic local chart and \(x_0\in U\). If its ambient coordinate derivative \(dU_{x_0}\) is nonzero and satisfies the Poincaré pullback identity, then \(dU_{x_0}/\sqrt{\rho^2(x_0)}\ne0\).
+proof:
+  The squared density \(\rho^2(x_0)\) is positive, so its square root is nonzero. Division by it therefore preserves nonvanishing of the coordinate derivative.
 -/
 theorem HyperbolicLocalChartPointedCoordinateDerivativeData.normalized_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1251,6 +1422,14 @@ theorem HyperbolicLocalChartPointedCoordinateDerivativeData.normalized_ne_zero
 
 /--
 The normalized coordinate derivative has squared hyperbolic norm `1`.
+
+%%handwave
+name:
+  The normalized chart derivative has unit hyperbolic norm
+statement:
+  Let \(U\) be a hyperbolic local chart and \(x_0\in U\). If \(|dU_{x_0}|^2/(\operatorname{Im}U(x_0))^2=\rho^2(x_0)\), then \(\bigl|dU_{x_0}/\sqrt{\rho^2(x_0)}\bigr|^2/(\operatorname{Im}U(x_0))^2=1\).
+proof:
+  Expand the squared norm of the quotient and substitute the pullback identity. Positivity of \(\rho^2(x_0)\) permits cancellation of its square root.
 -/
 theorem HyperbolicLocalChartPointedCoordinateDerivativeData.normalized_hyperbolicNormSq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1415,7 +1594,16 @@ def HyperbolicLocalChartCanonicalPointedFirstOrderMatch
       RealMobiusRepresentativeMapsTangentFrame A
         DU.toPointedFrame.frame DV.toPointedFrame.frame
 
-/-- Even the abstract first-order frame match includes the value equation. -/
+/-- Even the abstract first-order frame match includes the value equation.
+
+%%handwave
+name:
+  A pointed frame match matches chart values
+statement:
+  If the pointed frames of hyperbolic charts \(U,V\) at \(x_0\) are carried into one another by \(A\in\mathrm{PSL}_2(\mathbb R)\), then \(V(x_0)=A\cdot U(x_0)\).
+proof:
+  The bases of the two frames are respectively \(U(x_0)\) and \(V(x_0)\). The base-point component of the frame equality is therefore exactly the asserted value equation.
+-/
 theorem HyperbolicLocalChartPointedFirstOrderMatch.value_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
@@ -1426,7 +1614,16 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch.value_eq
   rw [← FV.base_eq, ← FU.base_eq]
   exact hmap.1
 
-/-- The abstract first-order frame match includes membership in the left chart domain. -/
+/-- The abstract first-order frame match includes membership in the left chart domain.
+
+%%handwave
+name:
+  A pointed frame match lies in the first chart
+statement:
+  If hyperbolic charts \(U,V\) have a pointed first-order match at \(x_0\), then \(x_0\in U\).
+proof:
+  The first pointed frame contained in the match records membership of \(x_0\) in the domain of \(U\).
+-/
 theorem HyperbolicLocalChartPointedFirstOrderMatch.mem_left
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
@@ -1435,7 +1632,16 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch.mem_left
   rcases h with ⟨FU, _FV, _hmap⟩
   exact FU.mem_domain
 
-/-- The abstract first-order frame match includes membership in the right chart domain. -/
+/-- The abstract first-order frame match includes membership in the right chart domain.
+
+%%handwave
+name:
+  A pointed frame match lies in the second chart
+statement:
+  If hyperbolic charts \(U,V\) have a pointed first-order match at \(x_0\), then \(x_0\in V\).
+proof:
+  The second pointed frame contained in the match records membership of \(x_0\) in the domain of \(V\).
+-/
 theorem HyperbolicLocalChartPointedFirstOrderMatch.mem_right
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
@@ -1452,6 +1658,14 @@ The point is that `HyperbolicLocalChartPointedFrame` is no longer an arbitrary
 frame witness: its tangent is definitionally tied to the normalized ambient
 coordinate derivative of the chart.  Multiplying by the common positive source
 density removes the normalization.
+
+%%handwave
+name:
+  A pointed frame match gives the coordinate derivative chain rule
+statement:
+  If the normalized pointed frames of \(U,V\) at \(x_0\) are matched by \(A\in\mathrm{PSL}_2(\mathbb R)\), then \(dV_{x_0}=A'(U(x_0))\,dU_{x_0}\).
+proof:
+  The frame equality gives this identity after both derivatives are divided by the same positive square root of the source metric density. Multiply by that nonzero factor and cancel it.
 -/
 theorem HyperbolicLocalChartPointedFirstOrderMatch.concreteFirstOrderMatch
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1502,6 +1716,14 @@ def HyperbolicLocalChartAbstractFirstOrderMatchCanonicalityTheorem
 /--
 Coordinate-derivative data plus equality of normalized derivative vectors gives
 the abstract first-order frame match.
+
+%%handwave
+name:
+  Normalized value and derivative equations give a pointed frame match
+statement:
+  Let \(U,V\) carry pointed coordinate-derivative data at \(x_0\). If \(V(x_0)=A\cdot U(x_0)\) and \(\widehat{dV}_{x_0}=A'(U(x_0))\widehat{dU}_{x_0}\), then their pointed frames are matched by \(A\).
+proof:
+  Use the canonical frames supplied by the two derivative-data packages. Their base and tangent equations are precisely the two hypotheses.
 -/
 theorem HyperbolicLocalChartPointedFirstOrderMatch_of_normalizedCoordinateDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1527,6 +1749,14 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch_of_normalizedCoordinateDeriva
 An unnormalized derivative equality gives equality of normalized derivative
 vectors, since both local charts are normalized by the same source metric
 density at the surface point.
+
+%%handwave
+name:
+  The coordinate chain rule survives metric normalization
+statement:
+  If \(dV_{x_0}=A'(U(x_0))\,dU_{x_0}\), then the normalized derivatives satisfy \(\widehat{dV}_{x_0}=A'(U(x_0))\widehat{dU}_{x_0}\).
+proof:
+  Both charts use the same ambient source metric density at \(x_0\). Divide the given equality by its square root and reassociate multiplication.
 -/
 theorem hyperbolicLocalChart_normalizedCoordinateDerivative_eq_of_coordinateDerivative_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1546,6 +1776,14 @@ theorem hyperbolicLocalChart_normalizedCoordinateDerivative_eq_of_coordinateDeri
 /--
 Coordinate-derivative data plus the ordinary chain-rule derivative equality
 gives the abstract first-order frame match.
+
+%%handwave
+name:
+  Value and coordinate derivative equations give a pointed frame match
+statement:
+  Let \(U,V\) carry pointed coordinate-derivative data at \(x_0\). If \(V(x_0)=A\cdot U(x_0)\) and \(dV_{x_0}=A'(U(x_0))\,dU_{x_0}\), then their pointed frames are matched by \(A\).
+proof:
+  The coordinate derivative equation passes to normalized derivatives because both charts use the same source density. The resulting value and normalized-derivative equations define the required frame match.
 -/
 theorem HyperbolicLocalChartPointedFirstOrderMatch_of_coordinateDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1568,6 +1806,14 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch_of_coordinateDerivative
 /--
 Concrete first-order matching, together with the pointed derivative data,
 gives the abstract oriented-frame match.
+
+%%handwave
+name:
+  A concrete first-order match gives a pointed frame match
+statement:
+  For charts \(U,V\) with pointed coordinate-derivative data at \(x_0\), the equations \(V(x_0)=A\cdot U(x_0)\) and \(dV_{x_0}=A'(U(x_0))\,dU_{x_0}\) yield a pointed first-order frame match.
+proof:
+  Apply the construction from the value and coordinate derivative equations.
 -/
 theorem HyperbolicLocalChartPointedFirstOrderMatch_of_concreteFirstOrderMatch
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1582,7 +1828,16 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch_of_concreteFirstOrderMatch
   HyperbolicLocalChartPointedFirstOrderMatch_of_coordinateDerivative
     DU DV hvalue hfirst
 
-/-- Canonical first-order matching forgets to the abstract frame predicate. -/
+/-- Canonical first-order matching forgets to the abstract frame predicate.
+
+%%handwave
+name:
+  Canonical pointed matching gives an abstract frame match
+statement:
+  An explicit match between the canonical normalized derivative frames of \(U\) and \(V\) at \(x_0\) is a pointed first-order frame match.
+proof:
+  Forget that the two frames were canonically constructed and retain the frames together with their matching equation.
+-/
 theorem HyperbolicLocalChartPointedFirstOrderMatch_of_canonical
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
@@ -1591,7 +1846,16 @@ theorem HyperbolicLocalChartPointedFirstOrderMatch_of_canonical
   rcases h with ⟨DU, DV, hmap⟩
   exact ⟨DU.toPointedFrame, DV.toPointedFrame, hmap⟩
 
-/-- Canonical first-order matching includes the value equation. -/
+/-- Canonical first-order matching includes the value equation.
+
+%%handwave
+name:
+  A canonical pointed match matches chart values
+statement:
+  If the canonical normalized derivative frames of \(U,V\) at \(x_0\) are matched by \(A\), then \(V(x_0)=A\cdot U(x_0)\).
+proof:
+  The base points of the canonical frames are the two chart values, so the base component of their frame match is the stated equality.
+-/
 theorem HyperbolicLocalChartCanonicalPointedFirstOrderMatch.value_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
     {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
@@ -1605,6 +1869,14 @@ theorem HyperbolicLocalChartCanonicalPointedFirstOrderMatch.value_eq
 /--
 Canonical first-order matching is faithful to the concrete coordinate
 derivative chain-rule identity.
+
+%%handwave
+name:
+  A canonical pointed match gives the coordinate chain rule
+statement:
+  If the canonical normalized derivative frames of \(U,V\) at \(x_0\) are matched by \(A\), then \(dV_{x_0}=A'(U(x_0))\,dU_{x_0}\).
+proof:
+  The tangent component matches the derivatives after division by the common factor \(\sqrt{\rho^2(x_0)}\). Positivity of the source density makes this factor nonzero, so multiplying through gives the unnormalized chain rule.
 -/
 theorem HyperbolicLocalChartCanonicalPointedFirstOrderMatch.concreteFirstOrderMatch
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1637,47 +1909,17 @@ theorem HyperbolicLocalChartCanonicalPointedFirstOrderMatch.concreteFirstOrderMa
   exact hmul
 
 /--
-If abstract first-order matches are canonical, then an abstract match gives
-the concrete ambient coordinate derivative chain-rule identity.
--/
-theorem HyperbolicLocalChartConcreteFirstOrderMatch_of_pointedFirstOrderMatch_of_canonicality
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hCanon :
-      HyperbolicLocalChartAbstractFirstOrderMatchCanonicalityTheorem X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {x₀ : X}
-    (h : HyperbolicLocalChartPointedFirstOrderMatch U V A x₀) :
-    HyperbolicLocalChartConcreteFirstOrderMatch U V A x₀ :=
-  (hCanon g U V A x₀ h).concreteFirstOrderMatch
-
-/--
-Concrete first-order matching with pointed derivative data is the same as
-canonical pointed first-order matching.
--/
-theorem HyperbolicLocalChartCanonicalPointedFirstOrderMatch_of_concreteFirstOrderMatch
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-    {U V : HyperbolicLocalChart X g} {A : RealMobiusRepresentative} {x₀ : X}
-    (DU : HyperbolicLocalChartPointedCoordinateDerivativeData U x₀)
-    (DV : HyperbolicLocalChartPointedCoordinateDerivativeData V x₀)
-    (hvalue :
-      V.toUpperHalfPlane x₀ =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane x₀))
-    (hfirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A x₀) :
-    HyperbolicLocalChartCanonicalPointedFirstOrderMatch U V A x₀ := by
-  refine ⟨DU, DV, ?_⟩
-  constructor
-  · simpa [HyperbolicLocalChartPointedCoordinateDerivativeData.toPointedFrame]
-      using hvalue
-  · have hnorm :=
-      hyperbolicLocalChart_normalizedCoordinateDerivative_eq_of_coordinateDerivative_eq
-        hfirst
-    simpa [HyperbolicLocalChartPointedCoordinateDerivativeData.toPointedFrame]
-      using hnorm
-
-/--
 For two coordinate pullback formulae, actual ambient derivative identification
 turns the ordinary coordinate derivative chain rule into the abstract
 first-order frame match for the induced hyperbolic local charts.
+
+%%handwave
+name:
+  Coordinate one-jets induce a pointed frame match
+statement:
+  Let \((\kappa_F,f)\) and \((\kappa_G,g)\) be coordinate pullback formulae at \(x_0\), compatible there with the ambient chart. If their induced ambient derivatives equal \(f'(\kappa_F(x_0))\) and \(g'(\kappa_G(x_0))\), and \(g(\kappa_G(x_0))=A\cdot f(\kappa_F(x_0))\) with \(g'=A'(f)f'\) at that point, then the induced hyperbolic charts have a pointed first-order match by \(A\).
+proof:
+  The derivative-norm identifications supply canonical pointed derivative data for both induced charts. Substitute the actual derivative identifications into the coordinate chain rule and apply the value-and-derivative frame construction.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pointedFirstOrderMatch_of_coordinateDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1729,39 +1971,17 @@ theorem CoordinateUpperHalfPlanePullbackFormula.pointedFirstOrderMatch_of_coordi
     simpa [U, V, CoordinateUpperHalfPlanePullbackFormula.toUpperHalfPlane] using hderiv
 
 /--
-Chart-compatible coordinate pullback formulae satisfy the pairwise first-order
-frame bridge as soon as their stored coordinate values and derivatives satisfy
-the real-Mobius value and chain-rule equations.
--/
-theorem CoordinateUpperHalfPlanePullbackFormula.pointedFirstOrderMatch_of_coordinateDerivative_eqOn_chartAt
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-    (F G : CoordinateUpperHalfPlanePullbackFormula X g)
-    {A : RealMobiusRepresentative} {x₀ : X}
-    (hxF : x₀ ∈ F.domain) (hxG : x₀ ∈ G.domain)
-    (hEqF : Set.EqOn F.coordinate (chartAt ℂ x₀) F.domain)
-    (hEqG : Set.EqOn G.coordinate (chartAt ℂ x₀) G.domain)
-    (hvalue :
-      G.localMap (G.coordinate x₀) =
-        realMobiusRepresentativeAction A (F.localMap (F.coordinate x₀)))
-    (hderiv :
-      deriv (fun z : ℂ ↦ (G.localMap z : ℂ)) (G.coordinate x₀) =
-        realMobiusRepresentativeDerivativeAt A (F.localMap (F.coordinate x₀)) *
-          deriv (fun z : ℂ ↦ (F.localMap z : ℂ)) (F.coordinate x₀)) :
-    HyperbolicLocalChartPointedFirstOrderMatch
-      F.toUpperHalfPlanePullbackFormula.toHyperbolicLocalChart
-      G.toUpperHalfPlanePullbackFormula.toHyperbolicLocalChart A x₀ :=
-  CoordinateUpperHalfPlanePullbackFormula.pointedFirstOrderMatch_of_coordinateDerivative
-    F G hxF hxG hEqF hEqG
-    (CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eqOn_chartAt
-      F hxF hEqF)
-    (CoordinateUpperHalfPlanePullbackFormula.ambientDerivativeAt_of_eqOn_chartAt
-      G hxG hEqG)
-    hvalue hderiv
-
-/--
 Locally chart-compatible coordinate pullback formulae satisfy the pairwise
 first-order frame bridge as soon as their stored coordinate values and
 derivatives satisfy the real-Mobius value and chain-rule equations.
+
+%%handwave
+name:
+  Locally ambient coordinate one-jets induce a pointed frame match
+statement:
+  Let two coordinate pullback formulae have source coordinates that become the identity in the ambient chart near \(x_0\). If their stored values and derivatives satisfy the value and chain-rule equations for \(A\in\mathrm{PSL}_2(\mathbb R)\), then their induced hyperbolic charts have a pointed first-order match by \(A\).
+proof:
+  Local coordinate identity supplies the canonical derivative data and identifies each ambient derivative with the stored derivative. The given one-jet equations then produce the frame match.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pointedFirstOrderMatch_of_coordinateDerivative_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1834,6 +2054,14 @@ structure HyperbolicLocalChartPointedRealMobiusTransition
 Pointed coordinate-derivative data at one surface point gives a pointed real
 Mobius comparison there, by transitivity on pointed unit hyperbolic tangent
 frames.
+
+%%handwave
+name:
+  Two pointed hyperbolic chart frames differ by a real Möbius transformation
+statement:
+  If hyperbolic charts \(U,V\) carry pointed coordinate-derivative data at \(x_0\), then some \(A\in\mathrm{PSL}_2(\mathbb R)\) matches their values and normalized first derivatives at \(x_0\).
+proof:
+  The canonical normalized derivative frames both have unit hyperbolic norm. Transitivity of \(\mathrm{PSL}_2(\mathbb R)\) on equal-length pointed tangent frames supplies \(A\); its base and tangent equations give the transition package.
 -/
 theorem HyperbolicLocalChartPointedRealMobiusTransition.exists_of_coordinateDerivativeData
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1862,6 +2090,14 @@ For two coordinate pullback formulae, value agreement and the coordinate
 derivative chain rule give the full pointed real-Mobius transition package for
 the induced hyperbolic local charts, provided the actual ambient derivatives
 are identified with the stored coordinate derivatives.
+
+%%handwave
+name:
+  Coordinate one-jets give a pointed real Möbius transition
+statement:
+  For two chart-compatible coordinate pullback formulae at \(x_0\), suppose their ambient derivatives are identified with their stored derivatives and their stored values and derivatives obey the one-jet equations for \(A\). Then \(A\) is a pointed real Möbius transition between the induced hyperbolic charts.
+proof:
+  The domain and value components are immediate. The derivative hypotheses and one-jet equations give the pointed first-order frame component.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_coordinateDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1896,6 +2132,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_c
 Chart-compatible coordinate pullback formulae give the full pointed
 real-Mobius transition package from the stored value and derivative chain-rule
 equations.
+
+%%handwave
+name:
+  Chart-compatible coordinate one-jets give a pointed real Möbius transition
+statement:
+  If two coordinate pullback formulae agree with the ambient chart on their domains at \(x_0\), and their stored values and derivatives obey the one-jet equations for \(A\), then \(A\) is a pointed real Möbius transition between their induced hyperbolic charts.
+proof:
+  Chart compatibility identifies both ambient derivatives with the stored derivatives. Apply the coordinate one-jet transition result.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_coordinateDerivative_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1926,6 +2170,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_c
 Locally chart-compatible coordinate pullback formulae give the full pointed
 real-Mobius transition package from the stored value and derivative chain-rule
 equations.
+
+%%handwave
+name:
+  Locally ambient coordinate one-jets give a pointed real Möbius transition
+statement:
+  If the source coordinates of two pullback formulae become the identity in the ambient chart near \(x_0\), and their stored values and derivatives satisfy the one-jet equations for \(A\), then \(A\) is a pointed real Möbius transition between the induced hyperbolic charts.
+proof:
+  The two domain assumptions and the value equation give the first three components. Local coordinate identity turns the stored derivative chain rule into the required first-order frame match.
 -/
 theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_coordinateDerivative_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
@@ -1960,6 +2212,14 @@ theorem CoordinateUpperHalfPlanePullbackFormula.pointedRealMobiusTransition_of_c
 A coordinate-branch one-jet equality gives the pointed real-Mobius transition
 for the two induced surface hyperbolic charts, once the shared surface
 coordinate is chart-compatible at the point.
+
+%%handwave
+name:
+  A developing-branch one-jet gives a pointed real Möbius transition
+statement:
+  Let \(H_1,H_2\) be upper-half-plane developing branches over the same chart coordinate \(\kappa\), and let \(x_0\) lie in their common domain. If \(\kappa\) agrees with the ambient chart and the value and derivative one-jets of the branches at \(\kappa(x_0)\) agree after postcomposition by \(A\in\mathrm{PSL}_2(\mathbb R)\), then \(A\) gives a pointed transition between the induced hyperbolic charts at \(x_0\).
+proof:
+  The one-jet hypothesis gives the value equation. Combine its derivative equality with the chain rule for postcomposition by \(A\), then apply the chart-compatible coordinate transition theorem.
 -/
 theorem LocalUpperHalfPlaneDevelopingMap.pointedRealMobiusTransition_of_coordinateBranchOneJet
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2018,6 +2278,14 @@ theorem LocalUpperHalfPlaneDevelopingMap.pointedRealMobiusTransition_of_coordina
 A coordinate-branch one-jet equality gives the pointed real-Mobius transition
 for the two induced surface hyperbolic charts from local ambient-coordinate
 compatibility at the point.
+
+%%handwave
+name:
+  A locally ambient developing-branch one-jet gives a pointed transition
+statement:
+  Let \(H_1,H_2\) be upper-half-plane developing branches over the same surface coordinate near \(x_0\). If both induced source coordinates become the ambient coordinate locally and their one-jets at the common coordinate value agree after postcomposition by \(A\in\mathrm{PSL}_2(\mathbb R)\), then \(A\) gives a pointed transition between the induced hyperbolic charts.
+proof:
+  Extract the value equality from the one-jet hypothesis and combine its derivative equality with the postcomposition chain rule. The locally ambient coordinate transition theorem then supplies the full pointed transition.
 -/
 theorem LocalUpperHalfPlaneDevelopingMap.pointedRealMobiusTransition_of_coordinateBranchOneJet_coordinateEventuallyEq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

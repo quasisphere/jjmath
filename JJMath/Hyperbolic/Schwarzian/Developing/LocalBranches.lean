@@ -30,7 +30,14 @@ def localMap {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (C : LocalSchwarzianODEChart S) : ℂ → ℂ :=
   C.frame.localMap
 
-/-- The constructed local coordinate has Schwarzian coefficient `S.coefficient`. -/
+/--
+%%handwave
+name: Schwarzian equation for a local ODE coordinate
+statement:
+  Let $f=y_1/y_0$ be the local coordinate obtained from a fundamental solution pair for $y''+\frac12S(z)y=0$. On its domain, $\{f,z\}=S(z)$.
+proof:
+  This is the Schwarzian identity supplied by the underlying linear ODE frame.
+-/
 theorem schwarzian_eq_coefficient
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (C : LocalSchwarzianODEChart S) :
@@ -39,7 +46,14 @@ theorem schwarzian_eq_coefficient
         C.frame.localMapThirdDeriv z = S.coefficient z :=
   C.frame.schwarzianExpression_eq_coefficient
 
-/-- The constructed local coordinate has nonzero first derivative. -/
+/--
+%%handwave
+name: Nonvanishing derivative of a local Schwarzian coordinate
+statement:
+  The local coordinate $f=y_1/y_0$ obtained from a nondegenerate Schwarzian ODE frame satisfies $f'(z)\ne0$ throughout its domain.
+proof:
+  Apply the nonvanishing-derivative conclusion of the underlying ODE frame.
+-/
 theorem localMapDeriv_ne_zero
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (C : LocalSchwarzianODEChart S) :
@@ -113,6 +127,14 @@ def restrict {u : LocalConformalFactor} {S : LocalSchwarzianData u}
   schwarzian_eq_coefficient := fun z hz ↦
     D.schwarzian_eq_coefficient z (hVsub hz)
 
+/--
+%%handwave
+name: Domain of a restricted projective developing map
+statement:
+  If a local projective developing map is restricted to an open subset $V$ of its domain, the restricted map has domain exactly $V$.
+proof:
+  This is immediate from the definition of restriction.
+-/
 @[simp]
 theorem restrict_domain {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (D : LocalProjectiveDevelopingMap S) (V : Set ℂ)
@@ -134,7 +156,14 @@ def LocalUpperHalfPlaneMapHolomorphicOn (U : Set ℂ) (f : ℂ → ℍ) : Prop :
 
 namespace LocalUpperHalfPlaneMapHolomorphicOn
 
-/-- Pointwise `HasDerivAt` data gives the local holomorphicity predicate. -/
+/--
+%%handwave
+name: Holomorphicity from prescribed complex derivatives
+statement:
+  Let $f:U\to\mathbb H$. If for every $z\in U$ the complex-valued map $f$ has a complex derivative $f'(z)$ at $z$, then $f$ is holomorphic on $U$.
+proof:
+  Existence of a complex derivative at each point is precisely pointwise complex differentiability on $U$.
+-/
 theorem of_hasDerivAt {U : Set ℂ} {f : ℂ → ℍ} {f' : ℂ → ℂ}
     (h :
       ∀ z, z ∈ U →
@@ -208,6 +237,14 @@ def restrict {u : LocalConformalFactor} {S : LocalSchwarzianData u}
   densitySq_eq_pullback := fun z hz ↦
     H.densitySq_eq_pullback z (hVsub hz)
 
+/--
+%%handwave
+name: Domain of a restricted upper-half-plane branch
+statement:
+  If a local upper-half-plane developing map is restricted to an open subset $V$ of its domain, the restricted branch has domain exactly $V$.
+proof:
+  This is immediate from the definition of restriction.
+-/
 @[simp]
 theorem restrict_domain {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) (V : Set ℂ)
@@ -215,7 +252,14 @@ theorem restrict_domain {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H.restrict V hVOpen hVsub).domain = V :=
   rfl
 
-/-- The complex-valued upper-half-plane branch is differentiable at every domain point. -/
+/--
+%%handwave
+name: Complex differentiability of an upper-half-plane branch
+statement:
+  A holomorphic local branch $F:\Omega\to\mathbb H$, regarded as a complex-valued function, is complex differentiable at every $z\in\Omega$.
+proof:
+  Apply the stored holomorphicity hypothesis at the chosen domain point.
+-/
 theorem differentiableAt_upperHalfPlaneMap
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ} (hz : z ∈ H.domain) :
@@ -261,7 +305,14 @@ def HasPointedRealMobiusTransition
         (fun z : ℂ ↦ (realMobiusRepresentativeAction A (H₁.upperHalfPlaneMap z) : ℂ))
         z₀
 
-/-- Every upper-half-plane branch has the identity real-Mobius transition to itself. -/
+/--
+%%handwave
+name: Identity transition of an upper-half-plane branch
+statement:
+  Every local upper-half-plane developing map differs from itself on its domain by the identity element of $\operatorname{PSL}(2,\mathbb R)$.
+proof:
+  Choose the identity real Mobius transformation and simplify its action pointwise.
+-/
 theorem hasRealMobiusTransition_self
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) :
@@ -270,7 +321,14 @@ theorem hasRealMobiusTransition_self
   intro z _hz _hz'
   simp [realMobiusRepresentativeAction_one]
 
-/-- Real-Mobius transition data restricts to smaller branch domains. -/
+/--
+%%handwave
+name: Restriction of a real Mobius transition
+statement:
+  Suppose $F_2=A\cdot F_1$ on the overlap of two local upper-half-plane branches, with $A\in\operatorname{PSL}(2,\mathbb R)$. The same identity holds after restricting the two branches to arbitrary open subdomains.
+proof:
+  Retain the same transformation $A$ and apply the original transition identity to points of the smaller overlap.
+-/
 theorem HasRealMobiusTransition.restrict
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
     {H₁ : LocalUpperHalfPlaneDevelopingMap S₁}
@@ -292,7 +350,14 @@ def toLocalProjectiveDevelopingMap
     LocalProjectiveDevelopingMap S :=
   H.projective
 
-/-- The affine coordinate has positive imaginary part on the local domain. -/
+/--
+%%handwave
+name: Positive imaginary part of the affine developing coordinate
+statement:
+  If the affine coordinate of a local developing map agrees on $\Omega$ with a branch $F:\Omega\to\mathbb H$, then $\operatorname{Im}F(z)>0$ for every $z\in\Omega$.
+proof:
+  Rewrite the affine coordinate as the upper-half-plane-valued branch and use positivity of the imaginary part in $\mathbb H$.
+-/
 theorem affineMap_im_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ}
@@ -301,7 +366,14 @@ theorem affineMap_im_pos
   rw [← H.upperHalfPlaneMap_eq_affine z hz]
   exact (H.upperHalfPlaneMap z).im_pos
 
-/-- The squared norm of the projective derivative is positive on the domain. -/
+/--
+%%handwave
+name: Positive squared norm of the developing-map derivative
+statement:
+  If the derivative $F'(z)$ of a local projective developing coordinate is nonzero, then $|F'(z)|^2>0$.
+proof:
+  The complex squared norm is positive exactly for nonzero complex numbers.
+-/
 theorem affineDerivativeNormSq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ}
@@ -309,7 +381,14 @@ theorem affineDerivativeNormSq_pos
     0 < Complex.normSq (H.projective.affineMapDeriv z) :=
   Complex.normSq_pos.mpr (H.projective.affineMapDeriv_ne_zero z hz)
 
-/-- The actual derivative norm square of the `ℍ`-branch is positive. -/
+/--
+%%handwave
+name: Positive derivative norm of an upper-half-plane branch
+statement:
+  The squared norm of the complex derivative of a local upper-half-plane developing map is positive at every point of its domain.
+proof:
+  Identify the actual derivative with the nonzero derivative stored by the projective developing map, then use positivity of its squared norm.
+-/
 theorem upperHalfPlaneDerivativeNormSq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ}
@@ -330,8 +409,12 @@ def hyperbolicDerivativeNormSqAt
   complexDerivativeNormSq H.upperHalfPlaneMap z / ((H.upperHalfPlaneMap z : ℂ).im ^ 2)
 
 /--
-For a metric-recovering branch, the hyperbolic norm square of the derivative
-is the conformal density square.
+%%handwave
+name: Hyperbolic derivative norm of a metric-recovering branch
+statement:
+  Let $F:\Omega\to\mathbb H$ recover a conformal factor $u$ by the Poincare pullback formula. Then $|F'(z)|^2/(\operatorname{Im}F(z))^2=e^{2u(z)}$ for every $z\in\Omega$.
+proof:
+  Replace the actual derivative by the derivative stored with the projective branch and apply the metric-recovery identity.
 -/
 theorem hyperbolicDerivativeNormSqAt_eq_densitySq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -343,8 +426,13 @@ theorem hyperbolicDerivativeNormSqAt_eq_densitySq
   exact (H.densitySq_eq_pullback z hz).symm
 
 /--
-Two metric-recovering branches for the same conformal factor have equal
-hyperbolic derivative norm square at every common point.
+%%handwave
+name: Equal hyperbolic derivative norms on branch overlaps
+statement:
+  If $F_1$ and $F_2$ both recover the same conformal factor $u$, then at every point $z$ in both domains,
+  $$\frac{|F_1'(z)|^2}{(\operatorname{Im}F_1(z))^2}=\frac{|F_2'(z)|^2}{(\operatorname{Im}F_2(z))^2}.$$
+proof:
+  Both sides equal the common squared conformal density $e^{2u(z)}$.
 -/
 theorem hyperbolicDerivativeNormSqAt_eq_of_mem_inter
     {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -356,7 +444,14 @@ theorem hyperbolicDerivativeNormSqAt_eq_of_mem_inter
   rw [H₁.hyperbolicDerivativeNormSqAt_eq_densitySq hz₁,
     H₂.hyperbolicDerivativeNormSqAt_eq_densitySq hz₂]
 
-/-- The Poincare denominator `(Im f)^2` is positive on the local domain. -/
+/--
+%%handwave
+name: Positivity of the Poincare denominator
+statement:
+  For a local branch $F:\Omega\to\mathbb H$, one has $(\operatorname{Im}F(z))^2>0$ at every $z\in\Omega$.
+proof:
+  The imaginary part is positive in the upper half-plane, hence so is its square.
+-/
 theorem affineMap_im_sq_pos
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ}
@@ -364,7 +459,14 @@ theorem affineMap_im_sq_pos
     0 < (H.projective.affineMap z).im ^ 2 :=
   sq_pos_of_pos (H.affineMap_im_pos hz)
 
-/-- The density pullback formula rewritten using only the affine coordinate. -/
+/--
+%%handwave
+name: Affine-coordinate form of the Poincare pullback formula
+statement:
+  If the affine developing coordinate $f$ agrees with a metric-recovering upper-half-plane branch on $\Omega$, then $e^{2u(z)}=|f'(z)|^2/(\operatorname{Im}f(z))^2$ for every $z\in\Omega$.
+proof:
+  Start from the stored pullback formula and replace the upper-half-plane branch by its equal affine coordinate.
+-/
 theorem densitySq_eq_pullback_affine
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     (H : LocalUpperHalfPlaneDevelopingMap S) {z : ℂ}
@@ -615,20 +717,43 @@ def toLocalLiouvilleDevelopingSolutionAtlas
   mem_solutionAt_domain := A.mem_formulaAt_domain
   transition_realMobius := B.transition_realMobius
 
-/-- Surface-level Schwarzian branch data gives the metric-level local solving target. -/
+/--
+%%handwave
+name: Local developing-solution atlas from surface Schwarzian branches
+statement:
+  Suppose every chart in a local Liouville metric atlas is equipped with an upper-half-plane Schwarzian branch whose coordinate image lies in its domain, and suppose the resulting branches have real Mobius transitions. Then the metric admits an atlas of local Liouville developing solutions.
+proof:
+  Assemble the given branch at each chart center. The assumed covering and
+  real Möbius overlap properties make these branches a local
+  developing-solution atlas.
+-/
 theorem hasLocalLiouvilleDevelopingSolutionAtlas
     (B : SurfaceSchwarzianBranchData A) :
     g.HasLocalLiouvilleDevelopingSolutionAtlas :=
   ⟨B.toLocalLiouvilleDevelopingSolutionAtlas⟩
 
-/-- Surface-level Schwarzian branch data gives coordinate Poincare pullback formulas. -/
+/--
+%%handwave
+name: Coordinate Poincare formulas from surface Schwarzian branches
+statement:
+  Surface Schwarzian branches with real Mobius transitions determine an atlas of coordinate formulas expressing the metric as the pullback of the Poincare metric.
+proof:
+  First assemble the branches into a local Liouville developing-solution atlas, then forget the Liouville data while retaining each Poincare pullback formula.
+-/
 theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
     (B : SurfaceSchwarzianBranchData A) :
     g.HasCoordinateUpperHalfPlanePullbackFormulaAtlas :=
   HyperbolicMetric.hasCoordinateUpperHalfPlanePullbackFormulaAtlas_of_hasLocalLiouvilleDevelopingSolutionAtlas
     B.hasLocalLiouvilleDevelopingSolutionAtlas
 
-/-- Surface-level Schwarzian branch data gives local upper-half-plane models. -/
+/--
+%%handwave
+name: Local upper-half-plane models from surface Schwarzian branches
+statement:
+  Surface Schwarzian branches that cover the metric and have real Mobius transitions give local isometric models in the upper half-plane.
+proof:
+  Assemble the branches into a local Liouville developing-solution atlas and apply the passage from such an atlas to local upper-half-plane models.
+-/
 theorem hasUpperHalfPlaneLocalModels
     (B : SurfaceSchwarzianBranchData A) :
     g.HasUpperHalfPlaneLocalModels :=
@@ -685,6 +810,14 @@ def restrictedFormulaAt
   (A.formulaAt x).restrictDomainToCoordinateSubset (B.branchAt x).domain
     (B.branchAt x).projective.domain_subset (B.restricted_domain_open x)
 
+/--
+%%handwave
+name: Domain after restricting a surface formula to a branch
+statement:
+  If a metric formula with surface domain $U$ and coordinate $\phi$ is restricted to a branch domain $V\subseteq\mathbb C$, then its new domain is $\{y\in U:\phi(y)\in V\}$.
+proof:
+  This is immediate from the definition of restriction to a coordinate subset.
+-/
 @[simp]
 theorem restrictedFormulaAt_domain
     (B : SurfaceSchwarzianPointedBranchPreData A) (x : X) :
@@ -693,6 +826,14 @@ theorem restrictedFormulaAt_domain
         (A.formulaAt x).coordinate y ∈ (B.branchAt x).domain} :=
   rfl
 
+/--
+%%handwave
+name: Conformal factor after restricting a surface formula
+statement:
+  Restricting the surface domain of a local metric formula to the inverse image of a branch domain leaves its coordinate conformal factor unchanged.
+proof:
+  This is immediate from the definition of the restricted metric formula.
+-/
 @[simp]
 theorem restrictedFormulaAt_conformalFactor
     (B : SurfaceSchwarzianPointedBranchPreData A) (x : X) :
@@ -755,8 +896,12 @@ def toLocalLiouvilleDevelopingSolutionAtlas
   (B.toSurfaceSchwarzianBranchData hTransition).toLocalLiouvilleDevelopingSolutionAtlas
 
 /--
-Pointed branch data with real-Mobius transitions gives local upper-half-plane
-models after shrinking the surface domains.
+%%handwave
+name: Local models from pointed branches after domain shrinking
+statement:
+  Suppose each point of a surface has a local upper-half-plane branch defined at its chart coordinate, the associated restricted surface domains are open, and the resulting local solutions have real Mobius transitions. Then the metric has local upper-half-plane models.
+proof:
+  Restrict each metric formula to the inverse image of its branch domain, thereby obtaining ordinary surface branch data, and apply the local-model construction for those branches.
 -/
 theorem hasUpperHalfPlaneLocalModels
     (B : SurfaceSchwarzianPointedBranchPreData A)
@@ -817,8 +962,12 @@ def toLocalLiouvilleDevelopingSolutionAtlas
   B.toSurfaceSchwarzianBranchData.toLocalLiouvilleDevelopingSolutionAtlas
 
 /--
-Pointed branch data gives local upper-half-plane models after shrinking the
-surface domains.
+%%handwave
+name: Local models from compatible pointed Schwarzian branches
+statement:
+  A compatible family of pointed upper-half-plane Schwarzian branches, with real Mobius transitions after shrinking their surface domains, determines local upper-half-plane models of the metric.
+proof:
+  Convert the pointed data into ordinary branch data over the restricted atlas and apply the surface branch local-model theorem.
 -/
 theorem hasUpperHalfPlaneLocalModels
     (B : SurfaceSchwarzianPointedBranchData A) :
@@ -856,7 +1005,14 @@ def branchNear {u : LocalConformalFactor}
     LocalUpperHalfPlaneDevelopingMap (A.schwarzianAt z) :=
   A.branchAt z
 
-/-- The chosen local branches cover the coordinate domain. -/
+/--
+%%handwave
+name: A chosen local branch contains its center
+statement:
+  In a local upper-half-plane branch atlas over a coordinate domain $U$, the branch selected near each $z\in U$ is defined at $z$.
+proof:
+  This is the center-covering property of the branch atlas.
+-/
 theorem mem_branchNear_domain {u : LocalConformalFactor}
     (A : LocalUpperHalfPlaneBranchAtlas u) (z : u.coordinateDomain) :
     (z : ℂ) ∈ (A.branchNear z).domain :=
@@ -918,6 +1074,14 @@ def toShrinkData {u : LocalConformalFactor}
       ((convex_ball (z : ℂ) (D.radiusAt z)).inter
         (convex_ball (w : ℂ) (D.radiusAt w))).isPreconnected
 
+/--
+%%handwave
+name: Domains determined by ball-shrink data
+statement:
+  If the branch near $z$ is shrunk using a chosen radius $r_z>0$, then its prescribed shrunk domain is the ball $B(z,r_z)$.
+proof:
+  This is immediate from the construction of ordinary shrink data from ball radii.
+-/
 @[simp]
 theorem toShrinkData_domainAt {u : LocalConformalFactor}
     {A : LocalUpperHalfPlaneBranchAtlas u} (D : A.BallShrinkData)
@@ -928,8 +1092,12 @@ theorem toShrinkData_domainAt {u : LocalConformalFactor}
 end BallShrinkData
 
 /--
-Every chosen branch admits a positive coordinate ball around its base point
-inside its domain.
+%%handwave
+name: A branch domain contains a ball about its center
+statement:
+  Let $F$ be the branch selected near $z$ in a local branch atlas. There exists $r>0$ such that $B(z,r)$ lies in the domain of $F$.
+proof:
+  The branch domain is open and contains $z$, so it is a neighborhood of $z$; the metric-ball characterization of neighborhoods supplies the required positive radius.
 -/
 theorem exists_ball_subset_branchNear_domain {u : LocalConformalFactor}
     (A : LocalUpperHalfPlaneBranchAtlas u) (z : u.coordinateDomain) :
@@ -959,7 +1127,14 @@ noncomputable def ballShrinkData {u : LocalConformalFactor}
   ball_subset := fun z ↦
     (Classical.choose_spec (A.exists_ball_subset_branchNear_domain z)).2
 
-/-- Every local branch atlas has ball-shaped shrink data. -/
+/--
+%%handwave
+name: Existence of simultaneous ball-shrink data
+statement:
+  Every local upper-half-plane branch atlas admits a choice of a positive radius at each center whose ball is contained in the corresponding branch domain.
+proof:
+  For each center choose a radius from the ball contained in its open branch domain; these choices form the required ball-shrink data.
+-/
 theorem nonempty_ballShrinkData {u : LocalConformalFactor}
     (A : LocalUpperHalfPlaneBranchAtlas u) :
     Nonempty A.BallShrinkData :=
@@ -980,6 +1155,14 @@ def shrink {u : LocalConformalFactor}
     intro z w
     simpa [branchNear] using D.overlap_preconnected z w
 
+/--
+%%handwave
+name: Domain of a branch after shrinking an atlas
+statement:
+  If each branch in a local branch atlas is restricted to its prescribed open domain $V_z$, then the branch selected near $z$ in the shrunk atlas has domain exactly $V_z$.
+proof:
+  This follows directly from the definitions of atlas shrinking and branch restriction.
+-/
 @[simp]
 theorem shrink_branchNear_domain {u : LocalConformalFactor}
     (A : LocalUpperHalfPlaneBranchAtlas u) (D : A.ShrinkData)
@@ -1026,6 +1209,14 @@ def shrink {u : LocalConformalFactor}
         (D.isOpen_domainAt z) (D.isOpen_domainAt w)
         (D.domainAt_subset z) (D.domainAt_subset w)
 
+/--
+%%handwave
+name: Domain after shrinking an atlas with real transitions
+statement:
+  If a real-transition branch atlas is shrunk to prescribed domains $V_z$, then the branch near $z$ in the shrunk atlas has domain exactly $V_z$.
+proof:
+  The underlying branch atlas is restricted pointwise to the prescribed domains, so the equality is definitional.
+-/
 @[simp]
 theorem shrink_branchNear_domain {u : LocalConformalFactor}
     (A : LocalRealUpperHalfPlaneBranchAtlas u)
@@ -1161,7 +1352,14 @@ def branchAt
     LocalUpperHalfPlaneDevelopingMap (B.schwarzianAt x) :=
   (B.realBranchAtlas x).branchNear (B.baseCoordinate x)
 
-/-- The selected branch at `x` is defined at the coordinate of `x`. -/
+/--
+%%handwave
+name: The selected surface branch contains its center
+statement:
+  Let a real upper-half-plane branch atlas be chosen for the coordinate formula centered at a surface point $x$. The branch selected at the base coordinate $\phi_x(x)$ is defined at that coordinate.
+proof:
+  Apply the center-covering property of the chosen coordinate branch atlas at the base coordinate.
+-/
 theorem center_mem_branch
     (B : SurfaceRealUpperHalfPlaneBranchAtlasPreData A) (x : X) :
     (A.formulaAt x).coordinate x ∈ (B.branchAt x).domain :=
@@ -1228,7 +1426,14 @@ def toLocalLiouvilleDevelopingSolutionAtlas
     LocalLiouvilleDevelopingSolutionAtlas X g :=
   B.toSurfaceSchwarzianPointedBranchData.toLocalLiouvilleDevelopingSolutionAtlas
 
-/-- Surface real branch-atlas data gives local upper-half-plane models. -/
+/--
+%%handwave
+name: Local models from compatible real branch atlases
+statement:
+  Suppose each surface chart carries a real-transition upper-half-plane branch atlas and the selected branches have compatible real Mobius transitions after surface restriction. Then the metric has local upper-half-plane models.
+proof:
+  Convert the coordinate branch atlases into compatible pointed surface branches, then apply the pointed-branch local-model theorem.
+-/
 theorem hasUpperHalfPlaneLocalModels
     (B : SurfaceRealUpperHalfPlaneBranchAtlasData A) :
     g.HasUpperHalfPlaneLocalModels :=

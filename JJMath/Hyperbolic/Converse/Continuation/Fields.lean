@@ -114,7 +114,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {cover : SimplyConnectedCover X x₀} {dev : cover.total → ℍ}
 
 omit [RiemannSurface X] in
-/-- Local agreement with local-transition models forces pointwise continuity. -/
+/-- Local agreement with local-transition models forces pointwise continuity.
+
+%%handwave
+name: Local model agreement makes the developing map continuous at every point
+statement: Let $dev$ on a simply connected cover agree near each lift $y$ with a real Möbius transformation composed with a local hyperbolic chart of the projected point. Then $dev$ is continuous at $y$.
+proof: The cover projection, local chart, and real Möbius action are continuous. Their composite is continuous at $y$, and the assumed neighborhood equality transfers continuity to $dev$.
+-/
 theorem continuousAt
     (h : HyperbolicDevelopingAgreesWithLocalTransitionModels localModels cover dev)
     (y : cover.total) :
@@ -140,7 +146,13 @@ theorem continuousAt
   exact hlocal.congr_of_eventuallyEq heq
 
 omit [RiemannSurface X] in
-/-- Local agreement with local-transition models forces continuity. -/
+/-- Local agreement with local-transition models forces continuity.
+
+%%handwave
+name: Local model agreement makes the developing map continuous
+statement: If a developing map agrees locally everywhere with Möbius-transformed hyperbolic model charts, then it is continuous on the entire cover.
+proof: Apply the pointwise continuity result at every point.
+-/
 theorem continuous
     (h : HyperbolicDevelopingAgreesWithLocalTransitionModels localModels cover dev) :
     Continuous dev := by
@@ -148,7 +160,13 @@ theorem continuous
   intro y
   exact h.continuousAt y
 
-/-- Global-transition local agreement forgets to local-transition local agreement. -/
+/-- Global-transition local agreement forgets to local-transition local agreement.
+
+%%handwave
+name: Agreement with a global model atlas gives local-transition agreement
+statement: If $dev$ agrees locally with charts of a global hyperbolic local-model atlas, then it agrees locally with the same charts viewed in the associated local-transition atlas.
+proof: The local charts and agreement formulas are unchanged by forgetting the global transition structure.
+-/
 theorem of_global
     {A : HyperbolicLocalModelAtlas X g}
     {cover : SimplyConnectedCover X x₀} {dev : cover.total → ℍ}
@@ -201,7 +219,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
 omit [RiemannSurface X] in
-/-- Local-transition continuation fields supply continuity of `dev`. -/
+/-- Local-transition continuation fields supply continuity of `dev`.
+
+%%handwave
+name: Local-transition continuation fields have a continuous developing map
+statement: For any package of local-transition continuation fields, its developing map $dev$ is continuous.
+proof: Apply continuity from local-model agreement to the agreement data stored in the package.
+-/
 theorem dev_continuous
     (F : HyperbolicDevelopingLocalTransitionContinuationDataFields
       x₀ g localModels) :
@@ -209,7 +233,13 @@ theorem dev_continuous
   F.dev_regular.continuous
 
 omit [RiemannSurface X] in
-/-- Local-transition continuation fields supply chartwise holomorphicity. -/
+/-- Local-transition continuation fields supply chartwise holomorphicity.
+
+%%handwave
+name: Local-transition continuation fields have a holomorphic developing map
+statement: For every local-transition continuation field package and every cover point, the coordinate expression of $dev$ is complex differentiable at that point.
+proof: This is the chartwise holomorphicity field carried by the continuation package.
+-/
 theorem dev_holomorphic
     (F : HyperbolicDevelopingLocalTransitionContinuationDataFields
       x₀ g localModels) :
@@ -342,7 +372,13 @@ def canonicalContinuationCoverMetric (x₀ : X) (g : HyperbolicMetric X) :
     ConformalMetric (canonicalContinuationCover x₀).total :=
   PathHomotopyUniversalCover.pullbackConformalMetric (x₀ := x₀) g.toConformalMetric
 
-/-- The canonical cover metric is the pullback of the base metric. -/
+/-- The canonical cover metric is the pullback of the base metric.
+
+%%handwave
+name: The canonical cover metric is the pullback of the base metric
+statement: For the canonical path-homotopy cover $π:X̃→X$, the canonical cover metric satisfies $π^*g=g̃$.
+proof: This is the defining pullback property of the canonical cover metric, expressed in compatible source and target charts.
+-/
 theorem canonicalContinuationCoverMetric_pullback
     (x₀ : X) (g : HyperbolicMetric X) :
     PullsBackMetric
@@ -410,6 +446,13 @@ def toHyperbolicDevelopingLocalTransitionContinuationDataFields
   equivariant := F.equivariant
   agrees_with_local_models := F.agrees_with_local_models
 
+/-- Forgetting the specified canonical cover metric preserves the developing map.
+
+%%handwave
+name: Forgetting the canonical metric preserves the developing map
+statement: When canonical-cover-metric local-transition fields are viewed as ordinary local-transition continuation fields, their developing map is unchanged.
+proof: The forgetful construction copies the developing-map field.
+-/
 @[simp]
 theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_dev
     (F :
@@ -418,6 +461,13 @@ theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_dev
     F.toHyperbolicDevelopingLocalTransitionContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting the specified canonical cover metric retains that metric as the underlying cover metric.
+
+%%handwave
+name: Forgetting the canonical metric retains it as the cover metric
+statement: When canonical-cover-metric local-transition fields are viewed as ordinary fields, their cover metric is exactly the canonical pullback metric.
+proof: The forgetful construction assigns the specified canonical metric to the underlying cover-metric field.
+-/
 @[simp]
 theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_coverMetric
     (F :
@@ -432,6 +482,11 @@ end HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMet
 /--
 Real Mobius representatives preserve the Poincare conformal metric in the
 project's concrete chartwise pullback-metric sense.
+
+%%handwave
+name: Real Möbius transformations preserve the Poincaré metric
+statement: For every real Möbius representative $A$, its action on $ℍ$ satisfies $A^*g_{ℍ}=g_{ℍ}$.
+proof: In complex coordinates, use the derivative formula for the fractional-linear action and the formula for the imaginary part of $A·z$; the conformal factors cancel pointwise.
 -/
 theorem realMobiusRepresentativeAction_pullsBack_upperHalfPlaneConformalMetric
     (A : RealMobiusRepresentative) :
@@ -546,7 +601,13 @@ structure HyperbolicDevelopingContinuationDataFieldsOnCover
 
 namespace HyperbolicDevelopingContinuationDataFields
 
-/-- Explicit continuation fields supply continuity of the continued developing map. -/
+/-- Explicit continuation fields supply continuity of the continued developing map.
+
+%%handwave
+name: Explicit continuation fields have a continuous developing map
+statement: For every continuation field package built from a global local-model atlas, the developing map $dev$ is continuous.
+proof: The package supplies local agreement with the global models; forget to local-transition agreement and apply local continuity.
+-/
 theorem dev_continuous
     {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
@@ -554,7 +615,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.dev_regular.continuous
 
-/-- Explicit continuation fields supply chartwise holomorphicity of the continued developing map. -/
+/-- Explicit continuation fields supply chartwise holomorphicity of the continued developing map.
+
+%%handwave
+name: Explicit continuation fields have a holomorphic developing map
+statement: For every continuation field package from a global local-model atlas, $dev$ is holomorphic in surface charts.
+proof: This is the chartwise holomorphicity field included in the package.
+-/
 theorem dev_holomorphic
     {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
@@ -632,12 +699,26 @@ def toHyperbolicDevelopingContinuationDataFields
   equivariant := F.equivariant
   agrees_with_local_models := F.agrees_with_local_models
 
+/-- Forgetting the explicit cover retains the same simply connected covering.
+
+%%handwave
+name: Forgetting an explicitly fixed cover preserves that cover
+statement: When continuation fields on a specified simply connected cover are viewed as existential-cover fields, the underlying cover is the same specified cover.
+proof: This is immediate from the forgetful construction.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_cover
     (F : HyperbolicDevelopingContinuationDataFieldsOnCover x₀ g localModels cover) :
     F.toHyperbolicDevelopingContinuationDataFields.cover = cover :=
   rfl
 
+/-- Forgetting the explicit cover retains the same developing map.
+
+%%handwave
+name: Forgetting an explicitly fixed cover preserves the developing map
+statement: The developing map is unchanged when fields on a specified cover are viewed as general continuation fields.
+proof: The forgetful construction copies $dev$.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_dev
     (F : HyperbolicDevelopingContinuationDataFieldsOnCover x₀ g localModels cover) :
@@ -709,6 +790,13 @@ def toHyperbolicDevelopingContinuationDataFields
   equivariant := F.equivariant
   agrees_with_local_models := F.agrees_with_local_models
 
+/-- Forgetting the canonical cover metric retains the canonical continuation cover.
+
+%%handwave
+name: Forgetting the canonical cover metric preserves the canonical cover
+statement: When canonical-cover-metric continuation fields are viewed as general fields, their simply connected cover is the canonical path-homotopy cover.
+proof: This is the cover selected by the conversion.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_cover
     (F :
@@ -718,6 +806,13 @@ theorem toHyperbolicDevelopingContinuationDataFields_cover
       canonicalContinuationCover x₀ :=
   rfl
 
+/-- Forgetting the canonical cover metric retains that metric on the underlying cover.
+
+%%handwave
+name: Forgetting the canonical cover metric preserves that metric
+statement: The metric retained by the underlying continuation fields is the canonical pullback metric on the path-homotopy cover.
+proof: The conversion copies the canonical cover metric into the general cover-metric field.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_coverMetric
     (F :
@@ -732,6 +827,11 @@ end HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetric
 /--
 On the canonical path-homotopy cover, local agreement with hyperbolic local
 models forces chartwise holomorphicity of the continued map.
+
+%%handwave
+name: Canonical local-model agreement makes the developing map holomorphic
+statement: Let $dev:X̃→ℍ$ on the canonical path-homotopy cover agree locally with Möbius-transformed hyperbolic charts. Then $dev$ is holomorphic in the complex charts of $X̃$.
+proof: Near each lift, write $dev$ as a real Möbius action after a hyperbolic chart and the holomorphic covering projection. Each factor is holomorphic, so the local coordinate expression is complex differentiable.
 -/
 theorem canonicalAgreement_dev_holomorphic
     {x₀ : X} {g : HyperbolicMetric X}
@@ -815,6 +915,11 @@ theorem canonicalAgreement_dev_holomorphic
 /--
 Real-Mobius postcomposition of a local model has nonzero derivative in the
 ambient surface coordinate.
+
+%%handwave
+name: A Möbius-transformed hyperbolic chart has nonzero coordinate derivative
+statement: Let $U$ be a hyperbolic local chart, $A$ a real Möbius representative, and $x∈U$. The derivative at the ambient coordinate of $x$ of $z↦A·U((chart_x)^{-1}(z))$ is nonzero.
+proof: The local hyperbolic coordinate has nonzero derivative, and the real Möbius action has nonzero complex derivative on $ℍ$. The chain rule makes their product nonzero.
 -/
 theorem hyperbolicLocalChart_realMobius_postcomp_coordinateExpressionAt_deriv_ne_zero
     {g : HyperbolicMetric X} (U : HyperbolicLocalChart X g)
@@ -883,6 +988,11 @@ concrete chartwise pullback-metric identity at the base point.
 This is the metric analogue of the local regularity lemmas above: the witness
 is the actual ambient coordinate expression, restricted to the part of the
 coordinate chart landing in the local-model domain.
+
+%%handwave
+name: A Möbius-transformed hyperbolic chart pulls back the Poincaré metric
+statement: For a hyperbolic local chart $U$, real Möbius representative $A$, and $x∈U$, the map $z↦A·U(z)$ pulls the Poincaré conformal metric back to $g$ at $x$ in the ambient source chart and any target chart.
+proof: The hyperbolic chart pulls the Poincaré metric back to $g$, while the real Möbius action preserves the Poincaré metric. Compose the two chartwise pullback identities.
 -/
 theorem hyperbolicLocalChart_realMobius_postcomp_pullsBackMetricInChartsAt_chartAt
     {g : HyperbolicMetric X} (U : HyperbolicLocalChart X g)
@@ -1020,6 +1130,11 @@ the canonical `chartAt` coordinate.
 The proof composes the local model's Poincare pullback formula with the
 already-proved canonical projection pullback formula, then transfers across
 the local equality between `dev` and the Mobius-postcomposed local model.
+
+%%handwave
+name: Canonical local agreement gives the metric identity in the canonical source chart
+statement: If $dev$ agrees locally with the hyperbolic models on the canonical cover, then at every lift $y$ and in the canonical source chart, $dev^*g_{ℍ}=g̃$ in any upper-half-plane target chart.
+proof: Near $y$, replace $dev$ by a Möbius-transformed local model. Compose the model’s Poincaré pullback identity with the covering projection’s pullback of $g$, then transfer the result across the local equality.
 -/
 theorem canonicalAgreement_dev_pullsBackMetricInChartsAt_chartAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1092,6 +1207,11 @@ theorem canonicalAgreement_dev_pullsBackMetricInChartsAt_chartAt
 On the canonical cover, local agreement with hyperbolic local models gives the
 actual chartwise pullback-metric identity for the continued developing map in
 any source chart.
+
+%%handwave
+name: Canonical local agreement gives the metric identity in every source chart
+statement: Under canonical local-model agreement, the chartwise identity $dev^*g_{ℍ}=g̃$ holds at every lift for every compatible source chart and every upper-half-plane target chart.
+proof: First prove the identity in the canonical source chart, then use invariance of the chartwise pullback relation under changing source charts in the same complex atlas.
 -/
 theorem canonicalAgreement_dev_pullsBackMetricInChartsAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1166,6 +1286,11 @@ theorem canonicalAgreement_dev_pullsBackMetricInChartsAt
 /--
 Local agreement with hyperbolic local models supplies the full pullback metric
 identity for the continued developing map on the canonical cover.
+
+%%handwave
+name: Canonical local agreement makes the developing map a local Poincaré isometry
+statement: If $dev$ on the canonical cover agrees locally with Möbius-transformed hyperbolic charts, then $dev^*g_{ℍ}=g̃$ globally.
+proof: For arbitrary source and target charts and any point, apply the chartwise metric identity established from local agreement.
 -/
 theorem canonicalAgreement_dev_pullsBackMetric
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1184,6 +1309,11 @@ theorem canonicalAgreement_dev_pullsBackMetric
 /--
 On the canonical path-homotopy cover, local agreement with hyperbolic local
 models forces the nonzero-derivative part of developing-map regularity.
+
+%%handwave
+name: Canonical local agreement gives a nonvanishing developing-map derivative
+statement: If $dev$ on the canonical cover agrees locally with hyperbolic local models, then its complex coordinate derivative is nonzero at every lift.
+proof: Use the local equality with a Möbius-transformed hyperbolic chart. Its coordinate derivative is nonzero, and equality on a neighborhood identifies this derivative with that of $dev$.
 -/
 theorem canonicalAgreement_dev_local_biholomorphic
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1270,6 +1400,11 @@ theorem canonicalAgreement_dev_local_biholomorphic
 /--
 An analytic one-variable complex map with nonzero derivative has the concrete
 local-homeomorphism branch data required by developing-map regularity.
+
+%%handwave
+name: A holomorphic function with nonzero derivative has a local biholomorphic branch
+statement: Let $f:ℂ→ℂ$ be analytic at $z_0$, with $f′(z_0)≠0$, and let $S$ be a neighborhood of $z_0$. Then there is an open partial homeomorphism branch through $z_0$, contained in $S$, equal to $f$ on its source, differentiable there, and with nonzero derivative throughout.
+proof: Apply the holomorphic inverse function theorem at $z_0$, then shrink the source by intersecting with $S$ and with a neighborhood on which the derivative remains nonzero.
 -/
 theorem analyticAt_local_biholomorphism_branch
     {f : ℂ → ℂ} {z₀ : ℂ} {S : Set ℂ}
@@ -1316,6 +1451,11 @@ theorem analyticAt_local_biholomorphism_branch
 /--
 On the canonical path-homotopy cover, local agreement with local models makes
 the developing-map coordinate expression analytic at every point.
+
+%%handwave
+name: Canonical local agreement makes every developing coordinate expression analytic
+statement: Under canonical local-model agreement, for every lift $y$ the complex coordinate expression of $dev$ is analytic at the source coordinate of $y$.
+proof: The chartwise holomorphicity theorem gives complex differentiability on a neighborhood of the point; package this local differentiability as analyticity at the point.
 -/
 theorem canonicalAgreement_dev_coordinateExpression_analyticAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1415,6 +1555,11 @@ theorem canonicalAgreement_dev_coordinateExpression_analyticAt
 /--
 On the canonical path-homotopy cover, local agreement with hyperbolic local
 models supplies the concrete local-homeomorphism branch data.
+
+%%handwave
+name: Canonical local agreement supplies local biholomorphic branches
+statement: If $dev$ on the canonical cover agrees locally with hyperbolic local models, then at every lift its coordinate expression agrees near that point with an open partial homeomorphism whose derivative never vanishes.
+proof: The coordinate expression is analytic and has nonzero derivative at the point. Apply the analytic local-biholomorphism branch theorem, restricting its source to the coordinate-chart domain.
 -/
 theorem canonicalAgreement_dev_local_biholomorphism_data
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1434,6 +1579,11 @@ theorem canonicalAgreement_dev_local_biholomorphism_data
 /--
 On the canonical path-homotopy cover, local agreement with the hyperbolic
 local models supplies the full developing-map regularity package.
+
+%%handwave
+name: Canonical local-model agreement supplies full developing-map regularity
+statement: If $dev$ on the canonical cover agrees locally with hyperbolic local models, then it is continuous and holomorphic, has nonzero coordinate derivative everywhere, and admits concrete local biholomorphic branches.
+proof: Combine continuity from local agreement, canonical-cover holomorphicity, nonvanishing of the local-model derivative, and the analytic inverse-function branches.
 -/
 theorem canonicalAgreement_dev_regular
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1451,6 +1601,11 @@ theorem canonicalAgreement_dev_regular
 /--
 On the canonical path-homotopy cover, local agreement with local-transition
 models makes the developing-map coordinate expression analytic at every point.
+
+%%handwave
+name: Local-transition agreement makes each developing coordinate expression analytic
+statement: If $dev$ on the canonical cover agrees locally with local-transition hyperbolic charts, then for every lift $y$ its complex coordinate expression is analytic at the source coordinate of $y$.
+proof: On a neighborhood of $y$, replace $dev$ by a Möbius-transformed local hyperbolic chart after projection. This composite is analytic in the canonical coordinates, and local equality transfers analyticity.
 -/
 theorem canonicalLocalTransitionAgreement_dev_coordinateExpression_analyticAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1550,6 +1705,11 @@ theorem canonicalLocalTransitionAgreement_dev_coordinateExpression_analyticAt
 /--
 On the canonical path-homotopy cover, local agreement with local-transition
 models forces chartwise holomorphicity of the continued map.
+
+%%handwave
+name: Local-transition agreement makes the developing map holomorphic
+statement: If $dev$ on the canonical cover agrees locally with local-transition models, then its coordinate expression is complex differentiable at every lift.
+proof: Analyticity of the coordinate expression at each lift implies the required pointwise complex differentiability.
 -/
 theorem canonicalLocalTransitionAgreement_dev_holomorphic
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1566,6 +1726,11 @@ theorem canonicalLocalTransitionAgreement_dev_holomorphic
 /--
 On the canonical path-homotopy cover, local agreement with local-transition
 models forces the nonzero-derivative part of developing-map regularity.
+
+%%handwave
+name: Local-transition agreement gives a nonvanishing developing derivative
+statement: If $dev$ agrees locally with local-transition hyperbolic models on the canonical cover, then its coordinate derivative is nonzero at every lift.
+proof: Use the local equality with a Möbius-transformed hyperbolic chart and the nonzero derivative of that model expression.
 -/
 theorem canonicalLocalTransitionAgreement_dev_local_biholomorphic
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1652,6 +1817,11 @@ theorem canonicalLocalTransitionAgreement_dev_local_biholomorphic
 /--
 On the canonical path-homotopy cover, local agreement with local-transition
 models supplies the concrete local-homeomorphism branch data.
+
+%%handwave
+name: Local-transition agreement supplies local biholomorphic branches
+statement: If $dev$ agrees locally with local-transition models, then around every lift its coordinate expression agrees with an open partial homeomorphism whose derivative is everywhere nonzero on the chosen source.
+proof: Combine analytic coordinate expressions with their nonzero derivative and apply the analytic inverse-function branch theorem, shrinking inside the coordinate domain.
 -/
 theorem canonicalLocalTransitionAgreement_dev_local_biholomorphism_data
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1672,6 +1842,11 @@ theorem canonicalLocalTransitionAgreement_dev_local_biholomorphism_data
 On the canonical cover, local agreement with local-transition models gives the
 actual chartwise pullback-metric identity for the continued developing map in
 the canonical `chartAt` coordinate.
+
+%%handwave
+name: Local-transition agreement gives the metric identity in canonical coordinates
+statement: Under local-transition model agreement, at every canonical-cover point $y$ the map $dev$ pulls the Poincaré metric back to the canonical cover metric in the canonical source chart and any target chart.
+proof: Use the local equality with a Möbius-transformed hyperbolic chart, compose its metric identity with the covering projection pullback, and transfer across the local equality.
 -/
 theorem canonicalLocalTransitionAgreement_dev_pullsBackMetricInChartsAt_chartAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1744,6 +1919,11 @@ theorem canonicalLocalTransitionAgreement_dev_pullsBackMetricInChartsAt_chartAt
 On the canonical cover, local agreement with local-transition models gives the
 actual chartwise pullback-metric identity for the continued developing map in
 any source chart.
+
+%%handwave
+name: Local-transition agreement gives the metric identity in arbitrary coordinates
+statement: Under local-transition model agreement, $dev$ pulls the Poincaré metric back to the canonical cover metric at every point in every compatible source and target chart.
+proof: Establish the identity in the canonical source chart and transport it through a change of source chart within the complex atlas.
 -/
 theorem canonicalLocalTransitionAgreement_dev_pullsBackMetricInChartsAt
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1848,6 +2028,11 @@ theorem canonicalLocalTransitionAgreement_dev_pullsBackMetric
 /--
 On the canonical path-homotopy cover, local agreement with local-transition
 models supplies the full developing-map regularity package.
+
+%%handwave
+name: Local-transition agreement supplies full developing-map regularity
+statement: If $dev$ on the canonical cover agrees locally with local-transition hyperbolic models, then it is continuous and holomorphic, has nonzero derivative everywhere, and admits explicit local biholomorphic branches.
+proof: Assemble continuity from local agreement, coordinate analyticity, derivative nonvanishing, and the local inverse branches into the regularity record.
 -/
 theorem canonicalLocalTransitionAgreement_dev_regular
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1894,7 +2079,13 @@ namespace HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCo
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- Local-transition model agreement supplies continuity of the continued map. -/
+/-- Local-transition model agreement supplies continuity of the continued map.
+
+%%handwave
+name: Derived local-transition regularity includes continuity
+statement: For a canonical-cover local-transition field package with derived regularity, its developing map $dev$ is continuous.
+proof: Apply the continuity theorem to the package’s local-model agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -1902,7 +2093,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-transition model agreement supplies chartwise holomorphicity. -/
+/-- Local-transition model agreement supplies chartwise holomorphicity.
+
+%%handwave
+name: Derived local-transition regularity includes holomorphicity
+statement: For such a package, $dev$ is holomorphic in the canonical cover charts.
+proof: Apply holomorphicity derived from local-transition model agreement.
+-/
 theorem dev_holomorphic
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -1910,7 +2107,13 @@ theorem dev_holomorphic
     HyperbolicDevelopingMapHolomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalLocalTransitionAgreement_dev_holomorphic F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies the nonzero-derivative field. -/
+/-- Local-transition model agreement supplies the nonzero-derivative field.
+
+%%handwave
+name: Derived local-transition regularity includes nonvanishing derivative
+statement: For such a package, the coordinate derivative of $dev$ is nonzero at every canonical-cover point.
+proof: Apply the nonvanishing theorem derived from local-transition model agreement.
+-/
 theorem dev_local_biholomorphic
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -1918,7 +2121,13 @@ theorem dev_local_biholomorphic
     HyperbolicDevelopingMapLocallyBiholomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalLocalTransitionAgreement_dev_local_biholomorphic F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies concrete local-biholomorphism branches. -/
+/-- Local-transition model agreement supplies concrete local-biholomorphism branches.
+
+%%handwave
+name: Derived local-transition regularity includes inverse branches
+statement: For such a package, every cover point has concrete local biholomorphic branch data for the coordinate expression of $dev$.
+proof: Apply the local inverse-branch construction derived from local-transition agreement.
+-/
 theorem dev_local_biholomorphism_data
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -1927,7 +2136,13 @@ theorem dev_local_biholomorphism_data
   canonicalLocalTransitionAgreement_dev_local_biholomorphism_data
     F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies the pullback metric identity. -/
+/-- Local-transition model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Derived local-transition regularity includes the metric pullback
+statement: For such a package, $dev^*g_{ℍ}$ equals the canonical pullback metric on the continuation cover.
+proof: Apply the global metric identity derived from local-transition model agreement.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -1971,6 +2186,13 @@ def toHyperbolicDevelopingLocalTransitionContinuationDataFields
   F.toHyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetric
     |>.toHyperbolicDevelopingLocalTransitionContinuationDataFields
 
+/-- Forgetting derived regularity retains the original developing map.
+
+%%handwave
+name: Forgetting derived local-transition regularity preserves the developing map
+statement: The underlying local-transition continuation fields have the same developing map $dev$.
+proof: The forgetful construction copies the developing map.
+-/
 @[simp]
 theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_dev
     (F :
@@ -1979,6 +2201,13 @@ theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_dev
     F.toHyperbolicDevelopingLocalTransitionContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting derived regularity retains the canonical pullback metric.
+
+%%handwave
+name: Forgetting derived local-transition regularity preserves the cover metric
+statement: The underlying local-transition fields retain the canonical pullback metric on the cover.
+proof: The forgetful construction assigns the same canonical cover metric.
+-/
 @[simp]
 theorem toHyperbolicDevelopingLocalTransitionContinuationDataFields_coverMetric
     (F :
@@ -2021,7 +2250,13 @@ namespace HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCo
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- Local-transition model agreement supplies continuity of the continued map. -/
+/-- Local-transition model agreement supplies continuity of the continued map.
+
+%%handwave
+name: Projective local-transition regularity includes continuity
+statement: For a projective canonical-cover local-transition field package with derived regularity, its developing map is continuous.
+proof: Apply continuity derived from the package’s local-transition model agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -2029,7 +2264,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-transition model agreement supplies chartwise holomorphicity. -/
+/-- Local-transition model agreement supplies chartwise holomorphicity.
+
+%%handwave
+name: Projective local-transition regularity includes holomorphicity
+statement: For such a projective package, the developing map is holomorphic in canonical-cover charts.
+proof: Apply holomorphicity derived from local-transition model agreement; the projective transition formulation does not change the local branch formulas.
+-/
 theorem dev_holomorphic
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -2037,7 +2278,13 @@ theorem dev_holomorphic
     HyperbolicDevelopingMapHolomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalLocalTransitionAgreement_dev_holomorphic F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies the nonzero-derivative field. -/
+/-- Local-transition model agreement supplies the nonzero-derivative field.
+
+%%handwave
+name: Projective local-transition regularity includes nonvanishing derivative
+statement: For such a projective package, the developing-map coordinate derivative is nonzero at every cover point.
+proof: Apply the local nonvanishing theorem to the stored model agreement.
+-/
 theorem dev_local_biholomorphic
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -2045,7 +2292,13 @@ theorem dev_local_biholomorphic
     HyperbolicDevelopingMapLocallyBiholomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalLocalTransitionAgreement_dev_local_biholomorphic F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies concrete local-biholomorphism branches. -/
+/-- Local-transition model agreement supplies concrete local-biholomorphism branches.
+
+%%handwave
+name: Projective local-transition regularity includes local inverse branches
+statement: For such a projective package, every point admits concrete local biholomorphic branch data for the developing-map coordinate expression.
+proof: Use analyticity and nonzero derivative derived from local-transition agreement, then apply the local inverse-function branch theorem.
+-/
 theorem dev_local_biholomorphism_data
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -2054,7 +2307,13 @@ theorem dev_local_biholomorphism_data
   canonicalLocalTransitionAgreement_dev_local_biholomorphism_data
     F.agrees_with_local_models
 
-/-- Local-transition model agreement supplies the pullback metric identity. -/
+/-- Local-transition model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Projective local-transition regularity includes the metric pullback
+statement: For such a projective package, $dev^*g_{ℍ}$ is the canonical cover metric.
+proof: Apply the metric identity derived from the package’s local model agreement.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingLocalTransitionContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularityPSL
@@ -2103,6 +2362,13 @@ def ofLifted
       exact (F.holonomyLift.toRealHolonomyRepresentation_isInducedByLift).2 γ (F.dev y)
   agrees_with_local_models := F.agrees_with_local_models
 
+/-- The projective derived-regularity package built from lifted data retains the lifted developing map.
+
+%%handwave
+name: Projectivizing lifted regularity preserves the developing map
+statement: When a lifted regularity package is converted to its projective form, the developing map remains exactly $dev$.
+proof: The conversion copies the developing-map field.
+-/
 @[simp]
 theorem ofLifted_dev
     (F :
@@ -2154,7 +2420,13 @@ namespace HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDe
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
 
-/-- Local-model agreement supplies the continuity part of developing-map regularity. -/
+/-- Local-model agreement supplies the continuity part of developing-map regularity.
+
+%%handwave
+name: Derived continuity gives a continuous developing map
+statement: For canonical-cover global-model fields with continuity derived from local agreement, the developing map is continuous.
+proof: Apply continuity from the stored local model agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedContinuity
@@ -2162,7 +2434,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-model agreement supplies the pullback metric identity. -/
+/-- Local-model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Derived continuity fields retain the metric pullback identity
+statement: For these canonical-cover fields, $dev^*g_{ℍ}$ equals the canonical cover metric.
+proof: The metric pullback is already part of the underlying continuation fields and is retained by the derived-continuity package.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedContinuity
@@ -2207,6 +2485,13 @@ def toHyperbolicDevelopingContinuationDataFields
   F.toHyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetric
     |>.toHyperbolicDevelopingContinuationDataFields
 
+/-- Forgetting derived continuity retains the developing map.
+
+%%handwave
+name: Forgetting derived continuity preserves the developing map
+statement: The underlying continuation fields have the same developing map.
+proof: The forgetful construction copies $dev$.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_dev
     (F :
@@ -2215,6 +2500,13 @@ theorem toHyperbolicDevelopingContinuationDataFields_dev
     F.toHyperbolicDevelopingContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting derived continuity retains the canonical cover metric.
+
+%%handwave
+name: Forgetting derived continuity preserves the canonical metric
+statement: The underlying continuation fields retain the canonical pullback metric on the path-homotopy cover.
+proof: The forgetful construction copies the cover metric.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_coverMetric
     (F :
@@ -2261,7 +2553,13 @@ namespace HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDe
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
 
-/-- Local-model agreement supplies continuity of the continued map. -/
+/-- Local-model agreement supplies continuity of the continued map.
+
+%%handwave
+name: Derived holomorphic fields include continuity
+statement: For canonical-cover continuation fields with holomorphicity derived from local agreement, the developing map is continuous.
+proof: Apply continuity from the stored local-model agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedHolomorphic
@@ -2269,7 +2567,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover. -/
+/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover.
+
+%%handwave
+name: Derived holomorphic fields have a holomorphic developing map
+statement: For these fields, $dev$ is holomorphic in canonical-cover charts.
+proof: Apply the canonical-cover holomorphicity theorem to the stored local-model agreement.
+-/
 theorem dev_holomorphic
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedHolomorphic
@@ -2277,7 +2581,13 @@ theorem dev_holomorphic
     HyperbolicDevelopingMapHolomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_holomorphic F.agrees_with_local_models
 
-/-- Local-model agreement supplies the pullback metric identity. -/
+/-- Local-model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Derived holomorphic fields retain the metric identity
+statement: For these fields, $dev^*g_{ℍ}$ equals the canonical pullback metric.
+proof: The underlying continuation fields already carry this pullback identity.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedHolomorphic
@@ -2324,6 +2634,13 @@ def toHyperbolicDevelopingContinuationDataFields
   F.toHyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedContinuity
     |>.toHyperbolicDevelopingContinuationDataFields
 
+/-- Forgetting derived holomorphicity retains the developing map.
+
+%%handwave
+name: Forgetting derived holomorphicity preserves the developing map
+statement: The underlying continuation field package has the same developing map.
+proof: The forgetful construction copies $dev$.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_dev
     (F :
@@ -2332,6 +2649,13 @@ theorem toHyperbolicDevelopingContinuationDataFields_dev
     F.toHyperbolicDevelopingContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting derived holomorphicity retains the canonical cover metric.
+
+%%handwave
+name: Forgetting derived holomorphicity preserves the canonical metric
+statement: The underlying fields retain the canonical cover metric.
+proof: The forgetful construction copies the metric field.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_coverMetric
     (F :
@@ -2376,7 +2700,13 @@ namespace HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDe
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
 
-/-- Local-model agreement supplies continuity of the continued map. -/
+/-- Local-model agreement supplies continuity of the continued map.
+
+%%handwave
+name: Derived local biholomorphic fields include continuity
+statement: For canonical-cover fields with local biholomorphicity derived from model agreement, the developing map is continuous.
+proof: Apply continuity from local-model agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedLocalBiholomorphic
@@ -2384,7 +2714,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover. -/
+/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover.
+
+%%handwave
+name: Derived local biholomorphic fields include holomorphicity
+statement: For these fields, $dev$ is holomorphic in canonical-cover charts.
+proof: Apply holomorphicity from local-model agreement.
+-/
 theorem dev_holomorphic
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedLocalBiholomorphic
@@ -2392,7 +2728,13 @@ theorem dev_holomorphic
     HyperbolicDevelopingMapHolomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_holomorphic F.agrees_with_local_models
 
-/-- Local-model agreement supplies the nonzero-derivative local-biholomorphism field. -/
+/-- Local-model agreement supplies the nonzero-derivative local-biholomorphism field.
+
+%%handwave
+name: Derived local biholomorphic fields have nonzero derivative
+statement: For these fields, the developing-map coordinate derivative is nonzero at every cover point.
+proof: Apply derivative nonvanishing derived from local-model agreement.
+-/
 theorem dev_local_biholomorphic
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedLocalBiholomorphic
@@ -2400,7 +2742,13 @@ theorem dev_local_biholomorphic
     HyperbolicDevelopingMapLocallyBiholomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_local_biholomorphic F.agrees_with_local_models
 
-/-- Local-model agreement supplies the pullback metric identity. -/
+/-- Local-model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Derived local biholomorphic fields retain the metric identity
+statement: For these fields, $dev^*g_{ℍ}$ equals the canonical cover metric.
+proof: Use the pullback identity stored in the underlying fields.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedLocalBiholomorphic
@@ -2446,6 +2794,13 @@ def toHyperbolicDevelopingContinuationDataFields
   F.toHyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedHolomorphic
     |>.toHyperbolicDevelopingContinuationDataFields
 
+/-- Forgetting derived local biholomorphicity retains the developing map.
+
+%%handwave
+name: Forgetting derived local biholomorphicity preserves the developing map
+statement: The underlying continuation fields have the same map $dev$.
+proof: The forgetful construction copies the developing map.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_dev
     (F :
@@ -2454,6 +2809,13 @@ theorem toHyperbolicDevelopingContinuationDataFields_dev
     F.toHyperbolicDevelopingContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting derived local biholomorphicity retains the canonical cover metric.
+
+%%handwave
+name: Forgetting derived local biholomorphicity preserves the canonical metric
+statement: The underlying continuation fields retain the canonical cover metric.
+proof: The forgetful construction copies the metric.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_coverMetric
     (F :
@@ -2496,7 +2858,13 @@ namespace HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDe
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelAtlas X g}
 
-/-- Local-model agreement supplies continuity of the continued map. -/
+/-- Local-model agreement supplies continuity of the continued map.
+
+%%handwave
+name: Full derived regularity includes continuity
+statement: For a canonical-cover field package with full regularity derived from local-model agreement, the developing map is continuous.
+proof: Apply continuity from the stored local agreement.
+-/
 theorem dev_continuous
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -2504,7 +2872,13 @@ theorem dev_continuous
     Continuous F.dev :=
   F.agrees_with_local_models.continuous
 
-/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover. -/
+/-- Local-model agreement supplies chartwise holomorphicity on the canonical cover.
+
+%%handwave
+name: Full derived regularity includes holomorphicity
+statement: For a canonical-cover field package with full regularity derived from model agreement, $dev$ is holomorphic.
+proof: Apply the canonical-cover holomorphicity theorem to the stored local agreement.
+-/
 theorem dev_holomorphic
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -2512,7 +2886,13 @@ theorem dev_holomorphic
     HyperbolicDevelopingMapHolomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_holomorphic F.agrees_with_local_models
 
-/-- Local-model agreement supplies the nonzero-derivative local-biholomorphism field. -/
+/-- Local-model agreement supplies the nonzero-derivative local-biholomorphism field.
+
+%%handwave
+name: Full derived regularity includes nonvanishing derivative
+statement: For such a package, the developing-map coordinate derivative is nonzero at every cover point.
+proof: Apply derivative nonvanishing derived from local-model agreement.
+-/
 theorem dev_local_biholomorphic
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -2520,7 +2900,13 @@ theorem dev_local_biholomorphic
     HyperbolicDevelopingMapLocallyBiholomorphic (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_local_biholomorphic F.agrees_with_local_models
 
-/-- Local-model agreement supplies the concrete local-homeomorphism branch data. -/
+/-- Local-model agreement supplies the concrete local-homeomorphism branch data.
+
+%%handwave
+name: Full derived regularity includes local inverse branches
+statement: For such a package, every cover point admits concrete local biholomorphic branch data for $dev$.
+proof: Apply the analytic inverse-branch construction derived from local agreement.
+-/
 theorem dev_local_biholomorphism_data
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -2528,7 +2914,13 @@ theorem dev_local_biholomorphism_data
     HyperbolicDevelopingMapLocalBiholomorphismData (canonicalContinuationCover x₀) F.dev :=
   canonicalAgreement_dev_local_biholomorphism_data F.agrees_with_local_models
 
-/-- Local-model agreement supplies the pullback metric identity. -/
+/-- Local-model agreement supplies the pullback metric identity.
+
+%%handwave
+name: Full derived regularity includes the metric pullback
+statement: For such a package, $dev^*g_{ℍ}$ equals the canonical pullback metric.
+proof: Apply the metric identity supplied by local-model agreement.
+-/
 theorem pullback_metric
     (F :
       HyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedRegularity
@@ -2570,6 +2962,13 @@ def toHyperbolicDevelopingContinuationDataFields
   F.toHyperbolicDevelopingContinuationDataFieldsOnCanonicalCoverMetricWithDerivedLocalBiholomorphic
     |>.toHyperbolicDevelopingContinuationDataFields
 
+/-- Forgetting the full derived regularity package retains the developing map.
+
+%%handwave
+name: Forgetting full derived regularity preserves the developing map
+statement: The underlying continuation fields have exactly the same map $dev$.
+proof: The forgetful construction copies the developing map.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_dev
     (F :
@@ -2578,6 +2977,13 @@ theorem toHyperbolicDevelopingContinuationDataFields_dev
     F.toHyperbolicDevelopingContinuationDataFields.dev = F.dev :=
   rfl
 
+/-- Forgetting the full derived regularity package retains the canonical cover metric.
+
+%%handwave
+name: Forgetting full derived regularity preserves the canonical metric
+statement: The underlying fields retain the canonical metric on the path-homotopy cover.
+proof: The forgetful construction copies the cover metric.
+-/
 @[simp]
 theorem toHyperbolicDevelopingContinuationDataFields_coverMetric
     (F :
@@ -2692,6 +3098,13 @@ def toDerivedRegularityFields
   equivariant := M.equivariant
   agrees_with_local_models := M.localContinuation.agreesWithLocalModels
 
+/-- The regularity fields derived from analytic-continuation monodromy retain its developing map.
+
+%%handwave
+name: Regularity derived from analytic monodromy preserves the developing map
+statement: If regularity fields are constructed from analytic-continuation monodromy data $M$, their developing map equals the original map of $M$.
+proof: The construction passes the original developing map through the intermediate continuation field packages unchanged.
+-/
 @[simp]
 theorem toDerivedRegularityFields_dev
     (M : AnalyticContinuationMonodromyData x₀ g localModels) :
@@ -2804,6 +3217,13 @@ def toDerivedRegularityFields
   agrees_with_local_models :=
     M.localContinuation.agreesWithLocalTransitionModels
 
+/-- The regularity fields derived from local-transition monodromy retain its developing map.
+
+%%handwave
+name: Regularity derived from local-transition monodromy preserves the developing map
+statement: If regularity fields are constructed from local-transition analytic monodromy data $M$, their developing map equals the original map of $M$.
+proof: The construction copies the developing map while deriving continuity, holomorphicity, local inverse branches, and the metric identity.
+-/
 @[simp]
 theorem toDerivedRegularityFields_dev
     (M : LocalTransitionAnalyticContinuationMonodromyData x₀ g localModels) :
@@ -2917,6 +3337,13 @@ def toCanonicalCoverLocalTransitionContinuationData
         (PathHomotopyUniversalCover.endpoint y)
         (PathHomotopyUniversalCover.pathClass y) y' hy'
 
+/-- Lifting path-class continuation data to the canonical cover preserves the developing map.
+
+%%handwave
+name: Canonical lifting preserves the path-class developing map
+statement: For path-class local-transition continuation data $C$, the developing map of its lift to the canonical cover equals the original path-class map: $dev_{lift}=dev_C$.
+proof: The lifted package defines its map by evaluating the original data at the endpoint and path class of each cover point, which is exactly the original developing map.
+-/
 @[simp]
 theorem toCanonicalCoverLocalTransitionContinuationData_dev
     (C :
@@ -2924,6 +3351,13 @@ theorem toCanonicalCoverLocalTransitionContinuationData_dev
     C.toCanonicalCoverLocalTransitionContinuationData.dev = C.dev :=
   rfl
 
+/-- Lifting path-class continuation data preserves the selected local-chart center.
+
+%%handwave
+name: Canonical lifting preserves the selected chart center
+statement: For a canonical-cover point $y$, the lifted chart center is $c(π(y),[y])$, the center assigned by the path-class data to its endpoint and path class.
+proof: This is the definition of the lifted center field.
+-/
 @[simp]
 theorem toCanonicalCoverLocalTransitionContinuationData_centerAt
     (C :
@@ -2934,6 +3368,13 @@ theorem toCanonicalCoverLocalTransitionContinuationData_centerAt
         (PathHomotopyUniversalCover.pathClass y) :=
   rfl
 
+/-- Lifting path-class continuation data preserves the selected Möbius representative.
+
+%%handwave
+name: Canonical lifting preserves the selected Möbius representative
+statement: For a canonical-cover point $y$, the lifted representative is $M(π(y),[y])$, the representative assigned by the path-class data.
+proof: This is the definition of the lifted Möbius field.
+-/
 @[simp]
 theorem toCanonicalCoverLocalTransitionContinuationData_mobiusAt
     (C :
@@ -2944,6 +3385,13 @@ theorem toCanonicalCoverLocalTransitionContinuationData_mobiusAt
         (PathHomotopyUniversalCover.pathClass y) :=
   rfl
 
+/-- Lifting path-class continuation data preserves the continuation neighborhood.
+
+%%handwave
+name: Canonical lifting preserves the continuation neighborhood
+statement: For a cover point $y$, the lifted neighborhood is the neighborhood assigned by the path-class data to $(π(y),[y])$.
+proof: This is the definition of the lifted neighborhood field.
+-/
 @[simp]
 theorem toCanonicalCoverLocalTransitionContinuationData_neighborhoodAt
     (C :
@@ -3048,6 +3496,13 @@ def toDerivedRegularityFieldsPSL
     M.pathClassContinuation.toCanonicalCoverLocalTransitionContinuationData
       |>.agreesWithLocalTransitionModels
 
+/-- The projective regularity fields derived from path-class monodromy retain its developing map.
+
+%%handwave
+name: Projective regularity derived from path-class monodromy preserves the developing map
+statement: For projective path-class monodromy data $M$, the developing map in the derived projective regularity fields equals the developing map of the underlying path-class continuation data.
+proof: The construction lifts the path-class data to the canonical cover and retains its developing map through projectivization and regularity derivation.
+-/
 @[simp]
 theorem toDerivedRegularityFieldsPSL_dev
     (M :

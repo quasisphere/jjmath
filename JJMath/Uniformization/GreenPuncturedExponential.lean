@@ -23,7 +23,15 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
   {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
 
 /-- Extend a function on an open submanifold by an arbitrary value outside
-the open set.  The extension is holomorphic on the original open set. -/
+the open set.  The extension is holomorphic on the original open set.
+
+%%handwave
+name: Holomorphicity transferred from an open subtype
+statement:
+  Let $U$ be open in a complex manifold $X$, let $f:U\to\mathbb C$ be holomorphic, and let $F:X\to\mathbb C$ agree with $f$ on $U$. Then $F$ is holomorphic on $U$.
+proof:
+  Near each $x\in U$, retract $X$ to $U$ by the identity on $U$ and an arbitrary value outside. The composite with $f$ is holomorphic and agrees locally with $F$.
+-/
 private theorem mdifferentiableOn_of_eq_openSubtype
     (U : TopologicalSpace.Opens X) (f : U → ℂ)
     (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)

@@ -646,7 +646,17 @@ theorem fderivWithin_product_base_slice_apply
       (hsUnique.uniqueDiffWithinAt hx)
   exact congrFun (congrArg DFunLike.coe hcomp) w
 
-/-- Removing the leading entry from a tuple built with `Matrix.vecCons` gives the tail. -/
+/--
+%%handwave
+name:
+  Removing the first coordinate from a vector with an adjoined head
+statement:
+  For \(a\in\alpha\) and \(b:\operatorname{Fin}(n)\to\alpha\), deleting
+  coordinate \(0\) from the vector \((a,b_0,\ldots,b_{n-1})\) gives \(b\).
+proof:
+  Evaluate both sides at each coordinate; the index shift defining deletion
+  cancels the shift used to adjoin the head.
+-/
 @[simp]
 theorem Fin.removeNth_zero_vecCons {α : Type*} {n : ℕ}
     (a : α) (b : Fin n → α) :
@@ -654,7 +664,19 @@ theorem Fin.removeNth_zero_vecCons {α : Type*} {n : ℕ}
   funext i
   simp [Fin.removeNth]
 
-/-- Removing a non-leading entry from a tuple built with `Matrix.vecCons` preserves the head. -/
+/--
+%%handwave
+name:
+  Removing a noninitial coordinate from a vector with an adjoined head
+statement:
+  For \(a\in\alpha\), \(b:\operatorname{Fin}(n+1)\to\alpha\), and
+  \(i\in\operatorname{Fin}(n+1)\), deleting coordinate \(i+1\) from
+  \((a,b)\) gives \((a,b\text{ with coordinate }i\text{ deleted})\).
+proof:
+  Split the remaining coordinate into the initial coordinate and a successor;
+  both identities then follow from the definitions of adjoining and deleting
+  coordinates.
+-/
 @[simp]
 theorem Fin.removeNth_succ_vecCons {α : Type*} {n : ℕ}
     (a : α) (b : Fin (n + 1) → α) (i : Fin (n + 1)) :
@@ -667,7 +689,17 @@ theorem Fin.removeNth_succ_vecCons {α : Type*} {n : ℕ}
   | succ j =>
       simp [Fin.removeNth]
 
-/-- The alternating signs in adjacent degrees cancel termwise. -/
+/--
+%%handwave
+name:
+  Cancellation of consecutive alternating sign sums
+statement:
+  For \(a_0,\ldots,a_n\) in an additive commutative group,
+  \(\sum_{i=0}^n(-1)^i a_i+\sum_{i=0}^n(-1)^{i+1}a_i=0\).
+proof:
+  Combine the two sums term by term.  Each summand is
+  \((-1)^i a_i-(-1)^i a_i=0\).
+-/
 theorem alternating_zsmul_sum_add_succ_eq_zero
     {A : Type*} [AddCommGroup A] {n : ℕ} (a : Fin (n + 1) → A) :
     (∑ i : Fin (n + 1), (-1 : ℤ) ^ (i : ℕ) • a i) +
@@ -948,6 +980,19 @@ def IsContMDiffForm
     ContDiffOn 𝕜 r (coordinateExpression (I := I) (F := F) (n := n) form e)
       (e.extend I).target
 
+/--
+%%handwave
+name:
+  Differentiability of an extended inverse chart
+statement:
+  If \(e\) is a chart in a \(C^1\) atlas and \(y\) belongs to the target of
+  its extension, then the extended inverse chart is differentiable at \(y\)
+  relative to that target.
+proof:
+  The extended inverse is the chart inverse after the inverse model-with-corners
+  map.  Both factors are differentiable at the relevant points, so the claim
+  follows by composition.
+-/
 theorem mdifferentiableWithinAt_extend_symm_of_mem_atlas
     [IsManifold I 1 M]
     {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)
@@ -963,6 +1008,18 @@ theorem mdifferentiableWithinAt_extend_symm_of_mem_atlas
     mdifferentiableAt_atlas_symm (I := I) he hy_target
   exact he_symm.comp_mdifferentiableWithinAt y (hI.mono (e.extend_target_subset_range))
 
+/--
+%%handwave
+name:
+  Derivatives of an extended chart and its inverse
+statement:
+  If \(e\) is a chart in a \(C^1\) atlas and \(x\) lies in its source, then
+  \(D(e^{-1})_{e(x)}\circ De_x=\operatorname{id}_{T_xM}\), with the inverse
+  derivative taken relative to the extended chart target.
+proof:
+  Differentiate the local identity \(e^{-1}\circ e=\operatorname{id}\) on
+  the open extended chart source and apply the chain rule.
+-/
 theorem mfderivWithin_extend_symm_comp_mfderiv_extend_of_mem_atlas
     [IsManifold I 1 M]
     {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M)
@@ -1009,6 +1066,18 @@ theorem mfderivWithin_extend_symm_comp_mfderiv_extend_of_mem_atlas
   · exact (e.extend I).left_inv hx_ext
 
 omit [ChartedSpace H M] in
+/--
+%%handwave
+name:
+  Unique differentiability of an extended chart target
+statement:
+  The target of every extended chart is a unique-differentiability set in the
+  model vector space.
+proof:
+  The target is the inverse image under the model-with-corners equivalence of
+  the open chart target, so unique differentiability follows from that of the
+  model range.
+-/
 theorem uniqueDiffOn_extend_target
     (e : OpenPartialHomeomorph M H) :
     UniqueDiffOn 𝕜 (e.extend I).target := by
@@ -1016,6 +1085,18 @@ theorem uniqueDiffOn_extend_target
   exact I.uniqueDiffOn_preimage e.open_target
 
 omit [ChartedSpace H M] in
+/--
+%%handwave
+name:
+  Relative neighborhoods in an extended chart target
+statement:
+  If \(y\) lies in the target of an extended chart, then the neighborhood
+  filters of \(y\) relative to the extended target and relative to the full
+  model range coincide.
+proof:
+  Write \(y\) as the image of its inverse-chart point and use that the ordinary
+  chart target is open around this point.
+-/
 theorem nhdsWithin_extend_target_eq_of_mem
     {e : OpenPartialHomeomorph M H} {y : E}
     (hy : y ∈ (e.extend I).target) :
@@ -1028,6 +1109,18 @@ theorem nhdsWithin_extend_target_eq_of_mem
   exact e.nhdsWithin_extend_target_eq (I := I) hx
 
 omit [ChartedSpace H M] in
+/--
+%%handwave
+name:
+  Density of the interior of a coordinate-change domain
+statement:
+  For any two charts, the domain \(S\) of their extended coordinate change
+  satisfies \(S\subseteq\overline{\operatorname{int}S}\).
+proof:
+  Intersect an arbitrary neighborhood with the coordinate-change domain and
+  with the dense interior of the model range.  At the resulting interior point
+  the relative coordinate-change domain is an ordinary neighborhood.
+-/
 theorem extendCoordChange_source_subset_closure_interior
     (e e' : OpenPartialHomeomorph M H) :
     (I.extendCoordChange e e').source ⊆
@@ -1069,6 +1162,18 @@ theorem extendCoordChange_source_subset_closure_interior
   exact ⟨z, hzt, mem_interior_iff_mem_nhds.mpr hz_source_nhds⟩
 
 omit [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H] [ChartedSpace H M] in
+/--
+%%handwave
+name:
+  Intersecting a locally dense set with an open set
+statement:
+  If \(x\in\overline{\operatorname{int}s}\), \(u\) is open, and \(x\in u\),
+  then \(x\in\overline{\operatorname{int}(s\cap u)}\).
+proof:
+  Every neighborhood of \(x\) remains a neighborhood after intersection with
+  \(u\), and hence meets \(\operatorname{int}s\cap u\), which is contained in
+  \(\operatorname{int}(s\cap u)\).
+-/
 theorem mem_closure_interior_inter_of_mem_open
     {X : Type*} [TopologicalSpace X] {s u : Set X} {x : X}
     (hs : x ∈ closure (interior s)) (hu : IsOpen u) (hxu : x ∈ u) :
@@ -1085,6 +1190,19 @@ theorem mem_closure_interior_inter_of_mem_open
         intro w hw
         exact ⟨interior_subset hw.1, hw.2⟩))
 
+/--
+%%handwave
+name:
+  Regularity of the coordinate exterior derivative
+statement:
+  Let \(s\) be a unique-differentiability set.  If an \(n\)-form-valued map
+  \(\eta\) is \(C^{r+1}\) on \(s\), then its exterior derivative computed
+  relative to \(s\) is \(C^r\) on \(s\).
+proof:
+  The exterior derivative is the continuous alternation of the first derivative
+  of \(\eta\).  Differentiation lowers regularity by one, while the fixed
+  continuous linear alternation map preserves \(C^r\) regularity.
+-/
 theorem contDiffOn_extDerivWithin
     {eta : E → ModelForm (𝕜 := 𝕜) (E := E) F n} {s : Set E}
     {r : WithTop ℕ∞}
@@ -1098,6 +1216,18 @@ theorem contDiffOn_extDerivWithin
       (heta.fderivWithin hs (show r + 1 ≤ r + 1 from le_rfl))
 
 omit [ChartedSpace H M] in
+/--
+%%handwave
+name:
+  Compatibility of inverse charts with a coordinate change
+statement:
+  If \(y\) belongs to the domain of the coordinate change
+  \(\phi=e'\circ e^{-1}\), then \(e'^{-1}(\phi(y))=e^{-1}(y)\), where the
+  charts are understood as their extensions to the model space.
+proof:
+  The point \(e^{-1}(y)\) lies in the source of \(e'\), so the left-inverse
+  identity for \(e'\) applies directly.
+-/
 theorem extendCoordChange_symm_apply
     {e e' : OpenPartialHomeomorph M H} {y : E}
     (hy : y ∈ (I.extendCoordChange e e').source) :
@@ -1111,6 +1241,22 @@ theorem extendCoordChange_symm_apply
   rw [show φ y = e'.extend I ((e.extend I).symm y) from rfl]
   exact (e'.extend I).left_inv hy_source'
 
+/--
+%%handwave
+name:
+  Chain rule for inverse charts under a coordinate change
+statement:
+  For \(C^1\) charts \(e,e'\), a point \(y\) in the domain of
+  \(\phi=e'\circ e^{-1}\) satisfies
+  \[
+    D(e^{-1})_y=D(e'^{-1})_{\phi(y)}\circ D\phi_y,
+  \]
+  with derivatives taken relative to the corresponding chart domains.
+proof:
+  The inverse-chart maps agree on the coordinate-change domain as
+  \(e^{-1}=e'^{-1}\circ\phi\).  Differentiate this identity and apply the
+  within-set chain rule.
+-/
 theorem mfderivWithin_extend_symm_coordChange
     [IsManifold I 1 M]
     {e e' : OpenPartialHomeomorph M H} {y : E}
@@ -1180,6 +1326,22 @@ theorem mfderivWithin_extend_symm_coordChange
     congr 1
     exact mfderivWithin_eq_fderivWithin)
 
+/--
+%%handwave
+name:
+  Transformation law for coordinate expressions of differential forms
+statement:
+  Let \(\omega\) be a pointwise \(n\)-form and let
+  \(\phi=e'\circ e^{-1}\) be the transition between two \(C^1\) charts.  On
+  the transition domain,
+  \[
+    \omega_e(y)=\omega_{e'}(\phi(y))\circ (D\phi_y)^{\times n}.
+  \]
+proof:
+  Expand both coordinate expressions as pullbacks by inverse-chart
+  derivatives, then use
+  \(D(e^{-1})_y=D(e'^{-1})_{\phi(y)}\circ D\phi_y\).
+-/
 theorem coordinateExpression_coordChange
     [IsManifold I 1 M]
     (form : (x : M) → FormAt (I := I) F n x)
@@ -1303,6 +1465,17 @@ instance : CoeFun (DifferentialForm (I := I) (M := M) F n r)
     (fun _ ↦ (x : M) → FormAt (I := I) (M := M) F n x) where
   coe form := form.toFun
 
+/--
+%%handwave
+name:
+  Extensionality of differential forms
+statement:
+  Two \(C^r\) differential forms are equal if their alternating covectors agree
+  at every point of the manifold.
+proof:
+  A bundled differential form is determined by its pointwise covector field;
+  its regularity proof carries no additional data.
+-/
 @[ext]
 theorem ext {omegaForm eta : DifferentialForm (I := I) (M := M) F n r}
     (h : ∀ x, omegaForm.toFun x = eta.toFun x) : omegaForm = eta := by
@@ -1326,19 +1499,53 @@ def toContinuous (form : DifferentialForm (I := I) (M := M) F n r) :
     DifferentialForm (I := I) (M := M) F n (0 : WithTop ℕ∞) :=
   of_le (I := I) (M := M) (F := F) (n := n) zero_le form
 
+/--
+%%handwave
+name:
+  Underlying form after lowering regularity
+statement:
+  Regarding a \(C^{r'}\) differential form as \(C^r\), for \(r\le r'\), does
+  not change its pointwise alternating covectors.
+proof:
+  Lowering the asserted regularity leaves the underlying pointwise form
+  unchanged by definition.
+-/
 @[simp]
 theorem of_le_toFun {r r' : WithTop ℕ∞} (hrr' : r ≤ r')
     (form : DifferentialForm (I := I) (M := M) F n r') :
     (of_le (I := I) (M := M) (F := F) (n := n) hrr' form).toFun = form.toFun :=
   rfl
 
+/--
+%%handwave
+name:
+  Underlying form after forgetting to continuity
+statement:
+  Regarding a differential form of arbitrary regularity as merely continuous
+  does not change its pointwise alternating covectors.
+proof:
+  Passing to continuity leaves the underlying pointwise form unchanged by
+  definition.
+-/
 @[simp]
 theorem toContinuous_toFun
     (form : DifferentialForm (I := I) (M := M) F n r) :
     (form.toContinuous (I := I) (M := M) (F := F) (n := n)).toFun = form.toFun :=
   rfl
 
-/-- Continuous model-space alternating forms evaluate continuously on continuous vector fields. -/
+/--
+%%handwave
+name:
+  Continuity of evaluating a continuous alternating form field
+statement:
+  Let \(\omega_x\) be a continuous field of \(n\)-linear alternating forms on
+  a set \(s\), and let \(v_0,\ldots,v_{n-1}\) be continuous vector fields on
+  \(s\).  Then \(x\mapsto\omega_x(v_0(x),\ldots,v_{n-1}(x))\) is continuous
+  on \(s\).
+proof:
+  Assemble the vector fields into a continuous map to the finite product and
+  compose with the continuous evaluation map.
+-/
 theorem continuousOn_modelForm_eval
     {α : Type*} [TopologicalSpace α] {s : Set α}
     {omega : α → ModelForm (𝕜 := 𝕜) (E := E) F n}
@@ -1351,8 +1558,22 @@ theorem continuousOn_modelForm_eval
   simpa using (continuous_eval.comp_continuousOn (homega.prodMk hv'))
 
 /--
-In a chart, pointwise evaluation of a form is evaluation of its coordinate
-representative on the coordinate components of the tangent vectors.
+%%handwave
+name:
+  Evaluation of a differential form in tangent-bundle coordinates
+statement:
+  If \(z\) lies in a chart centered at \(x_0\), then for tangent vectors
+  \(v_0,\ldots,v_{n-1}\in T_zM\),
+  \[
+    \omega_z(v_0,\ldots,v_{n-1})
+    =\omega_e(e(z))\bigl([v_0]_e,\ldots,[v_{n-1}]_e\bigr),
+  \]
+  where \([v_i]_e\) are their coordinates in the induced tangent
+  trivialization.
+proof:
+  The inverse of the tangent trivialization converts each coordinate vector
+  back to \(v_i\); substituting this identity in the definition of the
+  coordinate representative gives the formula.
 -/
 theorem eval_eq_coordinateExpression_chartAt
     [IsManifold I 1 M]
@@ -1409,13 +1630,22 @@ theorem eval_eq_coordinateExpression_chartAt
   exact T.symmₗ_linearMapAt (R := 𝕜) hbase (v i)
 
 /--
-Evaluation of a continuous differential form on continuous tangent vector
-fields is continuous.
-
-This is the local-trivialization statement behind continuity of pullback
-integrands.  In charts it follows from the continuity of the coordinate
-representative of the form and the continuity of the bundle coordinate
-functions of the vector fields.
+%%handwave
+name:
+  Continuity of a differential form evaluated on tangent fields
+statement:
+  Let \(\omega\) be a continuous differential \(n\)-form, let
+  \(\phi:s\to M\) be continuous, and let \(V_i(x)\in T_{\phi(x)}M\) be
+  continuous tangent-vector fields along \(\phi\).  Then
+  \[
+    x\longmapsto\omega_{\phi(x)}(V_0(x),\ldots,V_{n-1}(x))
+  \]
+  is continuous on \(s\).
+proof:
+  Work locally in a chart around each \(\phi(x)\).  The coordinate
+  representative of \(\omega\) and the tangent coordinates of all \(V_i\)
+  are continuous, so continuity follows from continuous evaluation and then
+  glues over the domain.
 -/
 theorem continuousOn_eval_continuous_tangentFields
     [IsManifold I 1 M]
@@ -1493,7 +1723,17 @@ theorem continuousOn_eval_continuous_tangentFields
   exact hlocal.mono_of_mem_nhdsWithin
     (Filter.inter_mem self_mem_nhdsWithin hU_mem)
 
-/-- A constant vector field on a model vector space is continuous as a tangent-bundle map. -/
+/--
+%%handwave
+name:
+  Continuity of a constant tangent vector field on a vector space
+statement:
+  For a normed vector space \(E\) and fixed \(v\in E\), the tangent-bundle
+  section \(x\mapsto(x,v)\in TE\) is continuous on every subset of \(E\).
+proof:
+  Under the canonical trivialization \(TE\cong E\times E\), this is the product
+  of the identity map with the constant map \(v\).
+-/
 theorem continuousOn_constTangentVector_modelSpace
     {E₀ : Type*} [NormedAddCommGroup E₀] [NormedSpace 𝕜 E₀]
     {s : Set E₀} (v : E₀) :
@@ -1506,12 +1746,23 @@ theorem continuousOn_constTangentVector_modelSpace
     ContinuousOn (fun x : E₀ ↦ (x, v)) s)
 
 /--
-Evaluation of a continuous differential form on the differential of a \(C^1\)
-map is continuous on the parameter domain.
-
-This is the bundle-continuity bridge between the chartwise definition of a
-differential form and the pullback integrands used for integration over
-singular cells.
+%%handwave
+name:
+  Continuity of a differential form evaluated on a derivative
+statement:
+  Let \(\omega\) be a continuous differential \(n\)-form, let
+  \(\phi:s\to M\) be \(C^1\), and assume \(s\) is a
+  unique-differentiability set.  For fixed \(v_0,\ldots,v_{n-1}\) in the
+  parameter space, the function
+  \[
+    x\longmapsto
+    \omega_{\phi(x)}(D\phi_xv_0,\ldots,D\phi_xv_{n-1})
+  \]
+  is continuous on \(s\).
+proof:
+  The tangent map of \(\phi\) sends each constant tangent field \(v_i\) to a
+  continuous tangent field along \(\phi\).  Apply continuity of evaluating a
+  continuous form on continuous tangent fields.
 -/
 theorem continuousOn_eval_comp_mfderivWithin
     [IsManifold I 1 M]
@@ -1575,6 +1826,24 @@ def exteriorDerivativePoint
       (extChartAt I x).target ((extChartAt I x) x)).compContinuousLinearMap
     (mfderiv I 𝓘(𝕜, E) (extChartAt I x) x)
 
+/--
+%%handwave
+name:
+  Coordinate expression of the pointwise exterior derivative
+statement:
+  Let \(\omega\) be a \(C^{r+1}\) differential \(n\)-form on a smooth
+  manifold.  In every chart \(e\) and at every point \(y\) of its extended
+  target,
+  \[
+    (d\omega)_e(y)=d\bigl(\omega_e\bigr)(y),
+  \]
+  where the derivative on the right is computed relative to the chart target.
+proof:
+  Compare the chart \(e\) with the chart centered at the underlying point.
+  Use the coordinate transformation law for \(\omega\), naturality of the
+  exterior derivative under the transition map, and the chain rule for the
+  inverse-chart derivatives.
+-/
 theorem coordinateExpression_exteriorDerivativePoint
     [IsRCLikeNormedField 𝕜] [IsManifold I ∞ M]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -1776,6 +2045,19 @@ theorem coordinateExpression_exteriorDerivativePoint
         (coordinateExpression (I := I) (F := F) (n := n) form.toFun e)
         (e.extend I).target y := hset.symm
 
+/--
+%%handwave
+name:
+  Coordinate expression in a chart at its center
+statement:
+  For a pointwise \(n\)-form \(\omega\) and \(x\in M\), the coordinate
+  representative in the chart centered at \(x\), evaluated at the coordinate
+  point of \(x\), is exactly \(\omega_x\).
+proof:
+  The derivative of the inverse extended chart at the coordinate point of
+  \(x\) is the inverse of the chart derivative, so their composition is the
+  identity on \(T_xM\).
+-/
 theorem coordinateExpression_chartAt_self
     [IsManifold I 1 M]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {n : ℕ}

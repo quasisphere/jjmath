@@ -42,10 +42,32 @@ noncomputable def annularCutRotationPhase (v : Circle) :
       ContinuousLinearMap.mulLeftRight_apply, Function.comp_def, neg_mul]
       using hL.comp hdir
 
+/--
+%%handwave
+name:
+  The rotated circle coordinate has unit norm
+statement:
+  For every cut point \(v\in S^1\) and cylinder point \(q\in S^1\times
+  \mathbb R\), the rotated circle phase at \(q\) has complex modulus one.
+proof:
+  The rotated value is again a point of the unit circle, whose inclusion in
+  \(\mathbb C\) has norm one.
+-/
 theorem norm_annularCutRotationPhase (v : Circle) (q : Circle × ℝ) :
     ‖annularCutRotationPhase v q‖ = 1 :=
   Circle.norm_coe _
 
+/--
+%%handwave
+name:
+  Rotation based at the antipode of one is the identity
+statement:
+  For every \(q\in S^1\), rotating the circle coordinate using the cut at the
+  antipode of \(1\) leaves \(q\) unchanged.
+proof:
+  Expand the antipode and the cut rotation; the scalar rotation reduces to
+  multiplication by one.
+-/
 @[simp]
 theorem annularCutRotation_antipode_one (q : Circle) :
     annularCutRotation (circleAntipode 1) q = q := by
@@ -66,6 +88,22 @@ noncomputable def annularRadialNormalizedClosedOneForm (v : Circle) :
       (M := Circle × ℝ) (A := ℝ) 1 :=
   (2 * Real.pi)⁻¹ • annularCutRotationClosedOneForm v
 
+/--
+%%handwave
+name:
+  Exponential of the left annular angle lift
+statement:
+  On the cylinder slit at \(v\), if \(\theta_L\) is the left angle lift, then
+  \[
+    e^{i\theta_L(q)}=R_v(q_1),
+  \]
+  where \(R_v\) is the rotated unit-circle coordinate and \(q_1\) is the
+  circle component of \(q\).
+proof:
+  The rotated coordinate has modulus one.  The standard identity
+  \(e^{i\arg z}=z/|z|\) therefore reduces to the desired equality, since the
+  left lift is the argument of the rotated coordinate.
+-/
 theorem annularLeftAngleLift_exp_eq_cutRotation (v : Circle)
     (q : annularPunctureOpen v) :
     Complex.exp ((((annularLeftAngleLift v q : ℝ) : ℂ) * Complex.I)) =
@@ -78,6 +116,21 @@ theorem annularLeftAngleLift_exp_eq_cutRotation (v : Circle)
   norm_num at h
   simpa [z, annularLeftAngleLift, Complex.log_im] using h
 
+/--
+%%handwave
+name:
+  Exponential of the right annular angle lift
+statement:
+  On the cylinder slit at the point opposite \(v\), if \(\theta_R\) is the
+  right angle lift, then
+  \[
+    e^{i\theta_R(q)}=R_v(q_1).
+  \]
+proof:
+  Write the right lift as \(\arg(-R_v(q_1))+\pi\).  Exponentiating the sum
+  gives the unit phase of \(-R_v(q_1)\) times \(e^{i\pi}=-1\), hence recovers
+  \(R_v(q_1)\).
+-/
 theorem annularRightAngleLift_exp_eq_cutRotation (v : Circle)
     (q : annularPunctureOpen (annularOpposite v)) :
     Complex.exp ((((annularRightAngleLift v q : ℝ) : ℂ) * Complex.I)) =
@@ -103,8 +156,19 @@ theorem annularRightAngleLift_exp_eq_cutRotation (v : Circle)
   simp [Complex.exp_mul_I, w]
   rfl
 
-/-- On the first slit cylinder, the logarithmic phase form is the
-differential of the first angle lift. -/
+/--
+%%handwave
+name:
+  Logarithmic circle form on the left slit cylinder
+statement:
+  On the cylinder with the cut point \(v\) removed, the logarithmic one-form
+  of the rotated circle coordinate equals \(d\theta_L\), where \(\theta_L\)
+  is the left angle lift.
+proof:
+  Compare the restricted logarithmic primitive with the primitive obtained
+  from the global argument \(\theta_L\).  Their unit phases agree by
+  \(e^{i\theta_L}=R_v\), so their one-forms agree.
+-/
 theorem annularCutRotationClosedOneForm_restrict_left (v : Circle) :
     restrictSmoothFormsToOpen (I := AnnularCylinderModel) (A := ℝ)
         (annularPunctureOpen v) 1 (annularCutRotationClosedOneForm v).1 =
@@ -123,8 +187,19 @@ theorem annularCutRotationClosedOneForm_restrict_left (v : Circle) :
     Complex.exp ((((annularLeftAngleLift v q : ℝ) : ℂ) * Complex.I))
   exact (annularLeftAngleLift_exp_eq_cutRotation v q).symm
 
-/-- On the second slit cylinder, the logarithmic phase form is the
-differential of the second angle lift. -/
+/--
+%%handwave
+name:
+  Logarithmic circle form on the right slit cylinder
+statement:
+  On the cylinder with the point opposite \(v\) removed, the logarithmic
+  one-form of the rotated circle coordinate equals \(d\theta_R\), where
+  \(\theta_R\) is the right angle lift.
+proof:
+  Compare the restricted logarithmic primitive with the primitive defined by
+  the global argument \(\theta_R\).  The equality
+  \(e^{i\theta_R}=R_v\) identifies their phases and therefore their one-forms.
+-/
 theorem annularCutRotationClosedOneForm_restrict_right (v : Circle) :
     restrictSmoothFormsToOpen (I := AnnularCylinderModel) (A := ℝ)
         (annularPunctureOpen (annularOpposite v)) 1
@@ -211,8 +286,22 @@ noncomputable def annularRadialConnectingData (v : Circle) :
       rw [map_smul, map_smul,
         annularCutRotationClosedOneForm_restrict_right]
 
-/-- The normalized radial class is the chosen annular angular class, up to
-the orientation of the two slit-circle charts. -/
+/--
+%%handwave
+name:
+  The normalized radial class equals the annular angular class up to sign
+statement:
+  The de Rham class of \((2\pi)^{-1}d\log R_v\) on
+  \(S^1\times\mathbb R\) is either the chosen annular angular class or its
+  negative.
+proof:
+  Compute the radial class by the Mayer--Vietoris connecting map for the two
+  slit cylinders, using the normalized difference of their angle lifts on the
+  overlap.  Linearity pulls out the factor \((2\pi)^{-1}\).  The unnormalized
+  angle transition has coefficient \(2\pi\) or \(-2\pi\) relative to the
+  chosen angular generator, so normalization leaves coefficient \(1\) or
+  \(-1\).
+-/
 theorem annularRadialNormalizedClosedOneForm_class_eq_or_neg (v : Circle) :
     (DeRhamExactClosedForms (I := AnnularCylinderModel)
         (M := Circle × ℝ) (A := ℝ) 1).mkQ

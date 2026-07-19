@@ -24,6 +24,18 @@ def holomorphicDividedDifferenceUnitPhase
     (F : ℂ → ℂ) (z₀ z : ℂ) : ℂ :=
   dslope F z₀ z / ‖dslope F z₀ z‖
 
+/--
+%%handwave
+name:
+  Complex smoothness implies real smoothness
+statement:
+  If a map \(f:\mathbb C\to\mathbb C\) is smooth at \(z\) over the complex
+  scalars, then it is smooth at \(z\) when both copies of \(\mathbb C\) are
+  regarded as real vector spaces.
+proof:
+  Restrict the scalars in the complex differentiability statement from
+  \(\mathbb C\) to \(\mathbb R\).
+-/
 private theorem contDiffAt_complex_to_real
     {f : ℂ → ℂ} {z : ℂ} (h : ContDiffAt ℂ ∞ f z) :
     ContDiffAt ℝ ∞ f z :=
@@ -33,9 +45,24 @@ private theorem contDiffAt_complex_to_real
     (IsScalarTower.right : IsScalarTower ℝ ℂ ℂ) inferInstance
     (IsScalarTower.right : IsScalarTower ℝ ℂ ℂ) h
 
-/-- A holomorphic divided difference with nonzero derivative has a smooth
-unit phase on a ball around its base point.  Away from the base point this is
-the normalized phase of the ordinary difference quotient. -/
+/--
+%%handwave
+name:
+  Smooth unit phase of a holomorphic divided difference
+statement:
+  Let \(F\) be holomorphic near \(z_0\), with \(F'(z_0)\ne0\), and let
+  \(q(z)\) be the holomorphic divided difference, with \(q(z_0)=F'(z_0)\).
+  There is a radius \(\delta>0\) such that \(q\) has no zeros on
+  \(B(z_0,\delta)\), the map \(q/|q|\) is smooth there and has modulus one,
+  and, for \(z\ne z_0\), it equals the normalized phase of
+  \((F(z)-F(z_0))/(z-z_0)\).
+proof:
+  The divided difference is holomorphic at \(z_0\) and takes the nonzero
+  value \(F'(z_0)\) there.  Shrink to a ball on which it is holomorphic and
+  nonvanishing.  Division by its positive smooth norm then gives the claimed
+  smooth unit phase, and the off-diagonal formula follows from the defining
+  identity for divided differences.
+-/
 theorem holomorphicDividedDifferenceUnitPhase_local
     {F : ℂ → ℂ} {z₀ : ℂ} (hF : AnalyticAt ℂ F z₀)
     (hderiv : deriv F z₀ ≠ 0) :
@@ -100,10 +127,23 @@ theorem holomorphicDividedDifferenceUnitPhase_local
       simp [slope, div_eq_inv_mul, smul_eq_mul, mul_comm]
     simp only [holomorphicDividedDifferenceUnitPhase, hq_eq]
 
-/-- For two pointed surface coordinates, the unit phase of the holomorphic
-transition's divided difference is smooth and nonvanishing near the marked
-coordinate value.  Off the marked point it is the normalized coordinate
-difference quotient. -/
+/--
+%%handwave
+name:
+  Smooth divided-difference phase of a coordinate transition
+statement:
+  Let \(\chi\) and \(\psi\) be complex coordinates centered at the same point
+  \(p\), put \(F=\chi\circ\psi^{-1}\), and set \(z_0=\psi(p)\).  On some ball
+  \(B(z_0,\delta)\), the normalized phase of the divided difference of \(F\)
+  is smooth and has modulus one; away from \(z_0\) it is
+  \[
+    \frac{(F(z)-F(z_0))/(z-z_0)}{|(F(z)-F(z_0))/(z-z_0)|}.
+  \]
+proof:
+  A transition between complex surface coordinates is holomorphic and has
+  nonzero derivative at the marked point.  Apply the local divided-difference
+  phase construction to this transition map.
+-/
 theorem pointedCoordinate_transition_unitPhase_local
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {p : X}
@@ -149,6 +189,19 @@ def holomorphicVortexSeamPhase
   holomorphicVortexSeamFactor F z₀ α β z /
     ‖holomorphicVortexSeamFactor F z₀ α β z‖
 
+/--
+%%handwave
+name:
+  Multiplication of normalized complex phases
+statement:
+  For nonzero complex numbers \(u\) and \(v\),
+  \[
+    \frac{u}{|u|}\frac{v}{|v|}=\frac{uv}{|uv|}.
+  \]
+proof:
+  Use multiplicativity of the complex norm and cancel the two nonzero real
+  factors \(|u|\) and \(|v|\).
+-/
 private theorem normalized_mul_normalized
     {u v : ℂ} (hu : u ≠ 0) (hv : v ≠ 0) :
     (u / ‖u‖) * (v / ‖v‖) = (u * v) / ‖u * v‖ := by
@@ -156,10 +209,27 @@ private theorem normalized_mul_normalized
   push_cast
   field_simp [norm_ne_zero_iff.mpr hu, norm_ne_zero_iff.mpr hv]
 
-/-- The product of two consecutive raw vortex phases extends smoothly over
-their common endpoint.  The first pair has its pole at `F z₀`, in the target
-coordinate of `F`; the second has its zero at `z₀`, in the source coordinate.
-The other endpoints are `α` and `β` respectively. -/
+/--
+%%handwave
+name:
+  Smooth cancellation of consecutive vortex phases across a holomorphic seam
+statement:
+  Let \(F\) be holomorphic near \(z_0\), with \(F'(z_0)\ne0\), and suppose
+  \(F(z_0)\ne\alpha\) and \(z_0\ne\beta\).  On some ball about \(z_0\), the
+  normalized phase of
+  \[
+    H(z)=\frac{(F(z)-\alpha)/(z-\beta)}{(F(z)-F(z_0))/(z-z_0)}
+  \]
+  extends smoothly across \(z_0\) and has modulus one.  For \(z\ne z_0\),
+  this phase is the product of the normalized phases of
+  \((F(z)-\alpha)/(F(z)-F(z_0))\) and \((z-z_0)/(z-\beta)\).
+proof:
+  Replace the denominator in \(H\) by the holomorphic divided difference of
+  \(F\).  Near \(z_0\), that divided difference, \(F(z)-\alpha\), and
+  \(z-\beta\) are all nonzero, so \(H\) is a smooth nonvanishing function and
+  \(H/|H|\) is smooth.  Off the center, cancel the factors algebraically and
+  use multiplicativity of normalized complex phases.
+-/
 theorem holomorphicVortexSeamPhase_local
     {F : ℂ → ℂ} {z₀ α β : ℂ}
     (hF : AnalyticAt ℂ F z₀) (hderiv : deriv F z₀ ≠ 0)

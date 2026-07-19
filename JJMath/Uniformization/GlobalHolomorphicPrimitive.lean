@@ -17,6 +17,14 @@ open JJMath.Manifold
 
 noncomputable section
 
+/--
+%%handwave
+name: Tangent isomorphism induced by inclusion of open submanifolds
+statement:
+  If $W\subseteq U$ are open submanifolds of a manifold and $x\in W$, then the differential at $x$ of the inclusion $W\hookrightarrow U$ is bijective.
+proof:
+  Compose this differential with the differential of $U\hookrightarrow M$. The result is the differential of $W\hookrightarrow M$, and both outer inclusion differentials are tangent-space isomorphisms. Injectivity and surjectivity follow by cancellation.
+-/
 theorem mfderiv_opensInclusion_bijective
     {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -57,6 +65,14 @@ theorem mfderiv_opensInclusion_bijective
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name: Conjugate differential on a global holomorphic branch
+statement:
+  Let $u:Z\to\mathbb R$ be locally the real part of holomorphic functions, and let $\omega$ be the one-form obtained by gluing their imaginary differentials. If on an open set $U$ a holomorphic function $L$ satisfies $\Re L=u$ and a smooth function $\theta$ satisfies $\theta=\Im L$, then $\omega|_U=d\theta$.
+proof:
+  Around each $x\in U$, restrict $L$ to a small coordinate ball and regard it as one of the local holomorphic branches. The glued form and $d\theta$ both restrict there to the imaginary differential of that branch. Since the tangent map of the smaller-open inclusion is surjective, equality after restriction implies equality at $x$; vary $x$.
+-/
 theorem HarmonicConjugateDifferentialData.restrict_eq_globalHolomorphicRealPart
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]

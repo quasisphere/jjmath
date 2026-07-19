@@ -43,6 +43,17 @@ noncomputable def properLineTubeExteriorPoint
   subst p
   exact ht hp
 
+/--
+%%handwave
+name:
+  Underlying point of a proper-line tube exterior point
+statement:
+  If \(t\notin[-1,1]\), the exterior point specified by tube coordinates
+  \((s,t)\) has underlying surface point \(\varphi^{-1}(s,t)\).
+proof:
+  This is the defining value of the exterior point; its additional data only
+  certifies that it lies outside the transition core.
+-/
 @[simp]
 theorem properLineTubeExteriorPoint_val
     (U : TopologicalSpace.Opens X)
@@ -54,6 +65,18 @@ theorem properLineTubeExteriorPoint_val
       ((phi.symm (s, t) : U) : X) :=
   rfl
 
+/--
+%%handwave
+name:
+  Inclusion of an exterior point simplex
+statement:
+  The singular zero-simplex at the exterior point with tube coordinates
+  \((s,t)\), after inclusion into the surface, is the point simplex at
+  \(\varphi^{-1}(s,t)\).
+proof:
+  Both zero-simplices are constant maps with the same underlying surface
+  value.
+-/
 theorem point_openInclusion_properLineTubeExteriorPoint
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -69,8 +92,18 @@ theorem point_openInclusion_properLineTubeExteriorPoint
   intro q
   rfl
 
-/-- The boundary of a transverse proper-line-tube crossing is its
-positive-side endpoint minus its negative-side endpoint. -/
+/--
+%%handwave
+name:
+  Boundary of a transverse crossing of a proper-line tube
+statement:
+  The oriented boundary of the transverse one-simplex
+  \(q\mapsto\varphi^{-1}(s,(1-q)a+qb)\) is the point at
+  \(\varphi^{-1}(s,b)\) minus the point at \(\varphi^{-1}(s,a)\).
+proof:
+  The two faces of a one-simplex are its endpoint at \(b\) and its endpoint
+  at \(a\), with alternating signs \(+1\) and \(-1\).
+-/
 theorem boundary_properLineTubeTransverseSimplex_single
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -108,9 +141,20 @@ theorem boundary_properLineTubeTransverseSimplex_single
   simp [boundary, Finsupp.linearCombination_single, Fin.sum_univ_two,
     hface_zero, hface_one, sub_eq_add_neg]
 
-/-- If deleting the closed middle strip of a proper line tube leaves a
-connected surface, the tube's transverse Thom form detects nontrivial first
-de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Connected proper-line exterior forces nontrivial first cohomology
+statement:
+  Suppose the complement of the closed transition core of a proper-line tube
+  is connected.  Then \(H^1_{\mathrm{dR}}(X)\) is nontrivial.
+proof:
+  Choose transverse endpoints below and above the core and join them by a
+  smooth chain in the connected exterior.  Adding this return chain to the
+  transverse crossing gives a cycle.  The tube Thom form integrates to one
+  on the crossing and to zero on the exterior return, so its cohomology class
+  is nonzero.
+-/
 theorem not_subsingleton_deRhamH1_of_properLineTube_exterior_connected
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -145,8 +189,18 @@ theorem not_subsingleton_deRhamH1_of_properLineTube_exterior_connected
   rw [boundary_properLineTubeTransverseSimplex_single U phi s a b]
   abel
 
-/-- Vanishing first de Rham cohomology forces the exterior of every proper
-line tube's closed transition strip to be disconnected. -/
+/--
+%%handwave
+name:
+  Vanishing first cohomology disconnects every proper-line exterior
+statement:
+  If \(H^1_{\mathrm{dR}}(X)=0\), then the complement of the closed transition
+  core of every proper-line tube is disconnected.
+proof:
+  If such an exterior were connected, the transverse crossing and an
+  exterior return chain would produce a cycle of Thom-form period one,
+  contradicting the assumed vanishing of first de Rham cohomology.
+-/
 theorem properLineTube_exterior_not_connected_of_deRhamH1_subsingleton
     (hH1 : Subsingleton
       (DeRhamCohomology (I := SurfaceRealModel) (M := X) (A := ℝ) 1))

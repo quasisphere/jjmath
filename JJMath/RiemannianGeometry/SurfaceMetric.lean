@@ -581,12 +581,10 @@ statement:
   A Hausdorff sigma-compact smooth surface admits a smooth Riemannian metric.
 proof:
   Use
-  [a smooth family of positive definite symmetric tangent-bilinear
-  forms](lean:JJMath.Uniformization.exists_contMDiff_positiveDefiniteSymmetricTangentForm_via_partitionOfUnity)
+  [a smooth family of positive definite symmetric tangent-bilinear forms](lean:JJMath.Uniformization.exists_contMDiff_positiveDefiniteSymmetricTangentForm_via_partitionOfUnity)
   obtained by patching the Euclidean coordinate inner products.  The symmetry,
   positivity, and smoothness fields give the Mathlib smooth Riemannian metric;
-  [the positive definite sublevel sets are von Neumann
-  bounded](lean:JJMath.Uniformization.positiveDefiniteSymmetricTangentForm_isVonNBounded),
+  [the positive definite sublevel sets are von Neumann bounded](lean:JJMath.Uniformization.positiveDefiniteSymmetricTangentForm_isVonNBounded),
   which supplies the remaining boundedness field.
 tags:
   milestone

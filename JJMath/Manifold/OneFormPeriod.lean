@@ -28,6 +28,16 @@ def standardZeroSimplexVertex : StandardSimplex 0 :=
       positivity
     · simp⟩
 
+/--
+%%handwave
+name:
+  Uniqueness of the standard zero-simplex point
+statement:
+  The standard \(0\)-simplex consists of the single barycentric point
+  \((1)\).
+proof:
+  Its only coordinate must equal the sum of all coordinates, which is \(1\).
+-/
 theorem standardZeroSimplex_eq_vertex (q : StandardSimplex 0) :
     q = standardZeroSimplexVertex := by
   apply Subtype.ext
@@ -51,12 +61,32 @@ noncomputable def integrateSmoothChain
     (DifferentialForm.toContinuous (I := I) (M := M) (F := ℝ) (n := k) omega)
     c
 
+/--
+%%handwave
+name:
+  Integral over the zero chain
+statement:
+  For every smooth \(k\)-form \(\omega\), \(\int_0\omega=0\).
+proof:
+  Integration is an additive homomorphism of singular chains.
+-/
 @[simp]
 theorem integrateSmoothChain_zero_chain {k : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ k) :
     integrateSmoothChain (I := I) omega 0 = 0 := by
   simp [integrateSmoothChain, integrateChain]
 
+/--
+%%handwave
+name:
+  Additivity of integration in the chain
+statement:
+  For smooth \(k\)-chains \(c_1,c_2\),
+  \(\int_{c_1+c_2}\omega=\int_{c_1}\omega+\int_{c_2}\omega\).
+proof:
+  Integration against a fixed form is defined as an additive homomorphism on
+  singular chains.
+-/
 theorem integrateSmoothChain_add {k : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ k)
     (c₁ c₂ : SingularChain (I := I) (M := M) k ∞) :
@@ -65,6 +95,17 @@ theorem integrateSmoothChain_add {k : ℕ}
         integrateSmoothChain (I := I) omega c₂ := by
   simp [integrateSmoothChain, integrateChain, integrateChainHom]
 
+/--
+%%handwave
+name:
+  Integer homogeneity of integration in the chain
+statement:
+  For \(m\in\mathbb Z\) and a smooth \(k\)-chain \(c\),
+  \(\int_{m c}\omega=m\int_c\omega\).
+proof:
+  Every additive homomorphism of abelian groups commutes with integer scalar
+  multiplication.
+-/
 theorem integrateSmoothChain_zsmul {k : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ k)
     (n : ℤ) (c : SingularChain (I := I) (M := M) k ∞) :
@@ -77,8 +118,18 @@ theorem integrateSmoothChain_zsmul {k : ℕ}
       (DifferentialForm.toContinuous
         (I := I) (M := M) (F := ℝ) (n := k) omega)) n c
 
-/-- Integration over a fixed smooth singular chain is additive in the
-smooth form. -/
+/--
+%%handwave
+name:
+  Additivity of integration in the differential form
+statement:
+  For smooth \(k\)-forms \(\omega,\eta\) and a smooth \(k\)-chain \(c\),
+  \(\int_c(\omega+\eta)=\int_c\omega+\int_c\eta\).
+proof:
+  Reduce by linearity of chains to a single simplex.  There the pullback
+  coefficient is pointwise additive, and additivity of the Lebesgue integral
+  gives the result.
+-/
 theorem integrateSmoothChain_add_form {k : ℕ}
     (omega eta : SmoothForms (I := I) (M := M) ℝ k)
     (c : SingularChain (I := I) (M := M) k ∞) :
@@ -115,8 +166,17 @@ theorem integrateSmoothChain_add_form {k : ℕ}
           (DifferentialForm.toContinuous eta) sigma)]
       module
 
-/-- Integration over a fixed smooth singular chain commutes with real scalar
-multiplication of the smooth form. -/
+/--
+%%handwave
+name:
+  Real homogeneity of integration in the differential form
+statement:
+  For \(a\in\mathbb R\), a smooth \(k\)-form \(\omega\), and a smooth
+  \(k\)-chain \(c\), \(\int_c a\omega=a\int_c\omega\).
+proof:
+  Reduce by linearity of chains to a single simplex.  Pullback evaluation is
+  pointwise homogeneous, and scalar multiplication commutes with integration.
+-/
 theorem integrateSmoothChain_smul_form {k : ℕ}
     (a : ℝ) (omega : SmoothForms (I := I) (M := M) ℝ k)
     (c : SingularChain (I := I) (M := M) k ∞) :
@@ -144,12 +204,32 @@ theorem integrateSmoothChain_smul_form {k : ℕ}
       simp only [smul_eq_mul]
       ring
 
+/--
+%%handwave
+name:
+  Pointwise value of the zero differential form
+statement:
+  At every \(x\in M\), the zero smooth \(n\)-form has value \(0\) in
+  \(\Lambda^nT_x^*M\).
+proof:
+  This is the pointwise definition of the zero form.
+-/
 @[simp]
 theorem smoothForms_zero_toFun {n : ℕ} (x : M) :
     (0 : SmoothForms (I := I) (M := M) ℝ n).toFun x = 0 :=
   rfl
 
-/-- Integration of a smooth zero-form over a zero-simplex is evaluation at its vertex. -/
+/--
+%%handwave
+name:
+  Integral of a smooth function over a zero-simplex
+statement:
+  If \(f:M\to\mathbb R\) is smooth and \(\sigma:\Delta^0\to M\), then
+  \(\int_\sigma f=f(\sigma(*))\).
+proof:
+  The coordinate domain of \(\Delta^0\) is the one-point space
+  \(\mathbb R^0\), whose volume measure is the Dirac mass at its unique point.
+-/
 theorem integrateSimplexByPullback_smoothRealFunctionToZeroForm_zero
     (f : C^∞⟮I, M; ℝ⟯)
     (sigma : ContMDiffSingularSimplex (I := I) (M := M) 0 ∞) :
@@ -189,8 +269,18 @@ theorem integrateSimplexByPullback_smoothRealFunctionToZeroForm_zero
   rw [MeasureTheory.Measure.volume_pi_eq_dirac (0 : Fin 0 → ℝ)]
   simp
 
-/-- Integration of an arbitrary smooth zero-form over a zero-simplex is
-evaluation at its vertex. -/
+/--
+%%handwave
+name:
+  Integral of a smooth zero-form over a zero-simplex
+statement:
+  For a smooth zero-form \(\theta\) and
+  \(\sigma:\Delta^0\to M\), the pullback integral is the value
+  \(\theta_{\sigma(*)}\).
+proof:
+  The simplex coordinate domain is the singleton \(\mathbb R^0\), so the
+  integral is evaluation at its unique point.
+-/
 theorem integrateSimplexByPullback_zeroForm_zero
     (theta : SmoothForms (I := I) (M := M) ℝ 0)
     (sigma : ContMDiffSingularSimplex (I := I) (M := M) 0 ∞) :
@@ -235,45 +325,18 @@ theorem integrateSimplexByPullback_zeroForm_zero
   rw [MeasureTheory.Measure.volume_pi_eq_dirac (0 : Fin 0 → ℝ)]
   simp
 
-/-- Exterior differentiation at a point depends only on the germ of a smooth
-form at that point. -/
-private theorem legacy_deRhamDifferential_toFun_eq_of_eventuallyEq
-    {n : ℕ} (omega eta : SmoothForms (I := I) (M := M) ℝ n) {x : M}
-    (hlocal : ∀ᶠ y in 𝓝 x, omega.toFun y = eta.toFun y) :
-    (deRhamDifferential (I := I) (M := M) (A := ℝ) n omega).toFun x =
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) n eta).toFun x := by
-  let e : OpenPartialHomeomorph M H := chartAt H x
-  let y : E := (extChartAt I x) x
-  have hy : y ∈ (e.extend I).target := by
-    simp [e, y, extChartAt]
-  have hsymm_y : (e.extend I).symm y = x := by
-    simp [e, y, extChartAt]
-  have hsymm :
-      Filter.Tendsto (e.extend I).symm (𝓝[(e.extend I).target] y) (𝓝 x) := by
-    have hcontinuous :
-        ContinuousWithinAt (e.extend I).symm (e.extend I).target y :=
-      e.continuousOn_extend_symm (I := I) y hy
-    rw [← hsymm_y]
-    exact hcontinuous.tendsto
-  have hcoordinate :
-      coordinateExpression (I := I) (F := ℝ) (n := n) omega.toFun e =ᶠ[
-        𝓝[(e.extend I).target] y]
-      coordinateExpression (I := I) (F := ℝ) (n := n) eta.toFun e := by
-    filter_upwards [hsymm hlocal] with z hz
-    simp only [coordinateExpression]
-    rw [hz]
-  change
-    (extDerivWithin
-      (coordinateExpression (I := I) (F := ℝ) (n := n) omega.toFun e)
-      (e.extend I).target y).compContinuousLinearMap
-        (mfderiv I 𝓘(ℝ, E) (extChartAt I x) x) =
-      (extDerivWithin
-        (coordinateExpression (I := I) (F := ℝ) (n := n) eta.toFun e)
-        (e.extend I).target y).compContinuousLinearMap
-          (mfderiv I 𝓘(ℝ, E) (extChartAt I x) x)
-  rw [hcoordinate.extDerivWithin_eq_of_mem hy]
-
-/-- A pointwise form which is locally equal to a smooth form is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness from local equality with smooth forms
+statement:
+  A pointwise \(n\)-form \(\omega\) is smooth if every \(x\in M\) has a
+  neighborhood on which \(\omega\) agrees with some smooth \(n\)-form.
+proof:
+  In each chart, compose the germ equality with the inverse chart.  The
+  coordinate representative is then locally equal to a smooth coordinate
+  representative, hence is smooth at every chart point.
+-/
 theorem isContMDiffForm_of_locally_eventuallyEq_smoothForms
     {n : ℕ} (form : (x : M) → FormAt (I := I) ℝ n x)
     (hlocal : ∀ x : M, ∃ omega : SmoothForms (I := I) (M := M) ℝ n,
@@ -322,6 +385,16 @@ noncomputable def smoothFormPiecewiseZero
           have hyU : y ∉ U := fun hyU => hy (subset_closure hyU)
           simp [hyU] }
 
+/--
+%%handwave
+name:
+  Extension by zero on the retained region
+statement:
+  If a smooth form \(\omega\) is extended by zero outside \(U\), then at every
+  \(x\in U\) the extended form equals \(\omega_x\).
+proof:
+  The piecewise definition selects \(\omega\) at points of \(U\).
+-/
 @[simp]
 theorem smoothFormPiecewiseZero_toFun_of_mem
     {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
@@ -331,6 +404,16 @@ theorem smoothFormPiecewiseZero_toFun_of_mem
   classical
   simp [smoothFormPiecewiseZero, hx]
 
+/--
+%%handwave
+name:
+  Extension by zero off the retained region
+statement:
+  If a smooth form \(\omega\) is extended by zero outside \(U\), then at every
+  \(x\notin U\) the extended form equals \(0\).
+proof:
+  The piecewise definition selects the zero form outside \(U\).
+-/
 @[simp]
 theorem smoothFormPiecewiseZero_toFun_of_not_mem
     {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
@@ -340,8 +423,19 @@ theorem smoothFormPiecewiseZero_toFun_of_not_mem
   classical
   simp [smoothFormPiecewiseZero, hx]
 
-/-- Extension by zero preserves closedness when the original form vanishes
-near the gluing frontier. -/
+/--
+%%handwave
+name:
+  Closedness of an extension by zero
+statement:
+  Let \(\omega\) be a closed smooth \(n\)-form and suppose that near every
+  point of the frontier of \(U\), \(\omega\) vanishes.  Then the form equal to
+  \(\omega\) on \(U\) and \(0\) outside \(U\) is closed.
+proof:
+  At an interior point it has the same germ as \(\omega\); at a frontier or
+  exterior point it has the same germ as zero.  Exterior differentiation
+  depends only on the germ, so it vanishes everywhere.
+-/
 theorem deRhamDifferential_smoothFormPiecewiseZero_eq_zero
     {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
     (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x, omega.toFun y = 0)
@@ -404,8 +498,19 @@ noncomputable def piecewiseExactOneForm
       (deRhamDifferential (I := I) (M := M) (A := ℝ) 0 theta) U hzero
       (deRhamDifferential_comp_eq_zero (I := I) (M := M) (A := ℝ) theta)⟩
 
-/-- The pullback integral over a simplex only depends on the values of the
-form along that simplex. -/
+/--
+%%handwave
+name:
+  Simplex integrals depend only on values along the simplex
+statement:
+  If two continuous \(k\)-forms \(\omega,\eta\) have equal values at every
+  point of a smooth simplex \(\sigma:\Delta^k\to M\), then
+  \(\int_\sigma\omega=\int_\sigma\eta\).
+proof:
+  On the simplex coordinate domain, both pullback coefficients use the same
+  parameterization and derivative; equality of the form values makes the
+  integrands pointwise equal.
+-/
 theorem integrateSimplexByPullback_eq_of_toFun_eqOn
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
     (omega eta : ContinuousDifferentialForm (I := I) (M := M) (F := ℝ) k)
@@ -428,8 +533,18 @@ theorem integrateSimplexByPullback_eq_of_toFun_eqOn
     simplexPullbackFormUsingExtension, simplexParametrizationUsingExtension]
   rw [hextension, hform q]
 
-/-- Two smooth forms with the same values along a smooth simplex have the
-same integral over the corresponding singleton chain. -/
+/--
+%%handwave
+name:
+  Equality of singleton-chain integrals from pointwise equality
+statement:
+  If smooth \(k\)-forms \(\omega,\eta\) agree at every point of a smooth
+  simplex \(\sigma\), then their integrals over the singleton chain
+  \([\sigma]\) are equal.
+proof:
+  Integration over a singleton chain is the simplex pullback integral, which
+  depends only on the values of the form along \(\sigma\).
+-/
 theorem integrateSmoothChain_single_eq_of_toFun_eqOn
     {k : ℕ} (omega eta : SmoothForms (I := I) (M := M) ℝ k)
     (sigma : ContMDiffSingularSimplex (I := I) (M := M) k ∞)
@@ -465,6 +580,16 @@ noncomputable def ContMDiffSingularSimplex.postcompose
     · intro q
       exact congrArg f (sigma.extension_eq q)
 
+/--
+%%handwave
+name:
+  Pointwise formula for postcomposing a simplex
+statement:
+  For a smooth map \(f:M\to N\), a smooth simplex \(\sigma\), and
+  \(q\in\Delta^k\), \((f\circ\sigma)(q)=f(\sigma(q))\).
+proof:
+  This is the definition of postcomposition.
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.postcompose_apply
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -478,6 +603,16 @@ theorem ContMDiffSingularSimplex.postcompose_apply
     sigma.postcompose (I := I) f q = f (sigma q) :=
   rfl
 
+/--
+%%handwave
+name:
+  Faces commute with postcomposition
+statement:
+  For every face \(i\) of a smooth simplex \(\sigma\) and smooth map \(f\),
+  \((f\circ\sigma)|_i=f\circ(\sigma|_i)\).
+proof:
+  Both simplices are the same composition with the \(i\)-th face map.
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.postcompose_face
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -505,6 +640,16 @@ noncomputable def SingularChain.postcompose
   Finsupp.mapDomain
     (fun sigma => sigma.postcompose (I := I) f) c
 
+/--
+%%handwave
+name:
+  Postcomposition preserves the zero chain
+statement:
+  For every smooth map \(f\), the pushforward by postcomposition sends the
+  zero singular chain to zero.
+proof:
+  Postcomposition of chains is induced by mapping the simplex basis.
+-/
 @[simp]
 theorem SingularChain.postcompose_zero
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -517,6 +662,17 @@ theorem SingularChain.postcompose_zero
         (0 : SingularChain (I := I) (M := M) k r) = 0 := by
   simp [SingularChain.postcompose]
 
+/--
+%%handwave
+name:
+  Postcomposition is additive on chains
+statement:
+  For smooth singular chains \(c,d\),
+  \(f_*(c+d)=f_*c+f_*d\).
+proof:
+  Mapping the simplex basis defines an additive homomorphism on finitely
+  supported chains.
+-/
 @[simp]
 theorem SingularChain.postcompose_add
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -531,6 +687,17 @@ theorem SingularChain.postcompose_add
         SingularChain.postcompose (I := I) f d := by
   exact Finsupp.mapDomain_add
 
+/--
+%%handwave
+name:
+  Postcomposition respects integer multiples
+statement:
+  For \(m\in\mathbb Z\) and a smooth singular chain \(c\),
+  \(f_*(m c)=m f_*c\).
+proof:
+  The map on chains induced by postcomposition is additive and therefore
+  commutes with integer scalar multiplication.
+-/
 @[simp]
 theorem SingularChain.postcompose_zsmul
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -549,6 +716,17 @@ theorem SingularChain.postcompose_zsmul
   change g (n • c) = n • g c
   exact map_zsmul g n c
 
+/--
+%%handwave
+name:
+  Postcomposition of a singleton chain
+statement:
+  For a smooth simplex \(\sigma\) and \(m\in\mathbb Z\),
+  \(f_*(m[\sigma])=m[f\circ\sigma]\).
+proof:
+  Mapping a finitely supported singleton replaces its simplex by its
+  postcomposition and leaves its coefficient unchanged.
+-/
 @[simp]
 theorem SingularChain.postcompose_single
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
@@ -562,8 +740,17 @@ theorem SingularChain.postcompose_single
       Finsupp.single (sigma.postcompose (I := I) f) n := by
   simp [SingularChain.postcompose]
 
-/-- Taking the boundary of a smooth chain commutes with postcomposition by a
-smooth map. -/
+/--
+%%handwave
+name:
+  Naturality of the boundary under postcomposition
+statement:
+  For every smooth singular chain \(c\) and smooth map \(f\),
+  \(f_*(\partial c)=\partial(f_*c)\).
+proof:
+  Reduce linearly to a simplex.  Postcomposition commutes with every face map,
+  so the two alternating face sums agree term by term.
+-/
 theorem SingularChain.postcompose_boundary
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -608,6 +795,17 @@ noncomputable def ContMDiffSingularSimplex.openInclusion
     · intro q
       exact congrArg Subtype.val (sigma.extension_eq q)
 
+/--
+%%handwave
+name:
+  Pointwise formula for inclusion of an open-subset simplex
+statement:
+  If \(U\subseteq M\) is open, \(\sigma:\Delta^k\to U\), and
+  \(q\in\Delta^k\), then the included simplex takes \(q\) to the underlying
+  point of \(\sigma(q)\) in \(M\).
+proof:
+  This is the definition of inclusion.
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.openInclusion_apply
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
@@ -616,6 +814,17 @@ theorem ContMDiffSingularSimplex.openInclusion_apply
     sigma.openInclusion (I := I) U q = (sigma q : M) :=
   rfl
 
+/--
+%%handwave
+name:
+  Injectivity of including simplices from an open subset
+statement:
+  Inclusion \(U\hookrightarrow M\) induces an injective map from smooth
+  simplices in \(U\) to smooth simplices in \(M\).
+proof:
+  Equality after inclusion gives equality of underlying points because the
+  subtype inclusion is injective, hence equality of the original simplices.
+-/
 theorem ContMDiffSingularSimplex.openInclusion_injective
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞} :
     Function.Injective
@@ -632,6 +841,17 @@ theorem ContMDiffSingularSimplex.openInclusion_injective
   subst tau
   rfl
 
+/--
+%%handwave
+name:
+  Faces commute with open inclusion
+statement:
+  For a simplex \(\sigma\) in an open subset \(U\), including its \(i\)-th
+  face in \(M\) equals the \(i\)-th face of the included simplex.
+proof:
+  Both are obtained by composing \(\sigma\) first with the face map and then
+  with \(U\hookrightarrow M\).
+-/
 theorem ContMDiffSingularSimplex.openInclusion_face
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
     (sigma : ContMDiffSingularSimplex (I := I) (M := U) (k + 1) r)
@@ -650,6 +870,15 @@ noncomputable def SingularChain.openInclusion
   Finsupp.mapDomain
     (fun sigma => sigma.openInclusion (I := I) U) c
 
+/--
+%%handwave
+name:
+  Open inclusion preserves the zero chain
+statement:
+  The inclusion \(U\hookrightarrow M\) sends the zero singular chain to zero.
+proof:
+  Inclusion of chains is induced by mapping the simplex basis.
+-/
 @[simp]
 theorem SingularChain.openInclusion_zero
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞} :
@@ -657,6 +886,15 @@ theorem SingularChain.openInclusion_zero
         (0 : SingularChain (I := I) (M := U) k r) = 0 := by
   simp [SingularChain.openInclusion]
 
+/--
+%%handwave
+name:
+  Open inclusion is additive on chains
+statement:
+  For chains \(c,d\) in \(U\), \(\iota_*(c+d)=\iota_*c+\iota_*d\).
+proof:
+  Mapping the simplex basis under inclusion defines an additive homomorphism.
+-/
 @[simp]
 theorem SingularChain.openInclusion_add
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
@@ -666,6 +904,15 @@ theorem SingularChain.openInclusion_add
         SingularChain.openInclusion (I := I) U d := by
   exact Finsupp.mapDomain_add
 
+/--
+%%handwave
+name:
+  Open inclusion respects subtraction of chains
+statement:
+  For chains \(c,d\) in \(U\), \(\iota_*(c-d)=\iota_*c-\iota_*d\).
+proof:
+  The inclusion-induced map on chains is an additive homomorphism.
+-/
 @[simp]
 theorem SingularChain.openInclusion_sub
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
@@ -680,6 +927,16 @@ theorem SingularChain.openInclusion_sub
   change f (c - d) = f c - f d
   exact map_sub f c d
 
+/--
+%%handwave
+name:
+  Open inclusion respects integer multiples
+statement:
+  For \(m\in\mathbb Z\) and a chain \(c\) in \(U\),
+  \(\iota_*(m c)=m\iota_*c\).
+proof:
+  The inclusion-induced map on chains is additive.
+-/
 @[simp]
 theorem SingularChain.openInclusion_zsmul
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
@@ -693,6 +950,17 @@ theorem SingularChain.openInclusion_zsmul
   change f (n • c) = n • f c
   exact map_zsmul f n c
 
+/--
+%%handwave
+name:
+  Open inclusion of a singleton chain
+statement:
+  For a simplex \(\sigma\) in \(U\) and \(m\in\mathbb Z\),
+  \(\iota_*(m[\sigma])=m[\iota\circ\sigma]\).
+proof:
+  Mapping a finitely supported singleton includes its simplex and preserves
+  its coefficient.
+-/
 @[simp]
 theorem SingularChain.openInclusion_single
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
@@ -701,8 +969,17 @@ theorem SingularChain.openInclusion_single
       Finsupp.single (sigma.openInclusion (I := I) U) n := by
   simp [SingularChain.openInclusion]
 
-/-- Taking the boundary of a smooth chain commutes with inclusion of an open
-subset into the ambient manifold. -/
+/--
+%%handwave
+name:
+  Naturality of the boundary under open inclusion
+statement:
+  For a smooth chain \(c\) in an open subset \(U\subseteq M\),
+  \(\iota_*(\partial c)=\partial(\iota_*c)\).
+proof:
+  Reduce linearly to a simplex.  Inclusion commutes with each face, so the
+  alternating boundary sums agree.
+-/
 theorem SingularChain.openInclusion_boundary
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
     (c : SingularChain (I := I) (M := U) (k + 1) r) :
@@ -744,6 +1021,17 @@ noncomputable def ContMDiffSingularSimplex.nestedOpenInclusion
     · intro q
       exact congrArg (TopologicalSpace.Opens.inclusion hUV) (sigma.extension_eq q)
 
+/--
+%%handwave
+name:
+  Pointwise formula for inclusion between nested open subsets
+statement:
+  If \(U\subseteq V\) are open and \(\sigma:\Delta^k\to U\), then at every
+  \(q\in\Delta^k\) the included simplex is the image of \(\sigma(q)\) under
+  \(U\hookrightarrow V\).
+proof:
+  This is the defining formula for nested inclusion.
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.nestedOpenInclusion_apply
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -754,6 +1042,17 @@ theorem ContMDiffSingularSimplex.nestedOpenInclusion_apply
       TopologicalSpace.Opens.inclusion hUV (sigma q) :=
   rfl
 
+/--
+%%handwave
+name:
+  Faces commute with nested open inclusion
+statement:
+  If \(U\subseteq V\), including the \(i\)-th face of a simplex in \(U\)
+  equals taking the \(i\)-th face after inclusion into \(V\).
+proof:
+  Both maps compose the simplex with the face map and the inclusion
+  \(U\hookrightarrow V\).
+-/
 theorem ContMDiffSingularSimplex.nestedOpenInclusion_face
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} {r : WithTop ℕ∞}
@@ -774,6 +1073,15 @@ noncomputable def SingularChain.nestedOpenInclusion
   Finsupp.mapDomain
     (fun sigma => sigma.nestedOpenInclusion (I := I) hUV) c
 
+/--
+%%handwave
+name:
+  Nested open inclusion preserves the zero chain
+statement:
+  For \(U\subseteq V\), the induced map on chains sends \(0\) to \(0\).
+proof:
+  It is induced by mapping the simplex basis.
+-/
 @[simp]
 theorem SingularChain.nestedOpenInclusion_zero
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -782,6 +1090,16 @@ theorem SingularChain.nestedOpenInclusion_zero
         (0 : SingularChain (I := I) (M := U) k r) = 0 := by
   simp [SingularChain.nestedOpenInclusion]
 
+/--
+%%handwave
+name:
+  Nested open inclusion of a singleton chain
+statement:
+  For \(U\subseteq V\), a simplex \(\sigma\) in \(U\), and \(m\in\mathbb Z\),
+  the included chain \(m[\sigma]\) is \(m\) times the included simplex.
+proof:
+  Mapping a finitely supported singleton preserves its coefficient.
+-/
 @[simp]
 theorem SingularChain.nestedOpenInclusion_single
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -792,6 +1110,17 @@ theorem SingularChain.nestedOpenInclusion_single
       Finsupp.single (sigma.nestedOpenInclusion (I := I) hUV) n := by
   simp [SingularChain.nestedOpenInclusion]
 
+/--
+%%handwave
+name:
+  Nested open inclusion is additive on chains
+statement:
+  For \(U\subseteq V\) and chains \(c,d\) in \(U\),
+  \(\iota_*(c+d)=\iota_*c+\iota_*d\).
+proof:
+  Inclusion acts by an additive map on finitely supported simplex
+  coefficients.
+-/
 @[simp]
 theorem SingularChain.nestedOpenInclusion_add
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -802,6 +1131,16 @@ theorem SingularChain.nestedOpenInclusion_add
         SingularChain.nestedOpenInclusion (I := I) hUV d := by
   exact Finsupp.mapDomain_add
 
+/--
+%%handwave
+name:
+  Nested open inclusion respects subtraction
+statement:
+  For \(U\subseteq V\) and chains \(c,d\) in \(U\),
+  \(\iota_*(c-d)=\iota_*c-\iota_*d\).
+proof:
+  The inclusion-induced map on chains is additive.
+-/
 @[simp]
 theorem SingularChain.nestedOpenInclusion_sub
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -817,6 +1156,16 @@ theorem SingularChain.nestedOpenInclusion_sub
   change f (c - d) = f c - f d
   exact map_sub f c d
 
+/--
+%%handwave
+name:
+  Nested open inclusion respects integer multiples
+statement:
+  For \(U\subseteq V\), \(m\in\mathbb Z\), and a chain \(c\) in \(U\),
+  \(\iota_*(m c)=m\iota_*c\).
+proof:
+  The inclusion-induced map on chains is additive.
+-/
 @[simp]
 theorem SingularChain.nestedOpenInclusion_zsmul
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -831,7 +1180,17 @@ theorem SingularChain.nestedOpenInclusion_zsmul
   change f (n • c) = n • f c
   exact map_zsmul f n c
 
-/-- Boundary commutes with inclusion between nested open subsets. -/
+/--
+%%handwave
+name:
+  Naturality of the boundary under nested open inclusion
+statement:
+  If \(U\subseteq V\) and \(c\) is a smooth chain in \(U\), then
+  \(\iota_*(\partial c)=\partial(\iota_*c)\).
+proof:
+  Reduce linearly to a simplex and use that inclusion commutes with every face
+  map.
+-/
 theorem SingularChain.nestedOpenInclusion_boundary
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} {r : WithTop ℕ∞}
@@ -858,9 +1217,20 @@ theorem SingularChain.nestedOpenInclusion_boundary
       rw [map_zsmul]
       simp [ContMDiffSingularSimplex.nestedOpenInclusion_face]
 
-/-- Pulling a form back along an inclusion of nested open subsets and
-integrating over a simplex is the same as integrating over the included
-simplex. -/
+/--
+%%handwave
+name:
+  Pullback coefficient under inclusion of nested open subsets
+statement:
+  Let \(U\subseteq V\), let \(\omega\) be a smooth \(k\)-form on \(V\), and
+  let \(\sigma:\Delta^k\to U\).  At every simplex coordinate \(x\), the
+  pullback coefficient of \(\omega\) along the included simplex equals that
+  of \(\omega|_U\) along \(\sigma\).
+proof:
+  The included parameterization is the inclusion composed with the original
+  one.  The chain rule identifies its derivative, and the definition of
+  restriction composes \(\omega\) with exactly that inclusion derivative.
+-/
 theorem simplexPullbackCoefficient_nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
@@ -942,8 +1312,20 @@ theorem simplexPullbackCoefficient_nestedOpenInclusion
   rw [hderiv]
   rfl
 
-/-- Integration over a simplex commutes with inclusion between nested open
-subsets. -/
+/--
+%%handwave
+name:
+  Simplex integration under inclusion of nested open subsets
+statement:
+  If \(U\subseteq V\), \(\omega\) is a smooth \(k\)-form on \(V\), and
+  \(\sigma:\Delta^k\to U\), then
+  \[
+    \int_{\iota\circ\sigma}\omega=\int_\sigma\omega|_U.
+  \]
+proof:
+  The two pullback coefficients agree pointwise on the common simplex
+  coordinate domain, so their integrals agree.
+-/
 theorem integrateSimplexByPullback_nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
@@ -967,8 +1349,20 @@ theorem integrateSimplexByPullback_nestedOpenInclusion
   exact simplexPullbackCoefficient_nestedOpenInclusion
     (I := I) hUV omega sigma hx
 
-/-- Integration over a smooth chain commutes with inclusion between nested
-open subsets. -/
+/--
+%%handwave
+name:
+  Chain integration under inclusion of nested open subsets
+statement:
+  If \(U\subseteq V\), \(\omega\) is a smooth \(k\)-form on \(V\), and \(c\)
+  is a smooth \(k\)-chain in \(U\), then
+  \[
+    \int_{\iota_*c}\omega=\int_c\omega|_U.
+  \]
+proof:
+  Reduce linearly to a singleton simplex and apply the corresponding simplex
+  integration identity.
+-/
 theorem integrateSmoothChain_nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
@@ -998,9 +1392,20 @@ theorem integrateSmoothChain_nestedOpenInclusion
           sigma
       rw [integrateSimplexByPullback_nestedOpenInclusion]
 
-/-- Pulling a smooth form back by a diffeomorphism and integrating it over a
-simplex is the same as integrating the original form over the transported
-simplex. -/
+/--
+%%handwave
+name:
+  Pullback coefficient under a diffeomorphism
+statement:
+  Let \(\phi:M\to N\) be a diffeomorphism, \(\omega\) a smooth \(k\)-form on
+  \(N\), and \(\sigma:\Delta^k\to M\).  At every simplex coordinate \(x\),
+  the coefficient of \(\omega\) along \(\phi\circ\sigma\) equals the
+  coefficient of \(\phi^*\omega\) along \(\sigma\).
+proof:
+  The chain rule gives
+  \(D(\phi\circ\sigma)=D\phi\circ D\sigma\), exactly matching the definition
+  of pullback of a differential form.
+-/
 theorem simplexPullbackCoefficient_diffeomorph
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -1082,7 +1487,20 @@ theorem simplexPullbackCoefficient_diffeomorph
   rw [hderiv]
   rfl
 
-/-- Naturality of integration over a simplex under a diffeomorphism. -/
+/--
+%%handwave
+name:
+  Simplex integration under a diffeomorphism
+statement:
+  For a diffeomorphism \(\phi:M\to N\), smooth \(k\)-form \(\omega\) on
+  \(N\), and smooth simplex \(\sigma\) in \(M\),
+  \[
+    \int_{\phi\circ\sigma}\omega=\int_\sigma\phi^*\omega.
+  \]
+proof:
+  The pullback coefficients agree pointwise by the chain rule, hence their
+  simplex integrals agree.
+-/
 theorem integrateSimplexByPullback_diffeomorph
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -1108,8 +1526,20 @@ theorem integrateSimplexByPullback_diffeomorph
   intro x hx
   exact simplexPullbackCoefficient_diffeomorph I I' φ omega sigma hx
 
-/-- Naturality of integration over a smooth singular chain under a
-diffeomorphism. -/
+/--
+%%handwave
+name:
+  Chain integration under a diffeomorphism
+statement:
+  For a diffeomorphism \(\phi:M\to N\), a smooth \(k\)-form \(\omega\) on
+  \(N\), and a smooth \(k\)-chain \(c\) in \(M\),
+  \[
+    \int_{\phi_*c}\omega=\int_c\phi^*\omega.
+  \]
+proof:
+  Reduce linearly to a simplex and apply the simplex change-of-variables
+  identity.
+-/
 theorem integrateSmoothChain_diffeomorph
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -1142,8 +1572,20 @@ theorem integrateSmoothChain_diffeomorph
             (smoothFormsPullbackDiffeomorph I I' φ k omega)) sigma
       rw [integrateSimplexByPullback_diffeomorph]
 
-/-- Pulling a smooth form back to an open subset and integrating there gives
-the same simplex coefficient as integrating the ambient form after inclusion. -/
+/--
+%%handwave
+name:
+  Pullback coefficient under inclusion of an open subset
+statement:
+  Let \(U\subseteq M\) be open, \(\omega\) a smooth \(k\)-form on \(M\), and
+  \(\sigma:\Delta^k\to U\).  At every simplex coordinate, the coefficient of
+  \(\omega\) along the included simplex equals that of \(\omega|_U\) along
+  \(\sigma\).
+proof:
+  Apply the chain rule to the inclusion composed with the simplex
+  parameterization; restriction of \(\omega\) inserts the same inclusion
+  derivative.
+-/
 theorem simplexPullbackCoefficient_openInclusion
     {k : ℕ} (U : TopologicalSpace.Opens M)
     (omega : SmoothForms (I := I) (M := M) ℝ k)
@@ -1215,8 +1657,20 @@ theorem simplexPullbackCoefficient_openInclusion
   rw [hderiv]
   rfl
 
-/-- Integration over a simplex is unchanged when a form and simplex are both
-restricted to an open subset containing the simplex. -/
+/--
+%%handwave
+name:
+  Simplex integration under open inclusion
+statement:
+  For \(U\subseteq M\) open, a smooth \(k\)-form \(\omega\) on \(M\), and
+  \(\sigma:\Delta^k\to U\),
+  \[
+    \int_{\iota\circ\sigma}\omega=\int_\sigma\omega|_U.
+  \]
+proof:
+  The two simplex pullback coefficients agree pointwise on their common
+  coordinate domain.
+-/
 theorem integrateSimplexByPullback_openInclusion
     {k : ℕ} (U : TopologicalSpace.Opens M)
     (omega : SmoothForms (I := I) (M := M) ℝ k)
@@ -1237,8 +1691,20 @@ theorem integrateSimplexByPullback_openInclusion
   intro x hx
   exact simplexPullbackCoefficient_openInclusion (I := I) U omega sigma hx
 
-/-- The integral of a global form over an included singleton simplex equals
-the integral of its restriction over the lifted singleton simplex. -/
+/--
+%%handwave
+name:
+  Integration of one simplex under open inclusion
+statement:
+  If \(\sigma\) is a smooth \(k\)-simplex in an open subset \(U\subseteq M\),
+  then
+  \[
+    \int_{[\iota\circ\sigma]}\omega=\int_{[\sigma]}\omega|_U.
+  \]
+proof:
+  Integration over a singleton chain is the associated simplex integral, and
+  simplex integration commutes with open inclusion.
+-/
 theorem integrateSmoothChain_openInclusion_single
     {k : ℕ} (U : TopologicalSpace.Opens M)
     (omega : SmoothForms (I := I) (M := M) ℝ k)
@@ -1253,8 +1719,20 @@ theorem integrateSmoothChain_openInclusion_single
   simp only [one_zsmul, integrateSimplex, pullbackSimplexIntegrationTheory]
   exact integrateSimplexByPullback_openInclusion (I := I) U omega sigma
 
-/-- Integration is unchanged when a form and an arbitrary smooth chain are
-both restricted to an open subset containing the chain. -/
+/--
+%%handwave
+name:
+  Chain integration under open inclusion
+statement:
+  For an open subset \(U\subseteq M\), a smooth \(k\)-form \(\omega\) on
+  \(M\), and a smooth \(k\)-chain \(c\) in \(U\),
+  \[
+    \int_{\iota_*c}\omega=\int_c\omega|_U.
+  \]
+proof:
+  Reduce linearly to singleton chains and apply the corresponding simplex
+  identity.
+-/
 theorem integrateSmoothChain_openInclusion
     {k : ℕ} (U : TopologicalSpace.Opens M)
     (omega : SmoothForms (I := I) (M := M) ℝ k)
@@ -1284,8 +1762,16 @@ theorem integrateSmoothChain_openInclusion
           sigma
       rw [integrateSimplexByPullback_openInclusion]
 
-/-- The zero smooth form integrates to zero over every smooth singular
-chain. -/
+/--
+%%handwave
+name:
+  Integral of the zero form
+statement:
+  For every smooth \(k\)-chain \(c\), \(\int_c0=0\).
+proof:
+  Reduce linearly to a simplex; its pullback coefficient is identically zero,
+  so the simplex integral vanishes.
+-/
 theorem integrateSmoothChain_zero_form
     {k : ℕ} (c : SingularChain (I := I) (M := M) k ∞) :
     integrateSmoothChain (I := I)
@@ -1350,8 +1836,17 @@ theorem integrateSmoothChain_deRhamDifferential_eq_boundary
   rw [htheta_continuous, hdtheta_continuous] at hstokes
   exact hstokes.symm
 
-/-- A closed smooth form integrates to zero over the boundary of every
-smooth singular chain. -/
+/--
+%%handwave
+name:
+  Closed forms have zero integral over boundaries
+statement:
+  If \(\omega\) is a closed smooth \(k\)-form and \(c\) is a smooth
+  \((k+1)\)-chain, then \(\int_{\partial c}\omega=0\).
+proof:
+  By Stokes,
+  \(\int_{\partial c}\omega=\int_c d\omega\), and \(d\omega=0\).
+-/
 theorem integrateSmoothChain_boundary_eq_zero_of_closed
     {k : ℕ}
     (omega : DeRhamClosedForms (I := I) (M := M) (A := ℝ) k)
@@ -1435,8 +1930,21 @@ theorem integrateSmoothChain_deRhamDifferential_zero_single_eq_endpoint_sub
     integrateSimplexByPullback_smoothRealFunctionToZeroForm_zero,
     sub_eq_add_neg]
 
-/-- The integral of the differential of a smooth zero-form over a smooth
-one-simplex is the terminal value of the zero-form minus its initial value. -/
+/--
+%%handwave
+name:
+  Fundamental theorem for a smooth zero-form
+statement:
+  For a smooth zero-form \(\theta\) and smooth singular one-simplex
+  \(\sigma:[0,1]\to M\),
+  \[
+    \int_\sigma d\theta=\theta_{\sigma(1)}-\theta_{\sigma(0)}.
+  \]
+proof:
+  Apply Stokes to \(\sigma\).  Its oriented boundary is the terminal vertex
+  minus the initial vertex, and integration of a zero-form over a vertex is
+  pointwise evaluation.
+-/
 theorem integrateSmoothChain_deRhamDifferential_zeroForm_single_eq_endpoint_sub
     (theta : SmoothForms (I := I) (M := M) ℝ 0)
     (sigma : ContMDiffSingularSimplex (I := I) (M := M) 1 ∞) :
@@ -1490,8 +1998,23 @@ theorem integrateSmoothChain_openInclusion_eq_endpoint_sub_of_restrict_eq_d
     integrateSimplexByPullback_smoothRealFunctionToZeroForm_zero,
     sub_eq_add_neg]
 
-/-- On a simplex contained in the retained side, integrating an exact form
-extended by zero still gives the change of its primitive at the endpoints. -/
+/--
+%%handwave
+name:
+  Fundamental theorem for an exact form extended by zero
+statement:
+  Let \(f:M\to\mathbb R\) be smooth and extend \(df\) by zero outside a set
+  \(U\), assuming it vanishes near the frontier.  If a smooth one-simplex
+  \(\sigma\) lies in \(U\), then
+  \[
+    \int_\sigma \widetilde{df}
+      =f(\sigma(1))-f(\sigma(0)).
+  \]
+proof:
+  Along \(\sigma\), the extension agrees pointwise with \(df\), so the
+  simplex integral agrees with that of \(df\).  Apply the fundamental theorem
+  for a smooth one-simplex.
+-/
 theorem integrate_piecewiseExactOneForm_single_eq_endpoint_sub
     (f : C^∞⟮I, M; ℝ⟯) (U : Set M)
     (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x,
@@ -1571,8 +2094,19 @@ theorem integrateSmoothChain_eq_zero_of_closed_of_deRhamH1_subsingleton
     (I := I) (omega := (omega : SmoothForms (I := I) (M := M) ℝ 1))
     hexact c hcycle
 
-/-- A nonzero period detects that the de Rham class of the given closed
-one-form is nonzero. -/
+/--
+%%handwave
+name:
+  A nonzero period detects a nonzero de Rham class
+statement:
+  If a closed smooth one-form \(\omega\) has nonzero integral over a smooth
+  one-cycle \(c\), then \([\omega]\ne0\) in
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)\).
+proof:
+  If \([\omega]=0\), then \(\omega\) is exact.  Stokes forces every exact
+  one-form to have zero integral over the cycle \(c\), contradicting the
+  nonzero period.
+-/
 theorem deRhamCohomologyClass_ne_zero_of_nonzero_period
     (omega : DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1)
     (c : SingularChain (I := I) (M := M) 1 ∞)
@@ -1595,8 +2129,19 @@ theorem deRhamCohomologyClass_ne_zero_of_nonzero_period
       (I := I) (omega := (omega : SmoothForms (I := I) (M := M) ℝ 1))
       hexact c hcycle)
 
-/-- A nonzero period after restriction to a smaller open set shows that the
-restricted de Rham class is nonzero. -/
+/--
+%%handwave
+name:
+  A nonzero local period detects a nonzero restricted class
+statement:
+  Let \(W\subseteq V\) be open.  If a closed one-form \(\omega\) on \(V\)
+  has nonzero period after restriction to a one-cycle \(c\) in \(W\), then
+  the restricted class \([\omega]|_W\) is nonzero in
+  \(H_{\mathrm{dR}}^1(W;\mathbb R)\).
+proof:
+  The restricted form is closed and retains the asserted nonzero period.
+  Hence its de Rham class is nonzero by the period criterion.
+-/
 theorem deRhamCohomologyRestrictionOfLE_ne_zero_of_nonzero_period
     {W V : TopologicalSpace.Opens M} (hWV : W ≤ V)
     (omega : DeRhamClosedForms (I := I) (M := V) (A := ℝ) 1)
@@ -1645,8 +2190,19 @@ theorem not_subsingleton_deRhamH1_of_exists_nonzero_period
     (integrateSmoothChain_eq_zero_of_closed_of_deRhamH1_subsingleton
       (I := I) omega c hcycle)
 
-/-- A collar-crossing chain with nonzero period, closed by a return chain on
-which the form vanishes, detects nontrivial first de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Nontrivial cohomology from a crossing and a zero-period return
+statement:
+  Let \(\omega\) be a closed one-form.  If a crossing chain \(c\) and return
+  chain \(e\) satisfy \(\partial(c+e)=0\),
+  \(\int_c\omega=1\), and \(\int_e\omega=0\), then
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  Additivity gives \(\int_{c+e}\omega=1\).  Thus the cycle \(c+e\) has a
+  nonzero period, which detects a nonzero first de Rham class.
+-/
 theorem not_subsingleton_deRhamH1_of_crossing_and_return
     (omega : DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1)
     (crossing returning : SingularChain (I := I) (M := M) 1 ∞)

@@ -25,6 +25,17 @@ noncomputable section
 
 open ContinuousLinearMap
 
+/--
+%%handwave
+name:
+  Squared extended norm of a real number
+statement:
+  For every \(r\in\mathbb R\),
+  \(\lVert r\rVert_{\!e}^{\,2}=\operatorname{ofReal}(r^2)\).
+proof:
+  Express the extended norm as the nonnegative-real embedding of \(|r|\),
+  commute squaring with the embedding, and use \(|r|^2=r^2\).
+-/
 private theorem real_enorm_rpow_two_eq_ofReal_sq (r : ℝ) :
     ‖r‖ₑ ^ (2 : ℝ) = ENNReal.ofReal (r ^ 2) := by
   rw [← ofReal_norm]
@@ -32,6 +43,20 @@ private theorem real_enorm_rpow_two_eq_ofReal_sq (r : ℝ) :
     (norm_nonneg r) (by norm_num : 0 ≤ (2 : ℝ))]
   norm_num [Real.rpow_natCast, sq, Real.norm_eq_abs]
 
+/--
+%%handwave
+name:
+  Best constant approximation in \(L^2\)
+statement:
+  On a finite measure space, every real \(u\in L^2(\mu)\) admits a constant
+  \(c\) such that
+  \[\lVert u-c\rVert_{L^2(\mu)}\le\lVert u-a\rVert_{L^2(\mu)}
+    \quad\text{for every }a\in\mathbb R.\]
+proof:
+  The constant functions form a closed finite-dimensional subspace of
+  \(L^2(\mu)\). Take the orthogonal projection of \(u\) onto this subspace;
+  the projection minimizes distance.
+-/
 private theorem exists_L2_best_center_on_finite_measure
     {X : Type} [MeasurableSpace X] {μ : Measure X}
     [IsFiniteMeasure μ] {u₀ : X → ℝ}
@@ -104,6 +129,18 @@ private theorem exists_L2_best_center_on_finite_measure
     _ ≤ edist F (L a) := hed_min
     _ = eLpNorm (fun x : X ↦ u₀ x - a) 2 μ := ha_edist
 
+/--
+%%handwave
+name:
+  Best constant approximation on a compact surface set
+statement:
+  Let \(K\) be compact in a surface with background volume. If
+  \(u\in L^2(K)\), then some constant \(c\) minimizes
+  \(\lVert u-a\rVert_{L^2(K)}\) over all \(a\in\mathbb R\).
+proof:
+  Background surface volume is finite on compact sets, so its restriction to
+  \(K\) is finite. Apply [existence of a best constant on a finite measure space](lean:exists_L2_best_center_on_finite_measure).
+-/
 private theorem surface_exists_L2_best_center_on_compact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     {g : BackgroundSurfaceMetricOnSurface X} {K : Set X}
@@ -1623,8 +1660,7 @@ statement:
     \overline B\!\left(c,r\,\frac{k+1}{k+2}\right).
   \]
 proof:
-  For each \(k\), apply [compact-subball Rellich
-  compactness](lean:JJMath.Uniformization.euclideanSobolev_bounded_subsequence_on_compact_of_ball)
+  For each \(k\), apply [compact-subball Rellich compactness](lean:JJMath.Uniformization.euclideanSobolev_bounded_subsequence_on_compact_of_ball)
   to the closed ball of radius \(r(k+1)/(k+2)\), using the next closed subball
   as the larger compact set.  The resulting compact subsets of the countably
   many \(L^2\)-spaces have compact product.  A convergent subsequence in this
@@ -1706,6 +1742,20 @@ theorem euclideanSobolev_bounded_subsequence_cauchy_on_standard_exhaustion_of_ba
     (continuous_apply k).tendsto a |>.comp hφ_tendsto
   simpa [X] using hk_tendsto.cauchySeq
 
+/--
+%%handwave
+name:
+  Extended-real perturbation estimate
+statement:
+  Let \(\delta\ge0\), let \(x\le C<\infty\), and suppose
+  \(\delta C_{\mathbb R}\le\varepsilon\). Then
+  \[\operatorname{ofReal}(1+\delta)x
+    \le x+\operatorname{ofReal}(\varepsilon).\]
+proof:
+  Since \(x\) is finite, expand the left side as
+  \(x+\operatorname{ofReal}(\delta)x\), bound \(x_{\mathbb R}\) by
+  \(C_{\mathbb R}\), and apply the hypothesis.
+-/
 private theorem ennreal_ofReal_one_add_mul_le_add_of_le
     {δ ε : ℝ} {x C : ℝ≥0∞}
     (hδ_nonneg : 0 ≤ δ)
@@ -2333,6 +2383,18 @@ theorem euclideanRadialHomothety_eLpNorm_comp_le
           (MeasureTheory.volume.restrict (Metric.ball c r)) := by
         simp [J, μB]
 
+/--
+%%handwave
+name:
+  Square of an integral on a probability space
+statement:
+  If \(\mu(X)=1\) and \(g\) is strongly measurable, then
+  \[\left\lVert\int_Xg\,d\mu\right\rVert_{\!e}^{\,2}
+    \le\int_X\lVert g\rVert_{\!e}^{\,2}\,d\mu.\]
+proof:
+  Bound the norm of the integral by the integral of the norm and apply
+  Hölder with exponents \(2,2\), using \(\lVert1\rVert_{L^2(\mu)}=1\).
+-/
 private theorem poincare_enorm_integral_sq_le_lintegral_enorm_sq_of_measure_univ_eq_one
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {g : α → ℝ} (hμ : μ Set.univ = 1)
@@ -3201,6 +3263,17 @@ private theorem memLp_restrict_of_isCompact_of_continuousOn
       hf_aesm C
       (ae_restrict_of_forall_mem hK.measurableSet hC)
 
+/--
+%%handwave
+name:
+  A bounded continuous multiplier belongs to \(L^2\) on a ball
+statement:
+  If \(a\) is continuous and globally bounded on a finite-dimensional
+  Euclidean space, then \(a\in L^2(B(c,r))\).
+proof:
+  Restricted Lebesgue measure of a ball is finite. Strong measurability follows
+  from continuity, and the global bound gives \(L^2\) membership.
+-/
 private theorem bounded_continuous_multiplier_memLp_two_on_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -3224,6 +3297,17 @@ private theorem bounded_continuous_multiplier_memLp_two_on_ball
       ha_cont.aestronglyMeasurable C
       (Filter.Eventually.of_forall hC)
 
+/--
+%%handwave
+name:
+  Integrability of a bounded multiplier times an \(L^2\) function
+statement:
+  If \(a\) is continuous and bounded and \(f\in L^2(B(c,r))\), then
+  \(af\in L^1(B(c,r))\).
+proof:
+  The multiplier belongs to \(L^2\) on the ball, so Hölder's inequality for
+  the product of two \(L^2\) functions gives integrability.
+-/
 private theorem bounded_continuous_multiplier_smul_integrable_of_memLp_two_on_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -3244,6 +3328,18 @@ private theorem bounded_continuous_multiplier_smul_integrable_of_memLp_two_on_ba
     MemLp.integrable_mul ha_mem (by simpa [μB] using hf)
   simpa [μB, smul_eq_mul] using hprod
 
+/--
+%%handwave
+name:
+  Convergence of bounded-multiplier integrals under \(L^2\) convergence
+statement:
+  Let \(a\) be bounded and continuous on a finite-dimensional Euclidean
+  space. If \(f_n\to f\) in \(L^2(B(c,r))\), then
+  \[\int_{B(c,r)}a f_n\longrightarrow\int_{B(c,r)}a f.\]
+proof:
+  Since \(a\in L^2(B(c,r))\), Hölder bounds the difference of the integrals by
+  \(\lVert a\rVert_2\lVert f_n-f\rVert_2\), which tends to zero.
+-/
 private theorem bounded_continuous_multiplier_integral_tendsto_of_L2_on_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -4707,8 +4803,7 @@ statement:
   integral of \(|D w|\) along the radial segment from \(c+a(z-c)\) to \(z\),
   with the derivative applied to the segment velocity.
 proof:
-  Apply [the radial weak fundamental theorem on almost every
-  segment](lean:JJMath.Uniformization.scalarWeakSobolev_radial_contraction_line_integral_eq_ae),
+  Apply [the radial weak fundamental theorem on almost every segment](lean:JJMath.Uniformization.scalarWeakSobolev_radial_contraction_line_integral_eq_ae),
   then take absolute values and use the triangle inequality for the integral.
 -/
 theorem scalarWeakSobolev_radial_contraction_segmentIntegral_bound_ae
@@ -4806,10 +4901,8 @@ statement:
   on \(\Omega\), with weak derivative \(D w\), the \(L^2(B(c,r))\)-norm of
   \(w(z)-w(c+a(z-c))\) is at most \(A\|D w\|_{L^2(B(c,r))}\).
 proof:
-  Combine [the pointwise bound by the integral of the weak derivative along
-  the radial segment](lean:JJMath.Uniformization.scalarWeakSobolev_radial_contraction_segmentIntegral_bound_ae)
-  with [the \(L^2(B(c,r))\)-norm of this radial segment integral is controlled
-  by the \(L^2(B(c,r))\)-norm of the weak derivative](lean:JJMath.Uniformization.euclideanRadialContractionGradientSegmentIntegral_eLpNorm_le).
+  Combine [the pointwise bound by the integral of the weak derivative along the radial segment](lean:JJMath.Uniformization.scalarWeakSobolev_radial_contraction_segmentIntegral_bound_ae)
+  with [the \(L^2(B(c,r))\)-norm of this radial segment integral is controlled by the \(L^2(B(c,r))\)-norm of the weak derivative](lean:JJMath.Uniformization.euclideanRadialContractionGradientSegmentIntegral_eLpNorm_le).
 -/
 theorem euclideanSobolev_radial_contraction_difference_eLpNorm_le_gradient
     {Ω : Set H} {c : H} {r a : ℝ}
@@ -4852,9 +4945,7 @@ statement:
   weak Sobolev function and its contracted pullback is at most
   \(A\|D w\|_{L^2(B(c,r))}\).
 proof:
-  Apply [the \(L^2(B(c,r))\)-norm of
-  \(w(z)-w(c+a(z-c))\) is controlled by the
-  \(L^2(B(c,r))\)-norm of the weak derivative for every \(0<a\le1\)](lean:JJMath.Uniformization.euclideanSobolev_radial_contraction_difference_eLpNorm_le_gradient)
+  Apply [the \(L^2(B(c,r))\)-norm of \(w(z)-w(c+a(z-c))\) is controlled by the \(L^2(B(c,r))\)-norm of the weak derivative for every \(0<a\le1\)](lean:JJMath.Uniformization.euclideanSobolev_radial_contraction_difference_eLpNorm_le_gradient)
   to the standard factor \(a=(k+1)/(k+2)\).
 -/
 theorem euclideanSobolev_standard_exhaustion_radial_contraction_difference_eLpNorm_le_gradient
@@ -6639,8 +6730,7 @@ statement:
 proof:
   Choose functions whose distance from every constant on the ball is
   normalized to one while the weak gradients tend to zero in \(L^2\).  The
-  [local Rellich compactness theorem on Euclidean
-  compacts](lean:JJMath.Uniformization.euclideanRellichKondrachov_subsequence_on_compact)
+  [local Rellich compactness theorem on Euclidean compacts](lean:JJMath.Uniformization.euclideanRellichKondrachov_subsequence_on_compact)
   gives a strongly \(L^2\)-convergent subsequence on compact subballs, and an
   exhaustion gives convergence on the ball.  The integration-by-parts identity
   passes to the limit, so the limit has zero weak gradient.  The
@@ -6677,6 +6767,8 @@ statement:
 proof:
   Argue by contradiction and apply the compactness contradiction for the
   normalized bad sequence.
+tags:
+  milestone
 -/
 theorem euclideanSobolev_poincare_L2_on_ball
     {Ω : Set H} {c : H} {r : ℝ}
@@ -6698,8 +6790,7 @@ statement:
   scalar weak Sobolev function whose weak derivative vanishes almost
   everywhere is almost everywhere equal to a constant on that ball.
 proof:
-  Apply [the local \(L^2\) Poincare inequality on the
-  ball](lean:JJMath.Uniformization.euclideanSobolev_poincare_L2_on_ball).
+  Apply [the local \(L^2\) Poincare inequality on the ball](lean:JJMath.Uniformization.euclideanSobolev_poincare_L2_on_ball).
   Since the weak gradient vanishes almost everywhere, its \(L^2\)-seminorm on
   the ball is zero.  The inequality forces the \(L^2\)-distance from \(u\) to
   the chosen constant to be zero, and the measurability supplied by the
@@ -6766,8 +6857,7 @@ statement:
   everywhere is locally almost everywhere constant.
 proof:
   Around the chosen point, take a metric ball contained in the open region.
-  Apply [the zero-gradient Poincare consequence on that
-  ball](lean:JJMath.Uniformization.euclideanSobolev_poincare_zero_gradient_ae_const_on_ball).
+  Apply [the zero-gradient Poincare consequence on that ball](lean:JJMath.Uniformization.euclideanSobolev_poincare_zero_gradient_ae_const_on_ball).
 -/
 theorem euclideanSobolev_zero_gradient_locally_constant_on_open
     {Ω : Set H} {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
@@ -6821,6 +6911,20 @@ theorem euclideanSobolev_zero_gradient_locally_constant_on_open
 
 end StandardEuclideanBall
 
+/--
+%%handwave
+name:
+  \(L^2\) Poincaré inequality on a complex Euclidean ball
+statement:
+  For every \(r>0\), the ball \(B(c,r)\subset\mathbb C\) satisfies the
+  \(L^2\) Poincaré inequality modulo constants for real functions with weak
+  differential, with a finite constant depending on the ball.
+proof:
+  Identify \(\mathbb C\) isometrically and measure-preservingly with
+  \(\mathbb R^2\), transport the function and differential, apply the
+  Euclidean finite-dimensional ball inequality, and transfer the estimates
+  back through the isometry.
+-/
 private theorem complex_euclideanSobolev_poincare_L2_on_ball_self
     {c : ℂ} {r : ℝ} (hr_pos : 0 < r) :
     EuclideanSobolevPoincareL2EstimateOnBall (Metric.ball c r) c r := by
@@ -7316,7 +7420,17 @@ def SmoothCompactlySupportedGlobalSurfaceFunction.const_smul
       hasCompactSupportOnSurface_mul_left
         (u := fun _ : X ↦ c) (v := F.toFun) F.compact_support
 
-/-- Strong zero-trace approximation is closed under real scalar multiplication. -/
+/--
+%%handwave
+name:
+  Scalar multiplication preserves convergence in zero-trace \(H^1\)
+statement:
+  If \(u_n\to u\) in global zero-trace \(H^1\), then
+  \(c\,u_n\to c\,u\) in the same topology for every \(c\in\mathbb R\).
+proof:
+  Scalar multiplication is continuous in the Sobolev norm; both the function
+  and weak-gradient differences are multiplied by \(c\).
+-/
 theorem TendstoInGlobalSobolevH1Zero.const_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     {μ : Measure X} {F : ℕ → SmoothCompactlySupportedGlobalSurfaceFunction X}
@@ -7393,7 +7507,17 @@ theorem TendstoInGlobalSobolevH1Zero.const_smul
               simp [SmoothCompactlySupportedGlobalSurfaceFunction.const_smul,
                 sub_eq_add_neg, smul_add, smul_neg]
 
-/-- Global zero trace is closed under real scalar multiplication. -/
+/--
+%%handwave
+name:
+  Scalar multiples preserve zero Sobolev trace
+statement:
+  If \(u\) has global zero Sobolev trace, then \(cu\) has global zero
+  Sobolev trace, with weak gradient \(c\,du\).
+proof:
+  Multiply a compactly supported smooth approximating sequence by \(c\) and
+  use scalar-multiplication continuity of zero-trace \(H^1\) convergence.
+-/
 theorem HasGlobalZeroSobolevTrace.const_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     {μ : Measure X} {u : X → ℝ} {du : X → ℂ →L[ℝ] ℝ} (c : ℝ)
@@ -7416,7 +7540,17 @@ def SobolevH1ZeroOnSurface.const_smul
   weakGradient_is_gradient := u.weakGradient_is_gradient.const_smul c
   zero_trace := u.zero_trace.const_smul c
 
-/-- Local \(L^2\) mass scales quadratically under real scalar multiplication. -/
+/--
+%%handwave
+name:
+  Quadratic scaling of the local \(L^2\) seminorm
+statement:
+  For every measurable \(K\),
+  \(\lVert cu\rVert_{L^2(K)}^2=c^2\lVert u\rVert_{L^2(K)}^2\).
+proof:
+  Move the constant through the squared absolute value and through the
+  integral.
+-/
 theorem greenLocalL2SeminormSq_const_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X]
@@ -7434,7 +7568,17 @@ theorem greenLocalL2SeminormSq_const_smul
     _ = c ^ 2 * ∫ x in K, u.toFun x ^ 2 ∂g.volume := by
           rw [integral_const_mul]
 
-/-- A metric-dual cotangent pairing is linear in its second argument. -/
+/--
+%%handwave
+name:
+  Linearity of the cotangent inner product in the second argument
+statement:
+  For the cotangent inner product induced by a metric,
+  \(\langle\xi,c\eta\rangle=c\langle\xi,\eta\rangle\).
+proof:
+  Express the cotangent inner product via the inverse metric and use linearity
+  of evaluation in the second cotangent vector.
+-/
 theorem cotangentInner_smul_right_of_isMetricDual
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -7449,7 +7593,17 @@ theorem cotangentInner_smul_right_of_isMetricDual
     _ = c * η v := by simp
     _ = c * cotangentInner x ξ η := by rw [hv.2 η]
 
-/-- The background cotangent norm squared scales quadratically. -/
+/--
+%%handwave
+name:
+  Quadratic scaling of the surface gradient pairing
+statement:
+  For a background surface metric,
+  \(\langle c\xi,c\xi\rangle_g=c^2\langle\xi,\xi\rangle_g\).
+proof:
+  Apply linearity of the cotangent inner product in each argument and collect
+  the two scalar factors.
+-/
 theorem BackgroundSurfaceMetricOnSurface.gradientInner_smul_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X)
@@ -7469,7 +7623,17 @@ theorem BackgroundSurfaceMetricOnSurface.gradientInner_smul_smul
               g.metric g.gradientInner (BackgroundSurfaceMetricOnSurface.gradientInner_isMetricDual g) x ξ ξ c]
     _ = c ^ 2 * g.gradientInner x ξ ξ := by ring
 
-/-- Dirichlet energy scales quadratically under real scalar multiplication. -/
+/--
+%%handwave
+name:
+  Quadratic scaling of Dirichlet energy
+statement:
+  For \(u\in W^{1,2}_0(X)\) and \(c\in\mathbb R\),
+  \(\mathcal E(cu)=c^2\mathcal E(u)\).
+proof:
+  The weak gradient of \(cu\) is \(c\,du\); apply quadratic scaling of the
+  metric gradient pairing under the integral.
+-/
 theorem greenDirichletSeminormSq_const_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X]
@@ -7687,6 +7851,20 @@ theorem exists_unit_localL2_sequence_with_dirichlet_tendsto_zero_of_positive_loc
       _ = D / M := by
               simp [D, div_eq_inv_mul, mul_comm]
 
+/--
+%%handwave
+name:
+  One term of a finite sum stays uniformly positive along a subsequence
+statement:
+  Let \(I\) be finite and nonempty. If
+  \(1\le\sum_{i\in I}m_n(i)\) for every \(n\), then there exist
+  \(i_0\in I\), \(\delta>0\), and a strictly increasing \(\phi\) such that
+  \(m_{\phi(n)}(i_0)\ge\delta\) for all \(n\).
+proof:
+  For each \(n\), some summand is at least \(1/|I|\). One index occurs
+  infinitely often; enumerate that infinite fiber by a strictly increasing
+  subsequence.
+-/
 private theorem exists_finite_index_strictMono_subsequence_uniform_lower_of_one_le_sum
     {ι : Type} [Fintype ι] [Nonempty ι]
     (m : ℕ → ι → ℝ)
@@ -7734,6 +7912,20 @@ private theorem exists_finite_index_strictMono_subsequence_uniform_lower_of_one_
   have hfn : δ ≤ m (φ n) (f (φ n)) := hf (φ n)
   simpa [hφ_mem n] using hfn
 
+/--
+%%handwave
+name:
+  One piece retains \(L^2\) mass along a subsequence
+statement:
+  For a finite nonempty family of sets \(K_i\), if
+  \[1\le\sum_i\lVert u_n\rVert_{L^2(K_i),\mathbb R}\]
+  for every \(n\), then some \(K_{i_0}\), \(\delta>0\), and strictly increasing
+  \(\phi\) satisfy
+  \(\operatorname{ofReal}(\delta)\le
+    \lVert u_{\phi(n)}\rVert_{L^2(K_{i_0})}\) for all \(n\).
+proof:
+  Apply [the finite-sum subsequence pigeonhole principle](lean:exists_finite_index_strictMono_subsequence_uniform_lower_of_one_le_sum) to the real \(L^2\)-norms and lift the resulting inequality to extended nonnegative reals.
+-/
 private theorem exists_finite_index_strictMono_subsequence_uniform_eLpNorm_lower_of_one_le_sum_toReal
     {X E ι : Type} [MeasurableSpace X] [NormedAddCommGroup E]
     [Fintype ι] [Nonempty ι]
@@ -7754,6 +7946,18 @@ private theorem exists_finite_index_strictMono_subsequence_uniform_eLpNorm_lower
   intro n
   exact ENNReal.ofReal_le_of_le_toReal (hlower n)
 
+/--
+%%handwave
+name:
+  Unit square integral gives unit \(L^2\)-norm
+statement:
+  If \(u\in L^2(K,\mu)\) and
+  \(\int_Ku(x)^2\,d\mu=1\), then
+  \(\lVert u\rVert_{L^2(K,\mu),\mathbb R}=1\).
+proof:
+  Identify the extended square integral with the embedding of the ordinary
+  integral, use the hypothesis, and take the positive square root.
+-/
 private theorem eLpNorm_two_toReal_eq_one_of_integral_sq_eq_one
     {X : Type} [MeasurableSpace X] {μ : Measure X} {K : Set X}
     {u : X → ℝ}
@@ -7795,6 +7999,18 @@ private theorem eLpNorm_two_toReal_eq_one_of_integral_sq_eq_one
     norm_num
   simp [μK, hnorm]
 
+/--
+%%handwave
+name:
+  Square of the real \(L^2\)-norm
+statement:
+  If \(u\in L^2(K,\mu)\), then
+  \[\lVert u\rVert_{L^2(K,\mu),\mathbb R}^{\,2}
+    =\int_Ku(x)^2\,d\mu.\]
+proof:
+  Express the real \(L^2\)-norm as the square root of the integral of
+  \(|u|^2\), replace \(|u|^2\) by \(u^2\), and square.
+-/
 private theorem eLpNorm_two_toReal_sq_eq_integral_sq
     {X : Type} [MeasurableSpace X] {μ : Measure X} {K : Set X}
     {u : X → ℝ}
@@ -7843,6 +8059,18 @@ private theorem eLpNorm_two_toReal_sq_eq_integral_sq
             rw [Real.sq_sqrt h_nonneg]
     _ = ∫ x in K, u x ^ (2 : ℕ) ∂μ := rfl
 
+/--
+%%handwave
+name:
+  Unit local mass is detected by a finite cover
+statement:
+  Let \(K=\bigcup_{i\in I}K_i\) with \(I\) finite. If a zero-trace Sobolev
+  function satisfies \(\int_Ku^2=1\), then
+  \[1\le\sum_{i\in I}\lVert u\rVert_{L^2(K_i),\mathbb R}.\]
+proof:
+  The global \(L^2(K)\)-norm is one. Its norm over a finite union is at most
+  the sum of the restricted norms; pass to real values using finiteness.
+-/
 private theorem one_le_sum_toReal_eLpNorm_on_finite_cover_of_greenLocalL2SeminormSq_eq_one
     {X ι : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [Fintype ι]
@@ -7893,6 +8121,22 @@ private theorem one_le_sum_toReal_eLpNorm_on_finite_cover_of_greenLocalL2Seminor
           (eLpNorm_two_restrict_finite_iUnion_le_sum Kc hcover f)
     _ = ∑ i : ι, (eLpNorm f 2 (μ.restrict (Kc i))).toReal := hsum_toReal
 
+/--
+%%handwave
+name:
+  Compact mass retention from a finite Rellich cover
+statement:
+  Suppose compact sets \(K_i\) finitely cover \(\overline Q\), each subsequence
+  admits a further subsequence converging in \(L^2(K_i)\) to a constant, and
+  \(\int_{\overline Q}Z_n^2=1\). Then for some positive-measure \(K_i\), a
+  subsequence retains a uniform positive \(L^2(K_i)\)-norm and converges there
+  in \(L^2\) to a constant.
+proof:
+  The finite-cover norm inequality and the finite pigeonhole subsequence
+  lemma select one piece with uniform mass. Apply the assumed compactness on
+  that piece; the positive lower bound forces the piece to have positive
+  measure.
+-/
 private theorem exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_finite_cover
     {X ι : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [Fintype ι]
@@ -8147,11 +8391,34 @@ private theorem normalized_constant_subsequence_absurd
     le_of_tendsto_of_tendsto hconst hlim hle_eventually
   exact (not_lt_of_ge hone_le_zero) zero_lt_one
 
+/--
+%%handwave
+name:
+  Second countability of the trivial real line bundle
+statement:
+  If \(X\) is second countable, then the total space of the trivial real line
+  bundle over \(X\) is second countable.
+proof:
+  The total space is homeomorphic to \(X\times\mathbb R\), a product of
+  second-countable spaces.
+-/
 private theorem surface_value_totalSpace_secondCountable
     {X : Type} [TopologicalSpace X] [SecondCountableTopology X] :
     SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ)) := by
   exact (Bundle.Trivial.homeomorphProd X ℝ).secondCountableTopology
 
+/--
+%%handwave
+name:
+  Pseudometrizability of the trivial real line bundle
+statement:
+  Over a second-countable Hausdorff surface, the total space of the trivial
+  real line bundle is pseudometrizable.
+proof:
+  The base is locally compact and regular, hence its product with
+  \(\mathbb R\) is regular. Transfer regularity through the bundle-product
+  homeomorphism and use second countability to obtain pseudometrizability.
+-/
 private theorem surface_value_totalSpace_pseudoMetrizable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [SecondCountableTopology X] [T2Space X] [IsManifold SurfaceRealModel 1 X] :
@@ -8407,26 +8674,18 @@ private theorem surface_coordinate_weakGradient_to_manifoldWeakDerivative
       manifoldChartRegion, surfaceChartRegion, smul_eq_mul, mul_comm, mul_left_comm,
       mul_assoc] using heq
 
-private theorem surfaceChartTangentMap_chartAt_self
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (x : X) :
-    surfaceChartTangentMap (chartAt ℂ x) ((chartAt ℂ x) x) =
-      ContinuousLinearMap.id ℝ ℂ := by
-  let e := chartAt ℂ x
-  have hxsource : x ∈ e.source := by
-    simp [e]
-  have hz : e x ∈ e.target := e.map_source hxsource
-  have hsymm : e.symm (e x) = x := e.left_inv hxsource
-  have hcongr :
-      Set.EqOn
-        (fun w : ℂ ↦ chartAt ℂ (e.symm (e x)) (e.symm w))
-        (fun w : ℂ ↦ w) e.target := by
-    intro w hw
-    simpa [e, hsymm] using e.right_inv hw
-  rw [surfaceChartTangentMap]
-  rw [fderivWithin_congr' hcongr hz]
-  exact fderivWithin_id (e.open_target.uniqueDiffWithinAt hz)
-
+/--
+%%handwave
+name:
+  Inverse-Gram contraction recovers vector evaluation
+statement:
+  Let \(G\) be positive definite, \(p=G\alpha\), and let \(q\) be another
+  coordinate vector. Then
+  \[\sum_{i,j}(G^{-1})_{ij}p_iq_j=\sum_i\alpha_iq_i.\]
+proof:
+  Positive definiteness makes \(G\) invertible, so \(G^{-1}p=\alpha\).
+  Reorder the double sum, use symmetry of \(G^{-1}\), and substitute.
+-/
 private theorem inverseGram_contraction_eq_eval
     {ι : Type} [Fintype ι] [DecidableEq ι]
     (G : Matrix ι ι ℝ) (hG : G.PosDef)
@@ -8465,12 +8724,36 @@ private theorem inverseGram_contraction_eq_eval
             intro i _
             ring
 
+/--
+%%handwave
+name:
+  Real inner product is multiplication
+statement:
+  For \(a,b\in\mathbb R\), \(\langle a,b\rangle_{\mathbb R}=ab\).
+proof:
+  Expand the standard real inner product and use that real conjugation is the
+  identity.
+-/
 private theorem real_inner_eq_mul_poincare (a b : ℝ) :
     inner ℝ a b = a * b := by
   calc
     inner ℝ a b = b * (starRingEnd ℝ) a := RCLike.inner_apply a b
     _ = a * b := by simp [mul_comm]
 
+/--
+%%handwave
+name:
+  Hilbert--Schmidt cotangent pairing equals the metric-dual pairing
+statement:
+  Let \(g\) be a Riemannian metric on a surface and let
+  \(\langle\, ,\,\rangle_{g^*}\) be its metric-dual cotangent pairing. At every
+  \(x\) and for cotangent vectors \(\xi,\eta\), the intrinsic
+  Hilbert--Schmidt pairing of differentials equals
+  \(\langle\xi,\eta\rangle_{g^*}\).
+proof:
+  Represent \(\xi\) by its metric-dual vector, expand in a finite basis, and
+  write both pairings with the Gram matrix. [Inverse-Gram contraction recovers the metric-dual evaluation](lean:inverseGram_contraction_eq_eval).
+-/
 private theorem surface_manifoldHilbertSchmidtInnerAt_eq_metricDual
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
@@ -8641,6 +8924,17 @@ theorem surface_coordinate_cotangent_fiberInner_eq_gradientInner
       (metric := g.metric) (cotangentInner := g.gradientInner)
       (BackgroundSurfaceMetricOnSurface.gradientInner_isMetricDual g) x ξ η
 
+/--
+%%handwave
+name:
+  Agreement of manifold and surface local value seminorms
+statement:
+  For a real function \(u\) and set \(K\), the manifold local value
+  seminorm squared equals \(\int_Ku^2\,d\mu\), the surface local
+  \(L^2\)-seminorm squared.
+proof:
+  Unfold both definitions and use \(\lVert u(x)\rVert^2=u(x)^2\).
+-/
 private theorem real_manifoldLocalValueL2SeminormSq_eq_surfaceLocalL2SeminormSq
     {X : Type} [MeasurableSpace X]
     (μ : Measure X) (K : Set X) (u : X → ℝ) :
@@ -8651,6 +8945,18 @@ private theorem real_manifoldLocalValueL2SeminormSq_eq_surfaceLocalL2SeminormSq
   filter_upwards [] with x
   simp [sq_abs]
 
+/--
+%%handwave
+name:
+  Agreement of manifold and surface differential energies
+statement:
+  For a coordinate cotangent field \(du\) on a surface,
+  the manifold differential seminorm squared over \(K\) equals
+  \[\int_K\langle du,du\rangle_{g^*}\,d\mu.\]
+proof:
+  Unfold both integrals and identify the intrinsic fiber Hilbert--Schmidt norm
+  with the metric-dual cotangent norm pointwise.
+-/
 private theorem surface_coordinate_manifoldLocalDifferentialSeminormSq_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
@@ -8666,6 +8972,17 @@ private theorem surface_coordinate_manifoldLocalDifferentialSeminormSq_eq
   simpa [SurfaceCotangentField.ofCoordinateField] using
     surface_coordinate_cotangent_fiberNormSq_eq_gradientInner g x (du x)
 
+/--
+%%handwave
+name:
+  Agreement of manifold and surface local \(H^1\) seminorms
+statement:
+  For a real function \(u\) and coordinate weak differential \(du\), the
+  manifold local \(H^1\)-seminorm squared on \(K\) equals the sum of the
+  surface local \(L^2\)-mass and gradient energy.
+proof:
+  Combine [agreement of the value seminorms](lean:real_manifoldLocalValueL2SeminormSq_eq_surfaceLocalL2SeminormSq) with [agreement of the differential energies](lean:surface_coordinate_manifoldLocalDifferentialSeminormSq_eq).
+-/
 private theorem surface_coordinate_manifoldLocalH1SeminormSq_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
@@ -8678,6 +8995,17 @@ private theorem surface_coordinate_manifoldLocalH1SeminormSq_eq
   rw [real_manifoldLocalValueL2SeminormSq_eq_surfaceLocalL2SeminormSq,
     surface_coordinate_manifoldLocalDifferentialSeminormSq_eq]
 
+/--
+%%handwave
+name:
+  Nonnegativity of local surface gradient energy
+statement:
+  For every cotangent field \(du\) and set \(U\),
+  \(0\le\int_U\langle du,du\rangle_{g^*}\,d\mu\).
+proof:
+  The metric-dual squared norm is pointwise nonnegative, so its integral is
+  nonnegative.
+-/
 private theorem surfaceLocalGradientSeminormSq_nonneg
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) (U : Set X)
@@ -8686,6 +9014,18 @@ private theorem surfaceLocalGradientSeminormSq_nonneg
   dsimp [surfaceLocalGradientSeminormSq]
   exact integral_nonneg fun x ↦ g.gradientInner_nonneg x (du x)
 
+/--
+%%handwave
+name:
+  Quadratic scaling of local surface gradient energy
+statement:
+  For \(c\in\mathbb R\),
+  \[\int_U\langle c\,du,c\,du\rangle_{g^*}\,d\mu
+    =c^2\int_U\langle du,du\rangle_{g^*}\,d\mu.\]
+proof:
+  Apply bilinearity of the cotangent pairing pointwise and move the constant
+  \(c^2\) outside the integral.
+-/
 private theorem surfaceLocalGradientSeminormSq_const_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) (U : Set X)
@@ -8704,6 +9044,18 @@ private theorem surfaceLocalGradientSeminormSq_const_smul
         ∫ x in U, g.gradientInner x (du x) (du x) ∂g.volume := by
           rw [integral_const_mul]
 
+/--
+%%handwave
+name:
+  Subtracting a constant preserves the weak gradient
+statement:
+  If \(du\) is a weak gradient of \(u\) on \(U\), then it is also a weak
+  gradient of \(u-a\) for every constant \(a\in\mathbb R\).
+proof:
+  In the weak integration-by-parts identity, the new constant term is
+  \(a\int D_v\varphi\). This vanishes because the test function is smooth and
+  compactly supported; all remaining terms are unchanged.
+-/
 private theorem IsWeakGradientOnRegion.sub_const_real {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     {U : Set X} {u : X → ℝ} {du : X → ℂ →L[ℝ] ℝ}
@@ -8868,6 +9220,19 @@ private theorem surfaceLocalGradientSeminormSq_tendsto_zero_of_greenDirichlet_te
     tendsto_of_tendsto_of_tendsto_of_le_of_le
       tendsto_const_nhds hZ_energy hnonneg hle
 
+/--
+%%handwave
+name:
+  Weak gradient of a zero-trace Sobolev function in surface coordinates
+statement:
+  For a zero-trace Sobolev function \(u\) on a surface, the coordinate
+  pullback \(u\circ e^{-1}\) has Euclidean weak derivative equal to the chart
+  pullback of its surface weak gradient.
+proof:
+  Apply the defining surface weak-gradient identity to the same compactly
+  supported coordinate test and rewrite the tangent evaluation as chart
+  pullback.
+-/
 private theorem surface_zeroTrace_chartPullback_weakGradient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -8892,6 +9257,20 @@ private theorem surface_zeroTrace_chartPullback_weakGradient
     ManifoldDifferentialField.chartPullback, surfaceChartRegion,
     surfaceChartTangentMap, smul_eq_mul, mul_comm, mul_left_comm, mul_assoc] using h
 
+/--
+%%handwave
+name:
+  Vanishing \(L^2\)-norm of the gradient magnitude
+statement:
+  Let \(Z_n\) have integrable gradient-energy density and global Dirichlet
+  energy tending to zero. For every set \(K\), the functions
+  \[x\mapsto\sqrt{\langle dZ_n(x),dZ_n(x)\rangle_{g^*}}\]
+  belong to \(L^2(K)\), and their \(L^2(K)\)-norms tend to zero.
+proof:
+  Their squares are exactly the nonnegative gradient-energy densities.
+  Local energy is bounded by global energy and tends to zero; take square
+  roots and use the squeeze theorem.
+-/
 private theorem sqrt_gradientInner_memLp_and_eLpNorm_tendsto_zero_on_set
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     {g : BackgroundSurfaceMetricOnSurface X} {K : Set X}
@@ -9005,6 +9384,21 @@ private theorem sqrt_gradientInner_memLp_and_eLpNorm_tendsto_zero_on_set
     tendsto_of_tendsto_of_tendsto_of_le_of_le'
       tendsto_const_nhds hupper hnonneg hle
 
+/--
+%%handwave
+name:
+  Surface \(L^2\)-norm controlled by its coordinate pullback
+statement:
+  Let \(K_0\) be compact in one chart and \(K_{\mathrm{coord}}=e(K_0)\).
+  For a smooth positive surface measure, there is a finite \(C\) such that
+  \[\lVert f-a\rVert_{L^2(K_0,\mu)}
+    \le C\lVert(f-a)\circ e^{-1}\rVert_{L^2(K_{\mathrm{coord}})}\]
+  whenever both sides are defined.
+proof:
+  In coordinates the surface measure is Lebesgue measure weighted by a smooth
+  positive density. Bound that density above on the compact coordinate set
+  and apply the weighted \(L^2\)-norm estimate.
+-/
 private theorem chartPullback_eLpNorm_two_sub_const_surface_le
     {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [T2Space X]
@@ -9188,6 +9582,21 @@ private theorem chartPullback_eLpNorm_two_sub_const_surface_le
             (MeasureTheory.volume.restrict Kcoord) := by
         rw [hνKcoord_eq]
 
+/--
+%%handwave
+name:
+  Vanishing coordinate evaluation of pulled-back weak gradients
+statement:
+  Let \(Z_n\) have integrable gradient density and Dirichlet energy tending to
+  zero. On a chart ball compactly contained in the chart target, for every
+  fixed \(v\in\mathbb C\), the scalar fields
+  \(z\mapsto(e^*dZ_n)_z(v)\) lie in \(L^2\), and their \(L^2\)-norms tend to
+  zero.
+proof:
+  Pull the intrinsic gradient magnitude to coordinates and use compact chart
+  norm comparison. Pointwise evaluation of a differential is uniformly
+  bounded by its Hilbert--Schmidt norm on the compact chart ball.
+-/
 private theorem chartBall_chartPullback_weakGradient_eval_memLp_tendsto_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
@@ -9506,6 +9915,18 @@ private theorem chartBall_chartPullback_weakGradient_eval_memLp_tendsto_zero
     simpa [Dseq, e, B] using hD_mem n
   · simpa [Dseq, e, B] using hD_tendsto
 
+/--
+%%handwave
+name:
+  Vanishing \(L^2\)-norm of pulled-back weak gradients on a chart ball
+statement:
+  Under vanishing Dirichlet energy, the full operator-valued chart pullbacks
+  \(e^*dZ_n\) belong to \(L^2\) on every protected chart ball and converge to
+  zero in that \(L^2\)-norm.
+proof:
+  Evaluate the operators on a finite basis of \(\mathbb C\). Each component
+  tends to zero by [the fixed-direction chart estimate](lean:chartBall_chartPullback_weakGradient_eval_memLp_tendsto_zero), and finite-dimensional basis evaluation reconstructs the operator norm.
+-/
 private theorem chartBall_chartPullback_weakGradient_memLp_tendsto_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
@@ -10094,8 +10515,7 @@ proof:
   Once the restrictions are known to be locally Sobolev on \(U\), uniformly
   \(W^{1,2}\)-bounded on \(Q\), and to have differential energy tending to
   zero on \(Q\), the extraction is an immediate subsequence application of
-  [local Rellich compactness with vanishing gradients gives constant
-  limits](lean:JJMath.Uniformization.localRellich_zeroGradient_subsequence_constant).
+  [local Rellich compactness with vanishing gradients gives constant limits](lean:JJMath.Uniformization.localRellich_zeroGradient_subsequence_constant).
   The remaining point is to supply the uniform compact value bound; it is not
   a consequence of Dirichlet energy convergence alone.
 -/
@@ -10407,6 +10827,21 @@ private theorem exists_finite_compact_preconnected_cover_closure
       rw [Set.mem_iUnion]
       exact ⟨i.2, hxi⟩
 
+/--
+%%handwave
+name:
+  Finite compact cover by protected chart balls
+statement:
+  If \(\overline Q\) is compact in a Riemann surface, it has a finite compact
+  cover \(K_i\), with chart centers \(c_i\) and radii
+  \(0<r_i<R_i\), such that \(K_i\) lies over the inner ball
+  \(B(e_i(c_i),r_i)\) and the closed outer ball of radius \(R_i\) lies in the
+  chart target.
+proof:
+  Around each point choose a protected outer chart ball and a smaller inner
+  ball. Compactness gives a finite subcover; compactly shrink that subcover
+  inside the inner chart neighborhoods.
+-/
 private theorem exists_finite_compact_chart_ball_cover_closure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -10505,6 +10940,23 @@ private theorem exists_finite_compact_chart_ball_cover_closure
   · intro i
     exact hKpiece_sub i.1
 
+/--
+%%handwave
+name:
+  Constant subsequence on a positive compact chart-ball piece
+statement:
+  Let \(K\subset\overline Q\) be compact of positive area and contained in a
+  protected chart ball. If \(Z_n\) has unit \(L^2(\overline Q)\)-mass,
+  integrable gradient energy, and Dirichlet energy tending to zero, then every
+  subsequence has a further subsequence converging in \(L^2(K)\) to a
+  constant.
+proof:
+  In the chart, the pulled-back weak gradients tend to zero in \(L^2\).
+  Euclidean Poincaré gives moving constants with vanishing error. Unit mass
+  bounds the values, positive area bounds those constants, and Rellich
+  compactness yields a further subsequence converging to one constant; transfer
+  the norm estimate back to the surface.
+-/
 private theorem positive_compact_chart_ball_piece_constant_subsequence_of_unit_localL2_and_dirichlet_tendsto_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
@@ -11054,7 +11506,19 @@ theorem exists_fixed_sign_measurable_set_of_ae_tendsto_nonzero_constant
       ⟨A, hA_meas, hA_ne_top, hA_pos, ψ, hψ, hlower⟩
     exact ⟨A, hA_meas, hA_ne_top, hA_pos, ρ, hρ, -1, Or.inr rfl, ψ, hψ, hlower⟩
 
-/-- A fixed signed lower bound and vanishing energy give capacity competitors. -/
+/--
+%%handwave
+name:
+  Capacity competitors from a fixed signed lower bound
+statement:
+  Let \(Z_n\in W^{1,2}_0(X)\) have Dirichlet energies tending to zero. If along
+  a subsequence \(sZ_n\ge\rho>0\) on \(L\), with \(s=\pm1\), then for every
+  \(\varepsilon>0\) there is \(u\in W^{1,2}_0(X)\) such that
+  \(u\ge1\) on \(L\) and \(\mathcal E(u)<\varepsilon\).
+proof:
+  Rescale \(Z_n\) by \(s/\rho\). The fixed-sign bound gives \(u\ge1\), while
+  quadratic homogeneity and vanishing energy give the required tolerance.
+-/
 theorem capacity_competitors_of_fixed_sign_lower_bound_and_dirichlet_tendsto_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X]
@@ -11118,7 +11582,21 @@ theorem capacity_competitors_of_fixed_sign_lower_bound_and_dirichlet_tendsto_zer
       _ = ε := by
             field_simp [hc_ne]
 
-/-- Finite-energy version of compact mass retention by the Rellich cover. -/
+/--
+%%handwave
+name:
+  Compact mass retention and local convergence to a constant
+statement:
+  Let \(\overline Q\) be compact. If \(Z_n\in W^{1,2}_0(X)\) has unit
+  \(L^2(\overline Q)\)-mass, integrable gradient energy, and Dirichlet energy
+  tending to zero, then some positive-measure compact \(K\) and subsequence
+  satisfy a uniform positive \(L^2(K)\)-mass bound and converge in \(L^2(K)\)
+  to a constant.
+proof:
+  Use the finite compact Rellich chart cover of \(\overline Q\), then apply
+  finite-cover mass retention and select a piece on which a subsequence
+  converges to one constant.
+-/
 theorem exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit_localL2_dirichlet_tendsto_zero_on_compact_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11153,7 +11631,18 @@ theorem exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit
     exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_finite_cover
       (g := g) (Q := Q) Kc hKc_compact hcover Z hZ_unit hpiece_constant
 
-/-- Relatively compact finite-energy version of compact mass retention. -/
+/--
+%%handwave
+name:
+  Compact mass retention on a relatively compact open set
+statement:
+  Under unit local \(L^2\)-mass and vanishing Dirichlet energy on a relatively
+  compact open \(Q\), a subsequence retains uniformly positive mass on a
+  positive-measure compact \(K\subset\overline Q\) and converges there in
+  \(L^2\) to a constant.
+proof:
+  Apply [compact mass retention and convergence to a constant on \(\overline Q\)](lean:exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit_localL2_dirichlet_tendsto_zero_on_compact_of_integrable).
+-/
 theorem exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11182,7 +11671,19 @@ theorem exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit
   exists_compact_constant_L2_tendsto_subsequence_with_uniform_mass_of_unit_localL2_dirichlet_tendsto_zero_on_compact_of_integrable
     (g := g) _hQ_open hQ_compact Z hZ_unit hZ_int hZ_energy
 
-/-- Finite-energy version of the measurable-set mass-retention extraction. -/
+/--
+%%handwave
+name:
+  Constant \(L^2\) limit on a finite positive-measure set
+statement:
+  Under the same normalized vanishing-energy hypotheses, there are a
+  measurable set \(A\) with \(0<\mu(A)<\infty\), a constant \(a\), and a
+  subsequence converging to \(a\) in \(L^2(A)\) while retaining a uniform
+  positive \(L^2(A)\)-mass.
+proof:
+  Take the compact set from the compact mass-retention theorem; compactness
+  makes it measurable and of finite measure.
+-/
 theorem exists_constant_L2_tendsto_subsequence_with_uniform_mass_on_measurable_set_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11221,7 +11722,18 @@ theorem exists_constant_L2_tendsto_subsequence_with_uniform_mass_on_measurable_s
     ⟨K, hK_compact.measurableSet, hK_ne_top, hK_pos,
       δ, hδ, a, φ, hφ, hlower, hlim⟩
 
-/-- Finite-energy version of the nonzero constant \(L^2\) extraction. -/
+/--
+%%handwave
+name:
+  Nonzero constant \(L^2\) limit on a measurable set
+statement:
+  A unit-local-mass sequence with vanishing Dirichlet energy has, on some set
+  \(A\) of finite positive measure, a subsequence converging in \(L^2(A)\) to
+  a nonzero constant.
+proof:
+  The preceding extraction gives convergence to a constant and a uniform
+  positive lower bound on the subsequence norms; such a limit cannot be zero.
+-/
 theorem exists_nonzero_constant_L2_tendsto_subsequence_on_measurable_set_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11255,7 +11767,18 @@ theorem exists_nonzero_constant_L2_tendsto_subsequence_on_measurable_set_of_unit
       hδ hlower hlim
   exact ⟨A, hA_meas, hA_ne_top, hA_pos, a, ha, φ, hφ, hlim⟩
 
-/-- Finite-energy version of the nonzero constant almost-everywhere extraction. -/
+/--
+%%handwave
+name:
+  Almost-everywhere convergence to a nonzero constant
+statement:
+  Under unit local \(L^2\)-mass and vanishing Dirichlet energy, there are a
+  finite positive-measure set \(A\), \(a\ne0\), and a subsequence converging
+  pointwise almost everywhere on \(A\) to \(a\).
+proof:
+  First extract \(L^2(A)\)-convergence to a nonzero constant, hence convergence
+  in measure, then pass to an almost-everywhere convergent subsequence.
+-/
 theorem exists_nonzero_constant_ae_tendsto_subsequence_on_measurable_set_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11309,7 +11832,19 @@ theorem exists_nonzero_constant_ae_tendsto_subsequence_on_measurable_set_of_unit
   filter_upwards [hψ_ae_volume] with x hx hxA
   simpa [Function.comp_def] using hx hxA
 
-/-- Finite-energy version of fixed-sign measurable extraction. -/
+/--
+%%handwave
+name:
+  Fixed-sign lower bound on a measurable set
+statement:
+  Under unit local \(L^2\)-mass and vanishing Dirichlet energy, some
+  finite positive-measure set \(A\), \(\rho>0\), sign \(s=\pm1\), and
+  subsequence satisfy \(sZ_n(x)\ge\rho\) for every \(x\in A\).
+proof:
+  Extract almost-everywhere convergence to a nonzero constant and choose a
+  positive-measure subset on which the convergence has a uniform signed lower
+  bound.
+-/
 theorem exists_fixed_sign_measurable_set_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11345,7 +11880,18 @@ theorem exists_fixed_sign_measurable_set_of_unit_localL2_dirichlet_tendsto_zero_
   intro n x hxA
   exact hlower n x hxA
 
-/-- Finite-energy version of fixed-sign compact extraction. -/
+/--
+%%handwave
+name:
+  Fixed-sign lower bound on a compact set
+statement:
+  Under the normalized vanishing-energy hypotheses, there are a compact
+  \(L\) of positive measure, \(\rho>0\), \(s=\pm1\), and a subsequence with
+  \(sZ_n\ge\rho\) on \(L\).
+proof:
+  Obtain the bound on a measurable finite positive-measure set, then use inner
+  regularity to choose a positive-measure compact subset.
+-/
 theorem exists_fixed_sign_compact_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11385,7 +11931,18 @@ theorem exists_fixed_sign_compact_of_unit_localL2_dirichlet_tendsto_zero_on_relc
     ⟨L, hL_compact, hL_pos, ρ, hρ, s, hsign, φ, hφ,
       fun n x hxL ↦ hlower n x (hLA hxL)⟩
 
-/-- Finite-energy version of the unit-local-mass capacity extraction. -/
+/--
+%%handwave
+name:
+  Positive-measure zero-capacity compact set from normalized vanishing energy
+statement:
+  If \(Z_n\in W^{1,2}_0(X)\) has unit local \(L^2\)-mass on
+  \(\overline Q\), integrable gradient energy, and Dirichlet energy tending to
+  zero, then some compact \(L\) has positive measure and capacity zero.
+proof:
+  Extract a fixed signed lower bound on a positive-measure compact set and
+  apply [the construction of arbitrarily small-energy capacity competitors](lean:capacity_competitors_of_fixed_sign_lower_bound_and_dirichlet_tendsto_zero).
+-/
 theorem exists_compact_zero_capacity_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11415,7 +11972,18 @@ theorem exists_compact_zero_capacity_of_unit_localL2_dirichlet_tendsto_zero_on_r
       capacity_competitors_of_fixed_sign_lower_bound_and_dirichlet_tendsto_zero
         (g := g) Z hZ_energy hρ hsign hφ hlower⟩
 
-/-- Finite-energy version of the normalized Rellich-to-capacity contradiction. -/
+/--
+%%handwave
+name:
+  Zero-capacity compact set from a vanishing energy-to-mass ratio
+statement:
+  If \(H_n\) has positive local \(L^2(\overline Q)\)-mass and
+  \(\mathcal E(H_n)/\lVert H_n\rVert_{L^2(\overline Q)}^2\to0\), then some
+  positive-measure compact set has capacity zero.
+proof:
+  Normalize each \(H_n\) to unit local mass, obtaining a sequence of vanishing
+  energy, and apply the normalized extraction theorem.
+-/
 theorem exists_compact_zero_capacity_of_positive_localL2_ratio_tendsto_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11446,7 +12014,17 @@ theorem exists_compact_zero_capacity_of_positive_localL2_ratio_tendsto_on_relcom
     exists_compact_zero_capacity_of_unit_localL2_dirichlet_tendsto_zero_on_relcompact_open_of_integrable
       (g := g) hQ_open hQ_compact Z hZ_unit hZ_int hZ_energy
 
-/-- Finite-energy version of the bad-sequence Rellich-to-capacity contradiction. -/
+/--
+%%handwave
+name:
+  Zero-capacity compact set from a bad local \(L^2\) sequence
+statement:
+  If \(n\mathcal E(H_n)<\lVert H_n\rVert_{L^2(\overline Q)}^2\) for all \(n\),
+  then some compact set of positive measure has capacity zero.
+proof:
+  Shift the sequence by one index; its energy-to-local-mass ratio tends to
+  zero, so apply the vanishing-ratio capacity theorem.
+-/
 theorem exists_compact_zero_capacity_of_bad_localL2_sequence_on_relcompact_open_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11477,7 +12055,19 @@ theorem exists_compact_zero_capacity_of_bad_localL2_sequence_on_relcompact_open_
           bad_localL2_sequence_shifted_dirichlet_div_localL2_tendsto_zero
             (g := g) (K := closure Q) H hH)
 
-/-- Finite-energy version of failed local control on a relatively compact open set. -/
+/--
+%%handwave
+name:
+  Failure of local \(L^2\) control produces a zero-capacity compact set
+statement:
+  If no constant \(P\ge0\) bounds
+  \(\lVert h\rVert_{L^2(\overline Q)}^2\le P\mathcal E(h)\) for all
+  finite-energy \(h\in W^{1,2}_0(X)\), then some positive-measure compact set
+  has capacity zero.
+proof:
+  Failure of the estimate yields a bad sequence with arbitrarily large
+  mass-to-energy ratio; apply the bad-sequence capacity theorem.
+-/
 theorem exists_compact_zero_capacity_of_relcompact_open_no_localL2_control_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]
@@ -11501,7 +12091,18 @@ theorem exists_compact_zero_capacity_of_relcompact_open_no_localL2_control_of_in
     exists_compact_zero_capacity_of_bad_localL2_sequence_on_relcompact_open_of_integrable
       (g := g) hQ_open hQ_compact H hH_int hH
 
-/-- Finite-energy version of failed compact local control. -/
+/--
+%%handwave
+name:
+  Failure of compact local \(L^2\) control produces zero capacity
+statement:
+  Let \(K\) be compact. If no finite constant controls the \(L^2(K)\)-mass of
+  all finite-energy zero-trace Sobolev functions by their Dirichlet energy,
+  then some compact set of positive measure has capacity zero.
+proof:
+  Enlarge \(K\) to a relatively compact open neighborhood on which local
+  control still fails, then apply the relatively compact open-set theorem.
+-/
 theorem exists_compact_subset_zero_capacity_of_no_localL2_control_of_integrable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X] [SecondCountableTopology X] [ComplexOneManifold X]

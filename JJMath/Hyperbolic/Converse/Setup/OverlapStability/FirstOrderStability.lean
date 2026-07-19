@@ -288,35 +288,6 @@ def pointedHyperbolicLocalChartRealMobiusTransitionOneJetLocalPersistenceTheorem
   exact ⟨hzFirst.value_eq, hzFirst⟩
 
 /--
-Pointwise first-order-only persistence: a frame match at a point supplies the
-pointed comparison at that same point, and first-order local persistence then
-propagates both the value equation and frame match nearby.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_firstOrderMatch_persists_atPoint_of_firstOrderLocalPersistence
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hLocal :
-      PointedHyperbolicLocalChartRealMobiusTransitionFirstOrderMatchLocalPersistenceTheorem
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z := by
-  let hpoint : HyperbolicLocalChartPointedRealMobiusTransition U V A y :=
-    { mem_left := hyFirst.mem_left
-      mem_right := hyFirst.mem_right
-      value_match := hyFirst.value_eq
-      first_order_match := hyFirst }
-  exact
-    pointedHyperbolicLocalChartRealMobiusTransitionOneJetLocalPersistenceTheorem_of_firstOrderLocalPersistence
-      hLocal g U V A y hpoint y hyFirst.mem_left hyFirst.mem_right
-      hyFirst.value_eq hyFirst
-
-/--
 Openness of the value equality locus and openness of the first-order match
 locus imply openness of the one-jet equality locus.
 -/
@@ -436,29 +407,6 @@ def pointedHyperbolicLocalChartRealMobiusTransitionFirstOrderMatchLocalPersisten
     pointedHyperbolicLocalChartRealMobiusTransitionFirstOrderMatchLocalPersistenceTheorem_of_firstOrderMatchSetOpen⟩
 
 /--
-Pointwise first-order-only persistence from openness of the first-order match
-locus.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_firstOrderMatch_persists_atPoint_of_firstOrderMatchSetOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hOpen :
-      PointedHyperbolicLocalChartRealMobiusTransitionFirstOrderMatchSetIsOpenTheorem
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_firstOrderMatch_persists_atPoint_of_firstOrderLocalPersistence
-    (pointedHyperbolicLocalChartRealMobiusTransitionFirstOrderMatchLocalPersistenceTheorem_of_firstOrderMatchSetOpen
-      hOpen)
-    hyFirst
-
-/--
 Value and first-order local persistence together make the one-jet equality
 locus open.
 -/
@@ -531,8 +479,12 @@ def HyperbolicLocalChartHolomorphicLocalIsometryFieldsHoldTheorem
       U.pulls_back_metric_on_domain
 
 /--
-The lightweight `HyperbolicLocalChart` record stores concrete proofs of the
-three local-isometry fields in its coordinate package.
+%%handwave
+name: Analytic local-isometry properties of a hyperbolic chart
+statement:
+  Every hyperbolic local chart is holomorphic on its domain, has nonvanishing complex derivative there, and pulls the given conformal metric back from the Poincare metric.
+proof:
+  These three properties are precisely the holomorphicity, local-biholomorphism, and metric-pullback data carried by the local-isometry package of the chart.
 -/
 theorem hyperbolicLocalChartHolomorphicLocalIsometryFieldsHoldTheorem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] :
@@ -542,70 +494,6 @@ theorem hyperbolicLocalChartHolomorphicLocalIsometryFieldsHoldTheorem
     ⟨U.local_isometry.holomorphic_on_domain,
       U.local_isometry.local_biholomorph_on_domain,
       U.local_isometry.pulls_back_metric_on_domain⟩
-
-/--
-For a chart obtained from an explicit upper-half-plane Schwarzian branch over
-a local metric formula, the stored local-isometry fields hold once the branch
-holomorphicity field holds.
-
-The local-biholomorphism and Poincare pullback parts are already concrete in
-the branch package: nonvanishing follows from the projective derivative field,
-and the pullback identity is the density formula used to build the developing
-solution.
--/
-theorem LocalUpperHalfPlaneDevelopingMap.toLocalLiouvilleDevelopingSolutionOfMetricFormula_hyperbolicLocalChart_fieldsHold
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X} {F : LocalLiouvilleMetricFormula X g}
-    {S : LocalSchwarzianData F.conformalFactor}
-    (H : LocalUpperHalfPlaneDevelopingMap S)
-    (hImage : ∀ x, x ∈ F.domain → F.coordinate x ∈ H.domain)
-    (hHol : LocalUpperHalfPlaneMapHolomorphicOn H.domain H.upperHalfPlaneMap) :
-    let L := H.toLocalLiouvilleDevelopingSolutionOfMetricFormula (F := F) hImage
-    L.toHyperbolicLocalChart.holomorphic_on_domain ∧
-      L.toHyperbolicLocalChart.local_biholomorph_on_domain ∧
-        L.toHyperbolicLocalChart.pulls_back_metric_on_domain := by
-  intro L
-  constructor
-  · exact hHol
-  constructor
-  · intro x hx
-    have hxF : x ∈ F.domain := by
-      simpa [L, LocalUpperHalfPlaneDevelopingMap.toLocalLiouvilleDevelopingSolutionOfMetricFormula]
-        using hx
-    have hxH : F.coordinate x ∈ H.domain := by
-      exact hImage x hxF
-    have hne :
-        deriv (fun w : ℂ ↦ (H.upperHalfPlaneMap w : ℂ)) (F.coordinate x) ≠ 0 := by
-      rw [H.upperHalfPlane_deriv_eq_projectiveDeriv (F.coordinate x) hxH]
-      exact H.projective.affineMapDeriv_ne_zero (F.coordinate x) hxH
-    simpa [L, LocalUpperHalfPlaneDevelopingMap.toLocalLiouvilleDevelopingSolutionOfMetricFormula]
-      using hne
-  · exact UpperHalfPlanePullbackFormula.toHyperbolicLocalChart_pulls_back_metric_on_domain
-      L.pullbackFormula.toUpperHalfPlanePullbackFormula
-
-/--
-For one of the selected pointed surface Schwarzian branches, the induced
-hyperbolic local chart satisfies the stored local-isometry fields once the
-selected upper-half-plane branch holomorphicity field holds.
--/
-theorem SurfaceSchwarzianPointedBranchPreData.solutionAt_hyperbolicLocalChart_fieldsHold_of_branchHolomorphic
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X} {A : LocalLiouvilleMetricFormulaAtlas X g}
-    (B : SurfaceSchwarzianPointedBranchPreData A) (x : X)
-    (hHol :
-      LocalUpperHalfPlaneMapHolomorphicOn
-        (B.branchAt x).domain (B.branchAt x).upperHalfPlaneMap) :
-    ((B.solutionAt x).toHyperbolicLocalChart).holomorphic_on_domain ∧
-      ((B.solutionAt x).toHyperbolicLocalChart).local_biholomorph_on_domain ∧
-        ((B.solutionAt x).toHyperbolicLocalChart).pulls_back_metric_on_domain := by
-  simpa [SurfaceSchwarzianPointedBranchPreData.solutionAt] using
-    LocalUpperHalfPlaneDevelopingMap.toLocalLiouvilleDevelopingSolutionOfMetricFormula_hyperbolicLocalChart_fieldsHold
-      (B.branchAt x)
-      (F := B.restrictedFormulaAt x)
-      (by
-        intro y hy
-        exact hy.2)
-      hHol
 
 /--
 Holomorphicity-field target for the selected upper-half-plane branches in a
@@ -1145,10 +1033,12 @@ def pointedHyperbolicLocalChartRealMobiusTransitionOneJetLocalPersistenceTheorem
     exact hzE
 
 /--
-Pointwise form of one-jet local persistence: if the value and oriented
-first-order frame agree at a point of the overlap, then they agree on a
-surface-open neighborhood of that point, after restricting back to the
-overlap.
+%%handwave
+name: Local persistence of a real-Mobius one-jet from openness
+statement:
+  Suppose the locus where a fixed real Mobius transformation \(A\) matches the value and oriented first-order data of hyperbolic local charts \(U,V\) is open in their overlap. If the match holds at \(y\) and \(A\) is the transformation selected by a pointed comparison, then there is an open surface neighborhood \(W\) of \(y\) on which both matching conditions hold at every point of \(W\cap\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  Openness of the equality locus gives one-jet local persistence in the overlap subspace. Apply that persistence statement to the given pointed comparison and the matching point \(y\).
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_oneJetEqualitySetOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1173,13 +1063,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_
     hOpen g U V A x₀ hpoint y hyU hyV hyValue hyFirst
 
 /--
-The same pointwise cross-chart persistence with the pointed transition taken
-at the point under consideration.
-
-This is the literal local uniqueness form: if two hyperbolic local charts
-agree in value and oriented first-order frame at a point of their overlap,
-then that one-jet agreement persists on a surface-open neighborhood of the
-point, after restricting back to the overlap.
+%%handwave
+name: At-point persistence of a real-Mobius one-jet from openness
+statement:
+  Suppose the real-Mobius one-jet equality locus of two hyperbolic local charts is open. If \(y\) belongs to both chart domains and \(V(y)=A(U(y))\) with matching oriented first-order data, then these two conditions persist on an open surface neighborhood of \(y\) inside the common domain.
+proof:
+  Package the domain memberships, value equality, and first-order equality at \(y\) as the pointed comparison based at \(y\), then apply pointwise persistence from openness.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1209,103 +1098,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_
       hOpen hpoint hyU hyV hyValue hyFirst
 
 /--
-Concrete-coordinate form of the at-point cross-chart persistence theorem.
-
-If pointed coordinate derivative data are available for local charts, then a
-value match plus the concrete coordinate-derivative chain-rule equality at a
-point supplies the abstract oriented-frame match required by the one-jet
-local uniqueness theorem.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hData : HyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem X)
-    (hOpen :
-      PointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z := by
-  rcases hData g U y hyU with ⟨DU⟩
-  rcases hData g V y hyV with ⟨DV⟩
-  exact
-    pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-      hOpen hyU hyV hyValue
-      (HyperbolicLocalChartPointedFirstOrderMatch_of_concreteFirstOrderMatch
-        DU DV hyValue hyFirst)
-
-/--
-Concrete-coordinate at-point persistence from the raw derivative-nonzero and
-Poincare pullback squared-density inputs.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_pullbackSquaredDensity_oneJetEqualitySetOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hDeriv : HyperbolicLocalChartCoordinateDerivativeNonzeroTheorem X)
-    (hPull : HyperbolicLocalChartPullbackSquaredDensityFormulaTheorem X)
-    (hOpen :
-      PointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (hyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem_of_pullbackSquaredDensityFormula
-      hDeriv hPull)
-    hOpen hyU hyV hyValue hyFirst
-
-/--
-Concrete-coordinate at-point persistence from the Poincare pullback
-squared-density formula alone; derivative nonvanishing is forced by positive
-source density.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_pullbackSquaredDensityFormula_oneJetEqualitySetOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hPull : HyperbolicLocalChartPullbackSquaredDensityFormulaTheorem X)
-    (hOpen :
-      PointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (hyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem_of_pullbackSquaredDensityFormula_proved
-      hPull)
-    hOpen hyU hyV hyValue hyFirst
-
-/--
-Canonical-frame at-point persistence from one-jet equality-locus openness.
-
-The canonical predicate already includes the overlap membership, the value
-equation, and the normalized coordinate-derivative frame relation.
+%%handwave
+name: Persistence of canonical first-order matching from one-jet openness
+statement:
+  Suppose the real-Mobius one-jet equality locus is open. If two hyperbolic local charts have a canonical normalized coordinate-frame match with \(A\) at \(y\), then on some open neighborhood of \(y\) their values and intrinsic oriented first-order data continue to match through \(A\) wherever both charts are defined.
+proof:
+  The canonical frame data contain both domain memberships and the value equation, and they induce the intrinsic first-order match. Apply at-point persistence of the one-jet equality.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1331,401 +1129,6 @@ theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch
       hyCanon'.value_eq
       (HyperbolicLocalChartPointedFirstOrderMatch_of_canonical hyCanon')
 
-/--
-Pointwise cross-chart persistence, proved from the open-loci form of the
-general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {x₀ y : X}
-    (hpoint : HyperbolicLocalChartPointedRealMobiusTransition U V A x₀)
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartOpenLoci
-      h)
-    hpoint hyU hyV hyValue hyFirst
-
-/--
-At-point cross-chart persistence, proved from the open-loci form of the
-general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartOpenLoci
-      h)
-    hyU hyV hyValue hyFirst
-
-/--
-Concrete-coordinate at-point cross-chart persistence, proved from the
-open-loci form of the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hData : HyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem X)
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    hData
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartOpenLoci
-      h)
-    hyU hyV hyValue hyFirst
-
-/--
-Concrete-coordinate at-point cross-chart persistence from raw derivative and
-pullback inputs, proved from the open-loci form of the general one-jet
-argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_pullbackSquaredDensity_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hDeriv : HyperbolicLocalChartCoordinateDerivativeNonzeroTheorem X)
-    (hPull : HyperbolicLocalChartPullbackSquaredDensityFormulaTheorem X)
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_crossChartOpenLoci
-    (hyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem_of_pullbackSquaredDensityFormula
-      hDeriv hPull)
-    h hyU hyV hyValue hyFirst
-
-/--
-Concrete-coordinate at-point cross-chart persistence from the Poincare
-pullback squared-density formula and the open-loci form of the one-jet
-argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_pullbackSquaredDensityFormula_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hPull : HyperbolicLocalChartPullbackSquaredDensityFormulaTheorem X)
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_crossChartOpenLoci
-    (hyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem_of_pullbackSquaredDensityFormula_proved
-      hPull)
-    h hyU hyV hyValue hyFirst
-
-/--
-Canonical-frame at-point cross-chart persistence from the open-loci form of
-the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_crossChartOpenLoci
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetOpenLociTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyCanon : HyperbolicLocalChartCanonicalPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartOpenLoci
-      h)
-    hyCanon
-
-/--
-Pointwise cross-chart persistence, proved from the local-persistence form of
-the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_crossChartLocalPersistence
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {x₀ y : X}
-    (hpoint : HyperbolicLocalChartPointedRealMobiusTransition U V A x₀)
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartLocalPersistence
-      h)
-    hpoint hyU hyV hyValue hyFirst
-
-/--
-At-point cross-chart persistence, proved from the local-persistence form of
-the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_crossChartLocalPersistence
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartLocalPersistence
-      h)
-    hyU hyV hyValue hyFirst
-
-/--
-Concrete-coordinate at-point cross-chart persistence, proved from the
-local-persistence form of the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_crossChartLocalPersistence
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hData : HyperbolicLocalChartsHavePointedCoordinateDerivativeDataTheorem X)
-    (h :
-      HyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartConcreteFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndConcreteFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    hData
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartLocalPersistence
-      h)
-    hyU hyV hyValue hyFirst
-
-/--
-Canonical-frame at-point cross-chart persistence from the local-persistence
-form of the general one-jet argument.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_crossChartLocalPersistence
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyCanon : HyperbolicLocalChartCanonicalPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_crossChartLocalPersistence
-      h)
-    hyCanon
-
-/--
-Pointwise cross-chart persistence obtained from the actual holomorphic
-local-isometry component-stability theorems.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_holomorphicLocalIsometryComponentStability
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartHolomorphicLocalIsometryComponentStabilityTheorems
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {x₀ y : X}
-    (hpoint : HyperbolicLocalChartPointedRealMobiusTransition U V A x₀)
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_crossChartLocalPersistence
-    (hyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems_of_holomorphicLocalIsometryComponentStability
-      h)
-    hpoint hyU hyV hyValue hyFirst
-
-/--
-At-point cross-chart persistence obtained from the actual holomorphic
-local-isometry component-stability theorems.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_holomorphicLocalIsometryComponentStability
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartHolomorphicLocalIsometryComponentStabilityTheorems
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_crossChartLocalPersistence
-    (hyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems_of_holomorphicLocalIsometryComponentStability
-      h)
-    hyU hyV hyValue hyFirst
-
-/--
-Canonical-frame at-point persistence obtained from the actual holomorphic
-local-isometry component-stability theorems.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_holomorphicLocalIsometryComponentStability
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartHolomorphicLocalIsometryComponentStabilityTheorems
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyCanon : HyperbolicLocalChartCanonicalPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_canonicalFirstOrderMatch_persists_atPoint_of_crossChartLocalPersistence
-    (hyperbolicLocalChartCrossChartOneJetLocalPersistenceTheorems_of_holomorphicLocalIsometryComponentStability
-      h)
-    hyCanon
-
-/--
-Pointwise cross-chart persistence obtained from direct one-jet local stability
-for holomorphic local isometries.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_holomorphicLocalIsometryOneJetStability
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartHolomorphicLocalIsometryOneJetStabilityTheorems
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {x₀ y : X}
-    (hpoint : HyperbolicLocalChartPointedRealMobiusTransition U V A x₀)
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_holomorphicLocalIsometryOneJetStability
-      h)
-    hpoint hyU hyV hyValue hyFirst
-
-/--
-At-point cross-chart persistence obtained from direct one-jet local stability
-for holomorphic local isometries.
--/
-theorem pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_holomorphicLocalIsometryOneJetStability
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (h :
-      HyperbolicLocalChartHolomorphicLocalIsometryOneJetStabilityTheorems
-        X)
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {A : RealMobiusRepresentative} {y : X}
-    (hyU : y ∈ U.domain) (hyV : y ∈ V.domain)
-    (hyValue :
-      V.toUpperHalfPlane y =
-        realMobiusRepresentativeAction A (U.toUpperHalfPlane y))
-    (hyFirst : HyperbolicLocalChartPointedFirstOrderMatch U V A y) :
-    ∃ W : Set X,
-      IsOpen W ∧ y ∈ W ∧
-        ∀ z, z ∈ W → z ∈ U.domain → z ∈ V.domain →
-          V.toUpperHalfPlane z =
-              realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
-            HyperbolicLocalChartPointedFirstOrderMatch U V A z :=
-  pointedHyperbolicLocalChartRealMobiusTransition_valueAndFirstOrderMatch_persists_atPoint_of_oneJetEqualitySetOpen
-    (pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_holomorphicLocalIsometryOneJetStability
-      h)
-    hyU hyV hyValue hyFirst
 
 end HyperbolicMetric
 

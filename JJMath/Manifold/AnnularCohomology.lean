@@ -31,6 +31,18 @@ def annularPunctureOpen (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) :=
   ⟨(annularPunctureChart v).source, (annularPunctureChart v).open_source⟩
 
+/--
+%%handwave
+name:
+  The punctured-cylinder chart belongs to the product atlas
+statement:
+  For \(v\in S^1\), the product of stereographic projection away from \(v\)
+  with the identity chart of \(\mathbb R\) is a chart in the standard product
+  atlas of \(S^1\times\mathbb R\).
+proof:
+  Stereographic projection is a standard circle chart, the identity is a
+  standard real chart, and the product atlas contains their product.
+-/
 theorem annularPunctureChart_mem_atlas (v : Circle) :
     annularPunctureChart v ∈
       atlas (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) (Circle × ℝ) := by
@@ -40,7 +52,20 @@ theorem annularPunctureChart_mem_atlas (v : Circle) :
   exact ⟨stereographic' 1 v, ⟨v, rfl⟩,
     OpenPartialHomeomorph.refl ℝ, by simp, rfl⟩
 
-/-- A once-punctured cylinder is diffeomorphic to a nonempty convex open plane. -/
+/--
+%%handwave
+name:
+  A once-punctured cylinder is diffeomorphic to a convex plane
+statement:
+  For every \(v\in S^1\), the open cylinder
+  \((S^1\setminus\{v\})\times\mathbb R\) is diffeomorphic to a nonempty convex
+  open subset of \(\mathbb R^2\), in fact to all of \(\mathbb R^2\).
+proof:
+  Use the product of stereographic projection
+  \(S^1\setminus\{v\}\cong\mathbb R\) with the identity on \(\mathbb R\).
+  Its extended chart has full target, giving the desired restriction
+  diffeomorphism.
+-/
 theorem annularPuncture_diffeomorphic_convex (v : Circle) :
     ∃ V : TopologicalSpace.Opens (EuclideanSpace ℝ (Fin 1) × ℝ),
       Convex ℝ (V : Set (EuclideanSpace ℝ (Fin 1) × ℝ)) ∧
@@ -62,7 +87,18 @@ theorem annularPuncture_diffeomorphic_convex (v : Circle) :
     simp [annularPunctureChart, AnnularCylinderModel]
     exact Set.mem_univ y
 
-/-- The first de Rham cohomology of a once-punctured cylinder vanishes. -/
+/--
+%%handwave
+name:
+  Vanishing of first de Rham cohomology of a punctured cylinder
+statement:
+  For every \(v\in S^1\), the first de Rham cohomology of
+  \((S^1\setminus\{v\})\times\mathbb R\) is trivial.
+proof:
+  The punctured cylinder is diffeomorphic to a nonempty convex open subset of
+  \(\mathbb R^2\).  The Poincaré lemma gives vanishing there, and de Rham
+  cohomology is invariant under diffeomorphism.
+-/
 theorem annularPuncture_deRhamH1_subsingleton (v : Circle) :
     Subsingleton
       (DeRhamCohomology (I := AnnularCylinderModel)

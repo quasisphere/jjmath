@@ -80,6 +80,15 @@ theorem cotangent_inner_toDual_eq_eval (ξ : ℂ →L[ℝ] ℝ) (v : ℂ) :
       ((InnerProductSpace.toDual ℝ ℂ).symm ((InnerProductSpace.toDual ℝ ℂ) v)) = ξ v
   simp
 
+/--
+%%handwave
+name:
+  Riesz pairing with a scaled dual vector
+statement:
+  For a real-linear functional \(\xi\) on \(\mathbb C\), scalar \(a\), and vector \(v\), \(\langle\xi,a\,v^\flat\rangle=a\,\xi(v)\).
+proof:
+  Use the Riesz isometry, linearity in the second argument, and the defining identity between a functional and its dual vector.
+-/
 private theorem cotangent_inner_smul_toDual_eq_mul_eval
     (ξ : ℂ →L[ℝ] ℝ) (a : ℝ) (v : ℂ) :
     inner ℝ ξ (a • (InnerProductSpace.toDual ℝ ℂ) v) = a * ξ v := by
@@ -142,6 +151,8 @@ name:
   The zero section is square-integrable
 statement:
   The zero section of a continuous Hilbert bundle is square-integrable.
+proof:
+  The zero total-space section is measurable, its fiberwise square norm is identically zero, and the zero function is integrable.
 -/
 theorem hilbertBundleSectionMemL2_zero
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -190,6 +201,8 @@ statement:
   If two sections of a Borel vector bundle are almost everywhere Borel
   measurable, then their fiberwise pair is almost everywhere Borel measurable
   as a section of the fiberwise product bundle.
+proof:
+  Combine the two almost-everywhere measurable total-space sections using the continuous fiberwise pairing map.
 -/
 theorem hilbertBundleSection_aemeasurable_pair
     {X F : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -356,6 +369,8 @@ statement:
   In a continuous real vector bundle, the fiberwise negative of an almost
   everywhere Borel measurable section is again almost everywhere Borel
   measurable.
+proof:
+  Compose the measurable total-space section with continuous fiberwise negation.
 -/
 theorem hilbertBundleSection_aemeasurable_neg
     {X F : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -402,6 +417,8 @@ statement:
   In a continuous real vector bundle, multiplying an almost everywhere Borel
   measurable section by a fixed scalar again gives an almost everywhere Borel
   measurable section.
+proof:
+  Compose the section with continuous fiberwise multiplication by the fixed scalar.
 -/
 theorem hilbertBundleSection_aemeasurable_smul
     {X F : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -495,6 +512,8 @@ name:
 statement:
   In a continuous Hilbert bundle, the pointwise inner product of two almost
   everywhere Borel measurable sections is almost everywhere Borel measurable.
+proof:
+  Pair the two measurable total-space sections and then apply the continuous fiberwise inner product.
 -/
 theorem hilbertBundleSection_aemeasurable_inner
     {X F : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
@@ -565,6 +584,8 @@ name:
 statement:
   The pointwise sum of two square-integrable sections of a continuous Hilbert
   bundle is square-integrable.
+proof:
+  The sum section is measurable.  Its squared norm is bounded by twice the sum of the two squared norms, which is integrable.
 -/
 theorem hilbertBundleSectionMemL2_add
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -623,6 +644,8 @@ name:
 statement:
   The pointwise negative of a square-integrable section of a continuous
   Hilbert bundle is square-integrable.
+proof:
+  Negation preserves measurability and the fiberwise squared norm, hence preserves square-integrability.
 -/
 theorem hilbertBundleSectionMemL2_neg
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -651,6 +674,8 @@ name:
 statement:
   Multiplying a square-integrable section of a continuous Hilbert bundle by a
   fixed real scalar gives another square-integrable section.
+proof:
+  Scalar multiplication preserves measurability and multiplies the fiberwise squared norm by the constant square of the scalar.
 -/
 theorem hilbertBundleSectionMemL2_smul
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -689,6 +714,8 @@ name:
 statement:
   A natural multiple of a square-integrable section of a continuous Hilbert
   bundle is square-integrable.
+proof:
+  Regard multiplication by a natural number as fiberwise scalar multiplication and apply scalar stability.
 -/
 theorem hilbertBundleSectionMemL2_nsmul
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -718,6 +745,8 @@ name:
 statement:
   An integer multiple of a square-integrable section of a continuous Hilbert
   bundle is square-integrable.
+proof:
+  Regard multiplication by an integer as fiberwise real scalar multiplication and apply scalar stability.
 -/
 theorem hilbertBundleSectionMemL2_zsmul
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -973,6 +1002,8 @@ name:
 statement:
   Almost-everywhere equal square-integrable sections have the same
   \(L^2\)-norm.
+proof:
+  Almost-everywhere equality makes the two fiberwise squared norms equal almost everywhere, so their integrals and square roots coincide.
 -/
 theorem squareIntegrableHilbertBundleSectionL2Norm_congr_ae
     {X F : Type} [TopologicalSpace X] [MeasurableSpace X]
@@ -993,6 +1024,8 @@ name:
   The zero section has zero \(L^2\)-norm
 statement:
   The \(L^2\)-norm of the zero section of a Hilbert bundle is zero.
+proof:
+  The fiber norm of the zero section is zero everywhere, so its squared norm integral and square root vanish.
 -/
 theorem squareIntegrableHilbertBundleSectionL2Norm_zero
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1025,6 +1058,8 @@ name:
 statement:
   The \(L^2\)-norm of the negative of a square-integrable section is the same
   as the \(L^2\)-norm of the section.
+proof:
+  Fiberwise negation preserves the norm, hence it leaves the integrated square norm unchanged.
 -/
 theorem squareIntegrableHilbertBundleSectionL2Norm_neg
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1055,6 +1090,8 @@ statement:
   The \(L^2\)-norm of a scalar multiple of a square-integrable Hilbert-bundle
   section is the absolute value of the scalar times the \(L^2\)-norm of the
   section.
+proof:
+  Pull the constant scalar square out of the integral and use that the square root of the scalar square is its absolute value.
 -/
 theorem squareIntegrableHilbertBundleSectionL2Norm_smul
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1107,6 +1144,8 @@ name:
 statement:
   The \(L^2\)-norm of a square-integrable Hilbert-bundle section is the scalar
   \(L^2\)-norm of its pointwise fiber norm.
+proof:
+  Rewrite the fiberwise square norm as the square of the ordinary norm and compare the defining integral formulas for the two real norms.
 -/
 theorem squareIntegrableHilbertBundleSectionL2Norm_eq_lpNorm_norm
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1157,6 +1196,8 @@ name:
 statement:
   The pointwise fiber norm of a square-integrable Hilbert-bundle section is a
   scalar \(L^2\)-function.
+proof:
+  Strong measurability follows from the measurable bundle section and continuity of the norm; integrability of its square is precisely the bundle square-integrability assumption.
 -/
 theorem squareIntegrableHilbertBundleSection_norm_memLp
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -2213,6 +2254,15 @@ private theorem l2HilbertBundle_mk_finset_sum
       (s a).toSection x + ∑ i ∈ K, (s i).toSection x
     simp [Finset.sum_insert, haK]
 
+/--
+%%handwave
+name:
+  The zero representative defines the zero bundle \(L^2\) class
+statement:
+  In the Hilbert structure on square-integrable bundle sections, the class of the pointwise zero section is the zero vector.
+proof:
+  Unfold the quotient operations; the two representatives agree pointwise.
+-/
 theorem l2HilbertBundle_mk_zero
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -2250,6 +2300,15 @@ noncomputable def squareIntegrableHilbertBundleSectionAdd
   ⟨s.toSection + t.toSection,
     hilbertBundleSectionMemL2_add (I := I) (G := G) hG_inner μ s.memL2 t.memL2⟩
 
+/--
+%%handwave
+name:
+  Addition of bundle \(L^2\) representatives
+statement:
+  For square-integrable bundle sections (s,t), the class of (s+t) equals the sum of their classes.
+proof:
+  Addition on the quotient is induced by pointwise fiberwise addition, so the representatives coincide.
+-/
 theorem l2HilbertBundle_mk_add
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -2287,6 +2346,15 @@ noncomputable def squareIntegrableHilbertBundleSectionSmul
   ⟨c • s.toSection,
     hilbertBundleSectionMemL2_smul (I := I) (G := G) hG_inner μ c s.memL2⟩
 
+/--
+%%handwave
+name:
+  Scalar multiplication of bundle \(L^2\) representatives
+statement:
+  For \(c\in\mathbb R\), the class of the section \(cs\) is \(c\) times the class of \(s\).
+proof:
+  Scalar multiplication on the quotient is induced by pointwise scalar multiplication.
+-/
 theorem l2HilbertBundle_mk_smul
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -2334,6 +2402,15 @@ private noncomputable def squareIntegrableHilbertBundleSectionSub
       hilbertBundleSectionMemL2_add (I := I) (G := G) hG_inner μ s.memL2
         (hilbertBundleSectionMemL2_neg (I := I) (G := G) hG_norm μ t.memL2)⟩
 
+/--
+%%handwave
+name:
+  Subtraction of bundle \(L^2\) representatives
+statement:
+  The class of the pointwise difference (s-t) equals the difference of the two bundle \(L^2\) classes.
+proof:
+  Rewrite subtraction as addition of the negative and use the representative formulas for addition and scalar multiplication.
+-/
 private theorem l2HilbertBundle_mk_sub
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -2355,6 +2432,15 @@ private theorem l2HilbertBundle_mk_sub
     l2HilbertBundleNormedAddCommGroup (I := I) (G := G) hG_inner μ
   rfl
 
+/--
+%%handwave
+name:
+  Norm of a represented bundle \(L^2\) section
+statement:
+  The norm of the class represented by \(s\) equals \(\big(\int \|s(x)\|_x^2\,d\mu\big)^{1/2}\).
+proof:
+  The quotient Hilbert norm is defined by the integrated fiberwise inner product; evaluating it on the diagonal gives the stated \(L^2\) norm.
+-/
 theorem l2HilbertBundle_norm_mk_eq_l2Norm
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -2375,6 +2461,15 @@ theorem l2HilbertBundle_norm_mk_eq_l2Norm
     l2HilbertBundleNormedAddCommGroup (I := I) (G := G) hG_inner μ
   rfl
 
+/--
+%%handwave
+name:
+  Extended norm of the pointwise fiber norm
+statement:
+  For a square-integrable bundle section \(s\), the extended \(L^2\)-norm of \(x\mapsto\|s(x)\|_x\) is the finite extended-real image of its real \(L^2\)-norm.
+proof:
+  Square both quantities, identify both with the integral of the fiberwise square norm, and use nonnegativity to take square roots.
+-/
 private theorem squareIntegrableHilbertBundleSection_eLpNorm_norm_eq_ofReal_l2Norm
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -3382,6 +3477,15 @@ statement:
     (I := I) (G := trivialHilbertBundleGeometry X E)
     (fun _ _ _ ↦ rfl) μ
 
+/--
+%%handwave
+name:
+  Distance between represented value sections
+statement:
+  For two square-integrable Hilbert-valued maps (w_1,w_2), the extended distance between their \(L^2\) classes is \(\operatorname{ofReal}|w_1-w_2|_{L^2}\).
+proof:
+  Express distance as the norm of the difference class and use the representative and norm formulas.
+-/
 private theorem valueL2Section_edist_mk_eq_ofReal_l2Norm_sub
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -3489,8 +3593,15 @@ theorem valueL2Section_tendsto_of_eLpNorm_sub_tendsto_zero
     (valueL2Section_edist_mk_eq_ofReal_l2Norm_sub
       (I := I) (X := X) (E := E) μ (u i) uLim).symm
 
-/-- Auxiliary form of the manifold differential \(L^2\) Hilbert-space theorem,
-with the continuous fiber Hilbert metric supplied explicitly. -/
+/--
+%%handwave
+name:
+  Hilbert structure on \(L^2\) differential sections
+statement:
+  A continuous Hilbert metric on the differential bundle induces a real Hilbert-space structure on its \(L^2\)-sections.
+proof:
+  Apply the Hilbert-space construction for \(L^2\)-sections of a continuous Hilbert bundle to the metric-induced fiber inner products.
+-/
 theorem manifoldDifferentialL2Sections_admit_hilbert_structure_of_metric
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -3680,6 +3791,15 @@ private noncomputable def squareIntegrableManifoldDifferentialFieldSub
     (G := manifoldDifferentialHilbertBundleGeometry (I := I) (X := X) (E := E) g)
     (fun _ _ _ ↦ rfl) μ w₁ w₂
 
+/--
+%%handwave
+name:
+  Distance between represented differential sections
+statement:
+  For square-integrable differential fields (A,B), the extended distance between their \(L^2\) classes is the finite extended-real image of the \(L^2\)-norm of (A-B).
+proof:
+  Use the general distance formula for represented Hilbert-bundle sections with the metric Hilbert--Schmidt fiber norm.
+-/
 private theorem manifoldDifferentialL2Section_edist_mk_eq_ofReal_l2Norm_sub
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4242,6 +4362,8 @@ name:
   Vector-valued weak derivative of zero on a manifold
 statement:
   The zero differential field is the weak derivative of the zero map.
+proof:
+  Both sides of every coordinate integration-by-parts identity are zero, and the zero integrands are integrable.
 -/
 theorem isWeakDerivativeOnManifoldBundle_zero
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -4507,6 +4629,15 @@ theorem smoothPositiveMeasureOnManifold_chart_volume_finite_of_compact
     Measure.restrict_eq_self MeasureTheory.volume hK_target
   exact (lt_top_iff_ne_top.1 (by simpa [ν, hνK_eq] using hνK_finite))
 
+/--
+%%handwave
+name:
+  Strong measurability of a square-integrable value representative
+statement:
+  A square-integrable section of a trivial Hilbert bundle is almost everywhere strongly measurable as an ordinary Hilbert-valued function.
+proof:
+  Compose the almost-everywhere strongly measurable total-space section with the continuous projection to the trivial fiber.
+-/
 private theorem squareIntegrableValueSection_aestronglyMeasurable
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4526,6 +4657,15 @@ private theorem squareIntegrableValueSection_aestronglyMeasurable
       (continuous_snd.comp (Bundle.Trivial.homeomorphProd X E).continuous)
   exact hsnd.comp_aestronglyMeasurable htotal
 
+/--
+%%handwave
+name:
+  A square-integrable value representative belongs to \(L^2\)
+statement:
+  Every square-integrable section of a trivial Hilbert bundle belongs to the ordinary Bochner space \(L^2(\mu;E)\).
+proof:
+  Combine strong measurability with finiteness of the \(L^2\)-norm of its pointwise norm.
+-/
 private theorem squareIntegrableValueSection_memLp
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4553,6 +4693,8 @@ name:
 statement:
   A square-integrable representative of a trivial Hilbert bundle section is
   an \(L^2\) map with respect to the underlying measure.
+proof:
+  Apply the preceding result that a square-integrable trivial-bundle representative is strongly measurable and has finite scalar norm.
 -/
 theorem SquareIntegrableValueSection.memLp
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -4566,6 +4708,15 @@ theorem SquareIntegrableValueSection.memLp
     MemLp w.toFunction 2 μ :=
   squareIntegrableValueSection_memLp (I := I) μ w
 
+/--
+%%handwave
+name:
+  Removing a density bounded below
+statement:
+  Let \(K\) be measurable and suppose \(0<c\le\delta\) almost everywhere on \(K\), with \(c<\infty\).  If \(f\in L^p((\delta\,d\nu)|_K)\), then \(f\in L^p(\nu|_K)\).
+proof:
+  The density bound gives \(\nu|_K\le c^{-1}(\delta\,d\nu)|_K\); monotonicity of \(L^p\)-membership under a bounded measure comparison proves the claim.
+-/
 private theorem memLp_of_withDensity_lower_bound_on_restrict
     {α E : Type} [MeasurableSpace α] [TopologicalSpace E] [ContinuousENorm E]
     {ν : Measure α} {δ : α → ℝ≥0∞} {K : Set α} {c : ℝ≥0∞}
@@ -4593,6 +4744,18 @@ private theorem memLp_of_withDensity_lower_bound_on_restrict
 
   exact hf.of_measure_le_smul (by simpa [ENNReal.inv_ne_top] using hc0) hmeasure_le
 
+/--
+%%handwave
+name:
+  \(L^2\)-norm comparison under a density lower bound
+statement:
+  If \(0<c\le\delta\) almost everywhere on a measurable \(K\), then
+  \[
+    \|f\|_{L^2(\nu|_K)}\le c^{-1/2}\|f\|_{L^2((\delta\,d\nu)|_K)}.
+  \]
+proof:
+  Use the measure inequality \(\nu|_K\le c^{-1}(\delta\,d\nu)|_K\) and the scaling formula for the extended \(L^2\)-norm.
+-/
 private theorem eLpNorm_two_of_withDensity_lower_bound_on_restrict_le
     {α E : Type} [MeasurableSpace α] [TopologicalSpace E] [ContinuousENorm E]
     {ν : Measure α} {δ : α → ℝ≥0∞} {K : Set α} {c : ℝ≥0∞}
@@ -4628,6 +4791,15 @@ private theorem eLpNorm_two_of_withDensity_lower_bound_on_restrict_le
           · rfl
           · exact ENNReal.inv_ne_zero.2 hctop
 
+/--
+%%handwave
+name:
+  Almost-everywhere equality for a smooth positive chart measure
+statement:
+  In a chart for a smooth positive measure, two coordinate functions agree almost everywhere for the pushed-forward surface measure exactly when they agree almost everywhere for Lebesgue measure on the chart target.
+proof:
+  The chart measure is a positive smooth density times Lebesgue measure, and a strictly positive density has exactly the same null sets.
+-/
 private theorem smoothPositiveMeasureOnManifold_chart_ae_eq
     {H X β : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4650,6 +4822,15 @@ private theorem smoothPositiveMeasureOnManifold_chart_ae_eq
       ne_of_gt (ENNReal.ofReal_pos.mpr (hρ_pos z hz))
   exact withDensity_ae_eq hρ_aemeas hρ_ne_zero
 
+/--
+%%handwave
+name:
+  Almost-everywhere measurability of an inverse chart
+statement:
+  For a smooth positive manifold measure, the inverse chart is almost everywhere measurable with respect to the chart pushforward measure.
+proof:
+  The inverse chart is measurable for restricted Lebesgue measure, and the chart pushforward is absolutely continuous with respect to that measure.
+-/
 private theorem smoothPositiveMeasureOnManifold_chart_symm_aemeasurable
     {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4668,6 +4849,15 @@ private theorem smoothPositiveMeasureOnManifold_chart_symm_aemeasurable
     exact withDensity_absolutelyContinuous _ _
   exact hsymm_vol.mono_ac h_ac
 
+/--
+%%handwave
+name:
+  Pushing a chart measure back through the inverse chart
+statement:
+  For a chart (e), pushing (e_ast\(mu|_{\mathrm{source}}\)) forward by (e^{-1}) recovers \(mu|_{\mathrm{source}}\).
+proof:
+  Compose the two almost-everywhere measurable maps and use the chart left-inverse identity on the source.
+-/
 private theorem smoothPositiveMeasureOnManifold_chart_map_symm_map
     {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4697,6 +4887,15 @@ private theorem smoothPositiveMeasureOnManifold_chart_map_symm_map
         Measure.map_congr hleft
     _ = μ.restrict e.source := by rw [Measure.map_id']
 
+/--
+%%handwave
+name:
+  Pulling almost-everywhere equality through an inverse chart
+statement:
+  If (f=g) almost everywhere on the manifold, then \(f\circ e^{-1}=g\circ e^{-1}\) almost everywhere for Lebesgue measure on the chart target.
+proof:
+  Restrict the original equality to the chart source, pull it through the inverse chart, and replace the chart measure by its equivalent positive-density Lebesgue measure.
+-/
 private theorem smoothPositiveMeasureOnManifold_chart_comp_symm_ae_eq
     {H X β : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4725,6 +4924,15 @@ private theorem smoothPositiveMeasureOnManifold_chart_comp_symm_ae_eq
   exact
     (smoothPositiveMeasureOnManifold_chart_ae_eq μ hμ e he).1 hmap_eq
 
+/--
+%%handwave
+name:
+  Lebesgue measure is dominated by a smooth positive chart measure
+statement:
+  On a chart target, restricted Lebesgue measure is absolutely continuous with respect to the pushforward of a smooth positive manifold measure.
+proof:
+  The pushforward has a smooth strictly positive density relative to Lebesgue measure, so every set null for it is Lebesgue-null.
+-/
 private theorem smoothPositiveMeasureOnManifold_chart_volume_ac_map
     {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4747,6 +4955,15 @@ private theorem smoothPositiveMeasureOnManifold_chart_volume_ac_map
       ne_of_gt (ENNReal.ofReal_pos.mpr (hρ_pos z hz))
   exact withDensity_absolutelyContinuous' hρ_aemeas hρ_ne_zero
 
+/--
+%%handwave
+name:
+  Strong measurability of a chart pullback
+statement:
+  If (f) is almost everywhere strongly measurable on the manifold and (K) lies in a chart target, then \(f\circ e^{-1}\) is almost everywhere strongly measurable for Lebesgue measure restricted to (K).
+proof:
+  Pull strong measurability through the inverse chart for the chart measure, transfer it by absolute continuity to Lebesgue measure, and restrict to (K).
+-/
 private theorem smoothPositiveMeasureOnManifold_chartPullback_aestronglyMeasurable
     {H X β : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4779,6 +4996,15 @@ private theorem smoothPositiveMeasureOnManifold_chartPullback_aestronglyMeasurab
     MeasureTheory.AEStronglyMeasurable.mono_ac hvol_ac hpull_ν
   exact hpull_target.mono_measure (Measure.restrict_mono hK le_rfl)
 
+/--
+%%handwave
+name:
+  Local \(L^2\) integrability of chart pullbacks
+statement:
+  If (f\in L^2(mu)) and (K) is compactly contained in a chart region, then (f\circ e^{-1}in L^2(K,dx)).
+proof:
+  The smooth positive chart density has a positive minimum on (K); remove that density using the resulting lower bound and the chart change-of-variables formula.
+-/
 private theorem smoothPositiveMeasureOnManifold_chartPullback_memLp_two_restrict_compact
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -4859,6 +5085,19 @@ private theorem smoothPositiveMeasureOnManifold_chartPullback_memLp_two_restrict
       hK_meas hc0 hctop hδ_lower hF_weighted_K
   simpa [Fpull, ν, Measure.restrict_restrict_of_subset hK_target] using hF_νK
 
+/--
+%%handwave
+name:
+  Uniform local chart pullback estimate
+statement:
+  For a compact \(K\) in a chart region there is \(C<\infty\) such that
+  \[
+    \|f\circ e^{-1}\|_{L^2(K,dx)}\le C\|f\|_{L^2\(\mu\)}
+  \]
+  for every almost everywhere strongly measurable \(f\).
+proof:
+  Take the positive minimum of the smooth chart density on (K), apply the density norm comparison, and use change of variables plus restriction monotonicity.
+-/
 private theorem smoothPositiveMeasureOnManifold_chartPullback_eLpNorm_two_restrict_compact_le
     {H X F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -5112,6 +5351,15 @@ theorem manifoldValueCompactlySupportedMultiplier_memLp_two_on_support
       hK_meas hc0 hctop hδ_lower hF_weighted_K
   simpa [F, K, ν, Measure.restrict_restrict_of_subset hK_target] using hF_νK
 
+/--
+%%handwave
+name:
+  Local chart estimate for Hilbert-valued manifold functions
+statement:
+  A Hilbert-valued \(L^2\) function obeys a uniform \(L^2\) pullback bound on every compact subset of a chart region.
+proof:
+  Apply the general smooth-positive-measure chart estimate to the canonical strongly measurable representative of the \(L^2\) function.
+-/
 private theorem manifoldValueChartPullback_eLpNorm_two_restrict_compact_le
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -5297,6 +5545,15 @@ theorem manifoldValueCompactlySupportedMultiplier_integrable
     (ν := MeasureTheory.volume) (Ω := Ω) (K := tsupport a)
     hF_memLp hK_finite hF_support (by simpa [Ω] using ha_support)
 
+/--
+%%handwave
+name:
+  Almost-everywhere congruence for compactly supported multiplier integrals
+statement:
+  Replacing an \(L^2\) manifold function by an almost-everywhere equal representative does not change its chart integral after multiplication by a fixed compactly supported coordinate factor.
+proof:
+  Pull the equality into the chart, multiply it pointwise by the fixed factor, and use congruence of the Bochner integral.
+-/
 private theorem manifoldValueCompactlySupportedMultiplier_integral_congr_ae
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
@@ -6080,6 +6337,15 @@ theorem manifoldDifferentialBundle_trivialization_eval_eq
   rw [Bundle.Trivialization.symmL_continuousLinearMapAt eT hyT ξ]
   simp [eE]
 
+/--
+%%handwave
+name:
+  Continuity of a coordinate tangent vector in the bundle
+statement:
+  For a fixed model vector \(u\), the total-space vector \(z\mapsto(e^{-1}(z),D(e^{-1})(z)u)\) is continuous on the chart target.
+proof:
+  This is the defining continuity of the tangent-bundle chart trivialization applied to the constant coordinate vector (u).
+-/
 private theorem manifoldChartCoordinateVector_continuousOn_id {H X : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
     [TopologicalSpace X] [ChartedSpace H X]
@@ -8412,6 +8678,15 @@ noncomputable def toLinearMapCLM :
     (ContinuousLinearMap.smulRightL ℝ ℂ E Complex.imCLM).comp
       (WithLp.sndL (p := (2 : ℝ≥0∞)) ℝ E E)
 
+/--
+%%handwave
+name:
+  Evaluation of the continuous map from coordinate pairs to linear maps
+statement:
+  The continuous linear realization of a coordinate differential pair \(Din E\times E\) has the same value as its underlying real-linear map.
+proof:
+  The continuous linear map is defined by packaging that underlying pointwise construction.
+-/
 @[simp]
 theorem toLinearMapCLM_apply
     (D : SurfaceDifferentialCoordinateHilbertFiber E) :
@@ -8432,12 +8707,33 @@ noncomputable def dualProjectionCLM (Λ : E →L[ℝ] ℝ) :
     SurfaceDifferentialCoordinateHilbertFiber E →L[ℝ] (ℂ →L[ℝ] ℝ) :=
   (ContinuousLinearMap.compL ℝ ℂ E ℝ Λ).comp toLinearMapCLM
 
+/--
+%%handwave
+name:
+  Dual projection of a coordinate differential
+statement:
+  For a functional \(\Lambda:E\to\mathbb R\), projecting a coordinate differential (D) gives the composite \(\Lambda\circ D\).
+proof:
+  Expand the continuous linear projection: it applies \(\Lambda\) to both coordinate components, which is precisely composition.
+-/
 @[simp]
 theorem dualProjectionCLM_apply
     (Λ : E →L[ℝ] ℝ) (D : SurfaceDifferentialCoordinateHilbertFiber E) :
     dualProjectionCLM Λ D = Λ.comp (toLinearMap D) := by
   simp [dualProjectionCLM]
 
+/--
+%%handwave
+name:
+  Linear map represented by two coordinate components
+statement:
+  If \(D=(D_1,D_2)\), then for \(z\in\mathbb C\),
+  \[
+    D(z)=\operatorname{Re}(z)D_1+\operatorname{Im}(z)D_2.
+  \]
+proof:
+  Expand the real basis decomposition (z=\operatorname{Re}(z)\cdot1+\operatorname{Im}(z)\cdot i).
+-/
 @[simp]
 theorem toLinearMap_apply
     (D : SurfaceDifferentialCoordinateHilbertFiber E) (z : ℂ) :
@@ -8445,12 +8741,30 @@ theorem toLinearMap_apply
       z.re • (WithLp.ofLp D).1 + z.im • (WithLp.ofLp D).2 := by
   simp [toLinearMap]
 
+/--
+%%handwave
+name:
+  The zero coordinate pair represents the zero differential
+statement:
+  The coordinate pair \((0,0)\) represents the zero real-linear map \(\mathbb C\to E\).
+proof:
+  Evaluate on an arbitrary complex vector and simplify both coordinate terms.
+-/
 @[simp]
 theorem toLinearMap_zero :
     toLinearMap (0 : SurfaceDifferentialCoordinateHilbertFiber E) = 0 := by
   ext z
   simp [toLinearMap]
 
+/--
+%%handwave
+name:
+  Addition of coordinate differential pairs
+statement:
+  The linear map represented by (D+F) is the sum of the maps represented by (D) and (F).
+proof:
+  Evaluate at (z), expand both coordinate components, and distribute addition.
+-/
 @[simp]
 theorem toLinearMap_add
     (D F : SurfaceDifferentialCoordinateHilbertFiber E) :
@@ -8458,6 +8772,15 @@ theorem toLinearMap_add
   ext z
   simp [toLinearMap, add_assoc, add_left_comm]
 
+/--
+%%handwave
+name:
+  Scalar multiplication of coordinate differential pairs
+statement:
+  The map represented by (cD) is (c) times the map represented by (D).
+proof:
+  Evaluate at (z) and distribute the scalar through the two coordinate components.
+-/
 @[simp]
 theorem toLinearMap_smul
     (c : ℝ) (D : SurfaceDifferentialCoordinateHilbertFiber E) :
@@ -9412,6 +9735,15 @@ theorem IsWeakGradientOnSurface.const_smul {X : Type}
               ∂MeasureTheory.volume := by
                 rw [show μΩ = MeasureTheory.volume.restrict Ω from rfl, hrhs_smul]
 
+/--
+%%handwave
+name:
+  Smooth functions are continuous on their surface domain
+statement:
+  A function smooth on a surface region (U) is continuous on (U).
+proof:
+  In every chart its coordinate representative is smooth and hence continuous; the local chart descriptions cover (U).
+-/
 theorem isSmoothOnSurface_continuousOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {U : Set X} {u : X → ℝ}
@@ -9438,6 +9770,15 @@ theorem isSmoothOnSurface_continuousOn
   have hsource_nhds : e.source ∈ 𝓝 x := chart_source_mem_nhds ℂ x
   exact (continuousWithinAt_inter hsource_nhds).1 hlocal_at
 
+/--
+%%handwave
+name:
+  A globally smooth surface function is continuous
+statement:
+  If a function is smooth on the whole surface, then it is continuous.
+proof:
+  Its restriction is continuous on the universal set, which is equivalent to ordinary continuity.
+-/
 theorem isSmoothOnSurface_univ_continuous
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {u : X → ℝ} (hu : IsSmoothOnSurface (Set.univ : Set X) u) :
@@ -9533,6 +9874,8 @@ name:
   Vector-valued weak derivative of zero
 statement:
   The zero differential field is the weak derivative of the zero map.
+proof:
+  Specialize the zero weak-derivative identity on manifolds to the surface model.
 -/
 theorem isWeakDerivativeOnSurfaceBundle_zero {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -9686,6 +10029,8 @@ name:
 statement:
   The zero coordinate differential is the dual-tested weak derivative of the
   zero map.
+proof:
+  Every continuous linear functional sends the zero value and zero differential to the scalar zero weak-gradient pair.
 -/
 theorem isWeakDerivativeOnSurfaceWithValuesByDual_zero {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -9703,6 +10048,8 @@ name:
 statement:
   The sum of two dual-tested weak derivatives is the dual-tested weak
   derivative of the sum of the maps.
+proof:
+  After applying any target functional, linearity turns the sum into the sum of the two scalar weak-gradient pairs; add their identities.
 -/
 theorem IsWeakDerivativeOnSurfaceWithValuesByDual.add {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -9723,6 +10070,8 @@ name:
 statement:
   Multiplying a vector-valued map and its weak derivative by the same real
   scalar preserves the dual-tested weak-derivative identity.
+proof:
+  After scalar projection, pull the constant through the functional and scale the scalar weak-gradient identity.
 -/
 theorem IsWeakDerivativeOnSurfaceWithValuesByDual.const_smul {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -9750,6 +10099,15 @@ def WeakGradientGraphOnSurface {X : Type}
     (fun x ↦ p.1 x) =ᵐ[μ] u ∧ (fun x ↦ p.2 x) =ᵐ[μ] du ∧
       IsWeakGradientOnSurface μ u du
 
+/--
+%%handwave
+name:
+  The zero pair belongs to the weak-gradient graph
+statement:
+  The zero \(L^2\) function together with the zero cotangent field satisfies the surface weak-gradient identity.
+proof:
+  Choose zero representatives; both test integrals vanish.
+-/
 theorem weakGradientGraphOnSurface_zero {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     (μ : Measure X) :
@@ -9765,6 +10123,15 @@ theorem weakGradientGraphOnSurface_zero {X : Type}
           (0 : X → ℂ →L[ℝ] ℝ))
   · exact isWeakGradientOnSurface_zero μ
 
+/--
+%%handwave
+name:
+  The weak-gradient graph is closed under addition
+statement:
+  If \((u,du)\) and \((v,dv)\) are weak-gradient pairs, then \((u+v,du+dv)\) is a weak-gradient pair.
+proof:
+  Add the two distributional integration-by-parts identities and use linearity of the integrals.
+-/
 theorem weakGradientGraphOnSurface_add {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     {μ : Measure X} {p q : Lp ℝ 2 μ × Lp (ℂ →L[ℝ] ℝ) 2 μ}
@@ -9785,6 +10152,15 @@ theorem weakGradientGraphOnSurface_add {X : Type}
   · exact hweak.add hweak'
 
 set_option synthInstance.maxHeartbeats 200000 in
+/--
+%%handwave
+name:
+  The weak-gradient graph is closed under real scaling
+statement:
+  If \((u,du)\) is a weak-gradient pair and \(c\in\mathbb R\), then \((cu,c\,du)\) is also a weak-gradient pair.
+proof:
+  Multiply the distributional identity by (c) and use linearity of integration.
+-/
 theorem weakGradientGraphOnSurface_const_smul {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     {μ : Measure X} (c : ℝ)
@@ -9827,6 +10203,15 @@ def WeakDerivativeGraphOnSurfaceWithValues {X E : Type}
     (fun x ↦ p.1 x) =ᵐ[μ] u ∧ (fun x ↦ p.2 x) =ᵐ[μ] du ∧
       IsWeakDerivativeOnSurfaceWithValuesByDual μ u du
 
+/--
+%%handwave
+name:
+  The zero pair belongs to the vector-valued weak-derivative graph
+statement:
+  The zero Hilbert-valued \(L^2\) function and zero coordinate differential form a weak-derivative pair.
+proof:
+  Every scalar dual projection is the zero weak-gradient pair.
+-/
 theorem weakDerivativeGraphOnSurfaceWithValues_zero {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [IsManifold SurfaceRealModel 1 X]
@@ -9847,6 +10232,15 @@ theorem weakDerivativeGraphOnSurfaceWithValues_zero {X E : Type}
           (0 : X → SurfaceDifferentialCoordinateHilbertFiber E))
   · exact isWeakDerivativeOnSurfaceWithValuesByDual_zero (X := X) (E := E) μ
 
+/--
+%%handwave
+name:
+  The vector-valued weak-derivative graph is closed under addition
+statement:
+  The sum of two Hilbert-valued weak-derivative pairs is again a weak-derivative pair.
+proof:
+  For every continuous linear functional on the target, add the corresponding scalar weak-gradient identities.
+-/
 theorem weakDerivativeGraphOnSurfaceWithValues_add {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [IsManifold SurfaceRealModel 1 X]
@@ -9869,6 +10263,15 @@ theorem weakDerivativeGraphOnSurfaceWithValues_add {X E : Type}
     exact hcoe.trans (hp_du.add hq_du)
   · exact hweak.add hweak'
 
+/--
+%%handwave
+name:
+  The vector-valued weak-derivative graph is closed under real scaling
+statement:
+  A real scalar multiple of a Hilbert-valued weak-derivative pair remains in the graph.
+proof:
+  Apply each target functional and scale the resulting scalar weak-gradient identity.
+-/
 theorem weakDerivativeGraphOnSurfaceWithValues_const_smul {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [IsManifold SurfaceRealModel 1 X]
@@ -9928,6 +10331,15 @@ theorem smoothPositiveAreaMeasureOnSurface_chart_ae_eq {X β : Type}
       ne_of_gt (ENNReal.ofReal_pos.mpr (hρ_pos z hz))
   exact withDensity_ae_eq hρ_aemeas hρ_ne_zero
 
+/--
+%%handwave
+name:
+  Almost-everywhere measurability of inverse surface charts
+statement:
+  For a smooth positive area measure, an inverse surface chart is almost everywhere measurable for the chart pushforward measure.
+proof:
+  This is the manifold inverse-chart measurability result specialized to the surface model.
+-/
 theorem smoothPositiveAreaMeasureOnSurface_chart_symm_aemeasurable {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     (μ : Measure X) (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
@@ -9944,6 +10356,15 @@ theorem smoothPositiveAreaMeasureOnSurface_chart_symm_aemeasurable {X : Type}
     exact withDensity_absolutelyContinuous _ _
   exact hsymm_vol.mono_ac h_ac
 
+/--
+%%handwave
+name:
+  A surface chart measure is inverted by its inverse chart
+statement:
+  Pushing the restricted surface measure into coordinates and then back through the inverse chart recovers the original restricted measure.
+proof:
+  Specialize the manifold chart pushforward--pullback identity to \(\mathbb C\).
+-/
 theorem smoothPositiveAreaMeasureOnSurface_chart_map_symm_map {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     (μ : Measure X) (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
@@ -9971,6 +10392,15 @@ theorem smoothPositiveAreaMeasureOnSurface_chart_map_symm_map {X : Type}
         Measure.map_congr hleft
     _ = μ.restrict e.source := by rw [Measure.map_id']
 
+/--
+%%handwave
+name:
+  Almost-everywhere equality pulls back to surface coordinates
+statement:
+  If (f=g) almost everywhere on a surface, then \(f\circ e^{-1}=g\circ e^{-1}\) for Lebesgue-almost every point of the chart target.
+proof:
+  Use the smooth positive chart density and the manifold pullback result in the surface model.
+-/
 theorem smoothPositiveAreaMeasureOnSurface_chart_comp_symm_ae_eq {X β : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     (μ : Measure X) (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
@@ -10076,6 +10506,15 @@ theorem IsWeakGradientOnSurface.congr_ae {X : Type}
                 ∂MeasureTheory.volume := by
                 rw [integral_congr_ae hrhs_eq]
 
+/--
+%%handwave
+name:
+  Canonical representatives of a weak-gradient graph element
+statement:
+  If an \(L^2\) pair lies in the weak-gradient graph, then the canonical pointwise representatives of its two components satisfy the surface distributional weak-gradient identity.
+proof:
+  Replace the witnessing representatives by the canonical \(L^2\) representatives using almost-everywhere equality, pull those equalities into every chart, and use congruence of the test integrals.
+-/
 theorem weakGradientGraphOnSurface_canonical_representatives {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10114,6 +10553,15 @@ theorem IsWeakDerivativeOnSurfaceWithValuesByDual.congr_ae {X E : Type}
   · filter_upwards [hdu] with x hx
     rw [hx]
 
+/--
+%%handwave
+name:
+  Canonical representatives of a vector-valued weak-derivative graph element
+statement:
+  If a Hilbert-valued \(L^2\) pair lies in the weak-derivative graph, its canonical value and coordinate-differential representatives satisfy the weak derivative identity after every scalar dual projection.
+proof:
+  For each target functional, replace the witnessing representatives by the canonical ones almost everywhere and invoke the scalar canonical-representative result.
+-/
 theorem weakDerivativeGraphOnSurfaceWithValues_canonical_representatives
     {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -10128,25 +10576,44 @@ theorem weakDerivativeGraphOnSurfaceWithValues_canonical_representatives
   exact IsWeakDerivativeOnSurfaceWithValuesByDual.congr_ae μ hμ
     hp_u.symm hp_du.symm hweak
 
+/--
+%%handwave
+name:
+  The real inner product is multiplication
+statement:
+  For real numbers \(a,b\), \(\langle a,b\rangle_{\mathbb R}=ab\).
+proof:
+  This is the standard real inner-product formula.
+-/
 private theorem real_inner_eq_mul (a b : ℝ) : inner ℝ a b = a * b := by
   calc
     inner ℝ a b = b * (starRingEnd ℝ) a := RCLike.inner_apply a b
     _ = a * b := by simp [mul_comm]
 
-private theorem smoothPositiveAreaMeasureOnSurface_isFiniteMeasureOnCompacts
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    {μ : Measure X} (hμ : SmoothPositiveAreaMeasureOnSurface X μ) :
-    IsFiniteMeasureOnCompacts μ where
-  lt_top_of_isCompact := by
-    intro K hK
-    exact lt_top_iff_ne_top.2 (hμ.finite_on_compact K hK)
-
+/--
+%%handwave
+name:
+  Support of a derivative of a compactly supported coordinate test
+statement:
+  For a compactly supported smooth coordinate test \(\varphi\), the support of \(z\mapsto D\varphi(z)v\) is contained in its coordinate region.
+proof:
+  Outside the support of \(\varphi\), the function vanishes on a neighborhood, so its derivative vanishes there; the original support lies in the region.
+-/
 private theorem smoothCompactlySupportedCoordinateFunction_fderiv_apply_tsupport_subset
     {Ω : Set ℂ} (φ : SmoothCompactlySupportedCoordinateFunction Ω) (v : ℂ) :
     tsupport (fun z : ℂ ↦ fderiv ℝ (φ : ℂ → ℝ) z v) ⊆ Ω :=
   (tsupport_fderiv_apply_subset (𝕜 := ℝ) (f := (φ : ℂ → ℝ)) v).trans
     φ.support_subset
 
+/--
+%%handwave
+name:
+  Compact support of a directional derivative test
+statement:
+  For a compactly supported smooth coordinate test \(\varphi\), the directional derivative \(z\mapsto D\varphi(z)v\) has compact support.
+proof:
+  Its support is closed and contained in the compact support of \(\varphi\).
+-/
 private theorem smoothCompactlySupportedCoordinateFunction_fderiv_apply_tsupport_isCompact
     {Ω : Set ℂ} (φ : SmoothCompactlySupportedCoordinateFunction Ω) (v : ℂ) :
     IsCompact (tsupport (fun z : ℂ ↦ fderiv ℝ (φ : ℂ → ℝ) z v)) :=
@@ -10627,6 +11094,15 @@ private noncomputable def coordinateCotangentTestRieszField {X : Type}
     (φ z / ρ z) •
       (InnerProductSpace.toDual ℝ ℂ) (surfaceChartTangentMap e z v)
 
+/--
+%%handwave
+name:
+  Continuity of the chart tangent map in a fixed direction
+statement:
+  Under continuous preferred tangent coordinates, \(z\mapsto D(e^{-1})(z)v\) is continuous on the target of every surface chart.
+proof:
+  Translate continuity of the preferred tangent coordinate field through the chart trivialization.
+-/
 private theorem surfaceChartTangentMap_apply_continuousOn {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10635,6 +11111,19 @@ private theorem surfaceChartTangentMap_apply_continuousOn {X : Type}
     ContinuousOn (fun z : ℂ ↦ surfaceChartTangentMap e z v) e.target := by
   exact hcoord e he v
 
+/--
+%%handwave
+name:
+  Continuity of the coordinate cotangent Riesz test field
+statement:
+  If \(\rho>0\) is smooth and \(\varphi\) is a smooth compactly supported test, then
+  \[
+    z\mapsto \frac{\varphi(z)}{\rho(z)}\big(D(e^{-1})(z)v\big)^\flat
+  \]
+  is continuous on the chart target.
+proof:
+  The tangent vector field is continuous, division by the positive smooth density is continuous, and the Riesz map and scalar multiplication are continuous.
+-/
 private theorem coordinateCotangentTestRieszField_continuousOn_target {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10671,6 +11160,15 @@ private theorem coordinateCotangentTestRieszField_continuousOn_target {X : Type}
     hscalar_cont.smul hdual_tangent_cont
 
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name:
+  Measurability and boundedness of the coordinate cotangent test field
+statement:
+  The coordinate cotangent Riesz test field is almost everywhere measurable for the chart measure and is uniformly bounded on the compact support of the test function.
+proof:
+  Continuity on the chart target gives measurability; compactness of the support gives a finite maximum of its norm.
+-/
 private theorem coordinateCotangentTestRieszField_aemeasurable_bounded {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10717,6 +11215,15 @@ private theorem coordinateCotangentTestRieszField_aemeasurable_bounded {X : Type
     hK_compact.exists_bound_of_continuousOn hq_cont_support
   exact ⟨hq_aemeas_target.mono_ac hmap_ac, C, hC⟩
 
+/--
+%%handwave
+name:
+  Finite chart measure of a compact test support
+statement:
+  The chart pushforward measure of the compact support of a coordinate test is finite.
+proof:
+  Map the compact support back to a compact subset of the surface and use finiteness of a smooth positive measure on compact sets.
+-/
 private theorem coordinateCotangentTestRieszField_map_tsupport_measure_ne_top {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10767,6 +11274,15 @@ private theorem coordinateCotangentTestRieszField_map_tsupport_measure_ne_top {X
     simpa [K] using ne_of_lt hlt
 
 set_option maxHeartbeats 800000 in
+/--
+%%handwave
+name:
+  A bounded cotangent test field is \(L^2\) on its compact support
+statement:
+  An almost everywhere measurable coordinate cotangent test field that is bounded on the test support belongs to \(L^2\) for the chart measure restricted to that support.
+proof:
+  The restricted support has finite measure, and an almost everywhere strongly measurable bounded function is in every finite \(L^p\).
+-/
 private theorem coordinateCotangentTestRieszField_memLp_restrict_tsupport_of_aemeasurable_bounded
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -10817,6 +11333,15 @@ private theorem coordinateCotangentTestRieszField_memLp_restrict_tsupport_of_aem
     MemLp.of_bound hq_aestrong.restrict (max C 0) hq_bound
   simpa [q, K] using hq_restrict
 
+/--
+%%handwave
+name:
+  The support indicator does not change the coordinate cotangent test field
+statement:
+  Multiplying the coordinate cotangent Riesz test field by the indicator of the test support leaves it unchanged.
+proof:
+  Inside the support the indicator is one; outside it the test function, hence the whole Riesz field, is zero.
+-/
 private theorem coordinateCotangentTestRieszField_tsupport_indicator_eq_self {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (ρ : ℂ → ℝ)
@@ -10834,6 +11359,15 @@ private theorem coordinateCotangentTestRieszField_tsupport_indicator_eq_self {X 
     simp [Set.indicator_of_notMem hz, hφ_zero]
 
 set_option maxHeartbeats 600000 in
+/--
+%%handwave
+name:
+  The supported coordinate cotangent test field is \(L^2\) for chart measure
+statement:
+  Under measurability and boundedness on the compact test support, the support-indicated coordinate cotangent test field belongs to \(L^2\) for the full chart measure.
+proof:
+  Use \(L^2\)-membership for the restricted measure and the equality between an indicator norm and restriction to its measurable support.
+-/
 private theorem coordinateCotangentTestRieszField_tsupport_indicator_memLp_map_of_aemeasurable_bounded
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -10879,6 +11413,15 @@ private theorem coordinateCotangentTestRieszField_tsupport_indicator_memLp_map_o
 
 set_option maxHeartbeats 3000000 in
 set_option synthInstance.maxHeartbeats 200000 in
+/--
+%%handwave
+name:
+  The pulled-back cotangent test field is \(L^2\) on the surface
+statement:
+  The chart-source indicator of a measurable bounded coordinate cotangent test field pulled back by the chart belongs to surface \(L^2\).
+proof:
+  Compose the chart-space \(L^2\) indicator with the chart map, use the pushforward measure identity, and convert restriction to a source indicator.
+-/
 private theorem coordinateCotangentTestRieszField_indicator_memLp_of_aemeasurable_bounded {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -10931,6 +11474,15 @@ private theorem coordinateCotangentTestRieszField_indicator_memLp_of_aemeasurabl
       (p := (2 : ℝ≥0∞)) (μ := μ) e.open_source.measurableSet).2
       (by simpa [q] using hcomp_mem)
 
+/--
+%%handwave
+name:
+  Measurable \(L^2\) Riesz representative for a coordinate cotangent test
+statement:
+  The density-corrected cotangent Riesz test is almost everywhere measurable in coordinates, and its chart pullback extended by zero is an \(L^2\) cotangent field on the surface.
+proof:
+  Combine continuity and compact-support boundedness of the test field with the preceding chart-to-surface \(L^2\) transfer.
+-/
 private theorem coordinateCotangentTestRieszField_aemeasurable_memLp {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -11373,6 +11925,15 @@ theorem isWeakGradientOnSurface_of_tendsto_Lp {X : Type}
   · simpa [Ω] using hduLim_int
   · simpa [Llim, Rlim, Ω] using hlim_eq
 
+/--
+%%handwave
+name:
+  Weak-gradient graph membership is stable under \(L^2\) limits
+statement:
+  If a net of weak-gradient pairs converges in the product \(L^2\) topology, then its limit is again a weak-gradient pair.
+proof:
+  Use canonical representatives, pass both compactly supported test pairings to the limit by local \(L^2\) bounds, and use uniqueness of limits to retain the distributional identity.
+-/
 theorem weakGradientGraphOnSurface_mem_of_tendsto {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [SecondCountableTopology X] [IsManifold SurfaceRealModel ∞ X]
@@ -11457,6 +12018,15 @@ noncomputable def weakDerivativeGraphWithValuesScalarProjectionCLM {X E : Type}
       (ContinuousLinearMap.snd ℝ
         (Lp E 2 μ) (Lp (SurfaceDifferentialCoordinateHilbertFiber E) 2 μ)))
 
+/--
+%%handwave
+name:
+  Canonical first component of scalar projection
+statement:
+  Applying a target functional \(\Lambda\) to the value component of an \(L^2\) pair agrees almost everywhere with the first component produced by the induced scalar projection operator.
+proof:
+  This is the pointwise almost-everywhere formula for composition of an \(L^2\) function with a continuous linear map.
+-/
 private theorem weakDerivativeGraphWithValuesScalarProjectionCLM_fst_ae
     {X E : Type} [MeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (μ : Measure X) (Λ : E →L[ℝ] ℝ)
@@ -11466,6 +12036,15 @@ private theorem weakDerivativeGraphWithValuesScalarProjectionCLM_fst_ae
   simpa [weakDerivativeGraphWithValuesScalarProjectionCLM] using
     (Λ.coeFn_compLpL (p := (2 : ℝ≥0∞)) p.1)
 
+/--
+%%handwave
+name:
+  Canonical second component of scalar projection
+statement:
+  The second component produced by scalar projection agrees almost everywhere with pointwise composition of the coordinate differential by \(\Lambda\).
+proof:
+  Apply the almost-everywhere evaluation formula for the induced continuous linear map on \(L^2\).
+-/
 private theorem weakDerivativeGraphWithValuesScalarProjectionCLM_snd_ae
     {X E : Type} [MeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (μ : Measure X) (Λ : E →L[ℝ] ℝ)
@@ -11477,6 +12056,15 @@ private theorem weakDerivativeGraphWithValuesScalarProjectionCLM_snd_ae
     ((SurfaceDifferentialCoordinateHilbertFiber.dualProjectionCLM Λ).coeFn_compLpL
       (p := (2 : ℝ≥0∞)) p.2)
 
+/--
+%%handwave
+name:
+  Scalar projections of a vector-valued weak derivative lie in the weak-gradient graph
+statement:
+  If a Hilbert-valued pair satisfies the weak derivative identity after every target functional, then each induced scalar \(L^2\) pair belongs to the scalar weak-gradient graph.
+proof:
+  Use the projected value and differential as witnesses, their canonical almost-everywhere identities, and the assumed scalar distributional identity.
+-/
 private theorem weakDerivativeGraphWithValues_scalarProjection_mem
     {X E : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]

@@ -39,8 +39,17 @@ def smoothFormCompactCore
   (fun x : U ↦ (x : M)) '' K
 
 omit [T2Space M] in
-/-- The ambient image of a compact subset of an open submanifold is
-compact. -/
+/--
+%%handwave
+name:
+  Compactness of the ambient image of a compact set
+statement:
+  If \(U\) is an open submanifold of \(M\) and \(K\subseteq U\) is compact,
+  then its image under the inclusion \(U\hookrightarrow M\) is compact.
+proof:
+  The inclusion of an open submanifold into the ambient manifold is
+  continuous, and the continuous image of a compact set is compact.
+-/
 theorem smoothFormCompactCore_isCompact
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K) :
     IsCompact (smoothFormCompactCore U K) := by
@@ -53,8 +62,19 @@ def smoothFormCompactCoreInOpen
   {x | (x : M) ∈ C}
 
 omit [T2Space M] in
-/-- Passing an ambient set into an open submanifold and then back to the
-ambient manifold recovers it, provided it lies in that open set. -/
+/--
+%%handwave
+name:
+  Recovery of an ambient set from an open submanifold
+statement:
+  Let \(V\subseteq M\) be open and let \(C\subseteq V\).  Regard \(C\) first
+  as a subset of \(V\) and then take its image under the inclusion
+  \(V\hookrightarrow M\).  The resulting subset of \(M\) is exactly \(C\).
+proof:
+  Both inclusions follow directly from the definition of the subtype: a point
+  of the image has underlying ambient point in \(C\), and every point of
+  \(C\) determines a point of \(V\) because \(C\subseteq V\).
+-/
 theorem smoothFormCompactCore_coreInOpen
     (V : TopologicalSpace.Opens M) (C : Set M) (hCV : C ⊆ V) :
     smoothFormCompactCore V (smoothFormCompactCoreInOpen V C) = C := by
@@ -66,8 +86,17 @@ theorem smoothFormCompactCore_coreInOpen
     exact ⟨⟨x, hCV hx⟩, hx, rfl⟩
 
 omit [T2Space M] in
-/-- A compact ambient set contained in an open set remains compact when
-regarded as a subset of that open submanifold. -/
+/--
+%%handwave
+name:
+  Compactness inside an open submanifold
+statement:
+  If \(C\subseteq M\) is compact and contained in an open set \(V\), then
+  \(C\), regarded as a subset of the open submanifold \(V\), is compact.
+proof:
+  A subset of a subtype is compact exactly when its ambient image is compact.
+  That image is \(C\) itself, which is compact by hypothesis.
+-/
 theorem smoothFormCompactCoreInOpen_isCompact
     (V : TopologicalSpace.Opens M) (C : Set M) (hC : IsCompact C)
     (hCV : C ⊆ V) :
@@ -80,28 +109,43 @@ theorem smoothFormCompactCoreInOpen_isCompact
         exact hC)
 
 omit [T2Space M] in
-/-- The ambient compact core lies in the original open set. -/
+/--
+%%handwave
+name:
+  An included core lies in its open submanifold
+statement:
+  If \(K\subseteq U\) for an open submanifold \(U\subseteq M\), then the image
+  of \(K\) under the inclusion \(U\hookrightarrow M\) is contained in \(U\).
+proof:
+  Every element of the subtype \(U\) carries, by definition, a proof that its
+  underlying ambient point belongs to \(U\).
+-/
 theorem smoothFormCompactCore_subset
     (U : TopologicalSpace.Opens M) (K : Set U) :
     smoothFormCompactCore U K ⊆ U := by
   rintro _ ⟨x, _hx, rfl⟩
   exact x.2
 
-/-- A compact core in an open submanifold has closed ambient image. -/
-theorem smoothFormCompactCore_isClosed
-    (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K) :
-    IsClosed (smoothFormCompactCore U K) := by
-  exact (hK.image continuous_subtype_val).isClosed
-
 /-- The ambient open set complementary to a compact support core. -/
 def smoothFormCompactExteriorOpen
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K) :
     TopologicalSpace.Opens M :=
   ⟨(smoothFormCompactCore U K)ᶜ,
-    (smoothFormCompactCore_isClosed U K hK).isOpen_compl⟩
+    (hK.image continuous_subtype_val).isClosed.isOpen_compl⟩
 
-/-- An open submanifold and the exterior of one of its compact subsets cover
-the ambient manifold. -/
+/--
+%%handwave
+name:
+  Open cover by a submanifold and the exterior of a compact core
+statement:
+  Let \(U\subseteq M\) be open and let \(K\subseteq U\) be compact.  Then
+  \(U\) together with the complement in \(M\) of the ambient image of \(K\)
+  is an open cover of \(M\).
+proof:
+  The ambient image of \(K\) is contained in \(U\).  Hence any point is either
+  in \(U\), or, if it is not in \(U\), cannot lie in that image and so belongs
+  to its complement.
+-/
 theorem smoothFormCompact_open_cover
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K) :
     U ⊔ smoothFormCompactExteriorOpen U K hK = ⊤ := by
@@ -113,42 +157,6 @@ theorem smoothFormCompact_open_cover
   · exact Or.inr fun hxcore ↦
       hxU (smoothFormCompactCore_subset U K hxcore)
 
-/-- A local form supported in a compact core restricts to zero on the
-overlap with the core's exterior. -/
-theorem smoothFormCompact_overlap_eq_zero
-    (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
-    {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
-    (hzero : ∀ x : U, x ∉ K → alpha.toFun x = 0) :
-    restrictSmoothFormsOfLE (I := I) (A := ℝ)
-        (W := (U ⊓ smoothFormCompactExteriorOpen U K hK :
-          TopologicalSpace.Opens M))
-        (V := U) inf_le_left n alpha = 0 := by
-  apply DifferentialForm.ext
-  intro x
-  let xU : U := TopologicalSpace.Opens.inclusion inf_le_left x
-  have hxUK : xU ∉ K := by
-    intro hxK
-    have hxcore : (x : M) ∈ smoothFormCompactCore U K := by
-      refine ⟨xU, hxK, ?_⟩
-      rfl
-    exact x.2.2 hxcore
-  have hz := hzero xU hxUK
-  simp only [restrictSmoothFormsOfLE]
-  change (alpha.toFun xU).compContinuousLinearMap _ = 0
-  rw [hz]
-  rfl
-
-/-- The local form and zero satisfy the Mayer--Vietoris overlap condition. -/
-theorem smoothFormCompact_mayerVietorisDifference_eq_zero
-    (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
-    {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
-    (hzero : ∀ x : U, x ∉ K → alpha.toFun x = 0) :
-    deRhamMayerVietorisSmoothDifference (I := I) (A := ℝ)
-      U (smoothFormCompactExteriorOpen U K hK) n (alpha, 0) = 0 := by
-  rw [deRhamMayerVietorisSmoothDifference]
-  simp only [map_zero, sub_zero]
-  exact smoothFormCompact_overlap_eq_zero I U K hK alpha hzero
-
 /-- Extend a smooth form supported in a compact subset of an open
 submanifold by zero to the ambient manifold. -/
 noncomputable def smoothFormCompactZeroExtension
@@ -159,10 +167,38 @@ noncomputable def smoothFormCompactZeroExtension
   smoothFormsTwoOpenGlue (I := I) (A := ℝ)
     U (smoothFormCompactExteriorOpen U K hK)
     (smoothFormCompact_open_cover U K hK) alpha 0
-    (smoothFormCompact_mayerVietorisDifference_eq_zero
-      I U K hK alpha hzero)
+    (by
+      rw [deRhamMayerVietorisSmoothDifference]
+      simp only [map_zero, sub_zero]
+      apply DifferentialForm.ext
+      intro x
+      let xU : U := TopologicalSpace.Opens.inclusion inf_le_left x
+      have hxUK : xU ∉ K := by
+        intro hxK
+        have hxcore : (x : M) ∈ smoothFormCompactCore U K := by
+          refine ⟨xU, hxK, ?_⟩
+          rfl
+        exact x.2.2 hxcore
+      have hz := hzero xU hxUK
+      simp only [restrictSmoothFormsOfLE]
+      change (alpha.toFun xU).compContinuousLinearMap _ = 0
+      rw [hz]
+      rfl)
 
-/-- Extension by zero restricts to the original form on its open domain. -/
+/--
+%%handwave
+name:
+  Restriction of a compactly supported zero extension
+statement:
+  Let \(\alpha\) be a smooth differential form on an open submanifold
+  \(U\subseteq M\), vanishing outside a compact set \(K\subseteq U\).  The
+  extension of \(\alpha\) by zero to \(M\), restricted back to \(U\), equals
+  \(\alpha\).
+proof:
+  The extension is defined by gluing \(\alpha\) on \(U\) with the zero form on
+  the complement of the ambient compact core.  The left restriction property
+  of this gluing construction gives the identity.
+-/
 theorem smoothFormCompactZeroExtension_restrict
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -172,7 +208,18 @@ theorem smoothFormCompactZeroExtension_restrict
   rw [smoothFormCompactZeroExtension,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_left]
 
-/-- Extension by zero restricts to zero outside its compact core. -/
+/--
+%%handwave
+name:
+  Exterior restriction of a compactly supported zero extension
+statement:
+  Let \(\alpha\) be a smooth form on \(U\) vanishing outside a compact
+  \(K\subseteq U\).  Its zero extension to \(M\), restricted to the complement
+  of the ambient image of \(K\), is the zero form.
+proof:
+  This is the right restriction property of the gluing which defines the zero
+  extension: its exterior piece is the zero form.
+-/
 theorem smoothFormCompactZeroExtension_restrict_exterior
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -183,8 +230,20 @@ theorem smoothFormCompactZeroExtension_restrict_exterior
   rw [smoothFormCompactZeroExtension,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_right]
 
-/-- Extension by zero vanishes pointwise outside the ambient image of its
-compact support core. -/
+/--
+%%handwave
+name:
+  Pointwise support of a compactly supported zero extension
+statement:
+  Let \(\alpha\) be a smooth form on an open submanifold \(U\), vanishing
+  outside compact \(K\subseteq U\).  Its extension by zero to \(M\) vanishes
+  at every point outside the ambient image of \(K\).
+proof:
+  At a point in \(U\), restrict the extension back to \(U\), use the assumed
+  vanishing of \(\alpha\), and use injectivity of pullback along the inclusion
+  on tangent alternating forms.  At a point outside \(U\), use the exterior
+  restriction of the glued form, which is identically zero.
+-/
 theorem smoothFormCompactZeroExtension_toFun_eq_zero_of_not_mem_core
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -217,8 +276,19 @@ theorem smoothFormCompactZeroExtension_toFun_eq_zero_of_not_mem_core
         I U K hK alpha hzero) hxext
 
 omit [T2Space M] in
-/-- Restricting an ambient form to an open submanifold preserves pointwise
-vanishing. -/
+/--
+%%handwave
+name:
+  Restriction preserves pointwise vanishing of a differential form
+statement:
+  Let \(\beta\) be a smooth differential form on \(M\), let \(U\subseteq M\)
+  be open, and let \(x\in U\).  If \(\beta_x=0\), then the restriction of
+  \(\beta\) to \(U\) also vanishes at \(x\).
+proof:
+  The restricted value is obtained by composing \(\beta_x\) with the tangent
+  map of the inclusion \(U\hookrightarrow M\).  Composing the zero alternating
+  form with any linear map gives zero.
+-/
 theorem restrictSmoothFormsToOpen_toFun_eq_zero_of_ambient_eq_zero
     (U : TopologicalSpace.Opens M) {n : ℕ}
     (beta : SmoothForms (I := I) (M := M) ℝ n)
@@ -228,8 +298,21 @@ theorem restrictSmoothFormsToOpen_toFun_eq_zero_of_ambient_eq_zero
   rw [hx]
   rfl
 
-/-- Extending the restriction of an ambient form by zero recovers the form
-when its support lies in the chosen compact core. -/
+/--
+%%handwave
+name:
+  Recovery of an ambient form from a compactly supported restriction
+statement:
+  Let \(\beta\) be a smooth form on \(M\) which vanishes outside the ambient
+  image of a compact set \(K\subseteq U\), where \(U\subseteq M\) is open.
+  Restrict \(\beta\) to \(U\) and then extend that restriction by zero.  The
+  resulting ambient form equals \(\beta\).
+proof:
+  Compare the forms on the open cover consisting of \(U\) and the complement
+  of the compact core.  On \(U\), restriction of the zero extension recovers
+  the restricted form.  On the exterior, both forms vanish.  Equality on the
+  two members of the cover implies global equality.
+-/
 theorem smoothFormCompactZeroExtension_restrict_eq_self
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (beta : SmoothForms (I := I) (M := M) ℝ n)
@@ -260,8 +343,18 @@ theorem smoothFormCompactZeroExtension_restrict_eq_self
     exact restrictSmoothFormsToOpen_toFun_eq_zero_of_ambient_eq_zero
       I V beta x hxzero
 
-/-- Compactly supported extension by zero respects equality of the local
-forms. -/
+/--
+%%handwave
+name:
+  Congruence of compactly supported zero extensions
+statement:
+  If two smooth forms on \(U\) are equal and both vanish outside a compact
+  set \(K\subseteq U\), then their extensions by zero to \(M\) are equal.
+proof:
+  After substituting the equality of the local forms, both zero extensions
+  are the same glued differential form; the particular proofs of their
+  support condition do not affect the construction.
+-/
 theorem smoothFormCompactZeroExtension_congr
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} {alpha beta : SmoothForms (I := I) (M := U) ℝ n}
@@ -273,7 +366,22 @@ theorem smoothFormCompactZeroExtension_congr
   subst beta
   rfl
 
-/-- Compactly supported extension by zero preserves subtraction. -/
+/--
+%%handwave
+name:
+  Linearity of compactly supported zero extension under subtraction
+statement:
+  If smooth forms \(\alpha\) and \(\beta\) on \(U\) both vanish outside a
+  compact set \(K\subseteq U\), then
+  \[
+    \widetilde{\alpha-\beta}=\widetilde\alpha-\widetilde\beta,
+  \]
+  where tildes denote extension by zero to the ambient manifold.
+proof:
+  Restrict both sides to the cover by \(U\) and the exterior of the compact
+  core.  On \(U\) the identity is ordinary linearity of restriction; on the
+  exterior all three zero extensions vanish.
+-/
 theorem smoothFormCompactZeroExtension_sub
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha beta : SmoothForms (I := I) (M := U) ℝ n)
@@ -300,8 +408,20 @@ theorem smoothFormCompactZeroExtension_sub
       smoothFormCompactZeroExtension_restrict_exterior]
     simp
 
-/-- The exterior derivative of a smooth form supported in a compact core also
-vanishes outside that core. -/
+/--
+%%handwave
+name:
+  Exterior differentiation does not enlarge compact support
+statement:
+  Let \(\alpha\) be a smooth form on \(U\) which vanishes outside a compact
+  set \(K\subseteq U\).  Then \(d\alpha\) also vanishes at every point of
+  \(U\setminus K\).
+proof:
+  Since \(K\) is closed, near any point outside \(K\) the form \(\alpha\)
+  agrees with the zero form.  Exterior differentiation is local, so
+  \(d\alpha\) agrees there with the exterior derivative of zero, which is
+  zero.
+-/
 theorem deRhamDifferential_toFun_eq_zero_of_not_mem_compact
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -320,8 +440,23 @@ theorem deRhamDifferential_toFun_eq_zero_of_not_mem_compact
     LinearMap.map_zero _
   simpa using congrArg (fun theta ↦ theta.toFun x) hd0
 
-/-- Exterior differentiation commutes with compactly supported extension by
-zero from an open submanifold. -/
+/--
+%%handwave
+name:
+  Exterior differentiation commutes with compactly supported zero extension
+statement:
+  Let \(\alpha\) be a smooth form on an open submanifold \(U\subseteq M\),
+  vanishing outside compact \(K\subseteq U\).  Then
+  \[
+    d\widetilde\alpha=\widetilde{d\alpha},
+  \]
+  where both tildes denote extension by zero from the same compact core.
+proof:
+  Compare the two forms on the cover by \(U\) and the exterior of the compact
+  core.  On \(U\), naturality of exterior differentiation under restriction
+  and recovery of the local form give equality.  On the exterior, both zero
+  extensions vanish, as does the derivative of the zero form.
+-/
 theorem deRhamDifferential_smoothFormCompactZeroExtension
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -387,8 +522,21 @@ def smoothFormTSupport {n : ℕ}
   closure (smoothFormSupport I omega)
 
 omit [T2Space M] in
-/-- The support of the exterior derivative lies in the closed support of the
-original form. -/
+/--
+%%handwave
+name:
+  Support of an exterior derivative
+statement:
+  For every smooth differential form \(\omega\),
+  \[
+    \operatorname{supp}(d\omega)
+      \subseteq\overline{\operatorname{supp}(\omega)}.
+  \]
+proof:
+  Outside the closed support of \(\omega\), the form vanishes on a
+  neighborhood.  Locality of exterior differentiation makes \(d\omega\)
+  agree there with the derivative of the zero form, hence vanish.
+-/
 theorem deRhamDifferential_support_subset_tsupport
     {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) :
     smoothFormSupport I
@@ -412,8 +560,21 @@ theorem deRhamDifferential_support_subset_tsupport
   simpa using congrArg (fun eta ↦ eta.toFun x) hd0
 
 omit [IsManifold I ∞ M] [T2Space M] in
-/-- Evaluation of a finite sum of smooth forms is the finite sum of their
-pointwise values. -/
+/--
+%%handwave
+name:
+  Pointwise evaluation of a finite sum of differential forms
+statement:
+  For a finite set \(S\) and smooth forms \(\omega_i\) of the same degree,
+  \[
+    \left(\sum_{i\in S}\omega_i\right)_x
+      =\sum_{i\in S}(\omega_i)_x
+  \]
+  at every point \(x\).
+proof:
+  Induct on the finite set \(S\), using that pointwise evaluation is additive
+  and that both sides are zero for the empty set.
+-/
 theorem smoothForms_finset_sum_toFun
     {n : ℕ} (omega : ι → SmoothForms (I := I) (M := M) ℝ n)
     (s : Finset ι) (x : M) :
@@ -448,6 +609,20 @@ noncomputable def smoothFormsLocallyFiniteFinsum
     exact (smoothForms_finset_sum_toFun I omega s y).symm
 
 omit [T2Space M] in
+/--
+%%handwave
+name:
+  Pointwise value of a locally finite sum of differential forms
+statement:
+  If the closed supports of a family of smooth forms \((\omega_i)\) are
+  locally finite, then the locally finite sum \(\omega\) satisfies
+  \[
+    \omega_x=\sum_i^{\mathrm{fin}}(\omega_i)_x
+  \]
+  at every point \(x\).
+proof:
+  This is the defining pointwise formula for the locally finite smooth sum.
+-/
 @[simp]
 theorem smoothFormsLocallyFiniteFinsum_toFun
     {n : ℕ} (omega : ι → SmoothForms (I := I) (M := M) ℝ n)
@@ -457,8 +632,24 @@ theorem smoothFormsLocallyFiniteFinsum_toFun
   rfl
 
 omit [T2Space M] in
-/-- Exterior differentiation commutes with a locally finite sum of smooth
-forms. -/
+/--
+%%handwave
+name:
+  Exterior differentiation commutes with locally finite sums
+statement:
+  Let \((\omega_i)\) be a family of smooth forms whose closed supports are
+  locally finite.  Then
+  \[
+    d\left(\sum_i\omega_i\right)=\sum_i d\omega_i,
+  \]
+  and the family of closed supports of \((d\omega_i)\) is locally finite as
+  well.
+proof:
+  Exterior differentiation does not enlarge closed support.  Near each point,
+  local finiteness therefore reduces both sums to the same finite set of
+  indices.  On that neighborhood, locality and linearity of \(d\) reduce the
+  identity to the corresponding finite-sum identity.
+-/
 theorem deRhamDifferential_smoothFormsLocallyFiniteFinsum
     {n : ℕ} (omega : ι → SmoothForms (I := I) (M := M) ℝ n)
     (hloc : LocallyFinite (fun i ↦ smoothFormTSupport I (omega i))) :
@@ -531,7 +722,21 @@ theorem deRhamDifferential_smoothFormsLocallyFiniteFinsum
   exact smoothForms_finset_sum_toFun I
     (fun i ↦ deRhamDifferential (I := I) (M := M) (A := ℝ) n (omega i)) s x
 
-/-- A finite-support telescoping sum on the natural numbers. -/
+/--
+%%handwave
+name:
+  Telescoping of an eventually zero sequence
+statement:
+  Let \((a_n)_{n\ge0}\) be a sequence in an additive commutative group which
+  is eventually zero.  Then its finite-support sum satisfies
+  \[
+    \sum_{n\ge0}^{\mathrm{fin}}(a_n-a_{n+1})=a_0.
+  \]
+proof:
+  Choose \(N\) such that \(a_n=0\) for all \(n\ge N\).  The sum is supported
+  in \(\{0,\ldots,N-1\}\), where ordinary finite telescoping gives
+  \(a_0-a_N=a_0\).
+-/
 theorem finsum_nat_sub_succ_eq_of_eventually_zero
     {A : Type*} [AddCommGroup A] (f : ℕ → A)
     (hf : ∃ N : ℕ, ∀ n ≥ N, f n = 0) :
@@ -550,9 +755,25 @@ theorem finsum_nat_sub_succ_eq_of_eventually_zero
   rw [hN N le_rfl, sub_zero]
 
 omit [T2Space M] in
-/-- A locally finite chain of primitives for successive differences gives a
-primitive of its first term when the transported remainders escape every
-point. -/
+/--
+%%handwave
+name:
+  Primitive from a locally finite telescoping chain
+statement:
+  Let \((\beta_k)_{k\ge0}\) be smooth \((n+1)\)-forms and
+  \((\eta_k)_{k\ge0}\) smooth \(n\)-forms such that
+  \[
+    d\eta_k=\beta_k-\beta_{k+1}.
+  \]
+  Suppose the closed supports of the \(\eta_k\) are locally finite and, at
+  each point, the values \((\beta_k)_x\) are eventually zero.  Then
+  \(\beta_0\) is exact.
+proof:
+  The locally finite sum \(\theta=\sum_k\eta_k\) is smooth, and exterior
+  differentiation commutes with this sum.  Pointwise, the resulting series
+  is \(\sum_k((\beta_k)_x-(\beta_{k+1})_x)\), which telescopes to
+  \((\beta_0)_x\) because the sequence is eventually zero.
+-/
 theorem exists_smoothForm_primitive_of_locallyFinite_telescope
     {n : ℕ}
     (beta : ℕ → SmoothForms (I := I) (M := M) ℝ (n + 1))
@@ -610,20 +831,51 @@ used by the compact-support primitive. -/
 noncomputable def intervalNormalizingDensity (a b : ℝ) (x : ℝ) : ℝ :=
   fderiv ℝ (intervalMiddleStep a b) x 1
 
-/-- The middle-third step is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the middle-third transition function
+statement:
+  For real endpoints \(a,b\), the function obtained by rescaling the standard
+  smooth transition to the middle third of \([a,b]\) is smooth on
+  \(\mathbb R\).
+proof:
+  The standard transition function is smooth, and its argument is an affine
+  function of the real variable.  Smoothness is preserved under composition.
+-/
 theorem intervalMiddleStep_contDiff {a b : ℝ} :
     ContDiff ℝ ∞ (intervalMiddleStep a b) := by
   unfold intervalMiddleStep
   fun_prop
 
-/-- The canonical normalizing density is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the canonical interval density
+statement:
+  For real endpoints \(a,b\), the derivative of the smooth transition across
+  the middle third of \([a,b]\) is a smooth function on \(\mathbb R\).
+proof:
+  A smooth real function has a smooth Fréchet derivative.  Evaluating this
+  derivative on the unit vector preserves smoothness.
+-/
 theorem intervalNormalizingDensity_contDiff {a b : ℝ} :
     ContDiff ℝ ∞ (intervalNormalizingDensity a b) := by
   unfold intervalNormalizingDensity
   exact ((intervalMiddleStep_contDiff (a := a) (b := b)).fderiv_right
     (m := ∞) (by simp)).clm_apply contDiff_const
 
-/-- The middle-third step is zero to the left of its transition. -/
+/--
+%%handwave
+name:
+  Left constant region of the middle-third transition
+statement:
+  If \(a<b\) and \(x\le(2a+b)/3\), then the smooth transition across the
+  middle third of \([a,b]\) has value zero at \(x\).
+proof:
+  The affine transition parameter is nonpositive at such an \(x\).  The
+  standard smooth transition is identically zero for nonpositive arguments.
+-/
 theorem intervalMiddleStep_eq_zero_of_le_left {a b x : ℝ}
     (hab : a < b) (h : x ≤ intervalMiddleLeft a b) :
     intervalMiddleStep a b x = 0 := by
@@ -634,7 +886,18 @@ theorem intervalMiddleStep_eq_zero_of_le_left {a b x : ℝ}
   · unfold intervalMiddleLeft intervalMiddleRight
     linarith
 
-/-- The middle-third step is one to the right of its transition. -/
+/--
+%%handwave
+name:
+  Right constant region of the middle-third transition
+statement:
+  If \(a<b\) and \((a+2b)/3\le x\), then the smooth transition across the
+  middle third of \([a,b]\) has value one at \(x\).
+proof:
+  Positivity of the length of the middle third shows that the rescaled
+  transition parameter is at least one.  The standard smooth transition is
+  identically one on that region.
+-/
 theorem intervalMiddleStep_eq_one_of_right_le {a b x : ℝ}
     (hab : a < b) (h : intervalMiddleRight a b ≤ x) :
     intervalMiddleStep a b x = 1 := by
@@ -646,8 +909,18 @@ theorem intervalMiddleStep_eq_one_of_right_le {a b x : ℝ}
   rw [le_div_iff₀ hden]
   linarith
 
-/-- The canonical density vanishes strictly to the left of its transition
-interval. -/
+/--
+%%handwave
+name:
+  Vanishing of the interval density to the left
+statement:
+  If \(a<b\) and \(x<(2a+b)/3\), then the canonical interval density at
+  \(x\) is zero.
+proof:
+  In a neighborhood of \(x\), the middle-third transition is the constant
+  zero function.  Its derivative, which is the canonical density, therefore
+  vanishes at \(x\).
+-/
 theorem intervalNormalizingDensity_eq_zero_of_lt_left {a b x : ℝ}
     (hab : a < b) (hx : x < intervalMiddleLeft a b) :
     intervalNormalizingDensity a b x = 0 := by
@@ -658,8 +931,17 @@ theorem intervalNormalizingDensity_eq_zero_of_lt_left {a b x : ℝ}
   rw [heq.fderiv_eq]
   simp
 
-/-- The canonical density vanishes strictly to the right of its transition
-interval. -/
+/--
+%%handwave
+name:
+  Vanishing of the interval density to the right
+statement:
+  If \(a<b\) and \((a+2b)/3<x\), then the canonical interval density at
+  \(x\) is zero.
+proof:
+  Near \(x\), the middle-third transition is the constant one function.
+  Differentiating this local equality shows that its derivative vanishes.
+-/
 theorem intervalNormalizingDensity_eq_zero_of_right_lt {a b x : ℝ}
     (hab : a < b) (hx : intervalMiddleRight a b < x) :
     intervalNormalizingDensity a b x = 0 := by
@@ -670,7 +952,18 @@ theorem intervalNormalizingDensity_eq_zero_of_right_lt {a b x : ℝ}
   rw [heq.fderiv_eq]
   simp
 
-/-- The closed support of the canonical density lies in the open interval. -/
+/--
+%%handwave
+name:
+  Support of the canonical interval density
+statement:
+  If \(a<b\), then the closed support of the canonical normalizing density is
+  contained in the open interval \((a,b)\).
+proof:
+  The density vanishes outside the closed middle third
+  \([(2a+b)/3,(a+2b)/3]\).  This closed interval contains the closure of the
+  nonzero locus and lies strictly inside \((a,b)\).
+-/
 theorem intervalNormalizingDensity_tsupport_subset {a b : ℝ} (hab : a < b) :
     tsupport (intervalNormalizingDensity a b) ⊆ Ioo a b := by
   have hsupp : Function.support (intervalNormalizingDensity a b) ⊆
@@ -686,7 +979,20 @@ theorem intervalNormalizingDensity_tsupport_subset {a b : ℝ} (hab : a < b) :
   unfold intervalMiddleLeft intervalMiddleRight at hx
   constructor <;> linarith [hx.1, hx.2]
 
-/-- The canonical density has interval integral one. -/
+/--
+%%handwave
+name:
+  Unit integral of the canonical interval density
+statement:
+  If \(a<b\), then the canonical normalizing density satisfies
+  \[
+    \int_a^b\rho_{a,b}(x)\,dx=1.
+  \]
+proof:
+  The density is the derivative of the middle-third transition.  By the
+  fundamental theorem of calculus its integral is the transition value at
+  \(b\) minus its value at \(a\), namely \(1-0=1\).
+-/
 theorem intervalNormalizingDensity_integral_eq_one {a b : ℝ} (hab : a < b) :
     ∫ x in a..b, intervalNormalizingDensity a b x = 1 := by
   have hFTC := intervalIntegral.integral_deriv_of_contDiffOn_Icc
@@ -712,7 +1018,20 @@ noncomputable def planarRectangleNormalizingDensity
   intervalNormalizingDensity a b p.1 *
     intervalNormalizingDensity c d p.2
 
-/-- The canonical rectangle density is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the canonical rectangular density
+statement:
+  The product density
+  \[
+    \sigma_{a,b,c,d}(x,y)=\rho_{a,b}(x)\rho_{c,d}(y)
+  \]
+  is smooth on \(\mathbb R^2\).
+proof:
+  Each interval density is smooth.  Compose them with the two coordinate
+  projections and multiply the resulting smooth functions.
+-/
 theorem planarRectangleNormalizingDensity_contDiff
     {a b c d : ℝ} :
     ContDiff ℝ ∞ (planarRectangleNormalizingDensity a b c d) := by
@@ -721,8 +1040,19 @@ theorem planarRectangleNormalizingDensity_contDiff
     (intervalNormalizingDensity_contDiff.comp contDiff_fst).mul
       (intervalNormalizingDensity_contDiff.comp contDiff_snd)
 
-/-- The closed support of the canonical rectangle density lies in the open
-rectangle. -/
+/--
+%%handwave
+name:
+  Support of the canonical rectangular density
+statement:
+  If \(a<b\) and \(c<d\), then the closed support of
+  \(\sigma_{a,b,c,d}(x,y)=\rho_{a,b}(x)\rho_{c,d}(y)\) is contained in
+  \((a,b)\times(c,d)\).
+proof:
+  A point in the closed support of the product must project into the closed
+  support of each factor.  The two interval support bounds then place its
+  first coordinate in \((a,b)\) and its second in \((c,d)\).
+-/
 theorem planarRectangleNormalizingDensity_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d) :
     tsupport (planarRectangleNormalizingDensity a b c d) ⊆
@@ -747,28 +1077,21 @@ theorem planarRectangleNormalizingDensity_tsupport_subset
 def planarHorizontalMarginal (a b : ℝ) (f : ℝ × ℝ → ℝ) (y : ℝ) : ℝ :=
   ∫ x in a..b, f (x, y)
 
-/-- Every horizontal slice of the canonical rectangle density integrates to
-the vertical density. -/
-theorem planarHorizontalMarginal_rectangleNormalizingDensity
-    {a b c d y : ℝ} (hab : a < b) :
-    planarHorizontalMarginal a b
-        (planarRectangleNormalizingDensity a b c d) y =
-      intervalNormalizingDensity c d y := by
-  unfold planarHorizontalMarginal planarRectangleNormalizingDensity
-  change (∫ x in a..b,
-    intervalNormalizingDensity a b x * intervalNormalizingDensity c d y) = _
-  rw [intervalIntegral.integral_mul_const,
-    intervalNormalizingDensity_integral_eq_one hab, one_mul]
-
-/-- The canonical rectangle density has total iterated integral one. -/
-theorem planarRectangleNormalizingDensity_total_eq_one
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d) :
-    ∫ y in c..d, planarHorizontalMarginal a b
-        (planarRectangleNormalizingDensity a b c d) y = 1 := by
-  simp_rw [planarHorizontalMarginal_rectangleNormalizingDensity hab]
-  exact intervalNormalizingDensity_integral_eq_one hcd
-
-/-- A smooth planar coefficient has a smooth horizontal marginal. -/
+/--
+%%handwave
+name:
+  Smoothness of a horizontal marginal
+statement:
+  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) is smooth, then
+  \[
+    y\longmapsto\int_a^b f(x,y)\,dx
+  \]
+  is smooth.
+proof:
+  View the integrand as a smooth function of the parameter \(y\) and the
+  integration variable \(x\).  Smooth dependence of integration over the
+  fixed compact interval \([a,b]\) yields the conclusion.
+-/
 theorem planarHorizontalMarginal_contDiff
     {a b : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) :
@@ -793,7 +1116,22 @@ noncomputable def planarMassTransportRemainder
   f p - planarRectangleMass a b c d f *
     planarRectangleNormalizingDensity a b c d p
 
-/-- The zero-mass remainder is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the rectangular mass-transport remainder
+statement:
+  If \(f:\mathbb R^2\to\mathbb R\) is smooth, then
+  \[
+    r=f-m\sigma_{a,b,c,d},\qquad
+    m=\int_c^d\int_a^b f(x,y)\,dx\,dy,
+  \]
+  is smooth.
+proof:
+  The mass \(m\) is constant and the normalized rectangular density
+  \(\sigma_{a,b,c,d}\) is smooth.  Scalar multiplication and subtraction
+  preserve smoothness.
+-/
 theorem planarMassTransportRemainder_contDiff
     {a b c d : ℝ} {f : ℝ × ℝ → ℝ} (hf : ContDiff ℝ ∞ f) :
     ContDiff ℝ ∞ (planarMassTransportRemainder a b c d f) := by
@@ -801,7 +1139,20 @@ theorem planarMassTransportRemainder_contDiff
   exact hf.sub
     (contDiff_const.mul planarRectangleNormalizingDensity_contDiff)
 
-/-- Removing the mass does not enlarge a rectangular support bound. -/
+/--
+%%handwave
+name:
+  Support of the rectangular mass-transport remainder
+statement:
+  If \(a<b\), \(c<d\), and the closed support of
+  \(f:\mathbb R^2\to\mathbb R\) is contained in
+  \((a,b)\times(c,d)\), then the same is true of
+  \(f-m\sigma_{a,b,c,d}\).
+proof:
+  The closed support of a difference lies in the union of the closed supports
+  of its two terms.  The first is bounded by hypothesis, while the normalized
+  density in the second is supported in the same open rectangle.
+-/
 theorem planarMassTransportRemainder_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     {f : ℝ × ℝ → ℝ}
@@ -819,8 +1170,23 @@ theorem planarMassTransportRemainder_tsupport_subset
   · exact planarRectangleNormalizingDensity_tsupport_subset hab hcd
       (tsupport_mul_subset_right hpDensity)
 
-/-- The horizontal marginal of the zero-mass remainder is the original
-marginal minus the transported product density. -/
+/--
+%%handwave
+name:
+  Horizontal marginal of the rectangular mass-transport remainder
+statement:
+  If \(a<b\) and \(f:\mathbb R^2\to\mathbb R\) is continuous, then for every
+  \(y\),
+  \[
+    \int_a^b\bigl(f(x,y)-m\rho_{a,b}(x)\rho_{c,d}(y)\bigr)\,dx
+      =\int_a^b f(x,y)\,dx-m\rho_{c,d}(y),
+  \]
+  where \(m\) is the total mass of \(f\) over the rectangle.
+proof:
+  Distribute the interval integral over the difference, pull the constants
+  \(m\) and \(\rho_{c,d}(y)\) outside, and use
+  \(\int_a^b\rho_{a,b}=1\).
+-/
 theorem planarHorizontalMarginal_massTransportRemainder
     {a b c d y : ℝ} (hab : a < b)
     {f : ℝ × ℝ → ℝ} (hf : Continuous f) :
@@ -846,7 +1212,22 @@ theorem planarHorizontalMarginal_massTransportRemainder
     ring
   · exact (hρint.mul_const _).const_mul _
 
-/-- The mass-transport remainder has total mass zero. -/
+/--
+%%handwave
+name:
+  Zero total mass of the rectangular transport remainder
+statement:
+  If \(a<b\), \(c<d\), and \(f:\mathbb R^2\to\mathbb R\) is smooth, then
+  \[
+    \int_c^d\int_a^b
+      \bigl(f(x,y)-m\sigma_{a,b,c,d}(x,y)\bigr)\,dx\,dy=0,
+  \]
+  where \(m=\int_c^d\int_a^b f\).
+proof:
+  Integrate the horizontal-marginal identity in \(y\).  The first term
+  integrates to \(m\), while the second also integrates to \(m\) because the
+  vertical normalizing density has integral one.
+-/
 theorem planarMassTransportRemainder_total_eq_zero
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     {f : ℝ × ℝ → ℝ} (hf : ContDiff ℝ ∞ f) :
@@ -866,8 +1247,20 @@ theorem planarMassTransportRemainder_total_eq_zero
 
 /-! ### Moving mass into a smaller target rectangle -/
 
-/-- The canonical interval density also integrates to one over any strictly
-larger interval containing its support. -/
+/--
+%%handwave
+name:
+  Unit integral over an outer interval
+statement:
+  If \(A<a<b<B\), then
+  \[
+    \int_A^B\rho_{a,b}(x)\,dx=1.
+  \]
+proof:
+  The canonical density is supported in \((a,b)\), so enlarging the interval
+  of integration from \([a,b]\) to \([A,B]\) does not change the integral.
+  Its integral on \([a,b]\) is one.
+-/
 theorem intervalNormalizingDensity_integral_eq_one_of_outer
     {A a b B : ℝ} (hAa : A < a) (hab : a < b) (hbB : b < B) :
     ∫ x in A..B, intervalNormalizingDensity a b x = 1 := by
@@ -885,31 +1278,6 @@ theorem intervalNormalizingDensity_integral_eq_one_of_outer
     ← intervalIntegral.integral_eq_integral_of_support_subset hsuppSmall,
     intervalNormalizingDensity_integral_eq_one hab]
 
-/-- Integrating a target rectangle density horizontally over a larger outer
-interval gives its vertical density. -/
-theorem planarHorizontalMarginal_rectangleNormalizingDensity_of_outer
-    {A B a b c d y : ℝ} (hAa : A < a) (hab : a < b) (hbB : b < B) :
-    planarHorizontalMarginal A B
-        (planarRectangleNormalizingDensity a b c d) y =
-      intervalNormalizingDensity c d y := by
-  unfold planarHorizontalMarginal planarRectangleNormalizingDensity
-  change (∫ x in A..B,
-    intervalNormalizingDensity a b x * intervalNormalizingDensity c d y) = _
-  rw [intervalIntegral.integral_mul_const,
-    intervalNormalizingDensity_integral_eq_one_of_outer hAa hab hbB, one_mul]
-
-/-- A target rectangle density has total mass one when integrated over a
-strictly larger outer rectangle. -/
-theorem planarRectangleNormalizingDensity_total_eq_one_of_outer
-    {A B C D a b c d : ℝ}
-    (hAa : A < a) (hab : a < b) (hbB : b < B)
-    (hCc : C < c) (hcd : c < d) (hdD : d < D) :
-    ∫ y in C..D, planarHorizontalMarginal A B
-        (planarRectangleNormalizingDensity a b c d) y = 1 := by
-  simp_rw [planarHorizontalMarginal_rectangleNormalizingDensity_of_outer
-    hAa hab hbB]
-  exact intervalNormalizingDensity_integral_eq_one_of_outer hCc hcd hdD
-
 /-- Remove the mass of a coefficient in an outer rectangle and place that
 mass into an independently chosen inner target rectangle. -/
 noncomputable def planarMassTransportRemainderTo
@@ -917,7 +1285,21 @@ noncomputable def planarMassTransportRemainderTo
   f p - planarRectangleMass A B C D f *
     planarRectangleNormalizingDensity a b c d p
 
-/-- The two-rectangle mass-transport remainder is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of a two-rectangle mass-transport remainder
+statement:
+  If \(f:\mathbb R^2\to\mathbb R\) is smooth, then
+  \[
+    r=f-m_{A,B,C,D}(f)\,\sigma_{a,b,c,d}
+  \]
+  is smooth, where the scalar \(m_{A,B,C,D}(f)\) is the mass of \(f\) over
+  the outer rectangle.
+proof:
+  The mass is a constant scalar and the target density is smooth.  Their
+  product is smooth, and subtracting it from \(f\) preserves smoothness.
+-/
 theorem planarMassTransportRemainderTo_contDiff
     {A B C D a b c d : ℝ} {f : ℝ × ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) :
@@ -926,8 +1308,24 @@ theorem planarMassTransportRemainderTo_contDiff
   exact hf.sub
     (contDiff_const.mul planarRectangleNormalizingDensity_contDiff)
 
-/-- If both the original support and target rectangle lie in the outer
-rectangle, the two-rectangle remainder remains supported there. -/
+/--
+%%handwave
+name:
+  Outer support of a two-rectangle mass-transport remainder
+statement:
+  Suppose \([a,b]\times[c,d]\) lies strictly inside
+  \([A,B]\times[C,D]\), and the closed support of \(f\) is contained in the
+  open outer rectangle.  Then the closed support of
+  \[
+    f-m_{A,B,C,D}(f)\,\sigma_{a,b,c,d}
+  \]
+  is also contained in \((A,B)\times(C,D)\).
+proof:
+  The support of the difference lies in the union of the support of \(f\) and
+  that of the target bump.  The former lies in the outer rectangle by
+  hypothesis; the latter lies in the inner rectangle, hence also in the
+  outer one by the strict endpoint inequalities.
+-/
 theorem planarMassTransportRemainderTo_tsupport_subset
     {A B C D a b c d : ℝ}
     (hAa : A < a) (hab : a < b) (hbB : b < B)
@@ -949,8 +1347,23 @@ theorem planarMassTransportRemainderTo_tsupport_subset
     exact ⟨⟨hAa.trans hpTarget.1.1, hpTarget.1.2.trans hbB⟩,
       ⟨hCc.trans hpTarget.2.1, hpTarget.2.2.trans hdD⟩⟩
 
-/-- The horizontal marginal of the two-rectangle remainder is the original
-marginal minus the transported vertical density. -/
+/--
+%%handwave
+name:
+  Horizontal marginal of a two-rectangle transport remainder
+statement:
+  If \(A<a<b<B\) and \(f:\mathbb R^2\to\mathbb R\) is continuous, then
+  \[
+    \int_A^B\bigl(f(x,y)-m\rho_{a,b}(x)\rho_{c,d}(y)\bigr)\,dx
+      =\int_A^B f(x,y)\,dx-m\rho_{c,d}(y),
+  \]
+  where \(m\) is the mass of \(f\) over
+  \([A,B]\times[C,D]\).
+proof:
+  Integrate the difference termwise and pull out the factors independent of
+  \(x\).  The density \(\rho_{a,b}\) integrates to one over the containing
+  interval \([A,B]\).
+-/
 theorem planarHorizontalMarginal_massTransportRemainderTo
     {A B C D a b c d y : ℝ}
     (hAa : A < a) (hab : a < b) (hbB : b < B)
@@ -977,8 +1390,24 @@ theorem planarHorizontalMarginal_massTransportRemainderTo
     ring
   · exact (hρint.mul_const _).const_mul _
 
-/-- Moving the mass into an inner target rectangle leaves a zero-total-mass
-remainder on the outer rectangle. -/
+/--
+%%handwave
+name:
+  Zero outer mass of a two-rectangle transport remainder
+statement:
+  Suppose \([a,b]\times[c,d]\) lies strictly inside
+  \([A,B]\times[C,D]\).  For every smooth \(f:\mathbb R^2\to\mathbb R\),
+  \[
+    \int_C^D\int_A^B
+      \bigl(f(x,y)-m\sigma_{a,b,c,d}(x,y)\bigr)\,dx\,dy=0,
+  \]
+  where \(m\) is the mass of \(f\) over the outer rectangle.
+proof:
+  Integrate the horizontal-marginal formula in \(y\).  The original marginal
+  contributes \(m\), and the target term contributes the same \(m\), because
+  both normalizing densities integrate to one over the corresponding outer
+  intervals.
+-/
 theorem planarMassTransportRemainderTo_total_eq_zero
     {A B C D a b c d : ℝ}
     (hAa : A < a) (hab : a < b) (hbB : b < B)
@@ -1002,8 +1431,23 @@ theorem planarMassTransportRemainderTo_total_eq_zero
   rw [intervalNormalizingDensity_integral_eq_one_of_outer hCc hcd hdD]
   simp [planarRectangleMass]
 
-/-- The closed support of the horizontal marginal is contained in the
-projection of the closed support of the planar coefficient. -/
+/--
+%%handwave
+name:
+  Support of a horizontal marginal is contained in the vertical projection
+statement:
+  Let \(f:\mathbb R^2\to\mathbb R\) have compact support.  For any real
+  interval \([a,b]\),
+  \[
+    \operatorname{supp}\left(y\mapsto\int_a^b f(x,y)\,dx\right)
+      \subseteq \operatorname{pr}_2(\operatorname{supp}f).
+  \]
+proof:
+  The vertical projection of the compact closed support of \(f\) is compact
+  and hence closed.  If \(y\) is outside this projection, then
+  \(f(x,y)=0\) for every \(x\), so the horizontal integral is zero.  Taking
+  the closure of the nonzero locus proves the inclusion.
+-/
 theorem tsupport_planarHorizontalMarginal_subset_snd_image
     (a b : ℝ) {f : ℝ × ℝ → ℝ} (hfc : HasCompactSupport f) :
     tsupport (planarHorizontalMarginal a b f) ⊆
@@ -1023,7 +1467,22 @@ theorem tsupport_planarHorizontalMarginal_subset_snd_image
   intro hxy
   exact hyimage ⟨(x, y), hxy, rfl⟩
 
-/-- A rectangular support bound descends to the horizontal marginal. -/
+/--
+%%handwave
+name:
+  Vertical support bound for a horizontal marginal
+statement:
+  If \(f:\mathbb R^2\to\mathbb R\) has compact support contained in
+  \((a,b)\times(c,d)\), then
+  \[
+    \operatorname{supp}\left(y\mapsto\int_a^b f(x,y)\,dx\right)
+      \subseteq(c,d).
+  \]
+proof:
+  The support of the marginal lies in the vertical projection of the support
+  of \(f\).  Projecting the assumed rectangular support inclusion places this
+  image inside \((c,d)\).
+-/
 theorem tsupport_planarHorizontalMarginal_subset_Ioo
     (a b c d : ℝ) {f : ℝ × ℝ → ℝ}
     (hfc : HasCompactSupport f)
@@ -1038,7 +1497,21 @@ def planarZeroHorizontalMarginalAdjustment
     (a b : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) : ℝ :=
   f p - ρ p.1 * planarHorizontalMarginal a b f p.2
 
-/-- The adjusted coefficient is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the zero-horizontal-marginal adjustment
+statement:
+  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) are smooth, then
+  \[
+    h(x,y)=f(x,y)-\rho(x)\int_a^b f(t,y)\,dt
+  \]
+  is smooth.
+proof:
+  The horizontal marginal is smooth in \(y\).  Compose it and \(\rho\) with
+  the coordinate projections, multiply, and subtract from \(f\).
+-/
 theorem planarZeroHorizontalMarginalAdjustment_contDiff
     {a b : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -1048,8 +1521,21 @@ theorem planarZeroHorizontalMarginalAdjustment_contDiff
     ((hρ.comp contDiff_fst).mul
       ((planarHorizontalMarginal_contDiff hab hf).comp contDiff_snd))
 
-/-- After subtracting the normalized product density, every horizontal slice
-has integral zero. -/
+/--
+%%handwave
+name:
+  Zero integral of every adjusted horizontal slice
+statement:
+  Let \(f:\mathbb R^2\to\mathbb R\) and \(\rho:\mathbb R\to\mathbb R\) be
+  continuous, with \(\int_a^b\rho=1\).  Then for every \(y\),
+  \[
+    \int_a^b\left(f(x,y)-\rho(x)\int_a^b f(t,y)\,dt\right)dx=0.
+  \]
+proof:
+  Distribute the integral over the difference.  Pull the horizontal marginal
+  out of the second integral and use the unit integral of \(\rho\); the two
+  resulting terms are equal and cancel.
+-/
 theorem planarZeroHorizontalMarginalAdjustment_intervalIntegral_eq_zero
     {a b : ℝ} {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : Continuous f) (hρ : Continuous ρ)
@@ -1066,8 +1552,25 @@ theorem planarZeroHorizontalMarginalAdjustment_intervalIntegral_eq_zero
   rw [intervalIntegral.integral_mul_const]
   simp [planarHorizontalMarginal, hρone]
 
-/-- If the original coefficient and the normalizing density are supported in
-the rectangle interior, so is the adjusted coefficient. -/
+/--
+%%handwave
+name:
+  Support of the zero-horizontal-marginal adjustment
+statement:
+  Let \(f:\mathbb R^2\to\mathbb R\) have compact support contained in
+  \((a,b)\times(c,d)\), and let \(\rho\) be supported in \((a,b)\).  Then the
+  closed support of
+  \[
+    f(x,y)-\rho(x)\int_a^b f(t,y)\,dt
+  \]
+  is also contained in \((a,b)\times(c,d)\).
+proof:
+  The support of the difference lies in the union of the support of \(f\) and
+  the support of the product correction.  A point in the latter has first
+  coordinate in the support of \(\rho\) and second coordinate in the support
+  of the horizontal marginal; the marginal support lies in \((c,d)\) by the
+  rectangular support of \(f\).
+-/
 theorem tsupport_planarZeroHorizontalMarginalAdjustment_subset
     {a b c d : ℝ} {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hfc : HasCompactSupport f)
@@ -1104,7 +1607,24 @@ def planarHorizontalPrimitive
   ∫ x in a..p.1,
     planarZeroHorizontalMarginalAdjustment a b f ρ (x, p.2)
 
-/-- The horizontal primitive is jointly smooth in both coordinates. -/
+/--
+%%handwave
+name:
+  Smoothness of the horizontal planar primitive
+statement:
+  Let \(a\le b\), and let \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) be smooth.  If \(h\) is the adjusted
+  coefficient with zero horizontal marginal, then
+  \[
+    Q(x,y)=\int_a^x h(t,y)\,dt
+  \]
+  is smooth jointly in \((x,y)\).
+proof:
+  Rescale each variable interval \([a,x]\) to the fixed interval \([0,1]\).
+  The rescaled integrand is jointly smooth in the parameters and integration
+  variable, so smooth parameter dependence of interval integrals makes the
+  resulting function smooth.
+-/
 theorem planarHorizontalPrimitive_contDiff
     {a b : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -1139,8 +1659,25 @@ theorem planarHorizontalPrimitive_contDiff
         (p.1 - a) a)]
   exact hscaled
 
-/-- The horizontal derivative of the horizontal primitive is the adjusted
-coefficient. -/
+/--
+%%handwave
+name:
+  Horizontal derivative of the planar horizontal primitive
+statement:
+  With
+  \[
+    Q(x,y)=\int_a^x h(t,y)\,dt,
+  \]
+  where \(h\) is the smooth zero-horizontal-marginal adjustment, one has
+  \[
+    \frac{\partial Q}{\partial x}(x,y)=h(x,y).
+  \]
+proof:
+  Restrict \(Q\) to the horizontal line through \((x,y)\).  The chain rule
+  identifies its derivative with the Fréchet derivative of \(Q\) in direction
+  \((1,0)\), while the fundamental theorem of calculus identifies it with
+  \(h(x,y)\).
+-/
 theorem planarHorizontalPrimitive_fderiv_fst
     {a b : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ)
@@ -1168,9 +1705,27 @@ theorem planarHorizontalPrimitive_fderiv_fst
   have happ := congrArg (fun L : ℝ →L[ℝ] ℝ ↦ L 1) hmaps
   simpa [Q, h, planarHorizontalPrimitive] using happ
 
-/-- The horizontal primitive remains compactly supported in the original
-rectangle interior.  The zero horizontal marginal is what makes it vanish
-again after passing the right edge of the support. -/
+/--
+%%handwave
+name:
+  Compact rectangular support of the horizontal planar primitive
+statement:
+  Let \(a<b\), \(c<d\), let \(f:\mathbb R^2\to\mathbb R\) be smooth and
+  compactly supported in \((a,b)\times(c,d)\), and let \(\rho\) be smooth,
+  supported in \((a,b)\), with \(\int_a^b\rho=1\).  Then
+  \[
+    Q(x,y)=\int_a^x\left(f(t,y)-\rho(t)
+      \int_a^b f(s,y)\,ds\right)dt
+  \]
+  has compact support contained in \((a,b)\times(c,d)\).
+proof:
+  The adjusted integrand has compact support in a smaller closed rectangle.
+  Outside its vertical projection every horizontal slice is zero.  To the
+  left of its horizontal projection the primitive is zero by definition; to
+  the right it is zero because each adjusted horizontal slice has integral
+  zero.  Thus the support lies in a compact inner rectangle, itself contained
+  in the stated open rectangle.
+-/
 theorem planarHorizontalPrimitive_hasCompactSupport_and_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
@@ -1277,7 +1832,22 @@ def planarVerticalMarginalPrimitive
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (y : ℝ) : ℝ :=
   ∫ t in c..y, planarHorizontalMarginal a b f t
 
-/-- The vertical marginal primitive is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the vertical marginal primitive
+statement:
+  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) is smooth, then for every
+  fixed \(c\in\mathbb R\) the function
+  \[
+    H(y)=\int_c^y\left(\int_a^b f(x,t)\,dx\right)dt
+  \]
+  is smooth.
+proof:
+  Smooth parameter dependence makes the horizontal marginal a smooth
+  function of \(t\).  The ordinary primitive of a smooth real-valued function
+  is smooth.
+-/
 theorem planarVerticalMarginalPrimitive_contDiff
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) :
@@ -1285,8 +1855,27 @@ theorem planarVerticalMarginalPrimitive_contDiff
   exact realPrimitive_contDiff_of_contDiff
     (planarHorizontalMarginal_contDiff hab hf) c
 
-/-- If the total iterated integral is zero, the vertical marginal primitive
-is compactly supported in the vertical interval. -/
+/--
+%%handwave
+name:
+  Compact support of the vertical marginal primitive
+statement:
+  Let \(a<b\), \(c<d\), and let \(f:\mathbb R^2\to\mathbb R\) be smooth and
+  compactly supported in \((a,b)\times(c,d)\).  If
+  \[
+    \int_c^d\int_a^b f(x,y)\,dx\,dy=0,
+  \]
+  then
+  \[
+    H(y)=\int_c^y\int_a^b f(x,t)\,dx\,dt
+  \]
+  has compact support contained in \((c,d)\).
+proof:
+  The horizontal marginal is compactly supported in \((c,d)\).  Its primitive
+  vanishes before the support and, because its total integral is zero, also
+  after the support.  The standard support theorem for a zero-integral
+  primitive therefore places the closed support of \(H\) inside \((c,d)\).
+-/
 theorem planarVerticalMarginalPrimitive_hasCompactSupport_and_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d) {f : ℝ × ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
@@ -1323,7 +1912,22 @@ def planarVerticalPrimitiveCoefficient
     (p : ℝ × ℝ) : ℝ :=
   -(ρ p.1 * planarVerticalMarginalPrimitive a b c f p.2)
 
-/-- The vertical correction coefficient is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the vertical correction coefficient
+statement:
+  Let \(a\le b\).  If \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) are smooth, then
+  \[
+    P(x,y)=-\rho(x)\int_c^y\int_a^b f(s,t)\,ds\,dt
+  \]
+  is smooth on \(\mathbb R^2\).
+proof:
+  The vertical primitive of the smooth horizontal marginal is smooth in
+  \(y\).  Compose it with the second projection, compose \(\rho\) with the
+  first projection, multiply the two functions, and negate.
+-/
 theorem planarVerticalPrimitiveCoefficient_contDiff
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -1332,8 +1936,26 @@ theorem planarVerticalPrimitiveCoefficient_contDiff
   exact ((hρ.comp contDiff_fst).mul
     ((planarVerticalMarginalPrimitive_contDiff hab hf).comp contDiff_snd)).neg
 
-/-- The vertical derivative of the vertical correction coefficient is minus
-the product density removed from the horizontal slices. -/
+/--
+%%handwave
+name:
+  Vertical derivative of the vertical correction coefficient
+statement:
+  For
+  \[
+    P(x,y)=-\rho(x)\int_c^y\int_a^b f(s,t)\,ds\,dt,
+  \]
+  one has
+  \[
+    \frac{\partial P}{\partial y}(x,y)
+      =-\rho(x)\int_a^b f(s,y)\,ds.
+  \]
+proof:
+  Restrict to the vertical line through \((x,y)\).  The chain rule converts
+  differentiation along this line to the directional derivative in direction
+  \((0,1)\), and the fundamental theorem of calculus differentiates the
+  vertical integral.
+-/
 theorem planarVerticalPrimitiveCoefficient_fderiv_snd
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ)
@@ -1364,8 +1986,24 @@ theorem planarVerticalPrimitiveCoefficient_fderiv_snd
   simpa [P, g, planarVerticalPrimitiveCoefficient,
     planarVerticalMarginalPrimitive] using happ
 
-/-- The vertical correction coefficient has compact support in the same
-rectangle. -/
+/--
+%%handwave
+name:
+  Compact rectangular support of the vertical correction coefficient
+statement:
+  Let \(a<b\), \(c<d\), let \(f:\mathbb R^2\to\mathbb R\) be smooth and
+  compactly supported in \((a,b)\times(c,d)\), and suppose its total integral
+  over that rectangle is zero.  If \(\rho\) is supported in \((a,b)\), then
+  \[
+    P(x,y)=-\rho(x)\int_c^y\int_a^b f(s,t)\,ds\,dt
+  \]
+  has compact support contained in \((a,b)\times(c,d)\).
+proof:
+  The vertical integral has compact support in \((c,d)\), while \(\rho\) has
+  support in \((a,b)\).  The support of their product lies in the product of
+  those two supports, and its closure is contained in the compact closed
+  rectangle \([a,b]\times[c,d]\).
+-/
 theorem planarVerticalPrimitiveCoefficient_hasCompactSupport_and_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
@@ -1411,7 +2049,25 @@ theorem planarVerticalPrimitiveCoefficient_hasCompactSupport_and_tsupport_subset
     exact hsupport.trans (Set.prod_mono Ioo_subset_Icc_self Ioo_subset_Icc_self)
   · exact hsupport
 
-/-- The two coefficient functions satisfy the planar curl identity. -/
+/--
+%%handwave
+name:
+  Curl identity for the compactly supported planar primitive
+statement:
+  Let \(a\le b\), let \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) be smooth, and let \(P,Q\) be the vertical
+  and horizontal coefficients of the explicit planar primitive.  Then
+  \[
+    \frac{\partial Q}{\partial x}(x,y)
+      -\frac{\partial P}{\partial y}(x,y)=f(x,y)
+  \]
+  for every \((x,y)\in\mathbb R^2\).
+proof:
+  The horizontal derivative equals the zero-horizontal-marginal adjustment
+  plus the normalizing correction, while the vertical derivative equals that
+  correction.  Subtracting cancels the correction and expands the adjustment
+  to \(f\).
+-/
 theorem planarCompactSupportPrimitive_curl_eq
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ)
@@ -1439,7 +2095,24 @@ def planarPrimitiveOneFormCoefficient
       (planarVerticalPrimitiveCoefficient a b c f ρ)
       (planarHorizontalPrimitive a b f ρ) p)
 
-/-- The coefficient field of the coordinate primitive is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the planar primitive one-form coefficient
+statement:
+  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) are smooth, then the one-form coefficient
+  field
+  \[
+    (x,y)\longmapsto P(x,y)\,dx+Q(x,y)\,dy
+  \]
+  produced by the planar primitive construction is smooth.
+proof:
+  The scalar coefficient functions \(P\) and \(Q\) are smooth.  Multiplication
+  by the fixed coordinate covectors \(dx\) and \(dy\), addition, and the
+  canonical identification of covectors with alternating one-forms preserve
+  smoothness.
+-/
 theorem planarPrimitiveOneFormCoefficient_contDiff
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -1450,57 +2123,6 @@ theorem planarPrimitiveOneFormCoefficient_contDiff
   exact (ContinuousAlternatingMap.ofSubsingletonLIE
       (𝕜 := ℝ) (E := ℝ × ℝ) (F := ℝ) (0 : Fin 1)).contDiff.comp
     (by fun_prop)
-
-/-- Under the zero-total-mass hypothesis, the full one-form coefficient is
-compactly supported in the original rectangle interior. -/
-theorem planarPrimitiveOneFormCoefficient_hasCompactSupport_and_tsupport_subset
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
-    (hf : ContDiff ℝ ∞ f) (hfc : HasCompactSupport f)
-    (hfrect : tsupport f ⊆ Set.Ioo a b ×ˢ Set.Ioo c d)
-    (hρ : ContDiff ℝ ∞ ρ)
-    (hρsupport : tsupport ρ ⊆ Set.Ioo a b)
-    (hρone : ∫ x in a..b, ρ x = 1)
-    (htotal : ∫ y in c..d, planarHorizontalMarginal a b f y = 0) :
-    HasCompactSupport (planarPrimitiveOneFormCoefficient a b c f ρ) ∧
-      tsupport (planarPrimitiveOneFormCoefficient a b c f ρ) ⊆
-        Set.Ioo a b ×ˢ Set.Ioo c d := by
-  let P : ℝ × ℝ → ℝ := planarVerticalPrimitiveCoefficient a b c f ρ
-  let Q : ℝ × ℝ → ℝ := planarHorizontalPrimitive a b f ρ
-  have hP := planarVerticalPrimitiveCoefficient_hasCompactSupport_and_tsupport_subset
-    hab hcd hf hfc hfrect hρsupport htotal
-  have hQ := planarHorizontalPrimitive_hasCompactSupport_and_tsupport_subset
-    hab hcd hf hfc hfrect hρ hρsupport hρone
-  have hsupport :
-      Function.support (planarPrimitiveOneFormCoefficient a b c f ρ) ⊆
-        tsupport P ∪ tsupport Q := by
-    intro p hp
-    by_contra hpUnion
-    have hpP : p ∉ tsupport P := fun hp' ↦ hpUnion (Or.inl hp')
-    have hpQ : p ∉ tsupport Q := fun hp' ↦ hpUnion (Or.inr hp')
-    have hPzero : P p = 0 := image_eq_zero_of_notMem_tsupport hpP
-    have hQzero : Q p = 0 := image_eq_zero_of_notMem_tsupport hpQ
-    apply hp
-    simp [planarPrimitiveOneFormCoefficient, planarCoordinateCovector,
-      P, Q, hPzero, hQzero]
-    exact (ContinuousAlternatingMap.ofSubsingletonLIE
-      (𝕜 := ℝ) (E := ℝ × ℝ) (F := ℝ) (0 : Fin 1)).map_zero
-  have htsupport : tsupport (planarPrimitiveOneFormCoefficient a b c f ρ) ⊆
-      tsupport P ∪ tsupport Q :=
-    closure_minimal hsupport
-      ((isClosed_tsupport P).union (isClosed_tsupport Q))
-  have hrect : tsupport (planarPrimitiveOneFormCoefficient a b c f ρ) ⊆
-      Set.Ioo a b ×ˢ Set.Ioo c d := by
-    refine htsupport.trans ?_
-    rintro p (hp | hp)
-    · exact hP.2 hp
-    · exact hQ.2 hp
-  constructor
-  · apply IsCompact.of_isClosed_subset
-      (isCompact_Icc.prod isCompact_Icc)
-      (isClosed_tsupport (planarPrimitiveOneFormCoefficient a b c f ρ))
-    exact hrect.trans (Set.prod_mono Ioo_subset_Icc_self Ioo_subset_Icc_self)
-  · exact hrect
 
 /-- The full coordinate plane, regarded as an open subset of itself. -/
 def planarModelOpen : TopologicalSpace.Opens (ℝ × ℝ) := ⊤
@@ -1526,6 +2148,18 @@ def planarOrientedBasis : Fin 2 → ℝ × ℝ
   | 0 => (1, 0)
   | 1 => (0, 1)
 
+/--
+%%handwave
+name:
+  Vertical-basis component of the planar primitive one-form
+statement:
+  For the one-form \(P\,dx+Q\,dy\), deleting the first vector from the
+  standard oriented basis \(((1,0),(0,1))\) and evaluating on the remaining
+  vector gives \(Q\).
+proof:
+  The remaining vector is \((0,1)\), on which \(dx\) vanishes and \(dy\)
+  takes the value one.
+-/
 @[simp]
 theorem planarPrimitiveOneFormCoefficient_removeNth_zero
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) :
@@ -1544,6 +2178,18 @@ theorem planarPrimitiveOneFormCoefficient_removeNth_zero
       (planarHorizontalPrimitive a b f ρ) p (0, 1) = _
   simp [planarCoordinateCovector]
 
+/--
+%%handwave
+name:
+  Horizontal-basis component of the planar primitive one-form
+statement:
+  For the one-form \(P\,dx+Q\,dy\), deleting the second vector from the
+  standard oriented basis \(((1,0),(0,1))\) and evaluating on the remaining
+  vector gives \(P\).
+proof:
+  The remaining vector is \((1,0)\), on which \(dx\) takes the value one and
+  \(dy\) vanishes.
+-/
 @[simp]
 theorem planarPrimitiveOneFormCoefficient_removeNth_one
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) :
@@ -1560,64 +2206,6 @@ theorem planarPrimitiveOneFormCoefficient_removeNth_one
       (planarVerticalPrimitiveCoefficient a b c f ρ)
       (planarHorizontalPrimitive a b f ρ) p (1, 0) = _
   simp [planarCoordinateCovector]
-
-/-- Evaluating the exterior derivative of the coordinate primitive on the
-oriented basis recovers the original planar coefficient. -/
-theorem deRhamDifferential_planarCompactSupportPrimitiveOneForm_apply_basis
-    {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
-    (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ)
-    (p : planarModelOpen) :
-    (JJMath.Manifold.deRhamDifferential
-        (I := modelWithCornersSelf ℝ (ℝ × ℝ))
-        (M := planarModelOpen) (A := ℝ) 1
-        (planarCompactSupportPrimitiveOneForm a b c hab f ρ hf hρ)).toFun p
-        planarOrientedBasis = f (p : ℝ × ℝ) := by
-  rw [JJMath.Manifold.deRhamDifferential_modelOpen_toFun]
-  have hcoeff :
-      JJMath.Manifold.modelOpenFormCoeffExtension
-          (E := ℝ × ℝ) planarModelOpen 1
-          (fun y ↦ JJMath.Manifold.smoothFormModelCoeff
-            (E := ℝ × ℝ) planarModelOpen 1
-              (planarCompactSupportPrimitiveOneForm a b c hab f ρ hf hρ) y) =
-        planarPrimitiveOneFormCoefficient a b c f ρ := by
-    funext x
-    simp [JJMath.Manifold.modelOpenFormCoeffExtension,
-      JJMath.Manifold.smoothFormModelCoeff, planarModelOpen,
-      planarCompactSupportPrimitiveOneForm]
-  rw [hcoeff]
-  change
-    extDerivWithin (planarPrimitiveOneFormCoefficient a b c f ρ)
-      (planarModelOpen : Set (ℝ × ℝ))
-        (p : ℝ × ℝ) planarOrientedBasis = f (p : ℝ × ℝ)
-  change
-    extDerivWithin (planarPrimitiveOneFormCoefficient a b c f ρ)
-      Set.univ (p : ℝ × ℝ) planarOrientedBasis = f (p : ℝ × ℝ)
-  rw [extDerivWithin_univ]
-  rw [extDeriv_apply
-    ((planarPrimitiveOneFormCoefficient_contDiff
-      (c := c) hab hf hρ).differentiable (by simp)).differentiableAt]
-  rw [Fin.sum_univ_two]
-  have hzero :
-      (fun x : ℝ × ℝ ↦
-        planarPrimitiveOneFormCoefficient a b c f ρ x
-          (Fin.removeNth (0 : Fin 2) planarOrientedBasis)) =
-        planarHorizontalPrimitive a b f ρ := by
-    funext x
-    exact planarPrimitiveOneFormCoefficient_removeNth_zero a b c f ρ x
-  have hone :
-      (fun x : ℝ × ℝ ↦
-        planarPrimitiveOneFormCoefficient a b c f ρ x
-          (Fin.removeNth (1 : Fin 2) planarOrientedBasis)) =
-        planarVerticalPrimitiveCoefficient a b c f ρ := by
-    funext x
-    exact planarPrimitiveOneFormCoefficient_removeNth_one a b c f ρ x
-  rw [hzero, hone]
-  norm_num [planarOrientedBasis]
-  change
-    fderiv ℝ (planarHorizontalPrimitive a b f ρ) (p : ℝ × ℝ) (1, 0) -
-      fderiv ℝ (planarVerticalPrimitiveCoefficient a b c f ρ)
-        (p : ℝ × ℝ) (0, 1) = f (p : ℝ × ℝ)
-  exact planarCompactSupportPrimitive_curl_eq hab hf hρ (p : ℝ × ℝ)
 
 /-! ## Complex-coordinate wrapper -/
 
@@ -1637,7 +2225,25 @@ def complexPlanarPrimitiveOneFormCoefficient
   ContinuousAlternatingMap.ofSubsingleton ℝ ℂ ℝ (0 : Fin 1)
     (complexPlanarPrimitiveCovector a b c f ρ z)
 
-/-- The complex-coordinate coefficient field is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the complex-coordinate primitive one-form coefficient
+statement:
+  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) are smooth, then the complex-coordinate
+  one-form field
+  \[
+    z\longmapsto P(\operatorname{Re}z,\operatorname{Im}z)\,d\operatorname{Re}
+      +Q(\operatorname{Re}z,\operatorname{Im}z)\,d\operatorname{Im}
+  \]
+  is smooth.
+proof:
+  The planar coefficients \(P,Q\) are smooth, and composition with the
+  real-imaginary coordinate isomorphism preserves smoothness.  Forming their
+  linear combination with the fixed real and imaginary covectors does as
+  well.
+-/
 theorem complexPlanarPrimitiveOneFormCoefficient_contDiff
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -1649,8 +2255,29 @@ theorem complexPlanarPrimitiveOneFormCoefficient_contDiff
       (𝕜 := ℝ) (E := ℂ) (F := ℝ) (0 : Fin 1)).contDiff.comp
     (by fun_prop)
 
-/-- The complex-coordinate one-form coefficient has compact support in the
-inverse image of the original rectangle. -/
+/--
+%%handwave
+name:
+  Support of the complex-coordinate primitive one-form coefficient
+statement:
+  Let \(a<b\), \(c<d\), and let \(f:\mathbb R^2\to\mathbb R\) be smooth and
+  compactly supported in \((a,b)\times(c,d)\).  Suppose \(\rho\) is smooth,
+  supported in \((a,b)\), satisfies \(\int_a^b\rho=1\), and the total
+  horizontal marginal of \(f\) over \([c,d]\) is zero.  Then the explicit
+  one-form coefficient on \(\mathbb C\) has compact support, with
+  \[
+    \operatorname{supp}\eta
+      \subseteq\{z:(\operatorname{Re}z,\operatorname{Im}z)
+        \in(a,b)\times(c,d)\}.
+  \]
+proof:
+  The planar support theorems place the closed supports of both scalar
+  coefficients \(P\) and \(Q\) in the open rectangle.  The one-form can be
+  nonzero only where at least one coefficient is nonzero, so its support lies
+  in the union of their inverse images under real-imaginary coordinates.
+  This union lies in the stated rectangle, and its closure is contained in a
+  compact closed rectangle.
+-/
 theorem complexPlanarPrimitiveOneFormCoefficient_hasCompactSupport_and_tsupport_subset
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
@@ -1720,8 +2347,20 @@ def complexPlanarModelOpen : TopologicalSpace.Opens ℂ := ⊤
 
 /-! ## Full-plane charts subordinate to an open set -/
 
-/-- A smooth map whose image lies in an open set is smooth as a map to the
-corresponding open submanifold. -/
+/--
+%%handwave
+name:
+  Smooth corestriction to an open submanifold
+statement:
+  Let \(f:M\to N\) be a \(C^n\) map whose image is contained in an open
+  subset \(U\subseteq N\).  Then the same function, regarded as a map
+  \(M\to U\), is \(C^n\).
+proof:
+  Near each point of the image, the inclusion of \(U\) admits the evident
+  local retraction which is the identity on \(U\).  Composing \(f\) with this
+  smooth local retraction gives the corestricted map locally, hence the latter
+  is smooth.
+-/
 theorem ContMDiff.codRestrict_open_aux
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -1769,14 +2408,35 @@ noncomputable def complexUnivBallPartialDiffeomorph
     exact (OpenPartialHomeomorph.contDiffOn_univBall_symm
       (n := (⊤ : ℕ∞))).contMDiffOn
 
-/-- The radial partial diffeomorphism is defined on the whole plane. -/
+/--
+%%handwave
+name:
+  Domain of the radial diffeomorphism onto a ball
+statement:
+  For \(c\in\mathbb C\) and \(r>0\), the standard radial diffeomorphism from
+  the complex plane onto the open ball \(B(c,r)\) has domain all of
+  \(\mathbb C\).
+proof:
+  This is the source identity in the explicit radial homeomorphism between
+  the whole normed space and an open ball; its smooth enhancement has the
+  same underlying partial equivalence.
+-/
 theorem complexUnivBallPartialDiffeomorph_source
     (c : ℂ) (r : ℝ) (hr : 0 < r) :
     (complexUnivBallPartialDiffeomorph c r hr).source = univ := by
   exact OpenPartialHomeomorph.univBall_source c r
 
-/-- The target of the radial partial diffeomorphism is the prescribed open
-ball. -/
+/--
+%%handwave
+name:
+  Image of the radial diffeomorphism onto a ball
+statement:
+  For \(c\in\mathbb C\) and \(r>0\), the image of the standard radial
+  diffeomorphism from \(\mathbb C\) is precisely the open ball \(B(c,r)\).
+proof:
+  The underlying radial open partial homeomorphism has target \(B(c,r)\), and
+  passing to its smooth enhancement does not change the target set.
+-/
 theorem complexUnivBallPartialDiffeomorph_target
     (c : ℂ) (r : ℝ) (hr : 0 < r) :
     (complexUnivBallPartialDiffeomorph c r hr).target = Metric.ball c r := by
@@ -1839,9 +2499,21 @@ noncomputable def partialDiffeomorphSourceToComplexPlanarModelOpen
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- Every point of an open subset of a smooth complex surface has a smaller
-coordinate neighborhood, still subordinate to that open set, which is
-smoothly diffeomorphic to the whole complex plane. -/
+/--
+%%handwave
+name:
+  A full-plane coordinate chart subordinate to an open set
+statement:
+  Let \(X\) be a smooth complex surface, let \(W\subseteq X\) be open, and let
+  \(x\in W\).  There is an open neighborhood \(U\) of \(x\), with
+  \(U\subseteq W\), which is smoothly diffeomorphic to \(\mathbb C\).
+proof:
+  Start with a chart at \(x\) and choose a small coordinate ball centered at
+  the image of \(x\) whose inverse image lies in \(W\).  Compose the restricted
+  chart with the standard radial diffeomorphism from that ball onto the whole
+  plane.  Its source is the required \(U\), and the ball containment gives
+  \(U\subseteq W\).
+-/
 theorem exists_complexPlanarChart_subordinate
     {X : Type*} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -1936,6 +2608,20 @@ def complexPlanarOrientedBasis : Fin 2 → ℂ
   | 0 => 1
   | 1 => Complex.I
 
+/--
+%%handwave
+name:
+  Imaginary component of the explicit complex-planar primitive
+statement:
+  Let \(\eta\) be the explicit complex-planar primitive one-form.  After
+  deleting the first vector from the oriented basis \((1,i)\), evaluating
+  \(\eta_z\) on the remaining vector \(i\) gives the horizontal primitive
+  coefficient at \((\operatorname{Re}z,\operatorname{Im}z)\).
+proof:
+  The remaining one-vector list is \((i)\).  Substitute it into the defining
+  covector formula; its imaginary component is one and its real component is
+  zero, leaving exactly the horizontal coefficient.
+-/
 @[simp]
 theorem complexPlanarPrimitiveOneFormCoefficient_removeNth_zero
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (z : ℂ) :
@@ -1952,6 +2638,20 @@ theorem complexPlanarPrimitiveOneFormCoefficient_removeNth_zero
   change complexPlanarPrimitiveCovector a b c f ρ z Complex.I = _
   simp [complexPlanarPrimitiveCovector]
 
+/--
+%%handwave
+name:
+  Real component of the explicit complex-planar primitive
+statement:
+  Let \(\eta\) be the explicit complex-planar primitive one-form.  After
+  deleting the second vector from the oriented basis \((1,i)\), evaluating
+  \(\eta_z\) on the remaining vector \(1\) gives the vertical primitive
+  coefficient at \((\operatorname{Re}z,\operatorname{Im}z)\).
+proof:
+  The remaining one-vector list is \((1)\).  In the defining covector formula
+  its real component is one and its imaginary component is zero, leaving the
+  vertical coefficient.
+-/
 @[simp]
 theorem complexPlanarPrimitiveOneFormCoefficient_removeNth_one
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (z : ℂ) :
@@ -1967,8 +2667,22 @@ theorem complexPlanarPrimitiveOneFormCoefficient_removeNth_one
   change complexPlanarPrimitiveCovector a b c f ρ z 1 = _
   simp [complexPlanarPrimitiveCovector]
 
-/-- Differentiating after real-imaginary coordinates in the real direction
-is differentiation in the first planar coordinate. -/
+/--
+%%handwave
+name:
+  Real-direction derivative after real-imaginary coordinates
+statement:
+  If \(g:\mathbb R^2\to\mathbb R\) is smooth, then for every
+  \(z\in\mathbb C\),
+  \[
+    D(g\circ(\operatorname{Re},\operatorname{Im}))(z)[1]
+      =Dg(\operatorname{Re}z,\operatorname{Im}z)[(1,0)].
+  \]
+proof:
+  Apply the Fréchet chain rule to the real-linear isomorphism
+  \(z\mapsto(\operatorname{Re}z,\operatorname{Im}z)\).  Its value on the real
+  unit vector \(1\) is \((1,0)\).
+-/
 theorem fderiv_comp_equivRealProdCLM_apply_one
     {g : ℝ × ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (z : ℂ) :
     fderiv ℝ (fun w : ℂ ↦ g (Complex.equivRealProdCLM w)) z 1 =
@@ -1982,8 +2696,21 @@ theorem fderiv_comp_equivRealProdCLM_apply_one
   have happ := congrArg (fun L : ℂ →L[ℝ] ℝ ↦ L 1) hmaps
   simpa [Function.comp_def] using happ
 
-/-- Differentiating after real-imaginary coordinates in the imaginary
-direction is differentiation in the second planar coordinate. -/
+/--
+%%handwave
+name:
+  Imaginary-direction derivative after real-imaginary coordinates
+statement:
+  If \(g:\mathbb R^2\to\mathbb R\) is smooth, then for every
+  \(z\in\mathbb C\),
+  \[
+    D(g\circ(\operatorname{Re},\operatorname{Im}))(z)[i]
+      =Dg(\operatorname{Re}z,\operatorname{Im}z)[(0,1)].
+  \]
+proof:
+  Apply the Fréchet chain rule to the real-imaginary coordinate
+  isomorphism.  This isomorphism sends the imaginary unit \(i\) to \((0,1)\).
+-/
 theorem fderiv_comp_equivRealProdCLM_apply_I
     {g : ℝ × ℝ → ℝ} (hg : ContDiff ℝ ∞ g) (z : ℂ) :
     fderiv ℝ (fun w : ℂ ↦ g (Complex.equivRealProdCLM w)) z Complex.I =
@@ -1997,8 +2724,24 @@ theorem fderiv_comp_equivRealProdCLM_apply_I
   have happ := congrArg (fun L : ℂ →L[ℝ] ℝ ↦ L Complex.I) hmaps
   simpa [Function.comp_def] using happ
 
-/-- In complex coordinates, the exterior derivative still recovers the
-original planar coefficient on the oriented real basis. -/
+/--
+%%handwave
+name:
+  Exterior derivative of the complex-planar compact-support primitive
+statement:
+  Let \(a\le b\), let \(f:\mathbb R^2\to\mathbb R\) and
+  \(\rho:\mathbb R\to\mathbb R\) be smooth, and let \(\eta\) be the explicit
+  one-form on \(\mathbb C\) obtained from the horizontal and vertical planar
+  primitives with reference height \(c\).  Then for every \(z\in\mathbb C\),
+  \[
+    (d\eta)_z(1,i)=f(\operatorname{Re}z,\operatorname{Im}z).
+  \]
+proof:
+  Expand the exterior derivative on the ordered basis \((1,i)\).  The chain
+  rule converts the two directional derivatives to derivatives in the first
+  and second real coordinates.  Their signed sum is the curl of the planar
+  primitive, which is exactly \(f\).
+-/
 theorem deRhamDifferential_complexPlanarCompactSupportPrimitiveOneForm_apply_basis
     {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ)
@@ -2084,7 +2827,22 @@ noncomputable def complexPlanarTwoFormCoefficient
     (z : ℂ) : ℝ :=
   omega.toFun ⟨z, trivial⟩ complexPlanarOrientedBasis
 
-/-- The oriented scalar coefficient of a smooth planar two-form is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the oriented coefficient of a complex-planar two-form
+statement:
+  If \(\omega\) is a smooth two-form on \(\mathbb C\), then
+  \[
+    z\longmapsto\omega_z(1,i)
+  \]
+  is a smooth real-valued function.
+proof:
+  The coefficient field of a smooth differential form is smooth in model
+  coordinates.  Evaluation of a continuous alternating map on the fixed
+  ordered basis \((1,i)\) is continuous linear, so composing preserves
+  smoothness.
+-/
 theorem complexPlanarTwoFormCoefficient_contDiff
     (omega : JJMath.Manifold.SmoothForms
       (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2) :
@@ -2118,7 +2876,20 @@ noncomputable def planarCoefficientOfComplexTwoForm
   complexPlanarTwoFormCoefficient omega
     (Complex.equivRealProdCLM.symm p)
 
-/-- The real-pair coefficient of a smooth complex-plane two-form is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the real-coordinate coefficient of a planar two-form
+statement:
+  If \(\omega\) is a smooth two-form on \(\mathbb C\), then the function
+  \[
+    (x,y)\longmapsto\omega_{x+iy}(1,i)
+  \]
+  is smooth on \(\mathbb R^2\).
+proof:
+  The oriented coefficient is smooth as a function of the complex variable.
+  Compose it with the real-linear isomorphism \((x,y)\mapsto x+iy\).
+-/
 theorem planarCoefficientOfComplexTwoForm_contDiff
     (omega : JJMath.Manifold.SmoothForms
       (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2) :
@@ -2126,8 +2897,22 @@ theorem planarCoefficientOfComplexTwoForm_contDiff
   exact (complexPlanarTwoFormCoefficient_contDiff omega).comp
     Complex.equivRealProdCLM.symm.contDiff
 
-/-- Two continuous top-degree alternating forms on the complex plane are
-equal when they agree on the oriented real basis. -/
+/--
+%%handwave
+name:
+  A two-form on the complex plane is determined by the oriented basis
+statement:
+  Let \(\omega\) and \(\eta\) be continuous alternating real-bilinear forms
+  on \(\mathbb C\).  If
+  \[
+    \omega(1,i)=\eta(1,i),
+  \]
+  then \(\omega=\eta\).
+proof:
+  In the real basis \((1,i)\), every alternating two-form is its value on
+  that basis multiplied by the determinant form.  Equality of the two scalar
+  factors therefore gives equality of the forms.
+-/
 theorem complexTopDegreeContinuousAlternatingMap_ext_basis
     (omega eta : ℂ [⋀^Fin 2]→L[ℝ] ℝ)
     (h : omega complexPlanarOrientedBasis =
@@ -2176,7 +2961,20 @@ noncomputable def complexPlanarAreaForm : ℂ [⋀^Fin 2]→L[ℝ] ℝ :=
         · exact Complex.abs_im_le_norm _
       _ = 2 * (‖m 0‖ * ‖m 1‖) := by ring)
 
-/-- The standard oriented area form evaluates to one on the oriented basis. -/
+/--
+%%handwave
+name:
+  Normalization of the standard complex-plane area form
+statement:
+  The standard real area form on \(\mathbb C\) satisfies
+  \[
+    (dx\wedge dy)(1,i)=1.
+  \]
+proof:
+  This value is the determinant of the coordinate matrix of the basis
+  \((1,i)\) with respect to itself, hence the determinant of the identity
+  matrix.
+-/
 theorem complexPlanarAreaForm_basis :
     complexPlanarAreaForm (fun i : Fin 2 ↦ Complex.basisOneI i) = 1 := by
   change Complex.basisOneI.det (fun i : Fin 2 ↦ Complex.basisOneI i) = 1
@@ -2201,8 +2999,20 @@ noncomputable def complexPlanarTwoFormOfCoefficient
     intro z _hz
     simp [modelOpenFormCoeffExtension, complexPlanarModelOpen]
 
-/-- Extracting the oriented coefficient of the two-form built from a
-coefficient recovers that coefficient. -/
+/--
+%%handwave
+name:
+  Recovering a planar scalar coefficient from its two-form
+statement:
+  Let \(f:\mathbb R^2\to\mathbb R\) be smooth and define
+  \[
+    \omega_{x+iy}=f(x,y)\,dx\wedge dy.
+  \]
+  Then the oriented coefficient of \(\omega\) is exactly \(f\).
+proof:
+  Evaluate \(\omega\) on \((1,i)\).  The standard area form takes the value
+  one on this basis, so \(\omega_{x+iy}(1,i)=f(x,y)\).
+-/
 theorem planarCoefficientOfComplexPlanarTwoFormOfCoefficient
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
     planarCoefficientOfComplexTwoForm
@@ -2220,8 +3030,21 @@ theorem planarCoefficientOfComplexPlanarTwoFormOfCoefficient
   change f p * complexPlanarAreaForm complexPlanarOrientedBasis = f p
   rw [harea, mul_one]
 
-/-- Evaluating a two-form built from a scalar coefficient on the standard
-oriented basis recovers that coefficient. -/
+/--
+%%handwave
+name:
+  Evaluation of a coefficient-defined planar two-form
+statement:
+  For a smooth function \(f:\mathbb R^2\to\mathbb R\), the two-form
+  \(\omega=f\,dx\wedge dy\) satisfies
+  \[
+    \omega_z(1,i)=f(\operatorname{Re}z,\operatorname{Im}z)
+  \]
+  for every \(z\in\mathbb C\).
+proof:
+  This is the pointwise form of the coefficient-recovery identity, evaluated
+  at the real-imaginary coordinate pair of \(z\).
+-/
 theorem complexPlanarTwoFormOfCoefficient_apply_basis
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f)
     (z : complexPlanarModelOpen) :
@@ -2234,8 +3057,21 @@ theorem complexPlanarTwoFormOfCoefficient_apply_basis
   simpa [planarCoefficientOfComplexTwoForm,
     complexPlanarTwoFormCoefficient] using h
 
-/-- Every planar top-degree form is recovered from its oriented scalar
-coefficient. -/
+/--
+%%handwave
+name:
+  Reconstruction of a planar two-form from its oriented coefficient
+statement:
+  Every smooth real two-form \(\omega\) on \(\mathbb C\) satisfies
+  \[
+    \omega_z=\omega_z(1,i)\,dx\wedge dy
+  \]
+  at each \(z\in\mathbb C\).
+proof:
+  Both sides are alternating two-forms on the real two-dimensional vector
+  space \(\mathbb C\).  They agree on the oriented basis \((1,i)\), because
+  the standard area form takes value one there, and hence are equal.
+-/
 theorem complexPlanarTwoFormOfPlanarCoefficient
     (omega : SmoothForms (I := SurfaceRealModel)
       (M := complexPlanarModelOpen) ℝ 2) :
@@ -2273,8 +3109,25 @@ noncomputable def complexPlanarPrimitiveOfTwoForm
     a b c hab (planarCoefficientOfComplexTwoForm omega) ρ
       (planarCoefficientOfComplexTwoForm_contDiff omega) hρ
 
-/-- On the complex coordinate plane the explicit primitive differentiates to
-the original two-form. -/
+/--
+%%handwave
+name:
+  Differential of the explicit primitive of a complex-planar two-form
+statement:
+  Let \(\omega\) be a smooth two-form on \(\mathbb C\), let \([a,b]\) be a
+  horizontal interval with \(a\le b\), let \(c\in\mathbb R\), and let
+  \(\rho:\mathbb R\to\mathbb R\) be smooth.  The one-form obtained by applying
+  the explicit rectangular primitive construction to the oriented scalar
+  coefficient of \(\omega\) satisfies
+  \[
+    d\eta=\omega.
+  \]
+proof:
+  Two-forms on the real two-dimensional plane are determined by their value
+  on the standard oriented basis.  On that basis, the formula for the
+  exterior derivative of the explicit one-form gives exactly the scalar
+  coefficient of \(\omega\).
+-/
 theorem deRhamDifferential_complexPlanarPrimitiveOfTwoForm
     {a b c : ℝ} (hab : a ≤ b)
     (omega : JJMath.Manifold.SmoothForms
@@ -2304,8 +3157,22 @@ def complexPlanarRectangleCore (a b c d : ℝ) :
   {z | Complex.equivRealProdCLM (z : ℂ) ∈
     Set.Icc a b ×ˢ Set.Icc c d}
 
-/-- A closed coordinate rectangle is compact as a subset of the full complex
-coordinate plane. -/
+/--
+%%handwave
+name:
+  Compactness of a closed rectangle in the complex plane
+statement:
+  For real numbers \(a,b,c,d\), the subset
+  \[
+    \{z\in\mathbb C:a\le\operatorname{Re}z\le b,
+      \ c\le\operatorname{Im}z\le d\}
+  \]
+  is compact.
+proof:
+  Under the real-linear homeomorphism \(\mathbb C\cong\mathbb R^2\), this set
+  is the inverse image of the product of the compact intervals \([a,b]\) and
+  \([c,d]\).  Homeomorphisms preserve compactness.
+-/
 theorem complexPlanarRectangleCore_isCompact (a b c d : ℝ) :
     IsCompact (complexPlanarRectangleCore a b c d) := by
   rw [Subtype.isCompact_iff]
@@ -2324,8 +3191,26 @@ theorem complexPlanarRectangleCore_isCompact (a b c d : ℝ) :
   exact Complex.equivRealProdCLM.toHomeomorph.isCompact_preimage.2
     (isCompact_Icc.prod isCompact_Icc)
 
-/-- Under the rectangle support and zero-total-mass hypotheses, the explicit
-primitive vanishes outside the corresponding closed rectangle. -/
+/--
+%%handwave
+name:
+  Rectangular support of the explicit primitive of a planar two-form
+statement:
+  Let \(a<b\) and \(c<d\).  Suppose the oriented coefficient \(f\) of a
+  smooth two-form on \(\mathbb C\) has compact support contained in
+  \((a,b)\times(c,d)\), a smooth density \(\rho\) is supported in \((a,b)\)
+  with \(\int_a^b\rho=1\), and
+  \[
+    \int_c^d\!\left(\int_a^b f(x,y)\,dx\right)dy=0.
+  \]
+  Then the explicit primitive vanishes outside
+  \([a,b]\times[c,d]\).
+proof:
+  The support theorem for the scalar coefficient of the primitive places its
+  closed support inside the open rectangle.  Thus a point outside the closed
+  rectangle lies outside that support, so the coefficient, and hence the
+  one-form, vanishes there.
+-/
 theorem complexPlanarPrimitiveOfTwoForm_toFun_eq_zero_of_not_mem_rectangle
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     (omega : JJMath.Manifold.SmoothForms
@@ -2382,8 +3267,30 @@ noncomputable def complexPlanarMassTransportPrimitive
     (intervalNormalizingDensity a b)
     intervalNormalizingDensity_contDiff
 
-/-- The planar mass-transport primitive differentiates to the original
-two-form minus its normalized mass bump. -/
+/--
+%%handwave
+name:
+  Differential of the planar rectangular mass-transport primitive
+statement:
+  Let \(a<b\), let \(f:\mathbb R^2\to\mathbb R\) be smooth, and let
+  \(\eta\) be the explicit planar one-form which subtracts from \(f\) a
+  normalized bump supported in \([a,b]\times[c,d]\) carrying the rectangular
+  mass
+  \[
+    m=\int_c^d\int_a^b f(x,y)\,dx\,dy.
+  \]
+  Then
+  \[
+    d\eta=f\,dx\wedge dy-m\sigma_{a,b,c,d}\,dx\wedge dy,
+  \]
+  where \(\sigma_{a,b,c,d}\) is the normalized rectangular density.
+proof:
+  The primitive construction differentiates to the two-form whose coefficient
+  is the mass-transport remainder
+  \(f-m\sigma_{a,b,c,d}\).  Evaluate both sides on the standard oriented
+  basis to identify this coefficient with the displayed difference of
+  two-forms.
+-/
 theorem deRhamDifferential_complexPlanarMassTransportPrimitive
     {a b c d : ℝ} (hab : a < b)
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
@@ -2415,8 +3322,22 @@ theorem deRhamDifferential_complexPlanarMassTransportPrimitive
     complexPlanarTwoFormOfCoefficient_apply_basis]
   rfl
 
-/-- The normalized transported mass two-form is supported in the chosen
-closed rectangle. -/
+/--
+%%handwave
+name:
+  Support of the normalized planar transported-mass form
+statement:
+  If \(a<b\) and \(c<d\), then the two-form
+  \[
+    m\sigma_{a,b,c,d}\,dx\wedge dy
+  \]
+  carrying the rectangular mass \(m\) vanishes outside
+  \([a,b]\times[c,d]\).
+proof:
+  The normalized density \(\sigma_{a,b,c,d}\) is supported in the open
+  rectangle.  At a point outside the closed rectangle its value is therefore
+  zero, so its scalar multiple of the planar area form is zero.
+-/
 theorem complexPlanarTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     (f : ℝ × ℝ → ℝ) (z : complexPlanarModelOpen)
@@ -2435,8 +3356,21 @@ theorem complexPlanarTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
         ((z : ℂ).re, (z : ℂ).im)) • complexPlanarAreaForm = 0
   rw [hzero, mul_zero, zero_smul]
 
-/-- The planar mass-transport primitive is supported in the chosen closed
-rectangle when the original coefficient is supported in its interior. -/
+/--
+%%handwave
+name:
+  Support of the planar rectangular mass-transport primitive
+statement:
+  Let \(a<b\) and \(c<d\), and let \(f:\mathbb R^2\to\mathbb R\) be smooth
+  with closed support contained in \((a,b)\times(c,d)\).  The explicit
+  mass-transport one-form associated with \(f\) vanishes outside the closed
+  rectangle \([a,b]\times[c,d]\).
+proof:
+  Subtracting the normalized rectangular bump gives a smooth remainder still
+  supported in the open rectangle and with total integral zero.  Apply the
+  rectangular support theorem for the explicit primitive to this remainder,
+  using the normalized horizontal density.
+-/
 theorem complexPlanarMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
     {a b c d : ℝ} (hab : a < b) (hcd : c < d)
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f)
@@ -2500,8 +3434,25 @@ noncomputable def complexPlanarMassTransportPrimitiveTo
     (intervalNormalizingDensity A B)
     intervalNormalizingDensity_contDiff
 
-/-- The two-rectangle transport primitive differentiates to the original
-two-form minus the mass bump in the target rectangle. -/
+/--
+%%handwave
+name:
+  Differential of a planar two-rectangle mass-transport primitive
+statement:
+  Let \(A<B\), let \(f:\mathbb R^2\to\mathbb R\) be smooth, and let \(\eta\)
+  be the explicit one-form which moves the mass
+  \[
+    m=\int_C^D\int_A^B f(x,y)\,dx\,dy
+  \]
+  into a normalized bump on \([a,b]\times[c,d]\).  Then
+  \[
+    d\eta=f\,dx\wedge dy-m\sigma_{a,b,c,d}\,dx\wedge dy.
+  \]
+proof:
+  The explicit primitive differentiates to the two-form whose coefficient is
+  the two-rectangle remainder \(f-m\sigma_{a,b,c,d}\).  Evaluating on the
+  standard oriented basis identifies this form with the stated difference.
+-/
 theorem deRhamDifferential_complexPlanarMassTransportPrimitiveTo
     {A B C D a b c d : ℝ} (hAB : A < B)
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
@@ -2534,7 +3485,19 @@ theorem deRhamDifferential_complexPlanarMassTransportPrimitiveTo
     complexPlanarTwoFormOfCoefficient_apply_basis]
   rfl
 
-/-- The transported target two-form vanishes outside its target rectangle. -/
+/--
+%%handwave
+name:
+  Support of the planar target mass form
+statement:
+  If \(a<b\) and \(c<d\), then the normalized target two-form used to move
+  mass from \([A,B]\times[C,D]\) into \([a,b]\times[c,d]\) vanishes outside
+  the closed target rectangle \([a,b]\times[c,d]\).
+proof:
+  Its coefficient is the transported mass multiplied by a normalized density
+  supported in the open target rectangle.  This density is zero at every
+  point outside the closed rectangle.
+-/
 theorem complexPlanarTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_target
     {A B C D a b c d : ℝ} (hab : a < b) (hcd : c < d)
     (f : ℝ × ℝ → ℝ) (z : complexPlanarModelOpen)
@@ -2552,9 +3515,22 @@ theorem complexPlanarTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_target
         ((z : ℂ).re, (z : ℂ).im)) • complexPlanarAreaForm = 0
   rw [hzero, mul_zero, zero_smul]
 
-/-- The two-rectangle transport primitive is supported in the outer
-rectangle when the original coefficient is supported there and the target
-rectangle lies strictly inside it. -/
+/--
+%%handwave
+name:
+  Outer support of a planar two-rectangle mass-transport primitive
+statement:
+  Let \([a,b]\times[c,d]\) lie strictly inside
+  \([A,B]\times[C,D]\), and let \(f:\mathbb R^2\to\mathbb R\) be smooth with
+  closed support contained in \((A,B)\times(C,D)\).  The one-form transporting
+  the mass of \(f\) into the inner rectangle vanishes outside the closed outer
+  rectangle.
+proof:
+  The two-rectangle remainder is smooth, supported in the open outer
+  rectangle, and has zero total integral over it.  Apply the support theorem
+  for the explicit planar primitive with the normalized horizontal density
+  on \([A,B]\).
+-/
 theorem complexPlanarMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_outer
     {A B C D a b c d : ℝ}
     (hAa : A < a) (hab : a < b) (hbB : b < B)
@@ -2603,8 +3579,23 @@ theorem complexPlanarMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_outer
     (intervalNormalizingDensity_integral_eq_one hAB)
     htotal z hz
 
-/-- Every point of an open subset of the real coordinate plane is surrounded
-by a closed axis-parallel rectangle still contained in that open set. -/
+/--
+%%handwave
+name:
+  A closed rectangle around a point of a planar open set
+statement:
+  If \(O\subseteq\mathbb R^2\) is open and \(p\in O\), then there is
+  \(\varepsilon>0\) such that
+  \[
+    [p_1-\varepsilon,p_1+\varepsilon]
+      \times[p_2-\varepsilon,p_2+\varepsilon]\subseteq O.
+  \]
+proof:
+  Choose a radius \(r>0\) whose open ball about \(p\) lies in \(O\), and take
+  \(\varepsilon=r/2\).  Every point of the displayed rectangle has both
+  coordinate distances from \(p\) at most \(r/2\), hence has product distance
+  less than \(r\).
+-/
 theorem exists_closed_rectangle_subset_of_mem_open
     {O : Set (ℝ × ℝ)} (hO : IsOpen O) {p : ℝ × ℝ} (hp : p ∈ O) :
     ∃ ε : ℝ, 0 < ε ∧
@@ -2636,9 +3627,22 @@ noncomputable def complexCoordinatePushforwardTwoForm
   smoothFormsPullbackDiffeomorph SurfaceRealModel I phi.symm 2 alpha
 
 omit [T2Space M] in
-/-- If a local top-degree form vanishes at the point represented by a real
-coordinate pair, then the scalar coefficient of its coordinate pushforward
-vanishes at that pair. -/
+/--
+%%handwave
+name:
+  Vanishing of the coordinate coefficient of a pushed-forward two-form
+statement:
+  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart and
+  \(\alpha\) a smooth two-form on \(U\).  If \(\alpha\) vanishes at the point
+  represented by \(p\in\mathbb R^2\), then the scalar coefficient of
+  \((\varphi^{-1})^*\alpha\) with respect to the standard oriented basis also
+  vanishes at \(p\).
+proof:
+  The pushed-forward form is the pullback of \(\alpha\) through
+  \(\varphi^{-1}\), so its value at \(p\) is zero.  Evaluating this zero
+  alternating form on the standard oriented basis gives the asserted scalar
+  coefficient.
+-/
 theorem planarCoefficientOf_complexCoordinatePushforwardTwoForm_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2663,8 +3667,23 @@ theorem planarCoefficientOf_complexCoordinatePushforwardTwoForm_eq_zero
   rfl
 
 omit [T2Space M] in
-/-- The closed support of a coordinate coefficient lies in the coordinate
-image of any closed support core for the local top-degree form. -/
+/--
+%%handwave
+name:
+  Coordinate support of a compactly supported local two-form
+statement:
+  Let \(K\subseteq U\) be compact and suppose that a smooth two-form
+  \(\alpha\) vanishes outside \(K\).  Then the closed support of the scalar
+  coefficient of \((\varphi^{-1})^*\alpha\) is contained in
+  \[
+    \{(\operatorname{Re}\varphi(x),\operatorname{Im}\varphi(x)):x\in K\}.
+  \]
+proof:
+  The coordinate image of \(K\) is compact and hence closed.  Outside this
+  image, the inverse coordinate point lies outside \(K\); the preceding
+  pointwise vanishing result makes the scalar coefficient zero.  Taking the
+  closure of the nonzero locus yields the desired inclusion.
+-/
 theorem planarCoefficientOf_complexCoordinatePushforwardTwoForm_tsupport_subset_image
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2694,32 +3713,20 @@ theorem planarCoefficientOf_complexCoordinatePushforwardTwoForm_tsupport_subset_
   rw [phi.apply_symm_apply]
   exact Complex.equivRealProdCLM.apply_symm_apply p
 
-omit [T2Space M] in
-/-- A local top-degree form supported in a compact set has a compactly
-supported scalar coefficient in any full-plane complex chart. -/
-theorem planarCoefficientOf_complexCoordinatePushforwardTwoForm_hasCompactSupport
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (K : Set U) (hK : IsCompact K)
-    (hzero : ∀ x : U, x ∉ K → alpha.toFun x = 0) :
-    HasCompactSupport (planarCoefficientOfComplexTwoForm
-      (complexCoordinatePushforwardTwoForm I U phi alpha)) := by
-  let coord : U → ℝ × ℝ := fun x =>
-    Complex.equivRealProdCLM (phi x : ℂ)
-  have hcoord : Continuous coord := by
-    fun_prop
-  have hcoordK : IsCompact (coord '' K) := hK.image hcoord
-  change IsCompact (tsupport (planarCoefficientOfComplexTwoForm
-    (complexCoordinatePushforwardTwoForm I U phi alpha)))
-  exact IsCompact.of_isClosed_subset hcoordK
-    (isClosed_tsupport (planarCoefficientOfComplexTwoForm
-      (complexCoordinatePushforwardTwoForm I U phi alpha)))
-    (planarCoefficientOf_complexCoordinatePushforwardTwoForm_tsupport_subset_image
-      I U phi alpha K hK hzero)
-
-/-- Every compact subset of the real coordinate plane lies in the interior
-of a centered square. -/
+/--
+%%handwave
+name:
+  A compact planar set lies in an open centered square
+statement:
+  For every compact set \(K\subseteq\mathbb R^2\), there is \(R>0\) such that
+  \[
+    K\subseteq(-R,R)\times(-R,R).
+  \]
+proof:
+  Compactness implies boundedness, so \(K\) lies in an open ball of some
+  radius \(R>0\) about the origin.  The product norm bounds the absolute value
+  of each coordinate by the ball radius, giving the square containment.
+-/
 theorem exists_open_rectangle_containing_compact
     {K : Set (ℝ × ℝ)} (hK : IsCompact K) :
     ∃ R : ℝ, 0 < R ∧ K ⊆ Ioo (-R) R ×ˢ Ioo (-R) R := by
@@ -2733,13 +3740,6 @@ theorem exists_open_rectangle_containing_compact
   have hsnd : |p.2| < R :=
     (le_max_right |p.1| |p.2|).trans_lt (by simpa using hball)
   exact ⟨abs_lt.mp hfst, abs_lt.mp hsnd⟩
-
-/-- Every compactly supported function on the real coordinate plane is
-supported in the interior of a centered square. -/
-theorem exists_open_rectangle_containing_tsupport_of_hasCompactSupport
-    {f : ℝ × ℝ → ℝ} (hf : HasCompactSupport f) :
-    ∃ R : ℝ, 0 < R ∧ tsupport f ⊆ Ioo (-R) R ×ˢ Ioo (-R) R := by
-  exact exists_open_rectangle_containing_compact hf
 
 /-- Pull the explicit planar mass-transport primitive back through a complex
 coordinate chart. -/
@@ -2770,8 +3770,25 @@ noncomputable def complexCoordinateLocalTransportedMassTwoForm
         (complexCoordinatePushforwardTwoForm I U phi alpha)))
 
 omit [T2Space M] in
-/-- In one coordinate chart, exterior differentiation of the transport
-primitive is the original two-form minus its normalized mass bump. -/
+/--
+%%handwave
+name:
+  Differential of a local rectangular mass-transport primitive
+statement:
+  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart, let
+  \(a<b\), and let \(\alpha\) be a smooth two-form on \(U\).  The local
+  rectangular mass-transport one-form \(\eta\), obtained from the coordinate
+  coefficient of \(\alpha\), satisfies
+  \[
+    d\eta=\alpha-\beta,
+  \]
+  where \(\beta\) is the normalized two-form carrying the same total mass in
+  the chosen rectangle.
+proof:
+  Exterior differentiation commutes with pullback through the chart.  Apply
+  the planar mass-transport identity and distribute the pullback over the
+  difference; the inverse pullback composition recovers \(\alpha\).
+-/
 theorem deRhamDifferential_complexCoordinateLocalMassTransportPrimitive
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2804,7 +3821,25 @@ noncomputable def complexCoordinateLocalPrimitive
       (complexCoordinatePushforwardTwoForm I U phi alpha) ρ hρ)
 
 omit [T2Space M] in
-/-- The coordinate-local primitive differentiates to the original two-form. -/
+/--
+%%handwave
+name:
+  Differential of a coordinate-local primitive of a two-form
+statement:
+  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart.  For a
+  smooth two-form \(\alpha\) on \(U\), a horizontal interval \([a,b]\) with
+  \(a\le b\), a reference height \(c\), and a smooth normalizing density
+  \(\rho\), the coordinate-local one-form obtained from the explicit planar
+  construction satisfies
+  \[
+    d\eta=\alpha.
+  \]
+proof:
+  By naturality, differentiating the pulled-back one-form is the pullback of
+  the derivative of the planar primitive.  The planar primitive differentiates
+  to the coordinate pushforward of \(\alpha\), and the two inverse coordinate
+  pullbacks cancel.
+-/
 theorem deRhamDifferential_complexCoordinateLocalPrimitive
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2829,7 +3864,22 @@ def complexCoordinateRectangleCore
   phi ⁻¹' complexPlanarRectangleCore a b c d
 
 omit [IsManifold I ∞ M] [T2Space M] in
-/-- The inverse image of a closed coordinate rectangle is compact. -/
+/--
+%%handwave
+name:
+  Compactness of a closed coordinate rectangle
+statement:
+  For a complex coordinate chart \(\varphi:U\to\mathbb C\), the set
+  \[
+    \{x\in U:a\le\operatorname{Re}\varphi(x)\le b,
+      \ c\le\operatorname{Im}\varphi(x)\le d\}
+  \]
+  is compact.
+proof:
+  The closed rectangle \([a,b]\times[c,d]\) is compact in the coordinate
+  plane.  Its inverse image under the coordinate homeomorphism is therefore
+  compact.
+-/
 theorem complexCoordinateRectangleCore_isCompact
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2839,8 +3889,30 @@ theorem complexCoordinateRectangleCore_isCompact
     (complexPlanarRectangleCore_isCompact a b c d)
 
 omit [IsManifold I ∞ M] [T2Space M] in
-/-- Around any point of a full-plane coordinate chart there is a closed
-coordinate rectangle whose ambient image lies in a prescribed open set. -/
+/--
+%%handwave
+name:
+  A coordinate rectangle subordinate to an ambient open set
+statement:
+  Let \(U,V\) be open subsets of a surface, let
+  \(\varphi:U\to\mathbb C\) be a full-plane coordinate chart, and let
+  \(x\in U\cap V\).  There is \(\varepsilon>0\) such that the ambient image of
+  \[
+    \varphi^{-1}\!\left(
+      [\operatorname{Re}\varphi(x)-\varepsilon,
+       \operatorname{Re}\varphi(x)+\varepsilon]
+      \times
+      [\operatorname{Im}\varphi(x)-\varepsilon,
+       \operatorname{Im}\varphi(x)+\varepsilon]
+    \right)
+  \]
+  is contained in \(V\).
+proof:
+  Pull \(V\) back to an open subset of \(\mathbb R^2\) using the inverse
+  coordinate map.  Choose a small closed rectangle about the coordinate of
+  \(x\) contained in this open preimage, then translate the resulting
+  inclusion back to the surface.
+-/
 theorem exists_complexCoordinateRectangleCore_subset_open
     (U V : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2889,8 +3961,21 @@ theorem exists_complexCoordinateRectangleCore_subset_open
   rwa [hfromeq] at hmemO
 
 omit [T2Space M] in
-/-- The coordinate mass-transport primitive is supported in the chosen
-closed rectangle. -/
+/--
+%%handwave
+name:
+  Rectangular support of a local mass-transport primitive
+statement:
+  Suppose \(a<b\), \(c<d\), and the coordinate coefficient of a smooth
+  two-form \(\alpha\) is supported in \((a,b)\times(c,d)\).  The local
+  mass-transport one-form constructed from \(\alpha\) vanishes at every
+  \(x\in U\) with
+  \(\varphi(x)\notin[a,b]\times[c,d]\).
+proof:
+  The corresponding planar primitive vanishes outside the closed rectangle.
+  Its pullback at \(x\) is the zero alternating form composed with the tangent
+  map of the chart, and is therefore zero.
+-/
 theorem complexCoordinateLocalMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2918,8 +4003,19 @@ theorem complexCoordinateLocalMassTransportPrimitive_toFun_eq_zero_of_not_mem_re
   rfl
 
 omit [T2Space M] in
-/-- The normalized transported mass two-form is supported in the chosen
-closed coordinate rectangle. -/
+/--
+%%handwave
+name:
+  Rectangular support of the local transported-mass two-form
+statement:
+  For \(a<b\) and \(c<d\), the normalized transported-mass two-form associated
+  with a smooth two-form \(\alpha\) on a coordinate chart vanishes at every
+  \(x\in U\) such that \(\varphi(x)\notin[a,b]\times[c,d]\).
+proof:
+  The normalized planar two-form is zero outside the closed rectangle.
+  Pulling it back through the coordinate chart preserves this pointwise
+  vanishing.
+-/
 theorem complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -2942,8 +4038,22 @@ theorem complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_re
   rfl
 
 omit [T2Space M] in
-/-- Rectangle support of the oriented coordinate coefficient implies
-rectangle support of the original top-degree form. -/
+/--
+%%handwave
+name:
+  Rectangular coefficient support implies support of the two-form
+statement:
+  Let \(\alpha\) be a smooth two-form on a complex coordinate chart.  If the
+  closed support of its oriented scalar coordinate coefficient is contained
+  in \((a,b)\times(c,d)\), then \(\alpha\) vanishes at every \(x\in U\) with
+  \(\varphi(x)\notin[a,b]\times[c,d]\).
+proof:
+  Outside the closed rectangle the scalar coefficient is outside its closed
+  support and hence is zero.  In real dimension two, a top-degree alternating
+  form is determined by its value on the oriented coordinate basis, so the
+  pushed-forward form vanishes.  Pulling back through the inverse chart then
+  shows that \(\alpha\) itself vanishes at \(x\).
+-/
 theorem complexCoordinateTwoForm_toFun_eq_zero_of_coefficient_tsupport
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3011,8 +4121,27 @@ noncomputable def complexCoordinateLocalTransportedMassTwoFormTo
         (complexCoordinatePushforwardTwoForm I U phi alpha)))
 
 omit [T2Space M] in
-/-- In a coordinate chart, the two-rectangle transport primitive
-differentiates to the original form minus its target bump. -/
+/--
+%%handwave
+name:
+  Differential of the local two-rectangle mass-transport primitive
+statement:
+  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart, let
+  \(R=[A,B]\times[C,D]\) and \(Q=[a,b]\times[c,d]\), with \(A<B\), and let
+  \(\alpha\) be a smooth two-form on \(U\).  The one-form \(\eta\) obtained by
+  pulling the planar mass-transport primitive for \(R\) and \(Q\) back through
+  \(\varphi\) satisfies
+  \[
+    d\eta=\alpha-\beta,
+  \]
+  where \(\beta\) is the corresponding normalized target two-form on \(Q\),
+  pulled back to \(U\).
+proof:
+  Naturality of the exterior derivative identifies \(d\eta\) with the
+  pullback of the derivative of the planar primitive.  The planar transport
+  identity gives the pushed-forward form minus the target bump, and pulling
+  back through the inverse coordinate transformations recovers \(\alpha\).
+-/
 theorem deRhamDifferential_complexCoordinateLocalMassTransportPrimitiveTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3032,8 +4161,23 @@ theorem deRhamDifferential_complexCoordinateLocalMassTransportPrimitiveTo
     smoothFormsPullbackDiffeomorph_comp_symm]
 
 omit [T2Space M] in
-/-- The pulled-back two-rectangle primitive vanishes off its outer
-coordinate rectangle. -/
+/--
+%%handwave
+name:
+  Support of the local two-rectangle mass-transport primitive
+statement:
+  Let \(Q=[a,b]\times[c,d]\) lie strictly inside
+  \(R=[A,B]\times[C,D]\), and suppose that the coordinate coefficient of a
+  smooth two-form \(\alpha\) is supported in
+  \((A,B)\times(C,D)\).  The local mass-transport one-form constructed from
+  \(\alpha\) vanishes at every \(x\in U\) for which
+  \(\varphi(x)\notin R\).
+proof:
+  The planar support theorem says that the planar transport primitive
+  vanishes outside \(R\).  Evaluating its pullback at \(x\) therefore gives
+  the zero alternating form composed with the tangent map of \(\varphi\),
+  which is zero.
+-/
 theorem complexCoordinateLocalMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_outer
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3064,8 +4208,19 @@ theorem complexCoordinateLocalMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_
   rfl
 
 omit [T2Space M] in
-/-- The target bump of a two-rectangle coordinate transport vanishes off
-the target rectangle. -/
+/--
+%%handwave
+name:
+  Support of the local target bump in a coordinate rectangle
+statement:
+  For \(a<b\) and \(c<d\), the normalized target two-form used in a local
+  two-rectangle mass transport vanishes at every \(x\in U\) with
+  \(\varphi(x)\notin[a,b]\times[c,d]\).
+proof:
+  The normalized planar target bump vanishes outside its closed target
+  rectangle.  Its pullback through the coordinate chart consequently
+  vanishes there as well.
+-/
 theorem complexCoordinateLocalTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_target
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3088,8 +4243,22 @@ theorem complexCoordinateLocalTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_
   rfl
 
 omit [IsManifold I ∞ M] [T2Space M] in
-/-- Strict containment of coordinate rectangles gives containment of their
-closed inverse-image cores. -/
+/--
+%%handwave
+name:
+  Containment of nested closed coordinate rectangles
+statement:
+  If \(A<a\), \(b<B\), \(C<c\), and \(d<D\), then
+  \[
+    \varphi^{-1}\!\left([a,b]\times[c,d]\right)
+      \subseteq
+    \varphi^{-1}\!\left([A,B]\times[C,D]\right).
+  \]
+proof:
+  Each coordinate interval of the inner rectangle is contained in the
+  corresponding coordinate interval of the outer rectangle, by transitivity
+  of the four endpoint inequalities.
+-/
 theorem complexCoordinateRectangleCore_target_subset_outer
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3122,8 +4291,22 @@ noncomputable def complexCoordinateGlobalMassTransportPrimitiveTo
     (complexCoordinateLocalMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_outer
       I U phi hAa hab hbB hCc hcd hdD alpha hfrect)
 
-/-- A global coordinate transport primitive vanishes outside its coordinate
-open set. -/
+/--
+%%handwave
+name:
+  A zero-extended coordinate transport primitive vanishes outside its chart
+statement:
+  Let \(Q=[a,b]\times[c,d]\) lie strictly inside
+  \(R=[A,B]\times[C,D]\), and suppose the coordinate coefficient of a smooth
+  two-form on \(U\) is supported in the interior of \(R\).  Extend the local
+  mass-transport primitive by zero from \(U\) to the ambient surface.  The
+  resulting one-form vanishes at every point outside \(U\).
+proof:
+  The local primitive is supported in the closed coordinate core
+  \(\varphi^{-1}(R)\), whose ambient image lies in \(U\).  A point outside
+  \(U\) is therefore outside that core, so the defining support property of
+  the zero extension makes its value zero.
+-/
 theorem complexCoordinateGlobalMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem_chart
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3170,8 +4353,22 @@ noncomputable def complexCoordinateGlobalTransportedMassTwoFormTo
           (complexCoordinateRectangleCore_target_subset_outer
             I U phi hAa hbB hCc hdD htarget)))
 
-/-- The ambient target bump of a two-rectangle coordinate transport vanishes
-outside the ambient image of its target rectangle. -/
+/--
+%%handwave
+name:
+  Support of the globally extended target bump
+statement:
+  Let \(Q=[a,b]\times[c,d]\) lie strictly inside
+  \(R=[A,B]\times[C,D]\).  The normalized target two-form, pulled back to the
+  chart and extended by zero to the ambient surface, vanishes outside the
+  ambient image of \(\varphi^{-1}(Q)\).
+proof:
+  For a point in the chart, restrict the zero extension back to \(U\) and use
+  the local support theorem for the target bump; injectivity of pullback along
+  the inclusion transfers the zero value to the ambient form.  For a point
+  outside the chart, the outer coordinate core does not contain it, so the
+  zero extension vanishes directly.
+-/
 theorem complexCoordinateGlobalTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_target
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3223,8 +4420,28 @@ theorem complexCoordinateGlobalTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem
     intro hxK
     exact hxU (smoothFormCompactCore_subset U K hxK)
 
-/-- One global two-rectangle coordinate transport has derivative equal to
-the original extension by zero minus the normalized target bump. -/
+/--
+%%handwave
+name:
+  Differential of the global two-rectangle mass-transport primitive
+statement:
+  Let \(Q=[a,b]\times[c,d]\) lie strictly inside
+  \(R=[A,B]\times[C,D]\), and let \(\alpha\) be a smooth two-form on a
+  coordinate chart \(U\) whose coordinate coefficient is supported in
+  \((A,B)\times(C,D)\).  If \(\eta\) is the local transport primitive extended
+  by zero to the ambient surface and \(\beta\) is the similarly extended
+  target bump, then
+  \[
+    d\eta=\widetilde\alpha-\beta,
+  \]
+  where \(\widetilde\alpha\) denotes the zero extension of \(\alpha\) from
+  the closed outer coordinate core.
+proof:
+  Exterior differentiation commutes with compactly supported zero extension.
+  Substitute the local identity \(d\eta=\alpha-\beta\), then use linearity of
+  zero extension with respect to subtraction.  The support bounds for the
+  local primitive, \(\alpha\), and \(\beta\) justify every extension.
+-/
 theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitiveTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3283,9 +4500,26 @@ theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitiveTo
       smoothFormCompactZeroExtension_sub I U K hK alpha beta halpha hbeta
     _ = _ := rfl
 
-/-- If the input is the restriction of an ambient form supported in the
-outer rectangle, a coordinate transport step has derivative equal to that
-ambient form minus the target bump. -/
+/--
+%%handwave
+name:
+  Global coordinate mass transport for a restricted ambient two-form
+statement:
+  Let an ambient smooth two-form \(\omega\) be supported in the image of an
+  outer coordinate rectangle, and suppose its coordinate coefficient is
+  supported in the interior of that rectangle.  If an inner target rectangle
+  is strictly contained in the outer one, then the global transport
+  one-form \(\eta\) constructed from \(\omega|_U\) satisfies
+  \[
+    d\eta=\omega-\beta,
+  \]
+  where \(\beta\) is the normalized two-form supported in the target
+  rectangle.
+proof:
+  Apply the global coordinate transport identity to the restricted form.
+  Extending that restriction by zero recovers \(\omega\), because the ambient
+  form vanishes outside the outer coordinate core.
+-/
 theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitiveTo_restrict
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3314,9 +4548,28 @@ theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitiveTo_restr
     (complexCoordinateRectangleCore_isCompact I U phi A B C D)
     omega hzero]
 
-/-- Any ambient two-form supported in a compact subset of a full-plane chart
-can be moved, modulo an exact form, into an arbitrary nondegenerate
-coordinate rectangle in that chart. -/
+/--
+%%handwave
+name:
+  Transport of compact support into a prescribed coordinate rectangle
+statement:
+  Let \(U\) be a full-plane complex coordinate chart, let \(K\subseteq U\) be
+  compact, and let an ambient smooth two-form \(\omega\) vanish outside the
+  ambient image of \(K\).  For every nondegenerate coordinate rectangle
+  \((a,b)\times(c,d)\), there are ambient forms \(\eta\) of degree one and
+  \(\beta\) of degree two such that
+  \[
+    d\eta=\omega-\beta,
+  \]
+  \(\eta\) vanishes outside \(U\), and \(\beta\) vanishes outside the closed
+  coordinate rectangle \([a,b]\times[c,d]\).
+proof:
+  The coordinate image of \(K\) lies in a sufficiently large centered square.
+  Enlarge that square further to contain the target rectangle strictly.
+  Apply the explicit two-rectangle mass-transport construction to move the
+  full mass of \(\omega\) from the outer square into the prescribed target,
+  and extend the resulting primitive and target form by zero.
+-/
 theorem exists_compactSupport_transport_to_coordinateRectangle
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3421,9 +4674,26 @@ theorem exists_compactSupport_transport_to_coordinateRectangle
   · exact complexCoordinateGlobalTransportedMassTwoFormTo_toFun_eq_zero_of_not_mem_target
       I U phi hAa hab hbB hCc hcd hdD alpha
 
-/-- If two coordinate opens overlap, a compactly supported two-form in the
-first can be moved, modulo an exact form, to a compact support core in the
-second. -/
+/--
+%%handwave
+name:
+  Compact-support transport across overlapping coordinate charts
+statement:
+  Let full-plane coordinate opens \(U\) and \(V\) overlap at \(x\).  If an
+  ambient two-form \(\omega\) is supported in the ambient image of a compact
+  set \(K\subseteq U\), then there are an ambient one-form \(\eta\), an
+  ambient two-form \(\beta\), and a compact set \(K'\subseteq V\) such that
+  \[
+    d\eta=\omega-\beta,
+  \]
+  \(\eta\) vanishes outside \(U\), and \(\beta\) is supported in the ambient
+  image of \(K'\).
+proof:
+  Choose a small coordinate rectangle around \(x\) whose closed ambient image
+  lies in \(V\).  Transport the support of \(\omega\) into that rectangle
+  inside \(U\).  Regard the compact ambient image of the target rectangle as
+  a compact subset \(K'\) of \(V\).
+-/
 theorem exists_compactSupport_transport_across_coordinate_overlap
     (U V : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3469,9 +4739,28 @@ theorem exists_compactSupport_transport_across_coordinate_overlap
     exact smoothFormCompactCore_coreInOpen V C hCV]
   exact hyTarget
 
-/-- Along a finite chain of overlapping full-plane coordinate opens, a
-compactly supported two-form can be moved, modulo an exact form, from the
-first chart to a compact support core in the last chart. -/
+/--
+%%handwave
+name:
+  Compact-support transport along a finite coordinate chain
+statement:
+  Let \(U_0,U_1,\ldots\) be full-plane coordinate opens inside an open
+  corridor \(W\), with each consecutive pair overlapping.  If \(\omega\) is
+  supported in a compact core of \(U_0\), then for every \(n\) there are an
+  ambient one-form \(\eta\), a two-form \(\beta\), and a compact
+  \(K_n\subseteq U_n\) such that
+  \[
+    d\eta=\omega-\beta,
+  \]
+  \(\eta\) vanishes outside \(W\), and \(\beta\) is supported in the ambient
+  image of \(K_n\).
+proof:
+  Induct on \(n\).  The initial case uses \(\eta=0\) and \(\beta=\omega\).
+  At a successor step, transport the current remainder across the next chart
+  overlap, add the new primitive to the accumulated one, and combine the two
+  differential identities.  Every added primitive is supported in its chart,
+  hence in \(W\).
+-/
 theorem exists_compactSupport_transport_along_finite_coordinateChain
     (W : TopologicalSpace.Opens M)
     (U : ℕ → TopologicalSpace.Opens M)
@@ -3513,9 +4802,30 @@ theorem exists_compactSupport_transport_along_finite_coordinateChain
 
 /-! ## Finite transport along a path -/
 
-/-- A path in an open corridor supplies a finite chain of coordinate
-transports.  The final compact support can be placed in an arbitrary target
-open set containing the endpoint, while remaining inside the corridor. -/
+/--
+%%handwave
+name:
+  Compact-support transport along a path
+statement:
+  Let \(\gamma\) be a path from \(x_0\) to \(x_1\) contained in an open
+  corridor \(W\), let \(U_0\subseteq W\) be a full-plane chart at \(x_0\),
+  and let \(Z\) be an open neighborhood of \(x_1\).  If an ambient two-form
+  \(\omega\) is supported in a compact core of \(U_0\), then there are forms
+  \(\eta,\beta\), a full-plane chart \(V\subseteq W\cap Z\) at \(x_1\), and
+  a compact \(K_V\subseteq V\) such that
+  \[
+    d\eta=\omega-\beta,
+  \]
+  \(\eta\) vanishes outside \(W\), and \(\beta\) is supported in the ambient
+  image of \(K_V\).
+proof:
+  Cover the compact path parameter interval by coordinate neighborhoods
+  subordinate to \(W\), and extract a finite ordered subdivision whose
+  successive charts overlap.  Transport the support along that finite chain.
+  Finally choose a chart at \(x_1\) subordinate to \(W\cap Z\) and perform one
+  more overlap transport into it, adding the last primitive to the previous
+  one.
+-/
 theorem exists_compactSupport_transport_along_path
     {X : Type*} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -3666,8 +4976,26 @@ noncomputable def complexCoordinateGlobalTransportedMassTwoForm
     (complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
       I U phi hab hcd alpha)
 
-/-- One coordinate mass-transport step gives a global primitive of the
-original compactly supported two-form minus its normalized replacement. -/
+/--
+%%handwave
+name:
+  Differential of the global coordinate mass-transport primitive
+statement:
+  Suppose the coordinate coefficient of a local two-form \(\alpha\) is
+  supported in \((a,b)\times(c,d)\).  Extending the coordinate
+  mass-transport primitive by zero gives an ambient one-form \(\eta\) with
+  \[
+    d\eta=\widetilde\alpha-\widetilde\beta,
+  \]
+  where \(\widetilde\alpha\) is the zero extension of \(\alpha\) and
+  \(\widetilde\beta\) is the zero extension of the normalized replacement
+  two-form on the same rectangle.
+proof:
+  Exterior differentiation commutes with compactly supported extension by
+  zero.  Apply the local coordinate mass-transport identity
+  \(d\eta_{\mathrm{loc}}=\alpha-\beta\), then use linearity of zero extension
+  with respect to subtraction.
+-/
 theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitive
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3723,8 +5051,26 @@ theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitive
     _ = _ := rfl
 
 omit [T2Space M] in
-/-- Under the rectangle support and zero-total-mass hypotheses, the local
-primitive vanishes outside the coordinate rectangle. -/
+/--
+%%handwave
+name:
+  Support of a coordinate-local primitive with zero total mass
+statement:
+  Let \(a<b\) and \(c<d\).  Suppose the oriented coordinate coefficient of a
+  smooth two-form \(\alpha\) is supported in \((a,b)\times(c,d)\), and let
+  \(\rho\) be a smooth function supported in \((a,b)\) with
+  \(\int_a^b\rho=1\).  If
+  \[
+    \int_c^d\int_a^b f(x,y)\,dx\,dy=0,
+  \]
+  where \(f\) is the coordinate coefficient of \(\alpha\), then the explicit
+  coordinate-local primitive vanishes outside the inverse image of
+  \([a,b]\times[c,d]\).
+proof:
+  The support assumptions make \(f\) compactly supported.  Apply the planar
+  support theorem for the explicit zero-mass primitive and pull the resulting
+  zero value back through the coordinate chart.
+-/
 theorem complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3758,8 +5104,20 @@ theorem complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
   rw [hplane]
   rfl
 
-/-- The original two-form also vanishes outside the coordinate rectangle,
-because it is the derivative of the supported local primitive. -/
+/--
+%%handwave
+name:
+  Support of a two-form admitting a supported coordinate primitive
+statement:
+  Under the same rectangular support, normalization, and zero-total-mass
+  hypotheses as above, the original smooth two-form \(\alpha\) vanishes
+  outside the inverse image of \([a,b]\times[c,d]\).
+proof:
+  The explicit local primitive vanishes outside the closed coordinate
+  rectangle.  Its exterior derivative therefore vanishes there as well,
+  because differentiation does not enlarge the closed support.  Since this
+  exterior derivative equals \(\alpha\), the asserted vanishing follows.
+-/
 theorem complexCoordinateTwoForm_toFun_eq_zero_of_not_mem_rectangle
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3818,8 +5176,23 @@ noncomputable def complexCoordinateGlobalPrimitive
     (complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
       I U phi hab hcd alpha ρ hfrect hρ hρsupport hρone htotal)
 
-/-- The exterior derivative of the global coordinate primitive is the
-extension by zero of the original zero-mass two-form. -/
+/--
+%%handwave
+name:
+  Differential of the global primitive of a zero-mass coordinate two-form
+statement:
+  Let a local two-form \(\alpha\) have coordinate coefficient supported in
+  \((a,b)\times(c,d)\), total integral zero, and let \(\rho\) be a smooth
+  horizontal density of integral one supported in \((a,b)\).  The ambient
+  zero extension of the explicit local primitive \(\eta\) satisfies
+  \[
+    d\widetilde\eta=\widetilde\alpha.
+  \]
+proof:
+  Differentiation commutes with compactly supported extension by zero, and the
+  local rectangle construction satisfies \(d\eta=\alpha\).  Transport this
+  equality through the zero-extension construction.
+-/
 theorem deRhamDifferential_complexCoordinateGlobalPrimitive
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)

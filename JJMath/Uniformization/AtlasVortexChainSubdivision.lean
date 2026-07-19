@@ -19,9 +19,22 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
 
-/-- Every point of an open set has a smaller coordinate neighborhood in
-which every ordered pair of distinct points carries a compact atlas vortex
-whose core stays in the original open set. -/
+/--
+%%handwave
+name:
+  A coordinate neighborhood supporting pairwise compact vortices
+statement:
+  Let \(a\) lie in an open set \(W\) of a complex surface.  There is an open
+  neighborhood \(V\) of \(a\), contained in \(W\), such that every ordered
+  pair of distinct points \(b,c\in V\) supports an atlas vortex from \(b\) to
+  \(c\) whose compact core is contained in \(W\).
+proof:
+  Choose a surface chart at \(a\) and a coordinate ball whose inverse image
+  lies in \(W\).  Take a much smaller concentric ball for \(V\).  Points of
+  this smaller ball are close enough for the standard affine planar vortex
+  construction, and the quantitative bound on its core keeps that core in
+  the original larger coordinate ball and hence in \(W\).
+-/
 theorem exists_pairwise_atlasVortexNeighborhood
     (W : TopologicalSpace.Opens X) {a : X} (haW : a ∈ W) :
     ∃ V : TopologicalSpace.Opens X, a ∈ V ∧ V ≤ W ∧
@@ -154,11 +167,32 @@ def AtlasVortexChainJoinedIn
     (W : TopologicalSpace.Opens X) (a b : X) : Prop :=
   Relation.ReflTransGen (ControlledAtlasVortexEdge W) a b
 
+/--
+%%handwave
+name:
+  Reflexivity of controlled vortex-chain reachability
+statement:
+  Every point is joined to itself by a finite controlled atlas-vortex chain
+  in any open set.
+proof:
+  Use the chain of length zero.
+-/
 theorem atlasVortexChainJoinedIn_refl
     (W : TopologicalSpace.Opens X) (a : X) :
     AtlasVortexChainJoinedIn W a a :=
   Relation.ReflTransGen.refl
 
+/--
+%%handwave
+name:
+  Transitivity of controlled vortex-chain reachability
+statement:
+  A controlled atlas-vortex chain from \(a\) to \(b\), followed by one from
+  \(b\) to \(c\), gives a controlled chain from \(a\) to \(c\) in the same
+  open set.
+proof:
+  Concatenate the two finite chains.
+-/
 theorem atlasVortexChainJoinedIn_trans
     (W : TopologicalSpace.Opens X) {a b c : X}
     (hab : AtlasVortexChainJoinedIn W a b)
@@ -166,7 +200,19 @@ theorem atlasVortexChainJoinedIn_trans
     AtlasVortexChainJoinedIn W a c :=
   hab.trans hbc
 
-/-- Controlled finite vortex-chain reachability is locally symmetric. -/
+/--
+%%handwave
+name:
+  Local two-way controlled vortex-chain reachability
+statement:
+  If \(a\in W\), there is an open neighborhood \(V\subseteq W\) of \(a\)
+  such that every \(b\in V\) is joined to \(a\), and \(a\) to \(b\), by
+  finite atlas-vortex chains whose cores lie in \(W\).
+proof:
+  Choose the pairwise vortex neighborhood inside \(W\).  If \(b=a\), use the
+  empty chain.  Otherwise construct one vortex for the ordered pair \((a,b)\)
+  and another for \((b,a)\); each gives a one-edge controlled chain.
+-/
 theorem exists_open_atlasVortexChainJoinedIn_both
     (W : TopologicalSpace.Opens X) {a : X} (haW : a ∈ W) :
     ∃ V : TopologicalSpace.Opens X, a ∈ V ∧ V ≤ W ∧
@@ -189,8 +235,19 @@ theorem exists_open_atlasVortexChainJoinedIn_both
       Relation.ReflTransGen.single
         ⟨hVW hbV, haW, ⟨Dba, hDba⟩⟩⟩
 
-/-- Any two points of a connected open surface are joined by a finite chain
-of atlas vortex pairs whose compact cores remain in that open surface. -/
+/--
+%%handwave
+name:
+  Controlled vortex-chain connectivity of a connected open surface
+statement:
+  Any two points of a connected open subset \(W\) of a complex surface can be
+  joined by a finite chain of atlas vortices whose vertices and compact cores
+  all remain in \(W\).
+proof:
+  Fix one endpoint and consider the points reachable from it.  Local two-way
+  reachability makes this set open and also makes its complement open.  It is
+  nonempty, so connectedness of \(W\) makes every point reachable.
+-/
 theorem atlasVortexChainJoinedIn_all
     (W : TopologicalSpace.Opens X) [ConnectedSpace W] (a b : W) :
     AtlasVortexChainJoinedIn W (a : X) (b : X) := by
@@ -259,8 +316,19 @@ def end_mem {W : TopologicalSpace.Opens X} {a b : X}
   | nil ha => exact ha
   | tail _ hb _ _ => exact hb
 
-/-- Propositional controlled reachability can be promoted to an explicit
-finite controlled path once membership of the initial point is known. -/
+/--
+%%handwave
+name:
+  An explicit controlled path from finite vortex-chain reachability
+statement:
+  If \(a\in W\) and a finite controlled atlas-vortex chain joins \(a\) to
+  \(b\), then there exists explicit finite path data recording every vertex,
+  vortex pair, and core-containment condition along the chain.
+proof:
+  Induct over the reflexive-transitive chain.  The reflexive case is the
+  empty path at \(a\); at each tail step, append the recorded vortex edge to
+  the previously constructed path.
+-/
 theorem nonempty_of_joined {W : TopologicalSpace.Opens X} {a b : X}
     (ha : a ∈ W) (h : AtlasVortexChainJoinedIn W a b) :
     Nonempty (ControlledAtlasVortexPath W a b) := by
@@ -271,8 +339,21 @@ theorem nonempty_of_joined {W : TopologicalSpace.Opens X} {a b : X}
       rcases edge with ⟨_hq, hb, data, hcore⟩
       exact ⟨.tail path hb data hcore⟩
 
-/-- Append a whole controlled finite path to an existing transport.  Outside
-the controlling open set the resulting phase is exactly the old phase. -/
+/--
+%%handwave
+name:
+  Appending a controlled vortex path while preserving the exterior phase
+statement:
+  Let a controlled vortex path inside \(W\) run from \(a\) to \(b\), let
+  \(p\notin W\), and let \(T\) be a transport from \(p\) to \(a\).  Then the
+  whole path can be appended to obtain a transport from \(p\) to \(b\), and
+  outside \(W\) its phase is exactly the phase of \(T\).
+proof:
+  Induct over the controlled path.  At each edge, append its atlas vortex to
+  the current transport.  Outside \(W\), the edge's compact core is absent,
+  so its global phase equals one; the append product formula therefore leaves
+  the previous phase unchanged.
+-/
 theorem exists_append_transport {W : TopologicalSpace.Opens X}
     {p a b : X} (path : ControlledAtlasVortexPath W a b)
     (T : AtlasVortexTransportData X p a) (hpW : p ∉ W) :
@@ -312,8 +393,18 @@ theorem exists_append_transport {W : TopologicalSpace.Opens X}
       rw [hphaseOne, mul_one]
       exact hTq ⟨(x : X), ⟨x.2.1, hxq⟩⟩ hxW
 
-/-- A nontrivial controlled path carries a finite transport from its initial
-vertex to its terminal vertex. -/
+/--
+%%handwave
+name:
+  A nontrivial controlled vortex path yields a finite transport
+statement:
+  If a controlled atlas-vortex path runs from \(a\) to \(b\) with \(a\ne b\),
+  then there exists a finite atlas-vortex transport from \(a\) to \(b\).
+proof:
+  Induct over the path.  An empty path contradicts \(a\ne b\).  For a final
+  edge, either its initial point is \(a\), in which case that single vortex is
+  the transport, or append the edge to the transport supplied by induction.
+-/
 theorem nonempty_transport {W : TopologicalSpace.Opens X} {a b : X}
     (path : ControlledAtlasVortexPath W a b) (hab : a ≠ b) :
     Nonempty (AtlasVortexTransportData X a b) := by

@@ -357,8 +357,21 @@ noncomputable def complexPuncturedDoubleBallDiffeomorphAnnularCylinder
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- The normal coordinate of the double-ball cylinder is negative precisely
-on the inner ball. -/
+/--
+%%handwave
+name:
+  Negative cylinder coordinate characterizes the inner punctured ball
+statement:
+  Under the radial diffeomorphism from \(B(c,2R)\setminus\{c\}\) to
+  \(S^1\times\mathbb R\), with \(R>0\), the second coordinate is negative
+  exactly when
+  \[
+    |z-c|<R.
+  \]
+proof:
+  The second coordinate is the sign-preserving tangent reparametrization of
+  \(|z-c|-R\), so it is negative precisely when that quantity is negative.
+-/
 theorem complexPuncturedDoubleBallDiffeomorphAnnularCylinder_second_lt_zero_iff
     (c : ℂ) (R : ℝ) (hR : 0 < R)
     (z : complexPuncturedBallOpen c (2 * R)) :
@@ -369,8 +382,20 @@ theorem complexPuncturedDoubleBallDiffeomorphAnnularCylinder_second_lt_zero_iff
   rw [symmetricOpenIntervalDiffeomorphReal_lt_zero_iff]
   simp [dist_eq_norm]
 
-/-- The normal coordinate of the double-ball cylinder is positive precisely
-outside the closed inner ball. -/
+/--
+%%handwave
+name:
+  Positive cylinder coordinate characterizes the exterior annulus
+statement:
+  Under the same radial diffeomorphism, the second coordinate is positive
+  exactly when
+  \[
+    R<|z-c|.
+  \]
+proof:
+  The sign-preserving transverse reparametrization is positive exactly when
+  \(|z-c|-R>0\).
+-/
 theorem complexPuncturedDoubleBallDiffeomorphAnnularCylinder_second_pos_iff
     (c : ℂ) (R : ℝ) (hR : 0 < R)
     (z : complexPuncturedBallOpen c (2 * R)) :
@@ -389,8 +414,19 @@ def ClosedCoordinateDisk.puncturedExpandedOpenDisk
   puncturedSurfaceOpen p ⊓
     ⟨D.expandedOpenDisk rho, D.expandedOpenDisk_isOpen rho⟩
 
-/-- A punctured coordinate disk is carried by its defining chart to the
-corresponding punctured Euclidean ball. -/
+/--
+%%handwave
+name:
+  A punctured coordinate disk is diffeomorphic to a punctured plane ball
+statement:
+  Suppose \(p\) lies in a coordinate chart, its chart value is the prescribed
+  center \(c\), and the coordinate ball \(B(c,\rho)\) lies in the chart
+  target.  Then the coordinate disk of radius \(\rho\), punctured at \(p\),
+  is smoothly diffeomorphic to \(B(c,\rho)\setminus\{c\}\).
+proof:
+  Restrict the smooth chart diffeomorphism to the two punctured open subsets.
+  Chart injectivity identifies omission of \(p\) with omission of \(c\).
+-/
 theorem ClosedCoordinateDisk.puncturedExpandedOpenDisk_diffeomorphic_puncturedBall
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -474,6 +510,17 @@ noncomputable def ClosedCoordinateDisk.puncturedExpandedOpenDiskChartDiffeomorph
         (Metric.ball_subset_ball hrho hy.1)
     simpa [deRham_boundarylessExtendedChart, SurfaceRealModel] using hytarget
 
+/--
+%%handwave
+name:
+  Underlying coordinate formula for the punctured-disk chart diffeomorphism
+statement:
+  The Euclidean value of the punctured-disk chart diffeomorphism at \(y\) is
+  exactly the original chart coordinate \(z(y)\).
+proof:
+  The diffeomorphism is defined by restricting the chart, so the equality is
+  immediate.
+-/
 @[simp]
 theorem ClosedCoordinateDisk.puncturedExpandedOpenDiskChartDiffeomorph_coe_apply
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -504,8 +551,22 @@ noncomputable def ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph
     (complexPuncturedDoubleBallDiffeomorphAnnularCylinder
       D.openDisk.center D.closedRadius D.closedRadius_pos)
 
-/-- The radial collar's negative side is the original coordinate-disk
-interior. -/
+/--
+%%handwave
+name:
+  The negative radial collar side is the coordinate-disk interior
+statement:
+  For the radial annular collar of a doubled coordinate disk,
+  \[
+    \Phi(y)_2<0
+    \quad\Longleftrightarrow\quad
+    y\in D^\circ.
+  \]
+proof:
+  In Euclidean coordinates, negativity is equivalent to distance from the
+  center being below the closed-disk radius.  The chart formula translates
+  this precisely into membership in the open coordinate disk.
+-/
 theorem ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph_second_lt_zero_iff
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -531,8 +592,22 @@ theorem ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph_second_lt_zero_iff
   · rintro ⟨_hsource, hball⟩
     simpa [Metric.mem_ball] using hball
 
-/-- The radial collar's positive side is the exterior of the closed coordinate
-disk. -/
+/--
+%%handwave
+name:
+  The positive radial collar side is outside the closed disk
+statement:
+  For the radial annular collar of a doubled coordinate disk,
+  \[
+    \Phi(y)_2>0
+    \quad\Longleftrightarrow\quad
+    y\notin\overline{D^\circ}.
+  \]
+proof:
+  Positivity means that the chart distance from the center exceeds the
+  closed-disk radius.  Since the closure of the open coordinate disk is the
+  corresponding closed coordinate disk, this is exactly exterior membership.
+-/
 theorem ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph_second_pos_iff
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -568,8 +643,21 @@ theorem ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph_second_pos_iff
       exact ⟨y.2.2.1, by simpa [Metric.mem_closedBall] using hle⟩
     exact lt_of_not_ge hnotle
 
-/-- The doubled punctured coordinate disk together with the exterior of the
-closed inner disk is the whole surface with the center point removed. -/
+/--
+%%handwave
+name:
+  The doubled radial collar and disk exterior cover the punctured surface
+statement:
+  If \(p\) is the center of a closed coordinate disk \(D\), then
+  \[
+    \bigl(D_{2R}\setminus\{p\}\bigr)\cup(X\setminus D)
+      =X\setminus\{p\}.
+  \]
+proof:
+  A point outside \(D\) is in the exterior piece.  A point of \(D\) distinct
+  from \(p\) has coordinate radius at most \(R<2R\), so it lies in the doubled
+  punctured disk.
+-/
 theorem ClosedCoordinateDisk.radialPuncturedCollarUnion_eq_puncturedSurfaceOpen
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -608,8 +696,17 @@ theorem ClosedCoordinateDisk.radialPuncturedCollarUnion_eq_puncturedSurfaceOpen
       exact hle.trans_lt hRdouble
     · exact Or.inr hxD
 
-/-- The domain half of the doubled radial punctured collar is exactly the
-punctured inner coordinate disk. -/
+/--
+%%handwave
+name:
+  The domain half of the doubled collar is the punctured inner disk
+statement:
+  Intersecting the doubled punctured coordinate disk with the open inner disk
+  gives exactly the punctured coordinate disk of radius \(R\).
+proof:
+  Membership in the inner disk already implies the stronger radius bound
+  \(R<2R\); the puncture condition is unchanged.
+-/
 theorem ClosedCoordinateDisk.radialPuncturedCollarDomain_eq_puncturedExpandedOpenDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -629,8 +726,18 @@ theorem ClosedCoordinateDisk.radialPuncturedCollarDomain_eq_puncturedExpandedOpe
     apply Metric.ball_subset_ball _ hxball
     linarith [D.closedRadius_pos]
 
-/-- A coordinate disk punctured at its coordinate center is smoothly an
-annular cylinder. -/
+/--
+%%handwave
+name:
+  A punctured coordinate disk is an annular cylinder
+statement:
+  A coordinate disk punctured at its coordinate center is smoothly
+  diffeomorphic to \(S^1\times\mathbb R\).
+proof:
+  The chart identifies it with a punctured Euclidean ball.  Radial compression
+  identifies that ball with the punctured plane, and polar coordinates identify
+  the punctured plane with the annular cylinder.
+-/
 theorem ClosedCoordinateDisk.puncturedExpandedOpenDisk_diffeomorphic_annularCylinder
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -658,8 +765,24 @@ theorem ClosedCoordinateDisk.puncturedExpandedOpenDisk_diffeomorphic_annularCyli
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- If the ambient surface has trivial first de Rham cohomology, restriction
-from the punctured surface to the part inside a coordinate disk is injective. -/
+/--
+%%handwave
+name:
+  Injectivity of restriction to a punctured coordinate disk
+statement:
+  If \(H^1_{\mathrm{dR}}(X)=0\), then restriction
+  \[
+    H^1_{\mathrm{dR}}(X\setminus\{p\})
+      \longrightarrow
+    H^1_{\mathrm{dR}}(D^\circ\setminus\{p\})
+  \]
+  is injective for every coordinate disk containing \(p\).
+proof:
+  The punctured surface together with the unpunctured coordinate disk covers
+  \(X\), and the disk has trivial first de Rham cohomology.  The
+  Mayer–Vietoris restriction criterion, together with vanishing of ambient
+  \(H^1\), gives injectivity on their intersection.
+-/
 theorem puncturedSurfaceOpen_coordinateDisk_restriction_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -759,9 +882,21 @@ theorem ClosedCoordinateDisk.smoothDomain_complement_isExteriorComponent
     D.closure_expandedOpenDisk_closedRadius] using
       closedCoordinateDisk_complement_isExteriorComponent D
 
-/-- A radial coordinate disk supplies a closed angular form on the whole
-punctured surface.  On the punctured inner disk it is the standard angular
-class pulled back by the radial annular coordinate. -/
+/--
+%%handwave
+name:
+  A global closed angular form around a puncture
+statement:
+  On a noncompact Riemann surface with \(H^1_{\mathrm{dR}}(X)=0\), a radial
+  coordinate disk centered at \(p\) determines a closed one-form \(\eta\) on
+  \(X\setminus\{p\}\) whose restriction to the inner half of the radial collar
+  is the pullback of the standard angular form on \(S^1\times\mathbb R\).
+proof:
+  The complement of the closed coordinate disk is its exterior component.
+  Apply the exterior angular-extension theorem to the side-preserving radial
+  collar, then transport the resulting closed form from the collar–exterior
+  union, which equals the punctured surface.
+-/
 theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -865,8 +1000,24 @@ theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm
           (exteriorCutoffAngularCollarOneForm W phi v) := by
             simpa [S, Q] using heta
 
-/-- The global puncture form can be chosen together with a local smooth cycle
-on which its period is normalized to `-1`. -/
+/--
+%%handwave
+name:
+  A puncture angular form with normalized local period
+statement:
+  The global closed puncture form can be chosen with a smooth cycle \(c\) in
+  the punctured inner coordinate disk such that
+  \[
+    \partial c=0,
+    \qquad
+    \int_c\eta=-1.
+  \]
+proof:
+  Choose the global form agreeing with the standard angular collar form on
+  the inner half.  Pull back the standard negative-half-cylinder cycle whose
+  angular period is \(-1\); equality of the restricted forms transfers that
+  period to \(\eta\).
+-/
 theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm_normalized
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -945,9 +1096,25 @@ theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm_normalized
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- Restriction from the punctured surface onto the punctured inner coordinate
-disk is surjective in first de Rham cohomology.  The global angular extension
-supplies a class whose restriction is a nonzero annular generator. -/
+/--
+%%handwave
+name:
+  Surjectivity of restriction to a punctured coordinate disk
+statement:
+  Under the noncompactness and vanishing ambient cohomology hypotheses,
+  restriction
+  \[
+    H^1_{\mathrm{dR}}(X\setminus\{p\})
+      \longrightarrow
+    H^1_{\mathrm{dR}}(D^\circ\setminus\{p\})
+  \]
+  is surjective.
+proof:
+  The global angular extension restricts to the pullback of the standard
+  angular form on an annular cylinder and hence gives a nonzero class in the
+  target.  Since the target annulus has one-dimensional first cohomology, any
+  linear map whose range contains a nonzero class is surjective.
+-/
 theorem puncturedSurfaceOpen_coordinateDisk_restriction_surjective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -1066,9 +1233,23 @@ theorem puncturedSurfaceOpen_coordinateDisk_restriction_surjective
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- On a noncompact surface with vanishing ambient first de Rham cohomology,
-restriction identifies the first cohomology of the punctured surface with
-that of a punctured coordinate disk. -/
+/--
+%%handwave
+name:
+  Cohomology of the punctured surface is detected on a punctured disk
+statement:
+  If \(X\) is noncompact and \(H^1_{\mathrm{dR}}(X)=0\), then restriction
+  gives an isomorphism
+  \[
+    H^1_{\mathrm{dR}}(X\setminus\{p\})
+      \cong
+    H^1_{\mathrm{dR}}(D^\circ\setminus\{p\})
+  \]
+  for a centered coordinate disk \(D\).
+proof:
+  The restriction is injective by the Mayer–Vietoris argument and surjective
+  because the global angular extension supplies the annular generator.
+-/
 theorem puncturedSurfaceOpen_coordinateDisk_restriction_bijective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

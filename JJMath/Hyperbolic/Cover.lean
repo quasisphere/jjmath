@@ -29,10 +29,31 @@ instance instOneSelf : One (Y ≃ₜ Y) where
 instance instMulSelf : Mul (Y ≃ₜ Y) where
   mul f g := g.trans f
 
+/--
+%%handwave
+name:
+  The identity homeomorphism fixes every point
+statement:
+  For every point \(y\in Y\), the identity self-homeomorphism satisfies
+  \(\operatorname{id}_Y(y)=y\).
+proof:
+  This is the defining action of the identity homeomorphism.
+-/
 @[simp]
 theorem one_apply (y : Y) : (1 : Y ≃ₜ Y) y = y :=
   rfl
 
+/--
+%%handwave
+name:
+  Multiplication of homeomorphisms acts by composition
+statement:
+  For self-homeomorphisms \(f,g\) of \(Y\) and \(y\in Y\), one has
+  \((fg)(y)=f(g(y))\).
+proof:
+  Multiplication was defined as composition in this order, so the equality is
+  immediate from the definition.
+-/
 @[simp]
 theorem mul_apply (f g : Y ≃ₜ Y) (y : Y) : (f * g) y = f (g y) :=
   rfl
@@ -127,27 +148,67 @@ variable {X Y : Type*} [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y]
     {projection : Y → X} {y : Y}
 
-/-- The stored local projection agrees with the global projection at the selected lift. -/
+/--
+%%handwave
+name:
+  The local projection agrees with the covering projection at its center
+statement:
+  For local holomorphic section data centered at \(y\), the chosen local
+  projection sends \(y\) to the global projection of \(y\).
+proof:
+  Evaluate the stipulated equality between the global and local projections
+  at \(y\).
+-/
 theorem localProjection_apply_lift
     (S : CoverLocalHolomorphicSectionData projection y) :
     S.localProjection y = projection y :=
   (congrFun S.localProjection_eq_projection y).symm
 
-/-- The projected base point lies in the target of the stored local projection. -/
+/--
+%%handwave
+name:
+  The projected center lies in the local projection target
+statement:
+  If local section data are centered at \(y\), then the projected point
+  \(\pi(y)\) belongs to the target of the chosen local projection.
+proof:
+  The center belongs to the source by assumption, hence its local-projection
+  image belongs to the target; this image is \(\pi(y)\).
+-/
 theorem projection_lift_mem_localProjection_target
     (S : CoverLocalHolomorphicSectionData projection y) :
     projection y ∈ S.localProjection.target := by
   rw [← S.localProjection_apply_lift]
   exact S.localProjection.map_source S.mem_localProjection_source
 
-/-- The local inverse section sends the projected base point back to the selected lift. -/
+/--
+%%handwave
+name:
+  The local inverse recovers its center
+statement:
+  For local section data centered at \(y\), applying the inverse local
+  projection to \(\pi(y)\) gives \(y\).
+proof:
+  Replace \(\pi(y)\) by the local projection of \(y\), then use the inverse
+  law on the source of the local homeomorphism.
+-/
 theorem localProjection_symm_projection_lift
     (S : CoverLocalHolomorphicSectionData projection y) :
     S.localProjection.symm (projection y) = y := by
   rw [← S.localProjection_apply_lift]
   exact S.localProjection.left_inv S.mem_localProjection_source
 
-/-- The stored local section projects back to the base point. -/
+/--
+%%handwave
+name:
+  The local inverse section is a right inverse to the projection
+statement:
+  If \(x\) lies in the target of a chosen local projection, then its local
+  inverse lift projects globally back to \(x\).
+proof:
+  Replace the global projection by the local projection at the inverse lift
+  and apply the right-inverse law of the local homeomorphism.
+-/
 theorem projection_localProjection_symm
     (S : CoverLocalHolomorphicSectionData projection y)
     {x : X} (hx : x ∈ S.localProjection.target) :
@@ -158,7 +219,18 @@ theorem projection_localProjection_symm
       exact congrFun S.localProjection_eq_projection (S.localProjection.symm x)
     _ = x := S.localProjection.right_inv hx
 
-/-- In coordinates, the stored local section projects to the inverse base chart. -/
+/--
+%%handwave
+name:
+  Projection of the coordinate local section
+statement:
+  For \(z\) in the coordinate source, projecting the lift of the base-chart
+  point \(z\) gives the inverse base-chart point itself:
+  \[\pi\bigl(s(z)\bigr)=\varphi^{-1}(z).\]
+proof:
+  The coordinate-source hypothesis places \(\varphi^{-1}(z)\) in the target
+  of the local projection, where the inverse section is a right inverse.
+-/
 theorem projection_section_coordinate_point
     (S : CoverLocalHolomorphicSectionData projection y)
     {z : ℂ} (hz : z ∈ S.coordinateSource) :
@@ -167,7 +239,19 @@ theorem projection_section_coordinate_point
   S.projection_localProjection_symm
     (S.coordinateSource_lands_in_localProjection_target z hz)
 
-/-- At the selected lift, the section coordinate is the canonical cover chart coordinate. -/
+/--
+%%handwave
+name:
+  The section coordinate at the projected center
+statement:
+  For local section data centered at \(y\), evaluating the coordinate
+  expression at the base coordinate of \(\pi(y)\) yields the canonical cover
+  chart coordinate of \(y\).
+proof:
+  Expand the coordinate expression. The inverse base chart returns
+  \(\pi(y)\), the inverse local projection returns \(y\), and the selected
+  total chart is the canonical chart at \(y\).
+-/
 theorem sectionCoordinate_basepoint_eq_chartAt
     (S : CoverLocalHolomorphicSectionData projection y) :
     S.sectionCoordinate (S.baseComplexChart (projection y)) = chartAt ℂ y y := by
@@ -186,7 +270,17 @@ theorem sectionCoordinate_basepoint_eq_chartAt
     _ = chartAt ℂ y y := by
       rw [S.totalComplexChart_eq_chartAt]
 
-/-- The coordinate expression of a cover-local section is continuous on its source. -/
+/--
+%%handwave
+name:
+  Continuity of the coordinate local section
+statement:
+  The coordinate expression of a cover-local holomorphic section is
+  continuous on its coordinate source.
+proof:
+  At every point of the source the expression is complex differentiable, and
+  differentiability implies continuity there.
+-/
 theorem sectionCoordinate_continuousOn
     (S : CoverLocalHolomorphicSectionData projection y) :
     ContinuousOn S.sectionCoordinate S.coordinateSource := by
@@ -220,6 +314,16 @@ def endpoint (y : PathHomotopyUniversalCover X x₀) : X :=
 def baseLift (x₀ : X) : PathHomotopyUniversalCover X x₀ :=
   ⟨x₀, Path.Homotopic.Quotient.refl x₀⟩
 
+/--
+%%handwave
+name:
+  The distinguished lift projects to the basepoint
+statement:
+  The endpoint of the constant-path class based at \(x_0\) is \(x_0\).
+proof:
+  The endpoint projection is the first component of the path-class pair, which
+  is \(x_0\) by construction.
+-/
 @[simp]
 theorem endpoint_baseLift (x₀ : X) :
     endpoint (baseLift x₀) = x₀ :=
@@ -230,12 +334,33 @@ noncomputable def liftOfPoint [PathConnectedSpace X] (x₀ x : X) :
     PathHomotopyUniversalCover X x₀ :=
   ⟨x, Path.Homotopic.Quotient.mk (PathConnectedSpace.somePath x₀ x)⟩
 
+/--
+%%handwave
+name:
+  A chosen path-class lift has the prescribed endpoint
+statement:
+  On a path-connected space, the chosen path-class lift of \(x\) based at
+  \(x_0\) projects to \(x\).
+proof:
+  The lift is defined as the pair whose first component is \(x\).
+-/
 @[simp]
 theorem endpoint_liftOfPoint [PathConnectedSpace X] (x₀ x : X) :
     endpoint (liftOfPoint x₀ x) = x :=
   rfl
 
-/-- The endpoint projection of the path-homotopy model is surjective on a path-connected base. -/
+/--
+%%handwave
+name:
+  Surjectivity of the endpoint projection
+statement:
+  If \(X\) is path-connected, every \(x\in X\) is the endpoint of a based
+  path-homotopy class, so the endpoint projection from the path-class cover is
+  surjective.
+proof:
+  Choose a path from the basepoint to \(x\) and take its homotopy class. The
+  associated lift has endpoint \(x\).
+-/
 theorem endpoint_surjective [PathConnectedSpace X] (x₀ : X) :
     Function.Surjective (endpoint : PathHomotopyUniversalCover X x₀ → X) :=
   fun x ↦ ⟨liftOfPoint x₀ x, rfl⟩
@@ -256,6 +381,16 @@ def initialSegmentPoint {x : X} (p : Path x₀ x) (t : I) :
     PathHomotopyUniversalCover X x₀ :=
   ⟨p t, Path.Homotopic.Quotient.mk (initialSegment (x₀ := x₀) p t)⟩
 
+/--
+%%handwave
+name:
+  Endpoint of an initial-segment lift
+statement:
+  If \(p\) is a path from \(x_0\) and \(t\in[0,1]\), the lift represented by
+  the initial segment \(p|_{[0,t]}\) projects to \(p(t)\).
+proof:
+  The endpoint of the initial-segment lift is defined to be \(p(t)\).
+-/
 @[simp]
 theorem endpoint_initialSegmentPoint {x : X} (p : Path x₀ x) (t : I) :
     endpoint (initialSegmentPoint (x₀ := x₀) p t) = p t :=
@@ -281,6 +416,17 @@ def fiberPathClassEquiv (x : X) :
   right_inv q := by
     simp [pathClass, endpoint]
 
+/--
+%%handwave
+name:
+  Inverse of the fiber path-class equivalence
+statement:
+  For \(x\in X\) and a homotopy class \([q]\) of paths from \(x_0\) to
+  \(x\), the inverse fiber equivalence returns the cover point \((x,[q])\),
+  equipped with its evident endpoint equality.
+proof:
+  This is the defining formula for the inverse equivalence.
+-/
 @[simp]
 theorem fiberPathClassEquiv_symm_apply (x : X)
     (q : Path.Homotopic.Quotient x₀ x) :
@@ -293,10 +439,17 @@ noncomputable def pathInSet {U : Set X} [PathConnectedSpace U] (a x : U) :
   (PathConnectedSpace.somePath a x).map continuous_subtype_val
 
 /--
-In a simply connected subset, the chosen path from `a` to `x` is homotopic
-to the chosen path from `a` to `b` followed by the chosen path from `b` to `x`.
-
-This is the basic overlap-compatibility input for local sheets.
+%%handwave
+name:
+  Concatenation of chosen paths in a simply connected set
+statement:
+  In a path-connected simply connected set \(U\), the homotopy class of the
+  chosen path from \(a\) to \(b\), followed by the chosen path from \(b\) to
+  \(x\), equals the class of the chosen path from \(a\) to \(x\).
+proof:
+  Concatenate the two paths inside \(U\). Simple connectedness makes this path
+  homotopic relative endpoints to the chosen path from \(a\) to \(x\); mapping
+  the homotopy into \(X\) gives the asserted equality of classes.
 -/
 theorem pathInSet_trans_eq_of_simplyConnected {U : Set X}
     [PathConnectedSpace U] [SimplyConnectedSpace U] (a b x : U) :
@@ -312,7 +465,17 @@ theorem pathInSet_trans_eq_of_simplyConnected {U : Set X}
     (PathConnectedSpace.somePath a x)).map
       ⟨Subtype.val, continuous_subtype_val⟩
 
-/-- The chosen path from a point to itself is homotopic to the constant path. -/
+/--
+%%handwave
+name:
+  A chosen loop in a simply connected set is null-homotopic
+statement:
+  In a path-connected simply connected set \(U\), the chosen path from
+  \(a\in U\) back to \(a\) represents the constant-path class in \(X\).
+proof:
+  Within \(U\), simple connectedness gives a homotopy between the chosen loop
+  and the constant loop. Map that homotopy along the inclusion \(U\hookrightarrow X\).
+-/
 theorem pathInSet_self_eq_refl_of_simplyConnected {U : Set X}
     [PathConnectedSpace U] [SimplyConnectedSpace U] (a : U) :
     Path.Homotopic.Quotient.mk (pathInSet a a) =
@@ -326,8 +489,17 @@ theorem pathInSet_self_eq_refl_of_simplyConnected {U : Set X}
       ⟨Subtype.val, continuous_subtype_val⟩
 
 /--
-In a simply connected subset, any path contained in the subset has the same
-ambient homotopy class as the chosen `pathInSet`.
+%%handwave
+name:
+  Uniqueness of path classes inside a simply connected set
+statement:
+  Let \(a,b\in U\), where \(U\) is path-connected and simply connected. If a
+  path \(\gamma\) from \(a\) to \(b\) stays in \(U\), then \(\gamma\) and the
+  chosen path inside \(U\) determine the same homotopy class in \(X\).
+proof:
+  Regard \(\gamma\) as a path in the subtype \(U\). Simple connectedness gives
+  a relative-endpoint homotopy to the chosen path, and inclusion into \(X\)
+  preserves that homotopy.
 -/
 theorem pathInSet_eq_path_of_simplyConnected {U : Set X}
     [PathConnectedSpace U] [SimplyConnectedSpace U] (a b : U)
@@ -350,7 +522,17 @@ theorem pathInSet_eq_path_of_simplyConnected {U : Set X}
       ⟨Subtype.val, continuous_subtype_val⟩
   simpa [pathInSet, γU] using h
 
-/-- Reversal turns a composed path-homotopy class into the reversed composition. -/
+/--
+%%handwave
+name:
+  Reversal of a concatenated path class
+statement:
+  For composable path classes \(p:x\to y\) and \(q:y\to z\),
+  \[(p\mathbin{*}q)^{-1}=q^{-1}\mathbin{*}p^{-1}.\]
+proof:
+  Represent both classes by paths and use the corresponding identity for
+  reversal of concatenated paths.
+-/
 theorem quotient_symm_trans {x y z : X}
     (p : Path.Homotopic.Quotient x y) (q : Path.Homotopic.Quotient y z) :
     Path.Homotopic.Quotient.symm (Path.Homotopic.Quotient.trans p q) =
@@ -365,7 +547,17 @@ theorem quotient_symm_trans {x y z : X}
   rw [← Path.Homotopic.Quotient.mk_symm]
   rw [← Path.Homotopic.Quotient.mk_trans, Path.trans_symm]
 
-/-- Left cancellation for path-homotopy composition. -/
+/--
+%%handwave
+name:
+  Left cancellation for path classes
+statement:
+  If \(p:x\to y\) is a path class and \(p*q=p*r\) for path classes
+  \(q,r:y\to z\), then \(q=r\).
+proof:
+  Concatenate on the left with \(p^{-1}\), use associativity, and cancel
+  \(p^{-1}*p\) to the constant class at \(y\).
+-/
 theorem quotient_trans_left_cancel {x y z : X}
     (p : Path.Homotopic.Quotient x y)
     {q r : Path.Homotopic.Quotient y z}
@@ -392,7 +584,17 @@ theorem quotient_trans_left_cancel {x y z : X}
     _ = r := by
       rw [Path.Homotopic.Quotient.refl_trans]
 
-/-- Right cancellation for path-homotopy composition. -/
+/--
+%%handwave
+name:
+  Right cancellation for path classes
+statement:
+  If \(q:y\to z\) is a path class and \(p*q=r*q\) for path classes
+  \(p,r:x\to y\), then \(p=r\).
+proof:
+  Concatenate on the right with \(q^{-1}\), use associativity, and cancel
+  \(q*q^{-1}\) to the constant class at \(y\).
+-/
 theorem quotient_trans_right_cancel {x y z : X}
     (q : Path.Homotopic.Quotient y z)
     {p r : Path.Homotopic.Quotient x y}
@@ -419,7 +621,18 @@ theorem quotient_trans_right_cancel {x y z : X}
     _ = r := by
       rw [Path.Homotopic.Quotient.trans_refl]
 
-/-- Casting a constant path class along two proofs with the same new endpoint is still constant. -/
+/--
+%%handwave
+name:
+  Transported constant path classes are constant
+statement:
+  If two endpoint identifications both identify \(x'\) with \(x\), then
+  transporting the constant path class at \(x\) along them gives the constant
+  path class at \(x'\).
+proof:
+  Substitute the two endpoint equalities; both transported classes then reduce
+  definitionally to the same constant class.
+-/
 theorem quotient_refl_cast_eq {x x' : X} (hx hy : x' = x) :
     (Path.Homotopic.Quotient.refl x).cast hx hy =
       Path.Homotopic.Quotient.refl x' := by
@@ -428,8 +641,17 @@ theorem quotient_refl_cast_eq {x x' : X} (hx hy : x' = x) :
   rfl
 
 /--
-Composing a path class with the endpoint-cast constant class is heterogeneously
-the same as casting the path class itself.
+%%handwave
+name:
+  Concatenating a transported constant path class
+statement:
+  Let \(q\) be a path class from \(a\) to \(b\), with alternate endpoint
+  identifications \(a'=a\) and \(b'=b\). Concatenating \(q\) with the
+  transported constant class at \(a'\) agrees, after endpoint transport, with
+  \(q\) itself.
+proof:
+  Substitute both endpoint equalities and apply the left identity law for path
+  concatenation.
 -/
 theorem quotient_refl_cast_trans_heq {a b a' b' : X}
     (q : Path.Homotopic.Quotient a b) (ha : a' = a) (hb : b' = b) :
@@ -442,9 +664,17 @@ theorem quotient_refl_cast_trans_heq {a b a' b' : X}
   simp
 
 /--
-If `W ⊆ U` and `U` is simply connected, then a chosen path inside `W`,
-viewed in the ambient space, has the same homotopy class as the chosen path
-inside `U` between the same endpoints.
+%%handwave
+name:
+  Compatibility of chosen paths under inclusion
+statement:
+  Let \(W\subseteq U\), with \(U\) simply connected and both sets
+  path-connected. For \(a,x\in W\), the chosen path from \(a\) to \(x\) in
+  \(U\) and the chosen path in \(W\) represent the same path class in \(X\).
+proof:
+  Map the chosen path in \(W\) into \(U\). Simple connectedness of \(U\)
+  makes it homotopic to the chosen path in \(U\), and inclusion into \(X\)
+  preserves the homotopy.
 -/
 theorem pathInSet_eq_of_subset_simplyConnected {U W : Set X}
     [PathConnectedSpace U] [SimplyConnectedSpace U] [PathConnectedSpace W]
@@ -464,9 +694,18 @@ theorem pathInSet_eq_of_subset_simplyConnected {U W : Set X}
   simpa [pathInSet, i, Path.map_map] using h
 
 /--
-If `W ⊆ U` and `U` is simply connected, then the chosen path in `U` from
-`a` to `x` followed by the reverse of the chosen path in `W` from `b` to `x`
-has the same class as the chosen path in `U` from `a` to `b`.
+%%handwave
+name:
+  Cancellation of nested chosen paths
+statement:
+  Let \(W\subseteq U\), with \(U\) simply connected and both sets
+  path-connected. For \(a\in U\) and \(b,x\in W\), following the chosen path
+  \(a\to x\) in \(U\) by the reverse of the chosen path \(b\to x\) in \(W\)
+  represents the chosen path \(a\to b\) in \(U\).
+proof:
+  Replace the path chosen in \(W\) by its equal class chosen in \(U\). The
+  concatenation law for the three chosen paths, followed by cancellation of a
+  path with its reverse, gives the result.
 -/
 theorem pathInSet_trans_subset_symm_eq_of_simplyConnected {U W : Set X}
     [PathConnectedSpace U] [SimplyConnectedSpace U] [PathConnectedSpace W]
@@ -538,6 +777,15 @@ noncomputable def localTrivializationEquiv {U : Set X} [PathConnectedSpace U]
       Path.Homotopic.Quotient.trans_symm,
       Path.Homotopic.Quotient.trans_refl]
 
+/--
+%%handwave
+name:
+  Base coordinate of the algebraic local trivialization
+statement:
+  The first coordinate of a lift \(y\) under the local trivialization over \(U\) is its endpoint, regarded as a point of \(U\).
+proof:
+  This is the first component in the definition of the trivialization.
+-/
 @[simp]
 theorem localTrivializationEquiv_apply_fst {U : Set X} [PathConnectedSpace U]
     (a : U) (y : {y : PathHomotopyUniversalCover X x₀ // endpoint y ∈ U}) :
@@ -545,6 +793,15 @@ theorem localTrivializationEquiv_apply_fst {U : Set X} [PathConnectedSpace U]
       ⟨endpoint y.1, y.2⟩ :=
   rfl
 
+/--
+%%handwave
+name:
+  Endpoint of the inverse algebraic trivialization
+statement:
+  The lift reconstructed from \((x,q)\) by the local trivialization has endpoint \(x\).
+proof:
+  The inverse construction stores \(x\) as the endpoint index.
+-/
 @[simp]
 theorem endpoint_localTrivializationEquiv_symm {U : Set X} [PathConnectedSpace U]
     (a : U) (xp : U × Path.Homotopic.Quotient x₀ (a : X)) :
@@ -563,6 +820,15 @@ noncomputable def localTrivializationFiberEquiv {U : Set X} [PathConnectedSpace 
   (localTrivializationEquiv (x₀ := x₀) a).trans
     (Equiv.prodCongr (Equiv.refl U) (fiberPathClassEquiv (x₀ := x₀) (a : X)).symm)
 
+/--
+%%handwave
+name:
+  Base coordinate of the fiber-valued local trivialization
+statement:
+  In the fiber-valued trivialization over \(U\), the first coordinate of \(y\) is its endpoint in \(U\).
+proof:
+  Rewriting the second factor as a literal endpoint fiber does not change the first coordinate.
+-/
 @[simp]
 theorem localTrivializationFiberEquiv_apply_fst {U : Set X} [PathConnectedSpace U]
     (a : U) (y : {y : PathHomotopyUniversalCover X x₀ // endpoint y ∈ U}) :
@@ -570,12 +836,30 @@ theorem localTrivializationFiberEquiv_apply_fst {U : Set X} [PathConnectedSpace 
       ⟨endpoint y.1, y.2⟩ :=
   rfl
 
+/--
+%%handwave
+name:
+  Endpoint of the inverse fiber-valued trivialization
+statement:
+  Reconstructing a lift from \((x,\eta)\) in the fiber-valued trivialization gives a point with endpoint \(x\).
+proof:
+  This follows from the corresponding inverse identity in path-class coordinates.
+-/
 @[simp]
 theorem endpoint_localTrivializationFiberEquiv_symm {U : Set X} [PathConnectedSpace U]
     (a : U) (xp : U × Fiber x₀ (a : X)) :
     endpoint ((localTrivializationFiberEquiv (x₀ := x₀) a).symm xp).1 = xp.1 :=
   rfl
 
+/--
+%%handwave
+name:
+  Fiber coordinate of the fiber-valued trivialization
+statement:
+  The fiber coordinate of \(y\) is the endpoint-fiber point corresponding to its transported path class back to the center \(a\).
+proof:
+  The fiber-valued trivialization is obtained by postcomposing the path-class trivialization with the inverse fiber-to-path-class equivalence.
+-/
 @[simp]
 theorem localTrivializationFiberEquiv_apply_snd {U : Set X} [PathConnectedSpace U]
     (a : U)
@@ -585,6 +869,15 @@ theorem localTrivializationFiberEquiv_apply_snd {U : Set X} [PathConnectedSpace 
         (((localTrivializationEquiv (x₀ := x₀) a) y).2) :=
   rfl
 
+/--
+%%handwave
+name:
+  Path class of the local fiber label
+statement:
+  Converting the fiber label of a locally trivialized lift back to a path class recovers its transported path-class coordinate.
+proof:
+  The fiber label was defined using the inverse of this equivalence, so the two maps cancel.
+-/
 @[simp]
 theorem fiberPathClassEquiv_localTrivializationFiberEquiv_snd
     {U : Set X} [PathConnectedSpace U] (a : U)
@@ -597,6 +890,14 @@ theorem fiberPathClassEquiv_localTrivializationFiberEquiv_snd
 /--
 Change of local-trivialization label after restricting from a simply connected
 neighborhood `U` to a smaller path-connected neighborhood `W`.
+
+%%handwave
+name:
+  Fiber labels under restriction of a simply connected trivialization
+statement:
+  Let \(W\subseteq U\), with \(U\) simply connected, and choose centers \(a\in U\), \(b\in W\). For a lift \(y\) over \(W\), its label at \(a\) is its label at \(b\), followed by the inverse of the chosen path from \(a\) to \(b\).
+proof:
+  Expand both labels as the stored path class of \(y\) followed by a return path. Simple connectedness identifies the return path in \(U\) with the return through \(b\), and associativity gives the formula.
 -/
 theorem localTrivializationFiberEquiv_subset_label
     {U W : Set X} [PathConnectedSpace U] [SimplyConnectedSpace U]
@@ -655,7 +956,16 @@ def localSheet {U : Set X} [PathConnectedSpace U]
   {y | ∃ hyU : endpoint y ∈ U,
     ((localTrivializationFiberEquiv (x₀ := x₀) a) ⟨y, hyU⟩).2 = η}
 
-/-- The endpoint of a point in a local sheet lies in the base neighborhood. -/
+/-- The endpoint of a point in a local sheet lies in the base neighborhood.
+
+%%handwave
+name:
+  A local-sheet point ends in the sheet base
+statement:
+  If \(y\) lies in the local sheet over \(U\) labelled at \(a\), then \(\operatorname{end}(y)\in U\).
+proof:
+  Membership in the local sheet includes this endpoint condition.
+-/
 theorem endpoint_mem_of_mem_localSheet {U : Set X} [PathConnectedSpace U]
     {a : U} {η : Fiber x₀ (a : X)}
     {y : PathHomotopyUniversalCover X x₀} (hy : y ∈ localSheet a η) :
@@ -665,6 +975,14 @@ theorem endpoint_mem_of_mem_localSheet {U : Set X} [PathConnectedSpace U]
 /--
 Over a simply connected base neighborhood, the fiber label itself lies on the
 local sheet it labels.
+
+%%handwave
+name:
+  A sheet label lies in its own local sheet
+statement:
+  If \(U\) is simply connected and \(\eta\) is a lift over \(a\in U\), then the underlying lift \(\eta\) belongs to the local sheet over \(U\) labelled by \(\eta\).
+proof:
+  At \(a\), the return path is homotopic to the constant path. Thus the local-trivialization label of \(\eta\) is unchanged.
 -/
 theorem fiberPoint_mem_localSheet_of_simplyConnected
     {U : Set X} [PathConnectedSpace U] [SimplyConnectedSpace U]
@@ -702,6 +1020,14 @@ theorem fiberPoint_mem_localSheet_of_simplyConnected
 Restrict a local sheet from a simply connected neighborhood `U` to a smaller
 path-connected neighborhood `W`.  If the restricted sheet is labelled by a
 point already on the original sheet, then it lies inside the original sheet.
+
+%%handwave
+name:
+  Restricting a local sheet preserves sheet membership
+statement:
+  Let \(W\subseteq U\), with \(U\) simply connected. If \(y\) lies in a sheet \(S\) over \(U\), then the sheet over \(W\) through \(y\) is contained in \(S\).
+proof:
+  Compare the two local-trivialization labels using the restriction formula. Every point with the same \(W\)-label as \(y\) consequently has the same \(U\)-label, hence lies in \(S\).
 -/
 theorem localSheet_subset_of_subset_of_mem_localSheet
     {U W : Set X} [PathConnectedSpace U] [SimplyConnectedSpace U]
@@ -759,12 +1085,34 @@ noncomputable def localSheetLift {U : Set X} [PathConnectedSpace U]
     PathHomotopyUniversalCover X x₀ :=
   ((localTrivializationFiberEquiv (x₀ := x₀) a).symm (x, η)).1
 
+/--
+%%handwave
+name:
+  Endpoint of the canonical local-sheet lift
+statement:
+  For \(x\in U\), the canonical lift of \(x\) in the sheet labelled by \(\eta\) has endpoint \(x\).
+proof:
+  It is reconstructed from the local-trivialization pair \((x,\eta)\).
+-/
 @[simp]
 theorem endpoint_localSheetLift {U : Set X} [PathConnectedSpace U]
     (a : U) (η : Fiber x₀ (a : X)) (x : U) :
     endpoint (localSheetLift a η x) = x :=
   rfl
 
+/--
+%%handwave
+name:
+  Path class of the canonical local-sheet lift
+statement:
+  If \(\eta\) corresponds to a path class \([q]:x_0\to a\), then the
+  canonical lift of \(x\in U\) in the sheet labelled by \(\eta\) has path
+  class \([q*\sigma_{a,x}]\), where \(\sigma_{a,x}\) is the chosen path from
+  \(a\) to \(x\) inside \(U\).
+proof:
+  Expand the inverse of the local trivialization: it concatenates the path
+  class labelling the sheet with the chosen path inside \(U\).
+-/
 @[simp]
 theorem pathClass_localSheetLift {U : Set X} [PathConnectedSpace U]
     (a : U) (η : Fiber x₀ (a : X)) (x : U) :
@@ -774,7 +1122,16 @@ theorem pathClass_localSheetLift {U : Set X} [PathConnectedSpace U]
         (Path.Homotopic.Quotient.mk (pathInSet a x)) :=
   rfl
 
-/-- The local sheet section lands in its sheet. -/
+/-- The local sheet section lands in its sheet.
+
+%%handwave
+name:
+  The canonical local lift lands in its sheet
+statement:
+  For \(x\in U\), the canonical lift with fixed fiber label \(\eta\) lies in the local sheet labelled by \(\eta\).
+proof:
+  Applying the local trivialization to its inverse image of \((x,\eta)\) recovers exactly that pair, so the endpoint and label conditions hold.
+-/
 theorem localSheetLift_mem {U : Set X} [PathConnectedSpace U]
     (a : U) (η : Fiber x₀ (a : X)) (x : U) :
     localSheetLift a η x ∈ localSheet a η := by
@@ -782,7 +1139,16 @@ theorem localSheetLift_mem {U : Set X} [PathConnectedSpace U]
   exact congrArg Prod.snd
     ((localTrivializationFiberEquiv (x₀ := x₀) a).apply_symm_apply (x, η))
 
-/-- A point of a local sheet is recovered from its endpoint by the sheet section. -/
+/-- A point of a local sheet is recovered from its endpoint by the sheet section.
+
+%%handwave
+name:
+  A local-sheet point is determined by its endpoint
+statement:
+  If \(y\) lies in the sheet labelled by \(\eta\), then the canonical \(\eta\)-labelled lift of \(\operatorname{end}(y)\) is \(y\).
+proof:
+  The local trivialization sends \(y\) to \((\operatorname{end}(y),\eta)\); applying its inverse recovers \(y\).
+-/
 theorem localSheetLift_endpoint_eq {U : Set X} [PathConnectedSpace U]
     {a : U} {η : Fiber x₀ (a : X)}
     {y : PathHomotopyUniversalCover X x₀} (hy : y ∈ localSheet a η) :
@@ -798,7 +1164,16 @@ theorem localSheetLift_endpoint_eq {U : Set X} [PathConnectedSpace U]
     rw [← hchart, Equiv.symm_apply_apply]
   exact congrArg Subtype.val hsub
 
-/-- The endpoint projection is injective on each algebraic local sheet. -/
+/-- The endpoint projection is injective on each algebraic local sheet.
+
+%%handwave
+name:
+  The endpoint map is injective on each local sheet
+statement:
+  If \(y,z\) lie in the same local sheet and have equal endpoints, then \(y=z\).
+proof:
+  Recover both points as the canonical sheet lift of their endpoint and use the endpoint equality.
+-/
 theorem localSheet_endpoint_injective {U : Set X} [PathConnectedSpace U]
     {a : U} {η : Fiber x₀ (a : X)}
     {y z : PathHomotopyUniversalCover X x₀}
@@ -819,6 +1194,15 @@ noncomputable def localSheetEndpointEquiv {U : Set X} [PathConnectedSpace U]
   right_inv x := by
     exact Subtype.ext rfl
 
+/--
+%%handwave
+name:
+  Endpoint equivalence on a local sheet
+statement:
+  The local-sheet endpoint equivalence sends a lift \(y\) to its endpoint in the base neighborhood.
+proof:
+  This is the forward map defining the equivalence.
+-/
 @[simp]
 theorem localSheetEndpointEquiv_apply {U : Set X} [PathConnectedSpace U]
     (a : U) (η : Fiber x₀ (a : X))
@@ -827,6 +1211,15 @@ theorem localSheetEndpointEquiv_apply {U : Set X} [PathConnectedSpace U]
       ⟨endpoint y.1, endpoint_mem_of_mem_localSheet y.2⟩ :=
   rfl
 
+/--
+%%handwave
+name:
+  Inverse endpoint equivalence on a local sheet
+statement:
+  The inverse endpoint equivalence sends \(x\in U\) to the canonical lift of \(x\) in the chosen local sheet.
+proof:
+  This is the inverse map defining the equivalence.
+-/
 @[simp]
 theorem localSheetEndpointEquiv_symm_apply {U : Set X} [PathConnectedSpace U]
     (a : U) (η : Fiber x₀ (a : X)) (x : U) :
@@ -875,6 +1268,15 @@ noncomputable def endpointEquiv :
     {y : PathHomotopyUniversalCover X x₀ // y ∈ C.sheet} ≃ C.base :=
   localSheetEndpointEquiv C.center C.fiberPoint
 
+/--
+%%handwave
+name:
+  Endpoint chart of a named local sheet
+statement:
+  The endpoint equivalence of a named sheet chart sends a sheet point to its endpoint in the chart base.
+proof:
+  The named equivalence is the local-sheet endpoint equivalence.
+-/
 @[simp]
 theorem endpointEquiv_apply
     (y : {y : PathHomotopyUniversalCover X x₀ // y ∈ C.sheet}) :
@@ -882,6 +1284,15 @@ theorem endpointEquiv_apply
       ⟨endpoint y.1, endpoint_mem_of_mem_localSheet y.2⟩ :=
   rfl
 
+/--
+%%handwave
+name:
+  Inverse endpoint chart of a named local sheet
+statement:
+  The inverse endpoint equivalence of a named sheet chart sends a base point to its canonical lift in that sheet.
+proof:
+  The named equivalence uses the canonical local-sheet lift as its inverse.
+-/
 @[simp]
 theorem endpointEquiv_symm_apply (x : C.base) :
     C.endpointEquiv.symm x =
@@ -916,7 +1327,16 @@ instance instTopologicalSpaceFiber (x : X) : TopologicalSpace (Fiber x₀ x) := 
   dsimp [Fiber]
   infer_instance
 
-/-- Every named local sheet chart is open in the generated cover topology. -/
+/-- Every named local sheet chart is open in the generated cover topology.
+
+%%handwave
+name:
+  Every named local sheet is open
+statement:
+  The sheet of every local sheet chart is open in the generated topology on the path-homotopy cover.
+proof:
+  It is one of the generating sets, obtained by restricting the sheet over the open set \(X\).
+-/
 theorem isOpen_localSheetChart_sheet (C : LocalSheetChart (X := X) x₀) :
     IsOpen C.sheet :=
   TopologicalSpace.isOpen_generateFrom_of_mem
@@ -925,19 +1345,45 @@ theorem isOpen_localSheetChart_sheet (C : LocalSheetChart (X := X) x₀) :
 /--
 The part of a local sheet lying over an open subset of the base is open in the
 generated cover topology.
+
+%%handwave
+name:
+  Open restrictions of local sheets are open
+statement:
+  If \(C\) is a local sheet chart and \(V\subseteq X\) is open, then \(C\cap\operatorname{end}^{-1}(V)\) is open upstairs.
+proof:
+  This set is a generator of the path-homotopy cover topology.
 -/
 theorem isOpen_localSheetChart_sheet_inter_endpoint_preimage
     (C : LocalSheetChart (X := X) x₀) {V : Set X} (hV : IsOpen V) :
     IsOpen (C.sheet ∩ (endpoint (x₀ := x₀)) ⁻¹' V) :=
   TopologicalSpace.isOpen_generateFrom_of_mem ⟨C, V, hV, rfl⟩
 
-/-- A local sheet chart containing a lift is a neighborhood of that lift. -/
+/-- A local sheet chart containing a lift is a neighborhood of that lift.
+
+%%handwave
+name:
+  A local sheet containing a lift is its neighborhood
+statement:
+  If \(y\) lies in a local sheet \(C\), then \(C\) is a neighborhood of \(y\).
+proof:
+  The sheet is open and contains \(y\).
+-/
 theorem localSheetChart_sheet_mem_nhds (C : LocalSheetChart (X := X) x₀)
     {y : PathHomotopyUniversalCover X x₀} (hy : y ∈ C.sheet) :
     C.sheet ∈ nhds y :=
   (isOpen_localSheetChart_sheet C).mem_nhds hy
 
-/-- The preimage of a path-connected set is the union of its algebraic local sheets. -/
+/-- The preimage of a path-connected set is the union of its algebraic local sheets.
+
+%%handwave
+name:
+  An endpoint preimage is the union of its local sheets
+statement:
+  For a path-connected set \(U\) and \(a\in U\), \(\operatorname{end}^{-1}(U)\) is the union of the local sheets indexed by the fiber over \(a\).
+proof:
+  Every lift over \(U\) has a unique fiber label under the local trivialization and belongs to its labelled sheet; conversely every labelled sheet lies over \(U\).
+-/
 theorem endpoint_preimage_eq_iUnion_localSheet {U : Set X} [PathConnectedSpace U]
     (a : U) :
     (endpoint (x₀ := x₀)) ⁻¹' U = ⋃ η : Fiber x₀ (a : X), localSheet a η := by
@@ -954,6 +1400,14 @@ theorem endpoint_preimage_eq_iUnion_localSheet {U : Set X} [PathConnectedSpace U
 /--
 The endpoint preimage of the base of a local sheet chart is open in the
 generated cover topology.
+
+%%handwave
+name:
+  The endpoint preimage of a sheet base is open
+statement:
+  For every local sheet chart \(C\), \(\operatorname{end}^{-1}(C_{\mathrm{base}})\) is open upstairs.
+proof:
+  Decompose this preimage as the union of all sheets over the chart base, each of which is open.
 -/
 theorem isOpen_endpoint_preimage_localSheetChart_base
     (C : LocalSheetChart (X := X) x₀) :
@@ -981,7 +1435,16 @@ noncomputable def localSheetChartAtWithin [LocallySimplyConnectedSpace X]
     fiberPoint := ((localTrivializationFiberEquiv (x₀ := x₀) center)
       ⟨y, W.mem_carrier⟩).2 }
 
-/-- The chosen local sheet chart around a lift contains that lift. -/
+/-- The chosen local sheet chart around a lift contains that lift.
+
+%%handwave
+name:
+  The chosen local sheet chart contains its lift
+statement:
+  If \(\operatorname{end}(y)\in N\) with \(N\) open, then the local sheet chart chosen around \(y\) inside \(N\) contains \(y\).
+proof:
+  Its fiber label is defined to be the local-trivialization label of \(y\), so the sheet-membership conditions hold directly.
+-/
 theorem localSheetChartAtWithin_mem [LocallySimplyConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) {N : Set X}
     (hyN : endpoint y ∈ N) (hN : IsOpen N) :
@@ -989,6 +1452,15 @@ theorem localSheetChartAtWithin_mem [LocallySimplyConnectedSpace X]
   dsimp [localSheetChartAtWithin, LocalSheetChart.sheet, localSheet]
   exact ⟨(SimplyConnectedOpenNeighborhood.choose hyN hN).mem_carrier, rfl⟩
 
+/--
+%%handwave
+name:
+  Center of the chosen local sheet chart
+statement:
+  The center of the local sheet chart chosen around \(y\) has underlying base point equal to the endpoint of \(y\).
+proof:
+  The chosen center is the endpoint of \(y\), equipped with membership in the chosen neighborhood.
+-/
 @[simp]
 theorem localSheetChartAtWithin_center_coe [LocallySimplyConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) {N : Set X}
@@ -996,7 +1468,16 @@ theorem localSheetChartAtWithin_center_coe [LocallySimplyConnectedSpace X]
     ((localSheetChartAtWithin (x₀ := x₀) y hyN hN).center : X) = endpoint y := by
   rfl
 
-/-- The base of the chosen local sheet chart lies inside the prescribed open set. -/
+/-- The base of the chosen local sheet chart lies inside the prescribed open set.
+
+%%handwave
+name:
+  The chosen sheet base lies in the prescribed neighborhood
+statement:
+  If the local sheet chart around \(y\) is chosen inside an open set \(N\), then its base is contained in \(N\).
+proof:
+  The base is the simply connected open neighborhood selected inside \(N\), whose construction records this inclusion.
+-/
 theorem localSheetChartAtWithin_base_subset [LocallySimplyConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) {N : Set X}
     (hyN : endpoint y ∈ N) (hN : IsOpen N) :
@@ -1004,7 +1485,16 @@ theorem localSheetChartAtWithin_base_subset [LocallySimplyConnectedSpace X]
   dsimp [localSheetChartAtWithin]
   exact (SimplyConnectedOpenNeighborhood.choose hyN hN).carrier_subset
 
-/-- The sheet of the chosen local chart lies over the prescribed open set. -/
+/-- The sheet of the chosen local chart lies over the prescribed open set.
+
+%%handwave
+name:
+  The chosen local sheet lies over the prescribed neighborhood
+statement:
+  If a local sheet chart around \(y\) is chosen inside \(N\), then every point of its sheet has endpoint in \(N\).
+proof:
+  A sheet point ends in the chart base, and that base is contained in \(N\).
+-/
 theorem localSheetChartAtWithin_sheet_subset_endpoint_preimage
     [LocallySimplyConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) {N : Set X}
@@ -1021,7 +1511,16 @@ noncomputable def localSheetChartAt [LocallySimplyConnectedSpace X]
     LocalSheetChart (X := X) x₀ :=
   localSheetChartAtWithin (x₀ := x₀) y (by simp) isOpen_univ
 
-/-- Every lift lies in some local sheet chart when the base is locally simply connected. -/
+/-- Every lift lies in some local sheet chart when the base is locally simply connected.
+
+%%handwave
+name:
+  Every lift lies in a local sheet chart
+statement:
+  When \(X\) is locally simply connected, every point of the path-homotopy cover belongs to some local sheet chart.
+proof:
+  Choose a simply connected open neighborhood of its endpoint inside \(X\) and take the sheet through the lift.
+-/
 theorem exists_localSheetChart_mem [LocallySimplyConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) :
     ∃ C : LocalSheetChart (X := X) x₀, y ∈ C.sheet :=
@@ -1031,6 +1530,14 @@ theorem exists_localSheetChart_mem [LocallySimplyConnectedSpace X]
 /--
 The local sheet charts form a basis-like family: if two sheets meet at `y`,
 there is a smaller chosen sheet around `y` contained in their intersection.
+
+%%handwave
+name:
+  Local sheets refine their intersections
+statement:
+  If a lift \(y\) lies in local sheets \(C\) and \(D\), then there is a local sheet \(E\) containing \(y\) with \(E\subseteq C\cap D\).
+proof:
+  Choose a smaller simply connected base neighborhood inside the intersection of the two bases. The restricted sheet through \(y\) lies in each original sheet by restriction compatibility.
 -/
 theorem exists_localSheetChart_subset_inter_of_mem_inter [LocallySimplyConnectedSpace X]
     (C D : LocalSheetChart (X := X) x₀)
@@ -1084,6 +1591,14 @@ theorem exists_localSheetChart_subset_inter_of_mem_inter [LocallySimplyConnected
 A chosen local sheet chart inside a base neighborhood contained in `C.base`
 has its sheet contained in `C.sheet`, provided it is centred at a point already
 lying on `C.sheet`.
+
+%%handwave
+name:
+  A sufficiently small chosen sheet stays in a given sheet
+statement:
+  Suppose \(y\in C\), and choose a local sheet chart \(E\) through \(y\) whose base is contained in the base of \(C\). Then \(E\subseteq C\).
+proof:
+  The chosen chart \(E\) is the restricted local sheet through \(y\); the sheet-restriction theorem places it inside \(C\).
 -/
 theorem localSheetChartAtWithin_sheet_subset_of_mem_localSheet
     [LocallySimplyConnectedSpace X]
@@ -1113,6 +1628,14 @@ theorem localSheetChartAtWithin_sheet_subset_of_mem_localSheet
 /--
 Against every generated local-sheet open in the cover, the section of a fixed
 local sheet has open preimage in the sheet base.
+
+%%handwave
+name:
+  A local-sheet section has open preimages of restricted sheets
+statement:
+  For local sheet charts \(C,D\) and open \(V\subseteq X\), the set of \(x\in C_{\mathrm{base}}\) whose canonical \(C\)-lift lies in \(D\cap\operatorname{end}^{-1}(V)\) is open.
+proof:
+  Around any such \(x\), choose a smaller sheet through its lift with base inside \(C_{\mathrm{base}}\cap D_{\mathrm{base}}\cap V\). Injectivity of endpoint on \(C\) identifies the two local lifts, giving an open base neighborhood contained in the preimage.
 -/
 theorem isOpen_localSheetLift_preimage_localSheetChart_restrict
     [LocallySimplyConnectedSpace X]
@@ -1174,6 +1697,14 @@ theorem isOpen_localSheetLift_preimage_localSheetChart_restrict
 Inside the base of `C`, the points whose `C`-sheet lift lies on the chosen
 `D`-sheet form an open subset of the base overlap. This is the positive half
 of local constancy of sheet labels.
+
+%%handwave
+name:
+  Membership in another sheet is locally open on a base overlap
+statement:
+  For sheet charts \(C,D\), the set of \(x\in C_{\mathrm{base}}\cap D_{\mathrm{base}}\) whose \(C\)-sheet lift lies in \(D\) is open in \(C_{\mathrm{base}}\).
+proof:
+  Apply the restricted-sheet preimage result with the whole base space as the additional open set; endpoint membership supplies the base-overlap condition.
 -/
 theorem isOpen_localSheetLift_preimage_localSheetChart_sheet_restrict
     [LocallySimplyConnectedSpace X]
@@ -1199,6 +1730,14 @@ theorem isOpen_localSheetLift_preimage_localSheetChart_sheet_restrict
 Inside the base of `C`, the points lying over `D.base` but not on the
 chosen `D`-sheet form an open set.  Equivalently, the `D`-sheet label of the
 `C`-sheet section is locally constant.
+
+%%handwave
+name:
+  Nonmembership in another sheet is locally open on a base overlap
+statement:
+  For sheet charts \(C,D\), the set of \(x\in C_{\mathrm{base}}\cap D_{\mathrm{base}}\) whose \(C\)-sheet lift does not lie in \(D\) is open in \(C_{\mathrm{base}}\).
+proof:
+  At such a point, label the lift by its actual \(D\)-fiber coordinate; this label differs from \(D\)'s chosen label. The open set where the lift stays in the alternative labelled sheet cannot meet \(D\), so it lies in the complement.
 -/
 theorem isOpen_localSheetLift_preimage_localSheetChart_compl_restrict
     [LocallySimplyConnectedSpace X]
@@ -1253,6 +1792,14 @@ Sheet labels are constant on connected components of the base overlap.
 If the `C`-sheet lift of a point of `C.base ∩ D.base` lies on the chosen
 `D`-sheet, then the same is true for every point in the same connected
 component of the base overlap.
+
+%%handwave
+name:
+  Sheet labels are constant on connected components of a base overlap
+statement:
+  Let \(C,D\) be local sheets. If the \(C\)-lift of \(a\in C_{\mathrm{base}}\cap D_{\mathrm{base}}\) lies in \(D\), then the \(C\)-lift of every point in the same connected component of the base overlap also lies in \(D\).
+proof:
+  Within the overlap, membership and nonmembership in \(D\) are both open, so membership is clopen. A connected component meeting this clopen set is contained in it.
 -/
 theorem localSheetLift_mem_localSheetChart_of_mem_connectedComponentIn_base_inter
     [LocallySimplyConnectedSpace X]
@@ -1321,7 +1868,16 @@ theorem localSheetLift_mem_localSheetChart_of_mem_connectedComponentIn_base_inte
   subst x
   exact hsubset hz
 
-/-- The section of a local sheet is continuous for the generated cover topology. -/
+/-- The section of a local sheet is continuous for the generated cover topology.
+
+%%handwave
+name:
+  The canonical section of a local sheet is continuous
+statement:
+  For every local sheet chart \(C\), the map sending a base point to its canonical lift in \(C\) is continuous.
+proof:
+  The cover topology is generated by endpoint-restricted local sheets. The preimage of every generator under the section is open by local constancy of sheet labels.
+-/
 theorem continuous_localSheetLift [LocallySimplyConnectedSpace X]
     (C : LocalSheetChart (X := X) x₀) :
     Continuous (fun x : C.base => localSheetLift C.center C.fiberPoint x) := by
@@ -1339,6 +1895,14 @@ overlaps, as long as both endpoint lifts are taken through the fixed `C`-sheet.
 This is the covering-space form of the componentwise-overlap principle used by
 the continuation construction: the only topological input is connectedness of
 the relevant component in the base overlap.
+
+%%handwave
+name:
+  Connected base overlaps lift to connected sheet overlaps
+statement:
+  Suppose \(y_1\in C\cap D\) and \(y\in C\). If the endpoint of \(y\) lies in the same connected component of the base overlap as the endpoint of \(y_1\), then \(y\) lies in the connected component of \(C\cap D\) containing \(y_1\).
+proof:
+  Lift the relevant base component continuously through the \(C\)-sheet. Sheet-label constancy puts its image inside \(D\), so the image is a preconnected subset of \(C\cap D\) containing both \(y_1\) and \(y\).
 -/
 theorem mem_connectedComponentIn_localSheetChart_inter_of_endpoint_mem_base_inter
     [LocallySimplyConnectedSpace X]
@@ -1388,7 +1952,16 @@ theorem mem_connectedComponentIn_localSheetChart_inter_of_endpoint_mem_base_inte
         (by simpa [B, F] using hbB)
   exact (himagePre.subset_connectedComponentIn hy₁B hsubset) hyB
 
-/-- Endpoint preimages of open sets are open in the path-homotopy cover topology. -/
+/-- Endpoint preimages of open sets are open in the path-homotopy cover topology.
+
+%%handwave
+name:
+  Endpoint preimages of open sets are open
+statement:
+  If \(V\subseteq X\) is open, then \(\operatorname{end}^{-1}(V)\) is open in the path-homotopy cover.
+proof:
+  For each lift over \(V\), choose a local sheet whose base lies inside \(V\). These open sheets cover exactly the endpoint preimage.
+-/
 theorem isOpen_endpoint_preimage_of_isOpen [LocallySimplyConnectedSpace X]
     {V : Set X} (hV : IsOpen V) :
     IsOpen ((endpoint (x₀ := x₀)) ⁻¹' V) := by
@@ -1409,7 +1982,16 @@ theorem isOpen_endpoint_preimage_of_isOpen [LocallySimplyConnectedSpace X]
   exact isOpen_iUnion fun y =>
     isOpen_localSheetChart_sheet (localSheetChartAtWithin (x₀ := x₀) y.1 y.2 hV)
 
-/-- The endpoint projection is continuous for the generated path-homotopy cover topology. -/
+/-- The endpoint projection is continuous for the generated path-homotopy cover topology.
+
+%%handwave
+name:
+  The endpoint projection is continuous
+statement:
+  If \(X\) is locally simply connected, the endpoint map from the path-homotopy cover to \(X\) is continuous.
+proof:
+  The preimage of every open subset of \(X\) is open in the generated local-sheet topology.
+-/
 theorem continuous_endpoint [LocallySimplyConnectedSpace X] :
     Continuous (endpoint : PathHomotopyUniversalCover X x₀ → X) :=
   continuous_def.mpr fun _ hV => isOpen_endpoint_preimage_of_isOpen (x₀ := x₀) hV
@@ -1465,14 +2047,32 @@ noncomputable def localSheetOpenPartialHomeomorph [LocallySimplyConnectedSpace X
       ext x
       simp [Set.restrict] }
 
-/-- The endpoint projection of the path-homotopy cover is a local homeomorphism. -/
+/-- The endpoint projection of the path-homotopy cover is a local homeomorphism.
+
+%%handwave
+name:
+  The endpoint projection is a local homeomorphism
+statement:
+  If \(X\) is locally simply connected, the endpoint projection from the path-homotopy cover is a local homeomorphism.
+proof:
+  Every lift lies in a local sheet, and endpoint restricts there to the explicit homeomorphism onto its open simply connected base.
+-/
 theorem isLocalHomeomorph_endpoint [LocallySimplyConnectedSpace X] :
     IsLocalHomeomorph (endpoint : PathHomotopyUniversalCover X x₀ → X) := by
   intro y
   rcases exists_localSheetChart_mem (x₀ := x₀) y with ⟨C, hyC⟩
   exact ⟨localSheetOpenPartialHomeomorph (x₀ := x₀) C, hyC, rfl⟩
 
-/-- Endpoint fibers are discrete in the generated path-homotopy cover topology. -/
+/-- Endpoint fibers are discrete in the generated path-homotopy cover topology.
+
+%%handwave
+name:
+  Every endpoint fiber is discrete
+statement:
+  If \(X\) is locally simply connected, each fiber of the endpoint projection has the discrete topology.
+proof:
+  Around a fiber point choose a simply connected local sheet. Its intersection with the fiber is a singleton by injectivity of endpoint on the sheet, and that singleton is open as the pullback of the open sheet.
+-/
 theorem discreteTopology_fiber [LocallySimplyConnectedSpace X] (x : X) :
     DiscreteTopology (Fiber x₀ x) := by
   rw [discreteTopology_iff_isOpen_singleton]
@@ -1506,6 +2106,14 @@ theorem discreteTopology_fiber [LocallySimplyConnectedSpace X] (x : X) :
 /--
 On a simply connected local sheet, openness in the base is equivalent to
 openness after taking the corresponding sheetwise preimage.
+
+%%handwave
+name:
+  Openness is reflected by restriction to a simply connected sheet
+statement:
+  Let \(U\) be open, path connected, and simply connected, let \(S\) be one local sheet over \(U\), and let \(W\subseteq U\). Then \(W\) is open in \(X\) if and only if \(\operatorname{end}^{-1}(W)\cap S\) is open in the path-homotopy cover.
+proof:
+  The forward implication is a generating local-sheet open. Conversely, the endpoint map restricts to a homeomorphism from \(S\) to \(U\), and the image of the upstairs open set is exactly \(W\).
 -/
 theorem isOpen_endpoint_preimage_inter_localSheet_iff
     [LocallySimplyConnectedSpace X]
@@ -1586,7 +2194,16 @@ noncomputable def endpointTrivializationAt
     exact hlabel_same.symm.trans hlabel'
   · simpa using (endpoint_preimage_eq_iUnion_localSheet (x₀ := x₀) a).subset
 
-/-- The selected point lies in the base set of the local endpoint trivialization. -/
+/-- The selected point lies in the base set of the local endpoint trivialization.
+
+%%handwave
+name:
+  The endpoint trivialization contains its center
+statement:
+  The point \(x\) belongs to the base set of the endpoint trivialization chosen at \(x\).
+proof:
+  The chosen simply connected open neighborhood used as the trivialization base contains its center by construction.
+-/
 theorem mem_baseSet_endpointTrivializationAt
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X] (x : X) :
     x ∈ (endpointTrivializationAt (x₀ := x₀) x).baseSet := by
@@ -1595,7 +2212,16 @@ theorem mem_baseSet_endpointTrivializationAt
   exact (SimplyConnectedOpenNeighborhood.choose (x := x) (N := Set.univ)
     (by simp) isOpen_univ).mem_carrier
 
-/-- The endpoint projection of the path-homotopy universal cover is a covering map. -/
+/-- The endpoint projection of the path-homotopy universal cover is a covering map.
+
+%%handwave
+name:
+  The endpoint projection of the path-class cover is a covering map
+statement:
+  If \(X\) is path connected and locally simply connected, then the endpoint projection from based path-homotopy classes to \(X\) is a covering map.
+proof:
+  Around every \(x\), choose a simply connected open neighborhood. Its local sheets are pairwise disjoint, map injectively to the neighborhood, cover the full endpoint preimage, and furnish a discrete-fiber bundle trivialization.
+-/
 theorem isCoveringMap_endpoint
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X] :
     IsCoveringMap (endpoint : PathHomotopyUniversalCover X x₀ → X) := by
@@ -1609,7 +2235,16 @@ theorem isCoveringMap_endpoint
     (fun x : X => mem_baseSet_endpointTrivializationAt (x₀ := x₀) x)
 
 /-- Casting the endpoints of a base path does not change the underlying endpoint
-of its lifted monodromy; it only changes the fiber type. -/
+of its lifted monodromy; it only changes the fiber type.
+
+%%handwave
+name:
+  Changing endpoint types does not change the lifted monodromy point
+statement:
+  If a path-homotopy class is transported along equalities of its source and target and the starting fiber is transported accordingly, then the underlying endpoint of its monodromy lift is unchanged.
+proof:
+  After substituting the endpoint equalities, both monodromy expressions are definitionally the same.
+-/
 theorem monodromy_cast_apply_endpoint
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
     {a b a' b' : X} (q : Path.Homotopic.Quotient a b)
@@ -1626,6 +2261,14 @@ theorem monodromy_cast_apply_endpoint
 /--
 Local monodromy inside one simply connected sheet is given by the sheet lift of
 the endpoint path.
+
+%%handwave
+name:
+  Monodromy inside a simply connected neighborhood is the local-sheet lift
+statement:
+  Let \(\gamma\) be a path from \(a\) to \(b\) contained in an open simply connected set \(U\), and let \(\eta\) be a lift over \(a\). Then monodromy along \(\gamma\) ends at the canonical lift of \(b\) in the local sheet through \(\eta\).
+proof:
+  Lift \(\gamma\) pointwise using the local-sheet inverse. This is continuous, starts at \(\eta\), and projects to \(\gamma\); uniqueness of path lifting identifies it with the covering lift, whose endpoint gives the claim.
 -/
 theorem monodromy_localSheetLift
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
@@ -1687,6 +2330,14 @@ theorem monodromy_localSheetLift
 /--
 Local monodromy appends the homotopy class of a path contained in one simply
 connected chart to the stored path class of the starting lift.
+
+%%handwave
+name:
+  Local monodromy appends the path class
+statement:
+  For a path \(\gamma:a\to b\) contained in an open simply connected set and a lift represented by \(q:x_0\to a\), monodromy ends at the lift over \(b\) represented by \(q[\gamma]\).
+proof:
+  Monodromy is the local-sheet lift. In a simply connected neighborhood the chosen transport path from \(a\) to \(b\) is homotopic to \(\gamma\), so the stored class is \(q[\gamma]\).
 -/
 theorem monodromy_local_pathClass
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
@@ -1732,6 +2383,14 @@ theorem monodromy_local_pathClass
 If a path from the basepoint stays inside one simply connected open set, its
 monodromy from the base lift lands at the point storing exactly that path
 class.
+
+%%handwave
+name:
+  Local monodromy from the base lift records the path class
+statement:
+  If a path \(\gamma:x_0\to x\) lies in one open simply connected set containing \(x_0\), then monodromy along \(\gamma\) sends the constant-path lift to the cover point \((x,[\gamma])\).
+proof:
+  Apply the local-sheet monodromy formula. The starting fiber class is the constant path, and concatenating it with the chosen local path gives \([\gamma]\).
 -/
 theorem monodromy_baseLift_of_path_mem_simplyConnected
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
@@ -1778,6 +2437,14 @@ theorem monodromy_baseLift_of_path_mem_simplyConnected
 /--
 Monodromy along a finite concatenation of paths, each contained in a simply
 connected open set, appends the concatenated path class to the starting lift.
+
+%%handwave
+name:
+  Monodromy along locally simple pieces appends their concatenation
+statement:
+  Let a finite chain of paths \(F_k:p_k\to p_{k+1}\) each lie in an open simply connected set. Starting from a lift represented by \(q:x_0\to p_0\), monodromy along their concatenation ends at \((p_n,q[F_0*\cdots*F_{n-1}])\).
+proof:
+  Induct on the number of pieces. The last step uses the local monodromy formula, while functoriality of monodromy and associativity of path-class concatenation combine it with the induction hypothesis.
 -/
 theorem monodromy_concat_local_pathClass
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
@@ -1911,6 +2578,14 @@ theorem monodromy_concat_local_pathClass
 /--
 Every path admits a finite subdivision whose subpaths lie in simply connected
 open neighborhoods.
+
+%%handwave
+name:
+  Every path has a finite simply connected subdivision
+statement:
+  In a locally simply connected space, every path \(\gamma:[0,1]\to X\) admits a finite monotone subdivision such that each consecutive subpath is contained in an open path-connected simply connected set.
+proof:
+  Choose a simply connected open neighborhood around every point of the path. Their inverse images form an open cover of the compact unit interval; a finite monotone subdivision refines this cover.
 -/
 theorem exists_subdivision_subpaths_mem_simplyConnected
     [LocallySimplyConnectedSpace X] {x y : X} (γ : Path x y) :
@@ -1952,6 +2627,14 @@ theorem exists_subdivision_subpaths_mem_simplyConnected
 /--
 The path-homotopy class of a finite concatenation of subpaths of `γ` is the
 class of the corresponding single subpath of `γ`.
+
+%%handwave
+name:
+  Concatenated subpaths represent the total subpath
+statement:
+  For subdivision times \(t_0,\ldots,t_n\), the concatenation of the consecutive subpaths of \(\gamma\) represents the same homotopy class as the single subpath from \(t_0\) to \(t_n\).
+proof:
+  Use the standard homotopy that reparametrizes a finite concatenation of adjacent subpaths as the corresponding total subpath.
 -/
 theorem quotient_concat_subpath {x y : X} (γ : Path x y)
     {n : ℕ} (t : Fin (n + 1) → unitInterval) :
@@ -1963,7 +2646,16 @@ theorem quotient_concat_subpath {x y : X} (γ : Path x y)
   exact (Path.Homotopic.Quotient.eq).mpr
     (Path.Homotopic.concat_subpath γ t)
 
-/-- A subpath from `0` to `1`, with endpoints cast back, has the original path class. -/
+/-- A subpath from `0` to `1`, with endpoints cast back, has the original path class.
+
+%%handwave
+name:
+  The full subpath represents the original path
+statement:
+  If \(t_0=0\) and \(t_1=1\), then after identifying endpoints, the homotopy class of \(\gamma|_{[t_0,t_1]}\) is \([\gamma]\).
+proof:
+  After the endpoint substitutions, the cast subpath is pointwise equal to \(\gamma\); hence their quotient classes agree.
+-/
 theorem quotient_subpath_zero_one_cast {x y : X} (γ : Path x y)
     {t₀ t₁ : unitInterval} (ht₀ : t₀ = 0) (ht₁ : t₁ = 1) :
     (Path.Homotopic.Quotient.mk (γ.subpath t₀ t₁)).cast
@@ -1983,6 +2675,14 @@ theorem quotient_subpath_zero_one_cast {x y : X} (γ : Path x y)
 /--
 Monodromy of the path-homotopy cover from the base lift along an arbitrary
 path records exactly that path class.
+
+%%handwave
+name:
+  Monodromy from the base lift records any path
+statement:
+  For every path \(\gamma:x_0\to x\), monodromy sends the constant-path lift to the cover point \((x,[\gamma])\).
+proof:
+  Subdivide \(\gamma\) into pieces contained in simply connected neighborhoods and apply the finite-concatenation monodromy formula. The concatenated pieces represent the full path, including the endpoint identifications.
 -/
 theorem monodromy_baseLift_path
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
@@ -2052,7 +2752,16 @@ theorem monodromy_baseLift_path
       (Eq.heq hq)
 
 /-- Monodromy from the base lift along any path-homotopy class returns the
-cover point storing that class. -/
+cover point storing that class.
+
+%%handwave
+name:
+  Monodromy from the base lift records any path-homotopy class
+statement:
+  For every path-homotopy class \(q:x_0\to x\), monodromy along \(q\) sends the constant-path lift to \((x,q)\).
+proof:
+  Choose a path representative of \(q\) and apply the path-level monodromy formula.
+-/
 theorem monodromy_baseLift
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
     {x : X} (q : Path.Homotopic.Quotient x₀ x) :
@@ -2087,7 +2796,16 @@ noncomputable def pathFromBaseLiftOfPath
     simpa [cov, e0, h0, Γ, IsCoveringMap.monodromy] using
       congrArg Subtype.val hmon
 
-/-- Every point of the path-homotopy cover is joined to the base lift. -/
+/-- Every point of the path-homotopy cover is joined to the base lift.
+
+%%handwave
+name:
+  Every point of the path-class cover is joined to the base lift
+statement:
+  For every cover point \((x,q)\), there exists a path upstairs from the constant-path lift to \((x,q)\).
+proof:
+  Choose a representative path \(\gamma\) of \(q\) and lift it from the base lift. The monodromy formula identifies the lifted endpoint with \((x,q)\).
+-/
 theorem exists_path_baseLift
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
     (y : PathHomotopyUniversalCover X x₀) :
@@ -2108,7 +2826,16 @@ noncomputable instance instPathConnectedSpace
     exact ⟨γy.symm.trans γz⟩
 
 /-- The projection of an upstairs path class is forced by the stored endpoint
-path classes of its endpoints. -/
+path classes of its endpoints.
+
+%%handwave
+name:
+  The projected class of an upstairs path is determined by its endpoints
+statement:
+  For an upstairs path class \(\alpha:y\to z\), its projection to \(X\) is \(y^{-1}z\), where \(y\) and \(z\) denote the stored based path classes of the two endpoints.
+proof:
+  Monodromy of the projected class carries \(y\) to \(z\). Prepend the stored class of \(y\), compare both resulting monodromies from the base lift, use the explicit base-lift formula, and cancel \(y\) on the left.
+-/
 theorem endpoint_map_pathClass_eq
     [LocallySimplyConnectedSpace X] [PathConnectedSpace X]
     {y z : PathHomotopyUniversalCover X x₀}
@@ -2207,6 +2934,15 @@ noncomputable instance instChartedSpace
     exact ⟨localSheetChartAt (x₀ := x₀) y, chartAt ℂ (endpoint y),
       chart_mem_atlas ℂ (endpoint y), rfl⟩
 
+/--
+%%handwave
+name:
+  Canonical chart on the path-homotopy cover
+statement:
+  The canonical complex chart at a lift \(y\) is the local-sheet projection around \(y\), followed by the canonical base chart at its endpoint.
+proof:
+  This is the defining chart of the pulled-back complex atlas.
+-/
 @[simp]
 theorem chartAt_pathHomotopyUniversalCover
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
@@ -2232,7 +2968,16 @@ noncomputable def baseChartOfCoverChart
     OpenPartialHomeomorph X ℂ :=
   Classical.choose (Classical.choose_spec he)
 
-/-- The base chart extracted from a cover chart belongs to the base atlas. -/
+/-- The base chart extracted from a cover chart belongs to the base atlas.
+
+%%handwave
+name:
+  The base chart underlying a cover chart belongs to the base atlas
+statement:
+  If \(e\) is a chart in the pulled-back atlas of the path-homotopy cover, then its extracted base chart is a chart of \(X\).
+proof:
+  Membership of \(e\) in the pulled-back atlas includes a base chart in the atlas of \(X\); take that chosen chart.
+-/
 theorem baseChartOfCoverChart_mem_atlas
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2240,7 +2985,16 @@ theorem baseChartOfCoverChart_mem_atlas
     baseChartOfCoverChart (x₀ := x₀) e he ∈ atlas ℂ X :=
   (Classical.choose_spec (Classical.choose_spec he)).1
 
-/-- Every cover chart in the pulled-back atlas is a local sheet chart followed by a base chart. -/
+/-- Every cover chart in the pulled-back atlas is a local sheet chart followed by a base chart.
+
+%%handwave
+name:
+  Every cover chart is pulled back from a base chart on one sheet
+statement:
+  Every chart \(e\) in the pulled-back cover atlas factors as the endpoint homeomorphism on an evenly covered local sheet followed by an atlas chart of \(X\).
+proof:
+  This factorization is exactly the witness encoded by membership in the pulled-back atlas.
+-/
 theorem coverChart_eq_coverComplexChart
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2251,7 +3005,16 @@ theorem coverChart_eq_coverComplexChart
         (baseChartOfCoverChart (x₀ := x₀) e he) :=
   (Classical.choose_spec (Classical.choose_spec he)).2
 
-/-- A point in a cover-chart target lies in the target of the extracted base chart. -/
+/-- A point in a cover-chart target lies in the target of the extracted base chart.
+
+%%handwave
+name:
+  The target of a cover chart lies in its base-chart target
+statement:
+  If \(z\) lies in the target of a pulled-back cover chart \(e\), then it lies in the target of the base chart underlying \(e\).
+proof:
+  Expand the cover chart as a composition of a local sheet projection with the base chart; the target of the composition is contained in the latter chart target.
+-/
 theorem coverChart_target_subset_baseChart_target
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2262,7 +3025,16 @@ theorem coverChart_target_subset_baseChart_target
   rw [coverComplexChart, OpenPartialHomeomorph.trans_target] at hz
   exact hz.1
 
-/-- A point in a cover-chart source projects into the source of the extracted base chart. -/
+/-- A point in a cover-chart source projects into the source of the extracted base chart.
+
+%%handwave
+name:
+  A cover-chart source projects into its base-chart source
+statement:
+  If a lift \(y\) belongs to the source of a pulled-back cover chart \(e\), then its endpoint belongs to the source of the base chart underlying \(e\).
+proof:
+  Under the factorization of \(e\), source membership includes precisely this base-chart source condition.
+-/
 theorem coverChart_source_projection_mem_baseChart_source
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2273,7 +3045,16 @@ theorem coverChart_source_projection_mem_baseChart_source
   rw [coverComplexChart, OpenPartialHomeomorph.trans_source] at hy
   exact hy.2
 
-/-- A pulled-back cover chart is the extracted base chart applied after projection. -/
+/-- A pulled-back cover chart is the extracted base chart applied after projection.
+
+%%handwave
+name:
+  A pulled-back cover chart is the base chart after projection
+statement:
+  For a lift \(y\) in the source of a cover chart \(e\), \(e(y)=b(\operatorname{end}(y))\), where \(b\) is the base chart underlying \(e\).
+proof:
+  Replace \(e\) by its local-sheet factorization; the first map is the endpoint projection on that sheet.
+-/
 theorem coverChart_apply_eq_baseChart_apply_endpoint
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2291,7 +3072,16 @@ theorem coverChart_apply_eq_baseChart_apply_endpoint
       rw [heq]
     _ = b (endpoint y) := rfl
 
-/-- The canonical cover chart is the base chart applied after endpoint projection. -/
+/-- The canonical cover chart is the base chart applied after endpoint projection.
+
+%%handwave
+name:
+  The canonical cover chart is the endpoint chart after projection
+statement:
+  If \(y'\) lies in the canonical cover chart at \(y\), then \(\varphi_y(y')=\varphi_{\operatorname{end}(y)}(\operatorname{end}(y'))\).
+proof:
+  The canonical cover chart is defined as the local-sheet endpoint homeomorphism followed by the canonical base chart.
+-/
 theorem chartAt_apply_eq_chartAt_endpoint_apply
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (y y' : PathHomotopyUniversalCover X x₀)
@@ -2300,7 +3090,16 @@ theorem chartAt_apply_eq_chartAt_endpoint_apply
   rw [chartAt_pathHomotopyUniversalCover (x₀ := x₀) y]
   rfl
 
-/-- The inverse of a pulled-back cover chart projects to the inverse of its extracted base chart. -/
+/-- The inverse of a pulled-back cover chart projects to the inverse of its extracted base chart.
+
+%%handwave
+name:
+  The inverse of a cover chart projects to the inverse base chart
+statement:
+  If \(z\) lies in the target of a cover chart \(e\) with underlying base chart \(b\), then \(\operatorname{end}(e^{-1}(z))=b^{-1}(z)\).
+proof:
+  Factor \(e\) through a local sheet. Its inverse first applies \(b^{-1}\) and then the unique local-sheet lift, whose endpoint is its base argument.
+-/
 theorem endpoint_coverChart_symm_eq_baseChart_symm
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph (PathHomotopyUniversalCover X x₀) ℂ)
@@ -2336,7 +3135,16 @@ theorem endpoint_coverChart_symm_eq_baseChart_symm
       rw [dif_pos hbz]
       rfl
 
-/-- The inverse canonical cover chart projects to the inverse base chart. -/
+/-- The inverse canonical cover chart projects to the inverse base chart.
+
+%%handwave
+name:
+  The inverse canonical cover chart projects to the inverse endpoint chart
+statement:
+  If \(z\) lies in the target of the canonical chart at \(y\), then \(\operatorname{end}(\varphi_y^{-1}(z))=\varphi_{\operatorname{end}(y)}^{-1}(z)\).
+proof:
+  Specialize the local-sheet factorization of the canonical cover chart and use that its inverse lift has the prescribed endpoint.
+-/
 theorem endpoint_chartAt_symm_eq_chartAt_endpoint_symm
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
     (y : PathHomotopyUniversalCover X x₀) {z : ℂ}
@@ -2374,6 +3182,14 @@ theorem endpoint_chartAt_symm_eq_chartAt_endpoint_symm
 /--
 Near a point where two cover charts overlap, their coordinate change is the
 same as the coordinate change of the extracted base charts.
+
+%%handwave
+name:
+  Cover-chart transitions equal the corresponding base-chart transitions locally
+statement:
+  Let overlapping cover charts \(e,e'\) have underlying base charts \(b,b'\). Near an overlap point \(z\), \(e'\circ e^{-1}\) agrees with \(b'\circ b^{-1}\).
+proof:
+  On a neighborhood inside both chart domains, \(e'\) is \(b'\) after endpoint projection and the endpoint of \(e^{-1}(w)\) is \(b^{-1}(w)\). Combining the two identities gives equality of germs.
 -/
 theorem coverChart_transition_eventuallyEq_baseChart_transition
     [LocallySimplyConnectedSpace X] [ChartedSpace ℂ X]
@@ -2478,6 +3294,15 @@ def deckAction (γ : FundamentalGroup X x₀)
     PathHomotopyUniversalCover X x₀ :=
   ⟨endpoint y, Path.Homotopic.Quotient.trans (FundamentalGroup.toPath γ⁻¹) y.pathClass⟩
 
+/--
+%%handwave
+name:
+  Deck transformations preserve endpoints
+statement:
+  For every \(\gamma\in\pi_1(X,x_0)\) and based path class \(y\), the endpoint of \(\gamma\cdot y\) equals the endpoint of \(y\).
+proof:
+  Deck action changes only the path class by left concatenation and leaves its endpoint index unchanged.
+-/
 @[simp]
 theorem endpoint_deckAction (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
@@ -2489,12 +3314,30 @@ def deckActionFiber (γ : FundamentalGroup X x₀) {x : X} (η : Fiber x₀ x) :
     Fiber x₀ x :=
   ⟨deckAction γ η.1, by rw [endpoint_deckAction, η.2]⟩
 
+/--
+%%handwave
+name:
+  Underlying lift of the fiberwise deck action
+statement:
+  The underlying point of \(\gamma\cdot\eta\) in an endpoint fiber is the ordinary deck transform of the underlying lift of \(\eta\).
+proof:
+  This is the definition of the action restricted to a fiber.
+-/
 @[simp]
 theorem deckActionFiber_val (γ : FundamentalGroup X x₀) {x : X}
     (η : Fiber x₀ x) :
     (deckActionFiber γ η).1 = deckAction γ η.1 :=
   rfl
 
+/--
+%%handwave
+name:
+  Fiberwise deck action in path-class coordinates
+statement:
+  Under the identification of the fiber over \(x\) with path-homotopy classes from \(x_0\) to \(x\), \(\gamma\cdot\eta\) corresponds to \(\gamma^{-1}\) concatenated on the left with the class of \(\eta\).
+proof:
+  Unfold the fiber identification and the deck action; both sides are the same concatenated path class.
+-/
 @[simp]
 theorem fiberPathClassEquiv_deckActionFiber (γ : FundamentalGroup X x₀)
     {x : X} (η : Fiber x₀ x) :
@@ -2509,6 +3352,15 @@ theorem fiberPathClassEquiv_deckActionFiber (γ : FundamentalGroup X x₀)
           subst b
           simp [fiberPathClassEquiv, deckActionFiber, deckAction, pathClass, endpoint]
 
+/--
+%%handwave
+name:
+  The identity loop fixes every path class
+statement:
+  The identity element of \(\pi_1(X,x_0)\) acts trivially on every point of the path-homotopy cover.
+proof:
+  Its inverse is the constant loop, and left concatenation by the constant path leaves a path class unchanged.
+-/
 @[simp]
 theorem deckAction_one (y : PathHomotopyUniversalCover X x₀) :
     deckAction (1 : FundamentalGroup X x₀) y = y := by
@@ -2520,6 +3372,15 @@ theorem deckAction_one (y : PathHomotopyUniversalCover X x₀) :
           PathHomotopyUniversalCover X x₀) = ⟨x, q⟩
       rw [Path.Homotopic.Quotient.refl_trans]
 
+/--
+%%handwave
+name:
+  Deck action respects loop multiplication
+statement:
+  For \(\gamma,\delta\in\pi_1(X,x_0)\), \((\gamma\delta)\cdot y=\gamma\cdot(\delta\cdot y)\).
+proof:
+  Inverting the product reverses the two loops, and associativity of path concatenation identifies the resulting path classes.
+-/
 theorem deckAction_mul (γ δ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
     deckAction (γ * δ) y = deckAction γ (deckAction δ y) := by
@@ -2537,29 +3398,74 @@ theorem deckAction_mul (γ δ : FundamentalGroup X x₀)
             (Path.Homotopic.Quotient.trans (FundamentalGroup.toPath δ⁻¹) q)⟩
       rw [Path.Homotopic.Quotient.trans_assoc]
 
+/--
+%%handwave
+name:
+  The identity loop fixes every point of an endpoint fiber
+statement:
+  The identity element of \(\pi_1(X,x_0)\) fixes every element of every endpoint fiber.
+proof:
+  The underlying lift is fixed by the ordinary deck action, hence the fiber elements are equal.
+-/
 @[simp]
 theorem deckActionFiber_one {x : X} (η : Fiber x₀ x) :
     deckActionFiber (1 : FundamentalGroup X x₀) η = η := by
   exact Subtype.ext (deckAction_one η.1)
 
+/--
+%%handwave
+name:
+  Fiberwise deck action respects loop multiplication
+statement:
+  On every endpoint fiber, \((\gamma\delta)\cdot\eta=\gamma\cdot(\delta\cdot\eta)\).
+proof:
+  The equality follows from the corresponding equality of the underlying deck-transformed lifts.
+-/
 theorem deckActionFiber_mul (γ δ : FundamentalGroup X x₀) {x : X}
     (η : Fiber x₀ x) :
     deckActionFiber (γ * δ) η = deckActionFiber γ (deckActionFiber δ η) := by
   exact Subtype.ext (deckAction_mul γ δ η.1)
 
+/--
+%%handwave
+name:
+  An inverse deck transformation cancels on the left
+statement:
+  For every fiber point \(\eta\), \(\gamma^{-1}\cdot(\gamma\cdot\eta)=\eta\).
+proof:
+  Combine the two actions using the multiplication law and reduce \(\gamma^{-1}\gamma\) to the identity.
+-/
 @[simp]
 theorem deckActionFiber_inv_apply (γ : FundamentalGroup X x₀) {x : X}
     (η : Fiber x₀ x) :
     deckActionFiber γ⁻¹ (deckActionFiber γ η) = η := by
   rw [← deckActionFiber_mul, inv_mul_cancel, deckActionFiber_one]
 
+/--
+%%handwave
+name:
+  An inverse deck transformation cancels on the right
+statement:
+  For every fiber point \(\eta\), \(\gamma\cdot(\gamma^{-1}\cdot\eta)=\eta\).
+proof:
+  Combine the two actions using the multiplication law and reduce \(\gamma\gamma^{-1}\) to the identity.
+-/
 @[simp]
 theorem deckActionFiber_apply_inv (γ : FundamentalGroup X x₀) {x : X}
     (η : Fiber x₀ x) :
     deckActionFiber γ (deckActionFiber γ⁻¹ η) = η := by
   rw [← deckActionFiber_mul, mul_inv_cancel, deckActionFiber_one]
 
-/-- In local trivialization coordinates, deck action only changes the fiber label. -/
+/-- In local trivialization coordinates, deck action only changes the fiber label.
+
+%%handwave
+name:
+  Deck action changes only the fiber label in a local trivialization
+statement:
+  In a local trivialization over a path-connected set, the second coordinate of \(\gamma\cdot y\) is \(\gamma\) acting on the second coordinate of \(y\).
+proof:
+  Translate both fiber labels to path classes. Deck action is left concatenation by \(\gamma^{-1}\), and associativity moves this concatenation past the chosen local transport path.
+-/
 theorem localTrivializationFiberEquiv_deckAction_snd
     (γ : FundamentalGroup X x₀) {U : Set X} [PathConnectedSpace U]
     (a : U)
@@ -2585,7 +3491,16 @@ theorem localTrivializationFiberEquiv_deckAction_snd
                   (Path.Homotopic.Quotient.mk (pathInSet a ⟨x, hyU⟩).symm))
           rw [Path.Homotopic.Quotient.trans_assoc]
 
-/-- Deck action sends local sheets to local sheets by relabelling the fiber. -/
+/-- Deck action sends local sheets to local sheets by relabelling the fiber.
+
+%%handwave
+name:
+  Deck action relabels local sheets
+statement:
+  For a local sheet over \(U\) labelled by \(\eta\), \(\gamma\cdot y\) lies in that sheet if and only if \(y\) lies in the sheet labelled by \(\gamma^{-1}\cdot\eta\).
+proof:
+  Deck transformations preserve endpoints and act on the local-trivialization fiber label by \(\gamma\). Cancel this fiber action with \(\gamma^{-1}\) in the two directions.
+-/
 theorem deckAction_mem_localSheet_iff
     (γ : FundamentalGroup X x₀) {U : Set X} [PathConnectedSpace U]
     {a : U} {η : Fiber x₀ (a : X)}
@@ -2628,6 +3543,14 @@ The deck-preimage version of
 Deck action preserves endpoints and only relabels sheets, so the same base
 connected-component argument controls intersections of a sheet with the
 deck-preimage of another sheet.
+
+%%handwave
+name:
+  Base connected components control deck-translated sheet intersections
+statement:
+  Suppose \(y_1\) lies in a sheet \(C\) and \(\gamma y_1\) lies in a sheet \(D\). If the endpoint of \(y\in C\) lies in the same connected component of \(C\)'s base intersection with \(D\)'s base as the endpoint of \(y_1\), then \(y\) lies in the connected component of \(C\cap\gamma^{-1}D\) containing \(y_1\).
+proof:
+  Relabel \(D\) by \(\gamma^{-1}\) so that its sheet is exactly \(\gamma^{-1}D\). Apply the ordinary two-sheet connected-component lifting result.
 -/
 theorem mem_connectedComponentIn_localSheetChart_inter_deck_preimage_of_endpoint_mem_base_inter
     [LocallySimplyConnectedSpace X]
@@ -2674,6 +3597,15 @@ def deckEquiv (γ : FundamentalGroup X x₀) :
   right_inv y := by
     rw [← deckAction_mul, mul_inv_cancel, deckAction_one]
 
+/--
+%%handwave
+name:
+  The deck equivalence acts by path concatenation
+statement:
+  The permutation associated to \(\gamma\) sends each path-class lift \(y\) to \(\gamma\cdot y\).
+proof:
+  This is the forward map in the definition of the deck equivalence.
+-/
 @[simp]
 theorem deckEquiv_apply (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
@@ -2691,13 +3623,31 @@ def deckPermutation :
     ext y
     exact deckAction_mul γ δ y
 
+/--
+%%handwave
+name:
+  The deck permutation acts by path concatenation
+statement:
+  Evaluating the permutation representation of \(\gamma\) at \(y\) gives the deck transform \(\gamma\cdot y\).
+proof:
+  This is the underlying map of the permutation representation.
+-/
 @[simp]
 theorem deckPermutation_apply (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
     deckPermutation γ y = deckAction γ y :=
   rfl
 
-/-- The preimage of a generated local-sheet open under deck action is open. -/
+/-- The preimage of a generated local-sheet open under deck action is open.
+
+%%handwave
+name:
+  Deck preimages of restricted local sheets are open
+statement:
+  For a local sheet \(C\), an open base set \(V\), and \(\gamma\in\pi_1(X,x_0)\), the preimage \(\gamma^{-1}(C\cap\operatorname{end}^{-1}(V))\) is open in the path-homotopy cover.
+proof:
+  Deck action preserves endpoints and replaces the sheet label by \(\gamma^{-1}\) applied to it. The preimage is therefore another generating restricted local-sheet open.
+-/
 theorem isOpen_deckAction_preimage_localSheetChart_restrict
     (γ : FundamentalGroup X x₀) (C : LocalSheetChart (X := X) x₀)
     {V : Set X} (hV : IsOpen V) :
@@ -2712,7 +3662,16 @@ theorem isOpen_deckAction_preimage_localSheetChart_restrict
   exact isOpen_localSheetChart_sheet_inter_endpoint_preimage
     ({ C with fiberPoint := deckActionFiber γ⁻¹ C.fiberPoint }) hV
 
-/-- Deck action is continuous for the generated path-homotopy cover topology. -/
+/-- Deck action is continuous for the generated path-homotopy cover topology.
+
+%%handwave
+name:
+  Deck transformations of the path-homotopy cover are continuous
+statement:
+  For every \(\gamma\in\pi_1(X,x_0)\), the map \(y\mapsto\gamma\cdot y\) is continuous in the local-sheet topology.
+proof:
+  The topology is generated by restricted local sheets, and the preimage of every such generator under deck action is open.
+-/
 theorem continuous_deckAction (γ : FundamentalGroup X x₀) :
     Continuous (deckAction γ : PathHomotopyUniversalCover X x₀ →
       PathHomotopyUniversalCover X x₀) := by
@@ -2729,6 +3688,15 @@ def deckHomeomorph (γ : FundamentalGroup X x₀) :
   continuous_toFun := continuous_deckAction γ
   continuous_invFun := continuous_deckAction γ⁻¹
 
+/--
+%%handwave
+name:
+  The deck homeomorphism acts by path concatenation
+statement:
+  Evaluating the deck homeomorphism associated to \(\gamma\) at \(y\) gives \(\gamma\cdot y\).
+proof:
+  This is the underlying equivalence in the definition of the deck homeomorphism.
+-/
 @[simp]
 theorem deckHomeomorph_apply (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
@@ -2747,19 +3715,46 @@ def deckHomeomorphism :
     ext y
     exact deckAction_mul γ δ y
 
+/--
+%%handwave
+name:
+  The homeomorphism-valued deck representation has the expected action
+statement:
+  Evaluating the homeomorphism representation of \(\gamma\) at \(y\) gives the deck transform \(\gamma\cdot y\).
+proof:
+  This is the underlying map of the homeomorphism-valued representation.
+-/
 @[simp]
 theorem deckHomeomorphism_apply (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
     deckHomeomorphism γ y = deckAction γ y :=
   rfl
 
-/-- Homeomorphic deck transformations preserve endpoint fibers. -/
+/-- Homeomorphic deck transformations preserve endpoint fibers.
+
+%%handwave
+name:
+  Deck homeomorphisms preserve endpoints
+statement:
+  For every \(\gamma\in\pi_1(X,x_0)\) and lift \(y\), the endpoint of the deck homeomorphism \(\gamma(y)\) equals the endpoint of \(y\).
+proof:
+  The underlying map of the homeomorphism is the deck action, which preserves endpoints.
+-/
 theorem endpoint_deckHomeomorphism (γ : FundamentalGroup X x₀)
     (y : PathHomotopyUniversalCover X x₀) :
     endpoint (deckHomeomorphism γ y) = endpoint y :=
   endpoint_deckAction γ y
 
-/-- Deck transformations act transitively on the algebraic fiber over the basepoint. -/
+/-- Deck transformations act transitively on the algebraic fiber over the basepoint.
+
+%%handwave
+name:
+  Deck transformations are transitive on the base fiber of the path-class cover
+statement:
+  If a path class \(y\) ends at \(x_0\), then some \(\gamma\in\pi_1(X,x_0)\) sends the constant-path lift to \(y\).
+proof:
+  Represent \(y\) by a loop class \(q\) and choose \(\gamma=q^{-1}\). The action concatenates \(q\) with the constant path, yielding \(y\).
+-/
 theorem deckAction_base_fiber_transitive
     (y : PathHomotopyUniversalCover X x₀) (hy : endpoint y = x₀) :
     ∃ γ : FundamentalGroup X x₀, deckAction γ (baseLift x₀) = y := by
@@ -2777,7 +3772,16 @@ theorem deckAction_base_fiber_transitive
           PathHomotopyUniversalCover X x₀) = ⟨x₀, q⟩
       rw [Path.Homotopic.Quotient.trans_refl]
 
-/-- Deck transformations act freely on the distinguished lift in the algebraic base fiber. -/
+/-- Deck transformations act freely on the distinguished lift in the algebraic base fiber.
+
+%%handwave
+name:
+  The deck action is free at the constant-path lift
+statement:
+  If \(\gamma\) fixes the constant-path lift over \(x_0\), then \(\gamma=1\).
+proof:
+  The equality says that \(\gamma^{-1}\) concatenated with the constant path is the constant class. Cancel the constant path and invert.
+-/
 theorem deckAction_base_fiber_free
     (γ : FundamentalGroup X x₀)
     (hγ : deckAction γ (baseLift x₀) = baseLift x₀) :
@@ -2792,7 +3796,16 @@ theorem deckAction_base_fiber_free
     exact eq_of_heq (Sigma.mk.inj_iff.mp hγ).2
   exact inv_eq_one.mp hinv
 
-/-- Deck transformations act freely on every endpoint fiber. -/
+/-- Deck transformations act freely on every endpoint fiber.
+
+%%handwave
+name:
+  The deck action is free on every fiber of the path-class cover
+statement:
+  If \(\gamma\cdot y=y\) for any path-class lift \(y\), then \(\gamma=1\).
+proof:
+  Writing \(y\) as a path class \(q\), the equality is \(\gamma^{-1}q=q\). Right cancellation gives \(\gamma^{-1}=1\), hence \(\gamma=1\).
+-/
 theorem deckAction_fiber_free
     (γ : FundamentalGroup X x₀) (y : PathHomotopyUniversalCover X x₀)
     (hγ : deckAction γ y = y) :
@@ -2812,7 +3825,16 @@ theorem deckAction_fiber_free
           (by simpa using hq)
       exact inv_eq_one.mp hcancel
 
-/-- Deck transformations act transitively on every algebraic fiber. -/
+/-- Deck transformations act transitively on every algebraic fiber.
+
+%%handwave
+name:
+  Deck transformations are transitive on every fiber of the path-class cover
+statement:
+  If path-class lifts \(y,z\) have the same endpoint, then some \(\gamma\in\pi_1(X,x_0)\) satisfies \(\gamma\cdot y=z\).
+proof:
+  For path classes \(q_y,q_z\), choose the inverse of the loop \(q_zq_y^{-1}\). Its deck action left-concatenates by \(q_zq_y^{-1}\), which cancels with \(q_y\) to give \(q_z\).
+-/
 theorem deckAction_same_fiber_transitive
     (y z : PathHomotopyUniversalCover X x₀) (hyz : endpoint y = endpoint z) :
     ∃ γ : FundamentalGroup X x₀, deckAction γ y = z := by
@@ -2833,40 +3855,94 @@ theorem deckAction_same_fiber_transitive
               PathHomotopyUniversalCover X x₀) = ⟨x, qz⟩
           simp [Path.Homotopic.Quotient.trans_assoc]
 
-/-- Homeomorphic deck transformations act transitively on the base fiber. -/
+/-- Homeomorphic deck transformations act transitively on the base fiber.
+
+%%handwave
+name:
+  Deck homeomorphisms are transitive on the base fiber
+statement:
+  Every path-class lift over \(x_0\) is the image of the constant-path lift under some deck homeomorphism.
+proof:
+  Use transitivity of the underlying deck action; the homeomorphism has that same pointwise action.
+-/
 theorem deckHomeomorphism_base_fiber_transitive
     (y : PathHomotopyUniversalCover X x₀) (hy : endpoint y = x₀) :
     ∃ γ : FundamentalGroup X x₀, deckHomeomorphism γ (baseLift x₀) = y :=
   deckAction_base_fiber_transitive y hy
 
-/-- Homeomorphic deck transformations act freely on the distinguished base lift. -/
+/-- Homeomorphic deck transformations act freely on the distinguished base lift.
+
+%%handwave
+name:
+  The homeomorphic deck action is free at the base lift
+statement:
+  If the deck homeomorphism associated to \(\gamma\) fixes the constant-path lift, then \(\gamma=1\).
+proof:
+  Its underlying map is the algebraic deck action, which is free at that lift.
+-/
 theorem deckHomeomorphism_base_fiber_free
     (γ : FundamentalGroup X x₀)
     (hγ : deckHomeomorphism γ (baseLift x₀) = baseLift x₀) :
     γ = 1 :=
   deckAction_base_fiber_free γ hγ
 
-/-- Homeomorphic deck transformations act transitively on every endpoint fiber. -/
+/-- Homeomorphic deck transformations act transitively on every endpoint fiber.
+
+%%handwave
+name:
+  Deck homeomorphisms are transitive on every fiber
+statement:
+  For lifts \(y,z\) with the same endpoint, there is a based loop class \(\gamma\in\pi_1(X,x_0)\) whose deck homeomorphism sends \(y\) to \(z\).
+proof:
+  Use transitivity of the underlying deck action; the deck homeomorphism has that action as its underlying map.
+-/
 theorem deckHomeomorphism_same_fiber_transitive
     (y z : PathHomotopyUniversalCover X x₀) (hyz : endpoint y = endpoint z) :
     ∃ γ : FundamentalGroup X x₀, deckHomeomorphism γ y = z :=
   deckAction_same_fiber_transitive y z hyz
 
-/-- Riemann surfaces have surjective algebraic endpoint projection. -/
+/-- Riemann surfaces have surjective algebraic endpoint projection.
+
+%%handwave
+name:
+  Every point of a Riemann surface is the endpoint of a based path class
+statement:
+  For a Riemann surface \(X\) and base point \(x_0\), the endpoint map from based path-homotopy classes onto \(X\) is surjective.
+proof:
+  A Riemann surface is path connected, so every point is joined to \(x_0\) by a path; take its homotopy class.
+-/
 theorem endpoint_surjective_of_riemannSurface
     (X : Type u) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (x₀ : X) :
     Function.Surjective (endpoint : PathHomotopyUniversalCover X x₀ → X) :=
   endpoint_surjective x₀
 
-/-- Riemann surfaces give a continuous path-homotopy endpoint projection. -/
+/-- Riemann surfaces give a continuous path-homotopy endpoint projection.
+
+%%handwave
+name:
+  The path-class endpoint map of a Riemann surface is continuous
+statement:
+  For a Riemann surface \(X\), the endpoint projection from its based path-homotopy cover to \(X\) is continuous.
+proof:
+  Riemann surfaces are locally simply connected, and the endpoint projection is continuous for every locally simply connected base.
+-/
 theorem continuous_endpoint_of_riemannSurface
     (X : Type u) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (x₀ : X) :
     Continuous (endpoint : PathHomotopyUniversalCover X x₀ → X) :=
   continuous_endpoint
 
-/-- Riemann surfaces give a covering-map endpoint projection. -/
+/-- Riemann surfaces give a covering-map endpoint projection.
+
+%%handwave
+name:
+  The path-class endpoint map is a covering map for Riemann surfaces
+statement:
+  For a Riemann surface \(X\), the endpoint projection from based path-homotopy classes to \(X\) is a covering map.
+proof:
+  Riemann surfaces are locally simply connected; the local-sheet trivializations of the path-class space therefore exhibit the endpoint projection as a covering map.
+-/
 theorem isCoveringMap_endpoint_of_riemannSurface
     (X : Type u) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (x₀ : X) :
@@ -2965,18 +4041,45 @@ noncomputable def simplyConnectedCoverOfRiemannSurface
     SimplyConnectedCover X x₀ :=
   toSimplyConnectedCover (X := X) (x₀ := x₀) inferInstance
 
+/--
+%%handwave
+name:
+  Projection of the packaged path-homotopy cover
+statement:
+  After packaging the path-homotopy universal cover as a simply connected cover, its projection is the endpoint map.
+proof:
+  This is the projection field of the construction.
+-/
 @[simp]
 theorem toSimplyConnectedCover_projection [RiemannSurface X]
     (hsc : SimplyConnectedSpace (PathHomotopyUniversalCover X x₀)) :
     (toSimplyConnectedCover (X := X) (x₀ := x₀) hsc).projection = endpoint :=
   rfl
 
+/--
+%%handwave
+name:
+  Base lift of the packaged path-homotopy cover
+statement:
+  The chosen lift of \(x_0\) in the packaged path-homotopy cover is the constant-path class at \(x_0\).
+proof:
+  This is the chosen-lift field of the construction.
+-/
 @[simp]
 theorem toSimplyConnectedCover_baseLift [RiemannSurface X]
     (hsc : SimplyConnectedSpace (PathHomotopyUniversalCover X x₀)) :
     (toSimplyConnectedCover (X := X) (x₀ := x₀) hsc).baseLift = baseLift x₀ :=
   rfl
 
+/--
+%%handwave
+name:
+  Deck action of the packaged path-homotopy cover
+statement:
+  In the packaged path-homotopy cover, the deck transformation associated to \(\gamma\in\pi_1(X,x_0)\) acts by concatenating \(\gamma\) with the represented based path.
+proof:
+  This is the deck-transformation field of the construction.
+-/
 @[simp]
 theorem toSimplyConnectedCover_deckAction [RiemannSurface X]
     (hsc : SimplyConnectedSpace (PathHomotopyUniversalCover X x₀))
@@ -2996,6 +4099,15 @@ def deckAction (cover : SimplyConnectedCover X x₀)
     (γ : FundamentalGroup X x₀) : cover.total → cover.total :=
   cover.deckTransformation γ
 
+/--
+%%handwave
+name:
+  The identity loop acts trivially on a simply connected cover
+statement:
+  For a simply connected cover and every lift \(y\), the identity element of \(\pi_1(X,x_0)\) fixes \(y\).
+proof:
+  The deck transformations form a monoid homomorphism, so the identity loop maps to the identity homeomorphism.
+-/
 @[simp]
 theorem deckAction_one (cover : SimplyConnectedCover X x₀) (y : cover.total) :
     cover.deckAction 1 y = y := by
@@ -3003,6 +4115,15 @@ theorem deckAction_one (cover : SimplyConnectedCover X x₀) (y : cover.total) :
   rw [cover.deckTransformation.map_one]
   rfl
 
+/--
+%%handwave
+name:
+  Deck actions compose according to loop multiplication
+statement:
+  For \(\gamma,\delta\in\pi_1(X,x_0)\) and every lift \(y\), \((\gamma\delta)\cdot y=\gamma\cdot(\delta\cdot y)\).
+proof:
+  The homeomorphism-valued deck transformation map preserves multiplication.
+-/
 @[simp]
 theorem deckAction_mul (cover : SimplyConnectedCover X x₀)
     (γ δ : FundamentalGroup X x₀) (y : cover.total) :
@@ -3013,42 +4134,105 @@ theorem deckAction_mul (cover : SimplyConnectedCover X x₀)
   rw [cover.deckTransformation.map_mul]
   rfl
 
-/-- Deck transformations preserve fibers of the covering map. -/
+/-- Deck transformations preserve fibers of the covering map.
+
+%%handwave
+name:
+  Deck transformations preserve the covering projection
+statement:
+  For every \(\gamma\in\pi_1(X,x_0)\) and lift \(y\), \(\pi(\gamma\cdot y)=\pi(y)\).
+proof:
+  This is the fiber-preservation property of the deck action stored with the cover.
+-/
 theorem projection_deckAction (cover : SimplyConnectedCover X x₀)
     (γ : FundamentalGroup X x₀) (y : cover.total) :
     cover.projection (cover.deckAction γ y) = cover.projection y :=
   cover.projection_deckTransformation γ y
 
-/-- The projection of a simply connected cover is continuous. -/
+/-- The projection of a simply connected cover is continuous.
+
+%%handwave
+name:
+  A simply connected covering projection is continuous
+statement:
+  The projection \(\pi:\widetilde X\to X\) of a simply connected cover is continuous.
+proof:
+  A covering map is a local homeomorphism and hence is continuous at every point.
+-/
 theorem projection_continuous (cover : SimplyConnectedCover X x₀) :
     Continuous cover.projection := by
   rw [continuous_iff_continuousAt]
   intro y
   exact cover.isCovering.isCoveringMapOn.continuousAt (by trivial)
 
-/-- The projection of a simply connected cover is continuous at every lift. -/
+/-- The projection of a simply connected cover is continuous at every lift.
+
+%%handwave
+name:
+  A simply connected covering projection is continuous at every lift
+statement:
+  For every \(y\in\widetilde X\), the covering projection \(\pi\) is continuous at \(y\).
+proof:
+  This is the pointwise form of continuity of the covering projection.
+-/
 theorem projection_continuousAt (cover : SimplyConnectedCover X x₀) (y : cover.total) :
     ContinuousAt cover.projection y :=
   cover.projection_continuous.continuousAt
 
-/-- Every point of the base has a lift to the cover. -/
+/-- Every point of the base has a lift to the cover.
+
+%%handwave
+name:
+  Every base point has a lift
+statement:
+  For every \(x\in X\), there exists \(y\in\widetilde X\) with \(\pi(y)=x\).
+proof:
+  The projection of the simply connected cover is surjective.
+-/
 theorem exists_lift (cover : SimplyConnectedCover X x₀) (x : X) :
     ∃ y : cover.total, cover.projection y = x :=
   cover.projection_surjective x
 
-/-- Deck transformations act transitively on the fiber over the basepoint. -/
+/-- Deck transformations act transitively on the fiber over the basepoint.
+
+%%handwave
+name:
+  Deck transformations are transitive on the chosen base fiber
+statement:
+  If \(\pi(y)=x_0\), then some \(\gamma\in\pi_1(X,x_0)\) satisfies \(\gamma\cdot\widetilde x_0=y\).
+proof:
+  This is the base-fiber transitivity property stored with the cover.
+-/
 theorem deckAction_fiber_transitive (cover : SimplyConnectedCover X x₀)
     (y : cover.total) (hy : cover.projection y = x₀) :
     ∃ γ, cover.deckAction γ cover.baseLift = y :=
   cover.deckTransformation_fiber_transitive y hy
 
-/-- Deck transformations act transitively on any fiber. -/
+/-- Deck transformations act transitively on any fiber.
+
+%%handwave
+name:
+  Deck transformations are transitive on every fiber of a simply connected cover
+statement:
+  If \(\pi(y)=\pi(z)\), then some \(\gamma\in\pi_1(X,x_0)\) satisfies \(\gamma\cdot y=z\).
+proof:
+  This is the same-fiber transitivity property stored with the cover.
+-/
 theorem deckAction_same_fiber_transitive (cover : SimplyConnectedCover X x₀)
     (y z : cover.total) (hyz : cover.projection y = cover.projection z) :
     ∃ γ, cover.deckAction γ y = z :=
   cover.deckTransformation_same_fiber_transitive y z hyz
 
-/-- Deck transformations act freely on the chosen lift in the base fiber. -/
+/-- Deck transformations act freely on the chosen lift in the base fiber.
+
+%%handwave
+name:
+  The deck action is free at the chosen base lift
+statement:
+  If \(\gamma\cdot\widetilde x_0=\widetilde x_0\), then \(\gamma=1\) in \(\pi_1(X,x_0)\).
+proof:
+  This is the base-fiber freeness property stored with the cover.
+-/
 theorem deckAction_fiber_free (cover : SimplyConnectedCover X x₀)
     (γ : FundamentalGroup X x₀)
     (hγ : cover.deckAction γ cover.baseLift = cover.baseLift) :
@@ -3063,19 +4247,46 @@ noncomputable def localHomeomorphAt (cover : SimplyConnectedCover X x₀)
     (y : cover.total) : OpenPartialHomeomorph cover.total X :=
   Classical.choose (cover.isCovering.isLocalHomeomorph y)
 
-/-- The chosen local homeomorphism around a lift contains that lift. -/
+/-- The chosen local homeomorphism around a lift contains that lift.
+
+%%handwave
+name:
+  The chosen covering chart contains its center
+statement:
+  For every lift \(y\), the source of the chosen local homeomorphism representing \(\pi\) near \(y\) contains \(y\).
+proof:
+  Choose the local homeomorphism supplied by the covering-map property; its defining specification includes membership of the center in its source.
+-/
 theorem mem_localHomeomorphAt_source (cover : SimplyConnectedCover X x₀)
     (y : cover.total) :
     y ∈ (cover.localHomeomorphAt y).source :=
   (Classical.choose_spec (cover.isCovering.isLocalHomeomorph y)).1
 
-/-- The chosen local homeomorphism around a lift is the projection map. -/
+/-- The chosen local homeomorphism around a lift is the projection map.
+
+%%handwave
+name:
+  The chosen covering chart represents the projection
+statement:
+  For every lift \(y\), the chosen local homeomorphism near \(y\) agrees with the covering projection \(\pi\) on its source.
+proof:
+  This is the map-identification part of the chosen local-homeomorphism specification.
+-/
 theorem localHomeomorphAt_eq_projection (cover : SimplyConnectedCover X x₀)
     (y : cover.total) :
     cover.projection = cover.localHomeomorphAt y :=
   (Classical.choose_spec (cover.isCovering.isLocalHomeomorph y)).2
 
-/-- The local inverse of the chosen covering chart projects back to the base point. -/
+/-- The local inverse of the chosen covering chart projects back to the base point.
+
+%%handwave
+name:
+  A local inverse section projects to the identity
+statement:
+  If \(x\) lies in the target of the chosen covering chart at \(y\), then \(\pi((\pi|_y)^{-1}(x))=x\).
+proof:
+  Replace the local chart map by the projection and apply the right-inverse identity of the local homeomorphism.
+-/
 theorem projection_localHomeomorphAt_symm (cover : SimplyConnectedCover X x₀)
     (y : cover.total) {x : X} (hx : x ∈ (cover.localHomeomorphAt y).target) :
     cover.projection ((cover.localHomeomorphAt y).symm x) = x := by
@@ -3090,6 +4301,14 @@ If two local sections project to the same base map and agree at one point after
 applying a fixed deck transformation to the first one, then they agree near
 that point.  This is the covering-space local injectivity argument used to make
 the real-projective transition representative locally constant.
+
+%%handwave
+name:
+  Two locally coincident lifted sections agree near a point
+statement:
+  Let \(s_1,s_2\) be continuous at \(t_0\), with \(\pi\circ s_1=\pi\circ s_2=b\) near \(t_0\). If \(\gamma\cdot s_1(t_0)=s_2(t_0)\), then \(\gamma\cdot s_1=s_2\) on a neighborhood of \(t_0\).
+proof:
+  Both sections eventually lie in the same evenly covered sheet around \(s_2(t_0)\). Deck transformations preserve projection, so their images under that sheet's injective local projection agree; local injectivity then makes the lifted sections equal.
 -/
 theorem deckAction_sections_eventuallyEq_of_projection_eq
     (cover : SimplyConnectedCover X x₀)
@@ -3144,27 +4363,63 @@ def localHolomorphicSection
     CoverLocalHolomorphicSectionData cover.projection y :=
   cover.local_holomorphic_section y
 
-/-- Existence form of `localHolomorphicSection`, convenient for branch choices. -/
+/-- Existence form of `localHolomorphicSection`, convenient for branch choices.
+
+%%handwave
+name:
+  A holomorphic local inverse exists through every lift
+statement:
+  For every \(y\in\widetilde X\), there exists a local inverse section of \(\pi\) through \(y\) whose coordinate expression is holomorphic with nonzero derivative.
+proof:
+  Take the local holomorphic section supplied with the simply connected cover.
+-/
 theorem exists_localHolomorphicSection
     (cover : SimplyConnectedCover X x₀) (y : cover.total) :
     Nonempty (CoverLocalHolomorphicSectionData cover.projection y) :=
   ⟨cover.localHolomorphicSection y⟩
 
-/-- The holomorphic local section projects back to the base point. -/
+/-- The holomorphic local section projects back to the base point.
+
+%%handwave
+name:
+  The holomorphic local inverse projects to the identity
+statement:
+  For a local holomorphic inverse section \(s\) through \(y\), \(\pi(s(x))=x\) throughout the target of its local projection.
+proof:
+  Apply the right-inverse identity in the local holomorphic section data.
+-/
 theorem localHolomorphicSection_projects
     (cover : SimplyConnectedCover X x₀) (y : cover.total)
     {x : X} (hx : x ∈ (cover.localHolomorphicSection y).localProjection.target) :
     cover.projection ((cover.localHolomorphicSection y).localProjection.symm x) = x :=
   (cover.localHolomorphicSection y).projection_localProjection_symm hx
 
-/-- The coordinate expression of a cover-local section is holomorphic. -/
+/-- The coordinate expression of a cover-local section is holomorphic.
+
+%%handwave
+name:
+  A local inverse section is holomorphic in coordinates
+statement:
+  The coordinate expression of the chosen local inverse section through \(y\) is complex differentiable at every point of its coordinate domain.
+proof:
+  This is the holomorphicity property stored in the local section data.
+-/
 theorem localHolomorphicSection_coordinate_holomorphic
     (cover : SimplyConnectedCover X x₀) (y : cover.total)
     {z : ℂ} (hz : z ∈ (cover.localHolomorphicSection y).coordinateSource) :
     DifferentiableAt ℂ (cover.localHolomorphicSection y).sectionCoordinate z :=
   (cover.localHolomorphicSection y).sectionCoordinate_holomorphic z hz
 
-/-- The coordinate expression of a cover-local section has nonzero derivative. -/
+/-- The coordinate expression of a cover-local section has nonzero derivative.
+
+%%handwave
+name:
+  A local inverse section has nonzero coordinate derivative
+statement:
+  The coordinate derivative of the chosen local inverse section through \(y\) is nonzero at every point of its coordinate domain.
+proof:
+  This is the local-biholomorphism nonvanishing property stored in the local section data.
+-/
 theorem localHolomorphicSection_coordinate_deriv_ne_zero
     (cover : SimplyConnectedCover X x₀) (y : cover.total)
     {z : ℂ} (hz : z ∈ (cover.localHolomorphicSection y).coordinateSource) :

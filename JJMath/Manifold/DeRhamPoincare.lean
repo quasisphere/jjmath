@@ -4545,7 +4545,18 @@ def deRhamCohomologyPullbackDiffeomorph
     (deRhamClosedFormsPullbackDiffeomorph I₁ I₂ φ n)
     (deRhamClosedFormsPullbackDiffeomorph_exact I₁ I₂ φ n)
 
-/-- Pullback by inverse diffeomorphisms is the identity on closed forms. -/
+/--
+%%handwave
+name:
+  Pullback of closed forms along inverse diffeomorphisms
+statement:
+  For a diffeomorphism \(\varphi:M_1\to M_2\) and a closed differential form
+  \(\omega\) on \(M_2\),
+  \((\varphi^{-1})^*(\varphi^*\omega)=\omega\).
+proof:
+  The corresponding identity holds for all smooth forms; equality in the
+  subtype of closed forms follows from equality of the underlying forms.
+-/
 theorem deRhamClosedFormsPullbackDiffeomorph_symm_comp
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
     [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
@@ -4557,7 +4568,18 @@ theorem deRhamClosedFormsPullbackDiffeomorph_symm_comp
   apply Subtype.ext
   exact smoothFormsPullbackDiffeomorph_symm_comp I₁ I₂ φ omega.1
 
-/-- Pullback by inverse diffeomorphisms is the identity on closed forms, reversed. -/
+/--
+%%handwave
+name:
+  Reverse pullback identity for closed forms
+statement:
+  For a diffeomorphism \(\varphi:M_1\to M_2\) and a closed differential form
+  \(\omega\) on \(M_1\),
+  \(\varphi^*((\varphi^{-1})^*\omega)=\omega\).
+proof:
+  Apply the inverse-composition identity for pullback of smooth forms and then
+  forget the proof of closedness.
+-/
 theorem deRhamClosedFormsPullbackDiffeomorph_comp_symm
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
     [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]

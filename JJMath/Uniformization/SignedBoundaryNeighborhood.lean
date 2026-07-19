@@ -26,14 +26,36 @@ variable {X : Type} [TopologicalSpace X]
 def frontierComponentCarrier (U : Set X) (x₀ : frontier U) : Set X :=
   Subtype.val '' connectedComponent x₀
 
-/-- A frontier component is contained in the frontier. -/
+/--
+%%handwave
+name:
+  A connected boundary component lies in the boundary
+statement:
+  For a subset \(U\) of a topological space and a point \(x_0\in\partial U\),
+  the ambient image of the connected component of \(x_0\) in \(\partial U\)
+  is contained in \(\partial U\).
+proof:
+  Every point of the component is, by construction, a point of the boundary
+  subtype; forgetting the subtype therefore leaves it in \(\partial U\).
+-/
 theorem frontierComponentCarrier_subset_frontier
     (U : Set X) (x₀ : frontier U) :
     frontierComponentCarrier U x₀ ⊆ frontier U := by
   rintro x ⟨y, _hy, rfl⟩
   exact y.2
 
-/-- A connected component of a compact frontier is compact in the ambient space. -/
+/--
+%%handwave
+name:
+  Compactness of a connected boundary component
+statement:
+  If \(X\) is Hausdorff and \(\partial U\) is compact, then every connected
+  component of \(\partial U\), viewed as a subset of \(X\), is compact.
+proof:
+  A connected component is closed in the compact space \(\partial U\), hence
+  compact.  Its image under the continuous inclusion \(\partial U\hookrightarrow
+  X\) is compact.
+-/
 theorem frontierComponentCarrier_isCompact
     [T2Space X] {U : Set X} (hfrontier : IsCompact (frontier U))
     (x₀ : frontier U) :
@@ -43,15 +65,37 @@ theorem frontierComponentCarrier_isCompact
     isClosed_connectedComponent.isCompact
   exact hcomponent.image continuous_subtype_val
 
-/-- A connected component of a compact frontier is closed in a Hausdorff space. -/
+/--
+%%handwave
+name:
+  Closedness of a connected boundary component
+statement:
+  If \(X\) is Hausdorff and \(\partial U\) is compact, then each connected
+  component of \(\partial U\), regarded as a subset of \(X\), is closed.
+proof:
+  The component is compact by compactness of connected boundary components,
+  and compact subsets of a Hausdorff space are closed.
+-/
 theorem frontierComponentCarrier_isClosed
     [T2Space X] {U : Set X} (hfrontier : IsCompact (frontier U))
     (x₀ : frontier U) :
     IsClosed (frontierComponentCarrier U x₀) :=
   (frontierComponentCarrier_isCompact hfrontier x₀).isClosed
 
-/-- A component of a locally connected frontier is the intersection of that
-frontier with an ambient open set. -/
+/--
+%%handwave
+name:
+  Ambient open isolation of a locally connected boundary component
+statement:
+  If \(X\) is Hausdorff and \(\partial U\) is locally connected, then for each
+  \(x_0\in\partial U\) there is an open set \(O\subseteq X\) such that the
+  connected component of \(x_0\) in \(\partial U\), viewed in \(X\), is
+  exactly \(O\cap\partial U\).
+proof:
+  Connected components of a locally connected space are open.  Express this
+  open subset of the subspace \(\partial U\) as the inverse image of an
+  ambient open set and then pass through the subtype inclusion.
+-/
 theorem exists_open_frontierComponentCarrier_isolation
     [T2Space X] (U : Set X) [LocallyConnectedSpace (frontier U)]
     (x₀ : frontier U) :
@@ -88,6 +132,26 @@ structure SignedDefiningChart [ChartedSpace ℂ X]
   frontier_iff_zero : ∀ x ∈ neighborhood,
     x ∈ frontier D.carrier ↔ definingFunction x = 0
 
+/--
+%%handwave
+name:
+  Signed local defining function inside a prescribed neighborhood
+statement:
+  Let \(D\) be a smooth-boundary domain, let \(p\in\partial D\), and let
+  \(A\) be an open neighborhood of \(p\).  There is an open neighborhood
+  \(W\subseteq A\) of \(p\) and a continuous real function \(r\) on \(W\)
+  such that, for \(x\in W\),
+  \[
+    x\in D\iff r(x)<0,
+    \qquad x\in\partial D\iff r(x)=0.
+  \]
+proof:
+  Take the regular local defining function supplied by smoothness of the
+  boundary and straighten its zero set by the implicit-function theorem.
+  Intersect its valid neighborhood with \(A\), and pull the defining function
+  back through the surface coordinate.  The local sign and zero-set
+  equivalences persist on this smaller open neighborhood.
+-/
 theorem exists_signedDefiningChart_within
     [ChartedSpace ℂ X]
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)

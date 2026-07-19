@@ -1163,10 +1163,8 @@ statement:
   For constant boundary data, the Poisson Dirichlet candidate solves the
   Euclidean disk Dirichlet problem.
 proof:
-  [The Poisson candidate is the same constant
-  function](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_const),
-  and [constant functions solve the disk Dirichlet
-  problem](lean:JJMath.Uniformization.constant_solves_euclidean_disk_dirichlet_problem).
+  [The Poisson candidate is the same constant function](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_const),
+  and [constant functions solve the disk Dirichlet problem](lean:JJMath.Uniformization.constant_solves_euclidean_disk_dirichlet_problem).
 -/
 theorem poissonDiskDirichletCandidate_const_solves
     (c : ℂ) (r : ℝ) (a : ℝ) :
@@ -1183,10 +1181,8 @@ statement:
   The Poisson extension of continuous boundary data is harmonic in the open
   disk.
 proof:
-  Use the Schwarz integral: [the complex Poisson potential is analytic in the
-  open disk](lean:JJMath.Uniformization.poissonDiskComplexPotential_analyticOnNhd),
-  and [its real part is the Poisson
-  extension](lean:JJMath.Uniformization.poissonDiskComplexPotential_re_eq_poissonDiskExtension_of_mem_ball).
+  Use the Schwarz integral: [the complex Poisson potential is analytic in the open disk](lean:JJMath.Uniformization.poissonDiskComplexPotential_analyticOnNhd),
+  and [its real part is the Poisson extension](lean:JJMath.Uniformization.poissonDiskComplexPotential_re_eq_poissonDiskExtension_of_mem_ball).
   Since real parts of holomorphic functions are harmonic, the Poisson
   extension is harmonic.
 -/
@@ -1218,10 +1214,8 @@ name:
 statement:
   The Poisson Dirichlet candidate is harmonic in the open disk.
 proof:
-  [The Poisson extension is harmonic in the
-  disk](lean:JJMath.Uniformization.poissonDiskExtension_harmonicOn), and inside
-  the open disk [the Poisson candidate equals the Poisson
-  extension](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_eq_extension_of_mem).
+  [The Poisson extension is harmonic in the disk](lean:JJMath.Uniformization.poissonDiskExtension_harmonicOn), and inside
+  the open disk [the Poisson candidate equals the Poisson extension](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_eq_extension_of_mem).
 -/
 theorem poissonDiskDirichletCandidate_harmonicOn
     (c : ℂ) {r : ℝ} (hr : 0 < r) (φ : ℂ → ℝ)
@@ -1246,8 +1240,7 @@ statement:
 proof:
   The Poisson kernels form an approximate identity on the boundary circle.
   Since the boundary data is continuous at the chosen point,
-  [the Poisson extension at a nearby interior point is close to that boundary
-  value](lean:JJMath.Uniformization.abs_poissonDiskExtension_sub_boundary_value_le).
+  [the Poisson extension at a nearby interior point is close to that boundary value](lean:JJMath.Uniformization.abs_poissonDiskExtension_sub_boundary_value_le).
   On the boundary itself the candidate is defined to be the prescribed value.
 -/
 theorem poissonDiskDirichletCandidate_continuousWithinAt_frontier
@@ -1402,12 +1395,9 @@ statement:
   The Poisson Dirichlet candidate solves the harmonic Dirichlet problem on the
   Euclidean disk for continuous boundary data.
 proof:
-  Combine [the Poisson extension is harmonic in the
-  disk](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_harmonicOn),
-  [the Poisson candidate is continuous on the closed
-  disk](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_continuousOn_closedBall),
-  and [the candidate has the prescribed boundary
-  values](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_boundary_eq).
+  Combine [the Poisson extension is harmonic in the disk](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_harmonicOn),
+  [the Poisson candidate is continuous on the closed disk](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_continuousOn_closedBall),
+  and [the candidate has the prescribed boundary values](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_boundary_eq).
 -/
 theorem poissonDiskDirichletCandidate_solves
     (c : ℂ) {r : ℝ} (hr : 0 < r) (φ : ℂ → ℝ)

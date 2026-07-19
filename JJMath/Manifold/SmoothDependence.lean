@@ -32,9 +32,22 @@ universe u
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
-/-- If a globally `C^n` implicit equation has invertible vertical derivative at
-one point, the implicit function produced there is `C^n` at every point of a
-sufficiently small common neighborhood. -/
+/--
+%%handwave
+name:
+  Local regularity of an implicit function on a common neighborhood
+statement:
+  Let \(f:E_1\times E_2\to F\) be \(C^n\), with \(n\ne0\), and suppose the
+  derivative of \(f\) in the \(E_2\)-direction is invertible at \(u\).
+  Then the implicit function obtained at \(u\) is \(C^n\) at every \(x\) in
+  some neighborhood of \(u_1\).
+proof:
+  The implicit-function construction locally identifies
+  \((x,y)\mapsto(f(x,y),x)\) with a homeomorphism.  Its derivative remains
+  invertible near \(u\), so the inverse function theorem makes the inverse
+  \(C^n\) on a common target neighborhood; taking its second component gives
+  the implicit function.
+-/
 theorem ContDiff.eventually_contDiffAt_implicitFunction
     {𝕜 : Type*} [RCLike 𝕜]
     {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
@@ -126,6 +139,19 @@ def extendLocalCurve (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve E ε) : ℝ →
   fun t ↦ f (projIcc (-ε) ε (neg_le_self hε) t)
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Continuity of extending a curve by endpoint projection
+statement:
+  If \(\varepsilon\ge0\) and
+  \(u:[-\varepsilon,\varepsilon]\to E\) is continuous, then
+  \(t\mapsto u(\operatorname{proj}_{[-\varepsilon,\varepsilon]}t)\) is
+  continuous on \(\mathbb R\).
+proof:
+  The metric projection onto a closed interval is continuous, so the result
+  follows by composition.
+-/
 theorem extendLocalCurve_continuous (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve E ε) :
     Continuous (extendLocalCurve ε hε f) :=
   f.continuous.comp continuous_projIcc
@@ -139,6 +165,19 @@ def localCurveIntegralFun (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve E ε) :
         continuous_subtype_val
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Additivity of the Volterra integral on local curves
+statement:
+  For continuous curves \(u,v:[-\varepsilon,\varepsilon]\to E\),
+  \[
+    \int_0^t(u+v)(s)\,ds=\int_0^tu(s)\,ds+\int_0^tv(s)\,ds
+  \]
+  for every \(t\in[-\varepsilon,\varepsilon]\).
+proof:
+  This is additivity of the interval integral.
+-/
 theorem localCurveIntegralFun_add (ε : ℝ) (hε : 0 ≤ ε)
     (f g : LocalCurve E ε) :
     localCurveIntegralFun ε hε (f + g) =
@@ -153,6 +192,19 @@ theorem localCurveIntegralFun_add (ε : ℝ) (hε : 0 ≤ ε)
   · exact ((extendLocalCurve_continuous ε hε g).intervalIntegrable 0 t)
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Homogeneity of the Volterra integral on local curves
+statement:
+  For \(c\in\mathbb R\) and a continuous curve
+  \(u:[-\varepsilon,\varepsilon]\to E\),
+  \[
+    \int_0^t c\,u(s)\,ds=c\int_0^t u(s)\,ds.
+  \]
+proof:
+  This is homogeneity of the interval integral.
+-/
 theorem localCurveIntegralFun_smul (ε : ℝ) (hε : 0 ≤ ε) (c : ℝ)
     (f : LocalCurve E ε) :
     localCurveIntegralFun ε hε (c • f) = c • localCurveIntegralFun ε hε f := by
@@ -169,6 +221,21 @@ def localCurveIntegralLinearMap (ε : ℝ) (hε : 0 ≤ ε) :
   map_smul' := localCurveIntegralFun_smul ε hε
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Supremum estimate for the Volterra integral
+statement:
+  If \(\varepsilon\ge0\) and
+  \(u:[-\varepsilon,\varepsilon]\to E\) is continuous, then
+  \[
+    \sup_{|t|\le\varepsilon}\left\|\int_0^tu(s)\,ds\right\|
+    \le\varepsilon\|u\|_\infty.
+  \]
+proof:
+  The norm of each interval integral is at most
+  \(|t|\|u\|_\infty\), and \(|t|\le\varepsilon\).
+-/
 theorem localCurveIntegralFun_norm_le (ε : ℝ) (hε : 0 ≤ ε)
     (f : LocalCurve E ε) :
     ‖localCurveIntegralFun ε hε f‖ ≤ ε * ‖f‖ := by
@@ -191,6 +258,20 @@ def localCurveIntegral (ε : ℝ) (hε : 0 ≤ ε) :
     (localCurveIntegralFun_norm_le ε hε)
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Formula for the Volterra integral operator
+statement:
+  For \(u:[-\varepsilon,\varepsilon]\to E\) and
+  \(t\in[-\varepsilon,\varepsilon]\), the bounded Volterra operator satisfies
+  \[
+    (Vu)(t)=\int_0^t\widetilde u(s)\,ds,
+  \]
+  where \(\widetilde u\) is obtained by projecting time to the interval.
+proof:
+  This is the defining formula of the bounded linear operator.
+-/
 @[simp]
 theorem localCurveIntegral_apply (ε : ℝ) (hε : 0 ≤ ε)
     (f : LocalCurve E ε) (t : Icc (-ε) ε) :
@@ -199,6 +280,17 @@ theorem localCurveIntegral_apply (ε : ℝ) (hε : 0 ≤ ε)
   rfl
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Operator norm of the Volterra integral
+statement:
+  For \(\varepsilon\ge0\), the Volterra operator on continuous curves over
+  \([-\varepsilon,\varepsilon]\) has operator norm at most \(\varepsilon\).
+proof:
+  Apply the supremum estimate
+  \(\|Vu\|_\infty\le\varepsilon\|u\|_\infty\).
+-/
 theorem norm_localCurveIntegral_le (ε : ℝ) (hε : 0 ≤ ε) :
     ‖localCurveIntegral (ε := ε) hε (E := E)‖ ≤ ε :=
   LinearMap.mkContinuous_norm_le _ hε (localCurveIntegralFun_norm_le ε hε)
@@ -213,24 +305,64 @@ def pointwiseApplyFun (A : C(K, E →L[ℝ] F)) (f : C(K, E)) : C(K, F) where
   continuous_toFun := A.continuous.clm_apply f.continuous
 
 omit [CompleteSpace E] [CompactSpace K] in
+/--
+%%handwave
+name:
+  Additivity of pointwise operator evaluation in the operator field
+statement:
+  For continuous operator fields \(A,B:K\to\mathcal L(E,F)\) and
+  \(u:K\to E\), \((A+B)u=Au+Bu\) pointwise on \(K\).
+proof:
+  Evaluate at each \(x\in K\) and use additivity of operator evaluation.
+-/
 theorem pointwiseApplyFun_add_left (A B : C(K, E →L[ℝ] F)) (f : C(K, E)) :
     pointwiseApplyFun (A + B) f = pointwiseApplyFun A f + pointwiseApplyFun B f := by
   ext x
   rfl
 
 omit [CompleteSpace E] [CompactSpace K] in
+/--
+%%handwave
+name:
+  Homogeneity of pointwise operator evaluation in the operator field
+statement:
+  For \(c\in\mathbb R\), \(A:K\to\mathcal L(E,F)\), and \(u:K\to E\),
+  \((cA)u=c(Au)\) pointwise.
+proof:
+  Evaluate at each point and use homogeneity of operator evaluation.
+-/
 theorem pointwiseApplyFun_smul_left (c : ℝ) (A : C(K, E →L[ℝ] F)) (f : C(K, E)) :
     pointwiseApplyFun (c • A) f = c • pointwiseApplyFun A f := by
   ext x
   rfl
 
 omit [CompleteSpace E] [CompactSpace K] in
+/--
+%%handwave
+name:
+  Additivity of pointwise operator evaluation in the vector field
+statement:
+  For \(A:K\to\mathcal L(E,F)\) and continuous \(u,v:K\to E\),
+  \(A(u+v)=Au+Av\) pointwise.
+proof:
+  Each operator \(A(x)\) is linear.
+-/
 theorem pointwiseApplyFun_add_right (A : C(K, E →L[ℝ] F)) (f g : C(K, E)) :
     pointwiseApplyFun A (f + g) = pointwiseApplyFun A f + pointwiseApplyFun A g := by
   ext x
   exact map_add (A x) (f x) (g x)
 
 omit [CompleteSpace E] [CompactSpace K] in
+/--
+%%handwave
+name:
+  Homogeneity of pointwise operator evaluation in the vector field
+statement:
+  For \(c\in\mathbb R\), \(A:K\to\mathcal L(E,F)\), and \(u:K\to E\),
+  \(A(cu)=c(Au)\) pointwise.
+proof:
+  Each operator \(A(x)\) is linear.
+-/
 theorem pointwiseApplyFun_smul_right (c : ℝ) (A : C(K, E →L[ℝ] F)) (f : C(K, E)) :
     pointwiseApplyFun A (c • f) = c • pointwiseApplyFun A f := by
   ext x
@@ -250,6 +382,19 @@ def pointwiseApplyLinearMap :
     rfl
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Norm bound for pointwise operator evaluation
+statement:
+  For continuous \(A:K\to\mathcal L(E,F)\) and \(u:K\to E\),
+  \[
+    \|x\mapsto A(x)u(x)\|_\infty
+      \le\|A\|_\infty\|u\|_\infty.
+  \]
+proof:
+  Pointwise, \(\|A(x)u(x)\|\le\|A(x)\|\|u(x)\|\); take suprema.
+-/
 theorem pointwiseApplyFun_norm_le (A : C(K, E →L[ℝ] F)) (f : C(K, E)) :
     ‖pointwiseApplyFun A f‖ ≤ ‖A‖ * ‖f‖ := by
   apply (ContinuousMap.norm_le (pointwiseApplyFun A f)
@@ -265,6 +410,16 @@ def pointwiseApplyRight (A : C(K, E →L[ℝ] F)) :
     (pointwiseApplyFun_norm_le (E := E) (F := F) (K := K) A)
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Operator norm bound for a fixed pointwise operator field
+statement:
+  For a continuous operator field \(A:K\to\mathcal L(E,F)\), the operator
+  \(u\mapsto(x\mapsto A(x)u(x))\) has norm at most \(\|A\|_\infty\).
+proof:
+  This is the pointwise evaluation norm estimate, viewed as an operator bound.
+-/
 theorem pointwiseApplyRight_norm_le (A : C(K, E →L[ℝ] F)) :
     ‖pointwiseApplyRight (E := E) (F := F) (K := K) A‖ ≤ ‖A‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg A)
@@ -296,6 +451,19 @@ def pointwiseApply :
       pointwiseApplyRight_norm_le (E := E) (F := F) (K := K) A)
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Formula for the bilinear pointwise evaluation map
+statement:
+  For \(A:K\to\mathcal L(E,F)\), \(u:K\to E\), and \(x\in K\), the
+  continuous bilinear evaluation map satisfies
+  \[
+    \mathcal E(A,u)(x)=A(x)u(x).
+  \]
+proof:
+  This is its defining formula.
+-/
 @[simp]
 theorem pointwiseApply_apply (A : C(K, E →L[ℝ] F)) (f : C(K, E)) (x : K) :
     pointwiseApply (E := E) (F := F) (K := K) A f x = A x (f x) := by
@@ -325,12 +493,35 @@ def superpositionFDeriv (f : E → F) (hf : ContDiff ℝ 1 f) (u : C(K, E)) :
 
 omit [NormedSpace ℝ E] [CompleteSpace E] [CompactSpace K]
   [NormedSpace ℝ F] [CompleteSpace F] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Formula for a superposition operator
+statement:
+  For \(f:E\to F\), \(u:K\to E\), and \(t\in K\), the superposition
+  operator satisfies \(\mathcal N_f(u)(t)=f(u(t))\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem superposition_apply (f : E → F) (hf : Continuous f) (u : C(K, E)) (t : K) :
     superposition f hf u t = f (u t) :=
   rfl
 
 omit [CompleteSpace E] [CompleteSpace F] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Formula for the derivative candidate of a superposition operator
+statement:
+  For \(f:E\to F\) of class \(C^1\) and continuous \(u,h:K\to E\),
+  \[
+    (D\mathcal N_f(u)h)(t)=Df(u(t))h(t).
+  \]
+proof:
+  This is the pointwise evaluation formula for the derivative field
+  \(t\mapsto Df(u(t))\).
+-/
 @[simp]
 theorem superpositionFDeriv_apply (f : E → F) (hf : ContDiff ℝ 1 f)
     (u h : C(K, E)) (t : K) :
@@ -338,6 +529,22 @@ theorem superpositionFDeriv_apply (f : E → F) (hf : ContDiff ℝ 1 f)
   simp [superpositionFDeriv, fderivAlong]
 
 omit [CompleteSpace E] [CompleteSpace F] in
+/--
+%%handwave
+name:
+  Fréchet derivative of a superposition operator
+statement:
+  Let \(K\) be compact and \(E\) finite-dimensional.  If \(f:E\to F\) is
+  \(C^1\), then at \(u\in C(K,E)\) the superposition map
+  \(\mathcal N_f(u)=f\circ u\) has derivative
+  \[
+    D\mathcal N_f(u)h:t\mapsto Df(u(t))h(t).
+  \]
+proof:
+  On a compact thickening of \(u(K)\), \(Df\) is uniformly continuous.  The
+  finite-dimensional mean-value estimate then bounds the remainder uniformly
+  by \(o(\|h\|_\infty)\).
+-/
 theorem superposition_hasFDerivAt (f : E → F) (hf : ContDiff ℝ 1 f)
     (u : C(K, E)) :
     HasFDerivAt (superposition f hf.continuous)
@@ -396,17 +603,53 @@ theorem superposition_hasFDerivAt (f : E → F) (hf : ContDiff ℝ 1 f)
   simpa [x, y] using hrem
 
 omit [CompleteSpace E] [CompleteSpace F] in
+/--
+%%handwave
+name:
+  Differentiability of a superposition operator
+statement:
+  If \(K\) is compact, \(E\) is finite-dimensional, and \(f:E\to F\) is
+  \(C^1\), then \(u\mapsto f\circ u\) is Fréchet differentiable on \(C(K,E)\).
+proof:
+  At every \(u\), its derivative is the pointwise operator
+  \(h(t)\mapsto Df(u(t))h(t)\).
+-/
 theorem superposition_differentiable (f : E → F) (hf : ContDiff ℝ 1 f) :
     Differentiable ℝ (superposition (K := K) f hf.continuous) :=
   fun u ↦ (superposition_hasFDerivAt (K := K) f hf u).differentiableAt
 
 omit [CompleteSpace E] [CompleteSpace F] in
+/--
+%%handwave
+name:
+  Derivative formula for a superposition operator
+statement:
+  Under the same hypotheses, the Fréchet derivative at \(u\) is
+  \[
+    D\mathcal N_f(u)h:t\mapsto Df(u(t))h(t).
+  \]
+proof:
+  This is the derivative identified by the uniform remainder estimate.
+-/
 theorem fderiv_superposition (f : E → F) (hf : ContDiff ℝ 1 f) (u : C(K, E)) :
     fderiv ℝ (superposition (K := K) f hf.continuous) u =
       superpositionFDeriv (K := K) f hf u :=
   (superposition_hasFDerivAt (K := K) f hf u).fderiv
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Finite regularity of superposition operators
+statement:
+  For every \(n\in\mathbb N\), if \(f:E\to G\) is \(C^{n+1}\), then the
+  superposition map \(u\mapsto f\circ u\) on \(C(K,E)\) is \(C^n\).
+proof:
+  Induct on \(n\).  The derivative is pointwise multiplication by
+  \(Df\circ u\); the induction hypothesis applies to the superposition
+  operator associated with \(Df\), and continuous pointwise evaluation
+  preserves the remaining regularity.
+-/
 theorem superposition_contDiff_nat : ∀ n : ℕ,
     ∀ {G : Type u} [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G],
       ∀ (f : E → G), ∀ hf : ContDiff ℝ ((n + 1 : ℕ) : WithTop ℕ∞) f,
@@ -448,6 +691,17 @@ theorem superposition_contDiff_nat : ∀ n : ℕ,
       simpa only [Nat.cast_succ] using htarget
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Smoothness of superposition operators
+statement:
+  If \(K\) is compact, \(E\) is finite-dimensional, and \(f:E\to F\) is
+  smooth, then \(u\mapsto f\circ u\) is smooth from \(C(K,E)\) to \(C(K,F)\).
+proof:
+  Smoothness means \(C^n\) for every finite \(n\); apply the finite-regularity
+  theorem to each \(n\).
+-/
 theorem superposition_contDiff_infty (f : E → F) (hf : ContDiff ℝ ∞ f) :
     ContDiff ℝ ∞ (superposition (K := K) f hf.continuous) := by
   rw [contDiff_infty]
@@ -467,6 +721,22 @@ def picardResidual (ε : ℝ) (hε : 0 ≤ ε) (f : E → E) (hf : ContDiff ℝ 
   p.2 - ContinuousMap.const (Icc (-ε) ε) p.1 -
     localCurveIntegral ε hε (superposition f hf.continuous p.2)
 
+/--
+%%handwave
+name:
+  Smoothness of the Picard residual
+statement:
+  If \(f:E\to E\) is smooth, then
+  \[
+    R(x,u)=u-\underline{x}-V(f\circ u)
+  \]
+  is a smooth map from \(E\times C([-\varepsilon,\varepsilon],E)\) to the
+  curve space, where \(V\) is the Volterra operator.
+proof:
+  Projection, the constant-curve embedding, and the Volterra operator are
+  continuous linear maps, while the superposition map \(u\mapsto f\circ u\)
+  is smooth.  Sums and compositions preserve smoothness.
+-/
 theorem picardResidual_contDiff (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
     (hf : ContDiff ℝ ∞ f) :
     ContDiff ℝ ∞ (picardResidual ε hε f hf) := by
@@ -490,6 +760,19 @@ def picardResidualFDeriv (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
         (ContinuousLinearMap.snd ℝ E (LocalCurve E ε)))
 
 omit [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Derivative of the Picard residual
+statement:
+  At \((x,u)\), the Picard residual has derivative
+  \[
+    DR(x,u)(\xi,h)=h-\underline{\xi}-V\bigl(t\mapsto Df(u(t))h(t)\bigr).
+  \]
+proof:
+  Differentiate the two linear terms directly, use the derivative formula for
+  the superposition operator, and compose with the Volterra operator.
+-/
 theorem picardResidual_hasFDerivAt (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
     (hf : ContDiff ℝ ∞ f) (p : E × LocalCurve E ε) :
     HasFDerivAt (picardResidual ε hε f hf)
@@ -530,6 +813,20 @@ def picardCurveDerivative (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
       (superpositionFDeriv f (hf.of_le (by simp)) u)
 
 omit [CompleteSpace E] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Vertical derivative of the Picard residual
+statement:
+  At \((x,u)\), the derivative of the Picard residual in the curve variable
+  is
+  \[
+    h\longmapsto h-V\bigl(t\mapsto Df(u(t))h(t)\bigr).
+  \]
+proof:
+  Insert the vertical tangent vector \((0,h)\) into the full derivative
+  formula; the constant-curve term disappears.
+-/
 theorem picardResidualFDeriv_comp_inr (ε : ℝ) (hε : 0 ≤ ε)
     (f : E → E) (hf : ContDiff ℝ ∞ f) (p : E × LocalCurve E ε) :
     (picardResidualFDeriv ε hε f hf p).comp
@@ -539,6 +836,17 @@ theorem picardResidualFDeriv_comp_inr (ε : ℝ) (hε : 0 ≤ ε)
   simp [picardResidualFDeriv, picardCurveDerivative]
 
 omit [CompleteSpace E] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Norm bound for the linearized superposition operator
+statement:
+  If \(\|Df(u(t))\|\le M\) for every \(t\), with \(M\ge0\), then the operator
+  \(h(t)\mapsto Df(u(t))h(t)\) on continuous curves has norm at most \(M\).
+proof:
+  Pointwise evaluation has norm bounded by the supremum of
+  \(\|Df(u(t))\|\), which is at most \(M\).
+-/
 theorem superpositionFDeriv_norm_le_of_forall (ε : ℝ) (f : E → E)
     (hf : ContDiff ℝ 1 f) (u : LocalCurve E ε) {M : ℝ}
     (hM0 : 0 ≤ M) (hM : ∀ t, ‖fderiv ℝ f (u t)‖ ≤ M) :
@@ -549,6 +857,22 @@ theorem superpositionFDeriv_norm_le_of_forall (ε : ℝ) (f : E → E)
   exact hM
 
 omit [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Invertibility of the linearized Picard operator
+statement:
+  Suppose \(\varepsilon\ge0\), \(\|Df(u(t))\|\le M\), \(M\ge0\), and
+  \(\varepsilon M<1\).  Then
+  \[
+    I-V\bigl(Df\circ u\bigr)
+  \]
+  is invertible on \(C([-\varepsilon,\varepsilon],E)\).
+proof:
+  The Volterra norm bound and the derivative bound give
+  \(\|V(Df\circ u)\|<1\).  Hence the Neumann-series criterion makes
+  \(I-V(Df\circ u)\) invertible.
+-/
 theorem picardCurveDerivative_isInvertible_of_small (ε : ℝ) (hε : 0 ≤ ε)
     (f : E → E) (hf : ContDiff ℝ ∞ f) (u : LocalCurve E ε) {M : ℝ}
     (hM0 : 0 ≤ M) (hM : ∀ t, ‖fderiv ℝ f (u t)‖ ≤ M) (hsmall : ε * M < 1) :
@@ -570,8 +894,25 @@ theorem picardCurveDerivative_isInvertible_of_small (ε : ℝ) (hε : 0 ≤ ε)
     picardCurveDerivative ε hε f hf u
   simpa [picardCurveDerivative, A] using ha
 
-/-- The smooth Picard family supplied by the implicit-function theorem is locally the
-unique nearby solution of the integral equation. -/
+/--
+%%handwave
+name:
+  Locally unique smooth family of Picard fixed points
+statement:
+  Let \(u:[-\varepsilon,\varepsilon]\to E\) solve
+  \[
+    u(t)=x+\int_0^t f(u(s))\,ds.
+  \]
+  If \(\|Df(u(t))\|\le M\), \(M\ge0\), and \(\varepsilon M<1\), then there
+  is a family \(y\mapsto\psi_y\), smooth at every nearby \(y\), with
+  \(\psi_x=u\), satisfying the same integral equation with initial value
+  \(y\); moreover, near \((x,u)\), a pair \((y,v)\) solves the equation if
+  and only if \(v=\psi_y\).
+proof:
+  Apply the smooth implicit-function theorem to the Picard residual.  Its
+  vertical derivative is invertible by the Neumann-series estimate, and the
+  residual equation is precisely the Picard fixed-point equation.
+-/
 theorem exists_contDiffAt_picardFixedPoint_family_unique
     (ε : ℝ) (hε : 0 ≤ ε) (f : E → E) (hf : ContDiff ℝ ∞ f)
     (x : E) (u : LocalCurve E ε) {M : ℝ}
@@ -681,6 +1022,24 @@ def rescaleLocalCurve (ε : ℝ) (hε : 0 ≤ ε) (η t₀ : ℝ)
     · exact continuous_const
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
+/--
+%%handwave
+name:
+  Continuity of affine time rescaling of local curves
+statement:
+  Fix \(\varepsilon\ge0\), an auxiliary interval
+  \([-\eta,\eta]\), and \(t_0\in\mathbb R\).  The map
+  \[
+    (u,a)\longmapsto\bigl(\tau\mapsto
+      (\widetilde u(t_0+a\tau),a)\bigr)
+  \]
+  from local curves and scales to continuous \(E\times\mathbb R\)-valued
+  curves is continuous in the supremum norm.
+proof:
+  Joint evaluation of continuous maps on a compact domain is continuous; the
+  projected affine time argument and the constant scale coordinate are also
+  continuous.
+-/
 theorem rescaleLocalCurve_continuous (ε : ℝ) (hε : 0 ≤ ε) (η t₀ : ℝ) :
     Continuous (rescaleLocalCurve (E := E) ε hε η t₀) := by
   apply ContinuousMap.continuous_of_continuous_uncurry
@@ -703,12 +1062,34 @@ def timeScaleVectorField (f : E → E) (p : E × ℝ) : E × ℝ :=
   (p.2 • f p.1, 0)
 
 omit [CompleteSpace E] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Smoothness of the time-scaled vector field
+statement:
+  If \(f:E\to E\) is smooth, then
+  \(G(z,a)=(a f(z),0)\) is a smooth vector field on
+  \(E\times\mathbb R\).
+proof:
+  It is assembled from projections, the smooth map \(f\), scalar
+  multiplication, and a constant component.
+-/
 theorem timeScaleVectorField_contDiff (f : E → E) (hf : ContDiff ℝ ∞ f) :
     ContDiff ℝ ∞ (timeScaleVectorField f) := by
   unfold timeScaleVectorField
   fun_prop
 
 omit [NormedSpace ℝ E] [CompleteSpace E] [FiniteDimensional ℝ E] in
+/--
+%%handwave
+name:
+  Extended local curve on its original interval
+statement:
+  If \(t\in[-\varepsilon,\varepsilon]\), then the endpoint-projected
+  extension of \(u\) satisfies \(\widetilde u(t)=u(t)\).
+proof:
+  Projection onto the interval fixes every point already in the interval.
+-/
 @[simp]
 theorem extendLocalCurve_apply_of_mem (ε : ℝ) (hε : 0 ≤ ε)
     (u : LocalCurve E ε) {t : ℝ} (ht : t ∈ Icc (-ε) ε) :
@@ -716,8 +1097,26 @@ theorem extendLocalCurve_apply_of_mem (ε : ℝ) (hε : 0 ≤ ε)
   simp [extendLocalCurve, projIcc_of_mem (neg_le_self hε) ht]
 
 omit [FiniteDimensional ℝ E] in
-/-- An affine reparametrization of a Picard fixed point is a Picard fixed point
-for the time-scaled vector field. -/
+/--
+%%handwave
+name:
+  Affine time rescaling of a Picard solution
+statement:
+  Let \(u\) solve \(u'=f(u)\), \(u(0)=y\), on
+  \([-\varepsilon,\varepsilon]\).  If
+  \(t_0+a[-\eta,\eta]\subseteq[-\varepsilon,\varepsilon]\), then
+  \[
+    w(\tau)=(u(t_0+a\tau),a)
+  \]
+  satisfies
+  \[
+    w(\tau)=w(0)+\int_0^\tau (a f(w_1(s)),0)\,ds.
+  \]
+proof:
+  Subtract the integral equation for \(u(t_0)\) from that for
+  \(u(t_0+a\tau)\), then use the affine change of variables
+  \(s=t_0+a r\).  The scale coordinate is constant.
+-/
 theorem rescaleLocalCurve_fixedPoint
     (ε η : ℝ) (hε : 0 ≤ ε) (hη : 0 ≤ η)
     (f : E → E) (hf : ContDiff ℝ ∞ f)
@@ -813,9 +1212,22 @@ theorem rescaleLocalCurve_fixedPoint
         rfl
       _ = 0 := by simp
 
-/-- If `t₀` is in the interior of the original time interval, sufficiently small
-affine time rescalings stay in that interval uniformly on a compact auxiliary
-time interval. -/
+/--
+%%handwave
+name:
+  Uniformly admissible small affine time rescalings
+statement:
+  If \(t_0\in(-\varepsilon,\varepsilon)\), then for every compact interval
+  \([-\eta,\eta]\), all sufficiently small \(a\) satisfy
+  \[
+    t_0+a\tau\in[-\varepsilon,\varepsilon]
+    \quad\text{for every }\tau\in[-\eta,\eta].
+  \]
+proof:
+  The compact set \(\{0\}\times[-\eta,\eta]\) lies in the open inverse image
+  of \((-\varepsilon,\varepsilon)\) under \((a,\tau)\mapsto t_0+a\tau\).
+  The tube lemma supplies a common neighborhood of \(a=0\).
+-/
 theorem eventually_forall_affine_mem_Icc
     (ε η t₀ : ℝ) (ht₀ : t₀ ∈ Ioo (-ε) ε) :
     ∀ᶠ a in 𝓝 (0 : ℝ), ∀ τ : Icc (-η) η,
@@ -834,8 +1246,28 @@ theorem eventually_forall_affine_mem_Icc
   have h := hUV hmem
   exact ⟨h.1.le, h.2.le⟩
 
-/-- A smooth family of Picard fixed-point curves depends smoothly jointly on
-the initial value and on every interior time. -/
+/--
+%%handwave
+name:
+  Joint smoothness of a local Picard family at an interior time
+statement:
+  Suppose \(y\mapsto\psi_y\) is smooth at \(x\), \(\psi_x=u\), and nearby
+  curves satisfy
+  \[
+    \psi_y(t)=y+\int_0^t f(\psi_y(s))\,ds.
+  \]
+  Then for every \(t_0\in(-\varepsilon,\varepsilon)\), the evaluation map
+  \[
+    (y,t)\longmapsto\widetilde{\psi_y}(t)
+  \]
+  is smooth at \((x,t_0)\).
+proof:
+  Rescale time around \(t_0\) and regard the scale as an initial-value
+  parameter for the vector field \((z,a)\mapsto(a f(z),0)\).  The implicit
+  Picard family for this time-scaled field is jointly smooth; local uniqueness
+  identifies it with the rescaled original family, and undoing the affine
+  rescaling yields the claim.
+-/
 theorem contDiffAt_uncurry_extendLocalCurve_of_picardFixedPoint
     (ε : ℝ) (hε : 0 ≤ ε) (f : E → E) (hf : ContDiff ℝ ∞ f)
     (x : E) (u : LocalCurve E ε) (ψ : E → LocalCurve E ε)

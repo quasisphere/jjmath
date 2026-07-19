@@ -28,6 +28,12 @@ This is the pointwise calculation used by both the global preconnected-overlap
 package and the local/germ monodromy argument: no global component statement is
 needed, only one preconnected overlap containing the original endpoint and the
 transported endpoint.
+
+%%handwave
+name: Constancy of the terminal transition class under terminal-sheet extension
+statement: Let $X$ be a Riemann surface equipped with compatible hyperbolic local models, let $\gamma\in\pi_1(X,x_0)$, and let $p:x_0\rightsquigarrow x$. Write $L_\gamma$ for the chosen loop representing $\gamma^{-1}$. If a point $y$ of the universal cover lies in the terminal sheet for $p$, while $\gamma y$ lies in the terminal sheet for $L_\gamma*p$, extend both paths inside those sheets to paths $p_y$ and $(L_\gamma*p)_{\gamma y}$ ending at $\pi(y)$. Assume terminal-sheet extension preserves the terminal chart and Möbius representative. If a preconnected set $W$ contains both $x$ and $\pi(y)$ and lies in the overlap of the two original terminal charts, then $[A(p_y,(L_\gamma*p)_{\gamma y})]=[A(p,L_\gamma*p)]$ in $\mathrm{PSL}_2(\mathbb R)$.
+proof: Transport the transition data at $\pi(y)$ along the two terminal-sheet agreements so that its source and target are the original terminal charts. Every point of $W$ admits transition data between these two charts, so [the projective class of such transition data is constant on a preconnected overlap](lean:JJMath.HyperbolicMetric.localRealMobiusTransitionData_projection_eq_of_preconnected). Applying this at $x$ and $\pi(y)$ gives the asserted equality.
+%%
 -/
 theorem terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq_of_preconnectedOverlap
     (C :
@@ -112,6 +118,12 @@ theorem terminalTransitionRepresentativeBetween_terminalSheetExtension_projectio
 A pointwise preconnected terminal-chart overlap gives equality of the
 normalized canonical-loop projection at the transported cover point and at the
 source terminal cover point.
+
+%%handwave
+name: Local constancy of normalized loop transport under terminal-sheet extension
+statement: In the setting above, assume terminal-sheet extension preserves the terminal chart and Möbius representative. Let $y$ lie in the terminal sheet for $p:x_0\rightsquigarrow x$, and suppose $\gamma y$ lies in the terminal sheet for $L_\gamma*p$. If a preconnected set $W$ contains $x$ and $\pi(y)$ and is contained in the overlap of the two original terminal charts, then the normalized projective transport associated with $\gamma$ has the same value at $y$ as at the terminal lift $\widetilde p(1)$: $N_\gamma(y)=N_\gamma(\widetilde p(1))$.
+proof: Extend $p$ inside its terminal sheet to a path $q$ representing $y$, and extend $L_\gamma*p$ to a path $r$ representing $\gamma y$. The path $L_\gamma*q$ is homotopic to $r$. Homotopy invariance identifies the adjusted target terms, terminal-sheet agreement identifies the source and target Möbius classes, and [the transition classes for the extended and original pairs coincide](lean:JJMath.HyperbolicMetric.PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq_of_preconnectedOverlap). Substitution in the numerator and denominator of $N_\gamma$ proves the equality.
+%%
 -/
 theorem canonicalLoopNormalizedProjectionAt_eq_of_preconnectedOverlap
     (C :
@@ -312,6 +324,12 @@ theorem canonicalLoopNormalizedProjectionAt_eq_of_preconnectedOverlap
 /--
 PSL-level terminal-extension agreement is enough for the pointwise
 preconnected-overlap transport of terminal transition classes.
+
+%%handwave
+name: Constancy of the terminal transition class from projective sheet agreement
+statement: Let $\gamma\in\pi_1(X,x_0)$, let $p:x_0\rightsquigarrow x$, and let $L_\gamma$ represent $\gamma^{-1}$. Suppose $y$ lies in the terminal sheet for $p$ and $\gamma y$ lies in the terminal sheet for $L_\gamma*p$. Extend these paths inside their terminal sheets to $p_y$ and $(L_\gamma*p)_{\gamma y}$. If extension preserves the terminal center and the projective class of the terminal Möbius map, and if a preconnected set $W$ contains $x$ and $\pi(y)$ inside the overlap of the two original terminal charts, then $[A(p_y,(L_\gamma*p)_{\gamma y})]=[A(p,L_\gamma*p)]$ in $\mathrm{PSL}_2(\mathbb R)$.
+proof: Use equality of terminal centers to regard the two transition data as transitions between fixed source and target charts. The assumed projective agreement is sufficient for this change of representatives. The class of transition data between two fixed charts is constant on the preconnected set $W$, so comparison at $x$ and $\pi(y)$ gives the formula.
+%%
 -/
 theorem terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq_of_preconnectedOverlap_of_projectionAgreement
     (C :
@@ -395,6 +413,12 @@ theorem terminalTransitionRepresentativeBetween_terminalSheetExtension_projectio
 /--
 PSL-level terminal-extension agreement is enough for local normalized
 canonical-loop transport on a preconnected terminal-chart overlap.
+
+%%handwave
+name: Local constancy of normalized loop transport from projective sheet agreement
+statement: Let $p:x_0\rightsquigarrow x$ and $\gamma\in\pi_1(X,x_0)$. Suppose $y$ belongs to the terminal sheet for $p$, while $\gamma y$ belongs to the terminal sheet for $L_\gamma*p$, where $L_\gamma$ represents $\gamma^{-1}$. Assume terminal-sheet extension preserves the terminal center and the projective class of the terminal Möbius map. If $x$ and $\pi(y)$ lie in a preconnected subset of the overlap of the two original terminal charts, then $N_\gamma(y)=N_\gamma(\widetilde p(1))$.
+proof: Represent $y$ by a terminal-sheet extension $q$ of $p$ and $\gamma y$ by an extension $r$ of $L_\gamma*p$. Homotopy invariance compares $L_\gamma*q$ with $r$. Projective terminal-sheet agreement identifies the source and target Möbius factors, while [the extended transition class equals the original transition class](lean:JJMath.HyperbolicMetric.PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq_of_preconnectedOverlap_of_projectionAgreement). The defining quotient for $N_\gamma$ therefore has the same numerator and denominator for $q$ and $p$.
+%%
 -/
 theorem canonicalLoopNormalizedProjectionAt_eq_of_preconnectedOverlap_of_projectionAgreement
     (C :
@@ -598,6 +622,12 @@ This removes the artificial requirement that terminal-sheet extension keep the
 same selected terminal chart.  Source and target terminal extensions are
 compared by the adjusted PSL transition forced by agreement of the two
 terminal formulae on an upstairs open sheet overlap.
+
+%%handwave
+name: Local constancy of normalized loop transport from terminal-sheet overlap
+statement: Let $p:x_0\rightsquigarrow x$, let $\gamma\in\pi_1(X,x_0)$, and let $L_\gamma$ represent $\gamma^{-1}$. If $y$ lies in the terminal sheet for $p$ and $\gamma y$ lies in the terminal sheet for $L_\gamma*p$, and if a preconnected set $W$ contains $x$ and $\pi(y)$ inside the overlap of the two original terminal charts, then $N_\gamma(y)=N_\gamma(\widetilde p(1))$. No equality of the terminal charts selected after extending the paths is required.
+proof: Extend $p$ and $L_\gamma*p$ to paths $q$ and $r$ representing $y$ and $\gamma y$. Compare the four terminal charts by transition data: from $p$ to $q$, from $L_\gamma*p$ to $r$, from $L_\gamma*q$ to $r$, and from $q$ to $L_\gamma*q$. Constancy on $W$ identifies the direct transition at $\pi(y)$ with the one at $x$, while transition composition gives the cocycle identity $d a_q b=c a_p$. Agreement of the developing formula on each terminal-sheet overlap gives $m_Qb=m_S$ and $m_Rc=m_T$, and homotopy of $L_\gamma*q$ with $r$ gives $m_Rd=m_{LQ}$. These identities reduce $m_{LQ}a_qm_Q^{-1}$ to $m_Ta_pm_S^{-1}$, which is precisely the desired equality of normalized projections.
+%%
 -/
 theorem canonicalLoopNormalizedProjectionAt_eq_of_preconnectedOverlap_of_terminalSheetOverlap
     (C :

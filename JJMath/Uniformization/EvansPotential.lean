@@ -577,6 +577,8 @@ proof:
   Cover the open set by the countable family of its intersections with
   centered closed balls.  Sard's theorem on each bounded piece gives a null
   critical-value set, and countable subadditivity gives the result.
+tags:
+  milestone
 -/
 theorem smoothPlaneFunction_criticalValuesOn_volume_zero
     {g : ℂ → ℝ} {U : Set ℂ} (hU_open : IsOpen U)
@@ -1424,6 +1426,10 @@ name:
 statement:
   Every point of a closed exhaustion collar belongs to its outer exhaustion
   domain.
+proof:
+  The collar is defined by removing the closed inner domain from the outer
+  domain, so the assertion is the first projection of membership in a set
+  difference.
 -/
 theorem closedCollar_subset_outer
     (E : SmoothRelativelyCompactExhaustion X) (m n : ℕ) :
@@ -1489,14 +1495,37 @@ noncomputable def closedCollarPerronDomain
     (E.closedCollar_isOpen m n) hnonempty
     (E.closedCollar_compact_closure m n)
 
-@[simp] theorem closedCollarPerronDomain_carrier
+/--
+%%handwave
+name:
+  Carrier of a closed-collar Perron domain
+statement:
+  The Perron domain associated with a nonempty closed exhaustion collar has
+  exactly that collar as its carrier.
+proof:
+  The construction stores the collar itself as the underlying open set.
+-/
+@[simp]
+theorem closedCollarPerronDomain_carrier
     (E : SmoothRelativelyCompactExhaustion X) (m n : ℕ)
     (hnonempty : (E.closedCollar m n).Nonempty) :
     (E.closedCollarPerronDomain m n hnonempty).carrier =
       E.closedCollar m n := by
   simp [closedCollarPerronDomain]
 
-@[simp] theorem closedCollarPerronDomain_boundary
+/--
+%%handwave
+name:
+  Boundary of a closed-collar Perron domain
+statement:
+  The boundary of the Perron domain associated with a nonempty closed
+  exhaustion collar is the frontier of that collar.
+proof:
+  The boundary of a Perron domain is the frontier of its carrier, which here is
+  the collar.
+-/
+@[simp]
+theorem closedCollarPerronDomain_boundary
     (E : SmoothRelativelyCompactExhaustion X) (m n : ℕ)
     (hnonempty : (E.closedCollar m n).Nonempty) :
     (E.closedCollarPerronDomain m n hnonempty).boundary =
@@ -1849,7 +1878,18 @@ noncomputable def shift (E : SmoothRelativelyCompactExhaustion X) (N : ℕ) :
     refine ⟨m, ?_⟩
     exact E.carrier_mono (Nat.le_add_left m N) hxm
 
-@[simp] theorem shift_domain
+/--
+%%handwave
+name:
+  Domains in the tail of a smooth exhaustion
+statement:
+  The \(n\)-th domain of the exhaustion obtained by discarding the first \(N\)
+  indices is the original domain with index \(N+n\).
+proof:
+  This is the defining indexing rule for the shifted exhaustion.
+-/
+@[simp]
+theorem shift_domain
     (E : SmoothRelativelyCompactExhaustion X) (N n : ℕ) :
     (E.shift N).domain n = E.domain (N + n) :=
   rfl
@@ -1886,7 +1926,19 @@ noncomputable def compStrictMono (E : SmoothRelativelyCompactExhaustion X)
     rcases Filter.eventually_atTop.mp hφ_ge with ⟨N, hN⟩
     exact ⟨N, E.carrier_mono (hN N le_rfl) hxm⟩
 
-@[simp] theorem compStrictMono_domain
+/--
+%%handwave
+name:
+  Domains in a subsequence of a smooth exhaustion
+statement:
+  If an exhaustion is restricted along a strictly increasing index map
+  \(\varphi\), its \(n\)-th domain is the original domain of index
+  \(\varphi(n)\).
+proof:
+  This is the defining indexing rule for the subsequence exhaustion.
+-/
+@[simp]
+theorem compStrictMono_domain
     (E : SmoothRelativelyCompactExhaustion X) (φ : ℕ → ℕ)
     (hφ : StrictMono φ) (n : ℕ) :
     (E.compStrictMono φ hφ).domain n = E.domain (φ n) :=
@@ -2251,7 +2303,19 @@ proof:
     exact smoothBoundaryDomain_sdiff_closedCoordinateDisk_hasSmoothBoundary
       Ω D hD_subset
 
-@[simp] theorem smoothBoundaryDomainRemoveClosedCoordinateDisk_carrier
+/--
+%%handwave
+name:
+  Carrier after removing a closed coordinate disk
+statement:
+  The smooth domain obtained by deleting a closed coordinate disk \(D\) from a
+  domain \(\Omega\) has carrier \(\Omega\setminus D\).
+proof:
+  This is the underlying set used in the construction of the punctured smooth
+  domain.
+-/
+@[simp]
+theorem smoothBoundaryDomainRemoveClosedCoordinateDisk_carrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
     (Ω : SmoothBoundaryDomain X) (D : ClosedCoordinateDisk X)
     (hD_subset : D.carrier ⊆ Ω.carrier)
@@ -2281,7 +2345,18 @@ statement:
     exact Ω.compact_closure.of_isClosed_subset isClosed_closure
       (closure_mono Set.diff_subset)
 
-@[simp] theorem annularPerronDomain_carrier
+/--
+%%handwave
+name:
+  Carrier of an annular Perron domain
+statement:
+  The Perron domain obtained by deleting a closed coordinate disk \(D\) from a
+  smooth domain \(\Omega\) has carrier \(\Omega\setminus D\).
+proof:
+  The construction uses this set difference as its underlying open set.
+-/
+@[simp]
+theorem annularPerronDomain_carrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
     (Ω : SmoothBoundaryDomain X) (D : ClosedCoordinateDisk X)
     (hD_subset : D.carrier ⊆ Ω.carrier)
@@ -2897,7 +2972,19 @@ noncomputable def closedCollarInnerBoundaryData
   continuous_boundary :=
     E.closedCollarInnerBoundaryFunction_continuousOn_boundary hmn hnonempty
 
-@[simp] theorem closedCollarInnerBoundaryData_eq_one_of_inner_boundary
+/--
+%%handwave
+name:
+  Closed-collar boundary data on the inner boundary
+statement:
+  The boundary data defining inner harmonic measure on a closed exhaustion
+  collar takes the value \(1\) at every point of the inner boundary.
+proof:
+  By definition the data is the indicator-valued function that equals \(1\)
+  precisely on the inner boundary.
+-/
+@[simp]
+theorem closedCollarInnerBoundaryData_eq_one_of_inner_boundary
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (E : SmoothRelativelyCompactExhaustion X) {m n : ℕ}
     (hmn : m < n)
@@ -2907,7 +2994,19 @@ noncomputable def closedCollarInnerBoundaryData
   classical
   simp [closedCollarInnerBoundaryData, closedCollarInnerBoundaryFunction, hx]
 
-@[simp] theorem closedCollarInnerBoundaryData_eq_zero_of_not_inner_boundary
+/--
+%%handwave
+name:
+  Closed-collar boundary data away from the inner boundary
+statement:
+  The boundary data defining inner harmonic measure on a closed exhaustion
+  collar takes the value \(0\) at every point outside the inner boundary.
+proof:
+  By definition the data is the indicator-valued function of the inner
+  boundary.
+-/
+@[simp]
+theorem closedCollarInnerBoundaryData_eq_zero_of_not_inner_boundary
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (E : SmoothRelativelyCompactExhaustion X) {m n : ℕ}
     (hmn : m < n)
@@ -2967,6 +3066,9 @@ name:
   Inner harmonic measure is harmonic in the collar
 statement:
   The inner harmonic measure is harmonic on the open collar.
+proof:
+  The inner harmonic measure is the Perron solution of the collar Dirichlet
+  problem, whose first defining property is harmonicity in the collar.
 -/
 theorem exhaustionClosedCollarInnerHarmonicMeasure_harmonic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2985,6 +3087,9 @@ name:
   Inner harmonic measure is continuous on the closed collar
 statement:
   The inner harmonic measure is continuous on the closure of the collar.
+proof:
+  The inner harmonic measure solves the collar Dirichlet problem, whose second
+  defining property includes continuity on the closed collar.
 -/
 theorem exhaustionClosedCollarInnerHarmonicMeasure_continuousOn_closure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3490,7 +3595,19 @@ noncomputable def annularLogBoundaryData
     exact annularLogBoundaryFunction_continuousOn_boundary
       Ω D hD_subset hnonempty
 
-@[simp] theorem annularLogBoundaryData_eq_log_on_boundaryCircle
+/--
+%%handwave
+name:
+  Logarithmic annular data on the inner circle
+statement:
+  On the boundary circle of a deleted coordinate disk of radius \(r\), the
+  logarithmic annular boundary value is \(\log r\).
+proof:
+  The boundary function is defined piecewise to have this constant value on the
+  inner coordinate circle.
+-/
+@[simp]
+theorem annularLogBoundaryData_eq_log_on_boundaryCircle
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
     (Ω : SmoothBoundaryDomain X) (D : ClosedCoordinateDisk X)
     (hD_subset : D.carrier ⊆ Ω.carrier)
@@ -3500,7 +3617,19 @@ noncomputable def annularLogBoundaryData
       Real.log D.closedRadius := by
   simp [annularLogBoundaryData, annularLogBoundaryFunction, hx]
 
-@[simp] theorem annularLogBoundaryData_eq_zero_off_boundaryCircle
+/--
+%%handwave
+name:
+  Logarithmic annular data away from the inner circle
+statement:
+  Away from the boundary circle of the deleted coordinate disk, the
+  logarithmic annular boundary value is \(0\).
+proof:
+  This is the outer branch of the piecewise definition of the boundary
+  function.
+-/
+@[simp]
+theorem annularLogBoundaryData_eq_zero_off_boundaryCircle
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
     (Ω : SmoothBoundaryDomain X) (D : ClosedCoordinateDisk X)
     (hD_subset : D.carrier ⊆ Ω.carrier)
@@ -6187,9 +6316,9 @@ statement:
   positive superlevel \(\{-G_n>\varepsilon\}\) is eventually contained in the
   fixed inner exhaustion domain.
 proof:
-  This is an immediate compatibility wrapper around the eventual trapping
-  theorem, since bounded Green potentials now include punctured closed-domain
-  continuity.
+  Bounded Green potentials already have the required punctured closed-domain
+  continuity. The eventual boundary bound therefore satisfies the hypotheses
+  of the positive-superlevel trapping theorem, which gives the inclusion.
 -/
 theorem neg_boundedNegativeGreen_exhaustion_eventual_positive_superlevel_subset_inner_of_eventual_boundary_upper_bound_and_punctured_closure_continuity
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -6222,9 +6351,9 @@ statement:
   \(\{G_n-G_n(q)<A\}\) is eventually contained in the fixed inner exhaustion
   domain.
 proof:
-  This is an immediate compatibility wrapper around the eventual centered
-  trapping theorem, since bounded Green potentials now include punctured
-  closed-domain continuity.
+  Bounded Green potentials already have the required punctured closed-domain
+  continuity. Apply the centered sublevel trapping theorem to the eventual
+  boundary lower bound and the diverging boundary heights.
 -/
 theorem centered_boundedNegativeGreen_exhaustion_eventual_sublevel_subset_inner_of_eventual_boundary_lower_bound_and_punctured_closure_continuity
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -12140,7 +12269,18 @@ noncomputable def fixedChartShrinkingClosedCoordinateDisk
   have hrR : r < R := hr_le_ρ.trans_lt hρR
   exact closedCoordinateDiskOfChartBall e he c hr_pos hrR hball_target
 
-@[simp] theorem fixedChartShrinkingClosedCoordinateDisk_closedRadius
+/--
+%%handwave
+name:
+  Radius of a fixed-chart shrinking coordinate disk
+statement:
+  The \(n\)-th closed coordinate disk in the fixed-chart shrinking family has
+  radius \(\rho/(n+1)\).
+proof:
+  This is the radius used in the definition of the shrinking disk.
+-/
+@[simp]
+theorem fixedChartShrinkingClosedCoordinateDisk_closedRadius
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [T2Space X]
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (c : ℂ)
     {ρ R : ℝ} (hρ_pos : 0 < ρ) (hρR : ρ < R)
@@ -12157,6 +12297,11 @@ statement:
   If \(a,b>0\) and \(ma\le b\le Ma\) for positive constants \(m,M\),
   then \(|\log a-\log b|\) is bounded by a constant depending only on
   \(m\) and \(M\).
+proof:
+  Monotonicity and additivity of the logarithm give
+  \(\log m\le\log b-\log a\le\log M\).  Bounding each endpoint by its
+  absolute value yields
+  \(|\log a-\log b|\le\max\{|\log m|,|\log M|\}\).
 -/
 lemma real_log_sub_norm_le_of_mul_le_le_mul
     {a b m M : ℝ} (ha : 0 < a) (hm : 0 < m) (hM : 0 < M)

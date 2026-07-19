@@ -218,7 +218,13 @@ def trans
 
 omit [RiemannSurface X] in
 /-- A finite grid walk preserves the terminal branch formula from its first path
-to its last path. -/
+to its last path.
+
+%%handwave
+name: A finite homotopy-grid walk preserves the terminal formula
+statement: If a finite homotopy-grid walk joins based paths $p$ and $q$ with common endpoint $x$, then the chosen continuation formulas satisfy $F_p(x)=F_q(x)$.
+proof: Induct over the grid walk. The empty walk is reflexive, and adjoining an elementary grid move composes its endpoint formula equality with the induction hypothesis.
+-/
 theorem terminalFormulaAt_start_eq_end
     (W :
       PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
@@ -308,7 +314,13 @@ def of_common_fixedChart
             exact (T.terminalValue_eq_fixedChartBranch c hcq Tbase).symm
 
 omit [RiemannSurface X] in
-/-- The terminal formula equality carried by an elementary grid move. -/
+/-- The terminal formula equality carried by an elementary grid move.
+
+%%handwave
+name: An elementary grid move preserves the endpoint formula
+statement: If an elementary grid move joins paths $p,q:x_0⇝x$, then the chosen continuation formulas satisfy $F_p(x)=F_q(x)$.
+proof: This is the terminal-formula equality carried by the elementary move.
+-/
 theorem terminalFormulaAt_eq
     (M :
       PathLocalTransitionBasedWeakHandoffElementaryGridMove
@@ -536,7 +548,13 @@ def trans
           W₂.moveAt (n - W₁.length) hn₂
 
 omit [RiemannSurface X] in
-/-- An elementary-move walk preserves the terminal branch formula. -/
+/-- An elementary-move walk preserves the terminal branch formula.
+
+%%handwave
+name: A finite elementary-move walk preserves the terminal formula
+statement: If a finite walk of elementary grid moves joins paths $p,q:x_0⇝x$, then the chosen continuation formulas satisfy $F_p(x)=F_q(x)$.
+proof: Induct along the move walk and compose the terminal-formula equality of each elementary move.
+-/
 theorem terminalFormulaAt_start_eq_end
     (W :
       PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
@@ -695,6 +713,13 @@ noncomputable def homotopyStripCutPath
     homotopyStripCutPathRaw F a b r
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- At the lower boundary of a strip, the normalized cut is the row at the left horizontal parameter.
+
+%%handwave
+name: The terminal strip cut is the left row
+statement: For an endpoint-fixed homotopy $F$ and $a,b∈[0,1]$, the normalized strip cut at $r=1$ equals the row path $s↦F(a,s)$.
+proof: Expand the normalized cut definition; its $r=1$ branch is exactly the row at $a$.
+-/
 @[simp]
 theorem homotopyStripCutPath_one
     {x₀ x : X} {p q : Path x₀ x}
@@ -703,6 +728,13 @@ theorem homotopyStripCutPath_one
   simp [homotopyStripCutPath]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- At the upper boundary of a strip, the normalized cut is the row at the right horizontal parameter.
+
+%%handwave
+name: The initial strip cut is the right row
+statement: For an endpoint-fixed homotopy $F$ and $a,b∈[0,1]$, the normalized strip cut at $r=0$ equals the row path $s↦F(b,s)$.
+proof: Expand the normalized cut definition; after excluding $0=1$, its $r=0$ branch is exactly the row at $b$.
+-/
 @[simp]
 theorem homotopyStripCutPath_zero
     {x₀ x : X} {p q : Path x₀ x}
@@ -847,6 +879,13 @@ def homotopyStripColumnBottomAssocPath
     (by simp) (by simp)
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- The decomposed top route is the common prefix, the lower-then-right rectangle edge, and the common suffix.
+
+%%handwave
+name: The top column route decomposes into prefix, rectangle edge, and suffix
+statement: For a homotopy rectangle $[a,b]×[r_0,r_1]$, the decomposed top route is exactly $(P_{a,r_0}⋆B_{a,b,r_0,r_1})⋆Q_{b,r_1}$, where $B$ traverses the lower edge and then the right edge.
+proof: This equality follows by unfolding the definitions of the decomposed top path, common prefix, rectangle edge, and common suffix.
+-/
 @[simp]
 theorem homotopyStripColumnTopPath_eq_prefix_rectangle_suffix
     {x₀ x : X} {p q : Path x₀ x}
@@ -858,6 +897,13 @@ theorem homotopyStripColumnTopPath_eq_prefix_rectangle_suffix
   rfl
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- The decomposed bottom route is the common prefix, the left-then-upper rectangle edge, and the common suffix.
+
+%%handwave
+name: The bottom column route decomposes into prefix, rectangle edge, and suffix
+statement: For a homotopy rectangle $[a,b]×[r_0,r_1]$, the decomposed bottom route is exactly $(P_{a,r_0}⋆L_{a,b,r_0,r_1})⋆Q_{b,r_1}$, where $L$ traverses the left edge and then the upper edge.
+proof: This equality follows directly by unfolding the four path definitions.
+-/
 @[simp]
 theorem homotopyStripColumnBottomPath_eq_prefix_rectangle_suffix
     {x₀ x : X} {p q : Path x₀ x}
@@ -873,6 +919,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 The decomposed upper cut path is endpoint-fixed homotopic to the raw upper
 cut path.  This is only reparameterization/parenthesization bookkeeping:
 first merge the two lower-row subpaths, then reassociate concatenations.
+
+%%handwave
+name: The decomposed top route is homotopic to the raw upper cut
+statement: For every endpoint-fixed homotopy $F$ and parameters $a,b,r_0,r_1$, the raw-core top column route is endpoint-fixed homotopic to the raw strip cut at height $r_1$.
+proof: Merge the two adjacent subpaths of the row at $a$, whisker that homotopy by the common horizontal and suffix paths, and reassociate the concatenations.
 -/
 theorem homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -909,6 +960,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The decomposed lower cut path is endpoint-fixed homotopic to the raw lower
 cut path.  This is the analogous upper-row subpath merge for the bottom edge.
+
+%%handwave
+name: The decomposed bottom route is homotopic to the raw lower cut
+statement: For every endpoint-fixed homotopy $F$ and parameters $a,b,r_0,r_1$, the raw-core bottom column route is endpoint-fixed homotopic to the raw strip cut at height $r_0$.
+proof: Merge the two adjacent subpaths of the row at $b$ after the common prefix and horizontal route, then reassociate the concatenations.
 -/
 theorem homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -949,6 +1005,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 Casted endpoint form of
 `homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore`.
+
+%%handwave
+name: The based top column route is homotopic to the based raw cut
+statement: For paths based at $x_0$ and ending at $x$, the decomposed top column path over $[a,b]×[r_0,r_1]$ is endpoint-fixed homotopic to the raw cut at $r_1$.
+proof: Transport the raw-core homotopy through the endpoint casts identifying its source with $x_0$ and target with $x$.
 -/
 theorem homotopyStripColumnTopPath_homotopic_cutPathRaw
     {x₀ x : X} {p q : Path x₀ x}
@@ -962,6 +1023,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 Casted endpoint form of
 `homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore`.
+
+%%handwave
+name: The based bottom column route is homotopic to the based raw cut
+statement: For paths based at $x_0$ and ending at $x$, the decomposed bottom column path over $[a,b]×[r_0,r_1]$ is endpoint-fixed homotopic to the raw cut at $r_0$.
+proof: Transport the raw-core bottom homotopy through the common endpoint casts.
 -/
 theorem homotopyStripColumnBottomPath_homotopic_cutPathRaw
     {x₀ x : X} {p q : Path x₀ x}
@@ -975,6 +1041,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 Taking a subpath of a subpath is the same as taking the corresponding
 subpath of the original path.
+
+%%handwave
+name: A subpath of a subpath is an affine subpath
+statement: For a path $γ$ and $a,b,s,t∈[0,1]$, $(γ|_{[a,b]})|_{[s,t]}=γ|_{[(1-s)a+sb,(1-t)a+tb]}$.
+proof: Extensionality reduces the claim to associativity of affine interpolation on the unit interval.
 -/
 theorem path_subpath_subpath
     {x y : X} (γ : Path x y)
@@ -1017,6 +1088,13 @@ def unitInterval.middleParameter
         exact div_le_one_of_le₀ hba_ca hca⟩
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- A point between two ordered unit-interval parameters is their convex combination at the middle parameter.
+
+%%handwave
+name: An intermediate parameter is a convex combination of the endpoints
+statement: If $a≤b≤c$ in $[0,1]$, then for the explicit middle parameter $θ=(b-a)/(c-a)$, with the degenerate case interpreted in $[0,1]$, one has $b=(1-θ)a+θc$.
+proof: Apply the convex-combination representation of a point lying in the closed interval $[a,c]$.
+-/
 theorem unitInterval.middleParameter_spec
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
     b = Set.Icc.convexComb a c
@@ -1033,14 +1111,13 @@ def unitInterval.rescaleLeft
     div_le_one_of_le₀ hu hr0.le⟩
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-@[simp]
-theorem unitInterval.coe_rescaleLeft
-    (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
-    (unitInterval.rescaleLeft r u hr0 hu : ℝ) = (u : ℝ) / r :=
-  rfl
+/-- Rescaling really inverts the left subinterval parametrization.
 
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- Rescaling really inverts the left subinterval parametrization. -/
+%%handwave
+name: Left rescaling inverts the left affine parametrization
+statement: If $0<r$ and $0≤u≤r$, then the affine point of $[0,r]$ at parameter $u/r$ is $u$: $(1-u/r)0+(u/r)r=u$.
+proof: Reduce subtype equality to real equality and simplify the quotient using $r≠0$.
+-/
 theorem unitInterval.convexCombo_zero_right_rescaleLeft
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
     Set.Icc.convexComb 0 r (unitInterval.rescaleLeft r u hr0 hu) = u := by
@@ -1062,15 +1139,13 @@ def unitInterval.rescaleRight
       exact div_le_one_of_le₀ hur (sub_nonneg.mpr hr1.le)⟩
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-@[simp]
-theorem unitInterval.coe_rescaleRight
-    (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
-    (unitInterval.rescaleRight r u hr1 hu : ℝ) =
-      ((u : ℝ) - r) / (1 - r) :=
-  rfl
+/-- Rescaling really inverts the right subinterval parametrization.
 
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- Rescaling really inverts the right subinterval parametrization. -/
+%%handwave
+name: Right rescaling inverts the right affine parametrization
+statement: If $r<1$ and $r≤u≤1$, then the affine point of $[r,1]$ at parameter $(u-r)/(1-r)$ is $u$.
+proof: Reduce to real equality, clear the nonzero denominator $1-r$, and expand the resulting ring identity.
+-/
 theorem unitInterval.convexCombo_left_one_rescaleRight
     (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
     Set.Icc.convexComb r 1 (unitInterval.rescaleRight r u hr1 hu) = u := by
@@ -1084,6 +1159,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 On the first half of the split path, the left rescaling recovers the original
 path value at `u`.
+
+%%handwave
+name: Left rescaling recovers the original path on the first split half
+statement: If $0<r$ and $u≤r$, evaluating $(γ|_{[0,r]})⋆(γ|_{[r,1]})$ at the first-half parameter corresponding to $u/r$ gives $γ(u)$.
+proof: The first half of a concatenated path evaluates on the left subpath, and left affine rescaling sends its parameter back to $u$.
 -/
 theorem path_unitSplit_firstHalf_rescaleLeft
     {x y : X} (γ : Path x y)
@@ -1100,6 +1180,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 On the second half of the split path, the right rescaling recovers the
 original path value at `u`.
+
+%%handwave
+name: Right rescaling recovers the original path on the second split half
+statement: If $r<1$ and $r≤u$, evaluating $(γ|_{[0,r]})⋆(γ|_{[r,1]})$ at the second-half parameter corresponding to $(u-r)/(1-r)$ gives $γ(u)$.
+proof: Use the second-half evaluation formula for concatenation and the inverse formula for right affine rescaling.
 -/
 theorem path_unitSplit_secondHalf_rescaleRight
     {x y : X} (γ : Path x y)
@@ -1127,6 +1212,13 @@ noncomputable def unitInterval.unitSplitReparam
       (unitInterval.rescaleRight r u hr1 (le_of_lt (lt_of_not_ge hu)))
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- Below the breakpoint, the split reparameterization is the rescaled first half.
+
+%%handwave
+name: The split reparameterization uses the first half below the breakpoint
+statement: For $0<r<1$ and $u≤r$, the split reparameterization is $R_r(u)=u/(2r)$.
+proof: The defining case distinction selects the left branch under the hypothesis $u≤r$.
+-/
 theorem unitInterval.unitSplitReparam_of_le
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (hu : u ≤ r) :
@@ -1135,6 +1227,13 @@ theorem unitInterval.unitSplitReparam_of_le
   simp [unitInterval.unitSplitReparam, hu]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- Above the breakpoint, the split reparameterization is the rescaled second half.
+
+%%handwave
+name: The split reparameterization uses the second half above the breakpoint
+statement: For $0<r<1$ and $r≤u$, the split reparameterization is $R_r(u)=1/2+(u-r)/(2(1-r))$.
+proof: If $u>r$, unfold the right branch. At $u=r$, compute both branches and show that each equals $1/2$.
+-/
 theorem unitInterval.unitSplitReparam_of_ge
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (hu : r ≤ u) :
@@ -1156,7 +1255,13 @@ theorem unitInterval.unitSplitReparam_of_ge
   · simp [unitInterval.unitSplitReparam, hur]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- The split reparameterization is monotone. -/
+/-- The split reparameterization is monotone.
+
+%%handwave
+name: The unit-split reparameterization is monotone
+statement: For $0<r<1$ and $u≤v$, one has $R_r(u)≤R_r(v)$.
+proof: Split according to whether $u$ and $v$ lie below or above $r$. On one side monotonicity follows from affine rescaling; across the breakpoint the first-half image is at most $1/2$ and the second-half image is at least $1/2$.
+-/
 theorem unitInterval.unitSplitReparam_mono
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     {u v : unitInterval} (huv : u ≤ v) :
@@ -1194,6 +1299,13 @@ theorem unitInterval.unitSplitReparam_mono
     nlinarith
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- The split reparameterization fixes the left endpoint.
+
+%%handwave
+name: The unit-split reparameterization fixes zero
+statement: For every $0<r<1$, $R_r(0)=0$.
+proof: Use the left-branch formula and evaluate the left rescaling and first-half map at zero.
+-/
 @[simp]
 theorem unitInterval.unitSplitReparam_zero
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -1204,6 +1316,13 @@ theorem unitInterval.unitSplitReparam_zero
   simp [unitInterval.firstHalf, unitInterval.rescaleLeft]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- The split reparameterization fixes the right endpoint.
+
+%%handwave
+name: The unit-split reparameterization fixes one
+statement: For every $0<r<1$, $R_r(1)=1$.
+proof: Use the right-branch formula, simplify $(1-r)/(1-r)=1$, and evaluate the second-half map at one.
+-/
 @[simp]
 theorem unitInterval.unitSplitReparam_one
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -1219,6 +1338,11 @@ theorem unitInterval.unitSplitReparam_one
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The combined split reparameterization recovers the original path value.
+
+%%handwave
+name: The split path composed with its reparameterization is the original path
+statement: For a path $γ$, a breakpoint $0<r<1$, and $u∈[0,1]$, $((γ|_{[0,r]})⋆(γ|_{[r,1]}))(R_r(u))=γ(u)$.
+proof: If $u≤r$, use the first-half recovery formula; otherwise $r≤u$ and the second-half recovery formula applies.
 -/
 theorem path_unitSplit_unitSplitReparam
     {x y : X} (γ : Path x y)
@@ -1247,6 +1371,13 @@ noncomputable def unitInterval.unitSplitOriginalParameter
       (unitInterval.doubleSubOneOfHalfLe t (le_of_lt (lt_of_not_ge ht)))
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- On the first half, the inverse split parameter is the corresponding point of the left original subinterval.
+
+%%handwave
+name: The inverse split parameter uses the left original interval on the first half
+statement: For $0<r<1$ and $t≤1/2$, the original parameter associated with $t$ is $P_r(t)=2tr$.
+proof: The definition selects the first branch, the affine parametrization of $[0,r]$ at the doubled parameter $2t$.
+-/
 theorem unitInterval.unitSplitOriginalParameter_of_le_half
     (r t : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (ht : (t : ℝ) ≤ 1 / 2) :
@@ -1256,6 +1387,13 @@ theorem unitInterval.unitSplitOriginalParameter_of_le_half
   rw [dif_pos ht]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/-- On the second half, the inverse split parameter is the corresponding point of the right original subinterval.
+
+%%handwave
+name: The inverse split parameter uses the right original interval on the second half
+statement: For $0<r<1$ and $1/2≤t$, the original parameter is $P_r(t)=r+(2t-1)(1-r)$.
+proof: For $t>1/2$ the defining right branch applies. At $t=1/2$, direct affine calculation shows the left and right expressions both equal $r$.
+-/
 theorem unitInterval.unitSplitOriginalParameter_of_half_le
     (r t : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     (ht : (1 / 2 : ℝ) ≤ t) :
@@ -1274,7 +1412,13 @@ theorem unitInterval.unitSplitOriginalParameter_of_half_le
     rw [dif_neg ht']
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- The inverse split parameter is monotone. -/
+/-- The inverse split parameter is monotone.
+
+%%handwave
+name: The inverse unit-split parameter is monotone
+statement: For $0<r<1$ and $s≤t$, one has $P_r(s)≤P_r(t)$.
+proof: Split at $1/2$. Each affine branch is monotone, while in the mixed case the left branch is at most $r$ and the right branch is at least $r$.
+-/
 theorem unitInterval.unitSplitOriginalParameter_mono
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
     {s t : unitInterval} (hst : s ≤ t) :
@@ -1309,7 +1453,13 @@ theorem unitInterval.unitSplitOriginalParameter_mono
     nlinarith [show (r : ℝ) ≤ 1 from hr1.le, show (s : ℝ) ≤ t from hst]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- Inverting the split reparameterization recovers the original parameter. -/
+/-- Inverting the split reparameterization recovers the original parameter.
+
+%%handwave
+name: The inverse split parameter undoes the split reparameterization
+statement: For every $0<r<1$ and $u∈[0,1]$, $P_r(R_r(u))=u$.
+proof: Split according to $u≤r$. Substitute the corresponding formulas for $R_r$ and $P_r$, then simplify the affine rescalings.
+-/
 theorem unitInterval.unitSplitOriginalParameter_unitSplitReparam
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
     unitInterval.unitSplitOriginalParameter r
@@ -1331,6 +1481,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 If a split parameter lies between the split images of two original
 parameters, its original inverse lies between those original parameters.
+
+%%handwave
+name: Bounds in split coordinates pull back to bounds in original coordinates
+statement: For $0<r<1$, if $R_r(a)≤t≤R_r(b)$, then $a≤P_r(t)≤b$.
+proof: Apply monotonicity of $P_r$ to both inequalities and replace $P_r(R_r(a))$ and $P_r(R_r(b))$ by $a$ and $b$.
 -/
 theorem unitInterval.unitSplitOriginalParameter_mem_interval_of_reparam_bounds
     (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
@@ -1351,6 +1506,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 Evaluating the split path and then inverting its parameter recovers the same
 point of the original path.
+
+%%handwave
+name: The inverse split parameter recovers the original path point
+statement: For every path $γ$, breakpoint $0<r<1$, and $t∈[0,1]$, $((γ|_{[0,r]})⋆(γ|_{[r,1]}))(t)=γ(P_r(t))$.
+proof: Split according to $t≤1/2$ and use the appropriate concatenation half together with the left or right formula for $P_r$.
 -/
 theorem path_unitSplit_originalParameter
     {x y : X} (γ : Path x y)
@@ -1432,6 +1592,13 @@ noncomputable def unitSplitReparamSkeleton
   initialTransition := S.initialTransition
 
 omit [RiemannSurface X] in
+/-- Reparameterizing a skeleton across a unit split leaves its terminal chart center unchanged.
+
+%%handwave
+name: Unit-split reparameterization preserves the terminal chart
+statement: If a continuation skeleton $S$ along $γ|_{[0,1]}$ is transported to the split path through $R_r$, then its terminal chart center is unchanged.
+proof: The transported skeleton retains the same ordered charts, so the terminal center is definitionally the same.
+-/
 @[simp]
 theorem unitSplitReparamSkeleton_terminalCenter
     {x y : X} (γ : Path x y) (r : unitInterval)
@@ -1444,6 +1611,13 @@ theorem unitSplitReparamSkeleton_terminalCenter
   rfl
 
 omit [RiemannSurface X] in
+/-- Reparameterizing a skeleton across a unit split leaves its accumulated terminal Möbius transformation unchanged.
+
+%%handwave
+name: Unit-split reparameterization preserves the accumulated terminal transformation
+statement: If a continuation skeleton $S$ along $γ|_{[0,1]}$ is transported to the split path through $R_r$, then its accumulated terminal Möbius transformation is unchanged.
+proof: Induct over the accumulated products. The transported skeleton has the same initial and successive transition representatives, so every partial product, and hence the terminal product, agrees.
+-/
 @[simp]
 theorem unitSplitReparamSkeleton_terminalMobius
     {x y : X} (γ : Path x y) (r : unitInterval)
@@ -1520,6 +1694,11 @@ omit [RiemannSurface X] in
 The interior normalized unit-split witness is unconditional: transport any
 finite handoff skeleton for `γ.subpath 0 1` through the explicit split
 reparameterization.
+
+%%handwave
+name: An interior unit split preserves terminal branch data
+statement: For every path $γ$ and breakpoint $0<r<1$, there exist continuation skeletons over $(γ|_{[0,r]})⋆(γ|_{[r,1]})$ and $γ|_{[0,1]}$ with the same terminal chart and accumulated Möbius transformation.
+proof: Choose any skeleton over the unsplit path and transport it through the explicit unit-split reparameterization. The preceding invariance formulas identify its terminal chart and accumulated transformation.
 -/
 theorem pathLocalTransitionBasedWeakHandoffInteriorUnitSplitBranchDataWitnessPrinciple
     {g : HyperbolicMetric X}
@@ -1539,7 +1718,13 @@ theorem pathLocalTransitionBasedWeakHandoffInteriorUnitSplitBranchDataWitnessPri
         simp [T] }
 
 omit [RiemannSurface X] in
-/-- The normalized unit split is direct at the left endpoint. -/
+/-- The normalized unit split is direct at the left endpoint.
+
+%%handwave
+name: Splitting at zero preserves terminal branch data
+statement: For every path $γ$, there are continuation skeletons over $(γ|_{[0,0]})⋆(γ|_{[0,1]})$ and $γ|_{[0,1]}$ with identical terminal branch data.
+proof: Choose a skeleton over $γ|_{[0,1]}$ and prepend the constant path $γ|_{[0,0]}$; constant-prefix invariance supplies the branch-data equality.
+-/
 theorem exists_terminalBranchDataEq_unitSplit_zero
     {x y : X} (γ : Path x y)
     {g : HyperbolicMetric X}
@@ -1563,7 +1748,13 @@ theorem exists_terminalBranchDataEq_unitSplit_zero
   exact ⟨S, C, H⟩
 
 omit [RiemannSurface X] in
-/-- The normalized unit split is direct at the right endpoint. -/
+/-- The normalized unit split is direct at the right endpoint.
+
+%%handwave
+name: Splitting at one preserves terminal branch data
+statement: For every path $γ$, there are continuation skeletons over $(γ|_{[0,1]})⋆(γ|_{[1,1]})$ and $γ|_{[0,1]}$ with identical terminal branch data.
+proof: Choose a skeleton over $γ|_{[0,1]}$ and append the constant path $γ|_{[1,1]}$; constant-suffix invariance supplies the branch-data equality.
+-/
 theorem exists_terminalBranchDataEq_unitSplit_one
     {x y : X} (γ : Path x y)
     {g : HyperbolicMetric X}
@@ -1591,6 +1782,11 @@ omit [RiemannSurface X] in
 Once the genuine interior unit-split case is known, the full normalized
 unit-split boundary follows from the constant-prefix and constant-suffix
 endpoint cases.
+
+%%handwave
+name: Interior and endpoint cases give unit-split invariance
+statement: If terminal branch data are preserved by splitting every path at each $0<r<1$, then they are preserved by splitting at every $r∈[0,1]$.
+proof: Separate the cases $r=0$, $r=1$, and $0<r<1$. Use the constant-prefix lemma, constant-suffix lemma, and the assumed interior principle respectively.
 -/
 theorem pathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple_of_interior
     {g : HyperbolicMetric X}
@@ -1706,22 +1902,14 @@ def PathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessP
       Ssplit.terminalValue = Smerged.terminalValue
 
 omit [RiemannSurface X] in
-/-- The old broad subpath-merge boundary implies the ordered boundary. -/
-theorem pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple_of_subpathMerge
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffSubpathMergeBranchDataWitnessPrinciple
-        g localModels) :
-    PathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple
-      g localModels := by
-  intro x y γ t₀ t₁ t₂ _h₀₁ _h₁₂
-  exact hMerge γ t₀ t₁ t₂
-
-omit [RiemannSurface X] in
 /--
 The general ordered subpath-merge boundary reduces to the normalized split of
 a single path at one parameter.
+
+%%handwave
+name: Unit-split invariance implies monotone subpath merging
+statement: Assume splitting any path once preserves terminal branch data. Then for every path $γ$ and $t_0≤t_1≤t_2$, there are skeletons over $(γ|_{[t_0,t_1]})⋆(γ|_{[t_1,t_2]})$ and $γ|_{[t_0,t_2]}$ with identical terminal branch data.
+proof: Express $t_1$ as the affine middle parameter of $[t_0,t_2]$, apply unit-split invariance to $γ|_{[t_0,t_2]}$, and identify its two subpaths with the original adjacent subpaths.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple_of_unitSplit
     {g : HyperbolicMetric X}
@@ -1778,19 +1966,6 @@ theorem pathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitness
   exact H₀.castEndpoints h0 h1 |>.castPath hsplitPath hmergedPath
 
 omit [RiemannSurface X] in
-/-- The old broad prefixed subpath-merge boundary implies the ordered boundary. -/
-theorem pathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple_of_prefixedSubpathMerge
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffPrefixedSubpathMergeValueWitnessPrinciple
-        g localModels) :
-    PathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple
-      g localModels := by
-  intro x₀ y z γ t₀ t₁ t₂ pref _h₀₁ _h₁₂
-  exact hMerge γ t₀ t₁ t₂ pref
-
-omit [RiemannSurface X] in
 /--
 The prefixed ordered subpath-merge value witness is not an independent
 continuation boundary.
@@ -1800,6 +1975,11 @@ arbitrary already-continued prefix by bridging through the actual source chart
 of the suffix.  The append formula then shows that both terminal Mobius
 products are obtained from the equal suffix terminal products by the same
 left factor.
+
+%%handwave
+name: Monotone branch-data merging survives a common prefix
+statement: Assume adjacent ordered subpaths $γ|_{[t_0,t_1]}$ and $γ|_{[t_1,t_2]}$ can be merged without changing terminal branch data. After any based prefix ending at $γ(t_0)$, there are skeletons over the prefixed split and merged routes with equal terminal values.
+proof: Choose a prefix skeleton, bridge its terminal chart to the source chart of the two suffix witnesses, and append the split and merged suffix skeletons. Equal suffix terminal branch data make the two accumulated products differ by the same left factor.
 -/
 theorem pathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple_of_monotoneSubpathMergeBranchData
     {g : HyperbolicMetric X}
@@ -1904,6 +2084,11 @@ remaining top-side move from this intermediate path to `homotopyStripCutPath`
 is the genuine subpath merge
 `(F.eval a).subpath 0 r₀` followed by `(F.eval a).subpath r₀ r₁`
 to `(F.eval a).subpath 0 r₁`.
+
+%%handwave
+name: Reassociating the top column route preserves terminal branch data
+statement: For every homotopy rectangle, there are continuation skeletons over the reassociated top raw-core route and the original parenthesized top raw-core route with the same terminal chart and accumulated Möbius transformation.
+proof: Choose a skeleton over the reassociated path and transport it across associativity of path concatenation; endpoint casts do not alter the terminal branch data.
 -/
 theorem exists_terminalBranchDataEq_homotopyStripColumnTop_assocPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -1989,6 +2174,11 @@ Reassociation has already been proved exactly; this theorem uses the remaining
 one-dimensional merge for `(F.eval a).subpath 0 r₀` followed by
 `(F.eval a).subpath r₀ r₁`, then appends the common horizontal piece and
 upper suffix.
+
+%%handwave
+name: Top-column subpath merging preserves the raw-cut terminal value
+statement: Assume arbitrary adjacent subpaths can be merged with equal terminal branch data and fixed-path terminal values are unique. Then for every homotopy rectangle there are skeletons over the decomposed top raw-core route and the raw cut at $r_1$ with equal terminal values.
+proof: Reassociate the top route, merge the two adjacent row subpaths at $a$, append the common horizontal and suffix pieces, and use fixed-path uniqueness to identify the independently chosen intermediate skeletons.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumnTop_rawCutPathRawCore_of_subpathMerge
     {x₀ x : X} {p q : Path x₀ x}
@@ -2056,6 +2246,11 @@ Top-column raw cut transfer from the monotone subpath-merge boundary.
 
 This is the form used in the actual grid route, where `r₀ ≤ r₁` comes from
 the monotone rectangle subdivision.
+
+%%handwave
+name: Monotone top-column merging preserves the raw-cut terminal value
+statement: If ordered adjacent subpaths admit equal branch data and $r_0≤r_1$, then there are skeletons over the decomposed top raw-core route and the raw cut at $r_1$ with equal terminal values.
+proof: Apply the generic top-column transfer using the monotone merge witness for the ordered parameters $0≤r_0≤r_1$.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumnTop_rawCutPathRawCore_of_monotoneSubpathMerge
     {x₀ x : X} {p q : Path x₀ x}
@@ -2127,6 +2322,11 @@ This discharges the parenthesization part of the bottom cut transfer.  The
 remaining bottom-side move is the subpath merge
 `(F.eval b).subpath r₀ r₁` followed by `(F.eval b).subpath r₁ 1`
 to `(F.eval b).subpath r₀ 1`.
+
+%%handwave
+name: Reassociating the bottom column route preserves terminal branch data
+statement: For every homotopy rectangle, there are skeletons over the reassociated bottom raw-core route and the original bottom raw-core route with the same terminal chart and accumulated Möbius transformation.
+proof: Choose a skeleton over one parenthesization and carry it through the associativity homotopy; the endpoint casts preserve its branch data.
 -/
 theorem exists_terminalBranchDataEq_homotopyStripColumnBottom_assocPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -2255,6 +2455,11 @@ boundary.
 
 The merge is applied to the two upper-row subpaths after the common lower-left
 prefix and horizontal piece have already been continued.
+
+%%handwave
+name: Prefixed bottom-column merging preserves the raw-cut terminal value
+statement: Assume adjacent subpaths can be merged after an arbitrary prefix without changing terminal value, and fixed-path terminal values are unique. Then the decomposed bottom raw-core route and the raw cut at $r_0$ admit skeletons with equal terminal values.
+proof: After the common lower-left and horizontal prefix, merge the two upper-row subpaths from $r_0$ through $r_1$ to $1$, then use reassociation and fixed-path uniqueness to match the constructed skeletons.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumnBottom_rawCutPathRawCore_of_prefixedSubpathMerge
     {x₀ x : X} {p q : Path x₀ x}
@@ -2310,6 +2515,11 @@ Bottom-column raw cut transfer from the monotone prefixed subpath-merge
 boundary.
 
 This is the ordered form used in the chart-grid route: `r₀ ≤ r₁ ≤ 1`.
+
+%%handwave
+name: Monotone prefixed bottom merging preserves the raw-cut terminal value
+statement: If ordered adjacent subpaths can be merged after a prefix and $r_0≤r_1$, then the decomposed bottom raw-core route and the raw cut at $r_0$ admit skeletons with equal terminal values.
+proof: Apply the prefixed bottom-column transfer to the ordered parameters $r_0≤r_1≤1$.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumnBottom_rawCutPathRawCore_of_monotonePrefixedSubpathMerge
     {x₀ x : X} {p q : Path x₀ x}
@@ -2364,6 +2574,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 If a homotopy rectangle is contained in a set, then the lower-then-right
 rectangle edge path is contained in that set.
+
+%%handwave
+name: The lower-right boundary path stays inside a containing set
+statement: Let $a≤b$ and $r_0≤r_1$. If $F([a,b]×[r_0,r_1])⊆A$, then every point of the path traversing the rectangle’s lower edge and then its right edge lies in $A$.
+proof: Split the concatenated path parameter at $1/2$; on each half, its affine coordinates lie in the stated horizontal and vertical intervals, so the rectangle inclusion applies.
 -/
 theorem homotopyRectangleBottomRightPath_mem_of_rect_subset
     {x₀ x : X} {p q : Path x₀ x}
@@ -2423,6 +2638,11 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 If a homotopy rectangle is contained in a set, then the left-then-upper
 rectangle edge path is contained in that set.
+
+%%handwave
+name: The left-upper boundary path stays inside a containing set
+statement: Let $a≤b$ and $r_0≤r_1$. If $F([a,b]×[r_0,r_1])⊆A$, then every point of the path traversing the left edge and then the upper edge lies in $A$.
+proof: Split the path at $1/2$ and verify that each affine pair lies in the rectangle before applying the assumed inclusion.
 -/
 theorem homotopyRectangleLeftTopPath_mem_of_rect_subset
     {x₀ x : X} {p q : Path x₀ x}
@@ -2482,6 +2702,11 @@ omit [RiemannSurface X] in
 /--
 A chart-contained homotopy rectangle contains both elementary rectangle edge
 paths used in the column move.
+
+%%handwave
+name: Both elementary rectangle routes stay in one containing chart
+statement: If $F([a,b]×[r_0,r_1])$ lies in the domain of a selected chart, with $a≤b$ and $r_0≤r_1$, then both the lower-right and left-upper rectangle paths lie entirely in that chart domain.
+proof: Apply the two boundary-path containment theorems to the selected chart domain.
 -/
 theorem homotopyRectangle_paths_mem_chart_of_rect_subset
     {x₀ x : X} {p q : Path x₀ x}
@@ -2509,6 +2734,11 @@ omit [RiemannSurface X] in
 The two elementary paths across a chart-contained rectangle give the same
 terminal value when appended to the same prefix skeleton whose terminal chart
 is that rectangle chart.
+
+%%handwave
+name: Two routes across one chart rectangle have the same terminal value
+statement: Suppose a prefix skeleton ends in the chart containing $F([a,b]×[r_0,r_1])$. Extending it along the lower-right and left-upper boundary routes yields skeletons whose terminal values are equal.
+proof: Both routes remain in the terminal chart. Their extensions keep the same accumulated Möbius transformation and evaluate that same branch formula at their common endpoint $F(b,r_1)$.
 -/
 theorem exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalValue_eq
     {x₀ x : X} {p q : Path x₀ x}
@@ -2560,6 +2790,11 @@ omit [RiemannSurface X] in
 The two elementary paths across a chart-contained rectangle give the same
 terminal branch data when appended to the same prefix skeleton whose terminal
 chart is that rectangle chart.
+
+%%handwave
+name: Two routes across one chart rectangle have identical terminal branch data
+statement: Suppose a prefix skeleton has terminal chart $c$ and the homotopy rectangle lies in chart $c$. Its extensions along the lower-right and left-upper boundary paths have the same terminal center and the same accumulated Möbius transformation.
+proof: Use rectangle containment to construct both in-chart extensions. Each extension retains the prefix terminal center and transformation, so the two terminal branch data agree.
 -/
 theorem exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalBranchDataEq
     {x₀ x : X} {p q : Path x₀ x}
@@ -2613,6 +2848,11 @@ omit [RiemannSurface X] in
 The rectangle terminal branch-data equality survives appending one further
 common suffix path, provided the suffix is valid in the two terminal charts
 obtained after the two rectangle-edge extensions.
+
+%%handwave
+name: A common in-chart suffix preserves rectangle branch-data equality
+statement: After extending one prefix skeleton along the two boundary routes of a chart-contained rectangle, suppose a common suffix lies in both resulting terminal charts. Extending both skeletons along that suffix preserves equality of their terminal charts and accumulated transformations.
+proof: The middle extensions already have identical terminal branch data. The suffix extension leaves each terminal transformation unchanged and preserves the equal terminal centers.
 -/
 theorem terminalExtensionAlongSkeleton_homotopyRectangle_suffix_terminalBranchDataEq
     {x₀ x : X} {p q : Path x₀ x}
@@ -2666,6 +2906,11 @@ after the two rectangle-edge extensions.
 This is the flat one-chart suffix step used by the full suffix transport
 argument.  The actual upper suffix will be handled by subdividing it into
 finitely many such local pieces.
+
+%%handwave
+name: A common in-chart suffix preserves the rectangle terminal value
+statement: Under the same rectangle and suffix hypotheses, extending the two rectangle-edge skeletons along the common suffix gives equal terminal values.
+proof: First obtain equality of the two final terminal branch data, then evaluate the resulting identical branch formulas at their common endpoint.
 -/
 theorem terminalExtensionAlongSkeleton_homotopyRectangle_suffix_terminalValue_eq
     {x₀ x : X} {p q : Path x₀ x}
@@ -2726,6 +2971,11 @@ This is the fully exact one-chart version of the rectangle move: the output
 skeletons live over `homotopyStripColumnTopPath` and
 `homotopyStripColumnBottomPath` themselves, using the prefix/suffix cast
 normal forms above.
+
+%%handwave
+name: A one-chart column with a one-chart suffix has equal route values
+statement: Let a prefix skeleton end in chart $c$. If a homotopy rectangle and the common suffix from its upper-right corner lie in chart $c$, then the exact decomposed top and bottom column paths admit continuation skeletons with equal terminal values.
+proof: Extend the prefix along the two rectangle boundary routes, append the common suffix inside chart $c$, use equality of the final values, and rewrite the concatenated paths as the exact decomposed column paths.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix
     {x₀ x : X} {p q : Path x₀ x}
@@ -2801,6 +3051,11 @@ This is the exact-path version of the componentwise suffix route: the suffix
 may be subdivided into many selected-chart pieces, but the resulting top and
 bottom skeletons live over the honest decomposed column paths, not merely
 homotopic reparameterizations.
+
+%%handwave
+name: A chart rectangle remains interchangeable before an arbitrary continued suffix
+statement: Let a prefix skeleton end in chart $c$, let the homotopy rectangle lie in chart $c$, and let an arbitrary finite continuation skeleton cover the common suffix. Then the exact decomposed top and bottom column paths admit skeletons with equal terminal values.
+proof: The two rectangle-edge extensions have identical terminal branch data. Transport that equality component by component along the given suffix skeleton, then use the path associativity identities to obtain skeletons on the exact top and bottom routes.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumn_suffixSkeleton
     {x₀ x : X} {p q : Path x₀ x}
@@ -2844,6 +3099,11 @@ the prefix skeleton chosen automatically.
 The prefix continuation may end in any selected chart.  We first perform a
 terminal chart change to the rectangle chart, then apply
 `exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix`.
+
+%%handwave
+name: A one-chart column and suffix admit equal-valued continuations
+statement: If a homotopy rectangle and its common suffix lie in one selected chart $c$, then the decomposed top and bottom column paths admit continuation skeletons with equal terminal values, without a prescribed prefix skeleton.
+proof: Choose a continuation skeleton along the common prefix, change its terminal chart to $c$ at the rectangle’s initial corner, and apply the one-chart rectangle-and-suffix comparison.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix_unconditional
     {x₀ x : X} {p q : Path x₀ x}
@@ -2895,6 +3155,11 @@ Exact decomposed-column terminal-value witness for the terminal column
 
 Here the common suffix is constant at the endpoint, so it is controlled by
 the same chart as the rectangle.
+
+%%handwave
+name: The final column has equal-valued top and bottom continuations
+statement: If $r_1=1$ and the homotopy rectangle $[a,b]×[r_0,1]$ lies in one selected chart, then the decomposed top and bottom routes admit continuation skeletons with equal terminal values.
+proof: At $r_1=1$ the common suffix is constant at the homotopy endpoint, hence lies in the rectangle chart. Apply the unconditional one-chart suffix comparison.
 -/
 theorem exists_terminalValue_eq_homotopyStripColumn_lastSuffix_unconditional
     {x₀ x : X} {p q : Path x₀ x}
@@ -2944,6 +3209,11 @@ The suffix is represented by its own based weak handoff skeleton.  This is
 the componentwise version of the one-chart suffix lemma above: after the two
 rectangle edge extensions have the same terminal branch data, finite suffix
 transport moves that equality across every suffix segment.
+
+%%handwave
+name: Rectangle branch equality transports through a finite suffix skeleton
+statement: Let a prefix skeleton end in chart $c$, let the rectangle lie in $c$, and let a finite continuation skeleton cover a common suffix from $F(b,r_1)$ to $y$. Then there exist based paths to $y$ and skeletons along them with identical terminal chart and accumulated Möbius transformation.
+proof: Construct the two in-chart rectangle-edge extensions with equal branch data, then transport that equality through every component of the given suffix skeleton, including the necessary endpoint casts.
 -/
 theorem exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton
     {x₀ x : X} {p q : Path x₀ x}
@@ -2986,6 +3256,11 @@ subdivided common suffix, with path homotopy bookkeeping.
 
 The transported upper and lower paths are homotopic to the corresponding
 rectangle-edge concatenations followed by the whole suffix.
+
+%%handwave
+name: Finite suffix transport retains the intended path homotopy classes
+statement: Under the rectangle and suffix hypotheses, there are equal-branch-data skeletons on paths $p_{BR},p_{LT}:x_0⇝y$ such that $p_{BR}$ is homotopic to the prefix followed by the lower-right edge and suffix, while $p_{LT}$ is homotopic to the prefix followed by the left-upper edge and suffix.
+proof: Start with equal branch data after the two rectangle edges and apply componentwise suffix transport with its concatenation and endpoint-cast homotopies recorded.
 -/
 theorem exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton_with_homotopy
     {x₀ x : X} {p q : Path x₀ x}
@@ -3031,6 +3306,11 @@ omit [RiemannSurface X] in
 /--
 Terminal-value form of
 `exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton_with_homotopy`.
+
+%%handwave
+name: Finite suffix transport gives equal values in the intended path classes
+statement: Under the rectangle and suffix hypotheses, there are skeletons with equal terminal values on paths homotopic respectively to the prefix–lower-right–suffix and prefix–left-upper–suffix routes.
+proof: Use the branch-data form with path-homotopy bookkeeping and forget the equal terminal center and transformation after extracting the implied terminal-value equality.
 -/
 theorem exists_terminalValue_eq_after_homotopyRectangle_suffixSkeleton_with_homotopy
     {x₀ x : X} {p q : Path x₀ x}
@@ -3074,6 +3354,11 @@ omit [RiemannSurface X] in
 /--
 Terminal-value form of
 `exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton`.
+
+%%handwave
+name: Finite suffix transport gives equal terminal values
+statement: Under the rectangle and suffix hypotheses, there exist two based paths to the suffix endpoint and continuation skeletons along them whose terminal values are equal.
+proof: Apply componentwise suffix transport to obtain equal terminal branch data and retain only the resulting equality of terminal values.
 -/
 theorem exists_terminalValue_eq_after_homotopyRectangle_suffixSkeleton
     {x₀ x : X} {p q : Path x₀ x}
@@ -3178,6 +3463,11 @@ This is the purely topological part of the homotopy-grid argument.  The
 remaining analytic-continuation content is to turn replacement of one small
 rectangle, with the common prefix and suffix held fixed, into an elementary
 terminal-formula-preserving move.
+
+%%handwave
+name: A path homotopy admits a finite monotone chart grid
+statement: For every endpoint-fixed homotopy $F:[0,1]^2→X$, there is a monotone sequence $(t_n)$ with $t_0=0$, eventually $t_n=1$, such that every rectangle $[t_n,t_{n+1}]×[t_m,t_{m+1}]$ is mapped into one selected local-model chart domain.
+proof: The selected chart domains form an open cover of $X$. Apply compact rectangular subdivision of the homotopy square subordinate to this cover.
 -/
 theorem pathHomotopy_exists_monotone_localTransition_chart_grid
     {x₀ x : X} {p q : Path x₀ x}
@@ -3214,6 +3504,11 @@ omit [RiemannSurface X] in
 /--
 Endpoint-fixed homotopic paths admit a finite chart grid for any chosen
 representing homotopy.
+
+%%handwave
+name: Homotopic paths admit a finite monotone chart grid
+statement: For endpoint-fixed homotopic paths $p,q:x_0⇝x$, a chosen representing homotopy admits a monotone eventually constant subdivision whose every grid rectangle lies in one selected local-model chart.
+proof: Apply the finite chart-grid theorem to a representative of the endpoint-fixed path homotopy.
 -/
 theorem pathHomotopic_exists_monotone_localTransition_chart_grid
     {x₀ x : X} {p q : Path x₀ x}
@@ -3267,6 +3562,11 @@ def PathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple
 omit [RiemannSurface X] in
 /--
 Concatenate a finite list of homotopy-strip walks.
+
+%%handwave
+name: A finite sequence of strip walks concatenates
+statement: Let $F$ be a path homotopy and $(t_i)$ a subdivision. If for each $i<N$ there is an elementary-move walk from the row $F(t_i,-)$ to $F(t_{i+1},-)$, then there is such a walk from $F(t_0,-)$ to $F(t_N,-)$.
+proof: Induct on $N$. Use the empty walk at $N=0$ and append the final strip walk to the induction hypothesis.
 -/
 theorem pathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk_rows
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3300,6 +3600,11 @@ omit [RiemannSurface X] in
 /--
 Concatenate a finite descending list of column moves inside one homotopy
 strip, from the cut at `t N` down to the cut at `t 0`.
+
+%%handwave
+name: A finite descending sequence of column walks concatenates
+statement: Fix a homotopy strip $[t_i,t_{i+1}]$. If for every $m<N$ there is a move walk from the cut at $t_{m+1}$ down to the cut at $t_m$, then there is a walk from the cut at $t_N$ down to the cut at $t_0$.
+proof: Induct on $N$, placing the last column walk before the accumulated walk through the preceding columns.
 -/
 theorem pathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk_stripColumns
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3337,6 +3642,11 @@ omit [RiemannSurface X] in
 /--
 Column moves across the rectangle subdivision imply the one-strip replacement
 principle.
+
+%%handwave
+name: Column replacement yields replacement of an entire homotopy strip
+statement: Suppose every chart-contained grid rectangle gives a move walk between its adjacent cuts. For a monotone subdivision eventually equal to $1$, each horizontal strip then gives a move walk from its lower row to its upper row.
+proof: Choose $N$ with $t_N=1$, build and concatenate the column walks from the terminal cut down to $t_0=0$, and identify the endpoint cuts with the two boundary rows.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripMovePrinciple_of_columnMovePrinciple
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3381,6 +3691,11 @@ omit [RiemannSurface X] in
 The strip-move principle implies the chart-grid local replacement principle.
 All remaining mathematics is now local to one homotopy strip; the passage from
 strips to the full homotopy square is finite concatenation.
+
+%%handwave
+name: Strip replacement yields replacement across the full homotopy grid
+statement: Suppose every chart-subdivided horizontal strip gives a move walk between its two boundary rows. Then any finite chart grid for an endpoint-fixed homotopy gives a move walk from the source path $p$ to the target path $q$.
+proof: Choose $N$ after which $t_N=1$, obtain a walk for every strip $i<N$, concatenate the row walks, and identify $F(t_0,-)$ and $F(t_N,-)$ with $p$ and $q$.
 -/
 theorem pathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple_of_stripMovePrinciple
     {x₀ : X} {g : HyperbolicMetric X}

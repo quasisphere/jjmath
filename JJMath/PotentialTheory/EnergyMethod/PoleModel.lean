@@ -912,11 +912,9 @@ statement:
   logarithm is exactly \(-\log |z-z(p)|\) there.
 proof:
   Use
-  [a smooth compactly supported coordinate cutoff which is identically one near
-  the point](lean:JJMath.Uniformization.exists_pointedCoordinate_smooth_cutoff_eq_one_near_pole).
+  [a smooth compactly supported coordinate cutoff which is identically one near the point](lean:JJMath.Uniformization.exists_pointedCoordinate_smooth_cutoff_eq_one_near_pole).
   Then
-  [multiplying this cutoff by the negative coordinate logarithm is smooth away
-  from the point](lean:JJMath.Uniformization.pointedCoordinate_cutoff_negative_log_smooth_away_pole).
+  [multiplying this cutoff by the negative coordinate logarithm is smooth away from the point](lean:JJMath.Uniformization.pointedCoordinate_cutoff_negative_log_smooth_away_pole).
   The compact support and the two displayed formulas follow directly from the
   support of the cutoff and the definition of the product.
 -/

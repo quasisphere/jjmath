@@ -22,6 +22,25 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 /--
 PSL-valued selected local-transition continuation plus projective-atlas
 construction gives the main partial-converse outputs.
+
+%%handwave
+name:
+  Continued local models and projective atlas construction give the converse outputs
+statement:
+  Suppose every hyperbolic metric $g$ has a selected atlas of local
+  upper-half-plane models, continuation of those models on the canonical cover
+  yields an equivariant developing map with
+  $\mathrm{PSL}_2(\mathbb R)$ holonomy and the Poincaré pullback identity, and
+  every projectivized developing map produces a compatible complex projective
+  atlas. Then for every basepoint $x_0$ and metric $g$, there exist a
+  hyperbolic developing map, its projectivization, and a complex projective
+  structure induced by $g$ with real holonomy.
+proof:
+  Choose the continued developing data for $x_0$ and $g$, retain its
+  hyperbolic developing map, and projectivize it using equivariance. Apply the
+  assumed atlas construction to this projectivized map; the resulting atlas
+  gives the induced complex projective structure, whose holonomy lies in
+  $\mathrm{PSL}_2(\mathbb R)$.
 -/
 theorem partial_converse_main_outputs_theorem_of_selected_local_transition_continuation_psl_and_projective_atlas
     (chosenLocalModels :
@@ -60,6 +79,25 @@ theorem partial_converse_main_outputs_theorem_of_selected_local_transition_conti
 Unlifted PSL-valued local-transition continuation, together with the local
 componentwise construction and projective-atlas theorem, gives the completed
 main-output theorem.
+
+%%handwave
+name:
+  Local branch selection and continuation imply the complete partial converse
+statement:
+  Suppose local real Liouville branches can be selected canonically, any two
+  pointed local hyperbolic charts are related by a real Möbius transformation,
+  this relation extends across their overlap component, the selected local
+  models continue on the canonical cover with
+  $\mathrm{PSL}_2(\mathbb R)$ holonomy, and every projectivized developing map
+  yields a compatible complex projective atlas. Then every hyperbolic metric
+  $g$ on $X$ induces a complex projective structure $P$ whose holonomy lies in
+  $\mathrm{PSL}_2(\mathbb R)$ at some basepoint.
+proof:
+  The branch-selection and component-extension hypotheses construct the
+  canonical atlas of local upper-half-plane models. Continuation and the
+  projective-atlas hypothesis then give the three converse outputs; applying
+  the assembly theorem converts those outputs into an induced projective
+  structure with real holonomy.
 -/
 theorem complete_partial_converse_theorem_of_branch_pre_data_selection_pointed_transitions_component_extension_selected_continuation_psl_projective_atlas
     (hSelection :

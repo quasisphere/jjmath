@@ -38,7 +38,15 @@ set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
 /-- If the degree-one Mayer--Vietoris connecting map is injective, vanishing
 of ambient and right-hand first cohomology forces vanishing on the left-hand
-member of the cover. -/
+member of the cover.
+
+%%handwave
+name: Cohomology vanishing on one member of a Mayer--Vietoris cover
+statement:
+  Let $M=U\cup V$. If $H^1_{\mathrm{dR}}(M;\mathbb R)=H^1_{\mathrm{dR}}(V;\mathbb R)=0$ and the Mayer--Vietoris connecting map $H^1_{\mathrm{dR}}(U\cap V;\mathbb R)\to H^2_{\mathrm{dR}}(M;\mathbb R)$ is injective, then $H^1_{\mathrm{dR}}(U;\mathbb R)=0$.
+proof:
+  Ambient and right-hand vanishing make restriction from $H^1(U)$ to $H^1(U\cap V)$ injective. Exactness puts every such restricted class in the kernel of the connecting map; injectivity of that map forces the restriction, and hence the original class, to vanish.
+-/
 theorem deRhamH1_left_subsingleton_of_connecting_injective
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     [T2Space M] [SigmaCompactSpace M]
@@ -96,7 +104,15 @@ theorem deRhamH1_left_subsingleton_of_connecting_injective
 end MayerVietorisAlgebra
 
 /-- Removing a point from a compact Riemann surface gives a
-noncompact Riemann surface. -/
+noncompact Riemann surface.
+
+%%handwave
+name: A punctured compact Riemann surface is noncompact
+statement:
+  If $X$ is a compact Riemann surface and $p\in X$, then $X\setminus\{p\}$ is noncompact.
+proof:
+  If the punctured surface were compact, its image in $X$ would be closed, so the singleton $\{p\}$ would be open. This contradicts the nontrivial punctured neighborhoods of a Riemann-surface point.
+-/
 theorem puncturedSurfaceOpen_noncompact
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [CompactSpace X] (p : X) :
@@ -225,7 +241,15 @@ theorem mdifferentiableAt_of_continuousAt_of_eventually_punctured_target
   exact ⟨hcont, by simpa [h, e', Function.comp_def] using hh.2⟩
 
 /-- A function agreeing on an open set with a holomorphic function on the
-corresponding open subtype is holomorphic on that open set. -/
+corresponding open subtype is holomorphic on that open set.
+
+%%handwave
+name: Holomorphicity transferred from an open subtype
+statement:
+  Let $U$ be open in a complex manifold $X$, let $f:U\to\mathbb C$ be holomorphic, and let $F:X\to\mathbb C$ satisfy $F(x)=f(x)$ for $x\in U$. Then $F$ is holomorphic on $U$.
+proof:
+  Near a fixed $x\in U$, retract the ambient space to $U$ by the identity on $U$ and an arbitrary value outside. This retraction is locally the identity, so $f$ composed with it is holomorphic and agrees locally with $F$.
+-/
 private theorem mdifferentiableOn_of_eq_openSubtype
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -548,7 +572,15 @@ theorem compact_biholomorphic_riemannSphere_of_punctured_complexPlane
 
 /-- Assuming the punctured surface has vanishing first de Rham cohomology,
 the open-surface theorem and removable singularity uniformize the compact
-surface by the sphere. -/
+surface by the sphere.
+
+%%handwave
+name: Compact uniformization from punctured cohomology vanishing
+statement:
+  Let $X$ be a compact Riemann surface with $H^1_{\mathrm{dR}}(X;\mathbb R)=0$. If also $H^1_{\mathrm{dR}}(X\setminus\{p\};\mathbb R)=0$ for some $p\in X$, then $X$ is biholomorphic to the Riemann sphere.
+proof:
+  The noncompact zero-cohomology uniformization theorem makes the punctured surface biholomorphic either to $\mathbb C$ or to $\mathbb D$. The disk alternative is impossible for a puncture of a compact surface; in the plane alternative, removable singularity at the omitted point extends the equivalence to a biholomorphism with the sphere.
+-/
 theorem compact_deRhamH1Zero_biholomorphic_riemannSphere_of_punctured
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -575,7 +607,15 @@ theorem compact_deRhamH1Zero_biholomorphic_riemannSphere_of_punctured
   · exact False.elim
       (compact_puncturedSurfaceOpen_not_biholomorphic_unitDisc X p hdisk)
 
-/-- A coordinate disk centered at any prescribed surface point. -/
+/-- A coordinate disk centered at any prescribed surface point.
+
+%%handwave
+name: Closed coordinate disk centered at a prescribed point
+statement:
+  For every point $p$ of a Riemann surface $X$, there is a closed coordinate disk $D$ whose interior contains $p$ and whose defining chart sends $p$ to the center of the disk.
+proof:
+  Take a chart at $p$, choose a Euclidean ball around its image whose closure remains in the chart target, and use a smaller concentric radius to form the closed coordinate disk.
+-/
 theorem exists_closedCoordinateDisk_centered
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X) :
@@ -599,7 +639,15 @@ theorem exists_closedCoordinateDisk_centered
   change dist (e p) c < r
   simpa [c] using hrpos
 
-/-- The punctured surface and a centered coordinate disk cover the surface. -/
+/-- The punctured surface and a centered coordinate disk cover the surface.
+
+%%handwave
+name: Cover by a punctured surface and a centered disk
+statement:
+  If a coordinate disk $D$ contains $p$ in its interior, then $(X\setminus\{p\})\cup\operatorname{int}(D)=X$.
+proof:
+  A point unequal to $p$ lies in the punctured surface, while $p$ lies in the disk by hypothesis.
+-/
 theorem puncturedSurfaceOpen_sup_centeredCoordinateDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -871,6 +919,8 @@ proof:
   holomorphic function and hence would extend across the puncture; compactness
   would then make it constant.  Thus the punctured surface is the plane, and
   adjoining the deleted point gives the Riemann sphere.
+tags:
+  milestone
 -/
 theorem compact_deRhamH1Zero_biholomorphic_riemannSphere
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -898,6 +948,8 @@ proof:
   compact zero-cohomology uniformization gives the Riemann sphere.  Otherwise,
   open-surface zero-cohomology uniformization gives either the complex plane
   or the unit disk.
+tags:
+  milestone
 -/
 theorem simplyConnected_riemannSurface_uniformization
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]

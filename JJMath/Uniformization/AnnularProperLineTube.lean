@@ -45,6 +45,19 @@ noncomputable def canonicalAnnularPuncturePlaneDiffeomorph (v : Circle) :
       simp [annularPunctureChart, AnnularCylinderModel]
       exact Set.mem_univ y)
 
+/--
+%%handwave
+name:
+  Formula for the canonical slit-cylinder plane coordinate
+statement:
+  On the annular cylinder with the radial line at \(v\) removed, the canonical
+  plane coordinate sends \((q,s)\) to
+  \((\sigma_v(q),s)\), where \(\sigma_v\) is stereographic projection from
+  \(v\).
+proof:
+  This is the defining formula of the extended-chart restriction used to
+  construct the diffeomorphism.
+-/
 @[simp]
 theorem canonicalAnnularPuncturePlaneDiffeomorph_apply
     (v : Circle) (x : annularPunctureOpen v) :
@@ -122,6 +135,19 @@ noncomputable def annularRadialLineTubeDiffeomorph (v : Circle) :
       (EuclideanSpace ℝ (Fin 1) × ℝ)).trans
       euclideanFinOneProdRealToProperLineDiffeomorph)
 
+/--
+%%handwave
+name:
+  Formula for the radial proper-line tube coordinate
+statement:
+  The proper-line tube coordinate on the slit annular cylinder sends
+  \((q,s)\) to \((s,\sigma_v(q))\), with the one-dimensional stereographic
+  coordinate identified with a real number.
+proof:
+  Compose the canonical slit-cylinder plane coordinate with the linear
+  identification of the one-dimensional Euclidean coordinate and swap the
+  angular and radial factors.
+-/
 @[simp]
 theorem annularRadialLineTubeDiffeomorph_apply
     (v : Circle) (x : annularPunctureOpen v) :
@@ -130,6 +156,18 @@ theorem annularRadialLineTubeDiffeomorph_apply
         (stereographic' 1 v (x : Circle × ℝ).1) 0) := by
   rfl
 
+/--
+%%handwave
+name:
+  Inverse formula for the radial proper-line tube coordinate
+statement:
+  The inverse tube coordinate sends \((s,t)\in\mathbb R^2\) to the annular
+  point whose radial coordinate is \(s\) and whose circle coordinate is the
+  inverse stereographic image of \(t\).
+proof:
+  Invert the factor swap, the one-dimensional Euclidean identification, and
+  the stereographic coordinate in the defining composite.
+-/
 @[simp]
 theorem annularRadialLineTubeDiffeomorph_symm_apply
     (v : Circle) (s t : ℝ) :
@@ -147,6 +185,19 @@ noncomputable def annularRadialCoreAngleMap (v : Circle) :
     ((EuclideanSpace.equiv (Fin 1) ℝ).symm
       ((ContinuousLinearEquiv.funUnique (Fin 1) ℝ ℝ).symm (t : ℝ)))
 
+/--
+%%handwave
+name:
+  Continuity of the annular core-angle parameterization
+statement:
+  The map from \([-1,1]\) to \(S^1\) obtained by applying inverse
+  stereographic projection from \(v\) to the real angular coordinate is
+  continuous.
+proof:
+  The linear identifications of the interval coordinate with the
+  one-dimensional Euclidean space are continuous, and inverse stereographic
+  projection is continuous on its target; compose them.
+-/
 theorem continuous_annularRadialCoreAngleMap (v : Circle) :
     Continuous (annularRadialCoreAngleMap v) := by
   let f : Set.Icc (-1 : ℝ) 1 → EuclideanSpace ℝ (Fin 1) := fun t =>
@@ -161,16 +212,48 @@ theorem continuous_annularRadialCoreAngleMap (v : Circle) :
 def annularRadialCoreAngleSet (v : Circle) : Set Circle :=
   Set.range (annularRadialCoreAngleMap v)
 
+/--
+%%handwave
+name:
+  Compactness of the annular core-angle arc
+statement:
+  The circle arc obtained as the inverse stereographic image of
+  \([-1,1]\) is compact.
+proof:
+  It is the continuous image of the compact interval \([-1,1]\).
+-/
 theorem annularRadialCoreAngleSet_isCompact (v : Circle) :
     IsCompact (annularRadialCoreAngleSet v) := by
   exact isCompact_range (continuous_annularRadialCoreAngleMap v)
 
+/--
+%%handwave
+name:
+  Closedness of the annular core-angle arc
+statement:
+  The inverse-stereographic image in \(S^1\) of the interval \([-1,1]\) is
+  closed.
+proof:
+  The arc is compact, and the circle is Hausdorff.
+-/
 theorem annularRadialCoreAngleSet_isClosed (v : Circle) :
     IsClosed (annularRadialCoreAngleSet v) :=
   (annularRadialCoreAngleSet_isCompact v).isClosed
 
-/-- The transition core is the product of a compact angular arc with the
-entire radial line. -/
+/--
+%%handwave
+name:
+  Product description of the radial proper-line transition core
+statement:
+  In the annular cylinder, the inverse image of the tube strip
+  \(\mathbb R\times[-1,1]\) is exactly \(A_v\times\mathbb R\), where \(A_v\)
+  is the compact circle arc obtained from angular stereographic coordinates
+  in \([-1,1]\).
+proof:
+  Use the explicit inverse tube-coordinate formula.  A point in the strip has
+  circle coordinate in \(A_v\), and conversely an angle in \(A_v\) supplies a
+  parameter \(t\in[-1,1]\) whose tube preimage is the given annular point.
+-/
 theorem annularRadialLineTubeCore_eq (v : Circle) :
     properLineTubeCore AnnularCylinderModel (annularPunctureOpen v)
         (annularRadialLineTubeDiffeomorph v) =
@@ -188,8 +271,18 @@ theorem annularRadialLineTubeCore_eq (v : Circle) :
     · exact congrArg Subtype.val ht
     · rfl
 
-/-- The closed transition strip remains closed in the full annular cylinder,
-even though the surrounding tube omits one radial line. -/
+/--
+%%handwave
+name:
+  Closedness of the annular radial proper-line core
+statement:
+  The transition core of the radial proper-line tube is closed in the full
+  annular cylinder \(S^1\times\mathbb R\).
+proof:
+  By the product description, the core is \(A_v\times\mathbb R\).  The
+  angular arc \(A_v\) is closed and \(\mathbb R\) is closed in itself, so
+  their product is closed.
+-/
 theorem annularRadialLineTubeCore_isClosed (v : Circle) :
     IsClosed
       (properLineTubeCore AnnularCylinderModel (annularPunctureOpen v)

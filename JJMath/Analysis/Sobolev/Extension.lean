@@ -65,6 +65,15 @@ def euclideanSobolevUnitBallPunctured
     (H : Type) [NormedAddCommGroup H] : Set H :=
   {x : H | (1 / 2 : ℝ) < ‖x‖ ∧ ‖x‖ < 1}
 
+/--
+%%handwave
+name:
+  The reflection annulus is open
+statement:
+  The annulus \(\{x:1<\|x\|<2\}\) used for radial reflection is open.
+proof:
+  It is the inverse image of the open interval \((1,2)\) under the continuous norm.
+-/
 theorem euclideanSobolevUnitBallReflectionAnnulus_isOpen
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     IsOpen (euclideanSobolevUnitBallReflectionAnnulus H) := by
@@ -72,6 +81,15 @@ theorem euclideanSobolevUnitBallReflectionAnnulus_isOpen
   exact (isOpen_lt continuous_const continuous_norm).inter
     (isOpen_lt continuous_norm continuous_const)
 
+/--
+%%handwave
+name:
+  The punctured unit ball is open
+statement:
+  The punctured unit ball \(\{x:0<\|x\|<1\}\) is open.
+proof:
+  It is the intersection of the open unit ball with the complement of the closed singleton \(\{0\}\).
+-/
 theorem euclideanSobolevUnitBallPunctured_isOpen
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     IsOpen (euclideanSobolevUnitBallPunctured H) := by
@@ -79,6 +97,15 @@ theorem euclideanSobolevUnitBallPunctured_isOpen
   exact (isOpen_lt continuous_const continuous_norm).inter
     (isOpen_lt continuous_norm continuous_const)
 
+/--
+%%handwave
+name:
+  The punctured unit ball lies in the unit ball
+statement:
+  Every point of the punctured unit ball belongs to the open unit ball.
+proof:
+  Discard the additional condition \(\|x\|>0\).
+-/
 theorem euclideanSobolevUnitBallPunctured_subset_unit_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     euclideanSobolevUnitBallPunctured H ⊆ Metric.ball (0 : H) 1 := by
@@ -86,6 +113,15 @@ theorem euclideanSobolevUnitBallPunctured_subset_unit_ball
   simpa [euclideanSobolevUnitBallPunctured, Metric.mem_ball, dist_eq_norm]
     using hx.2
 
+/--
+%%handwave
+name:
+  Norm of the radial reflection
+statement:
+  If \(0<\|x\|\le2\), the radial reflection across the unit sphere has norm \(2-\|x\|\).
+proof:
+  Write the reflected point as \((2/\|x\|-1)x\), use homogeneity of the norm, and simplify using \(0<\|x\|\le2\).
+-/
 theorem euclideanSobolevUnitBallRadialReflection_norm_of_norm_pos_of_norm_le_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H} (hxpos : 0 < ‖x‖) (hxle : ‖x‖ ≤ 2) :
@@ -96,6 +132,15 @@ theorem euclideanSobolevUnitBallRadialReflection_norm_of_norm_pos_of_norm_le_two
     Real.norm_eq_abs, abs_of_nonneg hfactor_nonneg]
   field_simp [ne_of_gt hxpos]
 
+/--
+%%handwave
+name:
+  Radial reflection sends the annulus into the unit ball
+statement:
+  If \(1<\|x\|<2\), then the radial reflection of \(x\) lies in the open unit ball.
+proof:
+  Its norm is \(2-\|x\|\), which lies between \(0\) and \(1\).
+-/
 theorem euclideanSobolevUnitBallRadialReflection_mem_unit_ball_of_mem_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H}
@@ -112,6 +157,15 @@ theorem euclideanSobolevUnitBallRadialReflection_mem_unit_ball_of_mem_annulus
     linarith [hx.1]
   simpa [Metric.mem_ball, dist_eq_norm, hnorm] using hlt
 
+/--
+%%handwave
+name:
+  Radial reflection sends the annulus into the punctured ball
+statement:
+  If \(1<\|x\|<2\), its radial reflection has norm strictly between \(0\) and \(1\).
+proof:
+  Use the norm formula \(2-\|x\|\) and the two annulus inequalities.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_mem_punctured_of_mem_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H}
@@ -130,6 +184,15 @@ theorem euclideanSobolevUnitBallRadialReflection_mem_punctured_of_mem_annulus
   · rw [hnorm]
     linarith [hx.1]
 
+/--
+%%handwave
+name:
+  Radial reflection sends the punctured ball into the annulus
+statement:
+  If \(0<\|x\|<1\), its radial reflection has norm strictly between \(1\) and \(2\).
+proof:
+  Again use \(\|R(x)\|=2-\|x\|\).
+-/
 theorem euclideanSobolevUnitBallRadialReflection_mem_annulus_of_mem_punctured
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H}
@@ -148,6 +211,15 @@ theorem euclideanSobolevUnitBallRadialReflection_mem_annulus_of_mem_punctured
   · rw [hnorm]
     linarith [hx.1]
 
+/--
+%%handwave
+name:
+  Radial reflection is an involution away from the boundary radii
+statement:
+  For \(0<\|x\|\le2\), applying radial reflection twice returns \(x\).
+proof:
+  Use the reflected norm \(2-\|x\|\), expand both radial scaling factors, and simplify.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_reflection_reflection
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H} (hxpos : 0 < ‖x‖) (hxlt : ‖x‖ < 2) :
@@ -173,6 +245,15 @@ theorem euclideanSobolevUnitBallRadialReflection_reflection_reflection
     ring
   rw [hscalar, one_smul]
 
+/--
+%%handwave
+name:
+  Radial reflection is involutive on the annulus
+statement:
+  On \(1<\|x\|<2\), radial reflection composed with itself is the identity.
+proof:
+  Apply the general double-reflection formula, since annulus points have positive norm at most \(2\).
+-/
 theorem euclideanSobolevUnitBallRadialReflection_involutive_on_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H} (hx : x ∈ euclideanSobolevUnitBallReflectionAnnulus H) :
@@ -182,6 +263,15 @@ theorem euclideanSobolevUnitBallRadialReflection_involutive_on_annulus
     (lt_trans (by norm_num : (0 : ℝ) < 1) hx.1)
     (by linarith [hx.2])
 
+/--
+%%handwave
+name:
+  Radial reflection is involutive on the punctured unit ball
+statement:
+  On \(0<\|x\|<1\), radial reflection composed with itself is the identity.
+proof:
+  Apply the general double-reflection formula.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_involutive_on_punctured
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {x : H} (hx : x ∈ euclideanSobolevUnitBallPunctured H) :
@@ -191,6 +281,15 @@ theorem euclideanSobolevUnitBallRadialReflection_involutive_on_punctured
     (lt_trans (by norm_num : (0 : ℝ) < 1 / 2) hx.1)
     (by linarith [hx.2])
 
+/--
+%%handwave
+name:
+  Radial reflection maps the annulus to the punctured ball
+statement:
+  Radial reflection maps every point of \(1<\|x\|<2\) into \(0<\|x\|<1\).
+proof:
+  This is the annulus-to-punctured-ball norm estimate.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_mapsTo_annulus_punctured
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     Set.MapsTo (euclideanSobolevUnitBallRadialReflection : H → H)
@@ -199,6 +298,15 @@ theorem euclideanSobolevUnitBallRadialReflection_mapsTo_annulus_punctured
   intro x hx
   exact euclideanSobolevUnitBallRadialReflection_mem_punctured_of_mem_annulus hx
 
+/--
+%%handwave
+name:
+  Radial reflection maps the punctured ball to the annulus
+statement:
+  Radial reflection maps every point of \(0<\|x\|<1\) into \(1<\|x\|<2\).
+proof:
+  This is the punctured-ball-to-annulus norm estimate.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_mapsTo_punctured_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     Set.MapsTo (euclideanSobolevUnitBallRadialReflection : H → H)
@@ -294,6 +402,15 @@ theorem euclideanSobolevUnitBallRadialReflection_lipschitzOnWith_annulus
       _ = (5 : ℝ≥0) * dist y z := by norm_num
   simpa [A, R] using hLip
 
+/--
+%%handwave
+name:
+  Radial reflection is locally Lipschitz on the annulus
+statement:
+  The radial reflection map is locally Lipschitz on \(1<\|x\|<2\).
+proof:
+  On neighborhoods bounded away from the origin, the norm, reciprocal norm, scalar multiplication, and their combination are Lipschitz.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_locallyLipschitzOn_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     LocallyLipschitzOn (euclideanSobolevUnitBallReflectionAnnulus H)
@@ -343,6 +460,15 @@ theorem euclideanSobolevUnitBallTaper_lipschitzOnWith_annulus
           rw [dist_eq_norm]
           norm_num
 
+/--
+%%handwave
+name:
+  The radial taper is locally Lipschitz on the annulus
+statement:
+  The scalar taper used to turn off the reflected extension is locally Lipschitz on \(1<\|x\|<2\).
+proof:
+  It is a Lipschitz one-variable cutoff composed with the locally Lipschitz norm.
+-/
 theorem euclideanSobolevUnitBallTaper_locallyLipschitzOn_annulus
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     LocallyLipschitzOn (euclideanSobolevUnitBallReflectionAnnulus H)
@@ -449,6 +575,15 @@ theorem euclideanSobolevUnitBallRadialReflection_lipschitzOnWith_punctured
       _ = (12 : ℝ≥0) * dist y z := by norm_num
   simpa [A, R] using hLip
 
+/--
+%%handwave
+name:
+  Radial reflection is locally Lipschitz on the punctured ball
+statement:
+  The radial reflection map is locally Lipschitz on \(0<\|x\|<1\).
+proof:
+  The same reciprocal-norm argument works locally away from the origin.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_locallyLipschitzOn_punctured
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
     LocallyLipschitzOn (euclideanSobolevUnitBallPunctured H)
@@ -461,6 +596,15 @@ theorem euclideanSobolevUnitBallRadialReflection_locallyLipschitzOn_punctured
         euclideanSobolevUnitBallRadialReflection_lipschitzOnWith_punctured
           (H := H)⟩
 
+/--
+%%handwave
+name:
+  Radial reflection is measurable
+statement:
+  Radial reflection is Borel measurable on the ambient finite-dimensional normed space.
+proof:
+  It is continuous away from the origin; assigning an arbitrary value at the closed singleton \(\{0\}\) preserves measurability.
+-/
 theorem euclideanSobolevUnitBallRadialReflection_measurable
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H] :
@@ -468,6 +612,15 @@ theorem euclideanSobolevUnitBallRadialReflection_measurable
   change Measurable fun x : H ↦ (((2 - ‖x‖) / ‖x‖ : ℝ) • x)
   measurability
 
+/--
+%%handwave
+name:
+  A Lipschitz inverse controls a restricted pushforward measure
+statement:
+  If \(f:A\to B\) has an inverse on the relevant sets which is \(L\)-Lipschitz, then the pushforward of volume restricted to \(A\) is bounded by a dimensional constant \(L^{\dim}\) times volume restricted to \(B\).
+proof:
+  Pull measurable subsets back through the inverse, apply the finite-dimensional Lipschitz volume bound, and extend from measurable sets to a measure inequality.
+-/
 private theorem map_restrict_le_smul_of_inverse_lipschitzOnWith
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -503,6 +656,15 @@ private theorem map_restrict_le_smul_of_inverse_lipschitzOnWith
     _ ≤ C * MeasureTheory.volume (B ∩ Ω) :=
           hS_image_le (B ∩ Ω) Set.inter_subset_right
 
+/--
+%%handwave
+name:
+  A Lipschitz inverse gives a quasi-measure-preserving restriction
+statement:
+  Under the same inverse and Lipschitz hypotheses, the restricted map is quasi-measure-preserving.
+proof:
+  Measurability comes from the given map, while the preceding pushforward bound supplies absolute continuity with a finite constant.
+-/
 private theorem quasiMeasurePreserving_restrict_of_inverse_lipschitzOnWith
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -755,6 +917,15 @@ noncomputable def euclideanSobolevUnitBallRadialReflectionDerivativeAnnulusValue
     else
       0
 
+/--
+%%handwave
+name:
+  Piecewise formula for the reflected derivative extension
+statement:
+  The derivative extension equals the original derivative in the unit ball, the reflected chain-rule expression in \(1<\|x\|<2\), and zero outside radius \(2\).
+proof:
+  Unfold the piecewise definition and split according to the three radial regions.
+-/
 theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_parts
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) (dw : H → H →L[ℝ] ℝ) :
@@ -793,6 +964,15 @@ theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_parts
         euclideanSobolevUnitBallRadialReflectionDerivativeAnnulusValuePart,
         hunit, houter]
 
+/--
+%%handwave
+name:
+  Piecewise formula for the reflected function extension
+statement:
+  The reflected function extension equals the original function in the unit ball, the tapered reflected value in the annulus, and zero outside radius \(2\).
+proof:
+  Unfold the definition and separate the radial cases.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_eq_parts
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) :
@@ -825,6 +1005,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_eq_parts
         euclideanSobolevUnitBallReflectionExtensionAnnulusPart,
         hunit, houter]
 
+/--
+%%handwave
+name:
+  The reflected extension agrees pointwise inside the unit ball
+statement:
+  At every point with \(\|x\|<1\), the reflected extension equals the original function.
+proof:
+  Select the interior branch of the piecewise formula.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_eq_of_mem_unit_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) {x : H}
@@ -834,6 +1023,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_eq_of_mem_unit_ball
     simpa [Metric.mem_ball, dist_eq_norm] using hx
   simp [euclideanSobolevUnitBallReflectionExtension, hxnorm]
 
+/--
+%%handwave
+name:
+  The reflected extension agrees almost everywhere on the unit ball
+statement:
+  The reflected extension and the original function agree almost everywhere on the open unit ball.
+proof:
+  Promote the pointwise interior equality to an almost-everywhere equality for the restricted measure.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_ae_eq_on_unit_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H]
@@ -843,6 +1041,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_ae_eq_on_unit_ball
   exact ae_restrict_of_forall_mem Metric.isOpen_ball.measurableSet fun _x hx ↦
     euclideanSobolevUnitBallReflectionExtension_eq_of_mem_unit_ball w hx
 
+/--
+%%handwave
+name:
+  Formula for the reflected extension in the outer annulus
+statement:
+  If \(1\le\|x\|<2\), the extension is the taper at \(x\) times the original function evaluated at the radial reflection of \(x\).
+proof:
+  Select the annular branch of the piecewise definition.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_eq_reflection_of_one_le_norm_of_norm_lt_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) {x : H}
@@ -853,6 +1060,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_eq_reflection_of_one_le_norm
   simp [euclideanSobolevUnitBallReflectionExtension,
     euclideanSobolevUnitBallRadialReflection, hxnot, h2]
 
+/--
+%%handwave
+name:
+  The reflected extension vanishes outside radius two
+statement:
+  If \(2\le\|x\|\), the reflected extension is zero.
+proof:
+  Select the exterior branch.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_eq_zero_of_two_le_norm
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) {x : H}
@@ -863,6 +1079,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_eq_zero_of_two_le_norm
   have hxnot_two : ¬ ‖x‖ < (3 / 2 : ℝ) := not_lt.mpr hx
   simp [euclideanSobolevUnitBallReflectionExtension, hxnot_one, hxnot_two]
 
+/--
+%%handwave
+name:
+  Support of the reflected extension
+statement:
+  The support of the reflected extension is contained in the closed ball of radius \(2\).
+proof:
+  Outside that closed ball the extension vanishes, so no such point lies in its support.
+-/
 theorem euclideanSobolevUnitBallReflectionExtension_support_subset_closedBall_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) :
@@ -878,6 +1103,15 @@ theorem euclideanSobolevUnitBallReflectionExtension_support_subset_closedBall_tw
   exact hx (euclideanSobolevUnitBallReflectionExtension_eq_zero_of_two_le_norm
     w hxnorm)
 
+/--
+%%handwave
+name:
+  The derivative extension agrees pointwise inside the unit ball
+statement:
+  At every point of the open unit ball, the reflected derivative extension equals the original derivative field.
+proof:
+  Select the interior branch of its piecewise formula.
+-/
 theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_of_mem_unit_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) (dw : H → H →L[ℝ] ℝ) {x : H}
@@ -887,6 +1121,15 @@ theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_of_mem_un
     simpa [Metric.mem_ball, dist_eq_norm] using hx
   simp [euclideanSobolevUnitBallRadialReflectionDerivativeExtension, hxnorm]
 
+/--
+%%handwave
+name:
+  The derivative extension agrees almost everywhere on the unit ball
+statement:
+  The reflected derivative extension agrees almost everywhere with the original field on the unit ball.
+proof:
+  Promote the pointwise equality on the ball to the restricted almost-everywhere statement.
+-/
 theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_ae_eq_on_unit_ball
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H]
@@ -897,6 +1140,15 @@ theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_ae_eq_on_uni
     euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_of_mem_unit_ball
       w dw hx
 
+/--
+%%handwave
+name:
+  The derivative extension vanishes outside radius two
+statement:
+  If \(2\le\|x\|\), the reflected derivative extension is zero.
+proof:
+  Use the exterior branch of the derivative-extension formula.
+-/
 theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_zero_of_two_le_norm
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) (dw : H → H →L[ℝ] ℝ) {x : H}
@@ -908,6 +1160,15 @@ theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_eq_zero_of_t
   simp [euclideanSobolevUnitBallRadialReflectionDerivativeExtension,
     hxnot_one, hxnot_two]
 
+/--
+%%handwave
+name:
+  Support of the reflected derivative extension
+statement:
+  The derivative extension is supported in the closed ball of radius \(2\).
+proof:
+  It vanishes pointwise outside that ball.
+-/
 theorem euclideanSobolevUnitBallRadialReflectionDerivativeExtension_support_subset_closedBall_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (w : H → ℝ) (dw : H → H →L[ℝ] ℝ) :
@@ -1130,6 +1391,15 @@ theorem euclideanSobolev_unit_ball_radial_reflection_annulus_pullback_locallyInt
     isFiniteMeasure_restrict.2 hK.measure_ne_top
   exact hK_mem.integrable (by norm_num : (1 : ℝ≥0∞) ≤ 2)
 
+/--
+%%handwave
+name:
+  Compactly supported bounded multipliers give integrable products
+statement:
+  If \(f\) is locally integrable on an open set and \(g\) has compact support there and is bounded on its support, then \(g f\) is integrable.
+proof:
+  Restrict local integrability to a compact neighborhood of the support and dominate \(\|g f\|\) by a constant times \(\|f\|\).
+-/
 private theorem locallyIntegrableOn_mul_left_integrable_of_compact_support_bound
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -1162,6 +1432,15 @@ private theorem locallyIntegrableOn_mul_left_integrable_of_compact_support_bound
   exact hprod_global.mono_measure
     (Measure.restrict_le_self (μ := MeasureTheory.volume) (s := Ω))
 
+/--
+%%handwave
+name:
+  Compactly supported continuous multipliers give integrable products
+statement:
+  If \(f\) is locally integrable and \(g\) is continuous with compact support in the region, then \(g f\) is integrable.
+proof:
+  Continuity on the compact support gives boundedness, so apply the bounded-multiplier result.
+-/
 private theorem locallyIntegrableOn_mul_left_integrable_of_compact_support_continuousOn
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -1707,6 +1986,15 @@ theorem euclideanSobolev_locallyLipschitz_mul_test_integral_eq_of_smooth_approx_
     tendsto_nhds_unique hnegR_tendsto_to_Llim hnegR_tendsto_to_neg_Rlim
   simpa [Llim, Rlim] using hlim_eq
 
+/--
+%%handwave
+name:
+  A smooth tapered radial extension across the unit sphere
+statement:
+  A smooth function on the closed unit ball admits an annular reflected-and-tapered extension which is smooth across the unit sphere and vanishes near radius \(2\).
+proof:
+  Reflect radially across \(\|x\|=1\), multiply by a smooth taper flat at the gluing radii, and verify equality of derivatives across the seams.
+-/
 private theorem euclideanSobolevUnitBallReflectionAnnulus_taper_smoothExtension
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H] :
     ∃ a : H → ℝ,
@@ -2205,8 +2493,7 @@ statement:
   from the inside.
 proof:
   Pull the function back by the dilation \(z\mapsto rz\), apply
-  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the
-  unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core),
+  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core),
   and push the trace representative forward to the sphere \(\|x\|=r\).
   The collar convergence follows from the dilation change of variables.
 -/
@@ -2780,6 +3067,15 @@ theorem unit_outer_taper_error_trace_integral_le_two_collar_mass
           ∫⁻ x in {x : H | (1 : ℝ) < ‖x‖ ∧ ‖x‖ < 1 + ε},
             ENNReal.ofReal ‖g x‖ ∂MeasureTheory.volume := rfl
 
+/--
+%%handwave
+name:
+  The tapered radial reflection error belongs to (L^p)
+statement:
+  The pullback of the taper error under radial reflection belongs to the required \(L^p\) space on the annulus.
+proof:
+  Use quasi-measure preservation of radial reflection, the bounded taper, and the original \(L^p\) control in the unit ball.
+-/
 private theorem unit_radial_reflection_taper_error_pullback_memLp
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -2836,6 +3132,15 @@ private theorem unit_radial_reflection_taper_error_pullback_memLp
   simpa [U, R, μ, Function.comp_def] using
     hw_map.comp_of_map hR_aemeas_U
 
+/--
+%%handwave
+name:
+  Finite annular (L^1) mass from an (L^p) bound
+statement:
+  On the finite-measure annulus, an \(L^p\) function with \(p>1\) has finite indicator \(L^1\) integral.
+proof:
+  Apply Hölder's inequality using finiteness of the annulus measure.
+-/
 private theorem annulus_l1_lintegral_indicator_lt_top_of_memLp_for_taper
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -2878,6 +3183,15 @@ private theorem annulus_l1_lintegral_indicator_lt_top_of_memLp_for_taper
       rw [lintegral_indicator hA_meas]
       exact hnorm_lt)
 
+/--
+%%handwave
+name:
+  The measure of the outer unit collar vanishes
+statement:
+  The volume of the annular collar \(\{1<\|x\|<1+\varepsilon\}\) tends to zero as \(\varepsilon\downarrow0\).
+proof:
+  The collars shrink to the unit sphere, which is volume-null, and continuity from above applies inside a finite ball.
+-/
 private theorem unit_outer_collar_measure_tendsto_zero_for_taper
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -2945,6 +3259,15 @@ private theorem unit_outer_collar_measure_tendsto_zero_for_taper
     simpa [hS_empty] using htendsto
   simpa [Function.comp_def, S, R] using htarget
 
+/--
+%%handwave
+name:
+  Annular (L^1) mass vanishes on shrinking outer collars
+statement:
+  The \(L^1\) mass of an integrable annular function on \(\{1<\|x\|<1+\varepsilon\}\) tends to zero.
+proof:
+  Use absolute continuity of the integral together with the vanishing collar measure.
+-/
 private theorem annulus_l1_outer_unit_collar_mass_tendsto_zero_for_taper
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -3224,11 +3547,9 @@ statement:
   on the unit sphere from the outside.
 proof:
   First use
-  [the radial reflected copy has the same exterior trace as the original
-  interior trace](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_of_inside).
+  [the radial reflected copy has the same exterior trace as the original interior trace](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_of_inside).
   Then apply
-  [multiplication by the taper does not change the exterior unit
-  trace](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_taper_of_untapered).
+  [multiplication by the taper does not change the exterior unit trace](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_taper_of_untapered).
 -/
 theorem hasL1TraceFromOutsideSphere_unit_radial_reflection_taper_of_inside
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -3265,11 +3586,9 @@ statement:
   sphere.
 proof:
   First apply
-  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the
-  unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside).
+  [a scalar \(W^{1,2}\) function on the unit ball has an \(L^1\) trace on the unit sphere from the inside](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside).
   Then apply
-  [the tapered radial reflection has the same \(L^1\) trace on the unit
-  sphere from the outside](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_taper_of_inside).
+  [the tapered radial reflection has the same \(L^1\) trace on the unit sphere from the outside](lean:JJMath.Uniformization.hasL1TraceFromOutsideSphere_unit_radial_reflection_taper_of_inside).
 -/
 theorem euclideanSobolev_unit_ball_radial_reflection_inner_trace
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -3905,8 +4224,7 @@ proof:
   Near radius \(3/2\) the radial reflection remains in a compact subannulus
   of the unit ball, while the taper \(3-2\|x\|\) tends to zero uniformly.
   Use square-integrability of the reflected pullback on the annulus, then apply
-  [the zero-trace statement for a square-integrable annular function
-  multiplied by the vanishing taper](lean:JJMath.Uniformization.hasL1TraceFromInsideSphere_three_halves_zero_of_annulus_taper).
+  [the zero-trace statement for a square-integrable annular function multiplied by the vanishing taper](lean:JJMath.Uniformization.hasL1TraceFromInsideSphere_three_halves_zero_of_annulus_taper).
 -/
 theorem euclideanSobolev_unit_ball_radial_reflection_outer_trace_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -4295,6 +4613,15 @@ structure EuclideanSobolevUnitBallAnnulusL1TraceGlueTraceControlledScalarCutoffD
           ∂MeasureTheory.volume)
       Filter.atTop (𝓝 (0 : ℝ))
 
+/--
+%%handwave
+name:
+  A smooth scalar cutoff with prescribed range
+statement:
+  There exists a smooth cutoff taking values in \([0,1]\), equal to the required constants on the two sides of its transition interval.
+proof:
+  Choose a standard smooth transition function and record its range and plateau properties.
+-/
 private theorem exists_scalarWeakSobolevCutoff_range_Icc
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [FiniteDimensional ℝ H]
@@ -4605,8 +4932,13 @@ def EuclideanSobolevUnitSphereWeightedTraceIntegrable
       ((MeasureTheory.volume : Measure H).toSphere)
 
 /--
-If the trace itself is integrable on the unit sphere, then its product with a
-fixed smooth ambient test function and a fixed normal component is integrable.
+%%handwave
+name:
+  Integrability of a weighted spherical trace
+statement:
+  If a trace is integrable on the unit sphere and the radial weight is bounded there, then their weighted product is integrable.
+proof:
+  Bound the weight on the compact unit sphere and dominate the product by a constant times the integrable trace.
 -/
 theorem euclideanSobolev_unit_sphere_weighted_trace_integrable_of_trace_integrable
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -5147,11 +5479,9 @@ statement:
   respect to the spherical measure.
 proof:
   First use
-  [a scalar \(W^{1,2}\) function on the unit ball has an inside \(L^1\)
-  trace](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core).
+  [a scalar \(W^{1,2}\) function on the unit ball has an inside \(L^1\) trace](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_has_l1_trace_from_inside_core).
   Then apply
-  [an inside \(L^1\) trace of a square-integrable function is integrable on
-  the unit sphere](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_integrable_sphere_trace_of_l1_trace_from_inside).
+  [an inside \(L^1\) trace of a square-integrable function is integrable on the unit sphere](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_integrable_sphere_trace_of_l1_trace_from_inside).
 -/
 theorem euclideanSobolev_unit_ball_has_integrable_l1_trace_from_inside
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -5254,6 +5584,15 @@ private def sphereOuterL1TraceError
       ENNReal.ofReal ‖u x - τ (((r / ‖x‖) : ℝ) • x)‖
         ∂MeasureTheory.volume
 
+/--
+%%handwave
+name:
+  Positive radial normalization lies on the corresponding sphere
+statement:
+  For \(r>0\) and \(x\ne0\), the radial projection \(r\|x\|^{-1}x\) has norm \(r\).
+proof:
+  Use homogeneity of the norm and cancel the positive factor \(\|x\|\).
+-/
 private theorem radialProjection_mem_sphere_of_pos
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {r : ℝ} (hr_pos : 0 < r) {z : H} (hz : z ≠ 0) :
@@ -5271,6 +5610,15 @@ private theorem radialProjection_mem_sphere_of_pos
   rw [Metric.mem_sphere, dist_eq_norm]
   simp [hnorm]
 
+/--
+%%handwave
+name:
+  Unit radial projection lies on the unit sphere
+statement:
+  For \(x\ne0\), the normalized vector \(\|x\|^{-1}x\) lies on the unit sphere.
+proof:
+  Apply the radial projection formula with radius \(1\).
+-/
 private theorem radialUnitProjection_mem_unit_sphere
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {z : H} (hz : z ≠ 0) :
@@ -5279,6 +5627,15 @@ private theorem radialUnitProjection_mem_unit_sphere
     (radialProjection_mem_sphere_of_pos
       (H := H) (r := (1 : ℝ)) (by norm_num) hz)
 
+/--
+%%handwave
+name:
+  Inverse-norm scaling gives a unit vector
+statement:
+  If \(x\ne0\), then \(\|x\|^{-1}x\) belongs to the unit sphere.
+proof:
+  Compute its norm directly by homogeneity and cancellation.
+-/
 private theorem invNorm_smul_mem_unit_sphere
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {z : H} (hz : z ≠ 0) :
@@ -5440,6 +5797,15 @@ private def euclideanSobolevUnitBallAnnulusOuterTransitionCollar
     (width : ℝ) : Set H :=
   {z : H | (3 / 2 : ℝ) - width < ‖z‖ ∧ ‖z‖ < (3 / 2 : ℝ)}
 
+/--
+%%handwave
+name:
+  The inner transition collar is open
+statement:
+  The radial collar on the unit-ball side of the smoothing transition is open.
+proof:
+  It is defined by strict inequalities in the continuous norm.
+-/
 private theorem euclideanSobolevUnitBallInnerTransitionCollar_isOpen
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (width : ℝ) :
@@ -5449,6 +5815,15 @@ private theorem euclideanSobolevUnitBallInnerTransitionCollar_isOpen
     (isOpen_lt continuous_const continuous_norm).inter
       (isOpen_lt continuous_norm continuous_const)
 
+/--
+%%handwave
+name:
+  The annular inner transition collar is open
+statement:
+  The inner transition collar on the annulus side is open.
+proof:
+  It is an inverse image of an open interval under the norm.
+-/
 private theorem euclideanSobolevUnitBallAnnulusInnerTransitionCollar_isOpen
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (width : ℝ) :
@@ -5458,6 +5833,15 @@ private theorem euclideanSobolevUnitBallAnnulusInnerTransitionCollar_isOpen
     (isOpen_lt continuous_const continuous_norm).inter
       (isOpen_lt continuous_norm continuous_const)
 
+/--
+%%handwave
+name:
+  The annular outer transition collar is open
+statement:
+  The outer transition collar near radius \(2\) is open.
+proof:
+  Use continuity of the norm and the strict radial bounds.
+-/
 private theorem euclideanSobolevUnitBallAnnulusOuterTransitionCollar_isOpen
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (width : ℝ) :
@@ -5467,6 +5851,15 @@ private theorem euclideanSobolevUnitBallAnnulusOuterTransitionCollar_isOpen
     (isOpen_lt continuous_const continuous_norm).inter
       (isOpen_lt continuous_norm continuous_const)
 
+/--
+%%handwave
+name:
+  The annular transition collars are disjoint
+statement:
+  For the chosen collar width, the inner and outer annular transition collars do not intersect.
+proof:
+  Their radial intervals are separated; the width hypotheses make the simultaneous inequalities contradictory.
+-/
 private theorem euclideanSobolevUnitBallAnnulusTransitionCollars_disjoint
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) :
@@ -5477,6 +5870,15 @@ private theorem euclideanSobolevUnitBallAnnulusTransitionCollars_disjoint
   intro z hinner houter
   nlinarith [hwidth_le_quarter, hinner.2, houter.1]
 
+/--
+%%handwave
+name:
+  The unit cutoff derivative vanishes outside its transition collar
+statement:
+  Outside the inner radial transition collar, the derivative of the unit-side cutoff is zero.
+proof:
+  There the transition profile is locally constant; the chain rule therefore gives zero derivative.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unit_fderiv_eq_zero_of_notMem_inner_transition_collar
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ}
@@ -5500,6 +5902,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unit_fderi
       exact hnot_lt_one hlt
     exact fderiv_of_notMem_tsupport (𝕜 := ℝ) (f := χ.unitCutoff) hnot_tsupport
 
+/--
+%%handwave
+name:
+  The annular cutoff derivative vanishes outside its transition collars
+statement:
+  Outside the inner and outer annular transition collars, the derivative of the annular cutoff is zero.
+proof:
+  Both radial transition factors are locally constant off their respective collars, so the product derivative vanishes.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulus_fderiv_eq_zero_of_notMem_transition_collars
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ}
@@ -5538,6 +5949,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulus_fd
       exact hA hA'
     exact fderiv_of_notMem_tsupport (𝕜 := ℝ) (f := χ.annulusCutoff) hnot_tsupport
 
+/--
+%%handwave
+name:
+  The unit derivative pairing is supported in the inner collar
+statement:
+  The integral pairing involving the derivative of the unit cutoff is unchanged when restricted to the unit-side inner transition collar.
+proof:
+  The integrand vanishes outside that collar by the cutoff derivative support statement.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unit_derivative_pairing_eq_inner_transition_collar
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H]
@@ -5579,6 +5999,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unit_deriv
   rw [setIntegral_eq_integral_of_forall_compl_eq_zero hzero_ball,
     setIntegral_eq_integral_of_forall_compl_eq_zero hzero_collar]
 
+/--
+%%handwave
+name:
+  The annular derivative pairing is supported in the transition collars
+statement:
+  The annular cutoff-derivative pairing is unchanged when restricted to the union of the inner and outer annular collars.
+proof:
+  Outside that union the cutoff derivative is zero.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulus_derivative_pairing_eq_transition_collars
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H]
@@ -5627,6 +6056,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulus_de
   rw [setIntegral_eq_integral_of_forall_compl_eq_zero hzero_annulus,
     setIntegral_eq_integral_of_forall_compl_eq_zero hzero_collars]
 
+/--
+%%handwave
+name:
+  The total cutoff derivative pairing splits over the transition collars
+statement:
+  The sum of the unit and annular cutoff-derivative pairings equals the sum of their restrictions to the corresponding transition collars.
+proof:
+  Apply the two support reductions and regroup the integrals.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.derivative_pairing_sum_eq_transition_collar_pairing_sum
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H]
@@ -5651,6 +6089,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.derivative
   rw [χ.unit_derivative_pairing_eq_inner_transition_collar u₀ φ v,
     χ.annulus_derivative_pairing_eq_transition_collars u₁ φ v]
 
+/--
+%%handwave
+name:
+  A uniform derivative bound for a smooth transition profile
+statement:
+  The derivative of the fixed smooth transition function is bounded on \([-2,2]\) by some finite constant.
+proof:
+  Its derivative is continuous, hence bounded on the compact interval.
+-/
 private theorem exists_smoothTransition_deriv_bound_Icc_neg_two_two :
     ∃ C : ℝ,
       1 ≤ C ∧
@@ -5668,14 +6115,15 @@ private theorem exists_smoothTransition_deriv_bound_Icc_neg_two_two :
   intro t ht
   exact (hC₀ t ht).trans (le_max_left C₀ 1)
 
-private theorem deriv_smoothTransition_eq_zero_of_lt_zero {x : ℝ}
-    (hx : x < 0) :
-    deriv Real.smoothTransition x = 0 := by
-  have hev : Real.smoothTransition =ᶠ[𝓝 x] fun _ : ℝ ↦ (0 : ℝ) :=
-    Filter.Eventually.mono (Iio_mem_nhds hx) fun y hy ↦
-      Real.smoothTransition.zero_of_nonpos hy.le
-  rw [Filter.EventuallyEq.deriv_eq hev, deriv_const]
-
+/--
+%%handwave
+name:
+  The transition derivative vanishes beyond its upper plateau
+statement:
+  For \(x>1\), the derivative of the smooth transition profile is zero.
+proof:
+  The profile is constant on a neighborhood of every point beyond the transition interval.
+-/
 private theorem deriv_smoothTransition_eq_zero_of_one_lt {x : ℝ}
     (hx : 1 < x) :
     deriv Real.smoothTransition x = 0 := by
@@ -5684,6 +6132,15 @@ private theorem deriv_smoothTransition_eq_zero_of_one_lt {x : ℝ}
       Real.smoothTransition.one_of_one_le hy.le
   rw [Filter.EventuallyEq.deriv_eq hev, deriv_const]
 
+/--
+%%handwave
+name:
+  The unit inner transition argument stays in ([-2,2])
+statement:
+  On the unit-side inner collar, the rescaled radial argument of the transition profile belongs to \([-2,2]\).
+proof:
+  Translate the collar inequalities and divide by the positive collar width.
+-/
 private theorem unit_inner_transition_arg_mem_Icc_neg_two_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_pos : 0 < width) {z : H}
@@ -5697,6 +6154,15 @@ private theorem unit_inner_transition_arg_mem_Icc_neg_two_two
   · rw [div_le_iff₀ hden]
     nlinarith [hz.1.le]
 
+/--
+%%handwave
+name:
+  The annular inner transition argument stays in ([-2,2])
+statement:
+  On the annular inner collar, its rescaled transition argument lies in \([-2,2]\).
+proof:
+  Rewrite the radial inequalities in terms of the scaled distance from radius \(1\).
+-/
 private theorem annulus_inner_transition_arg_mem_Icc_neg_two_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_pos : 0 < width) {z : H}
@@ -5711,6 +6177,15 @@ private theorem annulus_inner_transition_arg_mem_Icc_neg_two_two
   · rw [div_le_iff₀ hden]
     nlinarith [hz.2.le]
 
+/--
+%%handwave
+name:
+  The annular outer transition argument stays in ([-2,2])
+statement:
+  On the annular outer collar, the rescaled argument at radius \(2\) lies in \([-2,2]\).
+proof:
+  Translate the outer collar bounds by the positive width.
+-/
 private theorem annulus_outer_transition_arg_mem_Icc_neg_two_two
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_pos : 0 < width) {z : H}
@@ -5725,30 +6200,15 @@ private theorem annulus_outer_transition_arg_mem_Icc_neg_two_two
   · rw [div_le_iff₀ hden]
     nlinarith [hz.1.le]
 
-private theorem annulus_outer_transition_arg_gt_one_of_inner_transition
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {width : ℝ} (hwidth_pos : 0 < width)
-    (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) {z : H}
-    (hz :
-      z ∈ euclideanSobolevUnitBallAnnulusInnerTransitionCollar H width) :
-    1 <
-      ((((3 / 2 : ℝ) - width / 2) - ‖z‖) / (width / 4)) := by
-  have hden : 0 < width / 4 := by linarith
-  rw [one_lt_div hden]
-  nlinarith [hz.2, hwidth_le_quarter]
-
-private theorem annulus_inner_transition_arg_gt_one_of_outer_transition
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {width : ℝ} (hwidth_pos : 0 < width)
-    (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) {z : H}
-    (hz :
-      z ∈ euclideanSobolevUnitBallAnnulusOuterTransitionCollar H width) :
-    1 <
-      ((‖z‖ - ((1 : ℝ) + width / 2)) / (width / 4)) := by
-  have hden : 0 < width / 4 := by linarith
-  rw [one_lt_div hden]
-  nlinarith [hz.1, hwidth_le_quarter]
-
+/--
+%%handwave
+name:
+  Derivative of the unit inner transition profile
+statement:
+  The derivative of the unit-side radial transition profile is the derivative of the scalar transition evaluated at its rescaled radial argument, multiplied by the reciprocal collar width.
+proof:
+  Differentiate the affine rescaling by the one-dimensional chain rule.
+-/
 private theorem unit_inner_transition_profile_deriv_eq
     {width r : ℝ} :
     deriv
@@ -5776,6 +6236,15 @@ private theorem unit_inner_transition_profile_deriv_eq
   simpa [Function.comp_def, hderiv_arg] using
     deriv_comp r hs_diff harg_diff
 
+/--
+%%handwave
+name:
+  Derivative of the annular inner transition profile
+statement:
+  The annular inner profile derivative is the scalar transition derivative at its rescaled argument times the reciprocal width.
+proof:
+  Apply the chain rule to the affine radial argument.
+-/
 private theorem annulus_inner_transition_profile_deriv_eq
     {width r : ℝ} :
     deriv
@@ -5804,6 +6273,15 @@ private theorem annulus_inner_transition_profile_deriv_eq
   simpa [Function.comp_def, hderiv_arg] using
     deriv_comp r hs_diff harg_diff
 
+/--
+%%handwave
+name:
+  Derivative of the annular outer transition profile
+statement:
+  The annular outer profile derivative is the appropriately oriented scalar transition derivative divided by the collar width.
+proof:
+  Differentiate the reflected affine argument; its sign records the outer orientation.
+-/
 private theorem annulus_outer_transition_profile_deriv_eq
     {width r : ℝ} :
     deriv
@@ -5835,6 +6313,15 @@ private theorem annulus_outer_transition_profile_deriv_eq
   simpa [Function.comp_def, hderiv_arg] using
     deriv_comp r hs_diff harg_diff
 
+/--
+%%handwave
+name:
+  Derivative of the annular product profile on the inner collar
+statement:
+  On the inner annular collar, the derivative of the product cutoff reduces to the inner-profile derivative times the constant outer factor.
+proof:
+  The outer transition factor is on its plateau there, so the product rule loses the outer derivative term.
+-/
 private theorem annulus_transition_product_profile_deriv_eq_of_inner_collar
     {width r : ℝ} (_hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -5894,6 +6381,15 @@ private theorem annulus_transition_product_profile_deriv_eq_of_inner_collar
   rw [hprod, houter_one, houter_zero, hinner_deriv]
   ring
 
+/--
+%%handwave
+name:
+  Derivative of the annular product profile on the outer collar
+statement:
+  On the outer annular collar, the derivative of the product cutoff reduces to the outer-profile derivative times the constant inner factor.
+proof:
+  The inner factor is constant there; apply the product rule.
+-/
 private theorem annulus_transition_product_profile_deriv_eq_of_outer_collar
     {width r : ℝ} (_hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -5953,6 +6449,15 @@ private theorem annulus_transition_product_profile_deriv_eq_of_outer_collar
   rw [hprod, hinner_zero, hinner_one, houter_deriv]
   ring
 
+/--
+%%handwave
+name:
+  Bound for the unit inner profile derivative
+statement:
+  On the unit inner collar, the absolute derivative of the transition profile is bounded by the fixed transition-derivative bound divided by the collar width.
+proof:
+  Use the exact chain-rule formula and the fact that the argument lies in \([-2,2]\).
+-/
 private theorem unit_inner_transition_profile_deriv_norm_le
     {width C r : ℝ} (hwidth_pos : 0 < width)
     (hC : ∀ t ∈ Set.Icc (-(2 : ℝ)) 2,
@@ -6011,6 +6516,15 @@ private theorem unit_inner_transition_profile_deriv_norm_le
           mul_le_mul_of_nonneg_right (hC _ hr) (norm_nonneg _)
     _ = C * (4 / width) := by rw [hscale]
 
+/--
+%%handwave
+name:
+  Bound for the annular inner profile derivative
+statement:
+  On the annular inner collar, the profile derivative has magnitude at most the transition bound divided by the width.
+proof:
+  Combine the chain-rule formula with the compact-interval derivative bound.
+-/
 private theorem annulus_inner_transition_profile_deriv_norm_le
     {width C r : ℝ} (hwidth_pos : 0 < width)
     (hC : ∀ t ∈ Set.Icc (-(2 : ℝ)) 2,
@@ -6070,6 +6584,15 @@ private theorem annulus_inner_transition_profile_deriv_norm_le
           mul_le_mul_of_nonneg_right (hC _ hr) (norm_nonneg _)
     _ = C * (4 / width) := by rw [hscale]
 
+/--
+%%handwave
+name:
+  Bound for the annular outer profile derivative
+statement:
+  On the annular outer collar, the outer profile derivative has magnitude at most the transition bound divided by the width.
+proof:
+  The orientation sign does not affect the norm; apply the derivative bound.
+-/
 private theorem annulus_outer_transition_profile_deriv_norm_le
     {width C r : ℝ} (hwidth_pos : 0 < width)
     (hC : ∀ t ∈ Set.Icc (-(2 : ℝ)) 2,
@@ -6133,6 +6656,15 @@ private theorem annulus_outer_transition_profile_deriv_norm_le
           mul_le_mul_of_nonneg_right (hC _ hr) (norm_nonneg _)
     _ = C * (4 / width) := by rw [hscale]
 
+/--
+%%handwave
+name:
+  Bound for the annular product derivative on the inner collar
+statement:
+  On the inner annular collar, the product-profile derivative is bounded by the transition constant divided by the width.
+proof:
+  Use the reduced product derivative formula and that cutoff values lie in \([0,1]\).
+-/
 private theorem annulus_transition_product_profile_deriv_norm_le_of_inner_collar
     {width C r : ℝ} (hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -6277,6 +6809,15 @@ private theorem annulus_transition_product_profile_deriv_norm_le_of_inner_collar
         mul_le_mul hinner_bound houter_norm (norm_nonneg _) hscale_nonneg
     _ = C * (4 / width) := by ring
 
+/--
+%%handwave
+name:
+  Bound for the annular product derivative on the outer collar
+statement:
+  On the outer annular collar, the product-profile derivative is bounded by the transition constant divided by the width.
+proof:
+  Use the outer reduced formula and the range bound for the other cutoff factor.
+-/
 private theorem annulus_transition_product_profile_deriv_norm_le_of_outer_collar
     {width C r : ℝ} (hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -6725,6 +7266,15 @@ theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_exists_radial_collar_cu
     rw [Filter.EventuallyEq.fderiv_eq (𝕜 := ℝ) hone]
     simp
 
+/--
+%%handwave
+name:
+  Derivative of the norm in a radial direction
+statement:
+  At \(x\ne0\), the derivative of the norm applied to \(v\) is \(\langle v,\|x\|^{-1}x\rangle\).
+proof:
+  Use the Fréchet derivative formula for the norm in a real inner-product space and the Riesz representation of the radial unit vector.
+-/
 private theorem fderiv_norm_apply_eq_inner_inv_norm_smul
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {z v : H} (hz : z ≠ 0) :
@@ -6763,6 +7313,15 @@ private theorem fderiv_norm_apply_eq_inner_inv_norm_smul
           rw [inner_smul_left]
           simp
 
+/--
+%%handwave
+name:
+  Fréchet derivative of the unit cutoff
+statement:
+  At a nonzero point, the derivative of the unit radial cutoff is the scalar radial-profile derivative composed with the derivative of the norm.
+proof:
+  Apply the Fréchet chain rule to the cutoff as a scalar function of \(\|x\|\).
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff_fderiv_apply_eq
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6795,6 +7354,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff
   rw [hχ, hcomp]
   simp [g, ContinuousLinearMap.comp_apply, mul_comm]
 
+/--
+%%handwave
+name:
+  Radial formula for the unit cutoff derivative
+statement:
+  At \(x\ne0\), the unit cutoff derivative on \(v\) equals its radial profile derivative times \(\langle v,\|x\|^{-1}x\rangle\).
+proof:
+  Insert the derivative-of-norm formula into the cutoff chain rule.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff_fderiv_apply_eq_radial
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6810,6 +7378,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff
   rw [χ.unitCutoff_fderiv_apply_eq hz,
     fderiv_norm_apply_eq_inner_inv_norm_smul hz]
 
+/--
+%%handwave
+name:
+  Points in the unit inner collar are nonzero
+statement:
+  Every point in the unit-side inner transition collar has nonzero norm.
+proof:
+  Its collar inequalities place its norm near the positive radius \(1\).
+-/
 private theorem euclideanSobolevUnitBallInnerTransitionCollar_ne_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) {z : H}
@@ -6821,6 +7398,15 @@ private theorem euclideanSobolevUnitBallInnerTransitionCollar_ne_zero
     simpa [euclideanSobolevUnitBallInnerTransitionCollar] using hz.1
   nlinarith [hwidth_le_quarter, hlt]
 
+/--
+%%handwave
+name:
+  Points in the annular inner collar are nonzero
+statement:
+  Every point in the annular inner transition collar is nonzero.
+proof:
+  Its norm is strictly positive because it lies near radius \(1\).
+-/
 private theorem euclideanSobolevUnitBallAnnulusInnerTransitionCollar_ne_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} {z : H}
@@ -6832,6 +7418,15 @@ private theorem euclideanSobolevUnitBallAnnulusInnerTransitionCollar_ne_zero
     simpa [euclideanSobolevUnitBallAnnulusInnerTransitionCollar] using hz.1
   linarith
 
+/--
+%%handwave
+name:
+  Points in the annular outer collar are nonzero
+statement:
+  Every point in the annular outer transition collar is nonzero.
+proof:
+  Its norm lies near radius \(2\), hence is positive.
+-/
 private theorem euclideanSobolevUnitBallAnnulusOuterTransitionCollar_ne_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {width : ℝ} (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) {z : H}
@@ -6843,6 +7438,15 @@ private theorem euclideanSobolevUnitBallAnnulusOuterTransitionCollar_ne_zero
     simpa [euclideanSobolevUnitBallAnnulusOuterTransitionCollar] using hz.1
   nlinarith [hwidth_le_quarter, hlt]
 
+/--
+%%handwave
+name:
+  Radial unit-cutoff derivative on the inner collar
+statement:
+  On the unit inner collar, the derivative of the unit cutoff has the radial inner-product formula.
+proof:
+  Nonvanishing on the collar allows the general radial derivative formula to be applied.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff_fderiv_apply_eq_radial_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6861,6 +7465,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff
       (euclideanSobolevUnitBallInnerTransitionCollar_ne_zero
         hwidth_le_quarter hz)
 
+/--
+%%handwave
+name:
+  Oriented unit-cutoff derivative on the inner collar
+statement:
+  On the unit inner collar, the cutoff derivative equals the oriented transition-profile coefficient times the radial covector.
+proof:
+  Substitute the explicit one-dimensional profile derivative into the radial formula and collect the orientation sign.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff_fderiv_apply_eq_oriented_profile_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6877,6 +7490,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff
       hwidth_le_quarter hz,
     unit_inner_transition_profile_deriv_eq]
 
+/--
+%%handwave
+name:
+  Norm bound for the unit-cutoff derivative
+statement:
+  On the unit inner collar, the operator norm of the unit cutoff derivative is bounded by the transition constant divided by the collar width.
+proof:
+  The radial covector has norm one; combine this with the profile derivative bound.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff_fderiv_apply_norm_le_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -6937,6 +7559,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.unitCutoff
     _ ≤ (C * (4 / width)) * ‖v‖ :=
         mul_le_mul hprofile hnorm_apply (norm_nonneg _) hscale_nonneg
 
+/--
+%%handwave
+name:
+  Fréchet derivative of the annular cutoff
+statement:
+  At a nonzero point, the derivative of the annular product cutoff is its scalar radial-profile derivative composed with the derivative of the norm.
+proof:
+  Apply the chain rule to the annular cutoff as a function of radius.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6973,6 +7604,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
   rw [hχ, hcomp]
   simp [g, ContinuousLinearMap.comp_apply, mul_comm]
 
+/--
+%%handwave
+name:
+  Radial formula for the annular cutoff derivative
+statement:
+  At \(x\ne0\), evaluating the annular cutoff derivative on \(v\) gives the profile derivative times \(\langle v,\|x\|^{-1}x\rangle\).
+proof:
+  Combine the cutoff chain rule with the derivative-of-norm formula.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq_radial
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -6990,6 +7630,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
   rw [χ.annulusCutoff_fderiv_apply_eq hz,
     fderiv_norm_apply_eq_inner_inv_norm_smul hz]
 
+/--
+%%handwave
+name:
+  Radial annular-cutoff derivative on the inner collar
+statement:
+  On the annular inner collar, the derivative of the annular cutoff has the radial inner-product formula.
+proof:
+  Use nonvanishing on the collar in the general annular radial formula.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq_radial_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -7009,6 +7658,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
     χ.annulusCutoff_fderiv_apply_eq_radial
       (euclideanSobolevUnitBallAnnulusInnerTransitionCollar_ne_zero hz)
 
+/--
+%%handwave
+name:
+  Radial annular-cutoff derivative on the outer collar
+statement:
+  On the annular outer collar, the derivative of the annular cutoff has the radial inner-product formula.
+proof:
+  Again apply the nonzero-point radial formula.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq_radial_of_outer_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -7029,6 +7687,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
       (euclideanSobolevUnitBallAnnulusOuterTransitionCollar_ne_zero
         hwidth_le_quarter hz)
 
+/--
+%%handwave
+name:
+  Oriented annular-cutoff derivative on the inner collar
+statement:
+  On the inner annular collar, the annular cutoff derivative is the inner oriented transition coefficient times the radial covector.
+proof:
+  Substitute the inner product-profile derivative formula.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq_oriented_profile_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -7046,6 +7713,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
     annulus_transition_product_profile_deriv_eq_of_inner_collar
       hwidth_pos hwidth_le_quarter hz]
 
+/--
+%%handwave
+name:
+  Oriented annular-cutoff derivative on the outer collar
+statement:
+  On the outer annular collar, the annular cutoff derivative is the oppositely oriented outer transition coefficient times the radial covector.
+proof:
+  Insert the outer profile derivative, whose affine radial argument reverses orientation.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_eq_oriented_profile_of_outer_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width : ℝ}
@@ -7064,6 +7740,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
     annulus_transition_product_profile_deriv_eq_of_outer_collar
       hwidth_pos hwidth_le_quarter hz]
 
+/--
+%%handwave
+name:
+  Norm bound for the annular-cutoff derivative on the inner collar
+statement:
+  On the inner annular collar, the annular cutoff derivative has operator norm at most the transition constant divided by the width.
+proof:
+  The radial covector has norm one and the product-profile derivative obeys the inner bound.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_norm_le_of_inner_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -7130,6 +7815,15 @@ private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCut
     _ ≤ (C * (4 / width)) * ‖v‖ :=
         mul_le_mul hprofile hnorm_apply (norm_nonneg _) hscale_nonneg
 
+/--
+%%handwave
+name:
+  Norm bound for the annular-cutoff derivative on the outer collar
+statement:
+  On the outer annular collar, the annular cutoff derivative has operator norm at most the transition constant divided by the width.
+proof:
+  Combine the outer product-profile derivative estimate with the unit norm of the radial covector.
+-/
 private theorem EuclideanSobolevUnitBallAnnulusRadialCollarCutoffPair.annulusCutoff_fderiv_apply_norm_le_of_outer_transition
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -7233,6 +7927,15 @@ private noncomputable def euclideanSobolevUnitBallAnnulusOrientedRadialPairingWe
         euclideanSobolevUnitBallAnnulusOuterOrientedRadialPairingWeight
           width φ v z
 
+/--
+%%handwave
+name:
+  A radial inner product is bounded by the vector norm
+statement:
+  For \(x\ne0\), \(|\langle v,\|x\|^{-1}x\rangle|\le\|v\|\).
+proof:
+  The normalized radial vector has norm one, so this is Cauchy--Schwarz.
+-/
 private theorem norm_inner_invNorm_smul_le_norm
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {z v : H} (hz : z ≠ 0) :
@@ -7247,6 +7950,15 @@ private theorem norm_inner_invNorm_smul_le_norm
           norm_inner_le_norm (𝕜 := ℝ) _ _
     _ = ‖v‖ := by rw [hrad_norm, one_mul]
 
+/--
+%%handwave
+name:
+  Bound for the unit-side oriented radial weight
+statement:
+  The oriented radial pairing weight on the unit inner collar is bounded in norm by the underlying test-vector norm.
+proof:
+  Discard the orientation sign and apply the radial Cauchy--Schwarz bound.
+-/
 private theorem euclideanSobolevUnitBallInnerOrientedRadialPairingWeight_norm_le
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -7295,6 +8007,15 @@ private theorem euclideanSobolevUnitBallInnerOrientedRadialPairingWeight_norm_le
               (mul_le_mul hprof hinner (norm_nonneg _) hscale_nonneg)
               (norm_nonneg _)
 
+/--
+%%handwave
+name:
+  Bound for the annular inner oriented radial weight
+statement:
+  The oriented radial pairing weight on the annular inner collar is bounded by the test-vector norm.
+proof:
+  Use the normalized radial-vector estimate.
+-/
 private theorem euclideanSobolevUnitBallAnnulusInnerOrientedRadialPairingWeight_norm_le
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -7341,6 +8062,15 @@ private theorem euclideanSobolevUnitBallAnnulusInnerOrientedRadialPairingWeight_
               (mul_le_mul hprof hinner (norm_nonneg _) hscale_nonneg)
               (norm_nonneg _)
 
+/--
+%%handwave
+name:
+  Bound for the annular outer oriented radial weight
+statement:
+  The oriented radial pairing weight on the annular outer collar is bounded by the test-vector norm.
+proof:
+  The outer orientation changes only a sign; Cauchy--Schwarz gives the bound.
+-/
 private theorem euclideanSobolevUnitBallAnnulusOuterOrientedRadialPairingWeight_norm_le
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -7389,6 +8119,15 @@ private theorem euclideanSobolevUnitBallAnnulusOuterOrientedRadialPairingWeight_
               (mul_le_mul hprof hinner (norm_nonneg _) hscale_nonneg)
               (norm_nonneg _)
 
+/--
+%%handwave
+name:
+  Bound for the combined annular oriented radial weight
+statement:
+  The piecewise annular oriented radial pairing weight is bounded everywhere by the test-vector norm.
+proof:
+  Split into the inner collar, outer collar, and complement; apply the preceding bounds and use zero off the collars.
+-/
 private theorem euclideanSobolevUnitBallAnnulusOrientedRadialPairingWeight_norm_le
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {width C : ℝ}
@@ -8161,6 +8900,15 @@ private theorem dist_setIntegral_smul_le_lintegral_weight_error
   rw [hlin] at h
   exact h
 
+/--
+%%handwave
+name:
+  Integrability from an integrable trace and error
+statement:
+  If a scalar trace term and its approximation error are integrable, then their product with a bounded weight is integrable.
+proof:
+  Bound the weighted scalar by a constant times the sum of the trace magnitude and the integrable error, then apply domination.
+-/
 private theorem integrable_weighted_scalar_of_integrable_trace_and_error
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {a u t : α → ℝ}
@@ -9085,6 +9833,15 @@ private theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_oriented_radial
           mul_le_mul_of_nonneg_left hK_le_halfC hη_pos.le
       _ = η / 2 := by ring
 
+/--
+%%handwave
+name:
+  Exact trace cancellation reduces to two unit collars
+statement:
+  For the exact boundary trace, the total oriented cutoff-derivative pairing on the ball and annulus equals the sum of the two unit-sphere collar contributions.
+proof:
+  Use the support decomposition, cancel the matching inner interface terms by their opposite orientations, and note that the remaining outer terms vanish on cutoff plateaus.
+-/
 private theorem euclideanSobolevUnitBallAnnulusExactTraceOrientedPairing_eq_two_unit_collars
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -9152,6 +9909,15 @@ private theorem euclideanSobolevUnitBallAnnulusExactTraceOrientedPairing_eq_two_
           ∂MeasureTheory.volume) + x)
       hannulus
 
+/--
+%%handwave
+name:
+  Polar formula for an annular integral
+statement:
+  The integral of an integrable function over a radial annulus equals its spherical--radial integral with density \(r^{d-1}\).
+proof:
+  Apply the finite-dimensional polar integration formula and restrict the radial variable to the annular interval.
+-/
 private theorem euclideanSobolev_setIntegral_annulus_eq_polar
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -9259,6 +10025,15 @@ private theorem euclideanSobolev_setIntegral_annulus_eq_polar
             hmp.setIntegral_preimage_emb e.measurableEmbedding G P
   simpa [μH, μS, μR, C, I, P, ν, G] using hleft_subtype.trans hpolar
 
+/--
+%%handwave
+name:
+  Polar formula for the exact-trace two-collar pairing
+statement:
+  The sum of the two exact-trace collar pairings at the unit sphere can be written as an integral over directions and the corresponding inner and outer radial intervals.
+proof:
+  Apply the annular polar formula to each collar and use the oriented radial weights to identify the integrands.
+-/
 private theorem euclideanSobolev_two_unit_collar_exact_trace_pairing_eq_polar
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -9322,6 +10097,15 @@ private theorem euclideanSobolev_two_unit_collar_exact_trace_pairing_eq_polar
     euclideanSobolevUnitBallAnnulusInnerTransitionCollar] using
     congrArg₂ HAdd.hAdd hunit hannulus
 
+/--
+%%handwave
+name:
+  Norm of a polar point
+statement:
+  For a unit vector \(\theta\) and real \(r\), \(\|r\theta\|=|r|\).
+proof:
+  Use homogeneity of the norm and \(\|\theta\|=1\).
+-/
 private theorem norm_polar_smul_unit_sphere
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :
@@ -9332,6 +10116,15 @@ private theorem norm_polar_smul_unit_sphere
   have hr_nonneg : 0 ≤ ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) := p.2.2.le
   simp [norm_smul, Real.norm_of_nonneg hr_nonneg, hθ_norm]
 
+/--
+%%handwave
+name:
+  Normalizing a positive polar point recovers its direction
+statement:
+  If \(r>0\) and \(\|\theta\|=1\), then \(\|r\theta\|^{-1}(r\theta)=\theta\).
+proof:
+  The polar norm is \(r\); cancel the positive scalar.
+-/
 private theorem invNorm_smul_polar_smul_unit_sphere
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :
@@ -9347,6 +10140,15 @@ private theorem invNorm_smul_polar_smul_unit_sphere
     exact inv_mul_cancel₀ hr_ne
   simp [hcoef]
 
+/--
+%%handwave
+name:
+  Polar form of a radial spherical trace
+statement:
+  Evaluating the radial trace construction at \(r\theta\) with \(r>0\) simplifies to its scalar radial profile at \(r\) and angular value at \(\theta\).
+proof:
+  Use the polar norm and normalization identities.
+-/
 private theorem euclideanSobolevUnitSphereRadialTrace_polar
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {τ : H → ℝ}
@@ -9356,15 +10158,6 @@ private theorem euclideanSobolevUnitSphereRadialTrace_polar
       τ (p.1 : H) := by
   simpa [euclideanSobolevUnitSphereRadialTrace, one_div] using
     congrArg τ (invNorm_smul_polar_smul_unit_sphere (H := H) p)
-
-private theorem inner_invNorm_smul_polar_smul_unit_sphere
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    (p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) (v : H) :
-    inner ℝ
-        ((‖((p.2 : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H)‖)⁻¹ •
-          (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H))) v =
-      inner ℝ (p.1 : H) v := by
-  rw [invNorm_smul_polar_smul_unit_sphere p]
 
 /--
 %%handwave
@@ -9620,6 +10413,15 @@ private def euclideanSobolevTwoUnitOuterRadialProfileDeriv
       ((r - ((1 : ℝ) + width / 2)) / (width / 4)) *
     ((1 : ℝ) / (width / 4))
 
+/--
+%%handwave
+name:
+  The inner two-sided unit collar is measurable
+statement:
+  The inner radial collar adjacent to the unit sphere is measurable in the positive radial variable.
+proof:
+  It is an interval cut out by measurable strict inequalities.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_measurableSet
     (width : ℝ) :
     MeasurableSet (euclideanSobolevTwoUnitInnerRadialCollar width) := by
@@ -9628,6 +10430,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_measurableSet
     (isOpen_lt continuous_const continuous_subtype_val).measurableSet.inter
       (isOpen_lt continuous_subtype_val continuous_const).measurableSet
 
+/--
+%%handwave
+name:
+  The outer two-sided unit collar is measurable
+statement:
+  The outer radial collar adjacent to the unit sphere is measurable.
+proof:
+  It is a Borel interval in the radial coordinate.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_measurableSet
     (width : ℝ) :
     MeasurableSet (euclideanSobolevTwoUnitOuterRadialCollar width) := by
@@ -9636,6 +10447,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_measurableSet
     (isOpen_lt continuous_const continuous_subtype_val).measurableSet.inter
       (isOpen_lt continuous_subtype_val continuous_const).measurableSet
 
+/--
+%%handwave
+name:
+  The inner unit collar has finite radial measure
+statement:
+  The inner unit collar has finite \(r^{d-1}dr\)-measure.
+proof:
+  It is bounded and lies in a compact subinterval of the positive reals, where the polynomial density is integrable.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_measure_lt_top
     (n : ℕ) {width : ℝ} :
     MeasureTheory.Measure.volumeIoiPow n
@@ -9650,6 +10470,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_measure_lt_top
     rw [MeasureTheory.Measure.volumeIoiPow_apply_Iio]
     exact ENNReal.ofReal_lt_top)
 
+/--
+%%handwave
+name:
+  The outer unit collar has finite radial measure
+statement:
+  The outer unit collar has finite \(r^{d-1}dr\)-measure.
+proof:
+  Integrate the locally bounded radial density over its bounded interval.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_measure_lt_top
     (n : ℕ) {width : ℝ} (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) :
     MeasureTheory.Measure.volumeIoiPow n
@@ -9664,6 +10493,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_measure_lt_top
     rw [MeasureTheory.Measure.volumeIoiPow_apply_Iio]
     exact ENNReal.ofReal_lt_top)
 
+/--
+%%handwave
+name:
+  A density upper bound controls weighted measure
+statement:
+  If \(r^n\le C\) on a measurable set \(A\), then the radial measure \(\int_A r^n\,dr\) is at most \(C\) times the Lebesgue measure of \(A\).
+proof:
+  Apply monotonicity of the integral to the pointwise density bound.
+-/
 private theorem volumeIoiPow_apply_le_of_pow_le_on_set
     (n : ℕ) {s : Set (Set.Ioi (0 : ℝ))} (hs : MeasurableSet s)
     {M : ℝ} (_hM_nonneg : 0 ≤ M)
@@ -9683,6 +10521,15 @@ private theorem volumeIoiPow_apply_le_of_pow_le_on_set
         (Measure.comap Subtype.val (MeasureTheory.volume : Measure ℝ)) s := by
           rw [setLIntegral_const]
 
+/--
+%%handwave
+name:
+  Lebesgue measure of the inner unit collar is bounded by its width
+statement:
+  The ordinary radial measure of the inner collar is at most its prescribed width.
+proof:
+  The collar is contained in an interval of that length.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_comap_volume_le_width
     {width : ℝ} :
     (Measure.comap Subtype.val (MeasureTheory.volume : Measure ℝ))
@@ -9705,6 +10552,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_comap_volume_le_width
           rw [Real.volume_Ioo]
           ring_nf
 
+/--
+%%handwave
+name:
+  Lebesgue measure of the outer unit collar is bounded by its width
+statement:
+  The ordinary radial measure of the outer collar is at most its prescribed width.
+proof:
+  Compare it with the enclosing interval whose length is the width.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_comap_volume_le_width
     {width : ℝ} :
     (Measure.comap Subtype.val (MeasureTheory.volume : Measure ℝ))
@@ -9727,6 +10583,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_comap_volume_le_width
           rw [Real.volume_Ioo]
           ring_nf
 
+/--
+%%handwave
+name:
+  Weighted radial measure of the inner collar is bounded by its width
+statement:
+  The \(r^{d-1}dr\)-measure of the inner unit collar is bounded by a dimension-dependent constant times its width.
+proof:
+  Bound \(r^{d-1}\) on the collar and combine the density comparison with the ordinary width estimate.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_volumeIoiPow_real_le_width
     (n : ℕ) {width : ℝ} (hwidth_pos : 0 < width) :
     (MeasureTheory.Measure.volumeIoiPow n).real
@@ -9771,6 +10636,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_volumeIoiPow_real_le_wi
   exact ENNReal.toReal_le_of_le_ofReal
     (mul_nonneg hpow_nonneg hwidth_pos.le) hμ_le
 
+/--
+%%handwave
+name:
+  Weighted radial measure of the outer collar is bounded by its width
+statement:
+  The weighted radial measure of the outer unit collar is bounded by a dimension-dependent constant times its width.
+proof:
+  Use the maximum of the radial density on the bounded collar and its Lebesgue width.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_volumeIoiPow_real_le_width
     (n : ℕ) {width : ℝ} (hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ)) :
@@ -9816,6 +10690,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_volumeIoiPow_real_le_wi
   exact ENNReal.toReal_le_of_le_ofReal
     (mul_nonneg hpow_nonneg hwidth_pos.le) hμ_le
 
+/--
+%%handwave
+name:
+  The inner radial profile argument lies in its transition interval
+statement:
+  For radii in the inner unit collar, the rescaled inner profile argument belongs to the fixed compact transition interval.
+proof:
+  Translate and divide the collar inequalities by the positive width.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialProfile_arg_mem_Icc
     {width : ℝ} (hwidth_pos : 0 < width)
     {r : Set.Ioi (0 : ℝ)}
@@ -9829,6 +10712,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialProfile_arg_mem_Icc
   · rw [div_le_iff₀ hden]
     nlinarith [hr.1]
 
+/--
+%%handwave
+name:
+  The outer radial profile argument lies in its transition interval
+statement:
+  For radii in the outer unit collar, the rescaled outer profile argument lies in the fixed compact transition interval.
+proof:
+  Rewrite the outer collar inequalities under the affine rescaling.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialProfile_arg_mem_Icc
     {width : ℝ} (hwidth_pos : 0 < width)
     {r : Set.Ioi (0 : ℝ)}
@@ -9842,6 +10734,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialProfile_arg_mem_Icc
   · rw [div_le_iff₀ hden]
     nlinarith [hr.2]
 
+/--
+%%handwave
+name:
+  Measurability of the inner radial profile derivative
+statement:
+  The derivative of the inner radial transition profile is measurable on the positive real axis.
+proof:
+  It is a continuous transition derivative composed with an affine map and multiplied by a constant.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialProfileDeriv_measurable
     (width : ℝ) :
     Measurable
@@ -9862,6 +10763,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialProfileDeriv_measurable
   simpa [euclideanSobolevTwoUnitInnerRadialProfileDeriv] using
     ((hderiv_cont.comp harg_cont).measurable).mul measurable_const
 
+/--
+%%handwave
+name:
+  Measurability of the outer radial profile derivative
+statement:
+  The derivative of the outer radial transition profile is measurable.
+proof:
+  Use continuity of the scalar transition derivative and the affine outer rescaling.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialProfileDeriv_measurable
     (width : ℝ) :
     Measurable
@@ -9882,6 +10792,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialProfileDeriv_measurable
   simpa [euclideanSobolevTwoUnitOuterRadialProfileDeriv] using
     ((hderiv_cont.comp harg_cont).measurable).mul measurable_const
 
+/--
+%%handwave
+name:
+  Bound for the inner radial profile derivative
+statement:
+  On the inner unit collar, the absolute profile derivative is bounded by the transition constant divided by the width.
+proof:
+  The profile argument stays in the compact transition interval, where the derivative has the chosen uniform bound.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialProfileDeriv_norm_le
     {width C : ℝ} (hwidth_pos : 0 < width)
     (hC : ∀ t ∈ Set.Icc (-(2 : ℝ)) 2,
@@ -9898,6 +10817,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialProfileDeriv_norm_le
       (width := width) (C := C) (r := ((r : Set.Ioi (0 : ℝ)) : ℝ))
       hwidth_pos hC harg
 
+/--
+%%handwave
+name:
+  Bound for the outer radial profile derivative
+statement:
+  On the outer unit collar, the absolute profile derivative is bounded by the transition constant divided by the width.
+proof:
+  Apply the compact-interval transition derivative bound to the rescaled outer argument.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialProfileDeriv_norm_le
     {width C : ℝ} (hwidth_pos : 0 < width)
     (hC : ∀ t ∈ Set.Icc (-(2 : ℝ)) 2,
@@ -9914,6 +10842,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialProfileDeriv_norm_le
       (width := width) (C := C) (r := ((r : Set.Ioi (0 : ℝ)) : ℝ))
       hwidth_pos hC harg
 
+/--
+%%handwave
+name:
+  Inner collar distance from radius one is at most one
+statement:
+  Every radius in the inner unit collar satisfies \(|r-1|\le1\).
+proof:
+  The collar lies between positive radius and \(1\).
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_dist_one_le_one
     {width : ℝ} (hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -9925,6 +10862,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_dist_one_le_one
   · linarith [hr.1, hwidth_pos, hwidth_le_quarter]
   · linarith [hr.2]
 
+/--
+%%handwave
+name:
+  Inner collar distance from radius one is bounded by the width
+statement:
+  Every radius in the inner unit collar satisfies \(|r-1|\le\varepsilon\).
+proof:
+  This is the defining inner collar inequality rewritten as an absolute-value bound.
+-/
 private theorem euclideanSobolevTwoUnitInnerRadialCollar_dist_one_le_width
     {width : ℝ} (hwidth_pos : 0 < width)
     {r : Set.Ioi (0 : ℝ)}
@@ -9935,6 +10881,15 @@ private theorem euclideanSobolevTwoUnitInnerRadialCollar_dist_one_le_width
   · linarith [hr.1]
   · linarith [hr.2, hwidth_pos]
 
+/--
+%%handwave
+name:
+  Outer collar distance from radius one is at most one
+statement:
+  For the allowed widths, every radius in the outer unit collar satisfies \(|r-1|\le1\).
+proof:
+  The outer collar remains between radii \(1\) and \(2\).
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_dist_one_le_one
     {width : ℝ} (_hwidth_pos : 0 < width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -9946,6 +10901,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_dist_one_le_one
   · linarith [hr.1]
   · linarith [hr.2, hwidth_le_quarter]
 
+/--
+%%handwave
+name:
+  Outer collar distance from radius one is bounded by the width
+statement:
+  Every radius in the outer unit collar satisfies \(|r-1|\le\varepsilon\).
+proof:
+  Rewrite its defining interval inequality.
+-/
 private theorem euclideanSobolevTwoUnitOuterRadialCollar_dist_one_le_width
     {width : ℝ} (hwidth_pos : 0 < width)
     {r : Set.Ioi (0 : ℝ)}
@@ -9956,6 +10920,15 @@ private theorem euclideanSobolevTwoUnitOuterRadialCollar_dist_one_le_width
   · linarith [hr.1, hwidth_pos]
   · linarith [hr.2]
 
+/--
+%%handwave
+name:
+  Integrability against radial measure from measurability and boundedness
+statement:
+  A measurable function bounded on a finite radial-measure set is integrable there with respect to \(r^n dr\).
+proof:
+  Use the finite measure of the set and domination by a constant.
+-/
 private theorem integrableOn_volumeIoiPow_of_measurable_bounded
     {n : ℕ} {s : Set (Set.Ioi (0 : ℝ))}
     (hs_meas : MeasurableSet s)
@@ -10540,6 +11513,15 @@ private theorem euclideanSobolevTwoUnitScalarRadialFrozenPairing_eq_unit_mul
   simp [euclideanSobolevTwoUnitScalarRadialFrozenPairing,
     integral_mul_const, add_mul]
 
+/--
+%%handwave
+name:
+  Radial interval integral formula
+statement:
+  The integral against \(r^n dr\) over an open radial interval equals the corresponding ordinary interval integral of \(f(r)r^n\).
+proof:
+  Unfold the radial measure as Lebesgue measure with density \(r^n\), restrict to the interval, and apply the density integral formula.
+-/
 private theorem setIntegral_volumeIoiPow_Ioo_eq_interval
     (n : ℕ) {a b : ℝ} (ha_pos : 0 < a) (hab : a ≤ b)
     (F : ℝ → ℝ) :
@@ -10814,6 +11796,15 @@ private theorem euclideanSobolevTwoUnitScalarRadialFrozenPairing_unit_eq_transit
   rw [hset_eq_interval]
   exact hsum_interval
 
+/--
+%%handwave
+name:
+  Bound for the two-sided transition density difference
+statement:
+  Across the paired inner and outer unit collars, the absolute difference of their transition densities is bounded by a constant times the collar width.
+proof:
+  Use the mean-value estimate for the radial Jacobian \(r^{d-1}\), the profile derivative bounds, and \(|r-1|\le\varepsilon\).
+-/
 private theorem euclideanSobolevTwoUnitTransitionDensityDifference_abs_le
     (n : ℕ) {width t : ℝ} (hwidth_nonneg : 0 ≤ width)
     (hwidth_le_quarter : width ≤ (1 / 4 : ℝ))
@@ -13037,8 +14028,7 @@ statement:
   pairing is bounded by \(\eta\).
 proof:
   Apply
-  [the existence of radial collars satisfying the weighted trace
-  estimate](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_exists_radial_collar_pairing_bound_with_constant).
+  [the existence of radial collars satisfying the weighted trace estimate](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_exists_radial_collar_pairing_bound_with_constant).
 -/
 private theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_localized_radial_collar_pairing_bound_with_constant
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -13095,8 +14085,7 @@ statement:
   have cutoff-derivative pairing bounded by \(\eta\).
 proof:
   Apply
-  [the transition-collar pairing bound under the same trace-error
-  hypothesis](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_localized_radial_collar_pairing_bound_with_constant).
+  [the transition-collar pairing bound under the same trace-error hypothesis](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_localized_radial_collar_pairing_bound_with_constant).
   The cutoff derivatives vanish outside the three transition collars, so the
   full ball and annulus integrals are exactly the localized collar integrals.
 -/
@@ -13330,8 +14319,7 @@ statement:
   cores of width \(\delta\), bounded by one, and with cutoff-derivative
   collar term bounded in absolute value by \(\eta\).
 proof:
-  Apply [the radial collar cutoff construction with trace-controlled
-  derivative pairing](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_trace_controlled_radial_collar_cutoffs).
+  Apply [the radial collar cutoff construction with trace-controlled derivative pairing](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_trace_controlled_radial_collar_cutoffs).
 -/
 theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_trace_controlled_scalar_collar_cutoff_step_functions
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
@@ -13845,6 +14833,15 @@ theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_trace_controlled_smooth
           tests
        trace_collar_terms_tendsto_zero := htrace }⟩
 
+/--
+%%handwave
+name:
+  Pointwise convergence of the smooth unit collar test
+statement:
+  At each point not on the unit sphere, the unit-side smooth collar test converges to its limiting sharp test as the collar width tends to zero.
+proof:
+  For a fixed radial distance from the sphere, sufficiently small collars put the point on a constant plateau.
+-/
 private theorem euclideanSobolev_smooth_collar_unitTest_tendsto_at_point
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H]
@@ -13864,6 +14861,15 @@ private theorem euclideanSobolev_smooth_collar_unitTest_tendsto_at_point
       (hevent.mono fun n hn ↦ by
         exact tests.unit_eq_on_core n x (by linarith))
 
+/--
+%%handwave
+name:
+  Pointwise convergence of the smooth annular collar test
+statement:
+  Away from the unit sphere, the annular smooth collar test converges pointwise to its limiting sharp annular test.
+proof:
+  Eventually the fixed point lies outside the shrinking transition region, where the cutoff is constant.
+-/
 private theorem euclideanSobolev_smooth_collar_annulusTest_tendsto_at_point
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H]
@@ -13889,6 +14895,15 @@ private theorem euclideanSobolev_smooth_collar_annulusTest_tendsto_at_point
       ((hevent_inner.and hevent_outer).mono fun n hn ↦ by
         exact tests.annulus_eq_on_core n x (by linarith) (by linarith))
 
+/--
+%%handwave
+name:
+  The unit cutoff converges pointwise to one in the unit region
+statement:
+  At every fixed point strictly inside the unit region, the smooth unit cutoff tends to \(1\) as the collar shrinks.
+proof:
+  The point eventually lies on the interior plateau of the cutoff.
+-/
 private theorem euclideanSobolev_smooth_collar_unitCutoff_tendsto_one_at_point
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H]
@@ -13908,6 +14923,15 @@ private theorem euclideanSobolev_smooth_collar_unitCutoff_tendsto_one_at_point
       (hevent.mono fun n hn ↦ by
         exact tests.unitCutoff_eq_one_on_core n x (by linarith))
 
+/--
+%%handwave
+name:
+  The annular cutoff converges pointwise to one in the annulus
+statement:
+  At every fixed point strictly inside the annulus away from its seams, the smooth annular cutoff tends to \(1\).
+proof:
+  For sufficiently small width the point lies on both plateau regions of the product cutoff.
+-/
 private theorem euclideanSobolev_smooth_collar_annulusCutoff_tendsto_one_at_point
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H]
@@ -13933,6 +14957,15 @@ private theorem euclideanSobolev_smooth_collar_annulusCutoff_tendsto_one_at_poin
       ((hevent_inner.and hevent_outer).mono fun n hn ↦ by
         exact tests.annulusCutoff_eq_one_on_core n x (by linarith) (by linarith))
 
+/--
+%%handwave
+name:
+  Convergence of the unit-side main pairing
+statement:
+  The unit-side main integral pairing with the smooth collar test converges to the pairing with the limiting unit test.
+proof:
+  Use pointwise convergence of the cutoff and dominated convergence, with the fixed Sobolev and test-function integrable majorant.
+-/
 private theorem euclideanSobolev_smooth_collar_unit_left_main_pairing_tendsto
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -14003,6 +15036,15 @@ private theorem euclideanSobolev_smooth_collar_unit_left_main_pairing_tendsto
       (fun z : H ↦ ‖base z‖)
       hF_meas hbound_int hbound hlim)
 
+/--
+%%handwave
+name:
+  Convergence of the annular main pairing
+statement:
+  The annular main integral pairing with the smooth collar test converges to its limiting annular pairing.
+proof:
+  Apply dominated convergence using the cutoff range bound and integrability of the annular terms.
+-/
 private theorem euclideanSobolev_smooth_collar_annulus_left_main_pairing_tendsto
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -14081,6 +15123,15 @@ private theorem euclideanSobolev_smooth_collar_annulus_left_main_pairing_tendsto
       (fun z : H ↦ ‖base z‖)
       hF_meas hbound_int hbound hlim)
 
+/--
+%%handwave
+name:
+  Convergence of the unit-side derivative pairing
+statement:
+  The unit-side right-hand pairing involving the weak derivative converges as the smooth collar cutoff tends to its limiting test.
+proof:
+  Use pointwise cutoff convergence and dominate by the integrable derivative--test product.
+-/
 private theorem euclideanSobolev_smooth_collar_unit_right_pairing_tendsto
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -14149,6 +15200,15 @@ private theorem euclideanSobolev_smooth_collar_unit_right_pairing_tendsto
       (fun z : H ↦ ‖φ z • du₀ z v‖)
       hF_meas hbound_int hbound hlim)
 
+/--
+%%handwave
+name:
+  Convergence of the annular derivative pairing
+statement:
+  The annular right-hand weak-derivative pairing converges to the limiting annular test pairing.
+proof:
+  Apply dominated convergence with the annular derivative majorant.
+-/
 private theorem euclideanSobolev_smooth_collar_annulus_right_pairing_tendsto
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -15900,8 +16960,7 @@ statement:
   and converge to the global glued pairings.
 proof:
   Package
-  [the cutoff-localized pairings with their termwise identities and
-  limits](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_cutoffSequences)
+  [the cutoff-localized pairings with their termwise identities and limits](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_cutoffSequences)
   into the corresponding approximation data.
 -/
 theorem euclideanSobolev_unit_ball_annulus_l1_trace_glue_cutoffLimitData
@@ -16168,8 +17227,7 @@ statement:
   piecewise field.
 proof:
   Apply
-  [the test-function integration-by-parts identity for the piecewise glued
-  function and derivative field](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_test)
+  [the test-function integration-by-parts identity for the piecewise glued function and derivative field](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_annulus_l1_trace_glue_test)
   to each smooth compactly supported test function and each constant
   direction.
 -/
@@ -16391,6 +17449,15 @@ theorem euclideanSobolev_unit_ball_radial_reflection_glue_weakDerivative
         hunit hannulus hw.aestronglyMeasurable hu₁_aesm htest_integrable'
         htrace_inner₀ htrace_inner₁ htrace_outer hτ_weight
 
+/--
+%%handwave
+name:
+  Combining two (L^p) component bounds
+statement:
+  If two components belong to \(L^p\) and have extended norms bounded by \(A\) and \(B\), then their sum belongs to \(L^p\) with norm at most \(A+B\).
+proof:
+  Use closure of \(L^p\) under addition and the triangle inequality for the extended norm.
+-/
 private theorem memLp_two_add_eLpNorm_le_of_component_bounds
     {α E : Type} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {u v : α → E} {Cu Cv S : ℝ≥0∞}
@@ -16505,6 +17572,15 @@ theorem euclideanSobolev_unit_ball_radial_reflection_extension_unit_graph_bound
             (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) := by
         simp [B, μ]
 
+/--
+%%handwave
+name:
+  (L^p) bound for the reflected annular pullback
+statement:
+  The annular indicator of a function pulled back by radial reflection belongs to \(L^p\), with norm controlled by a dimensional constant times its unit-ball norm.
+proof:
+  Use quasi-measure preservation of the reflection and the change-of-measure estimate for composition.
+-/
 private theorem euclideanSobolev_unit_ball_radial_reflection_annulus_indicator_pullback_bound
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -17040,6 +18116,15 @@ theorem euclideanSobolev_unit_ball_radial_reflection_derivative_unit_part_graph_
             (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) := by
         simp [B, μ]
 
+/--
+%%handwave
+name:
+  Derivative bound for the radial taper
+statement:
+  On the reflection annulus, the Fréchet derivative of the radial taper has operator norm at most \(2\).
+proof:
+  Differentiate the scalar taper composed with the norm and use the one-dimensional derivative bound and unit norm of the radial covector.
+-/
 private theorem euclideanSobolev_unit_ball_taper_fderiv_norm_le_two
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     (x : H) :
@@ -17069,6 +18154,15 @@ private theorem euclideanSobolev_unit_ball_taper_fderiv_norm_le_two
     norm_fderiv_le_of_lipschitzOn (𝕜 := ℝ)
       (x₀ := x) (s := (Set.univ : Set H)) Filter.univ_mem hτ_lip
 
+/--
+%%handwave
+name:
+  Derivative bound for radial reflection
+statement:
+  On \(1<\|x\|<2\), the Fréchet derivative of radial reflection has operator norm at most \(5\).
+proof:
+  Differentiate \((2/\|x\|-1)x\), estimate the rank-one radial term and scalar identity term, and use \(\|x\|\ge1\).
+-/
 private theorem euclideanSobolevUnitBallRadialReflection_fderiv_norm_le_five_on_annulus
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     {x : H}
@@ -17453,6 +18547,15 @@ theorem euclideanSobolev_unit_ball_radial_reflection_derivative_annulus_value_gr
             (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) := by
         simp [μ, B]
 
+/--
+%%handwave
+name:
+  Combining three (L^p) component bounds
+statement:
+  If three components belong to \(L^p\) with extended norm bounds \(A,B,C\), then their sum belongs to \(L^p\) with norm at most \(A+B+C\).
+proof:
+  Apply the two-component estimate twice and associate the sum.
+-/
 private theorem memLp_three_add_eLpNorm_le_of_component_bounds
     {α E : Type} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {u v t : α → E} {Cu Cv Ct S : ℝ≥0∞}

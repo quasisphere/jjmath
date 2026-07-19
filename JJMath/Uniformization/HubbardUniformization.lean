@@ -88,6 +88,19 @@ noncomputable def PointedDiskUniformization.transition
     (TopologicalSpace.Opens.inclusion (E.domain_carrier_mono hmn)) ∘
       (P.equiv m).toHomeomorph.symm
 
+/--
+%%handwave
+name:
+  Holomorphicity of exhaustion disk transitions
+statement:
+  For exhaustion indices \(m\le n\), the transition from the disk
+  uniformizing the \(m\)-th member to the disk uniformizing the \(n\)-th
+  member is holomorphic.
+proof:
+  It is the composite of the inverse earlier disk uniformization, the
+  holomorphic inclusion of exhaustion domains, and the later disk
+  uniformization.
+-/
 theorem PointedDiskUniformization.transition_holomorphic
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -103,6 +116,17 @@ theorem PointedDiskUniformization.transition_holomorphic
   exact (P.equiv n).holomorphic_toFun.comp
     (hinc.comp (P.equiv m).holomorphic_invFun)
 
+/--
+%%handwave
+name:
+  Exhaustion disk transitions fix the origin
+statement:
+  Every transition between pointed disk uniformizations sends \(0\) to
+  \(0\).
+proof:
+  The inverse earlier uniformization sends zero to the common basepoint, and
+  the later uniformization sends that basepoint back to zero.
+-/
 theorem PointedDiskUniformization.transition_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -124,6 +148,19 @@ noncomputable def diskCoordinateRepresentative
     (T : Complex.UnitDisc → Complex.UnitDisc) : ℂ → ℂ :=
   fun z ↦ (T ((chartAt ℂ (0 : Complex.UnitDisc)).symm z) : ℂ)
 
+/--
+%%handwave
+name:
+  Analyticity of a disk map in the standard complex coordinate
+statement:
+  If \(T:\mathbb D\to\mathbb D\) is holomorphic, its complex-coordinate
+  representative is analytic on the unit disk \(B(0,1)\).
+proof:
+  Express the disk chart as the open embedding into \(\mathbb C\).  The
+  coordinate representative is the chart expression of the holomorphic map,
+  hence differentiable and analytic on the chart target containing the unit
+  disk.
+-/
 theorem diskCoordinateRepresentative_analyticOnNhd
     {T : Complex.UnitDisc → Complex.UnitDisc}
     (hT : HolomorphicMap Complex.UnitDisc Complex.UnitDisc T) :
@@ -159,6 +196,16 @@ theorem diskCoordinateRepresentative_analyticOnNhd
   rw [hchart]
   rfl
 
+/--
+%%handwave
+name:
+  Coordinate representative of a disk map fixing zero
+statement:
+  If \(T:\mathbb D\to\mathbb D\) satisfies \(T(0)=0\), then its standard
+  complex-coordinate representative also has value zero at zero.
+proof:
+  The inverse standard disk chart sends complex zero to the disk point zero.
+-/
 theorem diskCoordinateRepresentative_zero
     {T : Complex.UnitDisc → Complex.UnitDisc} (hT0 : T 0 = 0) :
     diskCoordinateRepresentative T 0 = 0 := by
@@ -178,6 +225,17 @@ theorem diskCoordinateRepresentative_zero
   rw [hinv, hT0]
   rfl
 
+/--
+%%handwave
+name:
+  Evaluation of the disk coordinate representative
+statement:
+  For \(z\in B(0,1)\), the complex-coordinate representative of a disk map
+  \(T\) has value equal to the complex coordinate of \(T(z)\).
+proof:
+  On the unit ball, the inverse standard disk chart is the subtype inclusion
+  of \(z\) into the disk.
+-/
 theorem diskCoordinateRepresentative_apply_of_mem
     (T : Complex.UnitDisc → Complex.UnitDisc)
     {z : ℂ} (hz : z ∈ ball (0 : ℂ) 1) :
@@ -200,8 +258,17 @@ theorem diskCoordinateRepresentative_apply_of_mem
   change (T (e.symm z) : ℂ) = (T zD : ℂ)
   rw [hinv]
 
-/-- On its unit-ball target, the inverse of the standard disk chart is the
-obvious subtype constructor. -/
+/--
+%%handwave
+name:
+  Inverse of the standard unit-disk chart
+statement:
+  For \(z\in B(0,1)\), the inverse chart at the origin of the unit disk sends
+  \(z\) to the same complex number regarded as a point of \(\mathbb D\).
+proof:
+  The chart is the open embedding of the unit disk into \(\mathbb C\); apply
+  its left-inverse identity.
+-/
 theorem unitDisc_chartAt_symm_apply_of_mem
     {z : ℂ} (hz : z ∈ ball (0 : ℂ) 1) :
     (chartAt ℂ (0 : Complex.UnitDisc)).symm z =
@@ -221,6 +288,17 @@ theorem unitDisc_chartAt_symm_apply_of_mem
   rw [hchart] at hleft
   exact hleft
 
+/--
+%%handwave
+name:
+  Injectivity of exhaustion disk transitions
+statement:
+  Every transition from an earlier pointed disk uniformization to a later one
+  is injective.
+proof:
+  It is a composite of two biholomorphic coordinate maps with an injective
+  inclusion of exhaustion domains.
+-/
 theorem PointedDiskUniformization.transition_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -245,6 +323,18 @@ noncomputable def PointedDiskUniformization.coefficient
     (P : PointedDiskUniformization E) (n : ℕ) : ℂ :=
   deriv (diskCoordinateRepresentative (P.transition 0 n (Nat.zero_le n))) 0
 
+/--
+%%handwave
+name:
+  Nonvanishing of the normalization coefficient
+statement:
+  The derivative at the origin of the transition from the first exhaustion
+  disk to the \(n\)-th disk is nonzero.
+proof:
+  Its coordinate representative is analytic and injective on the unit disk.
+  An injective holomorphic function has nonzero derivative there, in
+  particular at zero.
+-/
 theorem PointedDiskUniformization.coefficient_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -276,6 +366,16 @@ noncomputable def PointedDiskUniformization.radius
     (P : PointedDiskUniformization E) (n : ℕ) : ℝ :=
   ‖P.coefficient n‖⁻¹
 
+/--
+%%handwave
+name:
+  Positivity of the conformal radius
+statement:
+  The conformal radius defined as the reciprocal modulus of the normalization
+  coefficient is strictly positive.
+proof:
+  The coefficient is nonzero, so its norm and its reciprocal are positive.
+-/
 theorem PointedDiskUniformization.radius_pos
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -295,6 +395,17 @@ noncomputable def PointedDiskUniformization.normalizedMap
     (fun x : (E.domain n).openCarrier ↦
       ((P.equiv n).toHomeomorph x : ℂ) / P.coefficient n) 0
 
+/--
+%%handwave
+name:
+  Formula for a normalized map on its exhaustion domain
+statement:
+  On the \(n\)-th exhaustion member, the normalized map is the pointed disk
+  uniformization divided by its derivative coefficient at the basepoint.
+proof:
+  The set-theoretic extension agrees with its defining function on the
+  subtype domain.
+-/
 @[simp]
 theorem PointedDiskUniformization.normalizedMap_apply_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -327,6 +438,17 @@ noncomputable def PointedDiskUniformization.initialCoordinateMap
   diskCoordinateRepresentative
       (P.transition 0 n (Nat.zero_le n)) z / P.coefficient n
 
+/--
+%%handwave
+name:
+  Analyticity of the normalized map in the initial disk coordinate
+statement:
+  The initial-coordinate expression of the \(n\)-th normalized exhaustion
+  map is analytic on the unit disk.
+proof:
+  The transition coordinate representative is analytic there and division by
+  its nonzero constant derivative coefficient preserves analyticity.
+-/
 theorem PointedDiskUniformization.initialCoordinateMap_analyticOnNhd
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -337,6 +459,17 @@ theorem PointedDiskUniformization.initialCoordinateMap_analyticOnNhd
     (P.transition_holomorphic 0 n (Nat.zero_le n))).div
       analyticOnNhd_const (fun _ _ ↦ P.coefficient_ne_zero n)
 
+/--
+%%handwave
+name:
+  Derivative normalization in the initial disk coordinate
+statement:
+  The derivative at zero of every normalized exhaustion map expressed in the
+  first disk coordinate equals \(1\).
+proof:
+  Its numerator has derivative equal to the normalization coefficient, so
+  division by that nonzero coefficient gives one.
+-/
 theorem PointedDiskUniformization.initialCoordinateMap_deriv_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -354,6 +487,17 @@ theorem PointedDiskUniformization.initialCoordinateMap_deriv_zero
   rw [hdiv.deriv]
   exact div_self (P.coefficient_ne_zero n)
 
+/--
+%%handwave
+name:
+  Continuity of the initial disk parameterization
+statement:
+  The map from the complex unit ball into the surface obtained by inverting
+  the initial pointed disk coordinate is continuous.
+proof:
+  The inverse standard disk chart is continuous on its target, and the inverse
+  initial biholomorphism followed by inclusion into the surface is continuous.
+-/
 theorem PointedDiskUniformization.initialDiskParameter_continuousOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -380,6 +524,19 @@ theorem PointedDiskUniformization.initialDiskParameter_continuousOn
     Function.comp_def] using
       houter.comp_continuousOn (e.symm.continuousOn.mono htarget)
 
+/--
+%%handwave
+name:
+  Normalized map in the initial disk parameter
+statement:
+  For \(z\in B(0,1)\), evaluating the \(n\)-th normalized map at the surface
+  point with initial disk coordinate \(z\) equals its initial-coordinate
+  expression at \(z\).
+proof:
+  The parameterized point lies in every exhaustion domain.  Substitute the
+  on-domain normalized-map formula and identify the disk transition through
+  the initial uniformization.
+-/
 theorem PointedDiskUniformization.normalizedMap_initialDiskParameter
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -419,6 +576,18 @@ theorem PointedDiskUniformization.normalizedMap_initialDiskParameter
   rw [← diskCoordinateRepresentative_apply_of_mem _ hz]
   rfl
 
+/--
+%%handwave
+name:
+  Composition law for exhaustion disk transitions
+statement:
+  For \(m\le n\), the transition from the initial disk to the \(n\)-th disk
+  is the composite of the transition to the \(m\)-th disk and the transition
+  from the \(m\)-th to the \(n\)-th disk.
+proof:
+  Expand the three coordinate changes and cancel the intermediate
+  biholomorphism with its inverse.
+-/
 theorem PointedDiskUniformization.transition_comp
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -430,6 +599,17 @@ theorem PointedDiskUniformization.transition_comp
   funext z
   simp [PointedDiskUniformization.transition, Function.comp_def]
 
+/--
+%%handwave
+name:
+  Coordinate representative of a composite disk map
+statement:
+  On \(B(0,1)\), the coordinate representative of \(T\circ S\) equals the
+  composite of the coordinate representatives of \(S\) and \(T\).
+proof:
+  The value \(S(z)\) remains in the unit disk, so both inverse-chart
+  simplifications apply successively.
+-/
 theorem diskCoordinateRepresentative_comp_eqOn
     (T S : Complex.UnitDisc → Complex.UnitDisc) :
     EqOn (diskCoordinateRepresentative (T ∘ S))
@@ -446,6 +626,21 @@ theorem diskCoordinateRepresentative_comp_eqOn
   rw [diskCoordinateRepresentative_apply_of_mem T hS]
   rfl
 
+/--
+%%handwave
+name:
+  Chain rule for exhaustion normalization coefficients
+statement:
+  For \(m\le n\), if \(a_k\) is the derivative at zero of the transition from
+  the initial disk to disk \(k\), then
+  \[
+    a_n=T_{mn}'(0)\,a_m.
+  \]
+proof:
+  The initial-to-\(n\) transition is the composite of the initial-to-\(m\)
+  and \(m\)-to-\(n\) transitions, both fixing zero.  Differentiate the
+  coordinate composition at zero.
+-/
 theorem PointedDiskUniformization.coefficient_eq_transition_deriv_mul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -495,6 +690,18 @@ noncomputable def PointedDiskUniformization.normalizedTransition
     diskCoordinateRepresentative (P.transition m n hmn)
         (P.coefficient m * z) / P.coefficient n
 
+/--
+%%handwave
+name:
+  Analyticity of normalized disk transitions
+statement:
+  For \(m\le n\), the normalized transition is analytic on the disk of
+  conformal radius \(r_m\).
+proof:
+  Scaling by the nonzero coefficient for disk \(m\) maps this disk into the
+  unit disk.  Compose with the analytic disk transition and divide by the
+  nonzero coefficient for disk \(n\).
+-/
 theorem PointedDiskUniformization.normalizedTransition_analyticOnNhd
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -524,6 +731,17 @@ theorem PointedDiskUniformization.normalizedTransition_analyticOnNhd
   exact hcomp.div analyticOnNhd_const
     (fun _ _ ↦ P.coefficient_ne_zero n)
 
+/--
+%%handwave
+name:
+  Normalized disk transitions fix zero
+statement:
+  Every normalized transition between exhaustion disks sends \(0\) to
+  \(0\).
+proof:
+  Scaling fixes zero, the underlying pointed transition fixes zero, and the
+  final nonzero scalar division preserves it.
+-/
 theorem PointedDiskUniformization.normalizedTransition_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -534,6 +752,17 @@ theorem PointedDiskUniformization.normalizedTransition_zero
   simp [PointedDiskUniformization.normalizedTransition,
     diskCoordinateRepresentative_zero (P.transition_zero m n hmn)]
 
+/--
+%%handwave
+name:
+  Normalized disk transitions have derivative one
+statement:
+  For \(m\le n\), the normalized transition satisfies \(T_{mn}'(0)=1\).
+proof:
+  The chain rule gives numerator derivative
+  \(T_{mn}'(0)a_m=a_n\); division by the nonzero coefficient \(a_n\) gives
+  one.
+-/
 theorem PointedDiskUniformization.normalizedTransition_deriv_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -560,6 +789,18 @@ theorem PointedDiskUniformization.normalizedTransition_deriv_zero
   rw [← P.coefficient_eq_transition_deriv_mul m n hmn]
   exact div_self (P.coefficient_ne_zero n)
 
+/--
+%%handwave
+name:
+  Injectivity of normalized disk transitions
+statement:
+  The normalized transition from disk \(m\) to disk \(n\) is injective on
+  \(B(0,r_m)\).
+proof:
+  Multiplication by the nonzero source coefficient sends this disk into the
+  unit disk, where the underlying transition is injective; division by the
+  nonzero target coefficient also preserves injectivity.
+-/
 theorem PointedDiskUniformization.normalizedTransition_injOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -608,6 +849,18 @@ theorem PointedDiskUniformization.normalizedTransition_injOn
   have hmul : cm * z = cm * w := congrArg Subtype.val harg
   exact mul_left_cancel₀ hcm hmul
 
+/--
+%%handwave
+name:
+  Range of normalized disk transitions
+statement:
+  For \(m\le n\), the normalized transition maps
+  \(B(0,r_m)\) into \(B(0,r_n)\).
+proof:
+  Source scaling maps into the unit disk, the disk transition remains in the
+  unit disk, and division by the target coefficient rescales it to radius
+  \(r_n\).
+-/
 theorem PointedDiskUniformization.normalizedTransition_mapsTo
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -655,6 +908,8 @@ proof:
   The transition from an earlier normalized disk to a later one fixes zero
   and has derivative one.  Schwarz's lemma says that its source radius cannot
   exceed its target radius.
+tags:
+  milestone
 -/
 theorem PointedDiskUniformization.radius_mono
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -680,6 +935,17 @@ noncomputable def PointedDiskUniformization.unitTransition
   P.normalizedTransition m n hmn ((P.radius m : ℂ) * z) /
     (P.radius n : ℂ)
 
+/--
+%%handwave
+name:
+  Analyticity of the unit-rescaled transition
+statement:
+  After rescaling both source and target conformal-radius disks to the unit
+  disk, the transition is analytic on \(B(0,1)\).
+proof:
+  Source multiplication by \(r_m\) maps the unit disk into the domain of the
+  normalized transition; compose and divide by the positive radius \(r_n\).
+-/
 theorem PointedDiskUniformization.unitTransition_analyticOnNhd
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -701,6 +967,16 @@ theorem PointedDiskUniformization.unitTransition_analyticOnNhd
     analyticOnNhd_const
       (fun _ _ ↦ by exact_mod_cast (P.radius_pos n).ne')
 
+/--
+%%handwave
+name:
+  Injectivity of the unit-rescaled transition
+statement:
+  The transition rescaled to the unit disk is injective on \(B(0,1)\).
+proof:
+  Nonzero source and target radius scalings preserve the injectivity of the
+  normalized transition on \(B(0,r_m)\).
+-/
 theorem PointedDiskUniformization.unitTransition_injOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -729,6 +1005,16 @@ theorem PointedDiskUniformization.unitTransition_injOn
   exact mul_left_cancel₀ hrm
     ((P.normalizedTransition_injOn m n hmn) hzm hwm hS)
 
+/--
+%%handwave
+name:
+  The unit-rescaled transition is a disk self-map
+statement:
+  The rescaled transition maps \(B(0,1)\) into itself.
+proof:
+  Source scaling maps into \(B(0,r_m)\), the normalized transition maps that
+  disk into \(B(0,r_n)\), and target division rescales back to the unit disk.
+-/
 theorem PointedDiskUniformization.unitTransition_mapsTo
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -748,6 +1034,15 @@ theorem PointedDiskUniformization.unitTransition_mapsTo
     Complex.norm_real, Real.norm_eq_abs, abs_of_pos (P.radius_pos n)]
   exact (div_lt_iff₀ (P.radius_pos n)).2 (by simpa using hS)
 
+/--
+%%handwave
+name:
+  The unit-rescaled transition fixes zero
+statement:
+  Every unit-rescaled exhaustion transition sends \(0\) to \(0\).
+proof:
+  The normalized transition fixes zero and target rescaling preserves it.
+-/
 theorem PointedDiskUniformization.unitTransition_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -758,6 +1053,17 @@ theorem PointedDiskUniformization.unitTransition_zero
   simp [PointedDiskUniformization.unitTransition,
     P.normalizedTransition_zero m n hmn]
 
+/--
+%%handwave
+name:
+  Derivative of the unit-rescaled transition
+statement:
+  The derivative at zero of the unit-rescaled transition from member \(m\)
+  to member \(n\) is the real ratio \(r_m/r_n\).
+proof:
+  The normalized transition has derivative one.  The chain rule contributes
+  the source scaling \(r_m\), and target division contributes \(1/r_n\).
+-/
 theorem PointedDiskUniformization.unitTransition_deriv_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -781,6 +1087,20 @@ theorem PointedDiskUniformization.unitTransition_deriv_zero
   convert hraw.deriv using 1;
     simp
 
+/--
+%%handwave
+name:
+  Compatibility of normalized exhaustion maps with transitions
+statement:
+  If \(x\) lies in exhaustion member \(m\le n\), then
+  \[
+    T_{mn}^{\mathrm{norm}}(F_m(x))=F_n(x).
+  \]
+proof:
+  Substitute the normalized-map formulas.  The source coefficient cancels,
+  and the underlying disk transition carries the \(m\)-th disk coordinate of
+  \(x\) to its \(n\)-th disk coordinate.
+-/
 theorem PointedDiskUniformization.normalizedTransition_compat
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -816,6 +1136,18 @@ theorem PointedDiskUniformization.normalizedTransition_compat
   rw [PointedDiskUniformization.transition, Function.comp_apply,
     Function.comp_apply, hinv]
 
+/--
+%%handwave
+name:
+  Image of a normalized exhaustion map
+statement:
+  The image of the \(n\)-th exhaustion member under its normalized map is
+  exactly \(B(0,r_n)\).
+proof:
+  The pointed uniformization maps the member bijectively onto the unit disk;
+  division by its nonzero coefficient rescales that disk to radius
+  \(r_n=|a_n|^{-1}\).
+-/
 theorem PointedDiskUniformization.normalizedMap_image
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -858,8 +1190,17 @@ theorem PointedDiskUniformization.normalizedMap_image
     change (P.coefficient n * w) / P.coefficient n = w
     field_simp [hc]
 
-/-- Each normalized map is injective on the exhaustion member on which it is
-holomorphic. -/
+/--
+%%handwave
+name:
+  Injectivity of normalized exhaustion maps
+statement:
+  The \(n\)-th normalized map is injective on the \(n\)-th exhaustion
+  member.
+proof:
+  It is a biholomorphic disk coordinate followed by division by a nonzero
+  constant.
+-/
 theorem PointedDiskUniformization.normalizedMap_injOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -877,6 +1218,16 @@ theorem PointedDiskUniformization.normalizedMap_injOn
     exact mul_right_cancel₀ hc hmul
   exact congrArg Subtype.val ((P.equiv n).toHomeomorph.injective heq)
 
+/--
+%%handwave
+name:
+  Normalized exhaustion maps send the basepoint to zero
+statement:
+  Every normalized exhaustion map satisfies \(F_n(p)=0\).
+proof:
+  The pointed disk uniformization sends \(p\) to zero, and scalar division
+  leaves zero fixed.
+-/
 @[simp]
 theorem PointedDiskUniformization.normalizedMap_base
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -887,6 +1238,18 @@ theorem PointedDiskUniformization.normalizedMap_base
   rw [P.normalizedMap_apply_of_mem n (E.domain_base_mem n), P.base_eq n]
   simp
 
+/--
+%%handwave
+name:
+  Holomorphicity of a normalized map on its exhaustion member
+statement:
+  The \(n\)-th normalized map is holomorphic on the \(n\)-th exhaustion
+  domain.
+proof:
+  On that domain it is the biholomorphic disk coordinate followed by division
+  by the nonzero constant coefficient.  Holomorphicity is local, so the
+  ambient set-theoretic extension has the same derivative there.
+-/
 theorem PointedDiskUniformization.normalizedMap_mdifferentiableOn
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -919,8 +1282,21 @@ theorem PointedDiskUniformization.normalizedMap_mdifferentiableOn
       (U := U) (P.normalizedMap n) (⟨x, hx⟩ : U)).mpr
         (by simpa [Function.comp_def] using hrestrict)
 
-/-- A compactly contained earlier exhaustion member occupies only a fixed
-fraction of the normalized disk of the next member. -/
+/--
+%%handwave
+name:
+  A compact exhaustion core stays inside a fixed disk fraction
+statement:
+  For each exhaustion member \(D_j\), there is \(0\le\rho<1\) such that
+  \[
+    |F_{j+1}(x)|\le \rho r_{j+1}
+    \quad\text{for every }x\in D_j.
+  \]
+proof:
+  The closure of \(D_j\) is compactly contained in \(D_{j+1}\).  The modulus
+  of the unscaled disk coordinate attains a maximum there, and this maximum
+  is strictly below one.  Rescale back by the conformal radius.
+-/
 theorem PointedDiskUniformization.exists_core_fraction_bound
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -965,8 +1341,21 @@ theorem PointedDiskUniformization.exists_core_fraction_bound
     simpa [PointedDiskUniformization.radius, k, c, div_eq_mul_inv,
       mul_comm] using hdiv
 
-/-- The normalized exhaustion maps are eventually uniformly bounded and
-holomorphic on a neighborhood of each member of any compact exhaustion. -/
+/--
+%%handwave
+name:
+  Eventual local boundedness of normalized exhaustion maps
+statement:
+  For every compact-exhaustion set \(K_m\), there are a neighborhood \(V\),
+  an index \(N\), and \(B>0\) such that for all \(n\ge N\), the normalized
+  map \(F_n\) is holomorphic on \(V\) and satisfies \(|F_n|\le B\) there.
+proof:
+  Place \(K_m\) inside an earlier exhaustion member whose closure is compact
+  in the next.  The core fraction bound puts its image in a fixed fraction of
+  the next normalized disk.  Compatibility with later normalized transitions
+  and the univalent disk growth estimate then give a uniform bound independent
+  of \(n\).
+-/
 theorem PointedDiskUniformization.eventually_boundedOn_exhaustion_neighborhoods
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -1040,8 +1429,17 @@ theorem PointedDiskUniformization.exists_normalizedMap_limit
     X Kex P.normalizedMap
       (P.eventually_boundedOn_exhaustion_neighborhoods Kex)
 
-/-- On every compact set, all sufficiently late normalized maps are
-injective. -/
+/--
+%%handwave
+name:
+  Eventual injectivity of normalized exhaustion maps on compact sets
+statement:
+  For every compact set \(K\subseteq X\), all sufficiently late normalized
+  exhaustion maps are injective on \(K\).
+proof:
+  The compact set is eventually contained in an exhaustion domain, and each
+  normalized map is injective on its own domain.
+-/
 theorem PointedDiskUniformization.eventually_normalizedMap_injOn_compact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -1053,8 +1451,19 @@ theorem PointedDiskUniformization.eventually_normalizedMap_injOn_compact
       with n hn
   exact (P.normalizedMap_injOn n).mono hn
 
-/-- The derivative normalization survives a locally uniform subsequential
-limit, so the limit cannot be constant. -/
+/--
+%%handwave
+name:
+  A normalized exhaustion limit has nontrivial range
+statement:
+  Every locally uniform limit \(f\) of normalized exhaustion maps takes at
+  least two distinct values.
+proof:
+  Compose with the fixed initial disk coordinate.  Locally uniform convergence
+  of holomorphic functions gives convergence of derivatives, while every
+  normalized coordinate map has derivative \(1\) at zero.  Thus the limit
+  derivative is one and the limit cannot be constant.
+-/
 theorem PointedDiskUniformization.normalizedMap_limit_range_nontrivial
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -1141,8 +1550,19 @@ theorem PointedDiskUniformization.normalizedMap_limit_injective
     X (fun n : ℕ ↦ P.normalizedMap (φ n)) f hconv hholo hinj
       (P.normalizedMap_limit_range_nontrivial hconv)
 
-/-- If one value belongs eventually to the images of a fixed compact set,
-then it belongs to the image of the locally uniform limit. -/
+/--
+%%handwave
+name:
+  Eventual compact-image membership passes to a locally uniform limit
+statement:
+  Let \(F_n:X\to\mathbb C\) converge locally uniformly to a continuous map
+  \(f\), and let \(K\subseteq X\) be compact.  If a fixed value \(w\) lies in
+  \(F_n(K)\) for all sufficiently large \(n\), then \(w\in f(K)\).
+proof:
+  Uniform convergence on \(K\) places \(w\) in the closure of \(f(K)\).
+  Since the continuous image of a compact set is compact and therefore
+  closed, this closure equals \(f(K)\).
+-/
 theorem locallyUniformLimit_mem_image_of_eventually_mem_image_compact
     {X : Type} [TopologicalSpace X] [LocallyCompactSpace X]
     {F : ℕ → X → ℂ} {f : X → ℂ}
@@ -1367,7 +1787,17 @@ theorem PointedDiskUniformization.ball_csSup_radius_subset_range_normalizedMap_l
   rcases hwimage with ⟨x, _hxK, hfx⟩
   exact ⟨x, hfx⟩
 
-/-- The base point remains at the origin in every normalized Montel limit. -/
+/--
+%%handwave
+name:
+  A normalized exhaustion limit fixes the basepoint at zero
+statement:
+  If normalized exhaustion maps converge locally uniformly to \(f\), then
+  \(f(p)=0\) at the distinguished basepoint.
+proof:
+  Pointwise convergence at \(p\) passes the common value zero of all
+  normalized maps to the limit.
+-/
 theorem PointedDiskUniformization.normalizedMap_limit_base
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -1381,8 +1811,21 @@ theorem PointedDiskUniformization.normalizedMap_limit_base
     simpa using hp
   exact (tendsto_nhds_unique tendsto_const_nhds hp').symm
 
-/-- In the bounded-radius case every value of the Montel limit has norm at
-most the limiting conformal radius. -/
+/--
+%%handwave
+name:
+  Norm bound for a normalized limit in the bounded-radius case
+statement:
+  If the conformal radii \(r_n\) are bounded and normalized maps converge
+  locally uniformly to \(f\), then for every \(x\in X\),
+  \[
+    |f(x)|\le \sup_n r_n.
+  \]
+proof:
+  Once \(x\) lies in an exhaustion domain, every later normalized value lies
+  in the disk of radius \(r_n\), hence in the closed disk of limiting radius.
+  Closedness of that disk passes membership to the pointwise limit.
+-/
 theorem PointedDiskUniformization.normalizedMap_limit_norm_le_csSup_radius
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -1569,8 +2012,19 @@ theorem PointedDiskUniformization.biholomorphic_complexPlane_or_unitDisc
     exact biholomorphicToComplexPlane_of_bijective_unbranched_holomorphicPlaneMap
       X f hf hunbranched hinj hsurj
 
-/-- The exhaustion form of the noncompact zero-cohomology uniformization
-theorem, with noncompactness supplied as an explicit hypothesis. -/
+/--
+%%handwave
+name:
+  Uniformization from noncompactness and vanishing first cohomology
+statement:
+  Let \(X\) be a noncompact Riemann surface with
+  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  Then \(X\) is biholomorphic either
+  to \(\mathbb C\) or to the unit disk.
+proof:
+  Choose a smooth relatively compact exhaustion and fill it so that each
+  pointed member has vanishing first cohomology.  Simultaneously uniformize
+  those members by disks and apply the exhaustion-limit dichotomy.
+-/
 theorem deRhamH1Zero_biholomorphic_complexPlane_or_unitDisc_of_not_compactSpace
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -1606,6 +2060,8 @@ proof:
   Koebe's quarter theorem makes the limit onto the plane.  If they are bounded,
   quantitative kernel convergence makes it onto the disk whose radius is the
   supremum of the conformal radii; rescaling gives the unit disk.
+tags:
+  milestone
 -/
 theorem noncompact_deRhamH1Zero_biholomorphic_complexPlane_or_unitDisc
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]

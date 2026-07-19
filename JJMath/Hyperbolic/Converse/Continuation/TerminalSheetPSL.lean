@@ -415,7 +415,13 @@ namespace PathLocalTransitionBasedWeakHandoffCanonicalCoverAnalyticContinuationD
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- At the represented terminal point, the terminal branch value is `dev`. -/
+/-- At the represented terminal point, the terminal branch value is `dev`.
+
+%%handwave
+name: The developing map equals the terminal value at a represented lift
+statement: For every path $p:x_0\rightsquigarrow x$, the terminal branch value produced along $p$ equals the single-valued developing map at the lift $(x,[p])$: $v(p)=\mathrm{dev}(x,[p])$.
+proof: The lift $(x,[p])$ belongs to the terminal sheet of $p$. Evaluate the assumed sheetwise developing formula there and identify its endpoint with $x$.
+-/
 theorem terminalValue_eq_dev_terminalCoverPoint
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalCoverAnalyticContinuationDataPSL
@@ -434,6 +440,11 @@ theorem terminalValue_eq_dev_terminalCoverPoint
 /--
 The single-valued upstairs map turns endpoint-fixed homotopy of paths into
 equality of terminal branch values.
+
+%%handwave
+name: Homotopic paths have equal terminal values
+statement: If paths $p,q:x_0\rightsquigarrow x$ are homotopic relative to endpoints, then their terminal continuation values coincide: $v(p)=v(q)$.
+proof: Each terminal value equals the developing map at its terminal lift, and homotopic paths determine the same lift in the path-homotopy cover.
 -/
 theorem terminalValue_homotopic
     (C :
@@ -450,6 +461,11 @@ theorem terminalValue_homotopic
 /--
 If a path represents the path class of a point in a terminal sheet, its
 terminal formula is the same upstairs value as the terminal sheet formula.
+
+%%handwave
+name: Terminal formulas agree for two representatives of a sheet point
+statement: Let $y$ lie in the terminal sheet of $p$ and let $p':x_0\rightsquigarrow\pi(y)$ represent the path class of $y$. Then the terminal formula obtained along $p'$ and the terminal-sheet formula obtained along $p$ have the same value at $\pi(y)$.
+proof: The terminal lift of $p'$ is $y$, hence $y$ also lies in the terminal sheet selected for $p'$. The developing-map formula on the two terminal sheets identifies both branch values with $\mathrm{dev}(y)$.
 -/
 theorem terminalValue_eq_on_terminalSheet
     (C :
@@ -666,7 +682,13 @@ noncomputable def canonicalLoopFor
     (γ : FundamentalGroup X x₀) : Path x₀ x₀ :=
   Quot.out (FundamentalGroup.toPath γ⁻¹)
 
-/-- The canonical representative loop has the required path class. -/
+/-- The canonical representative loop has the required path class.
+
+%%handwave
+name: Path class of the canonical loop representative
+statement: For every $\gamma\in\pi_1(X,x_0)$, the chosen canonical loop $L_\gamma$ represents $\gamma^{-1}$: $[L_\gamma]=\gamma^{-1}$.
+proof: The loop is chosen as a representative of the quotient path class $\gamma^{-1}$, so the quotient map returns that class.
+-/
 theorem canonicalLoopFor_spec
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
@@ -679,6 +701,11 @@ theorem canonicalLoopFor_spec
 /--
 For the canonical loop representative, deck action sends the terminal cover
 point of `p` to the terminal cover point of the loop-prepended path.
+
+%%handwave
+name: Canonical loop prepending realizes deck action on terminal lifts
+statement: If $L_\gamma$ represents $\gamma^{-1}$ and $p:x_0\rightsquigarrow x$, then $\gamma\cdot(x,[p])=(x,[L_\gamma*p])$.
+proof: Prepending a loop representing $\gamma^{-1}$ is the defining action of the deck transformation $\gamma$ on the path-homotopy cover.
 -/
 theorem deckAction_terminalCoverPoint_canonicalLoopFor
     (C :
@@ -701,6 +728,11 @@ theorem deckAction_terminalCoverPoint_canonicalLoopFor
 /--
 The source terminal cover point lies in the deck-preimage of the canonical
 loop-prepended terminal sheet.
+
+%%handwave
+name: The source terminal lift lies over the loop-prepended terminal sheet
+statement: The terminal lift $(x,[p])$ belongs to the inverse image under deck action by $\gamma$ of the terminal sheet selected for $L_\gamma*p$.
+proof: Deck action sends $(x,[p])$ to the terminal lift of $L_\gamma*p$, and every terminal lift belongs to its own terminal sheet.
 -/
 theorem terminalCoverPoint_mem_deck_preimage_canonicalLoop_terminalSheet
     (C :
@@ -758,6 +790,11 @@ noncomputable def derivedHolonomyProjection
 /--
 The defining loop terminal class equals the derived holonomy times the base
 terminal class.
+
+%%handwave
+name: Reconstruction of the adjusted loop class from normalized holonomy
+statement: If $B$ is the base terminal projective class, $A_\gamma$ the adjusted loop-terminal class, and $H_\gamma=A_\gamma B^{-1}$, then $A_\gamma=H_\gamma B$.
+proof: Expand the definition of $H_\gamma$ and cancel $B^{-1}B$.
 -/
 theorem loopAdjustedTerminalProjection_eq_derivedHolonomyProjection_mul_base
     (C :
@@ -773,6 +810,11 @@ Canonical-loop covariance is automatic at the base normalization path.
 
 Thus the remaining canonical-loop covariance boundary is propagation of this
 base loop-terminal class along arbitrary terminal paths.
+
+%%handwave
+name: Canonical-loop covariance at the base normalization path
+statement: For the constant base path $e$, the adjusted terminal class after prepending $L_\gamma$ satisfies $[M_{L_\gamma*e}A(e,L_\gamma*e)]=H_\gamma[M_e]$.
+proof: Replace the chosen canonical-loop endpoint transition by the transition between the two terminal skeletons, whose projective classes agree. The result is the defining adjusted loop class, and its normalization formula gives $H_\gamma[M_e]$.
 -/
 theorem canonicalLoopTransitionProjection_equivariant_baseNormalizationPath
     (C :
@@ -846,6 +888,11 @@ noncomputable def canonicalLoopNormalizedTerminalProjection
 /--
 At the base normalization path, the normalized canonical-loop terminal class
 is exactly the derived holonomy.
+
+%%handwave
+name: Normalized loop transport at the base is the derived holonomy
+statement: For the constant base path $e$, the normalized canonical-loop class is $N_\gamma(e)=H_\gamma$.
+proof: Canonical-loop covariance at $e$ gives the numerator $H_\gamma[M_e]$; multiplying by $[M_e]^{-1}$ cancels the base class.
 -/
 theorem canonicalLoopNormalizedTerminalProjection_baseNormalizationPath
     (C :
@@ -864,6 +911,11 @@ endpoint path within its endpoint-fixed homotopy class.
 
 This descends the remaining propagation problem from arbitrary path
 representatives to points of the canonical cover.
+
+%%handwave
+name: Homotopy invariance of normalized canonical-loop transport
+statement: If $p,q:x_0\rightsquigarrow x$ are endpoint-fixed homotopic, then $N_\gamma(p)=N_\gamma(q)$.
+proof: Compare terminal products of $p$ and $q$ through their transition class, and do the same after prepending $L_\gamma$. Homotopy invariance gives compatible adjusted products; transition composition then cancels the intermediate class in the normalized quotient.
 -/
 theorem canonicalLoopNormalizedTerminalProjection_homotopic
     (C :
@@ -990,6 +1042,11 @@ noncomputable def canonicalLoopNormalizedProjectionAt
 /--
 The cover-valued normalized projection agrees with the formula computed from
 any representative path.
+
+%%handwave
+name: Evaluation of normalized loop transport on a represented cover point
+statement: For a lift represented by $p:x_0\rightsquigarrow x$, the cover-valued normalized transport equals the path formula: $N_\gamma(x,[p])=N_\gamma(p)$.
+proof: The chosen quotient representative of $[p]$ is endpoint-fixed homotopic to $p$, and the path formula is homotopy invariant.
 -/
 theorem canonicalLoopNormalizedProjectionAt_mk
     (C :
@@ -1008,6 +1065,11 @@ theorem canonicalLoopNormalizedProjectionAt_mk
 /--
 At the distinguished base lift, the cover-valued normalized projection is the
 derived holonomy.
+
+%%handwave
+name: Normalized loop transport at the base lift
+statement: At the distinguished lift $\widetilde x_0$, one has $N_\gamma(\widetilde x_0)=H_\gamma$.
+proof: Represent the base lift by the constant normalization path and use that its normalized loop transport is the derived holonomy.
 -/
 theorem canonicalLoopNormalizedProjectionAt_baseLift
     (C :
@@ -1025,6 +1087,11 @@ theorem canonicalLoopNormalizedProjectionAt_baseLift
 /--
 Constancy of the cover-valued normalized projection implies propagation of the
 path-representative normalized projection from the base path.
+
+%%handwave
+name: Coverwise constancy propagates normalized loop transport from the base
+statement: If $N_\gamma(y)=N_\gamma(\widetilde x_0)$ for every cover point $y$, then $N_\gamma(p)=N_\gamma(e)$ for every based path $p$, where $e$ is the constant base path.
+proof: Evaluate the cover function at the lift represented by $p$, apply the assumed constancy, and represent the base lift by $e$.
 -/
 theorem canonicalLoopNormalizedProjection_propagates_from_base_of_const_on_cover
     (C :
@@ -1060,6 +1127,11 @@ theorem canonicalLoopNormalizedProjection_propagates_from_base_of_const_on_cover
 /--
 If the normalized canonical-loop terminal class propagates unchanged from the
 base path to every path, then canonical-loop covariance follows.
+
+%%handwave
+name: Propagation of normalized transport implies canonical-loop covariance
+statement: If $N_\gamma(p)=N_\gamma(e)$ for every based path $p$, then $[M_{L_\gamma*p}A(p,L_\gamma*p)]=H_\gamma[M_p]$.
+proof: The propagation hypothesis and the base computation give $A_p[M_p]^{-1}=H_\gamma$ for the adjusted numerator $A_p$. Multiply on the right by $[M_p]$ and cancel.
 -/
 theorem canonicalLoopTransitionProjection_equivariant_of_normalizedProjection_propagates_from_base
     (C :
@@ -1092,6 +1164,11 @@ theorem canonicalLoopTransitionProjection_equivariant_of_normalizedProjection_pr
 Canonical-loop covariance implies arbitrary loop covariance, because the
 transition-adjusted terminal class is invariant under changing the loop within
 its endpoint-fixed homotopy class.
+
+%%handwave
+name: Canonical-loop covariance implies covariance for every representative loop
+statement: Suppose $[M_{L_\gamma*p}A(p,L_\gamma*p)]=H_\gamma[M_p]$ for the chosen canonical loop $L_\gamma$. Then the same formula holds for every loop $L$ representing $\gamma^{-1}$, using the automatic endpoint transition from $p$ to $L*p$.
+proof: The loops $L$ and $L_\gamma$ are endpoint-fixed homotopic, hence so are their concatenations with $p$. Homotopy invariance of adjusted terminal classes replaces the arbitrary loop-prepended path by the canonical one, after which canonical-loop covariance applies.
 -/
 theorem automaticTerminalTransitionProjection_equivariant_of_canonicalLoop_covariance
     (C :
@@ -1405,6 +1482,11 @@ noncomputable def toValueEquivarianceDataPSL_of_dev_equivariant
 For canonical-terminal-sheet agreement data, deck equivariance of the
 constructed upstairs map is equivalent to path-level PSL loop equivariance of
 terminal values.
+
+%%handwave
+name: Deck equivariance is equivalent to pathwise loop equivariance
+statement: For a projective holonomy $\rho$, the developing map satisfies $\mathrm{dev}(\gamma y)=\rho(\gamma)\cdot\mathrm{dev}(y)$ for all cover points if and only if every loop $L$ representing $\gamma^{-1}$ satisfies $v(L*p)=\rho(\gamma)\cdot v(p)$ for all based paths $p$.
+proof: Deck equivariance evaluated at the terminal lift of $p$ gives pathwise loop equivariance because prepending $L$ realizes deck action. Conversely, represent an arbitrary cover point by a path and use terminal-sheet descent to express both developing-map values as terminal values before applying the pathwise formula.
 -/
 theorem dev_deckAction_equivariant_iff_terminal_path_equivariant
     (C :
@@ -1553,6 +1635,11 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 The holonomy appearing in value equivariance is forced to be the derived
 loop-terminal PSL class.
+
+%%handwave
+name: Value holonomy equals terminally derived holonomy
+statement: If terminal values transform by a projective holonomy $\rho$ and equality of the local branch action forces equality of the adjusted terminal projective classes, then $\rho(\gamma)=H_\gamma$ for every $\gamma$.
+proof: Apply projection rigidity to the canonical loop $L_\gamma$ and the base normalization path. The resulting equality identifies the adjusted loop-terminal class with $\rho(\gamma)$ times the base class; multiply by the inverse base class to obtain the defining $H_\gamma$.
 -/
 theorem valueHolonomy_eq_derivedHolonomy
     (D :
@@ -1982,6 +2069,11 @@ This is the identity-loop part of monodromy at arbitrary endpoints.  It uses
 only terminal-sheet agreement: when `γ = 1`, the deck action is the identity,
 so the source and loop-prepended terminal formulae compute the same upstairs
 value on their common terminal-sheet patch.
+
+%%handwave
+name: A null-homotopic loop has trivial adjusted terminal class
+statement: If a loop $L$ represents the identity element of $\pi_1(X,x_0)$, then for every based path $p$ the adjusted class satisfies $[M_{L*p}A(p,L*p)]=[M_p]$.
+proof: Deck action by the identity fixes every cover point. On the common terminal-sheet coordinate patch, the source formula and the transition-adjusted loop-prepended formula therefore both equal the same developing-map value. Faithfulness of the projective Möbius action on that open coordinate set forces equality of their projective classes.
 -/
 theorem automaticTerminalTransitionProjection_eq_of_identity_loop
     (C :
@@ -2103,6 +2195,11 @@ developing map is assumed: for the identity deck transformation, the source
 and target terminal-sheet formulae both compute the same constructed upstairs
 value on the common sheet, and terminal-formula faithfulness identifies the
 adjusted terminal PSL class with the base terminal class.
+
+%%handwave
+name: The derived holonomy sends the identity to one
+statement: The normalized loop-terminal assignment satisfies $H_1=1$.
+proof: Apply triviality of the adjusted terminal class to the canonical representative of the identity and the base normalization path. The adjusted numerator equals the base class, so multiplication by the inverse base class gives $1$.
 -/
 theorem derivedHolonomyProjection_one
     (C :
@@ -2138,6 +2235,11 @@ The proof compares the direct continuation for `γ * δ` with the two-step
 continuation through `δ` and then `γ`.  The terminal-chart cocycle identifies
 the two-step chart change, while endpoint-fixed homotopy invariance removes
 the harmless choices of parenthesization and canonical loop representative.
+
+%%handwave
+name: Covariance forces multiplicativity of the derived holonomy
+statement: If every loop $L$ representing $\gamma^{-1}$ satisfies $[M_{L*p}A(p,L*p)]=H_\gamma[M_p]$, then $H_{\gamma\delta}=H_\gamma H_\delta$.
+proof: Compare direct prepending by a representative of $(\gamma\delta)^{-1}$ with successive prepending by representatives of $\delta^{-1}$ and $\gamma^{-1}$. Transition composition identifies the two adjusted chart changes, while homotopy invariance identifies the parenthesized concatenations. Applying covariance twice gives $H_\gamma H_\delta$ times the base class; applying it once gives $H_{\gamma\delta}$ times the same class, which cancels.
 -/
 theorem derivedHolonomyProjection_mul_of_automaticTerminalTransitionProjection_equivariant
     (C :

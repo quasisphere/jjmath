@@ -141,6 +141,8 @@ name:
   Components lie in the ambient set
 statement:
   A component of \(S\) is contained in \(S\).
+proof:
+  This containment is the first condition in the definition of a component.
 -/
 theorem IsComponentOf.subset
     {X : Type} [TopologicalSpace X] {U S : Set X}
@@ -154,6 +156,8 @@ name:
   Components are nonempty
 statement:
   A component is nonempty.
+proof:
+  Nonemptiness is one of the defining conditions for a component.
 -/
 theorem IsComponentOf.nonempty
     {X : Type} [TopologicalSpace X] {U S : Set X}
@@ -167,6 +171,8 @@ name:
   Components are preconnected
 statement:
   A component is preconnected.
+proof:
+  Preconnectedness is one of the defining conditions for a component.
 -/
 theorem IsComponentOf.isPreconnected
     {X : Type} [TopologicalSpace X] {U S : Set X}
@@ -753,6 +759,9 @@ name:
   Compact sets in noncompact spaces have exterior points
 statement:
   A compact subset of a noncompact space is not the whole space.
+proof:
+  Otherwise the compact subset would equal the entire space, making the space
+  compact and contradicting noncompactness.
 -/
 theorem noncompact_exists_not_mem_compact
     {X : Type} [TopologicalSpace X] [NoncompactSpace X]
@@ -775,6 +784,9 @@ name:
   Compact complements are nonempty in noncompact spaces
 statement:
   The complement of a compact set in a noncompact space is nonempty.
+proof:
+  A compact set cannot be the entire noncompact space, so some point lies
+  outside it.
 -/
 theorem noncompact_compl_nonempty_of_isCompact
     {X : Type} [TopologicalSpace X]
@@ -791,6 +803,9 @@ name:
 statement:
   The complement of a compact set in a noncompact space has at least one
   connected component.
+proof:
+  Choose a point outside the compact set and take its connected component
+  within the complement.
 -/
 theorem noncompact_compact_complement_has_component
     {X : Type} [TopologicalSpace X]
@@ -910,6 +925,9 @@ name:
 statement:
   A component of \(X\setminus K\) that leaves every compact set is an exterior
   component.
+proof:
+  These are exactly the two clauses in the definition of an exterior
+  component.
 -/
 theorem IsComponentOf.isExteriorComponent_of_escapes
     {X : Type} [TopologicalSpace X] {K U : Set X}
@@ -925,6 +943,8 @@ name:
 statement:
   An exterior component is, in particular, a component of the complement of
   the compact set.
+proof:
+  This is the first clause in the definition of an exterior component.
 -/
 theorem IsExteriorComponent.isComponentOf
     {X : Type} [TopologicalSpace X] {K U : Set X}
@@ -938,6 +958,9 @@ name:
   Exterior components lie outside the compact set
 statement:
   An exterior component of \(X\setminus K\) is contained in \(X\setminus K\).
+proof:
+  An exterior component is a complementary component, and every component is
+  contained in its ambient set.
 -/
 theorem IsExteriorComponent.subset_compl
     {X : Type} [TopologicalSpace X] {K U : Set X}
@@ -969,6 +992,10 @@ name:
 statement:
   An exterior component containing \(x\) is the connected component of \(x\)
   in the compact complement.
+proof:
+  A component is maximal among preconnected subsets of the complement, so the
+  component containing \(x\) coincides with the connected component of \(x\)
+  there.
 -/
 theorem IsExteriorComponent.eq_connectedComponentIn_of_mem
     {X : Type} [TopologicalSpace X] {K U : Set X}
@@ -983,6 +1010,9 @@ name:
 statement:
   Two distinct exterior components of the same compact complement have empty
   intersection.
+proof:
+  Intersecting components of the same set coincide by maximality.  Thus two
+  distinct exterior components cannot meet.
 -/
 theorem IsExteriorComponent.inter_eq_empty_of_ne
     {X : Type} [TopologicalSpace X] {K U V : Set X}
@@ -998,6 +1028,8 @@ name:
 statement:
   If \(U\) is an exterior component, then it contains points outside every
   prescribed compact set.
+proof:
+  This is the escaping clause in the definition of an exterior component.
 -/
 theorem IsExteriorComponent.exists_not_mem_compact
     {X : Type} [TopologicalSpace X] {K U L : Set X}
@@ -1206,6 +1238,9 @@ name:
   Exterior components are nonempty
 statement:
   Every exterior component is nonempty.
+proof:
+  Exterior components are complementary components, and components are
+  nonempty by definition.
 -/
 theorem IsExteriorComponent.nonempty
     {X : Type} [TopologicalSpace X] {K U : Set X}
@@ -1219,6 +1254,10 @@ name:
 statement:
   The component of a point outside \(K\) is an exterior component exactly when
   it leaves every compact subset of the surface.
+proof:
+  The connected component is already a component of \(X\setminus K\); hence the
+  only additional condition for being exterior is precisely the stated
+  escaping property.
 -/
 theorem connectedComponentIn_isExteriorComponent_iff
     {X : Type} [TopologicalSpace X] {K : Set X} {x : X} (hxK : x ∈ Kᶜ) :
@@ -1314,6 +1353,9 @@ name:
 statement:
   A point of the bounded filling lies either in the original closed set or in
   a complementary component with compact closure.
+proof:
+  The bounded filling is the interior of the union of exactly those sets, and
+  every interior point belongs to the union itself.
 -/
 theorem boundedFillingOfComplement_subset_obstacle_union_bounded_components
     {X : Type} [TopologicalSpace X] (K : Set X) :
@@ -1505,6 +1547,8 @@ name:
   Filled sides are open
 statement:
   The filled side of an exterior component is open.
+proof:
+  It is defined as the interior of the complement, and interiors are open.
 -/
 theorem filledSideOfExteriorComponent_isOpen
     {X : Type} [TopologicalSpace X] (U : Set X) :
@@ -1517,6 +1561,8 @@ name:
   Filled sides avoid the exterior component
 statement:
   The filled side is contained in the complement of the exterior component.
+proof:
+  Every interior of a set is contained in that set.
 -/
 theorem filledSideOfExteriorComponent_subset_compl
     {X : Type} [TopologicalSpace X] (U : Set X) :
@@ -1529,6 +1575,8 @@ name:
   Filled sides are disjoint from the exterior component
 statement:
   The filled side and the exterior component are disjoint.
+proof:
+  The filled side lies in the complement of the exterior component.
 -/
 theorem filledSideOfExteriorComponent_disjoint
     {X : Type} [TopologicalSpace X] (U : Set X) :
@@ -2020,9 +2068,22 @@ theorem IsExteriorComponent.subset_of_subset_left_of_unique
   intro y hyU₂
   exact hC_eq ▸ hU₂_subset_C hyU₂
 
-/-- An exterior component contains an exterior component after enlarging the
-compact obstacle, provided the larger complement has only finitely many
-components. -/
+/--
+%%handwave
+name:
+  A nested exterior component after enlarging a compact obstacle
+statement:
+  Let \(K_1\subseteq K_2\), with \(K_2\) compact, in a Hausdorff locally
+  connected space.  If \(U_1\) is an exterior component of \(X\setminus K_1\)
+  and \(X\setminus K_2\) has only finitely many components, then some exterior
+  component \(U_2\) of \(X\setminus K_2\) satisfies \(U_2\subseteq U_1\).
+proof:
+  Suppose every component of \(X\setminus K_2\) contained in \(U_1\) were
+  non-exterior.  Each such component then has compact closure, and there are
+  only finitely many of them.  Their closures together with \(K_2\) form a
+  compact set containing all of \(U_1\), contradicting that an exterior
+  component escapes every compact set.
+-/
 theorem IsExteriorComponent.exists_nested_of_subset_left_of_finite_components
     {X : Type} [TopologicalSpace X] [T2Space X] [LocallyConnectedSpace X]
     {K₁ K₂ U₁ : Set X} (hK : K₁ ⊆ K₂)
@@ -2162,6 +2223,8 @@ name:
   Pointed exhaustion domains are open
 statement:
   Every domain in a pointed smooth simply connected exhaustion is open.
+proof:
+  Each member is a smooth boundary domain, whose carrier is open by definition.
 -/
 theorem domain_isOpen
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2175,6 +2238,8 @@ name:
   Pointed exhaustion domains are nonempty
 statement:
   Every domain in a pointed smooth simply connected exhaustion is nonempty.
+proof:
+  Nonemptiness is part of the smooth boundary domain data.
 -/
 theorem domain_nonempty
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2189,6 +2254,9 @@ name:
 statement:
   Every domain in a pointed smooth simply connected exhaustion has compact
   closure.
+proof:
+  Compactness of the closure is part of the smooth relatively compact
+  exhaustion data.
 -/
 theorem domain_compact_closure
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2203,6 +2271,8 @@ name:
 statement:
   Every domain in a pointed smooth simply connected exhaustion has smooth
   boundary.
+proof:
+  Each exhaustion member is, by construction, a smooth boundary domain.
 -/
 theorem domain_smooth_boundary
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2217,6 +2287,9 @@ name:
 statement:
   Every domain in a pointed smooth simply connected exhaustion contains the
   base point.
+proof:
+  Containment of the base point in every member is part of the pointed
+  exhaustion data.
 -/
 theorem domain_base_mem
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2231,6 +2304,9 @@ name:
 statement:
   Every domain in a pointed smooth simply connected exhaustion is simply
   connected.
+proof:
+  Simple connectedness of every member is part of the defining exhaustion
+  data.
 -/
 theorem domain_simplyConnected
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2244,6 +2320,9 @@ name:
   Pointed exhaustion domains are monotone
 statement:
   The domains of a pointed smooth simply connected exhaustion are monotone.
+proof:
+  Iterate the one-step inclusions of the underlying smooth exhaustion from the
+  earlier index to the later one.
 -/
 theorem domain_carrier_mono
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2261,6 +2340,9 @@ name:
 statement:
   The closure of each domain in a pointed smooth simply connected exhaustion
   lies in the next domain.
+proof:
+  This is the successive compact-containment condition of the underlying
+  smooth exhaustion.
 -/
 theorem domain_closure_subset_next
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2293,6 +2375,8 @@ name:
 statement:
   Every point lies in some domain of a pointed smooth simply connected
   exhaustion.
+proof:
+  The underlying smooth exhaustion covers the entire surface.
 -/
 theorem domain_exhausts
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2307,6 +2391,9 @@ name:
 statement:
   Every point lies in all sufficiently late domains of a pointed smooth simply
   connected exhaustion.
+proof:
+  Choose one domain containing the point.  Monotonicity places the point in
+  every member with a larger index.
 -/
 theorem domain_eventually_mem
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p)
@@ -2323,6 +2410,9 @@ name:
 statement:
   The union of the domains of a pointed smooth simply connected exhaustion is
   the whole surface.
+proof:
+  Every domain is contained in the surface, while the exhaustion property puts
+  every surface point in at least one domain.
 -/
 theorem iUnion_domain_carrier_eq_univ
     (E : PointedSimplyConnectedSmoothRelativelyCompactExhaustion X p) :
@@ -2412,6 +2502,9 @@ name:
 statement:
   Every domain in a pointed H-one-zero smooth exhaustion contains the base
   point.
+proof:
+  Containment of the base point in every member is part of the pointed
+  exhaustion data.
 -/
 theorem domain_base_mem
     (E : PointedH1ZeroSmoothRelativelyCompactExhaustion X p)
@@ -2444,6 +2537,9 @@ name:
 statement:
   Every domain in a pointed H-one-zero smooth exhaustion has vanishing first
   real de Rham cohomology.
+proof:
+  Vanishing of first de Rham cohomology for each member is part of the defining
+  exhaustion data.
 -/
 theorem domain_deRhamH1Zero
     (E : PointedH1ZeroSmoothRelativelyCompactExhaustion X p)
@@ -2451,7 +2547,18 @@ theorem domain_deRhamH1Zero
     (E.domain n).deRhamH1Zero :=
   E.deRhamH1Zero n
 
-/-- The domains of a pointed H-one-zero smooth exhaustion are monotone. -/
+/--
+%%handwave
+name:
+  Monotonicity of pointed cohomologically trivial exhaustion domains
+statement:
+  For a pointed smooth exhaustion by domains with vanishing first real de
+  Rham cohomology, if \(m\le n\), then the \(m\)-th domain is contained in the
+  \(n\)-th domain.
+proof:
+  Induct from \(m\) to \(n\), composing the one-step inclusions supplied by
+  the underlying smooth exhaustion.
+-/
 theorem domain_carrier_mono
     (E : PointedH1ZeroSmoothRelativelyCompactExhaustion X p)
     {m n : ℕ} (hmn : m ≤ n) :
@@ -2468,6 +2575,8 @@ name:
 statement:
   Every point of the surface lies in some domain of a pointed H-one-zero
   smooth exhaustion.
+proof:
+  The underlying smooth relatively compact exhaustion covers the surface.
 -/
 theorem domain_exhausts
     (E : PointedH1ZeroSmoothRelativelyCompactExhaustion X p)
@@ -2482,6 +2591,9 @@ name:
 statement:
   The union of the domains of a pointed H-one-zero smooth exhaustion is the
   whole surface.
+proof:
+  Every surface point lies in some exhaustion member, and every member is a
+  subset of the surface.
 -/
 theorem iUnion_domain_carrier_eq_univ
     (E : PointedH1ZeroSmoothRelativelyCompactExhaustion X p) :
@@ -5719,6 +5831,14 @@ name:
 statement:
   If a compact-closure complementary component touches the closed pointed
   component, then the touching point lies in the bounded filling.
+proof:
+  The touching point lies on the boundary of the closed pointed component and
+  hence on the smooth boundary of the original domain.  A regular boundary
+  chart splits a small neighborhood into the domain side and its complement.
+  Maximality of the two relevant complementary components places the two
+  half-neighborhoods in the pointed component and the bounded component,
+  respectively.  Thus the whole neighborhood lies in their union, so the
+  touching point belongs to the interior defining the bounded filling.
 -/
 theorem smoothBoundaryDomain_bounded_component_frontier_attachment_mem_boundedFilling
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5811,6 +5931,14 @@ name:
 statement:
   Every point in a compact-closure complementary component can be joined
   inside the bounded filling to a point of the closed pointed component.
+proof:
+  Choose a frontier point of the bounded complementary component that lies in
+  the closed pointed component.  The preceding attachment result puts this
+  point in the open bounded filling, while the whole complementary component
+  also lies in the filling and is path connected.  A small path component of
+  the filling near the attachment meets the complementary component; joining
+  inside the component and then inside that path component gives the required
+  path.
 -/
 theorem smoothBoundaryDomain_bounded_component_joinedIn_pointedComponent_closure_in_boundedFilling
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -6502,9 +6630,23 @@ theorem smoothBoundaryDomain_boundary_interval_local_closure_complement_subset_c
     ⟨V₀, hV₀_subset⟩
   exact ⟨t, ht, O, hO_nhds, V₀, hV₀_subset⟩
 
-/-- Along a sufficiently small boundary interval there is exactly one
-component of the complement of the domain closure, and every point of the
-interval lies on the frontier of that component. -/
+/--
+%%handwave
+name:
+  Unique complementary component incident along a boundary interval
+statement:
+  Let \(D\) be a smooth relatively compact domain and \(x\in\partial D\).
+  There is a neighborhood \(t\) of \(x\) within \(\partial D\) and a component
+  \(V_0\) of \(X\setminus\overline D\) such that every point of \(t\) lies in
+  \(\partial V_0\), and every component of \(X\setminus\overline D\) whose
+  frontier trace meets \(t\) is \(V_0\).
+proof:
+  A signed boundary chart supplies a nonempty preconnected local exterior
+  patch whose closure contains the boundary interval.  Put that patch in its
+  complementary component \(V_0\).  Openness of \(V_0\) makes every point of
+  the interval a frontier point, while local component uniqueness forces any
+  other component with frontier meeting the interval to equal \(V_0\).
+-/
 theorem smoothBoundaryDomain_boundary_interval_unique_incident_closure_complement_component
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -6614,9 +6756,23 @@ theorem smoothBoundaryDomain_connected_boundary_component_incident_component
   intro y hy
   exact hS_clopen.connectedComponent_subset hpS hy
 
-/-- If a complementary component is incident at one point of a connected
-smooth boundary component, it is incident along that whole boundary
-component. -/
+/--
+%%handwave
+name:
+  Incidence propagates along a connected smooth boundary component
+statement:
+  Let \(D\) be a smooth relatively compact domain, let
+  \(p\in\partial D\), and let \(V\) be a component of
+  \(X\setminus\overline D\).  If \(p\in\partial V\), then every point in the
+  connected component of \(p\) within \(\partial D\) also lies in
+  \(\partial V\).
+proof:
+  The preceding local uniqueness theorem provides a complementary component
+  incident along the whole connected boundary component.  At a small boundary
+  interval through \(p\), both this component and \(V\) occur in the singleton
+  family of incident components, so they agree.  Substitute this equality in
+  the global incidence conclusion.
+-/
 theorem smoothBoundaryDomain_connected_boundary_component_subset_frontier_of_incident
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
@@ -7903,6 +8059,8 @@ name:
 statement:
   If every exhaustion member contains \(p\), then \(p\) lies in the
   \(p\)-component of every member.
+proof:
+  A point of a set belongs to its own connected component within that set.
 -/
 theorem smoothRelativelyCompactExhaustion_pointed_component_base_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7948,6 +8106,9 @@ name:
 statement:
   If every exhaustion member contains \(p\), then the \(p\)-component of each
   member is a component of that member.
+proof:
+  Since \(p\) belongs to the member, its connected component within that member
+  is nonempty, preconnected, contained there, and maximal.
 -/
 theorem smoothRelativelyCompactExhaustion_pointed_component_isComponentOf
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7963,6 +8124,8 @@ name:
   Pointed components are preconnected
 statement:
   The \(p\)-component of an exhaustion member is preconnected.
+proof:
+  Connected components within a set are preconnected by construction.
 -/
 theorem smoothRelativelyCompactExhaustion_pointed_component_isPreconnected
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -7977,6 +8140,9 @@ name:
 statement:
   The closure of each pointed component of a smooth relatively compact
   exhaustion member is compact.
+proof:
+  The pointed component lies in the exhaustion domain, so its closure is a
+  closed subset of the compact closure of that domain.
 -/
 theorem smoothRelativelyCompactExhaustion_pointed_component_closure_compact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -8252,6 +8418,10 @@ name:
 statement:
   If all exhaustion members contain \(p\), then the union of the pointed
   components is the whole surface.
+proof:
+  For any point \(x\), choose a path from \(p\) to \(x\).  Its compact image is
+  contained in some exhaustion member, so \(x\) and \(p\) lie in the same
+  component of that member.
 -/
 theorem smoothRelativelyCompactExhaustion_iUnion_pointed_components_eq_univ
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

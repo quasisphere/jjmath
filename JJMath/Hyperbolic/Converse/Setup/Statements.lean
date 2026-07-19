@@ -56,20 +56,6 @@ def curvatureLocalSolvingPackage_of_hasCurvatureLiouvilleDevelopingConstructionA
   upperHalfPlaneLocalModels :=
     hasUpperHalfPlaneLocalModels_of_hasCurvatureLiouvilleDevelopingConstructionAtlas h
 
-omit [RiemannSurface X] in
-theorem admitsCurvatureLocalSolvingPackage_of_hasCurvatureLiouvilleDevelopingConstructionAtlas
-    {g : HyperbolicMetric X}
-    (h : g.HasCurvatureLiouvilleDevelopingConstructionAtlas) :
-    g.AdmitsCurvatureLocalSolvingPackage :=
-  ⟨curvatureLocalSolvingPackage_of_hasCurvatureLiouvilleDevelopingConstructionAtlas h⟩
-
-omit [RiemannSurface X] in
-theorem hasUpperHalfPlaneLocalModels_of_admitsCurvatureLocalSolvingPackage
-    {g : HyperbolicMetric X}
-    (h : g.AdmitsCurvatureLocalSolvingPackage) :
-    g.HasUpperHalfPlaneLocalModels :=
-  h.elim fun H ↦ H.upperHalfPlaneLocalModels
-
 /--
 The analytic hyperbolic part of the partial converse.
 
@@ -219,66 +205,27 @@ def toHyperbolicDevelopingCurvaturePipeline
 
 end HyperbolicDevelopingAnalyticData
 
-theorem hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.HasDevelopingCurvaturePipeline x₀ :=
-  h.elim fun D ↦ ⟨D.toHyperbolicDevelopingCurvaturePipeline⟩
-
-theorem admitsCurvatureLocalSolvingPackage_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsCurvatureLocalSolvingPackage :=
-  h.elim fun D ↦ D.localSolvingPackage
-
-theorem admitsLiftedDevelopingMap_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsLiftedDevelopingMap x₀ :=
-  admitsLiftedDevelopingMap_of_hasDevelopingCurvaturePipeline
-    (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-
-theorem admitsDevelopingMap_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsDevelopingMap x₀ :=
-  admitsDevelopingMap_of_hasDevelopingCurvaturePipeline
-    (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-
-theorem hasUpperHalfPlaneLocalModels_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.HasUpperHalfPlaneLocalModels :=
-  hasUpperHalfPlaneLocalModels_of_hasDevelopingCurvaturePipeline
-    (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-
 /-- Assemble the analytic output package from the analytic input data. -/
 def hyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
     {x₀ : X} {g : HyperbolicMetric X}
     (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.HyperbolicDevelopingAnalyticPackage x₀ where
-  localSolvingPackage :=
-    h.elim fun D ↦ D.localSolvingPackage
-  curvatureFormulaAtlas :=
-    hasCurvatureLiouvilleFormulaAtlas_of_hasDevelopingCurvaturePipeline
-      (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-  coordinatePullbackFormulaAtlas :=
-    hasCoordinateUpperHalfPlanePullbackFormulaAtlas_of_hasDevelopingCurvaturePipeline
-      (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-  upperHalfPlaneLocalModels :=
-    hasUpperHalfPlaneLocalModels_of_hasHyperbolicDevelopingAnalyticData h
-  developingCurvaturePipeline :=
-    hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h
-  liftedDevelopingMap :=
-    admitsLiftedDevelopingMap_of_hasHyperbolicDevelopingAnalyticData h
-  developingMap :=
-    admitsDevelopingMap_of_hasHyperbolicDevelopingAnalyticData h
-
-theorem admitsHyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsHyperbolicDevelopingAnalyticPackage x₀ :=
-  ⟨hyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData h⟩
+    g.HyperbolicDevelopingAnalyticPackage x₀ := by
+  let hPipeline : g.HasDevelopingCurvaturePipeline x₀ :=
+    h.elim fun D ↦ ⟨D.toHyperbolicDevelopingCurvaturePipeline⟩
+  exact {
+    localSolvingPackage := h.elim fun D ↦ D.localSolvingPackage
+    curvatureFormulaAtlas :=
+      hasCurvatureLiouvilleFormulaAtlas_of_hasDevelopingCurvaturePipeline hPipeline
+    coordinatePullbackFormulaAtlas :=
+      hasCoordinateUpperHalfPlanePullbackFormulaAtlas_of_hasDevelopingCurvaturePipeline hPipeline
+    upperHalfPlaneLocalModels :=
+      hasUpperHalfPlaneLocalModels_of_hasDevelopingCurvaturePipeline hPipeline
+    developingCurvaturePipeline := hPipeline
+    liftedDevelopingMap :=
+      admitsLiftedDevelopingMap_of_hasDevelopingCurvaturePipeline hPipeline
+    developingMap :=
+      admitsDevelopingMap_of_hasDevelopingCurvaturePipeline hPipeline
+  }
 
 /-- Forget projective data and keep the analytic input data underlying a curvature pipeline. -/
 def hyperbolicDevelopingAnalyticData_of_hyperbolicDevelopingCurvaturePipeline
@@ -286,81 +233,22 @@ def hyperbolicDevelopingAnalyticData_of_hyperbolicDevelopingCurvaturePipeline
     (P : HyperbolicDevelopingCurvaturePipeline X x₀ g) :
     g.HyperbolicDevelopingAnalyticData x₀ where
   localSolvingPackage :=
-    admitsCurvatureLocalSolvingPackage_of_hasCurvatureLiouvilleDevelopingConstructionAtlas
-      P.localCurvatureConstructions
+    ⟨curvatureLocalSolvingPackage_of_hasCurvatureLiouvilleDevelopingConstructionAtlas
+      P.localCurvatureConstructions⟩
   localCurvatureConstructions := P.localCurvatureConstructions
   continuationData := P.continuationData
   continuation_uses_curvature_constructions :=
     P.continuation_uses_curvature_constructions
-
-theorem hasHyperbolicDevelopingAnalyticData_of_hasDevelopingCurvaturePipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasDevelopingCurvaturePipeline x₀) :
-    g.HasHyperbolicDevelopingAnalyticData x₀ :=
-  h.elim fun P ↦
-    ⟨hyperbolicDevelopingAnalyticData_of_hyperbolicDevelopingCurvaturePipeline P⟩
-
-theorem admitsHyperbolicDevelopingAnalyticPackage_of_hasDevelopingCurvaturePipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasDevelopingCurvaturePipeline x₀) :
-    g.AdmitsHyperbolicDevelopingAnalyticPackage x₀ :=
-  admitsHyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
-    (hasHyperbolicDevelopingAnalyticData_of_hasDevelopingCurvaturePipeline h)
-
-theorem admitsDevelopingMap_of_admitsHyperbolicDevelopingAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsHyperbolicDevelopingAnalyticPackage x₀) :
-    g.AdmitsDevelopingMap x₀ :=
-  h.elim fun H ↦ H.developingMap
-
-theorem admitsCurvatureLocalSolvingPackage_of_admitsHyperbolicDevelopingAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsHyperbolicDevelopingAnalyticPackage x₀) :
-    g.AdmitsCurvatureLocalSolvingPackage :=
-  h.elim fun H ↦ H.localSolvingPackage
-
-theorem hasUpperHalfPlaneLocalModels_of_admitsHyperbolicDevelopingAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsHyperbolicDevelopingAnalyticPackage x₀) :
-    g.HasUpperHalfPlaneLocalModels :=
-  h.elim fun H ↦ H.upperHalfPlaneLocalModels
-
-theorem admitsProjectivizedDevelopingMap_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsProjectivizedDevelopingMap x₀ :=
-  admitsProjectivizedDevelopingMap_of_hasDevelopingCurvaturePipeline
-    (hasDevelopingCurvaturePipeline_of_hasHyperbolicDevelopingAnalyticData h)
-
-theorem admitsProjectivizedDevelopingMap_of_admitsHyperbolicDevelopingAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsHyperbolicDevelopingAnalyticPackage x₀) :
-    g.AdmitsProjectivizedDevelopingMap x₀ :=
-  h.elim fun H ↦
-    admitsProjectivizedDevelopingMap_of_hasDevelopingCurvaturePipeline
-      H.developingCurvaturePipeline
 
 def projectivizedAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
     {x₀ : X} {g : HyperbolicMetric X}
     (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
     g.ProjectivizedAnalyticPackage x₀ where
   analyticPackage :=
-    admitsHyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData h
+    ⟨hyperbolicDevelopingAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData h⟩
   projectivizedDevelopingMap :=
-    admitsProjectivizedDevelopingMap_of_hasHyperbolicDevelopingAnalyticData h
-
-theorem admitsProjectivizedAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasHyperbolicDevelopingAnalyticData x₀) :
-    g.AdmitsProjectivizedAnalyticPackage x₀ :=
-  ⟨projectivizedAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData h⟩
-
-theorem admitsProjectivizedAnalyticPackage_of_hasDevelopingCurvaturePipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasDevelopingCurvaturePipeline x₀) :
-    g.AdmitsProjectivizedAnalyticPackage x₀ :=
-  admitsProjectivizedAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
-    (hasHyperbolicDevelopingAnalyticData_of_hasDevelopingCurvaturePipeline h)
+    admitsProjectivizedDevelopingMap_of_hasDevelopingCurvaturePipeline
+      (h.elim fun D ↦ ⟨D.toHyperbolicDevelopingCurvaturePipeline⟩)
 
 def projectivizedAnalyticPackage_of_admitsHyperbolicDevelopingAnalyticPackage
     {x₀ : X} {g : HyperbolicMetric X}
@@ -368,19 +256,9 @@ def projectivizedAnalyticPackage_of_admitsHyperbolicDevelopingAnalyticPackage
     g.ProjectivizedAnalyticPackage x₀ where
   analyticPackage := h
   projectivizedDevelopingMap :=
-    admitsProjectivizedDevelopingMap_of_admitsHyperbolicDevelopingAnalyticPackage h
-
-theorem admitsProjectivizedAnalyticPackage_of_admitsHyperbolicDevelopingAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsHyperbolicDevelopingAnalyticPackage x₀) :
-    g.AdmitsProjectivizedAnalyticPackage x₀ :=
-  ⟨projectivizedAnalyticPackage_of_admitsHyperbolicDevelopingAnalyticPackage h⟩
-
-theorem admitsProjectivizedDevelopingMap_of_admitsProjectivizedAnalyticPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectivizedAnalyticPackage x₀) :
-    g.AdmitsProjectivizedDevelopingMap x₀ :=
-  h.elim fun H ↦ H.projectivizedDevelopingMap
+    h.elim fun H ↦
+      admitsProjectivizedDevelopingMap_of_hasDevelopingCurvaturePipeline
+        H.developingCurvaturePipeline
 
 /-- Assemble the projective-atlas construction package from the atlas pipeline. -/
 def projectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvaturePipeline
@@ -388,8 +266,10 @@ def projectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvatu
     (h : g.HasProjectiveAtlasForDevelopingCurvaturePipeline x₀) :
     g.ProjectiveAtlasConstructionPackage x₀ where
   projectivizedAnalyticPackage :=
-    admitsProjectivizedAnalyticPackage_of_hasDevelopingCurvaturePipeline
-      (hasDevelopingCurvaturePipeline_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h)
+    (hasDevelopingCurvaturePipeline_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h).elim
+      fun P ↦
+        ⟨projectivizedAnalyticPackage_of_hasHyperbolicDevelopingAnalyticData
+          ⟨hyperbolicDevelopingAnalyticData_of_hyperbolicDevelopingCurvaturePipeline P⟩⟩
   projectiveAtlasPipeline :=
     admitsProjectiveAtlasForDevelopingCurvaturePipeline_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h
   curvatureProjectivizedPipeline :=
@@ -397,50 +277,6 @@ def projectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvatu
       (hasCurvatureProjectivizedDevelopingPipeline_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h)
   inducedRealProjectiveStructure :=
     inducesRealProjectiveStructure_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h
-
-theorem admitsProjectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvaturePipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasProjectiveAtlasForDevelopingCurvaturePipeline x₀) :
-    g.AdmitsProjectiveAtlasConstructionPackage x₀ :=
-  ⟨projectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvaturePipeline h⟩
-
-theorem admitsProjectiveAtlasConstructionPackage_of_admitsProjectiveAtlasForDevelopingCurvaturePipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasForDevelopingCurvaturePipeline x₀) :
-    g.AdmitsProjectiveAtlasConstructionPackage x₀ :=
-  h.elim fun H ↦
-    admitsProjectiveAtlasConstructionPackage_of_hasProjectiveAtlasForDevelopingCurvaturePipeline H
-
-theorem inducesRealProjectiveStructure_of_admitsProjectiveAtlasConstructionPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasConstructionPackage x₀) :
-    g.InducesRealProjectiveStructure x₀ :=
-  h.elim fun H ↦ H.inducedRealProjectiveStructure
-
-theorem admitsProjectivizedAnalyticPackage_of_admitsProjectiveAtlasConstructionPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasConstructionPackage x₀) :
-    g.AdmitsProjectivizedAnalyticPackage x₀ :=
-  h.elim fun H ↦ H.projectivizedAnalyticPackage
-
-theorem admitsProjectivizedDevelopingMap_of_admitsProjectiveAtlasConstructionPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasConstructionPackage x₀) :
-    g.AdmitsProjectivizedDevelopingMap x₀ :=
-  admitsProjectivizedDevelopingMap_of_admitsProjectivizedAnalyticPackage
-    (admitsProjectivizedAnalyticPackage_of_admitsProjectiveAtlasConstructionPackage h)
-
-theorem admitsProjectiveAtlasForDevelopingCurvaturePipeline_of_admitsProjectiveAtlasConstructionPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasConstructionPackage x₀) :
-    g.AdmitsProjectiveAtlasForDevelopingCurvaturePipeline x₀ :=
-  h.elim fun H ↦ H.projectiveAtlasPipeline
-
-theorem admitsCurvatureProjectivizedDevelopingPipeline_of_admitsProjectiveAtlasConstructionPackage
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.AdmitsProjectiveAtlasConstructionPackage x₀) :
-    g.AdmitsCurvatureProjectivizedDevelopingPipeline x₀ :=
-  h.elim fun H ↦ H.curvatureProjectivizedPipeline
 
 /--
 Input data for the partial converse, split along the intended proof:
@@ -527,8 +363,15 @@ def CompletePartialConverseTheorem (X : Type) [TopologicalSpace X]
         ∃ x₀ : X, HasPSL2RHolonomy x₀ P
 
 /--
-The older three-output package implies the explicit projective-structure
-converse statement.
+%%handwave
+name: Projective-structure converse from the three principal outputs
+statement:
+  Let \(X\) be a nonempty connected Riemann surface. Suppose that for every base point and hyperbolic metric \(g\), one has a developing map, its projectivization, and an induced real projective structure. Then every \(g\) induces a complex projective structure whose holonomy factors through \(\mathrm{PSL}_2(\mathbb R)\) for some base point.
+proof:
+  Choose a base point and extract the induced real projective structure from
+  the three-output hypothesis. Its underlying complex projective structure is
+  induced by \(g\), and its holonomy factors through
+  \(\mathrm{PSL}_2(\mathbb R)\).
 -/
 theorem complete_partial_converse_theorem_of_partial_converse_main_outputs_theorem
     (h : PartialConverseMainOutputsTheorem X) :

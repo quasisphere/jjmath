@@ -320,7 +320,17 @@ structure SurfaceMetricMeasureGeometry (X : Type)
 
 namespace SurfaceMetricMeasureGeometry
 
-/-- The Riemannian volume measure is smooth and positive in coordinates. -/
+/--
+%%handwave
+name:
+  The packaged surface volume is a smooth positive area measure
+statement:
+  For every surface metric-measure geometry, its volume measure is smooth and
+  strictly positive in local coordinates.
+proof:
+  By definition, the volume component of a surface metric-measure geometry is
+  the Riemannian area measure, whose coordinate density is smooth and positive.
+-/
 theorem smoothPositive {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     {metric : SmoothRiemannianMetricOnSurface X}
@@ -813,6 +823,8 @@ name:
 statement:
   At each point, the bilinear form of a smooth Riemannian metric is symmetric
   and positive definite on the tangent plane.
+proof:
+  Positive definiteness is part of the Riemannian metric at each tangent fiber; evaluating it on a nonzero vector gives a positive self-pairing.
 -/
 theorem smoothRiemannianMetric_inner_positiveDefinite
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -987,11 +999,29 @@ def complexCoordinateVector : Fin 2 → ℂ
   | 0 => 1
   | 1 => Complex.I
 
+/--
+%%handwave
+name:
+  The first real coordinate vector is \(1\)
+statement:
+  In the standard real basis of \(\mathbb C\), the coordinate vector indexed by \(0\) is \(1\).
+proof:
+  This is the defining first branch of the coordinate-vector convention.
+-/
 @[simp]
 theorem complexCoordinateVector_zero :
     complexCoordinateVector 0 = (1 : ℂ) := by
   rfl
 
+/--
+%%handwave
+name:
+  The second real coordinate vector is \(i\)
+statement:
+  In the standard real basis of \(\mathbb C\), the coordinate vector indexed by \(1\) is \(i\).
+proof:
+  This is the defining second branch of the coordinate-vector convention.
+-/
 @[simp]
 theorem complexCoordinateVector_one :
     complexCoordinateVector 1 = Complex.I := by
@@ -1025,6 +1055,16 @@ noncomputable def surfaceMetricInverseGramCoeffInChart {X : Type}
   | 1, 0 => - det⁻¹ * d
   | 1, 1 => det⁻¹ * a
 
+/--
+%%handwave
+name:
+  Upper-left inverse metric coefficient
+statement:
+  If \(G=(g_{ij})\) is the metric Gram matrix in a surface chart and
+  \(D=\det G\), then \(G^{-1}_{00}=D^{-1}g_{11}\).
+proof:
+  Expand the definition of the inverse coefficient for a \(2\times2\) Gram matrix.
+-/
 @[simp]
 theorem surfaceMetricInverseGramCoeffInChart_zero_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1038,6 +1078,16 @@ theorem surfaceMetricInverseGramCoeffInChart_zero_zero
       (surfaceMetricGramDetInChart g e z)⁻¹ * b v₂ v₂ := by
   simp [surfaceMetricInverseGramCoeffInChart]
 
+/--
+%%handwave
+name:
+  Upper-right inverse metric coefficient
+statement:
+  If \(G=(g_{ij})\) is the metric Gram matrix in a surface chart and
+  \(D=\det G\), then \(G^{-1}_{01}=-D^{-1}g_{01}\).
+proof:
+  Expand the \(2\times2\) inverse-matrix formula.
+-/
 @[simp]
 theorem surfaceMetricInverseGramCoeffInChart_zero_one
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1052,6 +1102,16 @@ theorem surfaceMetricInverseGramCoeffInChart_zero_one
       (-(surfaceMetricGramDetInChart g e z)⁻¹ * b v₁ v₂) := by
   simp [surfaceMetricInverseGramCoeffInChart]
 
+/--
+%%handwave
+name:
+  Lower-left inverse metric coefficient
+statement:
+  If \(G=(g_{ij})\) is the metric Gram matrix in a surface chart and
+  \(D=\det G\), then \(G^{-1}_{10}=-D^{-1}g_{10}\).
+proof:
+  Expand the \(2\times2\) inverse-matrix formula.
+-/
 @[simp]
 theorem surfaceMetricInverseGramCoeffInChart_one_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1066,6 +1126,16 @@ theorem surfaceMetricInverseGramCoeffInChart_one_zero
       (-(surfaceMetricGramDetInChart g e z)⁻¹ * b v₂ v₁) := by
   simp [surfaceMetricInverseGramCoeffInChart]
 
+/--
+%%handwave
+name:
+  Lower-right inverse metric coefficient
+statement:
+  If \(G=(g_{ij})\) is the metric Gram matrix in a surface chart and
+  \(D=\det G\), then \(G^{-1}_{11}=D^{-1}g_{00}\).
+proof:
+  Expand the definition of the inverse coefficient for a \(2\times2\) Gram matrix.
+-/
 @[simp]
 theorem surfaceMetricInverseGramCoeffInChart_one_one
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1106,6 +1176,16 @@ noncomputable def surfaceFunctionChartDerivativeComponent {X : Type}
     (e : OpenPartialHomeomorph X ℂ) (f : X → ℝ) (z : ℂ) (i : Fin 2) : ℝ :=
   surfaceFunctionChartDirectionalDerivative e f z (complexCoordinateVector i)
 
+/--
+%%handwave
+name:
+  First coordinate derivative component
+statement:
+  The \(0\)-th coordinate derivative of \(f\) in a chart is its directional
+  derivative along \(1\in\mathbb C\).
+proof:
+  This is the definition of the \(0\)-th coordinate component.
+-/
 @[simp]
 theorem surfaceFunctionChartDerivativeComponent_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1114,6 +1194,16 @@ theorem surfaceFunctionChartDerivativeComponent_zero
       surfaceFunctionChartDirectionalDerivative e f z (1 : ℂ) := by
   rfl
 
+/--
+%%handwave
+name:
+  Second coordinate derivative component
+statement:
+  The \(1\)-st coordinate derivative of \(f\) in a chart is its directional
+  derivative along \(i\in\mathbb C\).
+proof:
+  This is the definition of the \(1\)-st coordinate component.
+-/
 @[simp]
 theorem surfaceFunctionChartDerivativeComponent_one
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1142,6 +1232,18 @@ theorem surfaceFunctionChartDerivativeComponent_measurable
       measurable_fderiv_apply_const ℝ
         (fun w : ℂ ↦ f (e.symm w)) (complexCoordinateVector i)
 
+/--
+%%handwave
+name:
+  Coordinate derivative components are almost everywhere strongly measurable
+statement:
+  For any chart \(e\), function \(f:X\to\mathbb R\), coordinate index
+  \(i\in\{0,1\}\), and measure \(\mu\) on \(\mathbb C\), the function
+  \(z\mapsto\partial_i(f\circ e^{-1})(z)\) is almost everywhere strongly measurable.
+proof:
+  The Fréchet derivative evaluated on a fixed coordinate vector is measurable;
+  measurable real-valued functions are almost everywhere strongly measurable.
+-/
 theorem surfaceFunctionChartDerivativeComponent_aestronglyMeasurable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {μ : Measure ℂ} (e : OpenPartialHomeomorph X ℂ) (f : X → ℝ)
@@ -1257,6 +1359,8 @@ name:
 statement:
   The coordinate inverse-metric pairing is the four-term expansion of
   \(g^{ij}\partial_i f\,\partial_j h\) in the coordinate directions \(1,i\).
+proof:
+  Expand both coordinate covectors in the real basis of the complex plane and distribute the inverse-metric bilinear pairing, producing the four basis terms.
 -/
 theorem surfaceMetricCoordinateGradientPairingInChart_eq_four_terms
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1296,6 +1400,19 @@ noncomputable def surfaceMetricGradientFluxInChart {X : Type}
     surfaceMetricInverseGramCoeffInChart g e z i j *
       surfaceFunctionChartDerivativeComponent e f z j
 
+/--
+%%handwave
+name:
+  First component of the metric gradient flux
+statement:
+  With coordinate density \(\rho\), inverse metric coefficients \(g^{ij}\),
+  and derivatives \(\partial_jf\), the first flux component is
+  \[
+    \rho\,(g^{00}\partial_0f+g^{01}\partial_1f).
+  \]
+proof:
+  Expand the two-term sum defining the coordinate gradient flux.
+-/
 theorem surfaceMetricGradientFluxInChart_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X)
@@ -1308,6 +1425,18 @@ theorem surfaceMetricGradientFluxInChart_zero
             surfaceFunctionChartDerivativeComponent e f z 1) := by
   simp [surfaceMetricGradientFluxInChart, Fin.sum_univ_two]
 
+/--
+%%handwave
+name:
+  Second component of the metric gradient flux
+statement:
+  The second coordinate flux component is
+  \[
+    \rho\,(g^{10}\partial_0f+g^{11}\partial_1f).
+  \]
+proof:
+  Expand the two-term sum defining the coordinate gradient flux.
+-/
 theorem surfaceMetricGradientFluxInChart_one
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X)
@@ -1333,6 +1462,18 @@ noncomputable def surfaceCoordinateDivergence
     (F : ℂ → Fin 2 → ℝ) (z : ℂ) : ℝ :=
   ∑ i : Fin 2, fderiv ℝ (fun w : ℂ ↦ F w i) z (complexCoordinateVector i)
 
+/--
+%%handwave
+name:
+  Two-term formula for coordinate divergence
+statement:
+  For a two-component vector field \(F=(F^0,F^1)\) on \(\mathbb C\),
+  \[
+    \operatorname{div}F(z)=D F^0_z(1)+D F^1_z(i).
+  \]
+proof:
+  Expand the sum over the two standard real coordinate directions.
+-/
 theorem surfaceCoordinateDivergence_eq_two_terms
     (F : ℂ → Fin 2 → ℝ) (z : ℂ) :
     surfaceCoordinateDivergence F z =
@@ -1363,6 +1504,16 @@ def complexVectorComponent (v : ℂ) : Fin 2 → ℝ
   | 0 => v.re
   | 1 => v.im
 
+/--
+%%handwave
+name:
+  Components of a reconstructed complex vector
+statement:
+  For \(a:\{0,1\}\to\mathbb R\), the real coordinate components of
+  \(a_0\,1+a_1\,i\) are exactly \(a_0,a_1\).
+proof:
+  Check the two indices and simplify real and imaginary parts.
+-/
 @[simp]
 theorem complexVectorComponent_fromComponents
     (a : Fin 2 → ℝ) :
@@ -1370,6 +1521,16 @@ theorem complexVectorComponent_fromComponents
   funext i
   fin_cases i <;> simp [complexVectorComponent, complexVectorFromComponents]
 
+/--
+%%handwave
+name:
+  Reconstruction from real and imaginary components
+statement:
+  For every \(v\in\mathbb C\), reconstructing from its real coordinate
+  components gives \(v.re\,1+v.im\,i=v\).
+proof:
+  This is the standard real-imaginary decomposition of a complex number.
+-/
 @[simp]
 theorem complexVectorFromComponents_component
     (v : ℂ) :
@@ -1445,6 +1606,15 @@ noncomputable def coordinateJacobianSignAt
     (T : ℂ → ℂ) (z : ℂ) : ℝ :=
   if 0 < (fderiv ℝ T z).det then 1 else -1
 
+/--
+%%handwave
+name:
+  An invertible coordinate derivative has nonzero determinant
+statement:
+  If a real-linear map \(A:\mathbb C\to\mathbb C\) is invertible, then \(\det A\ne0\).
+proof:
+  An invertible linear map has unit determinant, hence nonzero determinant.
+-/
 private theorem coordinateComplexDet_ne_zero_of_isInvertible
     (A : ℂ →L[ℝ] ℂ) (hA : A.IsInvertible) : A.det ≠ 0 := by
   rcases hA with ⟨e, rfl⟩
@@ -1605,6 +1775,20 @@ noncomputable def signedCofactorScalarField
   | 0 => σ * (d z * P z - b z * Q z)
   | 1 => σ * (-(c z * P z) + a z * Q z)
 
+/--
+%%handwave
+name:
+  Determinant in complex coordinate components
+statement:
+  For a real-linear \(J:\mathbb C\to\mathbb C\),
+  \[
+    \det J=\operatorname{Re}(J1)\operatorname{Im}(Ji)
+      -\operatorname{Re}(Ji)\operatorname{Im}(J1).
+  \]
+proof:
+  Write the matrix of \(J\) in the real basis \(1,i\) and apply the
+  \(2\times2\) determinant formula.
+-/
 private theorem coordinateComplex_det_eq_components
     (J : ℂ →L[ℝ] ℂ) :
     J.det =
@@ -2051,6 +2235,18 @@ theorem pulledBackCoordinateComponent_differentiableAt
     (hF'.differentiableAt (by simp)).comp z
       (hT.differentiableAt (by simp))
 
+/--
+%%handwave
+name:
+  A real-linear functional is determined by its coordinate values
+statement:
+  For a real-linear functional \(L:\mathbb C\to\mathbb R\) and \(v\in\mathbb C\),
+  \[
+    L(v)=v.re\,L(1)+v.im\,L(i).
+  \]
+proof:
+  Apply real linearity to the decomposition \(v=v.re\,1+v.im\,i\).
+-/
 private theorem realLinearMap_apply_complex_eq_components
     (L : ℂ →L[ℝ] ℝ) (v : ℂ) :
     L v = v.re * L (1 : ℂ) + v.im * L Complex.I := by
@@ -2133,6 +2329,21 @@ theorem pulledBackCoordinateComponent_fderiv_I
       realLinearMap_apply_complex_eq_components L
         ((fderiv ℝ T z) Complex.I)
 
+/--
+%%handwave
+name:
+  Derivative of a coordinate Jacobian entry
+statement:
+  If \(T:\mathbb C\to\mathbb C\) is smooth at \(z\), then for coordinate
+  indices \(i,j\) and direction \(v\),
+  \[
+    D\!\left[w\mapsto(DT_w e_j)_i\right]_z(v)
+      =\bigl(D(DT)_z(v)(e_j)\bigr)_i.
+  \]
+proof:
+  Differentiate evaluation of the derivative field on the fixed vector \(e_j\),
+  then apply the continuous real coordinate projection.
+-/
 private theorem coordinateJacobianEntry_fderiv
     {T : ℂ → ℂ} {z v : ℂ} (hT : ContDiffAt ℝ ∞ T z)
     (i j : Fin 2) :
@@ -2686,6 +2897,8 @@ name:
 statement:
   Each inverse metric coefficient is almost everywhere strongly measurable
   with respect to the coordinate Riemannian volume measure.
+proof:
+  Smoothness of the metric makes the coordinate Gram matrix continuous; inversion is continuous on positive-definite matrices, so each inverse entry is measurable.
 -/
 theorem surfaceMetricInverseGramCoeffInChart_aestronglyMeasurable
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3342,6 +3555,16 @@ noncomputable def surfaceChartRepresentative {X : Type} [TopologicalSpace X] [Ch
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) : ℂ → ℝ :=
   e.target.indicator (fun z : ℂ ↦ η (e.symm z))
 
+/--
+%%handwave
+name:
+  Zero-extended chart representative inside the chart target
+statement:
+  If \(z\in e.target\), then the zero-extended representative of
+  \(\eta:X\to\mathbb R\) satisfies \(\eta_e(z)=\eta(e^{-1}z)\).
+proof:
+  Membership in the target selects the inverse-chart branch of the definition.
+-/
 theorem surfaceChartRepresentative_apply_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) {z : ℂ}
@@ -3349,6 +3572,15 @@ theorem surfaceChartRepresentative_apply_of_mem
     surfaceChartRepresentative e η z = η (e.symm z) := by
   simp [surfaceChartRepresentative, hz]
 
+/--
+%%handwave
+name:
+  Zero-extended chart representative outside the chart target
+statement:
+  If \(z\notin e.target\), then the zero-extended representative satisfies \(\eta_e(z)=0\).
+proof:
+  Nonmembership in the target selects the zero branch of the definition.
+-/
 theorem surfaceChartRepresentative_apply_of_notMem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) {z : ℂ}
@@ -3364,6 +3596,8 @@ statement:
   At every point of the chart image, the zero-extended coordinate
   representative agrees in a neighbourhood with the ordinary inverse-chart
   pullback.
+proof:
+  A point inside the chart image has a neighborhood still contained in that image.  On this neighborhood the zero-extension branch selects the raw chart representative.
 -/
 theorem surfaceChartRepresentative_eventuallyEq_raw_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3374,6 +3608,19 @@ theorem surfaceChartRepresentative_eventuallyEq_raw_of_mem
   filter_upwards [e.open_target.mem_nhds hz] with w hw
   exact surfaceChartRepresentative_apply_of_mem e η hw
 
+/--
+%%handwave
+name:
+  Derivative of a chart representative inside the chart target
+statement:
+  If \(z\in e.target\), then
+  \[
+    D\eta_e(z)=D(\eta\circ e^{-1})(z).
+  \]
+proof:
+  The zero extension agrees with the inverse-chart pullback on a neighborhood of \(z\);
+  eventually equal functions have equal derivatives there.
+-/
 theorem surfaceChartRepresentative_fderiv_eq_raw_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) {z : ℂ}
@@ -3383,6 +3630,16 @@ theorem surfaceChartRepresentative_fderiv_eq_raw_of_mem
   exact Filter.EventuallyEq.fderiv_eq
     (surfaceChartRepresentative_eventuallyEq_raw_of_mem e η hz)
 
+/--
+%%handwave
+name:
+  Directional derivative of a chart representative
+statement:
+  If \(z\in e.target\) and \(v\in\mathbb C\), then
+  \(D\eta_e(z)(v)=D(\eta\circ e^{-1})(z)(v)\).
+proof:
+  Evaluate the equality of Fréchet derivatives inside the chart target on \(v\).
+-/
 theorem surfaceChartRepresentative_directionalDerivative_eq_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) {z : ℂ}
@@ -3392,6 +3649,16 @@ theorem surfaceChartRepresentative_directionalDerivative_eq_of_mem
   rw [surfaceChartRepresentative_fderiv_eq_raw_of_mem e η hz]
   rfl
 
+/--
+%%handwave
+name:
+  Coordinate derivatives of a chart representative
+statement:
+  If \(z\in e.target\) and \(i\in\{0,1\}\), then
+  \(D\eta_e(z)(e_i)=\partial_i(\eta\circ e^{-1})(z)\).
+proof:
+  Apply the directional-derivative identity to the \(i\)-th standard coordinate vector.
+-/
 theorem surfaceChartRepresentative_derivativeComponent_eq_of_mem
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : X → ℝ) {z : ℂ}
@@ -3448,6 +3715,8 @@ statement:
   If the topological support of a surface function lies in a chart source,
   then the zero-extended coordinate representative has topological support in
   the chart target.
+proof:
+  Outside the chart target the zero-extended representative vanishes on the open complement, so no such point belongs to its topological support.
 -/
 theorem surfaceChartRepresentative_tsupport_subset_target
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3855,6 +4124,22 @@ theorem surfaceDifferential_apply_chartTangentMap
   simp [SurfaceRealModel]
   rfl
 
+/--
+%%handwave
+name:
+  Pairing through a two-by-two inverse Gram matrix
+statement:
+  Let \(G=(g_{ij})\) have nonzero determinant and suppose
+  \(p=\alpha g_{11}+\beta g_{21}\) and
+  \(q=\alpha g_{12}+\beta g_{22}\).  Then for all \(r,s\),
+  \[
+    \alpha r+\beta s
+    =p(G^{-1}_{11}r+G^{-1}_{12}s)
+      +q(G^{-1}_{21}r+G^{-1}_{22}s).
+  \]
+proof:
+  Substitute \(p,q\), clear the nonzero determinant, and verify the resulting polynomial identity.
+-/
 private theorem inverseGram_two_by_two_pairing
     {g₁₁ g₁₂ g₂₁ g₂₂ p q r s α β : ℝ}
     (hp : p = α * g₁₁ + β * g₂₁)
@@ -3994,12 +4279,8 @@ statement:
     \sum_{i,j} g^{ij}\partial_i f\,\partial_j h .
   \]
 proof:
-  Use that [the surface differential applied to a coordinate tangent vector
-  is the corresponding directional derivative of the coordinate
-  representative](lean:JJMath.Uniformization.surfaceDifferential_apply_chartTangentMap).
-  Then apply the pointwise fact that [the metric-dual pairing of two
-  covectors is the inverse-Gram contraction of their coordinate
-  components](lean:JJMath.Uniformization.surfaceMetricCotangentPairingInChart_eq).
+  Use that [the surface differential applied to a coordinate tangent vector is the corresponding directional derivative of the coordinate representative](lean:JJMath.Uniformization.surfaceDifferential_apply_chartTangentMap).
+  Then apply the pointwise fact that [the metric-dual pairing of two covectors is the inverse-Gram contraction of their coordinate components](lean:JJMath.Uniformization.surfaceMetricCotangentPairingInChart_eq).
 -/
 theorem surfaceMetricGradientPairingInChart_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4052,14 +4333,10 @@ statement:
     -\int g^{ij}\partial_i f\,\partial_j\eta\,\rho\,dz .
   \]
 proof:
-  First [multiplying the divergence-form Laplacian by the Riemannian volume
-  density cancels the prefactor
-  \(\rho^{-1}\)](lean:JJMath.Uniformization.surfaceDivergenceFormLaplaceBeltramiInChart_mul_volumeDensity).
+  First [multiplying the divergence-form Laplacian by the Riemannian volume density cancels the prefactor \(\rho^{-1}\)](lean:JJMath.Uniformization.surfaceDivergenceFormLaplaceBeltramiInChart_mul_volumeDensity).
   The right-hand side becomes the
-  [flux contraction with the coordinate derivative of the test
-  function](lean:JJMath.Uniformization.surfaceMetricCoordinateGradientPairingInChart_mul_volumeDensity_eq_flux).
-  The remaining step is [the Euclidean flux integration-by-parts
-  identity](lean:JJMath.Uniformization.surfaceMetricGradientFluxInChart_integral_by_parts).
+  [flux contraction with the coordinate derivative of the test function](lean:JJMath.Uniformization.surfaceMetricCoordinateGradientPairingInChart_mul_volumeDensity_eq_flux).
+  The remaining step is [the Euclidean flux integration-by-parts identity](lean:JJMath.Uniformization.surfaceMetricGradientFluxInChart_integral_by_parts).
 -/
 theorem surfaceDivergenceFormLaplaceBeltramiInChart_integral_by_parts
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -4631,6 +4908,18 @@ theorem surfaceChartTransition_contDiffOn_overlap
   simpa [SurfaceRealModel, surfaceChartTransition, surfaceChartOverlapDomain,
     ModelWithCorners.extendCoordChange, PartialEquiv.trans_source] using h
 
+/--
+%%handwave
+name:
+  Surface-chart transition derivatives are invertible on overlaps
+statement:
+  For two charts \(e,e'\) of a smooth surface and every point \(z\) of their
+  coordinate overlap, the derivative of the transition \(e'\circ e^{-1}\)
+  within the overlap is an invertible real-linear map of \(\mathbb C\).
+proof:
+  The tangent-coordinate maps of both charts are linear isomorphisms on the
+  overlap and satisfy \(A'=A\circ J\).  Hence \(J=A^{-1}\circ A'\) is invertible.
+-/
 private theorem surfaceChartTransition_fderivWithin_isInvertible_on_overlap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -4669,6 +4958,21 @@ private theorem surfaceChartTransition_fderivWithin_isInvertible_on_overlap
   rw [hJ_eq]
   exact hA'.inverse.comp hA
 
+/--
+%%handwave
+name:
+  Chain rule for chart derivatives on an overlap
+statement:
+  Let \(T=e'\circ e^{-1}\).  For a smooth \(f\), \(z\) in the overlap, and
+  \(i\in\{0,1\}\),
+  \[
+    \partial_i(f\circ e^{-1})(z)
+      =D(f\circ(e')^{-1})_{Tz}\bigl(DT_z(e_i)\bigr).
+  \]
+proof:
+  On the overlap, \(f\circ e^{-1}=(f\circ(e')^{-1})\circ T\).
+  Differentiate this local equality and evaluate the chain rule on \(e_i\).
+-/
 private theorem surfaceFunctionChartDerivativeComponent_transform_on_overlap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -4733,6 +5037,22 @@ private theorem surfaceFunctionChartDerivativeComponent_transform_on_overlap
       rw [hφ_fderiv]
       rfl
 
+/--
+%%handwave
+name:
+  Component transformation law for chart derivatives
+statement:
+  With \(T=e'\circ e^{-1}\), the coordinate derivatives of a smooth \(f\) satisfy
+  \[
+    \partial_i f_e
+      =\operatorname{Re}(DT(e_i))\,\partial_0 f_{e'}
+       +\operatorname{Im}(DT(e_i))\,\partial_1 f_{e'}
+  \]
+  at corresponding overlap points.
+proof:
+  Apply the overlap chain rule, then decompose the real-linear functional
+  \(D(f\circ(e')^{-1})\) in the basis \(1,i\).
+-/
 private theorem surfaceFunctionChartDerivativeComponent_transform_components_on_overlap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -4869,6 +5189,19 @@ theorem surfaceFunctionChartDerivativeComponent_transform_components_on_overlap_
     surfaceFunctionChartDirectionalDerivative] using
       realLinearMap_apply_complex_eq_components L v
 
+/--
+%%handwave
+name:
+  First component of inverse-metric vector covariance
+statement:
+  Let \(J=\begin{pmatrix}a&b\\c&d\end{pmatrix}\) and \(G\) be invertible
+  \(2\times2\) matrices, put \(G'=J^{\mathsf T}GJ\), and transform the covector
+  \((P,Q)\) by \(J^{\mathsf T}\).  The first component of
+  \(J(G')^{-1}J^{\mathsf T}(P,Q)\) equals the first component of \(G^{-1}(P,Q)\).
+proof:
+  Compute \(\det G'=(\det J)^2\det G\), substitute the two-by-two inverse
+  formulas, clear the nonzero determinants, and simplify.
+-/
 private theorem twoByTwo_inverseMetricVector_transform_zero
     {a b c d g₁₁ g₁₂ g₂₁ g₂₂ P Q : ℝ}
     (hJ : a * d - b * c ≠ 0)
@@ -4902,6 +5235,18 @@ private theorem twoByTwo_inverseMetricVector_transform_zero
   field_simp [hJ_sq, hJ_sq_nf, hG]
   ring_nf
 
+/--
+%%handwave
+name:
+  Second component of inverse-metric vector covariance
+statement:
+  Under the same hypotheses,
+  the second component of \(J(G')^{-1}J^{\mathsf T}(P,Q)\) equals the second
+  component of \(G^{-1}(P,Q)\).
+proof:
+  Use \(\det G'=(\det J)^2\det G\), expand the second component with the
+  two-by-two inverse formulas, and clear the nonzero determinants.
+-/
 private theorem twoByTwo_inverseMetricVector_transform_one
     {a b c d g₁₁ g₁₂ g₂₁ g₂₂ P Q : ℝ}
     (hJ : a * d - b * c ≠ 0)
@@ -4939,6 +5284,20 @@ private theorem twoByTwo_inverseMetricVector_transform_one
   rw [div_eq_iff hJ_sq_comm]
   ring_nf
 
+/--
+%%handwave
+name:
+  First coordinate of the inverse-metric gradient transforms correctly
+statement:
+  On a surface-chart overlap, assume the coordinate covector \(df\) obeys the
+  chain-rule component transformation.  Then the first component of the
+  inverse-metric vector, transported by the transition Jacobian, equals the
+  first inverse-metric gradient component in the new chart.
+proof:
+  Express both Gram matrices and both derivative covectors in the transition
+  components, verify the two determinants are nonzero, and apply the first
+  component of the two-by-two covariance identity.
+-/
 private theorem surfaceMetricInverseGradientVector_transform_zero_on_overlap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -5161,6 +5520,18 @@ private theorem surfaceMetricInverseGradientVector_transform_zero_on_overlap
       (g₁₁ := g₁₁) (g₁₂ := g₁₂) (g₂₁ := g₂₁) (g₂₂ := g₂₂)
       (P := P) (Q := Q) hJdet hG
 
+/--
+%%handwave
+name:
+  Second coordinate of the inverse-metric gradient transforms correctly
+statement:
+  Under the same overlap and chain-rule hypotheses, the second component of
+  the transported inverse-metric gradient equals the second inverse-metric
+  gradient component in the new chart.
+proof:
+  Substitute the chart Gram and covector transformation formulas and apply the
+  second component of the two-by-two covariance identity.
+-/
 private theorem surfaceMetricInverseGradientVector_transform_one_on_overlap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -6023,6 +6394,21 @@ theorem surfaceDivergenceFormLaplaceBeltrami_eq_inChart_of_mem_source
       metric c e hc_atlas _he f hf hz_target hx_overlap
   simpa [surfaceDivergenceFormLaplaceBeltrami, c, hleft] using hoverlap
 
+/--
+%%handwave
+name:
+  Source-localized Laplacian integral in chart measure
+statement:
+  Let \(f,\eta\) be smooth and let \(\eta\) be supported in a chart source.
+  If the left integrand is integrable, then
+  \[
+    \int_{e.source}(\Delta_g f)\eta\,d\mu_g
+      =\int_{\mathbb C}(\Delta_{g,e}f)(z)\eta(e^{-1}z)\,d\nu_{g,e}(z).
+  \]
+proof:
+  Use the chart pushforward identity for Riemannian volume and the pointwise
+  equality between the intrinsic divergence-form Laplacian and its chart expression.
+-/
 theorem surfaceDivergenceFormLaplaceBeltrami_left_source_integral_eq_chartMeasure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -6230,6 +6616,22 @@ theorem surfaceMetricGradientPairing_right_chartMeasure_aestronglyMeasurable
         Finset.aestronglyMeasurable_fun_sum (Finset.univ : Finset (Fin 2))
           (fun j _ ↦ ((hcoeff i j).mul (hdf i)).mul (hdη j)))
 
+/--
+%%handwave
+name:
+  Source-localized gradient pairing in chart measure
+statement:
+  For smooth \(f,\eta\), with \(\eta\) supported in a chart source and the
+  metric pairing integrable,
+  \[
+    \int_{e.source}\langle df,d\eta\rangle_{g^{-1}}\,d\mu_g
+      =\int_{\mathbb C}\sum_{i,j}g_e^{ij}\partial_i f_e\,\partial_j\eta_e\,
+        d\nu_{g,e}.
+  \]
+proof:
+  Push the restricted Riemannian measure through the chart and use the
+  pointwise inverse-metric coordinate formula for the cotangent pairing.
+-/
 theorem surfaceMetricGradientPairing_right_source_integral_eq_chartMeasure
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (metric : SmoothRiemannianMetricOnSurface X)
@@ -8514,8 +8916,7 @@ proof:
   expression determined by the metric coefficients and volume density.  The
   coordinate expressions agree on overlaps by tensoriality of the metric and
   the volume measure.  The
-  [divergence-form coordinate operator satisfies the global weak
-  identity](lean:JJMath.Uniformization.surfaceDivergenceFormLaplaceBeltrami_weak), by
+  [divergence-form coordinate operator satisfies the global weak identity](lean:JJMath.Uniformization.surfaceDivergenceFormLaplaceBeltrami_weak), by
   reducing compactly supported tests to the Euclidean divergence theorem or
   coordinate integration by parts in charts.
 -/
@@ -8564,21 +8965,48 @@ def volume {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace
     (g : BackgroundSurfaceMetricOnSurface X) : Measure X :=
   g.measureGeometry.volume
 
-/-- The area measure is smooth and positive in coordinates. -/
+/--
+%%handwave
+name:
+  A background surface metric has smooth positive volume
+statement:
+  The volume measure of every background surface metric is a smooth positive
+  area measure.
+proof:
+  This is the smooth-positivity property of its stored metric-measure geometry.
+-/
 theorem volume_smooth_positive {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
     SmoothPositiveAreaMeasureOnSurface X g.volume :=
   g.measureGeometry.smoothPositive
 
-/-- The area measure is the Riemannian volume measure of the metric. -/
+/--
+%%handwave
+name:
+  Background volume is the Riemannian volume
+statement:
+  The area measure stored by a background surface metric is its Riemannian volume measure.
+proof:
+  The volume component of the background geometry is defined to be the
+  Riemannian volume of its metric.
+-/
 theorem volume_isRiemannian {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
     IsRiemannianVolumeMeasureOnSurface g.metric g.volume :=
   g.measureGeometry.volume_isRiemannian
 
-/-- The background area measure is finite on compact sets. -/
+/--
+%%handwave
+name:
+  Background surface volume is finite on compact sets
+statement:
+  For every compact \(K\subseteq X\), the volume of a background surface metric
+  satisfies \(\mu_g(K)<\infty\).
+proof:
+  This is the compact-finiteness property of the stored metric-measure geometry.
+-/
 theorem volume_isFiniteMeasureOnCompacts {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
@@ -8598,21 +9026,49 @@ def gradientInner {X : Type}
     X → (ℂ →L[ℝ] ℝ) → (ℂ →L[ℝ] ℝ) → ℝ :=
   g.gradientGeometry.gradientInner
 
-/-- The cotangent pairing is symmetric. -/
+/--
+%%handwave
+name:
+  The background cotangent pairing is symmetric
+statement:
+  For every \(x\in X\) and cotangent vectors \(\xi,\eta\),
+  \(\langle\xi,\eta\rangle_{g^{-1}}=\langle\eta,\xi\rangle_{g^{-1}}\).
+proof:
+  This is the symmetry property of the cotangent pairing stored in the gradient geometry.
+-/
 theorem gradientInner_symm {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
     ∀ x ξ η, g.gradientInner x ξ η = g.gradientInner x η ξ :=
   g.gradientGeometry.gradientInner_symm
 
-/-- The cotangent pairing is nonnegative on diagonal terms. -/
+/--
+%%handwave
+name:
+  The background cotangent pairing is nonnegative on the diagonal
+statement:
+  For every \(x\in X\) and cotangent vector \(\xi\),
+  \(0\le\langle\xi,\xi\rangle_{g^{-1}}\).
+proof:
+  This is the diagonal nonnegativity property of the stored cotangent pairing.
+-/
 theorem gradientInner_nonneg {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
     ∀ x ξ, 0 ≤ g.gradientInner x ξ ξ :=
   g.gradientGeometry.gradientInner_nonneg
 
-/-- The cotangent pairing is induced by the inverse metric. -/
+/--
+%%handwave
+name:
+  The background cotangent pairing is the inverse-metric pairing
+statement:
+  The cotangent inner product stored by a background surface metric is the
+  pairing induced by the inverse of its tangent Riemannian metric.
+proof:
+  The cotangent pairing in the background geometry is defined using the
+  inverse Riemannian metric.
+-/
 theorem gradientInner_isMetricDual {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
@@ -8648,7 +9104,18 @@ theorem laplaceBeltrami_eq_divergence {X : Type}
     g.laplaceBeltrami = surfaceDivergenceFormLaplaceBeltrami g.metric :=
   g.gradientGeometry.laplaceBeltrami_eq_divergence
 
-/-- The Laplacian is characterized by integration by parts. -/
+/--
+%%handwave
+name:
+  The background Laplacian satisfies the weak Laplace–Beltrami identity
+statement:
+  The stored background operator \(\Delta_g\), differential, cotangent pairing,
+  and volume measure satisfy the divergence-form and weak integration-by-parts
+  axioms for the Laplace–Beltrami operator of \(g\).
+proof:
+  The background Laplacian is the divergence of the metric gradient, so the
+  divergence identity and integration by parts give the stated weak formula.
+-/
 theorem laplaceBeltrami_weak {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     (g : BackgroundSurfaceMetricOnSurface X) :
@@ -8669,6 +9136,8 @@ statement:
   In coordinates, the density is the square root of the determinant of the
   metric Gram matrix.  These coordinate densities agree on overlaps by the
   change-of-variables formula, and therefore define a global measure.
+proof:
+  Take the Riemannian volume associated with the smooth metric; its smooth positive chart densities and metric compatibility supply all fields of the required measure geometry.
 -/
 theorem smoothRiemannianMetricOnSurface_induces_measure_geometry
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -8690,14 +9159,11 @@ statement:
   on covectors, and the Laplace-Beltrami operator.
 proof:
   Use
-  [the exterior derivative of a smooth surface function is its surface
-  differential](lean:JJMath.Uniformization.surfaceExteriorDerivative_isSurfaceDifferential)
+  [the exterior derivative of a smooth surface function is its surface differential](lean:JJMath.Uniformization.surfaceExteriorDerivative_isSurfaceDifferential)
   for the gradient operator.  The metric supplies
-  [a symmetric nonnegative inverse-metric cotangent
-  pairing](lean:JJMath.Uniformization.exists_cotangentInnerForSurfaceMetric).
+  [a symmetric nonnegative inverse-metric cotangent pairing](lean:JJMath.Uniformization.exists_cotangentInnerForSurfaceMetric).
   Finally choose
-  [the Laplace-Beltrami operator characterized by integration by
-  parts](lean:JJMath.Uniformization.exists_laplaceBeltramiForSurfaceMetric)
+  [the Laplace-Beltrami operator characterized by integration by parts](lean:JJMath.Uniformization.exists_laplaceBeltramiForSurfaceMetric)
   and assemble the differential-geometry structure.
 -/
 theorem smoothRiemannianMetricOnSurface_induces_gradient_geometry
@@ -8770,8 +9236,7 @@ proof:
   First obtain
   [a smooth Riemannian metric](lean:JJMath.Uniformization.riemannSurface_has_smoothRiemannianMetric).
   Then use that
-  [a smooth Riemannian metric supplies the volume measure, Laplace-Beltrami
-  operator, and cotangent pairing](lean:JJMath.Uniformization.smoothRiemannianMetricOnSurface_induces_energy_background_metric).
+  [a smooth Riemannian metric supplies the volume measure, Laplace-Beltrami operator, and cotangent pairing](lean:JJMath.Uniformization.smoothRiemannianMetricOnSurface_induces_energy_background_metric).
 -/
 theorem riemannSurface_has_energy_background_metric
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -9297,8 +9762,19 @@ theorem complexLinearMap_apply_eq_mul
     ring
   · simp [Complex.mul_re, Complex.mul_im]
 
-/-- The real determinant of a complex-linear endomorphism of the complex
-line is the squared norm of its value at one. -/
+/--
+%%handwave
+name:
+  Determinant of a complex-linear map is a squared norm
+statement:
+  If a real-linear \(L:\mathbb C\to\mathbb C\) satisfies \(L(i)=iL(1)\), then
+  \[
+    \det_{\mathbb R}L=\lvert L(1)\rvert^2.
+  \]
+proof:
+  Write the real matrix of \(L\) in the basis \(1,i\); complex linearity makes
+  its columns \(L(1)\) and \(iL(1)\), whose determinant is the squared modulus.
+-/
 theorem complexLinearMap_det_eq_normSq
     (L : ℂ →L[ℝ] ℂ)
     (hI : L Complex.I = Complex.I * L (1 : ℂ)) :
@@ -9470,8 +9946,17 @@ theorem surfaceChartTangentMap_complex_linear_nonzero
     have hone : (1 : ℂ) = 0 := hinj (by simpa using hzero)
     norm_num at hone
 
-/-- Holomorphic coordinate changes preserve the complex orientation: their
-real Jacobian determinant is strictly positive. -/
+/--
+%%handwave
+name:
+  Holomorphic surface-chart tangent maps preserve orientation
+statement:
+  For a complex surface chart \(e\) and \(z\in e.target\), the real determinant
+  of its tangent-coordinate map is strictly positive.
+proof:
+  The tangent map is complex linear and nonzero.  Its real determinant is
+  therefore the positive number \(\lvert J(1)\rvert^2\).
+-/
 theorem surfaceChartTangentMap_det_pos
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X]

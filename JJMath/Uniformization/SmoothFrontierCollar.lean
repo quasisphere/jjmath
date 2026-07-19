@@ -30,8 +30,22 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
-/-- A plane local diffeomorphism which preserves the positive side of a
-vertical axis has positive normal derivative along that axis. -/
+/--
+%%handwave
+name:
+  Positivity of the normal derivative of a side-preserving plane map
+statement:
+  Let \(T:\mathbb R^2\to\mathbb R^2\) be differentiable at \(z\), with
+  invertible derivative.  Suppose its first component vanishes at \(z\), has
+  zero derivative in the vertical direction, and is positive immediately to
+  the positive horizontal side.  Then its horizontal derivative at \(z\) is
+  positive.
+proof:
+  Invertibility and vanishing of the vertical first-component derivative
+  force the horizontal derivative to be nonzero.  If it were negative, the
+  derivative sign theorem would make the first component negative for small
+  positive horizontal displacements, contradicting side preservation.
+-/
 private theorem first_deriv_pos_of_bijective_fderiv
     {T : (ℝ × ℝ) → (ℝ × ℝ)} {z : ℝ × ℝ}
     (hT : DifferentiableAt ℝ T z)
@@ -100,8 +114,18 @@ private theorem first_deriv_pos_of_bijective_fderiv
     exact hs.elim
   · exact hpos
 
-/-- A smooth partition of unity near the compact frontier, subordinate to the
-centered product-ball coordinates. -/
+/--
+%%handwave
+name:
+  A partition of unity subordinate to boundary product balls
+statement:
+  The compact frontier admits a smooth partition of unity subordinate to the
+  family of centered boundary product-ball neighborhoods.
+proof:
+  Rado's theorem supplies second countability and hence the required
+  sigma-compactness.  The product balls are open and cover the closed
+  frontier, so the smooth partition-of-unity theorem applies.
+-/
 theorem exists_smoothBoundaryProductBall_partitionOfUnity
     (D : SmoothBoundaryDomain X) :
     ∃ rho : SmoothPartitionOfUnity (frontier D.carrier)
@@ -127,6 +151,17 @@ noncomputable def smoothBoundaryProductBallPartitionOfUnity
       SurfaceRealModel X (frontier D.carrier) :=
   Classical.choose (exists_smoothBoundaryProductBall_partitionOfUnity D)
 
+/--
+%%handwave
+name:
+  Subordination of the chosen boundary partition
+statement:
+  Each function of the chosen smooth boundary partition of unity has support
+  contained in its corresponding centered product-ball neighborhood.
+proof:
+  This is the defining property of the partition selected from the existence
+  theorem.
+-/
 theorem smoothBoundaryProductBallPartitionOfUnity_isSubordinate
     (D : SmoothBoundaryDomain X) :
     (smoothBoundaryProductBallPartitionOfUnity D).IsSubordinate
@@ -141,6 +176,17 @@ noncomputable def smoothBoundaryLocalSignedCoordinate
   ((smoothBoundaryProductChartAt D p).coordinate x).1
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Smoothness of a local signed boundary coordinate
+statement:
+  The first coordinate of a centered boundary product chart is smooth on its
+  product-ball source.
+proof:
+  The product chart is smooth on its source; composing its coordinate map
+  with projection onto the first real factor preserves smoothness.
+-/
 theorem smoothBoundaryLocalSignedCoordinate_contMDiffOn
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ContMDiffOn SurfaceRealModel 𝓘(ℝ) ∞
@@ -200,12 +246,33 @@ noncomputable def smoothBoundaryPartitionSum
   ∑ᶠ p : frontier D.carrier,
     smoothBoundaryProductBallPartitionOfUnity D p x
 
+/--
+%%handwave
+name:
+  Smoothness of the boundary partition sum
+statement:
+  The locally finite sum of the chosen boundary partition functions is a
+  smooth real-valued function on the surface.
+proof:
+  This is the standard smoothness property of a smooth locally finite
+  partition of unity.
+-/
 theorem smoothBoundaryPartitionSum_contMDiff
     (D : SmoothBoundaryDomain X) :
     ContMDiff SurfaceRealModel 𝓘(ℝ) ∞
       (smoothBoundaryPartitionSum D) := by
   exact (smoothBoundaryProductBallPartitionOfUnity D).contMDiff_sum
 
+/--
+%%handwave
+name:
+  The boundary partition sums to one on the frontier
+statement:
+  At every \(x\in\partial D\), the sum of all boundary partition functions is
+  \(1\).
+proof:
+  The chosen family is a partition of unity on the frontier.
+-/
 @[simp]
 theorem smoothBoundaryPartitionSum_eq_one_of_mem_frontier
     (D : SmoothBoundaryDomain X) {x : X} (hx : x ∈ frontier D.carrier) :
@@ -218,12 +285,32 @@ def smoothBoundaryGlobalCoordinateNeighborhood
     (D : SmoothBoundaryDomain X) : Set X :=
   {x | (1 / 2 : ℝ) < smoothBoundaryPartitionSum D x}
 
+/--
+%%handwave
+name:
+  Openness of the global signed-coordinate neighborhood
+statement:
+  The set on which the boundary partition sum exceeds \(1/2\) is open.
+proof:
+  The partition sum is continuous, and the set is the inverse image of the
+  open ray \((1/2,\infty)\).
+-/
 theorem smoothBoundaryGlobalCoordinateNeighborhood_isOpen
     (D : SmoothBoundaryDomain X) :
     IsOpen (smoothBoundaryGlobalCoordinateNeighborhood D) := by
   exact isOpen_lt continuous_const
     (smoothBoundaryPartitionSum_contMDiff D).continuous
 
+/--
+%%handwave
+name:
+  The global coordinate neighborhood contains the frontier
+statement:
+  Every frontier point belongs to the open set where the boundary partition
+  sum exceeds \(1/2\).
+proof:
+  On the frontier the partition sum is exactly \(1>1/2\).
+-/
 theorem frontier_subset_smoothBoundaryGlobalCoordinateNeighborhood
     (D : SmoothBoundaryDomain X) :
     frontier D.carrier ⊆ smoothBoundaryGlobalCoordinateNeighborhood D := by
@@ -232,6 +319,18 @@ theorem frontier_subset_smoothBoundaryGlobalCoordinateNeighborhood
   rw [smoothBoundaryPartitionSum_eq_one_of_mem_frontier D hx]
   norm_num
 
+/--
+%%handwave
+name:
+  The global signed coordinate vanishes on the frontier
+statement:
+  For every \(x\in\partial D\), the weighted global signed boundary coordinate
+  satisfies \(s(x)=0\).
+proof:
+  Every active partition function is supported in a product chart, whose
+  local signed coordinate vanishes on the frontier.  Thus every term of the
+  locally finite weighted sum is zero.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_eq_zero_of_mem_frontier
     (D : SmoothBoundaryDomain X) {x : X} (hx : x ∈ frontier D.carrier) :
     smoothBoundaryGlobalSignedCoordinate D x = 0 := by
@@ -256,6 +355,17 @@ theorem smoothBoundaryGlobalSignedCoordinate_eq_zero_of_mem_frontier
     simp [hx_zero]
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Negativity of a local signed coordinate inside the domain
+statement:
+  In any centered boundary product ball, the local signed first coordinate is
+  negative at every point of \(D\).
+proof:
+  This is the side-preserving property of the boundary product chart, which
+  identifies the domain with the negative half-plane.
+-/
 theorem smoothBoundaryLocalSignedCoordinate_neg
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) {x : X}
     (hxD : x ∈ D.carrier)
@@ -265,6 +375,18 @@ theorem smoothBoundaryLocalSignedCoordinate_neg
     hxBall.1 |>.mp hxD
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Positivity of a local signed coordinate outside the closure
+statement:
+  In a centered boundary product ball, the local signed coordinate is
+  positive at every point outside \(\overline D\).
+proof:
+  It cannot be negative, since negative coordinates lie in \(D\), and it
+  cannot vanish, since the zero slice is the frontier.  Therefore it is
+  strictly positive.
+-/
 theorem smoothBoundaryLocalSignedCoordinate_pos
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) {x : X}
     (hxExterior : x ∉ closure D.carrier)
@@ -283,8 +405,18 @@ theorem smoothBoundaryLocalSignedCoordinate_pos
     exact hxExterior (frontier_subset_closure hxFrontier)
   exact lt_of_le_of_ne (le_of_not_gt hnot_neg) hne.symm
 
-/-- On the domain side of the collar neighborhood, the glued coordinate is
-strictly negative. -/
+/--
+%%handwave
+name:
+  Negativity of the global signed coordinate inside the domain
+statement:
+  If \(x\in D\) and the boundary partition sum at \(x\) exceeds \(1/2\), then
+  the global signed coordinate satisfies \(s(x)<0\).
+proof:
+  All partition weights are nonnegative and every active local signed
+  coordinate is negative.  The positive partition sum ensures at least one
+  weight is positive, so the weighted locally finite sum is strictly negative.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_neg
     (D : SmoothBoundaryDomain X) {x : X}
     (hxD : x ∈ D.carrier)
@@ -341,8 +473,18 @@ theorem smoothBoundaryGlobalSignedCoordinate_neg
   rw [(AddEquiv.neg ℝ).map_finsum]
   exact hpositive
 
-/-- On the exterior side of the collar neighborhood, the glued coordinate is
-strictly positive. -/
+/--
+%%handwave
+name:
+  Positivity of the global signed coordinate outside the closure
+statement:
+  If \(x\notin\overline D\) and the boundary partition sum at \(x\) exceeds
+  \(1/2\), then the global signed coordinate satisfies \(s(x)>0\).
+proof:
+  Every active local signed coordinate is positive and every partition weight
+  is nonnegative.  Since the weights have positive sum, at least one weighted
+  term is strictly positive.
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_pos
     (D : SmoothBoundaryDomain X) {x : X}
     (hxExterior : x ∉ closure D.carrier)
@@ -426,8 +568,19 @@ theorem smoothBoundaryGlobalSignedCoordinate_eq_zero_iff_mem_frontier
       exact (lt_irrefl 0) hneg
   · exact smoothBoundaryGlobalSignedCoordinate_eq_zero_of_mem_frontier D
 
-/-- In the global coordinate neighborhood, the negative side of the signed
-coordinate is exactly the domain. -/
+/--
+%%handwave
+name:
+  The negative side of the global coordinate is the domain
+statement:
+  On the global boundary-coordinate neighborhood,
+  \[
+    s(x)<0\quad\Longleftrightarrow\quad x\in D.
+  \]
+proof:
+  Membership in \(D\) gives negativity.  Conversely, a point not in \(D\) is
+  either on the frontier, where \(s=0\), or outside the closure, where \(s>0\).
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_lt_zero_iff_mem_carrier
     (D : SmoothBoundaryDomain X) {x : X}
     (hxN : x ∈ smoothBoundaryGlobalCoordinateNeighborhood D) :
@@ -446,8 +599,19 @@ theorem smoothBoundaryGlobalSignedCoordinate_lt_zero_iff_mem_carrier
       linarith
   · exact fun hxD => smoothBoundaryGlobalSignedCoordinate_neg D hxD hxN
 
-/-- In the global coordinate neighborhood, the positive side of the signed
-coordinate is exactly the complement of the domain closure. -/
+/--
+%%handwave
+name:
+  The positive side of the global coordinate is the exterior
+statement:
+  On the global boundary-coordinate neighborhood,
+  \[
+    s(x)>0\quad\Longleftrightarrow\quad x\notin\overline D.
+  \]
+proof:
+  Exterior points give positivity.  Conversely, a point in the closure lies
+  either in \(D\), where \(s<0\), or on the frontier, where \(s=0\).
+-/
 theorem smoothBoundaryGlobalSignedCoordinate_pos_iff_not_mem_closure
     (D : SmoothBoundaryDomain X) {x : X}
     (hxN : x ∈ smoothBoundaryGlobalCoordinateNeighborhood D) :
@@ -596,8 +760,23 @@ theorem smoothBoundaryProductChart_transition_first_deriv_pos
   exact first_deriv_pos_of_bijective_fderiv hTdiff hTbij hTzero
     hvertical hpositive
 
-/-- At every frontier point, some chosen product-chart normal sees a strictly
-positive derivative of the glued signed coordinate. -/
+/--
+%%handwave
+name:
+  A positive transverse derivative of the global signed coordinate
+statement:
+  At every \(x\in\partial D\), some active product chart has a positive normal
+  directional derivative of the global signed coordinate:
+  \[
+    \frac d{ds}\bigg|_{s=0}s\bigl(C^{-1}(C(x)+(s,0))\bigr)>0.
+  \]
+proof:
+  Differentiate the locally finite partition sum in a chart with positive
+  weight at \(x\).  Terms involving derivatives of weights vanish because all
+  local signed coordinates vanish on the frontier.  Transition maps have
+  positive transverse derivative, so the remaining weighted derivatives are
+  nonnegative and the chosen positive-weight term is strictly positive.
+-/
 theorem exists_smoothBoundaryGlobalSignedCoordinate_productChart_deriv_pos
     (D : SmoothBoundaryDomain X) {x : X}
     (hxfrontier : x ∈ frontier D.carrier) :

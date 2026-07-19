@@ -64,9 +64,19 @@ def AtlasVortexPairData.ofChartBall {a b : X}
     exact (planarVortexAffineCore_subset_ball_left hcoord
       (by simpa [norm_sub_rev] using hclose)).trans hball
 
-/-- Around every point of an atlas chart there is a positive coordinate
-radius such that every sufficiently close second endpoint gives valid compact
-vortex-pair data in that chart. -/
+/--
+%%handwave
+name:
+  Nearby points support a compact vortex pair in one chart
+statement:
+  If \(a\) lies in an atlas chart \(e\), there is \(r>0\) such that every
+  \(b\ne a\) in the same chart with \(2|e(b)-e(a)|<r\) determines compact
+  vortex-pair data whose affine core stays in the chart image.
+proof:
+  Choose a coordinate ball \(B(e(a),r)\) contained in the open chart target.
+  The planar affine core lies in the ball of radius \(2|e(b)-e(a)|\) about
+  \(e(a)\), so the closeness hypothesis keeps it inside the chart.
+-/
 theorem exists_radius_atlasVortexPairData_of_mem_source
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
     {a : X} (ha : a ∈ e.source) :
@@ -80,8 +90,18 @@ theorem exists_radius_atlasVortexPairData_of_mem_source
   intro b hb hba hclose
   exact ⟨AtlasVortexPairData.ofChartBall e he ha hb hba.symm hball hclose⟩
 
-/-- Every point in a specified atlas chart is the initial endpoint of a
-nontrivial compact vortex pair carried by that same chart. -/
+/--
+%%handwave
+name:
+  A nontrivial vortex pair starts at every point of a chart
+statement:
+  Given \(a\) in an atlas chart \(e\), there is \(b\ne a\) such that the pair
+  \((a,b)\) supports compact vortex-pair data carried by \(e\).
+proof:
+  Choose a coordinate ball of radius \(r\) around \(e(a)\), take
+  \(e(b)=e(a)+r/4\), and pull this point back by the chart.  The displacement
+  is nonzero and small enough that the affine core remains in the ball.
+-/
 theorem exists_atlasVortexPairData_from_chart
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
     (a : X) (ha : a ∈ e.source) :
@@ -114,8 +134,18 @@ theorem exists_atlasVortexPairData_from_chart
   exact ⟨b, AtlasVortexPairData.ofChartBall e he ha hb hab hball hclose,
     rfl⟩
 
-/-- Every point of a Riemann surface is the initial endpoint of a nontrivial
-compact vortex pair carried by its atlas chart. -/
+/--
+%%handwave
+name:
+  A compact atlas vortex pair starts at every surface point
+statement:
+  For every point \(a\) of a Riemann surface, there exists \(b\ne a\) and a
+  compact vortex pair from \(a\) to \(b\) contained in one holomorphic atlas
+  chart.
+proof:
+  Apply the preceding chartwise construction to the canonical chart centered
+  at \(a\).
+-/
 theorem exists_atlasVortexPairData_from (a : X) :
     ∃ b : X, Nonempty (AtlasVortexPairData X a b) := by
   let e : OpenPartialHomeomorph X ℂ := chartAt ℂ a
@@ -138,7 +168,16 @@ def AtlasVortexPairData.rightPoint {a b : X}
     (D : AtlasVortexPairData X a b) : D.sourceOpen :=
   ⟨b, D.right_mem_source⟩
 
-/-- The chart coordinates of the endpoints are distinct. -/
+/--
+%%handwave
+name:
+  Distinct vortex endpoints have distinct chart coordinates
+statement:
+  If \(a\ne b\) are the endpoints of an atlas vortex pair, then
+  \(e(a)\ne e(b)\).
+proof:
+  The chart is injective on its source, which contains both endpoints.
+-/
 theorem AtlasVortexPairData.chart_values_ne {a b : X}
     (D : AtlasVortexPairData X a b) : D.chart a ≠ D.chart b := by
   intro h
@@ -158,6 +197,17 @@ def AtlasVortexPairData.chartPatchToSource {a b : X}
   coordinateVortexChartPatchToChart
     D.sourceOpen D.leftPoint D.rightPoint x
 
+/--
+%%handwave
+name:
+  Smooth restriction of a map to an open codomain
+statement:
+  If a \(C^n\) map \(f:M\to N\) has image in an open subset \(V\subseteq N\),
+  then \(f\), regarded as a map \(M\to V\), is \(C^n\).
+proof:
+  Near each \(f(x)\), use the local retraction to \(V\) that is the identity
+  on \(V\), compose it with \(f\), and invoke locality of smoothness.
+-/
 private theorem contMDiffCodRestrictOpen
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -201,6 +251,18 @@ def AtlasVortexPairData.toPlanarPair {a b : X}
   · intro h
     exact x.1.2.2 (D.chart.injOn x.2 D.right_mem_source h)
 
+/--
+%%handwave
+name:
+  Smooth transport from a chart patch to the planar vortex pair
+statement:
+  The holomorphic chart sends its twice-punctured patch smoothly into
+  \(\mathbb C\setminus\{e(a),e(b)\}\).
+proof:
+  The chart is smooth on its source.  Compose with the smooth subtype
+  inclusion and restrict the codomain using the fact that injectivity of the
+  chart keeps the image away from both endpoint coordinates.
+-/
 theorem AtlasVortexPairData.contMDiff_toPlanarPair {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiff SurfaceRealModel (modelWithCornersSelf ℝ ℂ) ∞
@@ -226,6 +288,17 @@ def AtlasVortexPairData.chartPhase {a b : X}
     (D : AtlasVortexPairData X a b) (x : D.chartPatch) : ℂ :=
   planarVortexCompactPhaseAt D.chart_values_ne (D.toPlanarPair x)
 
+/--
+%%handwave
+name:
+  Smoothness of the compact vortex phase in a holomorphic chart
+statement:
+  The compact planar vortex-pair phase transported through a holomorphic
+  chart is smooth on the chart portion of the twice-punctured surface.
+proof:
+  Compose the smooth compact planar phase with the smooth chart transport to
+  the planar twice-punctured model.
+-/
 theorem AtlasVortexPairData.contMDiff_chartPhase {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiff SurfaceRealModel (modelWithCornersSelf ℝ ℂ) ∞
@@ -238,6 +311,18 @@ def AtlasVortexPairData.core {a b : X}
     (D : AtlasVortexPairData X a b) : Set D.sourceOpen :=
   {x | D.chart (x : X) ∈ planarVortexAffineCore D.chart_values_ne}
 
+/--
+%%handwave
+name:
+  Compactness of the atlas vortex core
+statement:
+  The inverse image in the chart source of the planar compact affine vortex
+  core is compact.
+proof:
+  The affine core is compact and lies entirely in the chart target.  The
+  chart homeomorphism carries its inverse image in the source homeomorphically
+  onto that compact set.
+-/
 theorem AtlasVortexPairData.core_isCompact {a b : X}
     (D : AtlasVortexPairData X a b) : IsCompact D.core := by
   let K : Set D.chart.target :=
@@ -262,12 +347,36 @@ def AtlasVortexPairData.ambientCore {a b : X}
     (D : AtlasVortexPairData X a b) : Set X :=
   smoothFormCompactCore D.sourceOpen D.core
 
+/--
+%%handwave
+name:
+  Compactness of the ambient atlas vortex core
+statement:
+  The compact affine vortex core, regarded as a subset of the ambient
+  surface, is compact.
+proof:
+  The core is compact in the open chart source, and its canonical ambient
+  realization preserves compactness.
+-/
 theorem AtlasVortexPairData.ambientCore_isCompact {a b : X}
     (D : AtlasVortexPairData X a b) : IsCompact D.ambientCore :=
   smoothFormCompactCore_isCompact D.sourceOpen D.core D.core_isCompact
 
-/-- On the affine core near either endpoint, the chart phase is the
-normalized holomorphic zero--pole ratio. -/
+/--
+%%handwave
+name:
+  Local holomorphic ratio formula for an atlas vortex pair
+statement:
+  If the affine normalized chart coordinate has modulus below two, then the
+  chart phase equals
+  \[
+    \frac{(e(x)-e(a))/(e(x)-e(b))}
+         {|(e(x)-e(a))/(e(x)-e(b))|}.
+  \]
+proof:
+  This is the local normalized-ratio formula for the compact planar phase,
+  evaluated after the chart transport.
+-/
 theorem AtlasVortexPairData.chartPhase_eq_normalized_ratio_of_affine_norm_lt_two
     {a b : X} (D : AtlasVortexPairData X a b) (x : D.chartPatch)
     (hx : ‖planarVortexAffine (D.chart a) (D.chart b)
@@ -289,7 +398,17 @@ def AtlasVortexPairData.exteriorPatch {a b : X}
       (continuous_subtype_val : Continuous
         (fun x : coordinateVortexPairOpen a b ↦ (x : X)))⟩
 
-/-- The chart phase is one off its compact affine core. -/
+/--
+%%handwave
+name:
+  The chart vortex phase is one outside its compact core
+statement:
+  At every chart-patch point outside the ambient compact affine core, the
+  compact chart phase equals \(1\).
+proof:
+  Nonmembership in the core forces the affine normalized radius to exceed
+  three, where the compact planar vortex phase is identically one.
+-/
 theorem AtlasVortexPairData.chartPhase_eq_one_of_mem_exterior
     {a b : X} (D : AtlasVortexPairData X a b) (x : D.chartPatch)
     (hx : ((x : coordinateVortexPairOpen a b) : X) ∉ D.ambientCore) :
@@ -313,12 +432,33 @@ def AtlasVortexPairData.globalPhaseFun {a b : X}
   classical
   exact if hx : (x : X) ∈ D.sourceOpen then D.chartPhase ⟨x, hx⟩ else 1
 
+/--
+%%handwave
+name:
+  The global atlas phase agrees with the chart phase in the chart
+statement:
+  At a twice-punctured point lying in the chart source, the globally extended
+  vortex phase equals the compact phase computed in that chart.
+proof:
+  This is the chart branch of the piecewise definition of the global phase.
+-/
 theorem AtlasVortexPairData.globalPhaseFun_eq_chart {a b : X}
     (D : AtlasVortexPairData X a b)
     {x : coordinateVortexPairOpen a b} (hx : (x : X) ∈ D.sourceOpen) :
     D.globalPhaseFun x = D.chartPhase ⟨x, hx⟩ := by
   simp [AtlasVortexPairData.globalPhaseFun, hx]
 
+/--
+%%handwave
+name:
+  The global atlas phase is one outside its compact core
+statement:
+  On the exterior of the ambient compact vortex core, the globally extended
+  atlas vortex phase equals \(1\).
+proof:
+  Inside the chart this follows from the compact-core cutoff formula; outside
+  the chart it is the constant branch of the definition.
+-/
 theorem AtlasVortexPairData.globalPhaseFun_eq_one_of_mem_exterior
     {a b : X} (D : AtlasVortexPairData X a b)
     {x : coordinateVortexPairOpen a b} (hx : x ∈ D.exteriorPatch) :
@@ -328,6 +468,18 @@ theorem AtlasVortexPairData.globalPhaseFun_eq_one_of_mem_exterior
     exact D.chartPhase_eq_one_of_mem_exterior ⟨x, hxU⟩ hx
   · simp [AtlasVortexPairData.globalPhaseFun, hxU]
 
+/--
+%%handwave
+name:
+  Smoothness of the globally extended atlas vortex phase
+statement:
+  Extending the compact chart vortex phase by \(1\) outside the chart gives a
+  smooth phase on \(X\setminus\{a,b\}\).
+proof:
+  Cover the twice-punctured surface by the chart patch, where the function is
+  the smooth chart phase, and the complement of the compact core, where it is
+  constantly one.  These formulas agree on the overlap.
+-/
 theorem AtlasVortexPairData.contMDiff_globalPhaseFun {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiff SurfaceRealModel (modelWithCornersSelf ℝ ℂ) ∞
@@ -364,6 +516,17 @@ def AtlasVortexPairData.globalPhase {a b : X}
   val := D.globalPhaseFun
   property := D.contMDiff_globalPhaseFun
 
+/--
+%%handwave
+name:
+  The global atlas vortex phase has unit modulus
+statement:
+  The globally extended compact vortex-pair phase has modulus one everywhere
+  on \(X\setminus\{a,b\}\).
+proof:
+  In the chart it is the unit-modulus compact planar phase; outside the chart
+  it equals \(1\).
+-/
 theorem AtlasVortexPairData.norm_globalPhase {a b : X}
     (D : AtlasVortexPairData X a b)
     (x : coordinateVortexPairOpen a b) : ‖D.globalPhase x‖ = 1 := by
@@ -387,10 +550,24 @@ def AtlasVortexPairData.circlePrimitive {a b : X}
 
 /-! ## Cancellation of consecutive atlas vortex pairs -/
 
-/-- Consecutive compact vortex pairs in holomorphic atlas charts have a
-smooth unit product across their shared endpoint.  Thus the apparent pole of
-the first phase and zero of the second phase cancel even when the two pairs
-use different coordinates. -/
+/--
+%%handwave
+name:
+  Local cancellation of consecutive atlas vortex pairs
+statement:
+  Let compact atlas vortex pairs run from \(a\) to \(q\) and from \(q\) to
+  \(b\).  There is a neighborhood \(U\) of \(q\) and a smooth unit phase
+  \(P:U\to S^1\) such that, away from \(a,q,b\),
+  \[
+    u_{a,q}(x)u_{q,b}(x)=P(x).
+  \]
+proof:
+  In the two holomorphic charts the phases are normalized zero–pole ratios.
+  The chart transition is holomorphic with nonzero derivative at \(q\), so
+  the holomorphic seam theorem smoothly extends their product across the
+  canceled pole and zero.  Shrink to a neighborhood where both compact
+  phases retain their raw ratio formulas.
+-/
 theorem AtlasVortexPairData.consecutive_product_local_extension
     {a q b : X} (D₁ : AtlasVortexPairData X a q)
     (D₂ : AtlasVortexPairData X q b) :
@@ -530,8 +707,23 @@ theorem AtlasVortexPairData.consecutive_product_local_extension
     D₂.chart.left_inv hxU.2.1.1,
     D₂.chart.left_inv D₂.left_mem_source] using hseam
 
-/-- Two consecutive compact atlas vortices glue to one smooth unit phase on
-the surface with only their two outer endpoints removed. -/
+/--
+%%handwave
+name:
+  Gluing two consecutive atlas vortex phases
+statement:
+  Consecutive compact vortex phases from \(a\) to \(q\) and from \(q\) to
+  \(b\) glue to a smooth unit phase \(Q\) on \(X\setminus\{a,b\}\), satisfying
+  \[
+    Q(x)=u_{a,q}(x)u_{q,b}(x)
+  \]
+  whenever \(x\ne q\).
+proof:
+  Near \(q\), use the smooth unit extension supplied by local cancellation;
+  away from \(q\), use the product of the two global phases.  The formulas
+  agree on their overlap, so smooth gluing gives \(Q\), and both branches have
+  unit modulus.
+-/
 theorem AtlasVortexPairData.exists_combinedPhase
     {a q b : X} (D₁ : AtlasVortexPairData X a q)
     (D₂ : AtlasVortexPairData X q b) :

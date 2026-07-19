@@ -105,6 +105,17 @@ noncomputable def homotopyStripCutPath
   else
     homotopyStripCutPathRaw F a b r
 
+/--
+%%handwave
+name:
+  Upper endpoint of a normalized homotopy-strip cut path
+statement:
+  At interpolation parameter \(1\), the normalized cut path through the
+  homotopy strip is the row at parameter \(a\).
+proof:
+  The endpoint normalization explicitly selects that row when the
+  interpolation parameter is one.
+-/
 @[simp]
 theorem homotopyStripCutPath_one
     {X : Type*} [TopologicalSpace X]
@@ -113,6 +124,17 @@ theorem homotopyStripCutPath_one
     homotopyStripCutPath F a b 1 = F.eval a := by
   simp [homotopyStripCutPath]
 
+/--
+%%handwave
+name:
+  Lower endpoint of a normalized homotopy-strip cut path
+statement:
+  At interpolation parameter \(0\), the normalized cut path through the
+  homotopy strip is the row at parameter \(b\).
+proof:
+  The endpoint normalization explicitly selects that row when the
+  interpolation parameter is zero.
+-/
 @[simp]
 theorem homotopyStripCutPath_zero
     {X : Type*} [TopologicalSpace X]
@@ -687,7 +709,16 @@ theorem trans
       ⟨u, hu_left, hu_right, hqv⟩
     exact ⟨u, hu_left, hu_right, hrv.trans hqv⟩
 
-/-- Transport order-reparameterization data across path equalities. -/
+/--
+%%handwave
+name:
+  Transporting ordered reparameterization data across equal paths
+statement:
+  If \(p\) is order-reparameterized to \(q\), and \(p=p'\) and \(q=q'\),
+  then the same parameter map order-reparameterizes \(p'\) to \(q'\).
+proof:
+  Substitute the two path equalities.
+-/
 theorem cast
     {X : Type*} [TopologicalSpace X]
     {x₀ x : X} {p p' q q' : Path x₀ x}
@@ -699,7 +730,18 @@ theorem cast
   subst q'
   exact h
 
-/-- Transport order-reparameterization data across endpoint casts. -/
+/--
+%%handwave
+name:
+  Transporting ordered reparameterization data across endpoint identifications
+statement:
+  An order-preserving reparameterization of two paths remains one after both
+  paths are regarded as having propositionally equal source and target
+  endpoints.
+proof:
+  Endpoint preservation and monotonicity are unchanged.  The sampled-path and
+  interval-image identities simplify through the endpoint casts.
+-/
 theorem castEndpoints
     {X : Type*} [TopologicalSpace X]
     {x₀ x y₀ y : X} {p q : Path x₀ x}
@@ -2441,35 +2483,104 @@ variable {G : Type w} {X : Type u} {Y : Type v} {ι : Type*}
     [TopologicalSpace Y] [ChartedSpace ℂ Y]
     (S : HolomorphicLocalBranchSystem G X Y ι)
 
+/--
+%%handwave
+name:
+  Identity transformation acts trivially
+statement:
+  The identity element of the transformation group fixes every point of the
+  target space.
+proof:
+  This is the identity law of the group action.
+-/
 @[simp]
 theorem act_one_apply (y : Y) : S.act 1 y = y :=
   S.act_one y
 
+/--
+%%handwave
+name:
+  Product transformation acts by composition
+statement:
+  For transformations \(\gamma,\delta\) and a target point \(y\),
+  \((\gamma\delta)\cdot y=\gamma\cdot(\delta\cdot y)\).
+proof:
+  This is the multiplication law of the group action.
+-/
 theorem act_mul_apply (γ δ : G) (y : Y) :
     S.act (γ * δ) y = S.act γ (S.act δ y) :=
   S.act_mul γ δ y
 
+/--
+%%handwave
+name:
+  An inverse transformation undoes the original transformation
+statement:
+  For every \(\gamma\) and \(y\),
+  \(\gamma^{-1}\cdot(\gamma\cdot y)=y\).
+proof:
+  Combine the action law with \(\gamma^{-1}\gamma=1\).
+-/
 @[simp]
 theorem act_inv_self (γ : G) (y : Y) :
     S.act γ⁻¹ (S.act γ y) = y := by
   rw [← S.act_mul_apply γ⁻¹ γ y, inv_mul_cancel, S.act_one_apply]
 
+/--
+%%handwave
+name:
+  A transformation undoes its inverse
+statement:
+  For every \(\gamma\) and \(y\),
+  \(\gamma\cdot(\gamma^{-1}\cdot y)=y\).
+proof:
+  Use the action law and \(\gamma\gamma^{-1}=1\).
+-/
 @[simp]
 theorem act_self_inv (γ : G) (y : Y) :
     S.act γ (S.act γ⁻¹ y) = y := by
   rw [← S.act_mul_apply γ γ⁻¹ y, mul_inv_cancel, S.act_one_apply]
 
+/--
+%%handwave
+name:
+  Every target transformation is injective
+statement:
+  For each group element \(\gamma\), the map \(y\mapsto\gamma\cdot y\) is
+  injective.
+proof:
+  Apply \(\gamma^{-1}\) to an equality of transformed points.
+-/
 theorem act_injective (γ : G) :
     Function.Injective (S.act γ) := by
   intro y z hyz
   have h := congrArg (S.act γ⁻¹) hyz
   simpa using h
 
+/--
+%%handwave
+name:
+  Every target transformation is surjective
+statement:
+  For each group element \(\gamma\), the map \(y\mapsto\gamma\cdot y\) is
+  surjective.
+proof:
+  A preimage of \(y\) is \(\gamma^{-1}\cdot y\).
+-/
 theorem act_surjective (γ : G) :
     Function.Surjective (S.act γ) := by
   intro y
   exact ⟨S.act γ⁻¹ y, S.act_self_inv γ y⟩
 
+/--
+%%handwave
+name:
+  Every target transformation is bijective
+statement:
+  The action of any group element on the target space is a bijection.
+proof:
+  It is both injective and surjective by the inverse-action identities.
+-/
 theorem act_bijective (γ : G) :
     Function.Bijective (S.act γ) :=
   ⟨S.act_injective γ, S.act_surjective γ⟩
@@ -2585,6 +2696,17 @@ def congr {i j i' j' : ι} {x x' : X}
   subst x'
   exact T
 
+/--
+%%handwave
+name:
+  Transition element is unchanged under relabeling
+statement:
+  Transporting a local transition across equal branch labels and an equal
+  basepoint leaves its group transition element unchanged.
+proof:
+  After substituting the equalities, the transported datum is identical to
+  the original one.
+-/
 @[simp]
 theorem congr_transition {i j i' j' : ι} {x x' : X}
     (T : S.LocalTransition i j x)
@@ -2705,7 +2827,11 @@ theorem locallyAgreesWith_refl
 name:
   Terminal germ agreement is symmetric
 statement:
-  Local agreement of terminal path-continuation germs is symmetric.
+  If terminal path-continuation germs \(A\) and \(B\) locally agree at their
+  common endpoint, then \(B\) and \(A\) locally agree there as well.
+proof:
+  Use the same endpoint neighborhood, interchange the two domain conditions,
+  and reverse the pointwise equality of the represented local maps.
 -/
 theorem locallyAgreesWith_symm {q : Path x₀ x}
     {A : S.PathContinuationGerm x₀ i₀ p}
@@ -2823,7 +2949,17 @@ def terminalBranch (C : S.PathContinuationChain x₀ i₀ p) : ι :=
 def terminalTransition (C : S.PathContinuationChain x₀ i₀ p) : G :=
   C.transitionProductAt (Fin.last C.length)
 
-/-- The terminal point belongs to the terminal branch domain. -/
+/--
+%%handwave
+name:
+  Endpoint lies in the terminal branch domain
+statement:
+  The endpoint of a finite path-continuation chain belongs to the domain of
+  its terminal branch.
+proof:
+  This is the chain's endpoint-domain condition, with the terminal branch
+  written as the branch at the last vertex.
+-/
 theorem endpoint_mem_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p) :
     x ∈ S.domain C.terminalBranch := by
@@ -2840,12 +2976,32 @@ def toTerminalGerm
   mem_neighborhood := C.endpoint_mem_terminalBranch
   subset_domain := subset_rfl
 
+/--
+%%handwave
+name:
+  Branch of the terminal germ of a chain
+statement:
+  The germ determined by a continuation chain uses the chain's terminal
+  branch.
+proof:
+  This is the branch field in the construction of the terminal germ.
+-/
 @[simp]
 theorem toTerminalGerm_branch
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.toTerminalGerm.branch = C.terminalBranch :=
   rfl
 
+/--
+%%handwave
+name:
+  Transition of the terminal germ of a chain
+statement:
+  The germ determined by a continuation chain uses its terminal accumulated
+  transition.
+proof:
+  This is the transition field in the construction of the terminal germ.
+-/
 @[simp]
 theorem toTerminalGerm_transition
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -2869,6 +3025,16 @@ def castInitialBranch
   subst j₀
   exact C
 
+/--
+%%handwave
+name:
+  Terminal branch after identifying initial branch labels
+statement:
+  Transporting a continuation chain across equality of its initial branch
+  label does not change its terminal branch.
+proof:
+  Substitute the equality of initial labels.
+-/
 @[simp]
 theorem castInitialBranch_terminalBranch
     {j₀ : ι}
@@ -2878,6 +3044,16 @@ theorem castInitialBranch_terminalBranch
   subst j₀
   rfl
 
+/--
+%%handwave
+name:
+  Terminal transition after identifying initial branch labels
+statement:
+  Transporting a continuation chain across equality of its initial branch
+  label does not change its terminal accumulated transition.
+proof:
+  Substitute the equality of initial labels.
+-/
 @[simp]
 theorem castInitialBranch_terminalTransition
     {j₀ : ι}
@@ -2974,6 +3150,17 @@ noncomputable def reparametrize
     simpa [u, hpath_all t] using hmem
   terminal_endpoint_mem_domain := C.terminal_endpoint_mem_domain
 
+/--
+%%handwave
+name:
+  Terminal branch under explicit path reparameterization
+statement:
+  Transporting a continuation chain through an endpoint-preserving monotone
+  reparameterization leaves its terminal branch unchanged.
+proof:
+  The construction changes only subdivision parameters and retains every
+  branch label.
+-/
 @[simp]
 theorem reparametrize_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -2991,6 +3178,17 @@ theorem reparametrize_terminalBranch
       hpath_sample hpath_all).terminalBranch = C.terminalBranch := by
   simp [reparametrize, terminalBranch]
 
+/--
+%%handwave
+name:
+  Terminal transition under explicit path reparameterization
+statement:
+  Transporting a continuation chain through an endpoint-preserving monotone
+  reparameterization leaves its terminal accumulated transition unchanged.
+proof:
+  The construction retains the entire sequence of accumulated transition
+  products.
+-/
 @[simp]
 theorem reparametrize_terminalTransition
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -3013,8 +3211,14 @@ theorem reparametrize_terminalTransition
 name:
   Reparameterization preserves the terminal germ
 statement:
-  Transporting a continuation chain across an order-preserving
-  reparameterization does not change its terminal germ.
+  Let \(C\) be a continuation chain along \(p\), and let an order-preserving
+  reparameterization identify \(p\) with a path \(q\) while respecting every
+  parameter interval of \(C\). Then the terminal germs of \(C\) and of the
+  transported chain along \(q\) locally agree.
+proof:
+  Reparameterization retains the terminal branch and accumulated transition.
+  On the terminal branch domain the two terminal local maps are therefore
+  identical, which supplies the required common neighborhood.
 -/
 theorem reparametrize_terminalGerms_agree
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -3114,6 +3318,17 @@ noncomputable def reparametrizeOrder
     terminal_endpoint_mem_domain := C.terminal_endpoint_mem_domain
   }
 
+/--
+%%handwave
+name:
+  Terminal branch under ordered-image reparameterization
+statement:
+  Reparameterizing a continuation chain by an order-preserving path
+  parameter map leaves its terminal branch unchanged.
+proof:
+  The ordered reparameterization transports the subdivision but reuses all
+  branch labels.
+-/
 @[simp]
 theorem reparametrizeOrder_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -3123,6 +3338,16 @@ theorem reparametrizeOrder_terminalBranch
     (C.reparametrizeOrder φ hdata).terminalBranch = C.terminalBranch := by
   simp [reparametrizeOrder, terminalBranch]
 
+/--
+%%handwave
+name:
+  Terminal transition under ordered-image reparameterization
+statement:
+  Reparameterizing a continuation chain by an order-preserving path parameter
+  map leaves its terminal accumulated transition unchanged.
+proof:
+  The transported chain retains every accumulated transition product.
+-/
 @[simp]
 theorem reparametrizeOrder_terminalTransition
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -3275,7 +3500,11 @@ variable {S} {i j k : ι} {γ δ ε : G} {x : X}
 name:
   Local expression agreement is symmetric
 statement:
-  Local agreement of transformed branch expressions is symmetric.
+  If \(\gamma\!\cdot f_i=\delta\!\cdot f_j\) on a neighborhood of \(x\),
+  then \(\delta\!\cdot f_j=\gamma\!\cdot f_i\) on a neighborhood of \(x\).
+proof:
+  Keep the same neighborhood, interchange its two branch-domain conditions,
+  and reverse the pointwise equality.
 -/
 theorem symm
     (h : S.LocalExpressionAgreesAt i j γ δ x) :
@@ -3441,14 +3670,12 @@ statement:
   at a point of the overlap, then the two expressions agree locally at that
   point.
 proof:
-  First, [the two transformed branch expressions have the same value at the
-  limiting point](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.LocalExpressionAgreesAt.value_eq_of_mem_closure_in_overlap).
+  First, [the two transformed branch expressions have the same value at the limiting point](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.LocalExpressionAgreesAt.value_eq_of_mem_closure_in_overlap).
   Choose source and target charts at this common value and shrink the source
   chart so both expressions land in the target chart.  In coordinates they
   become holomorphic functions on a preconnected plane neighborhood.  The
   accumulating points of local agreement give accumulating points of equality
-  for the coordinate representatives, so [the two coordinate functions agree
-  on that neighborhood](lean:JJMath.AnalyticContinuation.complex_identity_theorem_of_accumulation).
+  for the coordinate representatives, so [the two coordinate functions agree on that neighborhood](lean:JJMath.AnalyticContinuation.complex_identity_theorem_of_accumulation).
   Translating back through the charts gives local agreement on the surface.
 -/
 theorem of_mem_closure_in_overlap
@@ -3685,8 +3912,7 @@ statement:
   At the initial point, the accumulated branch expressions of any two
   continuation chains with the same prescribed initial branch agree locally.
 proof:
-  For each chain, [the initialized accumulated branch expression agrees with
-  the initial branch](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initialTransitionProduct_localMap_eq).
+  For each chain, [the initialized accumulated branch expression agrees with the initial branch](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initialTransitionProduct_localMap_eq).
   Intersect the two initial neighborhoods and cancel through the common
   initial branch expression.
 -/
@@ -3715,8 +3941,7 @@ statement:
   At each handoff, the accumulated branch expression before the handoff and
   the accumulated branch expression after the handoff agree locally.
 proof:
-  This is just [the handoff update identity for accumulated branch
-  expressions](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.transitionProductAt_succ_localMap_eq)
+  This is just [the handoff update identity for accumulated branch expressions](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.transitionProductAt_succ_localMap_eq)
   repackaged as local agreement.
 -/
 theorem transitionProductAt_succ_localExpressionAgreesAt
@@ -3864,9 +4089,13 @@ theorem localExpressionAgreesAt_propagates_along_path_segment
 name:
   Handoff update of local expression agreement
 statement:
-  If two accumulated expressions agree locally at a handoff point and each
-  handoff preserves its own accumulated expression, then the two updated
-  accumulated expressions agree locally at that point.
+  Suppose \(\gamma\!\cdot f_i=\delta\!\cdot f_j\) near \(x\), while the
+  handoffs satisfy \(\gamma\!\cdot f_i=\gamma'\!\cdot f_{i'}\) and
+  \(\delta\!\cdot f_j=\delta'\!\cdot f_{j'}\) near \(x\). Then
+  \(\gamma'\!\cdot f_{i'}=\delta'\!\cdot f_{j'}\) near \(x\).
+proof:
+  Reverse the first handoff equality and compose it transitively with the
+  original agreement and the second handoff equality.
 -/
 theorem localExpressionAgreesAt_update_of_handoffs
     {i i' j j' : ι} {γ γ' δ δ' : G} {x : X}
@@ -3885,10 +4114,8 @@ statement:
   parameters, then their accumulated branch expressions agree locally at every
   aligned vertex.
 proof:
-  Start from the common initial branch, using [the initial accumulated
-  expressions agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initial_localExpressionAgreesAt).
-  For the induction step, [local equality propagates along the common path
-  segment](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.localExpressionAgreesAt_propagates_along_path_segment),
+  Start from the common initial branch, using [the initial accumulated expressions agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initial_localExpressionAgreesAt).
+  For the induction step, [local equality propagates along the common path segment](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.localExpressionAgreesAt_propagates_along_path_segment),
   and the handoff identities update the two accumulated expressions.
 -/
 theorem localExpressionAgreesAt_aligned_vertex
@@ -3989,8 +4216,7 @@ statement:
   If two continuation chains along the same path have the same subdivision
   parameters, then their terminal germs locally agree.
 proof:
-  Apply [local agreement of accumulated expressions at aligned
-  vertices](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.localExpressionAgreesAt_aligned_vertex)
+  Apply [local agreement of accumulated expressions at aligned vertices](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.localExpressionAgreesAt_aligned_vertex)
   to the final vertex, where the path value is the endpoint.
 -/
 theorem terminalGerms_agree_of_alignedSubdivision
@@ -4072,6 +4298,16 @@ noncomputable def terminalExtensionTransitionProductAt
     else
       C.terminalTransition
 
+/--
+%%handwave
+name:
+  Old parameters in a terminal path extension
+statement:
+  At an old subdivision vertex, appending a path in the terminal branch uses
+  the original parameter compressed into the first half of the interval.
+proof:
+  The old vertex satisfies the first clause of the parameter assignment.
+-/
 @[simp]
 theorem terminalExtensionParameterAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4084,6 +4320,16 @@ theorem terminalExtensionParameterAt_castSucc
     else 1) = unitInterval.firstHalf (C.parameterAt i)
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Old branches in a terminal path extension
+statement:
+  At every old subdivision vertex, a terminal path extension retains the
+  original branch choice.
+proof:
+  Evaluate the old-index clause of the branch assignment.
+-/
 @[simp]
 theorem terminalExtensionBranchAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4095,6 +4341,16 @@ theorem terminalExtensionBranchAt_castSucc
     else C.terminalBranch) = C.branchAt i
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Old transition products in a terminal path extension
+statement:
+  At every old vertex, a terminal path extension retains the original
+  accumulated transition product.
+proof:
+  This is the old-index clause of the product assignment.
+-/
 @[simp]
 theorem terminalExtensionTransitionProductAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4107,12 +4363,31 @@ theorem terminalExtensionTransitionProductAt_castSucc
     else C.terminalTransition) = C.transitionProductAt i
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Final parameter of a terminal path extension
+statement:
+  The added terminal vertex of the extended subdivision has parameter \(1\).
+proof:
+  The last index falls in the added-endpoint clause.
+-/
 @[simp]
 theorem terminalExtensionParameterAt_last
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalExtensionParameterAt (Fin.last (C.length + 1)) = 1 := by
   simp [terminalExtensionParameterAt]
 
+/--
+%%handwave
+name:
+  Final branch of a terminal path extension
+statement:
+  The added endpoint of a path appended inside the terminal branch carries
+  the original terminal branch.
+proof:
+  This is how the added endpoint branch is assigned.
+-/
 @[simp]
 theorem terminalExtensionBranchAt_last
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -4120,6 +4395,16 @@ theorem terminalExtensionBranchAt_last
       C.terminalBranch := by
   simp [terminalExtensionBranchAt]
 
+/--
+%%handwave
+name:
+  Final transition product of a terminal path extension
+statement:
+  Appending a path within the terminal branch leaves the terminal accumulated
+  transition unchanged.
+proof:
+  The added endpoint is assigned the old terminal product.
+-/
 @[simp]
 theorem terminalExtensionTransitionProductAt_last
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -4127,39 +4412,93 @@ theorem terminalExtensionTransitionProductAt_last
       C.terminalTransition := by
   simp [terminalExtensionTransitionProductAt]
 
+/--
+%%handwave
+name:
+  Initial parameter of a terminal path extension
+statement:
+  The extended subdivision begins at parameter \(0\).
+proof:
+  The old initial value is zero and first-half compression fixes zero.
+-/
 @[simp]
 theorem terminalExtensionParameterAt_zero
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalExtensionParameterAt 0 = 0 := by
   simp [terminalExtensionParameterAt, C.parameterAt_zero]
 
+/--
+%%handwave
+name:
+  Initial branch of a terminal path extension
+statement:
+  The extended chain begins with the original initial branch.
+proof:
+  The zero vertex is retained from the old subdivision.
+-/
 @[simp]
 theorem terminalExtensionBranchAt_zero
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalExtensionBranchAt 0 = C.branchAt 0 := by
   simp [terminalExtensionBranchAt]
 
+/--
+%%handwave
+name:
+  Initial transition product of a terminal path extension
+statement:
+  The extended chain begins with the original initial accumulated transition.
+proof:
+  The zero vertex lies in the retained old part.
+-/
 @[simp]
 theorem terminalExtensionTransitionProductAt_zero
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalExtensionTransitionProductAt 0 = C.transitionProductAt 0 := by
   simp [terminalExtensionTransitionProductAt]
 
-/-- Successor after casting to a larger finite type is the cast of the successor. -/
+/--
+%%handwave
+name:
+  Successor commutes with finite-index inclusion
+statement:
+  Including an index in the next finite range and then taking its successor
+  gives the same index as taking the successor first and then including it.
+proof:
+  Both finite indices have the same underlying natural number.
+-/
 theorem fin_castSucc_succ_eq_succ_castSucc {n : ℕ} (k : Fin n) :
     (k.castSucc : Fin (n + 1)).succ = (k.succ).castSucc := by
   ext
   rfl
 
-/-- The successor of the last element is the last element in the next finite type. -/
+/--
+%%handwave
+name:
+  Successor of the last finite index
+statement:
+  The successor of the last index in a finite range is the last index in the
+  next larger range.
+proof:
+  Both indices have underlying natural number \(n\).
+-/
 theorem fin_last_succ_eq_last {n : ℕ} :
     (Fin.last n : Fin (n + 1)).succ = Fin.last (n + 1) := by
   ext
   rfl
 
 /--
-Inserting one entry in a finite tuple only adds that entry to the associated
-`List.ofFn`, up to permutation.
+%%handwave
+name:
+  List of a finite tuple after inserting one entry
+statement:
+  If an element \(x\) is inserted at any position in a finite tuple \(f\),
+  the list of entries of the resulting tuple is a permutation of
+  \(x\) followed by the list of entries of \(f\).
+proof:
+  Induct on the tuple length and split the insertion position between the
+  head and a successor.  In the successor case, use the induction hypothesis
+  on the tail and swap \(x\) past the old head.
 -/
 theorem ofFn_fin_insertNth_perm {α : Type*} :
     ∀ {n : ℕ} (i : Fin (n + 1)) (x : α) (f : Fin n → α),
@@ -4178,7 +4517,16 @@ theorem ofFn_fin_insertNth_perm {α : Type*} :
               (ofFn_fin_insertNth_perm i x (Fin.tail f))).trans
               (List.Perm.swap (f 0) x (List.ofFn (Fin.tail f))).symm
 
-/-- Every finite continuation chain has at least one segment. -/
+/--
+%%handwave
+name:
+  A continuation chain has positive length
+statement:
+  Every finite path-continuation chain contains at least one segment.
+proof:
+  If its length were zero, the initial and terminal vertex indices would
+  coincide, forcing their parameters \(0\) and \(1\) to be equal.
+-/
 theorem length_pos (C : S.PathContinuationChain x₀ i₀ p) :
     0 < C.length := by
   by_contra hpos
@@ -4191,8 +4539,17 @@ theorem length_pos (C : S.PathContinuationChain x₀ i₀ p) :
   exact zero_ne_one h01
 
 /--
-Every parameter of the unit interval lies in one of the closed subdivision
-subintervals of a finite continuation chain.
+%%handwave
+name:
+  Every parameter lies in a subdivision segment
+statement:
+  For every \(\tau\in[0,1]\) and every finite nondecreasing subdivision
+  \(0=t_0\le\cdots\le t_n=1\), there is \(k<n\) such that
+  \(t_k\le\tau\le t_{k+1}\).
+proof:
+  Choose the least vertex index whose parameter is at least \(\tau\).  If it
+  is zero, use \(0\le\tau\); otherwise minimality makes the preceding
+  parameter at most \(\tau\).
 -/
 theorem exists_segment_contains_parameter
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4304,6 +4661,16 @@ noncomputable def segmentSplitTransitionProductAt
     else
       C.transitionProductAt ((k.succ : Fin (C.length + 1)).predAbove i)
 
+/--
+%%handwave
+name:
+  Parameter at an inserted subdivision vertex
+statement:
+  After splitting a segment at \(\tau\), the newly inserted vertex has
+  parameter \(\tau\).
+proof:
+  This is the inserted-vertex clause of the parameter assignment.
+-/
 @[simp]
 theorem segmentSplitParameterAt_insert
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4311,6 +4678,16 @@ theorem segmentSplitParameterAt_insert
     C.segmentSplitParameterAt k τ (C.segmentSplitInsertVertex k) = τ := by
   simp [segmentSplitParameterAt]
 
+/--
+%%handwave
+name:
+  Branch at an inserted subdivision vertex
+statement:
+  The new vertex inserted into segment \(k\) is assigned the branch used at
+  the old left endpoint of that segment.
+proof:
+  This is the inserted-vertex clause of the branch assignment.
+-/
 @[simp]
 theorem segmentSplitBranchAt_insert
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4319,6 +4696,16 @@ theorem segmentSplitBranchAt_insert
       C.branchAt k.castSucc := by
   simp [segmentSplitBranchAt]
 
+/--
+%%handwave
+name:
+  Transition product at an inserted subdivision vertex
+statement:
+  The accumulated transition at a vertex inserted into segment \(k\) equals
+  the accumulated transition at the old left endpoint.
+proof:
+  This is the inserted-vertex clause of the product assignment.
+-/
 @[simp]
 theorem segmentSplitTransitionProductAt_insert
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4327,6 +4714,17 @@ theorem segmentSplitTransitionProductAt_insert
       C.transitionProductAt k.castSucc := by
   simp [segmentSplitTransitionProductAt]
 
+/--
+%%handwave
+name:
+  Old parameters after splitting a segment
+statement:
+  Every old subdivision vertex, embedded around the inserted vertex, retains
+  its original parameter.
+proof:
+  The embedded index is not the insertion index, and deleting the insertion
+  recovers the original index.
+-/
 @[simp]
 theorem segmentSplitParameterAt_old
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4341,8 +4739,15 @@ theorem segmentSplitParameterAt_old
   · exact Fin.succAbove_ne _ _
 
 /--
-The parameter tuple of a segment split is the old parameter tuple with the
-split parameter inserted at the new vertex.
+%%handwave
+name:
+  Parameter tuple after splitting a segment
+statement:
+  The parameter tuple of a segment split is exactly the old tuple with
+  \(\tau\) inserted immediately after the left endpoint of the split segment.
+proof:
+  At the insertion index both tuples equal \(\tau\); at every other index,
+  deleting the inserted position recovers the same old parameter.
 -/
 theorem segmentSplitParameterAt_eq_insertNth
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4364,6 +4769,16 @@ theorem segmentSplitParameterAt_eq_insertNth
     rw [C.segmentSplitParameterAt_old k τ old]
     rw [Fin.insertNth_apply_succAbove]
 
+/--
+%%handwave
+name:
+  Old branches after splitting a segment
+statement:
+  Every old subdivision vertex retains its branch assignment after one
+  segment is split.
+proof:
+  The embedding avoids the new vertex and deletion recovers the old index.
+-/
 @[simp]
 theorem segmentSplitBranchAt_old
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4376,6 +4791,17 @@ theorem segmentSplitBranchAt_old
   · rw [Fin.predAbove_succAbove]
   · exact Fin.succAbove_ne _ _
 
+/--
+%%handwave
+name:
+  Old transition products after splitting a segment
+statement:
+  Every old vertex retains its accumulated transition product after a segment
+  split.
+proof:
+  The embedded old index is not the insertion position, so the old-product
+  clause applies.
+-/
 @[simp]
 theorem segmentSplitTransitionProductAt_old
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4388,7 +4814,16 @@ theorem segmentSplitTransitionProductAt_old
   · rw [Fin.predAbove_succAbove]
   · exact Fin.succAbove_ne _ _
 
-/-- The first old vertex remains the first vertex after a segment split. -/
+/--
+%%handwave
+name:
+  Initial vertex embedding under a segment split
+statement:
+  The old initial vertex remains the initial vertex after inserting a point
+  into any segment.
+proof:
+  The insertion occurs strictly after index zero.
+-/
 theorem segmentSplitInsertVertex_succAbove_zero
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) :
@@ -4399,7 +4834,17 @@ theorem segmentSplitInsertVertex_succAbove_zero
   · change (0 : ℕ) < (k : ℕ) + 1
     exact Nat.succ_pos _
 
-/-- The last old vertex remains the last vertex after a segment split. -/
+/--
+%%handwave
+name:
+  Terminal vertex embedding under a segment split
+statement:
+  The old terminal vertex becomes the terminal vertex of the enlarged
+  subdivision.
+proof:
+  The insertion occurs at or before the old terminal index, shifting that
+  terminal index forward by one.
+-/
 theorem segmentSplitInsertVertex_succAbove_last
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) :
@@ -4410,7 +4855,16 @@ theorem segmentSplitInsertVertex_succAbove_last
   · change (k : ℕ) + 1 ≤ C.length
     exact k.isLt
 
-/-- The old left endpoint of the split segment embeds before the insertion. -/
+/--
+%%handwave
+name:
+  Embedding the old left endpoint of a split segment
+statement:
+  The old left endpoint of segment \(k\) embeds unchanged immediately before
+  the newly inserted vertex.
+proof:
+  Its index is strictly smaller than the insertion position \(k+1\).
+-/
 theorem segmentSplitInsertVertex_succAbove_left
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) :
@@ -4420,7 +4874,17 @@ theorem segmentSplitInsertVertex_succAbove_left
   change (k : ℕ) < (k : ℕ) + 1
   exact Nat.lt_succ_self _
 
-/-- The old right endpoint of the split segment embeds after the insertion. -/
+/--
+%%handwave
+name:
+  Embedding the old right endpoint of a split segment
+statement:
+  The old right endpoint of segment \(k\) embeds one place after the inserted
+  vertex.
+proof:
+  Its old index is the insertion position, so embedding around that position
+  shifts it by one.
+-/
 theorem segmentSplitInsertVertex_succAbove_right
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) :
@@ -4429,7 +4893,16 @@ theorem segmentSplitInsertVertex_succAbove_right
   rw [Fin.succAbove_of_le_castSucc]
   rfl
 
-/-- Old vertices strictly before the split segment embed unchanged on the left. -/
+/--
+%%handwave
+name:
+  Left endpoints before a segment split embed unchanged
+statement:
+  A left endpoint belonging to a segment strictly before the split segment
+  keeps the same index after insertion.
+proof:
+  Its index lies strictly below the insertion position.
+-/
 theorem segmentSplitInsertVertex_succAbove_before_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (j : Fin (C.length + 1))
@@ -4441,7 +4914,16 @@ theorem segmentSplitInsertVertex_succAbove_before_castSucc
   · rfl
   · exact_mod_cast Nat.lt_succ_of_lt hj
 
-/-- Old right vertices strictly before the split segment embed unchanged. -/
+/--
+%%handwave
+name:
+  Right endpoints before a segment split embed unchanged
+statement:
+  A right endpoint of a segment strictly before the split segment keeps its
+  same index in the enlarged subdivision.
+proof:
+  That endpoint still lies strictly below the insertion position.
+-/
 theorem segmentSplitInsertVertex_succAbove_before_succ
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (j : Fin (C.length + 1))
@@ -4453,7 +4935,17 @@ theorem segmentSplitInsertVertex_succAbove_before_succ
   · rfl
   · exact_mod_cast Nat.succ_lt_succ hj
 
-/-- Old vertices strictly after the split segment embed by shifting one step. -/
+/--
+%%handwave
+name:
+  Left endpoints after a segment split shift by one
+statement:
+  A left endpoint belonging strictly after the split segment embeds at its
+  old index shifted forward by one.
+proof:
+  It lies beyond the insertion position, so inserting a new vertex increments
+  its index.
+-/
 theorem segmentSplitInsertVertex_succAbove_after_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (j : Fin (C.length + 1))
@@ -4467,7 +4959,17 @@ theorem segmentSplitInsertVertex_succAbove_after_castSucc
     omega
   · exact_mod_cast Nat.le_pred_of_lt hj
 
-/-- Old right vertices strictly after the split segment embed by shifting one step. -/
+/--
+%%handwave
+name:
+  Right endpoints after a segment split shift by one
+statement:
+  A right endpoint belonging strictly after the split segment embeds at its
+  old index shifted forward by one.
+proof:
+  The new vertex is inserted earlier, hence all subsequent indices increase
+  by one.
+-/
 theorem segmentSplitInsertVertex_succAbove_after_succ
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (j : Fin (C.length + 1))
@@ -4482,6 +4984,15 @@ theorem segmentSplitInsertVertex_succAbove_after_succ
   · change (k : ℕ) + 1 ≤ (j : ℕ) - 1 + 1
     omega
 
+/--
+%%handwave
+name:
+  Initial parameter after a segment split
+statement:
+  Splitting a segment leaves the initial subdivision parameter equal to zero.
+proof:
+  The old initial vertex remains first and retains its parameter.
+-/
 @[simp]
 theorem segmentSplitParameterAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4490,6 +5001,15 @@ theorem segmentSplitParameterAt_zero
   rw [← C.segmentSplitInsertVertex_succAbove_zero k,
     C.segmentSplitParameterAt_old k τ 0, C.parameterAt_zero]
 
+/--
+%%handwave
+name:
+  Terminal parameter after a segment split
+statement:
+  Splitting a segment leaves the final subdivision parameter equal to one.
+proof:
+  The old terminal vertex remains last and retains its parameter.
+-/
 @[simp]
 theorem segmentSplitParameterAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4499,6 +5019,15 @@ theorem segmentSplitParameterAt_last
     C.segmentSplitParameterAt_old k τ (Fin.last C.length),
     C.parameterAt_last]
 
+/--
+%%handwave
+name:
+  Initial branch after a segment split
+statement:
+  Splitting a segment leaves the initial branch unchanged.
+proof:
+  The old initial vertex is retained.
+-/
 @[simp]
 theorem segmentSplitBranchAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4507,6 +5036,15 @@ theorem segmentSplitBranchAt_zero
   rw [← C.segmentSplitInsertVertex_succAbove_zero k,
     C.segmentSplitBranchAt_old k 0]
 
+/--
+%%handwave
+name:
+  Terminal branch after a segment split
+statement:
+  Splitting a segment leaves the terminal branch unchanged.
+proof:
+  The old terminal vertex embeds as the new terminal vertex.
+-/
 @[simp]
 theorem segmentSplitBranchAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4517,6 +5055,16 @@ theorem segmentSplitBranchAt_last
     C.segmentSplitBranchAt_old k (Fin.last C.length)]
   rfl
 
+/--
+%%handwave
+name:
+  Initial transition product after a segment split
+statement:
+  The accumulated transition at the initial vertex is unchanged by splitting
+  a segment.
+proof:
+  The initial old vertex retains its assigned product.
+-/
 @[simp]
 theorem segmentSplitTransitionProductAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4525,6 +5073,16 @@ theorem segmentSplitTransitionProductAt_zero
   rw [← C.segmentSplitInsertVertex_succAbove_zero k,
     C.segmentSplitTransitionProductAt_old k 0]
 
+/--
+%%handwave
+name:
+  Terminal transition product after a segment split
+statement:
+  The terminal accumulated transition is unchanged by splitting a segment.
+proof:
+  The old terminal vertex becomes the new terminal vertex and retains its
+  product.
+-/
 @[simp]
 theorem segmentSplitTransitionProductAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4535,7 +5093,16 @@ theorem segmentSplitTransitionProductAt_last
     C.segmentSplitTransitionProductAt_old k (Fin.last C.length)]
   rfl
 
-/-- The inserted point of a segment split lies in the branch used on the left half. -/
+/--
+%%handwave
+name:
+  The inserted point lies in its assigned branch domain
+statement:
+  If \(\tau\) lies between the endpoints of segment \(k\), then the path point
+  \(p(\tau)\) lies in the branch domain assigned to the left endpoint.
+proof:
+  This is the original chain's domain condition on the whole segment.
+-/
 theorem segmentSplit_insert_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (τ : unitInterval)
@@ -4544,7 +5111,17 @@ theorem segmentSplit_insert_mem_domain
     p τ ∈ S.domain (C.branchAt k.castSucc) :=
   C.path_segment_mem_domain k τ hτ_left hτ_right
 
-/-- Every sampled vertex of a segment split lies in its selected branch domain. -/
+/--
+%%handwave
+name:
+  Vertex-domain condition after a segment split
+statement:
+  Every vertex of a subdivision obtained by splitting one segment lies in the
+  domain of its assigned branch.
+proof:
+  The inserted vertex uses the original segment-domain condition; every old
+  vertex reduces to the original chain's vertex-domain condition.
+-/
 theorem segmentSplit_sample_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (τ : unitInterval)
@@ -4569,8 +5146,16 @@ theorem segmentSplit_sample_mem_domain
     exact C.sample_mem_domain old
 
 /--
-Every subinterval of a segment-split subdivision stays in the branch domain
-attached to its left vertex.
+%%handwave
+name:
+  Segment-domain condition after a segment split
+statement:
+  Every segment of the refined subdivision remains in the branch domain
+  attached to its left endpoint.
+proof:
+  The two pieces of the split segment are contained in its original branch
+  domain.  Segments before and after it correspond exactly to old segments
+  after the appropriate index embedding.
 -/
 theorem segmentSplit_path_segment_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4675,7 +5260,18 @@ theorem segmentSplit_path_segment_mem_domain
     rw [hbranch_left]
     exact C.path_segment_mem_domain e t ht_left ht_right
 
-/-- The subdivision parameters remain monotone after splitting one segment. -/
+/--
+%%handwave
+name:
+  Monotonicity after splitting one segment
+statement:
+  If \(t_k\le\tau\le t_{k+1}\), inserting \(\tau\) into a nondecreasing
+  subdivision preserves nondecreasing order.
+proof:
+  The two new inequalities are precisely
+  \(t_k\le\tau\) and \(\tau\le t_{k+1}\); every other adjacent pair is an
+  old monotone pair.
+-/
 theorem segmentSplitParameterAt_mono
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) (τ : unitInterval)
@@ -4755,7 +5351,17 @@ theorem segmentSplitParameterAt_mono
     rw [hparam_left, hparam_right]
     exact C.parameterAt_mono e
 
-/-- The endpoint still lies in the terminal branch after a segment split. -/
+/--
+%%handwave
+name:
+  Terminal endpoint remains in the terminal branch after a split
+statement:
+  After splitting any segment, the path endpoint still belongs to the domain
+  of the resulting terminal branch.
+proof:
+  The terminal branch is unchanged, so use the original terminal endpoint
+  condition.
+-/
 theorem segmentSplit_terminal_endpoint_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) :
@@ -5023,6 +5629,16 @@ noncomputable def segmentSplitChain
     C.segmentSplit_path_segment_mem_domain k τ hτ_left hτ_right
   terminal_endpoint_mem_domain := C.segmentSplit_terminal_endpoint_mem_domain k
 
+/--
+%%handwave
+name:
+  Terminal branch of a segment-split chain
+statement:
+  Inserting a subdivision point into one segment does not change the chain's
+  terminal branch.
+proof:
+  The old terminal vertex remains the terminal vertex and retains its branch.
+-/
 @[simp]
 theorem segmentSplitChain_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5033,6 +5649,16 @@ theorem segmentSplitChain_terminalBranch
       C.terminalBranch := by
   simp [segmentSplitChain, terminalBranch]
 
+/--
+%%handwave
+name:
+  Terminal transition of a segment-split chain
+statement:
+  Inserting a subdivision point into one segment does not change the terminal
+  accumulated transition.
+proof:
+  The old terminal vertex retains its transition product.
+-/
 @[simp]
 theorem segmentSplitChain_terminalTransition
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5090,6 +5716,16 @@ noncomputable def splitAtParameterChain
   let hk := Classical.choose_spec (C.exists_segment_contains_parameter τ)
   C.segmentSplitChain k τ hk.1 hk.2
 
+/--
+%%handwave
+name:
+  Length after splitting at an arbitrary parameter
+statement:
+  Splitting a continuation chain at one parameter increases its number of
+  segments by one.
+proof:
+  The chosen containing segment is replaced by its two subsegments.
+-/
 @[simp]
 theorem splitAtParameterChain_length
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5099,6 +5735,17 @@ theorem splitAtParameterChain_length
   unfold splitAtParameterChain
   simp [segmentSplitChain]
 
+/--
+%%handwave
+name:
+  Splitting at an arbitrary parameter preserves the terminal germ
+statement:
+  A continuation chain and the chain obtained by inserting any parameter
+  \(\tau\in[0,1]\) have locally agreeing terminal germs.
+proof:
+  Choose a subdivision segment containing \(\tau\) and apply invariance of
+  the terminal germ under splitting that segment.
+-/
 theorem splitAtParameterChain_terminalGerms_agree
     (C : S.PathContinuationChain x₀ i₀ p)
     (τ : unitInterval) :
@@ -5132,6 +5779,17 @@ noncomputable def splitAllVerticesOfChain
     S.PathContinuationChain x₀ i₀ p :=
   C.splitFirstVerticesOfChain D (D.length + 1)
 
+/--
+%%handwave
+name:
+  Length after inserting an initial list of vertices
+statement:
+  After inserting the first \(m\) sampled parameters of a second chain into a
+  chain of length \(n\), where \(m\) does not exceed the available vertices,
+  the resulting length is \(n+m\).
+proof:
+  Induct on \(m\); each permitted parameter split adds exactly one segment.
+-/
 theorem splitFirstVerticesOfChain_length_of_le
     (C D : S.PathContinuationChain x₀ i₀ p) :
     ∀ m : ℕ, m ≤ D.length + 1 →
@@ -5148,6 +5806,16 @@ theorem splitFirstVerticesOfChain_length_of_le
       simp [splitFirstVerticesOfChain, hm_lt, ih hm_prev,
         Nat.add_comm, Nat.add_left_comm, Nat.add_assoc]
 
+/--
+%%handwave
+name:
+  Length after inserting every vertex of another chain
+statement:
+  If chains have lengths \(m\) and \(n\), inserting all \(n+1\) sampled
+  vertices of the second into the first produces length \(m+n+1\).
+proof:
+  Apply the length formula for the first \(n+1\) inserted vertices.
+-/
 @[simp]
 theorem splitAllVerticesOfChain_length
     (C D : S.PathContinuationChain x₀ i₀ p) :
@@ -5160,7 +5828,17 @@ def parameterList (C : S.PathContinuationChain x₀ i₀ p) :
     List unitInterval :=
   List.ofFn C.parameterAt
 
-/-- The parameter list of a finite continuation chain is weakly sorted. -/
+/--
+%%handwave
+name:
+  Sortedness of a continuation chain's parameter list
+statement:
+  The finite list of subdivision parameters of a continuation chain is
+  nondecreasing.
+proof:
+  Consecutive list entries are consecutive subdivision parameters, ordered by
+  the chain's monotonicity condition.
+-/
 theorem parameterList_sortedLE
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.parameterList.SortedLE := by
@@ -5170,8 +5848,15 @@ theorem parameterList_sortedLE
   exact C.parameterAt_mono ⟨i, by omega⟩
 
 /--
-Sortedness turns a permutation comparison of parameter lists into the
-pointwise aligned-subdivision equality used by the continuation proof.
+%%handwave
+name:
+  Permuted sorted parameter lists agree pointwise
+statement:
+  If two continuation chains have parameter lists that are permutations of
+  one another, then their parameters at every common valid index are equal.
+proof:
+  Both lists are nondecreasing, so a permutation between them is equality.
+  Taking the entry at the chosen index gives the pointwise identity.
 -/
 theorem parameterAt_eq_of_parameterList_perm
     (C D : S.PathContinuationChain x₀ i₀ p)
@@ -5200,8 +5885,15 @@ theorem parameterAt_eq_of_parameterList_perm
   exact Option.some.inj hget
 
 /--
-Splitting one segment inserts exactly the new split parameter into the
-subdivision parameter list, up to permutation.
+%%handwave
+name:
+  Parameter list after one segment split
+statement:
+  Splitting one segment at \(\tau\) produces a parameter list that is a
+  permutation of \(\tau\) followed by the old parameter list.
+proof:
+  The new parameter tuple is obtained by inserting \(\tau\) at one finite
+  position; listing an insertion differs from prepending only by permutation.
 -/
 theorem segmentSplitChain_parameterList_perm
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5218,8 +5910,15 @@ theorem segmentSplitChain_parameterList_perm
   exact ofFn_fin_insertNth_perm (C.segmentSplitInsertVertex k) τ C.parameterAt
 
 /--
-Splitting at an arbitrary parameter inserts that parameter into the
-subdivision parameter list, up to permutation.
+%%handwave
+name:
+  Parameter list after splitting at an arbitrary parameter
+statement:
+  Splitting a chain at \(\tau\) yields a parameter list that is a permutation
+  of \(\tau\) followed by the original list.
+proof:
+  Choose a segment containing \(\tau\) and apply the one-segment insertion
+  formula.
 -/
 theorem splitAtParameterChain_parameterList_perm
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5248,6 +5947,16 @@ def firstParameterListOfChain
       else
         D.firstParameterListOfChain m
 
+/--
+%%handwave
+name:
+  Successor formula for the recursive parameter prefix
+statement:
+  When the \(m\)-th vertex exists, the recursively listed first \(m+1\)
+  parameters are the \(m\)-th parameter followed by the first \(m\).
+proof:
+  This is the valid-index branch of the recursive definition.
+-/
 @[simp]
 theorem firstParameterListOfChain_succ_of_lt
     (D : S.PathContinuationChain x₀ i₀ p)
@@ -5257,8 +5966,17 @@ theorem firstParameterListOfChain_succ_of_lt
   simp [firstParameterListOfChain, hm]
 
 /--
-The recursive first-parameter list is a permutation of the actual ordered
-prefix of the subdivision parameter tuple.
+%%handwave
+name:
+  Recursive parameter prefix is a permutation of the ordered prefix
+statement:
+  For \(m\) within the vertex count, the recursively accumulated first
+  parameter list is a permutation of the ordered list of the first \(m\)
+  subdivision parameters.
+proof:
+  Induct on \(m\).  The recursion prepends the newest parameter, while the
+  ordered prefix appends it; moving that element across the preceding list
+  gives the required permutation.
 -/
 theorem firstParameterListOfChain_perm_prefix
     (D : S.PathContinuationChain x₀ i₀ p) :
@@ -5297,7 +6015,16 @@ theorem firstParameterListOfChain_perm_prefix
               D.parameterAt ⟨i, by omega⟩)).symm.trans
             (by rw [htail]))
 
-/-- All recursively listed sampled parameters are a permutation of `parameterList`. -/
+/--
+%%handwave
+name:
+  The complete recursive parameter list is a permutation of all parameters
+statement:
+  Recursively listing all sampled parameters of a continuation chain gives a
+  permutation of its full ordered parameter list.
+proof:
+  Specialize the prefix-permutation result to the total vertex count.
+-/
 theorem firstParameterListOfChain_all_perm_parameterList
     (D : S.PathContinuationChain x₀ i₀ p) :
     List.Perm (D.firstParameterListOfChain (D.length + 1))
@@ -5306,8 +6033,16 @@ theorem firstParameterListOfChain_all_perm_parameterList
     D.firstParameterListOfChain_perm_prefix (D.length + 1) le_rfl
 
 /--
-Repeated splitting inserts precisely the recursively listed sampled
-parameters into the old parameter list, up to permutation.
+%%handwave
+name:
+  Parameter list after repeatedly inserting an initial vertex prefix
+statement:
+  After splitting a chain at the first \(m\) sampled parameters of another
+  chain, the resulting parameter list is a permutation of that recursive
+  \(m\)-parameter list followed by the original list.
+proof:
+  Induct on \(m\).  Each new split prepends its inserted parameter up to
+  permutation, and the induction hypothesis identifies the previous list.
 -/
 theorem splitFirstVerticesOfChain_parameterList_perm_of_le
     (C D : S.PathContinuationChain x₀ i₀ p) :
@@ -5368,6 +6103,16 @@ theorem splitAllVerticesOfChain_parameterList_perm
     (List.Perm.append_right C.parameterList
       D.firstParameterListOfChain_all_perm_parameterList)
 
+/--
+%%handwave
+name:
+  Left parameter at the terminal-extension midpoint
+statement:
+  The last old vertex of a terminal path extension occurs at the compressed
+  parameter \(1/2\).
+proof:
+  The old terminal parameter is \(1\), whose first-half image is \(1/2\).
+-/
 @[simp]
 theorem terminalExtensionParameterAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5376,6 +6121,16 @@ theorem terminalExtensionParameterAt_final_left
       unitInterval.firstHalf 1 := by
   simp [C.parameterAt_last]
 
+/--
+%%handwave
+name:
+  Left branch at the terminal-extension midpoint
+statement:
+  The last old vertex before the appended path carries the original terminal
+  branch.
+proof:
+  Old branch assignments are retained.
+-/
 @[simp]
 theorem terminalExtensionBranchAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5384,6 +6139,16 @@ theorem terminalExtensionBranchAt_final_left
       C.terminalBranch := by
   simp [terminalBranch]
 
+/--
+%%handwave
+name:
+  Left transition product at the terminal-extension midpoint
+statement:
+  The last old vertex before the appended path has the original terminal
+  transition product.
+proof:
+  Old accumulated products are retained.
+-/
 @[simp]
 theorem terminalExtensionTransitionProductAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5392,6 +6157,16 @@ theorem terminalExtensionTransitionProductAt_final_left
       C.terminalTransition := by
   simp [terminalTransition]
 
+/--
+%%handwave
+name:
+  Right parameter of the appended terminal path
+statement:
+  The endpoint on the right of the appended terminal segment has parameter
+  \(1\).
+proof:
+  This vertex is the new final index.
+-/
 @[simp]
 theorem terminalExtensionParameterAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5400,6 +6175,16 @@ theorem terminalExtensionParameterAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalExtensionParameterAt_last
 
+/--
+%%handwave
+name:
+  Right branch of the appended terminal path
+statement:
+  The endpoint on the right of the appended segment uses the original
+  terminal branch.
+proof:
+  The newly appended path remains inside that branch.
+-/
 @[simp]
 theorem terminalExtensionBranchAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5409,6 +6194,16 @@ theorem terminalExtensionBranchAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalExtensionBranchAt_last
 
+/--
+%%handwave
+name:
+  Right transition product of the appended terminal path
+statement:
+  The endpoint on the right of the appended segment has the original terminal
+  accumulated transition.
+proof:
+  No branch handoff occurs along the appended path.
+-/
 @[simp]
 theorem terminalExtensionTransitionProductAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -5418,6 +6213,17 @@ theorem terminalExtensionTransitionProductAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalExtensionTransitionProductAt_last
 
+/--
+%%handwave
+name:
+  Monotonicity of terminal-extension parameters
+statement:
+  Consecutive parameters in the subdivision obtained by appending a path in
+  the terminal branch are nondecreasing.
+proof:
+  Old segments inherit monotonicity after first-half compression.  The last
+  compressed parameter is \(1/2\), which is at most the new endpoint \(1\).
+-/
 theorem terminalExtensionParameterAt_mono
     (C : S.PathContinuationChain x₀ i₀ p) :
     ∀ k : Fin (C.length + 1),
@@ -5640,8 +6446,12 @@ noncomputable def terminalExtensionAlongChain
 name:
   Exact terminal-branch append preserves the terminal branch
 statement:
-  Appending a path inside the terminal branch leaves the terminal branch
-  unchanged.
+  If a path \(\rho\) begins at the endpoint of a continuation chain \(C\) and
+  stays in the domain of its terminal branch, then the chain obtained by
+  appending \(\rho\) has the same terminal branch as \(C\).
+proof:
+  In this extension the appended segment is assigned the existing terminal
+  branch, so evaluation of the final branch index gives that branch directly.
 -/
 @[simp]
 theorem terminalExtensionAlongChain_terminalBranch
@@ -5657,8 +6467,12 @@ theorem terminalExtensionAlongChain_terminalBranch
 name:
   Exact terminal-branch append preserves the terminal transition
 statement:
-  Appending a path inside the terminal branch leaves the accumulated terminal
-  transition unchanged.
+  If a path \(\rho\) begins at the endpoint of a continuation chain \(C\) and
+  stays in the domain of its terminal branch, then appending \(\rho\) leaves
+  the accumulated terminal transition unchanged.
+proof:
+  The appended segment uses the identity handoff, so the final transition
+  product reduces to the original terminal transition.
 -/
 @[simp]
 theorem terminalExtensionAlongChain_terminalTransition
@@ -5778,6 +6592,17 @@ noncomputable def appendSuffixTransitionProductAt
       C.terminalTransition *
         D.transitionProductAt ⟨(i : ℕ) - (C.length + 1), by omega⟩
 
+/--
+%%handwave
+name:
+  Prefix parameters in an appended suffix chain
+statement:
+  At a prefix vertex, the concatenated subdivision parameter is the original
+  prefix parameter compressed into the first half of the unit interval.
+proof:
+  Prefix indices satisfy the left branch of the appended-subdivision
+  definition.
+-/
 @[simp]
 theorem appendSuffixParameterAt_left
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5789,6 +6614,16 @@ theorem appendSuffixParameterAt_left
       unitInterval.firstHalf (C.parameterAt i) := by
   simp [appendSuffixParameterAt, i.isLt]
 
+/--
+%%handwave
+name:
+  Prefix branches in an appended suffix chain
+statement:
+  At every prefix vertex, appending a suffix retains the branch chosen by the
+  prefix chain.
+proof:
+  Evaluate the branch assignment in its prefix-index case.
+-/
 @[simp]
 theorem appendSuffixBranchAt_left
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5800,6 +6635,16 @@ theorem appendSuffixBranchAt_left
       C.branchAt i := by
   simp [appendSuffixBranchAt, i.isLt]
 
+/--
+%%handwave
+name:
+  Prefix transition products in an appended suffix chain
+statement:
+  At every prefix vertex, the concatenated chain has the prefix chain's
+  accumulated transition product.
+proof:
+  This is the prefix-index clause of the product assignment.
+-/
 @[simp]
 theorem appendSuffixTransitionProductAt_left
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5811,6 +6656,17 @@ theorem appendSuffixTransitionProductAt_left
       C.transitionProductAt i := by
   simp [appendSuffixTransitionProductAt, i.isLt]
 
+/--
+%%handwave
+name:
+  Suffix parameters in an appended suffix chain
+statement:
+  At a suffix vertex, the concatenated subdivision parameter is the suffix
+  parameter compressed into the second half of the unit interval.
+proof:
+  Subtracting the prefix vertex count recovers the suffix index, so the right
+  clause of the definition applies.
+-/
 @[simp]
 theorem appendSuffixParameterAt_right
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5827,6 +6683,16 @@ theorem appendSuffixParameterAt_right
     omega
   simp [appendSuffixParameterAt, hnot, hsub]
 
+/--
+%%handwave
+name:
+  Suffix branches in an appended suffix chain
+statement:
+  At every suffix vertex of the concatenated chain, the assigned branch is
+  the corresponding suffix-chain branch.
+proof:
+  The shifted index lies in the suffix clause of the assignment.
+-/
 @[simp]
 theorem appendSuffixBranchAt_right
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5843,6 +6709,17 @@ theorem appendSuffixBranchAt_right
     omega
   simp [appendSuffixBranchAt, hnot, hsub]
 
+/--
+%%handwave
+name:
+  Suffix transition products in an appended suffix chain
+statement:
+  If the prefix ends with accumulated transition \(g\), then at a suffix
+  vertex with suffix product \(h\), the concatenated product is \(gh\).
+proof:
+  This is the suffix clause of the concatenated product assignment after
+  recovering the shifted suffix index.
+-/
 @[simp]
 theorem appendSuffixTransitionProductAt_right
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5859,6 +6736,16 @@ theorem appendSuffixTransitionProductAt_right
     omega
   simp [appendSuffixTransitionProductAt, hnot, hsub]
 
+/--
+%%handwave
+name:
+  Initial parameter of an appended suffix chain
+statement:
+  The concatenated subdivision begins at parameter \(0\).
+proof:
+  The initial prefix parameter is zero, and first-half reparametrization fixes
+  zero.
+-/
 @[simp]
 theorem appendSuffixParameterAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5868,6 +6755,15 @@ theorem appendSuffixParameterAt_zero
   simpa [C.parameterAt_zero] using
     C.appendSuffixParameterAt_left D (0 : Fin (C.length + 1))
 
+/--
+%%handwave
+name:
+  Initial branch of an appended suffix chain
+statement:
+  The concatenated chain begins with the initial branch of the prefix chain.
+proof:
+  The zero vertex belongs to the prefix part.
+-/
 @[simp]
 theorem appendSuffixBranchAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5876,6 +6772,16 @@ theorem appendSuffixBranchAt_zero
     C.appendSuffixBranchAt D 0 = C.branchAt 0 := by
   simpa using C.appendSuffixBranchAt_left D (0 : Fin (C.length + 1))
 
+/--
+%%handwave
+name:
+  Initial transition product of an appended suffix chain
+statement:
+  The concatenated chain begins with the prefix chain's initial accumulated
+  transition product.
+proof:
+  The initial vertex is a prefix vertex.
+-/
 @[simp]
 theorem appendSuffixTransitionProductAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5885,6 +6791,16 @@ theorem appendSuffixTransitionProductAt_zero
   simpa using
     C.appendSuffixTransitionProductAt_left D (0 : Fin (C.length + 1))
 
+/--
+%%handwave
+name:
+  Final parameter of an appended suffix chain
+statement:
+  The concatenated subdivision ends at parameter \(1\).
+proof:
+  The last suffix parameter is one, and second-half reparametrization sends it
+  to one.
+-/
 @[simp]
 theorem appendSuffixParameterAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5902,6 +6818,16 @@ theorem appendSuffixParameterAt_last
   simpa [D.parameterAt_last] using
     C.appendSuffixParameterAt_right D (Fin.last D.length)
 
+/--
+%%handwave
+name:
+  Final branch of an appended suffix chain
+statement:
+  The terminal branch of the concatenated subdivision is the terminal branch
+  of the suffix chain.
+proof:
+  The last combined vertex corresponds to the last suffix vertex.
+-/
 @[simp]
 theorem appendSuffixBranchAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5920,6 +6846,17 @@ theorem appendSuffixBranchAt_last
   simpa [terminalBranch] using
     C.appendSuffixBranchAt_right D (Fin.last D.length)
 
+/--
+%%handwave
+name:
+  Final transition product of an appended suffix chain
+statement:
+  The terminal accumulated transition of the concatenation is the product of
+  the prefix and suffix terminal transitions.
+proof:
+  At the final suffix vertex, the general suffix-product formula gives the
+  product of the two terminal values.
+-/
 @[simp]
 theorem appendSuffixTransitionProductAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5939,6 +6876,17 @@ theorem appendSuffixTransitionProductAt_last
   simpa [terminalTransition] using
     C.appendSuffixTransitionProductAt_right D (Fin.last D.length)
 
+/--
+%%handwave
+name:
+  Monotonicity of appended suffix parameters
+statement:
+  Consecutive parameters in the concatenated subdivision are nondecreasing.
+proof:
+  On prefix and suffix segments this follows from the corresponding chain's
+  monotonicity after affine rescaling.  Across the duplicated midpoint, the
+  left value is at most \(1/2\) and the right value is exactly \(1/2\).
+-/
 theorem appendSuffixParameterAt_mono
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -6007,7 +6955,18 @@ theorem appendSuffixParameterAt_mono
         (1 + (D.parameterAt j.succ : ℝ)) / 2
       nlinarith [D.parameterAt_mono j]
 
-/-- Every vertex of an exact suffix append lies in its assigned branch domain. -/
+/--
+%%handwave
+name:
+  Vertex-domain condition for an appended suffix chain
+statement:
+  Every subdivision vertex of a concatenated prefix and suffix path belongs
+  to the domain of its assigned branch.
+proof:
+  Prefix vertices reduce through first-half reparametrization to the prefix
+  chain's vertex condition; suffix vertices reduce through second-half
+  reparametrization to the suffix chain's condition.
+-/
 theorem appendSuffix_sample_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -6042,7 +7001,19 @@ theorem appendSuffix_sample_mem_domain
     rw [path_trans_secondHalf_apply]
     exact D.sample_mem_domain j
 
-/-- Every segment of an exact suffix append stays in its left branch domain. -/
+/--
+%%handwave
+name:
+  Segment-domain condition for an appended suffix chain
+statement:
+  Each segment of the concatenated subdivision remains in the branch domain
+  assigned at its left endpoint.
+proof:
+  Segments strictly inside either half reduce by affine reparametrization to
+  the corresponding prefix or suffix segment.  The bridge segment is
+  degenerate at the common endpoint, which lies in the shared terminal branch
+  domain.
+-/
 theorem appendSuffix_path_segment_mem_domain
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -6395,6 +7366,16 @@ noncomputable def appendSuffixChain
     simpa [appendSuffixBranchAt_last, suffix.target] using
       D.terminal_endpoint_mem_domain
 
+/--
+%%handwave
+name:
+  Terminal branch of an appended suffix chain
+statement:
+  Appending a continuation chain along a suffix path produces a chain whose
+  terminal branch is the suffix chain's terminal branch.
+proof:
+  The last combined vertex is the last suffix vertex.
+-/
 @[simp]
 theorem appendSuffixChain_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6403,6 +7384,16 @@ theorem appendSuffixChain_terminalBranch
     (C.appendSuffixChain D).terminalBranch = D.terminalBranch := by
   simp [appendSuffixChain, terminalBranch]
 
+/--
+%%handwave
+name:
+  Terminal transition of an appended suffix chain
+statement:
+  The terminal transition of the concatenated chain is the product of the
+  prefix terminal transition and the suffix terminal transition.
+proof:
+  Apply the final-vertex formula for concatenated transition products.
+-/
 @[simp]
 theorem appendSuffixChain_terminalTransition
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6485,6 +7476,16 @@ noncomputable def terminalHandoffTransitionProductAt
     else
       C.terminalTransition * T.transition⁻¹
 
+/--
+%%handwave
+name:
+  Old parameters inside a terminal handoff subdivision
+statement:
+  At every old vertex, viewed among all but the newly appended endpoint, the
+  terminal-handoff subdivision has the original parameter value.
+proof:
+  Such an index satisfies the old-index branch of the defining case split.
+-/
 @[simp]
 theorem terminalHandoffParameterAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6496,6 +7497,16 @@ theorem terminalHandoffParameterAt_castSucc
     else 1) = C.parameterAt i
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Old branches inside a terminal handoff subdivision
+statement:
+  At every old vertex, the terminal-handoff subdivision retains the original
+  branch choice.
+proof:
+  The old vertex lies in the first case of the branch assignment.
+-/
 @[simp]
 theorem terminalHandoffBranchAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι)
@@ -6507,6 +7518,16 @@ theorem terminalHandoffBranchAt_castSucc
     else j) = C.branchAt i
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Old transition products inside a terminal handoff subdivision
+statement:
+  At every old vertex, the terminal-handoff construction retains the original
+  accumulated transition product.
+proof:
+  Evaluate the defining case split at an old index.
+-/
 @[simp]
 theorem terminalHandoffTransitionProductAt_castSucc
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6520,18 +7541,48 @@ theorem terminalHandoffTransitionProductAt_castSucc
     else C.terminalTransition * T.transition⁻¹) = C.transitionProductAt i
   rw [dif_pos i.isLt]
 
+/--
+%%handwave
+name:
+  Final parameter of a terminal handoff subdivision
+statement:
+  The newly appended final vertex of a terminal handoff has parameter \(1\).
+proof:
+  The last index is outside the old vertex range, so the new endpoint clause
+  applies.
+-/
 @[simp]
 theorem terminalHandoffParameterAt_last
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalHandoffParameterAt (Fin.last (C.length + 1)) = 1 := by
   simp [terminalHandoffParameterAt]
 
+/--
+%%handwave
+name:
+  Final branch of a terminal handoff subdivision
+statement:
+  The newly appended final vertex is assigned the requested handoff branch
+  \(j\).
+proof:
+  This is the new-endpoint clause of the branch assignment.
+-/
 @[simp]
 theorem terminalHandoffBranchAt_last
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι) :
     C.terminalHandoffBranchAt j (Fin.last (C.length + 1)) = j := by
   simp [terminalHandoffBranchAt]
 
+/--
+%%handwave
+name:
+  Final transition product of a terminal handoff subdivision
+statement:
+  If the old terminal product is \(g\) and the endpoint transition is \(h\),
+  the new final accumulated product is \(gh^{-1}\).
+proof:
+  This is the new-endpoint clause of the accumulated-product assignment.
+-/
 @[simp]
 theorem terminalHandoffTransitionProductAt_last
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6540,18 +7591,47 @@ theorem terminalHandoffTransitionProductAt_last
       C.terminalTransition * T.transition⁻¹ := by
   simp [terminalHandoffTransitionProductAt]
 
+/--
+%%handwave
+name:
+  Initial parameter of a terminal handoff subdivision
+statement:
+  The terminal-handoff subdivision begins at parameter \(0\).
+proof:
+  Its initial vertex is an old vertex, whose original parameter is zero.
+-/
 @[simp]
 theorem terminalHandoffParameterAt_zero
     (C : S.PathContinuationChain x₀ i₀ p) :
     C.terminalHandoffParameterAt 0 = 0 := by
   simp [terminalHandoffParameterAt, C.parameterAt_zero]
 
+/--
+%%handwave
+name:
+  Initial branch of a terminal handoff subdivision
+statement:
+  The terminal-handoff subdivision has the same branch as the original chain
+  at its initial vertex.
+proof:
+  The initial index belongs to the retained old vertex range.
+-/
 @[simp]
 theorem terminalHandoffBranchAt_zero
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι) :
     C.terminalHandoffBranchAt j 0 = C.branchAt 0 := by
   simp [terminalHandoffBranchAt]
 
+/--
+%%handwave
+name:
+  Initial transition product of a terminal handoff subdivision
+statement:
+  The terminal-handoff subdivision retains the original accumulated
+  transition product at parameter zero.
+proof:
+  The zero index is handled by the old-vertex clause.
+-/
 @[simp]
 theorem terminalHandoffTransitionProductAt_zero
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6559,6 +7639,16 @@ theorem terminalHandoffTransitionProductAt_zero
     C.terminalHandoffTransitionProductAt T 0 = C.transitionProductAt 0 := by
   simp [terminalHandoffTransitionProductAt]
 
+/--
+%%handwave
+name:
+  Left parameter at the duplicated terminal endpoint
+statement:
+  The last old vertex, regarded as the left endpoint of the newly appended
+  handoff segment, has parameter \(1\).
+proof:
+  It retains the original chain's terminal parameter.
+-/
 @[simp]
 theorem terminalHandoffParameterAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -6566,6 +7656,16 @@ theorem terminalHandoffParameterAt_final_left
         ((Fin.last C.length : Fin (C.length + 1)).castSucc) = 1 := by
   simp [C.parameterAt_last]
 
+/--
+%%handwave
+name:
+  Left branch at the terminal handoff
+statement:
+  The last old vertex on the left of the appended handoff segment carries the
+  original terminal branch.
+proof:
+  Old branch assignments are retained, including the terminal one.
+-/
 @[simp]
 theorem terminalHandoffBranchAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι) :
@@ -6574,6 +7674,16 @@ theorem terminalHandoffBranchAt_final_left
       C.terminalBranch := by
   simp [terminalBranch]
 
+/--
+%%handwave
+name:
+  Left transition product at the terminal handoff
+statement:
+  At the last old vertex, the handoff construction has the original terminal
+  transition product.
+proof:
+  The construction retains accumulated products on all old vertices.
+-/
 @[simp]
 theorem terminalHandoffTransitionProductAt_final_left
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6583,6 +7693,17 @@ theorem terminalHandoffTransitionProductAt_final_left
       C.terminalTransition := by
   simp [terminalTransition]
 
+/--
+%%handwave
+name:
+  Right parameter at the terminal handoff
+statement:
+  The newly appended vertex on the right of the handoff segment also has
+  parameter \(1\).
+proof:
+  This successor index is the new last index, whose parameter is defined to
+  be one.
+-/
 @[simp]
 theorem terminalHandoffParameterAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -6591,6 +7712,16 @@ theorem terminalHandoffParameterAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalHandoffParameterAt_last
 
+/--
+%%handwave
+name:
+  Right branch at the terminal handoff
+statement:
+  The vertex on the right of the appended endpoint segment carries the new
+  branch \(j\).
+proof:
+  It is the newly appended last vertex.
+-/
 @[simp]
 theorem terminalHandoffBranchAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι) :
@@ -6599,6 +7730,17 @@ theorem terminalHandoffBranchAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalHandoffBranchAt_last j
 
+/--
+%%handwave
+name:
+  Right transition product at the terminal handoff
+statement:
+  The right endpoint of the handoff segment has accumulated transition
+  \(gh^{-1}\), where \(g\) is the old terminal product and \(h\) is the local
+  branch transition.
+proof:
+  The right endpoint is the newly appended last vertex.
+-/
 @[simp]
 theorem terminalHandoffTransitionProductAt_final_right
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6609,6 +7751,17 @@ theorem terminalHandoffTransitionProductAt_final_right
   rw [fin_last_succ_eq_last]
   exact C.terminalHandoffTransitionProductAt_last T
 
+/--
+%%handwave
+name:
+  Monotonicity of terminal handoff parameters
+statement:
+  Consecutive parameters in the terminal-handoff subdivision are
+  nondecreasing.
+proof:
+  On old segments this is the original chain's monotonicity.  The final
+  segment has both endpoints at parameter \(1\).
+-/
 theorem terminalHandoffParameterAt_mono
     (C : S.PathContinuationChain x₀ i₀ p) :
     ∀ k : Fin (C.length + 1),
@@ -6794,6 +7947,17 @@ noncomputable def terminalHandoffAlongChain
     simpa [terminalHandoffBranchAt, p.target] using
       (T.subset_overlap T.mem_neighborhood).2
 
+/--
+%%handwave
+name:
+  Terminal branch after a handoff
+statement:
+  If a continuation chain ending in branch \(i\) is handed off at its endpoint
+  to a locally related branch \(j\), then the resulting chain terminates in
+  branch \(j\).
+proof:
+  The newly appended terminal vertex is assigned branch \(j\) by construction.
+-/
 @[simp]
 theorem terminalHandoffAlongChain_terminalBranch
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6801,6 +7965,18 @@ theorem terminalHandoffAlongChain_terminalBranch
     (C.terminalHandoffAlongChain T).terminalBranch = j := by
   simp [terminalHandoffAlongChain, terminalBranch]
 
+/--
+%%handwave
+name:
+  Terminal transition after a handoff
+statement:
+  If the original terminal transition is \(g\) and the local handoff from
+  branch \(i\) to branch \(j\) has transition \(h\), then the handed-off
+  chain has terminal transition \(gh^{-1}\).
+proof:
+  The appended endpoint vertex is defined with transition product
+  \(gh^{-1}\).
+-/
 @[simp]
 theorem terminalHandoffAlongChain_terminalTransition
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -7200,6 +8376,16 @@ def terminalGerm
     S.PathContinuationGerm x₀ i₀ A.path :=
   A.chain.toTerminalGerm
 
+/--
+%%handwave
+name:
+  Terminal germ of a chain state
+statement:
+  The path-continuation state built from a continuation chain has exactly the
+  terminal germ of that chain.
+proof:
+  This is immediate from the construction of the state.
+-/
 @[simp]
 theorem ofChain_terminalGerm {p : Path x₀ x}
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -7520,11 +8706,8 @@ statement:
 proof:
   Refine the two subdivisions to a common subdivision.  On each common segment,
   both chains represent continuations through branches containing the same path
-  image.  The local transition laws show that [the initialized accumulated
-  branch expression agrees with the initial
-  branch](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initialTransitionProduct_localMap_eq)
-  and that [each handoff preserves the accumulated branch
-  expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.transitionProductAt_succ_localMap_eq).
+  image.  The local transition laws show that [the initialized accumulated branch expression agrees with the initial branch](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.initialTransitionProduct_localMap_eq)
+  and that [each handoff preserves the accumulated branch expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.transitionProductAt_succ_localMap_eq).
   Induction over the common subdivision identifies the terminal germs.
 -/
 theorem exists_pathContinuationChainGermWalk_same_path
@@ -8111,11 +9294,8 @@ statement:
   there are continuation chains over the two adjacent cut paths whose terminal
   germs locally agree.
 proof:
-  First build [continuation chains over the explicitly decomposed column
-  paths whose terminal germs locally
-  agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_decomposed_terminalGerm_agreement).
-  Then use [the cut-path reparameterization
-  transfer](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_cutPath_terminalGerm_agreement_of_decomposed)
+  First build [continuation chains over the explicitly decomposed column paths whose terminal germs locally agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_decomposed_terminalGerm_agreement).
+  Then use [the cut-path reparameterization transfer](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_cutPath_terminalGerm_agreement_of_decomposed)
   to pass from the decomposed paths to the public cut paths.
 -/
 theorem exists_homotopyStripColumn_canonical_terminalGerm_agreement
@@ -8162,8 +9342,7 @@ statement:
   Local transition data identify the terminal germs obtained by crossing a
   small homotopy rectangle along its two boundary routes.
 proof:
-  First build [canonical continuations over the two adjacent cut paths whose
-  terminal germs agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_canonical_terminalGerm_agreement).
+  First build [canonical continuations over the two adjacent cut paths whose terminal germs agree](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_homotopyStripColumn_canonical_terminalGerm_agreement).
   Then compare the chosen continuations with these canonical ones by
   [same-path comparison](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_pathContinuationChainGermWalk_same_path),
   and concatenate the three terminal-germ walks.
@@ -8235,8 +9414,7 @@ statement:
   along the concatenated path has a terminal germ locally agreeing with the
   original terminal branch expression at the new endpoint.
 proof:
-  Use [an appended continuation chain with unchanged terminal branch
-  expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.terminalExtensionAlongChain).
+  Use [an appended continuation chain with unchanged terminal branch expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.PathContinuationChain.terminalExtensionAlongChain).
   The endpoint neighborhood is the terminal branch domain.
 -/
 theorem exists_terminalGerm_extensionAlong_pathIn_terminalBranch
@@ -8273,8 +9451,7 @@ statement:
   For endpoint-fixed homotopic paths, any two finite continuation chains can
   be joined by a finite walk of elementary terminal-germ moves.
 proof:
-  Use [the rectangular branch-domain subdivision of the
-  homotopy](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathHomotopic_exists_monotone_branch_grid).
+  Use [the rectangular branch-domain subdivision of the homotopy](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathHomotopic_exists_monotone_branch_grid).
   Each small rectangle gives an elementary move by replacing one side of the
   rectangle by the other while keeping the common prefix and suffix fixed.
   The finite grid walk is obtained by sweeping through the rectangles.
@@ -8426,6 +9603,16 @@ def toSingleValuedContinuation
     intro y hy
     exact F.coherent x y hy
 
+/--
+%%handwave
+name:
+  Global function of the continuation induced by a coherent family
+statement:
+  The global function underlying the single-valued continuation associated to
+  a coherent local family is the pointwise function determined by that family.
+proof:
+  This is the defining global field of the constructed continuation.
+-/
 @[simp]
 theorem toSingleValuedContinuation_global
     (F : S.CoherentLocalContinuationFamily) :
@@ -8486,12 +9673,8 @@ statement:
 proof:
   At each point use the terminal branch domain of the chosen chain as the local
   neighborhood.  For a nearby point, connect it to the center by a short path
-  inside a path-connected refinement of this domain.  Then [extend the center
-  chain along that short path without changing its terminal
-  expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_terminalGerm_extensionAlong_pathIn_terminalBranch),
-  and compare the extension with the separately chosen chain by [endpoint-fixed
-  homotopy invariance of terminal
-  germs](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathContinuationChain_terminalGerms_agree_of_homotopic).
+  inside a path-connected refinement of this domain.  Then [extend the center chain along that short path without changing its terminal expression](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_terminalGerm_extensionAlong_pathIn_terminalBranch),
+  and compare the extension with the separately chosen chain by [endpoint-fixed homotopy invariance of terminal germs](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathContinuationChain_terminalGerms_agree_of_homotopic).
 -/
 theorem exists_coherentLocalContinuationFamily_of_chosen_path_chains
     [RiemannSurface X] [SimplyConnectedSpace X] [ComplexOneManifold Y]
@@ -8557,13 +9740,10 @@ statement:
   continuation family.
 proof:
   Choose a basepoint and an initial branch.  For each point, choose a path from
-  the basepoint and [a finite continuation
-  chain](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_pathContinuationChain_of_localTransitions),
+  the basepoint and [a finite continuation chain](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_pathContinuationChain_of_localTransitions),
   and use its terminal germ as the local expression.  To compare nearby points,
   shrink the terminal neighborhood to a path-connected surface neighborhood,
-  append the short local path, and use that [homotopic continuation chains have
-  locally agreeing terminal
-  germs](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathContinuationChain_terminalGerms_agree_of_homotopic).
+  append the short local path, and use that [homotopic continuation chains have locally agreeing terminal germs](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.pathContinuationChain_terminalGerms_agree_of_homotopic).
   Since the surface is simply connected, endpoint-fixed homotopy is independent
   of the chosen path.
 -/
@@ -8594,11 +9774,8 @@ statement:
   On a simply connected Riemann surface, a holomorphic local branch
   system with coherent local transitions has a single-valued continuation.
 proof:
-  First produce [a coherent local continuation
-  family](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_coherentLocalContinuationFamily_of_simplyConnected_localTransitions)
-  from path continuation and monodromy.  Then [coherent local expressions glue
-  to a single-valued
-  continuation](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.CoherentLocalContinuationFamily.toSingleValuedContinuation).
+  First produce [a coherent local continuation family](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.exists_coherentLocalContinuationFamily_of_simplyConnected_localTransitions)
+  from path continuation and monodromy.  Then [coherent local expressions glue to a single-valued continuation](lean:JJMath.AnalyticContinuation.HolomorphicLocalBranchSystem.CoherentLocalContinuationFamily.toSingleValuedContinuation).
 -/
 theorem exists_singleValuedContinuation_of_simplyConnected_localTransitions
     [RiemannSurface X] [SimplyConnectedSpace X] [ComplexOneManifold Y]

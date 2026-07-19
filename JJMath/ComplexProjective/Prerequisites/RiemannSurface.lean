@@ -36,7 +36,18 @@ namespace LocallySimplyConnectedSpace
 
 variable {X : Type*} [TopologicalSpace X] [LocallySimplyConnectedSpace X]
 
-/-- A convenience wrapper for the local simply connected refinement property. -/
+/--
+%%handwave
+name:
+  Simply connected refinement of an open neighborhood
+statement:
+  In a locally simply connected space, if \(x\in N\) and \(N\) is open, then
+  there is an open set \(U\) with \(x\in U\subseteq N\) such that \(U\) is
+  path connected and simply connected.
+proof:
+  This is the neighborhood-refinement property supplied by local simple
+  connectedness, specialized to \(x\) and \(N\).
+-/
 theorem exists_subset (x : X) {N : Set X} (hxN : x ∈ N) (hN : IsOpen N) :
     ∃ U : Set X, x ∈ U ∧ IsOpen U ∧ U ⊆ N ∧
       Nonempty (PathConnectedSpace U) ∧ Nonempty (SimplyConnectedSpace U) :=

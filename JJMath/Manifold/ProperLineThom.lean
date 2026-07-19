@@ -30,6 +30,16 @@ noncomputable def properLineTransitionFunction :
   property := by
     exact (contDiff_annularStep.comp contDiff_snd).contMDiff
 
+/--
+%%handwave
+name:
+  Formula for the transverse transition function
+statement:
+  At \((s,t)\in\mathbb R^2\), the transverse transition function is the
+  one-variable step function \(\chi(t)\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem properLineTransitionFunction_apply (p : ℝ × ℝ) :
     properLineTransitionFunction p = annularStep p.2 :=
@@ -42,7 +52,16 @@ noncomputable def properLineTransitionOneForm :
     (smoothRealFunctionToZeroForm (I0 := ProperLineTubeModel)
       properLineTransitionFunction)
 
-/-- The transverse Thom form is closed. -/
+/--
+%%handwave
+name:
+  Closedness of the standard transverse Thom form
+statement:
+  The one-form \(d(\chi\circ\operatorname{pr}_2)\) on
+  \(\mathbb R\times\mathbb R\) is closed.
+proof:
+  It is exact, and \(d^2=0\).
+-/
 theorem properLineTransitionOneForm_closed :
     deRhamDifferential
         (I := ProperLineTubeModel) (M := ℝ × ℝ) (A := ℝ) 1
@@ -52,7 +71,18 @@ theorem properLineTransitionOneForm_closed :
     (smoothRealFunctionToZeroForm (I0 := ProperLineTubeModel)
       properLineTransitionFunction)
 
-/-- The transverse Thom form vanishes off the closed middle strip. -/
+/--
+%%handwave
+name:
+  Support of the standard transverse Thom form
+statement:
+  If \(p=(s,t)\in\mathbb R^2\) and \(t\notin[-1,1]\), then
+  \(d(\chi\circ\operatorname{pr}_2)_p=0\).
+proof:
+  On each of the regions \(t<-1\) and \(t>1\), the step function is locally
+  constant, respectively equal to \(0\) and \(1\), so its differential
+  vanishes.
+-/
 theorem properLineTransitionOneForm_toFun_eq_zero_of_second_not_mem_Icc
     (p : ℝ × ℝ) (hp : p.2 ∉ Set.Icc (-1 : ℝ) 1) :
     properLineTransitionOneForm.toFun p = 0 := by
@@ -105,6 +135,16 @@ theorem properLineTransitionOneForm_toFun_eq_zero_of_second_not_mem_Icc
 def properLineTransitionCore : Set (ℝ × ℝ) :=
   {p | p.2 ∈ Set.Icc (-1 : ℝ) 1}
 
+/--
+%%handwave
+name:
+  Closedness of the transition strip
+statement:
+  The strip \(\mathbb R\times[-1,1]\) is closed in \(\mathbb R^2\).
+proof:
+  It is the inverse image of the closed interval \([-1,1]\) under the
+  continuous second projection.
+-/
 theorem properLineTransitionCore_isClosed :
     IsClosed properLineTransitionCore := by
   exact isClosed_Icc.preimage continuous_snd
@@ -121,7 +161,17 @@ def properLineTransitionPositiveTail (R : ℝ) :
     Set properLineTransitionCore :=
   {q | R ≤ (q : ℝ × ℝ).1}
 
-/-- The bounded middle of the transition strip is compact. -/
+/--
+%%handwave
+name:
+  Compactness of a bounded transition rectangle
+statement:
+  For every \(R\in\mathbb R\), the subset
+  \(\{(s,t):s\in[-R,R],\ t\in[-1,1]\}\) of the transition strip is compact.
+proof:
+  Under the subtype inclusion this set is the product of two compact closed
+  intervals.
+-/
 theorem properLineTransitionMiddle_isCompact (R : ℝ) :
     IsCompact {q : properLineTransitionCore |
       (q : ℝ × ℝ).1 ∈ Set.Icc (-R) R} := by
@@ -140,9 +190,20 @@ theorem properLineTransitionMiddle_isCompact (R : ℝ) :
   rw [heq]
   exact isCompact_Icc.prod isCompact_Icc
 
-/-- A map on the full transition strip is proper if its restrictions to the
-two unbounded tails are proper.  The connector between the tails is confined
-to a compact rectangle and therefore does not affect properness. -/
+/--
+%%handwave
+name:
+  Properness from the two tails of a strip
+statement:
+  Let \(f:\mathbb R\times[-1,1]\to Y\) be continuous, where \(Y\) is Hausdorff
+  and compactly coherent.  If for some \(R\) the restrictions of \(f\) to
+  \(s\le -R\) and \(s\ge R\) are proper, then \(f\) is proper.
+proof:
+  For a compact \(K\subseteq Y\), decompose \(f^{-1}(K)\) into its two tail
+  pieces and its middle piece.  The tail pieces are compact by properness, and
+  the middle piece is closed in the compact rectangle
+  \([-R,R]\times[-1,1]\).
+-/
 theorem isProperMap_on_properLineTransitionCore_of_tails
     {Y : Type*} [TopologicalSpace Y] [T2Space Y]
     [CompactlyCoherentSpace Y]
@@ -244,6 +305,16 @@ def properLineTubeCore
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) : Set M :=
   (fun p : ℝ × ℝ => ((phi.symm p : U) : M)) '' properLineTransitionCore
 
+/--
+%%handwave
+name:
+  The transition core lies in the tube
+statement:
+  The image in \(M\) of the strip \(\mathbb R\times[-1,1]\) under the inverse
+  tube chart is contained in the tube \(U\).
+proof:
+  Every value of the inverse tube chart is, by definition, a point of \(U\).
+-/
 theorem properLineTubeCore_subset
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) :
@@ -251,7 +322,18 @@ theorem properLineTubeCore_subset
   rintro _ ⟨p, _hp, rfl⟩
   exact (phi.symm p).2
 
-/-- Properness of the embedded middle strip makes its ambient image closed. -/
+/--
+%%handwave
+name:
+  Closed transition core from proper embedding
+statement:
+  If the inverse tube chart restricted to
+  \(\mathbb R\times[-1,1]\) is proper as a map into the Hausdorff manifold
+  \(M\), then its image in \(M\) is closed.
+proof:
+  A proper map into a Hausdorff space is closed, and the transition core is
+  exactly its range.
+-/
 theorem properLineTubeCore_isClosed_of_proper
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -271,9 +353,18 @@ theorem properLineTubeCore_isClosed_of_proper
   rw [← hrange]
   exact hproper.isClosedMap.isClosed_range
 
-/-- Tailwise properness of a product tube is enough to make its transition
-core closed in the ambient manifold.  Thus arbitrary changes to the tube in
-a bounded longitudinal region do not affect extension by zero. -/
+/--
+%%handwave
+name:
+  Closed transition core from tailwise properness
+statement:
+  Suppose the inverse tube chart on
+  \(\mathbb R\times[-1,1]\) is proper on both tails \(s\le -R\) and
+  \(s\ge R\).  Then the image of the full strip is closed in \(M\).
+proof:
+  Tailwise properness implies properness on the full strip because the middle
+  rectangle is compact; the image is then closed.
+-/
 theorem properLineTubeCore_isClosed_of_tail_proper
     [CompactlyCoherentSpace M]
     (U : TopologicalSpace.Opens M)
@@ -301,6 +392,17 @@ def properLineTubeExteriorOpen
     TopologicalSpace.Opens M :=
   ⟨(properLineTubeCore I U phi)ᶜ, hcore.isOpen_compl⟩
 
+/--
+%%handwave
+name:
+  Cover by the tube and the exterior of its core
+statement:
+  If the transition core \(K\) of a tube \(U\) is closed, then
+  \(U\cup(M\setminus K)=M\).
+proof:
+  Since \(K\subseteq U\), every point either belongs to \(U\) or lies outside
+  \(K\).
+-/
 theorem properLineTube_open_cover
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -321,6 +423,17 @@ noncomputable def properLineTubeLocalOneForm
   smoothFormsPullbackDiffeomorph I ProperLineTubeModel phi 1
     properLineTransitionOneForm
 
+/--
+%%handwave
+name:
+  Closedness of the transported transverse form
+statement:
+  The pullback to a product-line tube of the standard transverse Thom
+  one-form is closed.
+proof:
+  Exterior differentiation commutes with pullback by the tube diffeomorphism,
+  and the standard transverse form is closed.
+-/
 theorem properLineTubeLocalOneForm_closed
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) :
@@ -331,8 +444,17 @@ theorem properLineTubeLocalOneForm_closed
     properLineTransitionOneForm_closed]
   exact LinearMap.map_zero _
 
-/-- On the overlap with the exterior of the closed middle strip, the
-transported form is zero. -/
+/--
+%%handwave
+name:
+  Vanishing of the tube form outside the transition core
+statement:
+  On \(U\cap(M\setminus K)\), where \(K\) is the closed transition core, the
+  transported transverse one-form restricts to zero.
+proof:
+  A point of this overlap maps under the tube chart outside
+  \(\mathbb R\times[-1,1]\), where the standard transverse form vanishes.
+-/
 theorem properLineTubeLocalOneForm_overlap_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -362,7 +484,18 @@ theorem properLineTubeLocalOneForm_overlap_eq_zero
   rw [hzero]
   rfl
 
-/-- The overlap condition for gluing the line-tube form to zero. -/
+/--
+%%handwave
+name:
+  Mayer--Vietoris compatibility for the tube form
+statement:
+  On the overlap of \(U\) with the exterior of its transition core, the
+  difference between the transported transverse form and the zero form is
+  zero.
+proof:
+  The transported form restricts to zero on the overlap, while the second
+  local form is identically zero.
+-/
 theorem properLineTubeLocalOneForm_mayerVietorisDifference_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -388,6 +521,18 @@ noncomputable def properLineTubeGlobalOneForm
     (properLineTubeLocalOneForm_mayerVietorisDifference_eq_zero
       I U phi hcore)
 
+/--
+%%handwave
+name:
+  Closedness of the global proper-line Thom form
+statement:
+  The one-form obtained by gluing the transported transverse form on \(U\)
+  to zero on the exterior of the transition core is closed on \(M\).
+proof:
+  Its restrictions to the two members of the open cover are respectively the
+  closed transported form and zero; equality of the restricted differentials
+  implies global closedness.
+-/
 theorem properLineTubeGlobalOneForm_closed
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -415,6 +560,17 @@ noncomputable def properLineTubeClosedOneForm
   ⟨properLineTubeGlobalOneForm I U phi hcore,
     properLineTubeGlobalOneForm_closed I U phi hcore⟩
 
+/--
+%%handwave
+name:
+  Restriction of the global Thom form to its tube
+statement:
+  The global proper-line Thom form restricts on \(U\) to the transported
+  standard transverse form.
+proof:
+  This is the left restriction identity for the two-open-set gluing
+  construction.
+-/
 theorem properLineTubeGlobalOneForm_restrict_tube
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -446,6 +602,16 @@ noncomputable def properLineTransverseSimplex
       contMDiff :=
         ⟨G, hG.contMDiffOn, fun _ => rfl⟩ }
 
+/--
+%%handwave
+name:
+  Upper endpoint of a transverse segment
+statement:
+  The face opposite vertex \(0\) of the affine transverse segment from
+  \((s,a)\) to \((s,b)\) is the point \((s,b)\).
+proof:
+  On this face the barycentric coordinates are \((0,1)\).
+-/
 @[simp]
 theorem properLineTransverseSimplex_face_zero_apply
     (s a b : ℝ) (q : StandardSimplex 0) :
@@ -462,6 +628,16 @@ theorem properLineTransverseSimplex_face_zero_apply
         exact simplexAmbientMap_succAbove_apply_succAbove 0 q 0]
   simp [hq]
 
+/--
+%%handwave
+name:
+  Lower endpoint of a transverse segment
+statement:
+  The face opposite vertex \(1\) of the affine transverse segment from
+  \((s,a)\) to \((s,b)\) is the point \((s,a)\).
+proof:
+  On this face the barycentric coordinates are \((1,0)\).
+-/
 @[simp]
 theorem properLineTransverseSimplex_face_one_apply
     (s a b : ℝ) (q : StandardSimplex 0) :
@@ -478,8 +654,18 @@ theorem properLineTransverseSimplex_face_one_apply
         exact simplexAmbientMap_succAbove_apply_succAbove 1 q 0]
   simp [hq]
 
-/-- The standard line-tube form has unit integral on a transverse segment
-whose endpoints lie beyond the transition strip. -/
+/--
+%%handwave
+name:
+  Unit period of the standard transverse Thom form
+statement:
+  If \(a\le-1\) and \(b\ge1\), then the integral of
+  \(d(\chi\circ\operatorname{pr}_2)\) along the oriented segment from
+  \((s,a)\) to \((s,b)\) equals \(1\).
+proof:
+  The fundamental theorem for exact one-forms gives
+  \(\chi(b)-\chi(a)=1-0=1\).
+-/
 theorem integrate_properLineTransitionOneForm_transverse_eq_one
     (s : ℝ) {a b : ℝ} (ha : a ≤ -1) (hb : 1 ≤ b) :
     integrateSmoothChain (I := ProperLineTubeModel)
@@ -512,6 +698,18 @@ noncomputable def properLineTubeTransitionFunction
     C^∞⟮I, U; ℝ⟯ :=
   properLineTransitionFunction.comp phi.toContMDiffMap
 
+/--
+%%handwave
+name:
+  Pullback of the transverse transition function
+statement:
+  Pulling the zero-form \(\chi\circ\operatorname{pr}_2\) back by the tube
+  chart gives the zero-form whose function is
+  \(\chi\circ\operatorname{pr}_2\circ\phi\).
+proof:
+  Evaluate both zero-forms at each point; pullback of a function is
+  composition.
+-/
 theorem smoothFormsPullbackDiffeomorph_properLineTransitionZeroForm
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) :
@@ -527,6 +725,17 @@ theorem smoothFormsPullbackDiffeomorph_properLineTransitionZeroForm
     smoothDifferentialFormPullbackDiffeomorph, smoothRealFunctionToZeroForm,
     properLineTubeTransitionFunction]
 
+/--
+%%handwave
+name:
+  The local tube form as an exact form
+statement:
+  On the tube \(U\), the transported transverse one-form equals
+  \(d(\chi\circ\operatorname{pr}_2\circ\phi)\).
+proof:
+  Exterior differentiation commutes with pullback, and pullback of the
+  transverse zero-form is composition with the tube chart.
+-/
 theorem properLineTubeLocalOneForm_eq_d_transitionFunction
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) :
@@ -554,6 +763,16 @@ noncomputable def properLineTubeTransverseSimplex
           phi.symm.contMDiff.comp_contMDiffOn sigma.extension_contMDiffOn,
           fun q => congrArg phi.symm (sigma.extension_eq q)⟩ }
 
+/--
+%%handwave
+name:
+  Formula for a transverse simplex in a tube
+statement:
+  The transverse simplex in \(U\) is obtained by applying the inverse tube
+  chart to the affine segment from \((s,a)\) to \((s,b)\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem properLineTubeTransverseSimplex_apply
     (U : TopologicalSpace.Opens M)
@@ -563,6 +782,17 @@ theorem properLineTubeTransverseSimplex_apply
       phi.symm (properLineTransverseSimplex s a b q) :=
   rfl
 
+/--
+%%handwave
+name:
+  Upper endpoint of a transported transverse segment
+statement:
+  The face opposite vertex \(0\) of the transported transverse segment is
+  \(\phi^{-1}(s,b)\).
+proof:
+  The corresponding face of the standard affine segment is \((s,b)\), and
+  the entire simplex is transported by \(\phi^{-1}\).
+-/
 @[simp]
 theorem properLineTubeTransverseSimplex_face_zero_apply
     (U : TopologicalSpace.Opens M)
@@ -575,6 +805,17 @@ theorem properLineTubeTransverseSimplex_face_zero_apply
   congr 1
   simp
 
+/--
+%%handwave
+name:
+  Lower endpoint of a transported transverse segment
+statement:
+  The face opposite vertex \(1\) of the transported transverse segment is
+  \(\phi^{-1}(s,a)\).
+proof:
+  The corresponding face of the standard affine segment is \((s,a)\), and
+  the entire simplex is transported by \(\phi^{-1}\).
+-/
 @[simp]
 theorem properLineTubeTransverseSimplex_face_one_apply
     (U : TopologicalSpace.Opens M)
@@ -587,7 +828,18 @@ theorem properLineTubeTransverseSimplex_face_one_apply
   congr 1
   simp
 
-/-- The transported line-tube form has unit integral across the tube. -/
+/--
+%%handwave
+name:
+  Unit transverse period of the local tube form
+statement:
+  If \(a\le-1\) and \(b\ge1\), the integral of the local tube form along the
+  transported segment from \(\phi^{-1}(s,a)\) to \(\phi^{-1}(s,b)\) equals
+  \(1\).
+proof:
+  The local form is the differential of the transported transition function,
+  so endpoint evaluation gives \(\chi(b)-\chi(a)=1\).
+-/
 theorem integrate_properLineTubeLocalOneForm_transverse_eq_one
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -601,7 +853,18 @@ theorem integrate_properLineTubeLocalOneForm_transverse_eq_one
     annularStep_eq_zero_of_le_neg_one ha,
     annularStep_eq_one_of_one_le hb]
 
-/-- The extended line-tube form still has unit transverse integral. -/
+/--
+%%handwave
+name:
+  Unit transverse period of the global tube form
+statement:
+  If \(a\le-1\) and \(b\ge1\), the global proper-line Thom form integrates to
+  \(1\) along the transverse segment included from \(U\) into \(M\).
+proof:
+  Integration after open inclusion equals integration of the restricted form,
+  whose restriction to \(U\) is the local tube form with unit transverse
+  period.
+-/
 theorem integrate_properLineTubeGlobalOneForm_transverse_eq_one
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -617,8 +880,16 @@ theorem integrate_properLineTubeGlobalOneForm_transverse_eq_one
   exact integrate_properLineTubeLocalOneForm_transverse_eq_one
     I U phi s ha hb
 
-/-- The extended line-tube form restricts to zero off its closed transition
-core. -/
+/--
+%%handwave
+name:
+  Vanishing of the global tube form on the exterior
+statement:
+  The global proper-line Thom form restricts to zero on the complement of
+  its closed transition core.
+proof:
+  The form was defined there as the zero member of the two-open-set gluing.
+-/
 theorem properLineTubeGlobalOneForm_restrict_exterior
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -629,8 +900,17 @@ theorem properLineTubeGlobalOneForm_restrict_exterior
   rw [properLineTubeGlobalOneForm,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_right]
 
-/-- Every smooth chain outside the closed transition core has zero integral
-against the extended line-tube form. -/
+/--
+%%handwave
+name:
+  Zero period on chains outside the transition core
+statement:
+  Every smooth \(1\)-chain supported in the exterior of the closed transition
+  core has integral \(0\) against the global proper-line Thom form.
+proof:
+  Move the integral across the open inclusion; the restricted global form is
+  zero on the exterior.
+-/
 theorem integrate_properLineTubeGlobalOneForm_exterior_chain_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -645,8 +925,18 @@ theorem integrate_properLineTubeGlobalOneForm_exterior_chain_eq_zero
   rw [properLineTubeGlobalOneForm_restrict_exterior]
   exact integrateSmoothChain_zero_form I c
 
-/-- A chain made from one positive transverse crossing and a return chain
-outside the closed transition strip has Thom period exactly one. -/
+/--
+%%handwave
+name:
+  Period of a crossing plus an exterior return chain
+statement:
+  A chain consisting of one positively oriented transverse crossing from
+  level \(a\le-1\) to level \(b\ge1\), together with any return chain outside
+  the transition core, has integral \(1\) against the global Thom form.
+proof:
+  The integral is additive.  The transverse crossing contributes \(1\), and
+  the exterior return chain contributes \(0\).
+-/
 theorem integrate_properLineTubeGlobalOneForm_crossing_add_exterior_eq_one
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -668,8 +958,18 @@ theorem integrate_properLineTubeGlobalOneForm_crossing_add_exterior_eq_one
       I U phi hcore returning]
   norm_num
 
-/-- Consequently, any ambient chain admitting such a crossing--return
-decomposition has Thom period one. -/
+/--
+%%handwave
+name:
+  Unit period from a crossing--return decomposition
+statement:
+  If an ambient \(1\)-chain is equal to one positive transverse crossing plus
+  a chain lying outside the transition core, then its integral against the
+  global proper-line Thom form is \(1\).
+proof:
+  Substitute the stated decomposition and use that a crossing has period
+  \(1\) while an exterior chain has period \(0\).
+-/
 theorem integrate_properLineTubeGlobalOneForm_eq_one_of_eq_crossing_add_exterior
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -690,8 +990,20 @@ theorem integrate_properLineTubeGlobalOneForm_eq_one_of_eq_crossing_add_exterior
   exact integrate_properLineTubeGlobalOneForm_crossing_add_exterior_eq_one
     I U phi hcore s ha hb returning
 
-/-- A transverse crossing closed by a return chain outside the transition
-core forces first de Rham cohomology to be nontrivial. -/
+/--
+%%handwave
+name:
+  Nontrivial first de Rham cohomology from a proper-line crossing
+statement:
+  Suppose a positive transverse crossing, together with a return chain outside
+  the transition core, is a cycle.  Then
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  The global Thom form is closed and has period \(1\) on this cycle: the
+  crossing contributes \(1\) and the exterior return contributes \(0\).
+  An exact form has zero period on cycles, so this closed form represents a
+  nonzero cohomology class.
+-/
 theorem not_subsingleton_deRhamH1_of_properLineTube_crossing_and_return_chain
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -718,8 +1030,19 @@ theorem not_subsingleton_deRhamH1_of_properLineTube_crossing_and_return_chain
   · exact integrate_properLineTubeGlobalOneForm_exterior_chain_eq_zero
       I U phi hcore returning
 
-/-- It suffices to produce an exterior return chain whose boundary is the
-negative of the transverse crossing boundary. -/
+/--
+%%handwave
+name:
+  Nontrivial cohomology from a return chain with prescribed boundary
+statement:
+  Suppose a return chain outside the transition core has boundary equal, after
+  inclusion in \(M\), to the negative boundary of a positive transverse
+  crossing.  Then \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  The crossing plus the included return chain is a cycle because their
+  boundaries cancel.  Its period against the global Thom form is \(1\), so
+  the preceding period obstruction gives a nonzero first de Rham class.
+-/
 theorem not_subsingleton_deRhamH1_of_properLineTube_return_chain_boundary
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)

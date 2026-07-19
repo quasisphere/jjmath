@@ -1718,8 +1718,18 @@ theorem deRhamDifferential_smoothRealFunctionToZeroForm_const
   simpa [deRhamDifferential, exteriorDerivative, exteriorDerivativePoint,
     smoothRealFunctionToZeroForm, smoothRealConstantFunction, e, y, hCE] using hconst_apply
 
-/-- Exterior differentiation at a point depends only on the germ of a smooth
-form at that point. -/
+/--
+%%handwave
+name:
+  Exterior differentiation depends only on the germ
+statement:
+  If smooth \(n\)-forms \(\omega\) and \(\eta\) agree on a neighborhood of
+  \(x\), then \(d\omega(x)=d\eta(x)\).
+proof:
+  Pull both forms into a chart at \(x\).  Their coordinate expressions agree
+  near the chart point, so their within-set exterior derivatives agree there;
+  composing with the chart tangent map preserves the equality.
+-/
 theorem deRhamDifferential_toFun_eq_of_eventuallyEq
     {I : ModelWithCorners ℝ E0 H0} [IsManifold I ∞ M0]
     {n : ℕ} (omega eta : SmoothForms (I := I) (M := M0) ℝ n) {x : M0}
@@ -1758,7 +1768,18 @@ theorem deRhamDifferential_toFun_eq_of_eventuallyEq
           (mfderiv I (modelWithCornersSelf ℝ E0) (extChartAt I x) x)
   rw [hcoordinate.extDerivWithin_eq_of_mem hy]
 
-/-- The exterior derivative of a locally constant real zero-form vanishes. -/
+/--
+%%handwave
+name:
+  A locally constant zero-form has zero exterior derivative
+statement:
+  If \(f:M\to\mathbb R\) is locally constant, then the smooth zero-form
+  associated to \(f\) satisfies \(df=0\).
+proof:
+  Near each point \(x\), the function equals the constant \(f(x)\).
+  Exterior differentiation depends only on this germ, and the differential of
+  a constant zero-form is zero.
+-/
 theorem deRhamDifferential_locallyConstant_zeroForm_eq_zero
     (f : M0 → ℝ) (hf : IsLocallyConstant f) :
     deRhamDifferential (I := I0) (M := M0) (A := ℝ) 0
@@ -2691,8 +2712,19 @@ theorem mfderiv_subtypeVal_comp_inclusion_eq
   exact h.symm
 
 omit [IsRCLikeNormedField 𝕜] in
-/-- Restricting an ambient form to a larger open set and then to a smaller
-one agrees with direct restriction to the smaller open set. -/
+/--
+%%handwave
+name:
+  Transitivity of restriction for smooth differential forms
+statement:
+  For open subsets \(W\subseteq V\subseteq M\), restricting a smooth form
+  first from \(M\) to \(V\) and then from \(V\) to \(W\) equals direct
+  restriction from \(M\) to \(W\).
+proof:
+  At each point of \(W\), the chain rule identifies the composite of the two
+  inclusion tangent maps with the tangent map of the direct inclusion.
+  Evaluating the ambient form on these maps gives the same value.
+-/
 theorem restrictSmoothFormsOfLE_restrictSmoothFormsToOpen_eq
     {W V : TopologicalSpace.Opens M} (hWV : W ≤ V) {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) A n) :

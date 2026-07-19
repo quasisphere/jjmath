@@ -274,6 +274,8 @@ name:
 statement:
   The canonical inclusion of the pre-Hilbert core into its completion
   preserves the norm.
+proof:
+  The canonical inclusion into a metric completion is an isometry, so it preserves the norm.
 -/
 theorem GreenSobolevH10DirichletCore.norm_toCompletion {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -290,6 +292,8 @@ name:
 statement:
   The squared norm of a core element is unchanged after passing to the pure
   Dirichlet completion.
+proof:
+  Square the norm-preservation identity.
 -/
 theorem GreenSobolevH10DirichletCore.normSq_toCompletion {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -305,6 +309,8 @@ name:
 statement:
   The completion of a pure Dirichlet pre-Hilbert core is a real Hilbert
   space.
+proof:
+  The completion of an inner-product space carries the unique extended inner product and is complete by construction.
 -/
 theorem greenSobolevH10DirichletCompletion_admits_hilbert_structure {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -323,6 +329,8 @@ name:
 statement:
   The image of the pre-Hilbert core is dense in the completed pure Dirichlet
   space.
+proof:
+  The canonical image of any uniform space is dense in its completion.
 -/
 theorem GreenSobolevH10DirichletCore.denseRange_toCompletion {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -341,6 +349,8 @@ name:
 statement:
   The canonical map from the pure Dirichlet core to its completion is a
   uniform inducing map.
+proof:
+  The canonical completion map is a uniform inducing by the universal property of completion.
 -/
 theorem GreenSobolevH10DirichletCore.isUniformInducing_toCompletion {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -378,6 +388,8 @@ name:
 statement:
   The continuous extension of a source functional agrees with the original
   pairing on core elements.
+proof:
+  The extended continuous functional agrees with the original source on the dense core by the defining extension property.
 -/
 theorem GreenSobolevH10DirichletCore.extendSource_toCompletion {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -403,6 +415,8 @@ name:
 statement:
   The extension of a continuous source functional to pure \(H^1_0\) is
   bounded by its operator norm times the \(H^1_0\) norm.
+proof:
+  First prove the bound on the dense core, then pass to arbitrary completion points by continuity and density.
 -/
 theorem GreenSobolevH10DirichletCore.extendSource_bound {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -439,6 +453,8 @@ name:
 statement:
   The intrinsic \(L^2\) cotangent fields for the background metric and area
   measure form a real Hilbert space.
+proof:
+  Apply the Hilbert-space construction for intrinsic square-integrable cotangent fields with the metric fiber inner product.
 -/
 theorem greenDifferentialL2Intrinsic_admits_hilbert_structure {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -690,6 +706,8 @@ name:
 statement:
   Every compactly supported smooth differential class belongs to the concrete
   Dirichlet core.
+proof:
+  The displayed smooth compactly supported differential is one of the generators used to define the core.
 -/
 theorem smoothCompactlySupportedGreenDifferentialClass_mem_core {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -702,6 +720,18 @@ theorem smoothCompactlySupportedGreenDifferentialClass_mem_core {X : Type}
     D ∈ greenSobolevH10SmoothCompactSupportCoreSubmodule g :=
   Submodule.subset_span hD
 
+/--
+%%handwave
+name:
+  The zero differential class has a smooth compactly supported primitive
+statement:
+  For every background surface metric \(g\), the zero element of the intrinsic
+  \(L^2\) cotangent space is represented by the differential of a smooth
+  compactly supported function.
+proof:
+  Take the zero smooth function.  Its gradient is the zero square-integrable
+  field, whose class in the \(L^2\) quotient is zero.
+-/
 theorem isSmoothCompactlySupportedGreenDifferentialClass_zero {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [MeasurableEq X] [IsManifold SurfaceRealModel ∞ X]
@@ -764,6 +794,18 @@ theorem isSmoothCompactlySupportedGreenDifferentialClass_zero {X : Type}
       greenDifferentialL2Intrinsic_admits_hilbert_structure,
       surfaceDifferentialL2Sections_admit_hilbert_structure] using hmk
 
+/--
+%%handwave
+name:
+  Smooth compactly supported differential classes are closed under addition
+statement:
+  If intrinsic \(L^2\) cotangent classes \(D,E\) are represented by
+  differentials of smooth compactly supported functions \(F,G\), then \(D+E\)
+  is represented by \(d(F+G)\).
+proof:
+  Add the two smooth compactly supported primitives.  Their gradients add
+  pointwise, and the quotient map from square-integrable fields preserves addition.
+-/
 theorem IsSmoothCompactlySupportedGreenDifferentialClass.add {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [MeasurableEq X] [IsManifold SurfaceRealModel ∞ X]
@@ -832,6 +874,17 @@ theorem IsSmoothCompactlySupportedGreenDifferentialClass.add {X : Type}
       greenDifferentialL2Intrinsic_admits_hilbert_structure,
       surfaceDifferentialL2Sections_admit_hilbert_structure] using hmk
 
+/--
+%%handwave
+name:
+  Smooth compactly supported differential classes are closed under scaling
+statement:
+  If \(D\) is represented by the differential of a smooth compactly supported
+  function \(F\), then \(cD\) is represented by \(d(cF)\) for every \(c\in\mathbb R\).
+proof:
+  Scale the primitive \(F\).  Its gradient scales pointwise, and the
+  \(L^2\)-quotient map preserves scalar multiplication.
+-/
 theorem IsSmoothCompactlySupportedGreenDifferentialClass.smul {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
     [MeasurableEq X] [IsManifold SurfaceRealModel ∞ X]
@@ -895,6 +948,18 @@ theorem IsSmoothCompactlySupportedGreenDifferentialClass.smul {X : Type}
       greenDifferentialL2Intrinsic_admits_hilbert_structure,
       surfaceDifferentialL2Sections_admit_hilbert_structure] using hmk
 
+/--
+%%handwave
+name:
+  Every element of the smooth Dirichlet core has a smooth primitive
+statement:
+  Every element \(D\) in the linear span of smooth compactly supported
+  differential classes is itself represented by the differential of a smooth
+  compactly supported function.
+proof:
+  The class of differentials with smooth compactly supported primitives contains
+  zero and is closed under addition and scalar multiplication, so it contains the span.
+-/
 theorem greenSobolevH10SmoothCompactSupportCoreSubmodule_isSmoothCompactlySupported
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -941,6 +1006,17 @@ noncomputable def greenSmoothDifferentialClass {X : Type}
         (X := X) (E := ℝ) g.metric g.volume) :
     GreenDifferentialL2Intrinsic g)
 
+/--
+%%handwave
+name:
+  The differential-class construction preserves addition
+statement:
+  For smooth compactly supported functions \(F,G\) whose gradients are in
+  \(L^2\), the intrinsic classes satisfy \([d(F+G)]=[dF]+[dG]\).
+proof:
+  Represent all three classes by their square-integrable gradient fields and
+  use the pointwise identity \(d(F+G)=dF+dG\) in the almost-everywhere quotient.
+-/
 theorem greenSmoothDifferentialClass_add
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -976,6 +1052,17 @@ theorem greenSmoothDifferentialClass_add
   filter_upwards [] with x
   rfl
 
+/--
+%%handwave
+name:
+  The differential-class construction preserves scalar multiplication
+statement:
+  For \(c\in\mathbb R\) and a smooth compactly supported function \(F\) with
+  \(L^2\) gradient, the intrinsic classes satisfy \([d(cF)]=c[dF]\).
+proof:
+  Represent both classes by square-integrable fields and use
+  \(d(cF)=c\,dF\) pointwise in the almost-everywhere quotient.
+-/
 theorem greenSmoothDifferentialClass_smul
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1004,6 +1091,22 @@ theorem greenSmoothDifferentialClass_smul
   filter_upwards [] with x
   rfl
 
+/--
+%%handwave
+name:
+  Norm of a smooth differential class is the square root of its Dirichlet energy
+statement:
+  If \(F\) is smooth and compactly supported with square-integrable gradient,
+  then
+  \[
+    \lVert[dF]\rVert=
+    \sqrt{\int_X \langle\nabla F,\nabla F\rangle_g\,d\mu_g}.
+  \]
+proof:
+  Use the \(L^2\)-norm formula for the quotient class represented by \(dF\).
+  The fiber norm squared of \(dF\) is the metric pairing
+  \(\langle\nabla F,\nabla F\rangle_g\) pointwise.
+-/
 theorem greenSmoothDifferentialClass_norm_eq_sqrt_dirichlet
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1066,6 +1169,17 @@ theorem greenSmoothDifferentialClass_norm_eq_sqrt_dirichlet
   exact surface_coordinate_cotangent_fiberNormSq_eq_gradientInner g x
     (F.gradient x)
 
+/--
+%%handwave
+name:
+  Core elements admit smooth compactly supported primitives
+statement:
+  For every element \(u\) of the smooth compactly supported Dirichlet core,
+  there are a smooth compactly supported function \(F\) and an \(L^2\) bound
+  for \(dF\) such that \([dF]=u\).
+proof:
+  Apply [every class in the core span has a smooth compactly supported primitive](lean:JJMath.Uniformization.greenSobolevH10SmoothCompactSupportCoreSubmodule_isSmoothCompactlySupported) to the membership proof carried by \(u\).
+-/
 theorem greenSobolevH10SmoothCompactSupportCore_has_smooth_primitive
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1112,6 +1226,16 @@ noncomputable def greenSobolevH10SmoothCompactSupportCorePrimitive_memL2
     (Classical.choose_spec
       (greenSobolevH10SmoothCompactSupportCore_has_smooth_primitive u))
 
+/--
+%%handwave
+name:
+  The chosen primitive represents its core element
+statement:
+  For each core element \(u\), the intrinsic differential class of its chosen
+  smooth compactly supported primitive is exactly the underlying class of \(u\).
+proof:
+  This is the equality component of the existence statement used to choose the primitive.
+-/
 theorem greenSobolevH10SmoothCompactSupportCorePrimitive_class_eq
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1241,6 +1365,18 @@ noncomputable def greenSobolevH10SmoothCompactSupportDifferentialClass
     (UniformSpace.Completion.toComplL :
       C.Core →L[ℝ] UniformSpace.Completion C.Core)
 
+/--
+%%handwave
+name:
+  The completed differential map extends the core inclusion
+statement:
+  If \(u\) belongs to the smooth Dirichlet core, then mapping its canonical
+  image in the \(H^1_0\) completion to the ambient intrinsic \(L^2\) cotangent
+  space gives the underlying differential class \(u\).
+proof:
+  The core embeds densely and uniformly into its completion.  Apply the
+  defining equality for the continuous extension of the core inclusion.
+-/
 theorem greenSobolevH10SmoothCompactSupportDifferentialClass_toCompletion
     {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
@@ -1298,6 +1434,8 @@ name:
 statement:
   The chosen cotangent representative of a completed pure \(H^1_0\) class
   represents its ambient \(L^2\) differential class.
+proof:
+  The representative was chosen from the equivalence class of the completed differential, so its quotient class is the prescribed one.
 -/
 theorem greenSobolevH10SmoothCompactSupportDifferentialRep_class_eq
     {X : Type}
@@ -1747,6 +1885,20 @@ theorem compactly_supported_smooth_source_mul_smooth_integrable
   exact (integrableOn_iff_integrable_of_support_subset hsupport).mp
     (by simpa [IntegrableOn, μK] using hprodK)
 
+/--
+%%handwave
+name:
+  Source pairing is additive in the test function
+statement:
+  If \(s:X\to\mathbb R\) is smooth and compactly supported and \(F,G\) are
+  smooth compactly supported functions, then
+  \[
+    \int_X s(F+G)\,d\mu_g=\int_X sF\,d\mu_g+\int_X sG\,d\mu_g.
+  \]
+proof:
+  Compact support and smoothness make \(sF\) and \(sG\) integrable.  Expand
+  \(s(F+G)=sF+sG\) and apply additivity of the integral.
+-/
 theorem compactly_supported_smooth_source_pairing_add
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X]
@@ -1779,6 +1931,20 @@ theorem compactly_supported_smooth_source_pairing_add
         ∫ x, source x * G.toFun x ∂g.volume := by
       rw [integral_add hF hG]
 
+/--
+%%handwave
+name:
+  Source pairing is homogeneous in the test function
+statement:
+  If \(s:X\to\mathbb R\) is smooth and compactly supported, \(F\) is smooth and
+  compactly supported, and \(c\in\mathbb R\), then
+  \[
+    \int_X s(cF)\,d\mu_g=c\int_X sF\,d\mu_g.
+  \]
+proof:
+  The product \(sF\) is integrable.  Rewrite \(s(cF)=c(sF)\) and pull the
+  constant \(c\) through the integral.
+-/
 theorem compactly_supported_smooth_source_pairing_smul
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
     [BorelSpace X]

@@ -22,7 +22,17 @@ noncomputable section
 noncomputable def properLineTransitionPhase (p : ℝ × ℝ) : ℂ :=
   Complex.exp ((((2 * Real.pi) * annularStep p.2 : ℝ) : ℂ) * Complex.I)
 
-/-- The standard transverse phase is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the standard transverse phase
+statement:
+  The function \(p\mapsto\exp(2\pi i\,s(p_2))\), where \(s\) is the smooth
+  transition step, is smooth on \(\mathbb R^2\).
+proof:
+  The step, scalar multiplication, inclusion into \(\mathbb C\),
+  multiplication by \(i\), and the complex exponential are all smooth.
+-/
 theorem properLineTransitionPhase_contMDiff :
     ContMDiff ProperLineTubeModel (modelWithCornersSelf ℝ ℂ) ∞
       properLineTransitionPhase := by
@@ -42,16 +52,44 @@ noncomputable def properLineTransitionPhaseSmooth :
   val := properLineTransitionPhase
   property := properLineTransitionPhase_contMDiff
 
+/--
+%%handwave
+name:
+  Evaluation of the bundled transverse phase
+statement:
+  The bundled smooth transverse phase evaluates at \(p\) as
+  \(\exp(2\pi i\,s(p_2))\).
+proof:
+  Bundling the function with its smoothness proof does not change its values.
+-/
 @[simp]
 theorem properLineTransitionPhaseSmooth_apply (p : ℝ × ℝ) :
     properLineTransitionPhaseSmooth p = properLineTransitionPhase p :=
   rfl
 
+/--
+%%handwave
+name:
+  The transverse phase below the transition strip
+statement:
+  If \(p_2\le-1\), then the standard transverse phase at \(p\) equals \(1\).
+proof:
+  The step is zero there, so the phase is \(e^0=1\).
+-/
 theorem properLineTransitionPhase_eq_one_of_second_le_neg_one
     (p : ℝ × ℝ) (hp : p.2 ≤ -1) :
     properLineTransitionPhase p = 1 := by
   simp [properLineTransitionPhase, annularStep_eq_zero_of_le_neg_one hp]
 
+/--
+%%handwave
+name:
+  The transverse phase above the transition strip
+statement:
+  If \(1\le p_2\), then the standard transverse phase at \(p\) equals \(1\).
+proof:
+  The step is one there, so the phase is \(e^{2\pi i}=1\).
+-/
 theorem properLineTransitionPhase_eq_one_of_one_le_second
     (p : ℝ × ℝ) (hp : 1 ≤ p.2) :
     properLineTransitionPhase p = 1 := by
@@ -60,6 +98,16 @@ theorem properLineTransitionPhase_eq_one_of_one_le_second
       ((2 * Real.pi : ℝ) : ℂ) * Complex.I by norm_num]
   simp [Complex.exp_mul_I]
 
+/--
+%%handwave
+name:
+  The transverse phase outside the transition strip
+statement:
+  If \(p_2\notin[-1,1]\), then the standard transverse phase at \(p\) is \(1\).
+proof:
+  Outside the interval, either \(p_2\le-1\) or \(p_2\ge1\); apply the
+  corresponding constant-end formula.
+-/
 theorem properLineTransitionPhase_eq_one_of_second_not_mem_Icc
     (p : ℝ × ℝ) (hp : p.2 ∉ Set.Icc (-1 : ℝ) 1) :
     properLineTransitionPhase p = 1 := by
@@ -85,6 +133,17 @@ noncomputable def properLineTubeLocalPhase
     ContMDiffMap I (modelWithCornersSelf ℝ ℂ) U ℂ ∞ :=
   properLineTransitionPhaseSmooth.comp phi.toContMDiffMap
 
+/--
+%%handwave
+name:
+  Local tube phase in product coordinates
+statement:
+  For \(x\) in a product line tube with coordinates \(\varphi(x)\), the local
+  phase is \(\exp(2\pi i\,s((\varphi x)_2))\).
+proof:
+  The local phase is the standard transverse phase composed with the tube
+  diffeomorphism.
+-/
 @[simp]
 theorem properLineTubeLocalPhase_apply
     (U : TopologicalSpace.Opens M)
@@ -102,6 +161,16 @@ noncomputable def properLineTubeLocalArgument
   property :=
     contMDiff_const.mul (properLineTubeTransitionFunction I U phi).contMDiff
 
+/--
+%%handwave
+name:
+  Local real argument of the tube phase
+statement:
+  In tube coordinates, the local real argument is
+  \(2\pi\,s((\varphi x)_2)\).
+proof:
+  This is the defining scalar function of the local argument.
+-/
 @[simp]
 theorem properLineTubeLocalArgument_apply
     (U : TopologicalSpace.Opens M)
@@ -111,8 +180,17 @@ theorem properLineTubeLocalArgument_apply
       (2 * Real.pi) * annularStep (phi x).2 :=
   rfl
 
-/-- On the tube, the periodic phase is the exponential of its real argument
-times the imaginary unit. -/
+/--
+%%handwave
+name:
+  The local tube phase is the exponential of its argument
+statement:
+  For every point \(x\) in the tube,
+  \(P_{\mathrm{loc}}(x)=e^{i\theta_{\mathrm{loc}}(x)}\).
+proof:
+  Both sides unfold to
+  \(\exp(2\pi i\,s((\varphi x)_2))\).
+-/
 theorem properLineTubeLocalPhase_eq_exp_argument
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -122,8 +200,18 @@ theorem properLineTubeLocalPhase_eq_exp_argument
         Complex.I) := by
   rfl
 
-/-- The differential of the local argument is exactly two pi times the
-transported Thom form. -/
+/--
+%%handwave
+name:
+  Differential of the local tube argument
+statement:
+  The local argument
+  \(\theta_{\mathrm{loc}}=2\pi\,s\circ\operatorname{pr}_2\circ\varphi\)
+  satisfies \(d\theta_{\mathrm{loc}}=2\pi\,\omega_{\mathrm{tube}}\).
+proof:
+  Use linearity of exterior differentiation and identify the differential of
+  the transition step with the transported local Thom form.
+-/
 theorem deRhamDifferential_properLineTubeLocalArgument
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ) :
@@ -156,6 +244,16 @@ noncomputable def properLineTubeGlobalPhaseFun
   classical
   exact if hx : x ∈ U then properLineTubeLocalPhase I U phi ⟨x, hx⟩ else 1
 
+/--
+%%handwave
+name:
+  The global phase function agrees with the local tube phase
+statement:
+  If \(x\in U\), then the global phase function equals the local tube phase at
+  \(x\).
+proof:
+  The tube branch of the piecewise definition applies.
+-/
 theorem properLineTubeGlobalPhaseFun_eq_local
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -164,6 +262,18 @@ theorem properLineTubeGlobalPhaseFun_eq_local
       properLineTubeLocalPhase I U phi ⟨x, hx⟩ := by
   simp [properLineTubeGlobalPhaseFun, hx]
 
+/--
+%%handwave
+name:
+  The global phase function is one on the tube exterior
+statement:
+  On the complement of the closed transition core, the global phase function
+  equals \(1\).
+proof:
+  Outside the tube it is one by definition.  Inside the tube but outside the
+  core, the transverse coordinate lies outside \([-1,1]\), where the local
+  periodic phase is one.
+-/
 theorem properLineTubeGlobalPhaseFun_eq_one_of_mem_exterior
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -214,6 +324,16 @@ noncomputable def properLineTubeGlobalPhase
     · exact U.is_open'
     · exact (properLineTubeExteriorOpen I U phi hcore).is_open'
 
+/--
+%%handwave
+name:
+  Evaluation of the bundled global proper-line phase
+statement:
+  The bundled smooth global phase evaluates as the underlying piecewise phase
+  function.
+proof:
+  Bundling the function with its smoothness proof does not alter its values.
+-/
 @[simp]
 theorem properLineTubeGlobalPhase_apply
     (U : TopologicalSpace.Opens M)
@@ -223,6 +343,16 @@ theorem properLineTubeGlobalPhase_apply
       properLineTubeGlobalPhaseFun I U phi x :=
   rfl
 
+/--
+%%handwave
+name:
+  The smooth global phase restricts to the tube phase
+statement:
+  At every \(x\in U\), the smooth global proper-line phase equals the local
+  phase defined in tube coordinates.
+proof:
+  Apply the local equality for the underlying piecewise phase function.
+-/
 theorem properLineTubeGlobalPhase_eq_local
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
@@ -232,6 +362,17 @@ theorem properLineTubeGlobalPhase_eq_local
       properLineTubeLocalPhase I U phi ⟨x, hx⟩ :=
   properLineTubeGlobalPhaseFun_eq_local I U phi hx
 
+/--
+%%handwave
+name:
+  The smooth global phase is one on the exterior
+statement:
+  On the complement of the closed tube transition core, the smooth global
+  proper-line phase equals \(1\).
+proof:
+  Apply the corresponding equality for the underlying piecewise phase
+  function.
+-/
 theorem properLineTubeGlobalPhase_eq_one_of_mem_exterior
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)

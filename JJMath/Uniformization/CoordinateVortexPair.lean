@@ -42,6 +42,18 @@ def coordinateVortexChartPatchToChart
     (x : coordinateVortexChartPatch U a b) : U :=
   ⟨((x : coordinateVortexPairOpen (a : X) (b : X)) : X), x.2⟩
 
+/--
+%%handwave
+name:
+  Smooth restriction of a map to an open codomain
+statement:
+  If a smooth map \(f:M\to N\) takes every point into an open subset
+  \(V\subseteq N\), then the induced map \(M\to V\) is smooth.
+proof:
+  Near each image point, a piecewise retraction from \(N\) to \(V\) agrees
+  with the identity.  Its local smoothness, composed with \(f\), proves the
+  claim.
+-/
 private theorem contMDiffCodRestrictOpen
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -73,6 +85,21 @@ private theorem contMDiffCodRestrictOpen
   filter_upwards [] with y
   simp [retract, hmem]
 
+/--
+%%handwave
+name:
+  Smooth inclusion of a punctured chart patch
+statement:
+  Let \(U\) be an open surface chart containing distinct points \(a,b\).
+  The natural map
+  \[
+    (U\setminus\{a,b\})\longrightarrow U
+  \]
+  is smooth.
+proof:
+  The ambient map is a composition of smooth subtype inclusions and its
+  image lies in \(U\); restrict its codomain to \(U\).
+-/
 theorem contMDiff_coordinateVortexChartPatchToChart
     (U : TopologicalSpace.Opens X) (a b : U) :
     ContMDiff SurfaceRealModel SurfaceRealModel ∞
@@ -83,7 +110,20 @@ theorem contMDiff_coordinateVortexChartPatchToChart
     contMDiff_subtype_val.comp contMDiff_subtype_val
   exact contMDiffCodRestrictOpen hambient U (fun x ↦ x.2)
 
-/-- Distinct chart points have distinct complex coordinates. -/
+/--
+%%handwave
+name:
+  Distinct points have distinct chart coordinates
+statement:
+  If \(a,b\in U\) are distinct and
+  \(\phi:U\to\mathbb C\) is a coordinate diffeomorphism, then
+  \[
+    \phi(a)\ne\phi(b).
+  \]
+proof:
+  Equality of the coordinates would contradict injectivity of the chart
+  diffeomorphism.
+-/
 theorem coordinateVortex_chart_values_ne
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -115,6 +155,22 @@ def coordinateVortexChartToPlanarPair
     have hxb : xU = b := phi.injective hphi
     exact x.1.2.2 (congrArg (fun y : U ↦ (y : X)) hxb)
 
+/--
+%%handwave
+name:
+  Smooth coordinate map to the twice-punctured plane
+statement:
+  The chart map restricts to a smooth map
+  \[
+    U\setminus\{a,b\}\longrightarrow
+      \mathbb C\setminus\{\phi(a),\phi(b)\}.
+  \]
+proof:
+  Compose the smooth inclusion into \(U\) with the chart diffeomorphism and
+  the coordinate projection.  Distinctness from \(a\) and \(b\) puts the
+  image in the twice-punctured plane, so codomain restriction preserves
+  smoothness.
+-/
 theorem contMDiff_coordinateVortexChartToPlanarPair
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -143,6 +199,17 @@ def coordinateVortexChartPhase
   planarVortexCompactPhaseAt (coordinateVortex_chart_values_ne U phi a b hab)
     (coordinateVortexChartToPlanarPair U phi a b hab x)
 
+/--
+%%handwave
+name:
+  Smoothness of the vortex-pair phase in coordinates
+statement:
+  The compactly supported planar vortex-pair phase, pulled back to
+  \(U\setminus\{a,b\}\) by the chart, is smooth.
+proof:
+  The planar phase is smooth on the twice-punctured plane, and the restricted
+  chart map into that plane is smooth.  Their composition is smooth.
+-/
 theorem contMDiff_coordinateVortexChartPhase
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -162,6 +229,17 @@ def coordinateVortexCore
   {x | (((phi x : complexPlanarModelOpen) : ℂ)) ∈
     planarVortexAffineCore (coordinateVortex_chart_values_ne U phi a b hab)}
 
+/--
+%%handwave
+name:
+  Compactness of the coordinate vortex core
+statement:
+  The preimage in \(U\) of the planar affine core supporting the nonconstant
+  vortex phase is compact.
+proof:
+  The planar affine core is compact.  Regard it as a compact subset of the
+  full-plane chart target and pull it back through the chart homeomorphism.
+-/
 theorem coordinateVortexCore_isCompact
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -194,6 +272,17 @@ def coordinateVortexAmbientCore
     (a b : U) (hab : (a : X) ≠ (b : X)) : Set X :=
   smoothFormCompactCore U (coordinateVortexCore U phi a b hab)
 
+/--
+%%handwave
+name:
+  Compactness of the ambient vortex core
+statement:
+  The image in the ambient surface of the compact coordinate vortex core is
+  compact.
+proof:
+  The coordinate core is compact, and the inclusion of the open chart into
+  the surface is continuous.
+-/
 theorem coordinateVortexAmbientCore_isCompact
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -215,7 +304,21 @@ def coordinateVortexExteriorPatch
       (continuous_subtype_val : Continuous
         (fun x : coordinateVortexPairOpen (a : X) (b : X) ↦ (x : X)))⟩
 
-/-- The chart phase is one off its compact core. -/
+/--
+%%handwave
+name:
+  The coordinate vortex phase is constant off its core
+statement:
+  If \(x\in U\setminus\{a,b\}\) lies outside the ambient vortex core, then
+  the pulled-back vortex phase satisfies
+  \[
+    \Phi_U(x)=1.
+  \]
+proof:
+  Such a point maps outside the planar affine core, where the affine vortex
+  coordinate has norm greater than \(3\).  The compact cutoff phase is
+  identically \(1\) on that exterior region.
+-/
 theorem coordinateVortexChartPhase_eq_one_of_mem_exterior
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -250,6 +353,17 @@ def coordinateVortexGlobalPhaseFun
     coordinateVortexChartPhase U phi a b hab ⟨x, hx⟩
   else 1
 
+/--
+%%handwave
+name:
+  The extended vortex phase agrees with the chart phase
+statement:
+  At every point \(x\in U\setminus\{a,b\}\), the phase extended to
+  \(X\setminus\{a,b\}\) equals the vortex phase defined in the chart.
+proof:
+  On \(U\), this is the first branch of the piecewise definition of the
+  extended phase.
+-/
 theorem coordinateVortexGlobalPhaseFun_eq_chart
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -259,6 +373,19 @@ theorem coordinateVortexGlobalPhaseFun_eq_chart
       coordinateVortexChartPhase U phi a b hab ⟨x, hx⟩ := by
   simp [coordinateVortexGlobalPhaseFun, hx]
 
+/--
+%%handwave
+name:
+  The extended vortex phase is one outside the compact core
+statement:
+  If \(x\in X\setminus\{a,b\}\) lies outside the ambient vortex core, then
+  \[
+    \Phi(x)=1.
+  \]
+proof:
+  If \(x\) lies in the chart, use the exterior constancy of the chart phase.
+  If it lies outside the chart, the extension is defined to be \(1\).
+-/
 theorem coordinateVortexGlobalPhaseFun_eq_one_of_mem_exterior
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -272,6 +399,19 @@ theorem coordinateVortexGlobalPhaseFun_eq_one_of_mem_exterior
       U phi a b hab ⟨x, hxU⟩ hx
   · simp [coordinateVortexGlobalPhaseFun, hxU]
 
+/--
+%%handwave
+name:
+  Smoothness of the global coordinate vortex phase
+statement:
+  The phase \(\Phi:X\setminus\{a,b\}\to\mathbb C\), obtained by extending
+  the chart vortex phase by \(1\), is smooth.
+proof:
+  The chart phase is smooth on the punctured chart, while the extension is
+  the smooth constant \(1\) outside the compact core.  These two open sets
+  cover the twice-punctured surface and the formulas agree on their overlap,
+  so they glue smoothly.
+-/
 theorem contMDiff_coordinateVortexGlobalPhaseFun
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -316,6 +456,19 @@ def coordinateVortexGlobalPhase
   val := coordinateVortexGlobalPhaseFun U phi a b hab
   property := contMDiff_coordinateVortexGlobalPhaseFun U phi a b hab
 
+/--
+%%handwave
+name:
+  Unit norm of the global coordinate vortex phase
+statement:
+  For every \(x\in X\setminus\{a,b\}\),
+  \[
+    |\Phi(x)|=1.
+  \]
+proof:
+  Inside the chart this is the unit-norm property of the planar compact
+  vortex phase.  Outside the chart, the global phase is \(1\).
+-/
 theorem norm_coordinateVortexGlobalPhase
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)

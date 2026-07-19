@@ -31,9 +31,23 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
   {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
   {P : CompactSuperlevelGreenFunctionPoleExponentialBranch X G}
 
-/-- A circle primitive of the Green conjugate differential exponentiates on
-the punctured surface to a nonvanishing holomorphic function with logarithmic
-modulus `-G`. -/
+/--
+%%handwave
+name:
+  Holomorphic exponential of a Green conjugate circle primitive
+statement:
+  Let \(G\) be a compact-superlevel Green function with pole \(p\), and let
+  \(\omega\) be its conjugate differential on \(X\setminus\{p\}\).  If
+  \(\omega\) has a smooth circle-valued primitive, then there is a
+  holomorphic function \(f:X\setminus\{p\}\to\mathbb C\) such that
+  \[
+    f(z)\ne0,\qquad \log|f(z)|=-G(z)
+    \quad(z\ne p).
+  \]
+proof:
+  Apply the holomorphic-exponential construction for a harmonic function and
+  a circle-valued primitive of its conjugate differential.
+-/
 theorem CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData.circlePrimitive_has_holomorphic_exp
     [IsManifold SurfaceRealModel ∞ X]
     (C : CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData X G)
@@ -45,8 +59,21 @@ theorem CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData.circleP
   simpa using
     (harmonicConjugate_circlePrimitive_has_holomorphic_exp C.conjugate PC)
 
-/-- A circle primitive of the Green conjugate produces a punctured Green
-plane map with the correct first-order factorization at the pole. -/
+/--
+%%handwave
+name:
+  A Green conjugate circle primitive gives a punctured plane map
+statement:
+  Suppose the Green conjugate differential \(\omega\) has a smooth
+  circle-valued primitive and a local exponential branch at the pole has
+  been fixed.  Then there is a punctured Green plane map whose modulus
+  satisfies \(\log|F|=-G\) and which has the prescribed first-order
+  factorization near the pole.
+proof:
+  Exponentiate the circle primitive to obtain a nonvanishing holomorphic
+  function with logarithmic modulus \(-G\), then combine it with the fixed
+  pole branch in the punctured-plane-map construction.
+-/
 theorem CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData.circlePrimitive_has_puncturedPlaneMap
     [IsManifold SurfaceRealModel ∞ X]
     (C : CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData X G)
@@ -58,8 +85,19 @@ theorem CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData.circleP
   exact ⟨compactSuperlevelGreenFunction_puncturedPlaneMap_of_holomorphicExp
     P f hf hf_nonzero hf_log⟩
 
-/-- A circle primitive of the Green conjugate exponentiates to a global
-holomorphic plane map with its unique simple zero at the pole. -/
+/--
+%%handwave
+name:
+  A Green conjugate circle primitive gives a global plane map
+statement:
+  Under the same hypotheses, there exists a global holomorphic Green plane
+  map \(F:X\to\mathbb C\) extending the punctured map and having a simple
+  zero at the pole.
+proof:
+  First construct the punctured plane map from the circle primitive.  Its
+  prescribed first-order pole factorization extends holomorphically across
+  the puncture and supplies the required global plane map.
+-/
 theorem CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData.circlePrimitive_has_planeMap
     [IsManifold SurfaceRealModel ∞ X]
     (C : CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData X G)
@@ -114,8 +152,27 @@ noncomputable def greenConjugateCirclePrimitiveOfAngular
       simpa [h] using hdecomposition
   exact SmoothCirclePrimitive.angularAddExact SurfaceRealModel Peta theta homega
 
-/-- A locally normalized global circle phase for the puncture class produces
-the global holomorphic Green plane map. -/
+/--
+%%handwave
+name:
+  Green plane map from a locally normalized angular circle phase
+statement:
+  Assume \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\), and write the Green conjugate
+  differential as
+  \[
+    \omega=\epsilon\,2\pi\,\eta+d\theta,
+    \qquad \epsilon\in\{1,-1\}.
+  \]
+  Let \(\tau\) be a closed one-form whose normalized form \(2\pi\tau\) has a
+  circle-valued primitive.  If the restrictions of \(\eta\) and \(\tau\) to
+  a punctured coordinate disk represent equal or opposite de Rham classes,
+  then the Green plane map exists.
+proof:
+  The local class comparison and vanishing global first cohomology transfer
+  the circle primitive from \(2\pi\tau\) to \(2\pi\eta\).  Adding the exact
+  term \(d\theta\), with the appropriate orientation, gives a circle
+  primitive of \(\omega\), which exponentiates to the plane map.
+-/
 theorem greenConjugate_planeMap_of_local_angular_circlePrimitive
     [IsManifold SurfaceRealModel ∞ X]
     [Subsingleton
@@ -151,8 +208,24 @@ theorem greenConjugate_planeMap_of_local_angular_circlePrimitive
       hdecomposition Peta
   exact C.circlePrimitive_has_planeMap P PC
 
-/-- A single normalized local period, together with a global periodic phase,
-produces the holomorphic Green plane map. -/
+/--
+%%handwave
+name:
+  Green plane map from one normalized local period
+statement:
+  In the preceding setting, let \(c\) be a closed one-chain in a punctured
+  coordinate annulus.  Suppose
+  \[
+    \int_c\eta=\pm\int_c\tau,\qquad \int_c\tau\ne0,
+  \]
+  and \(2\pi\tau\) has a circle-valued primitive.  Then the Green plane map
+  exists.
+proof:
+  On a punctured disk, one nonzero period detects the one-dimensional first
+  de Rham class, so the period identity makes the local classes of
+  \(\eta\) and \(\tau\) equal up to sign.  Transfer the circle primitive and
+  apply the angular-plus-exact Green conjugate construction.
+-/
 theorem greenConjugate_planeMap_of_local_period_circlePrimitive
     [IsManifold SurfaceRealModel ∞ X]
     [Subsingleton
@@ -211,8 +284,26 @@ theorem greenConjugate_planeMap_of_local_period_circlePrimitive
       hdecomposition Peta
   exact C.circlePrimitive_has_planeMap P PC
 
-/-- A proper-line tube whose Thom form has the normalized local puncture
-period supplies the periodic phase needed for Green exponentiation. -/
+/--
+%%handwave
+name:
+  Green plane map from matching proper-line tube periods
+statement:
+  Let \(\eta\) be the angular term in
+  \(\omega=\pm2\pi\eta+d\theta\), and let \(\tau\) be the closed Thom form of
+  a proper-line tube.  If a closed chain \(c\) in the punctured coordinate
+  annulus satisfies
+  \[
+    \int_c\eta\in\{1,-1\},
+    \qquad
+    \int_c\tau\in\{1,-1\},
+  \]
+  then the Green plane map exists.
+proof:
+  The two periods agree up to sign and the period of \(\tau\) is nonzero.
+  The proper-line tube supplies a circle primitive of \(2\pi\tau\), so the
+  normalized local-period criterion applies.
+-/
 theorem greenConjugate_planeMap_of_properLineTube_periods
     [IsManifold SurfaceRealModel ∞ X]
     [Subsingleton
@@ -323,9 +414,27 @@ theorem greenConjugate_planeMap_of_properLineTube_periods
     C P v D₀ hp eta tau theta hdecomposition annulusPhi c hcycle
       hperiod htauPeriod Ptau
 
-/-- The normalized pole-coordinate cycle reduces Green exponentiation to the
-single assertion that a proper-cut Thom form has period `1` up to orientation
-on that cycle. -/
+/--
+%%handwave
+name:
+  Reduction to the proper-line Thom period on a normalized pole cycle
+statement:
+  Fix an exhaustion, pole-coordinate Green data, conjugate-differential
+  data, and a proper-line tube in \(X\setminus\{p\}\).  There is a closed
+  one-chain \(c\) in the punctured pole-coordinate region such that
+  \[
+    \int_c\tau\in\{1,-1\}
+    \quad\Longrightarrow\quad
+    \text{a global Green plane map exists},
+  \]
+  where \(\tau\) is the tube's closed Thom form restricted to that region.
+proof:
+  The residue construction supplies an angular form \(\eta\), an exact
+  remainder, and a normalized pole cycle with \(\int_c\eta=-1\).  Transport
+  the cycle to the standard punctured annulus.  If the Thom period is
+  \(\pm1\), the angular and Thom periods agree up to sign, so the
+  proper-line-tube period criterion produces the plane map.
+-/
 theorem exists_normalizedPoleCycle_greenConjugate_planeMap_of_properLineTube
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -492,9 +601,25 @@ theorem exists_normalizedPoleCycle_greenConjugate_planeMap_of_properLineTube
   · exact Or.inr hetaPeriodSmall
   · exact htubePeriodSmall
 
-/-- It is enough to decompose the normalized pole cycle into one transverse
-crossing of the proper-cut tube and a return chain outside its closed
-transition strip. -/
+/--
+%%handwave
+name:
+  Reduction to one transverse tube crossing and an exterior return
+statement:
+  With the same data, there is a closed normalized pole chain \(c\) such
+  that a Green plane map exists whenever the image of \(c\) in the punctured
+  surface decomposes as
+  \[
+    c=\sigma+\rho,
+  \]
+  where \(\sigma\) crosses the proper-line tube once from a level
+  \(a\le-1\) to a level \(b\ge1\), and \(\rho\) is supported outside the
+  closed transition strip.
+proof:
+  The tube Thom form integrates to \(1\) on the transverse crossing and
+  vanishes on the exterior return chain.  Thus its period on \(c\) is \(1\),
+  and the normalized-pole-cycle reduction applies.
+-/
 theorem exists_normalizedPoleCycle_greenConjugate_planeMap_of_crossing_return
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -599,9 +724,29 @@ theorem exists_puncturedAngularForm_greenConjugate_circlePrimitive_reduction
   exact ⟨greenConjugateCirclePrimitiveOfAngular C v eta theta
     hdecomposition Peta⟩
 
-/-- The normalized puncture meridian reduces Green exponentiation to the
-geometric assertion that it generates smooth one-cycles modulo smooth
-boundaries. -/
+/--
+%%handwave
+name:
+  Green plane map from a normalized puncture-cycle generator
+statement:
+  Fix a base point in \(X\setminus\{p\}\).  There exist a closed one-form
+  \(\eta\), a function \(\theta\), and a closed one-chain \(\gamma\) such
+  that
+  \[
+    \omega=\pm2\pi\eta+d\theta,
+    \qquad
+    \int_\gamma 2\pi\eta=2\pi.
+  \]
+  If every closed smooth one-chain has the form
+  \(c=k\gamma+\partial b\) for some \(k\in\mathbb Z\), then the global Green
+  plane map exists.
+proof:
+  Reverse the normalized pole cycle so its \(2\pi\eta\)-period is \(2\pi\).
+  The cycle-generator hypothesis makes every period of \(2\pi\eta\) an
+  integral multiple of \(2\pi\), yielding a circle-valued primitive
+  normalized at the base point.  Combine it with the exact remainder and
+  exponentiate the Green conjugate.
+-/
 theorem exists_normalizedPunctureCycle_greenConjugate_planeMap_of_cycleGenerator
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -685,9 +830,27 @@ theorem exists_normalizedPunctureCycle_greenConjugate_planeMap_of_cycleGenerator
       hdecomposition Peta
   exact C.circlePrimitive_has_planeMap P PC
 
-/-- Compact-superlevel Green data exponentiate to a plane map once the
-normalized puncture meridian is known to generate smooth one-cycles modulo
-smooth boundaries. -/
+/--
+%%handwave
+name:
+  Plane-map reduction to a puncture-cycle generator
+statement:
+  Let \(G\) be a compact-superlevel Green function with pole \(p\) on a
+  noncompact Riemann surface with
+  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  There is a closed smooth one-chain
+  \(\gamma\) in \(X\setminus\{p\}\) such that
+  \[
+    \bigl[\forall c\text{ closed},
+      c=k\gamma+\partial b\text{ for some }k\in\mathbb Z,b\bigr]
+    \Longrightarrow
+    \text{a global Green plane map exists}.
+  \]
+proof:
+  Choose the pole exponential branch, pole-coordinate logarithmic data, and
+  conjugate-differential data attached to \(G\).  The normalized
+  puncture-cycle reduction then supplies the required \(\gamma\) and the
+  stated implication.
+-/
 theorem compactSuperlevelGreenFunction_planeMap_of_puncturedCycleGenerator
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -720,8 +883,30 @@ theorem compactSuperlevelGreenFunction_planeMap_of_puncturedCycleGenerator
       _hperiod, hfinish⟩
   exact ⟨gamma, hcycle, hfinish⟩
 
-/-- Integral smooth periods of the normalized punctured angular form suffice
-to exponentiate the Green conjugate differential holomorphically. -/
+/--
+%%handwave
+name:
+  Holomorphic Green exponential from integral angular periods
+statement:
+  There are a closed angular form \(\eta\) and a smooth function \(\theta\)
+  on \(X\setminus\{p\}\) such that
+  \[
+    \omega=\pm2\pi\eta+d\theta.
+  \]
+  If every closed smooth one-chain \(c\) satisfies
+  \[
+    \int_c2\pi\eta=2\pi k
+    \quad\text{for some }k\in\mathbb Z,
+  \]
+  then there is a holomorphic nonvanishing
+  \(f:X\setminus\{p\}\to\mathbb C\) with
+  \(\log|f|=-G\).
+proof:
+  The integral-period criterion gives \(2\pi\eta\) a circle-valued
+  primitive, normalized at the chosen base point.  Add the exact term
+  \(d\theta\), adjust for orientation, and apply the holomorphic
+  exponential construction for the Green conjugate.
+-/
 theorem exists_puncturedAngularForm_greenConjugate_holomorphicExp_of_integralPeriods
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton
@@ -774,8 +959,21 @@ theorem exists_puncturedAngularForm_greenConjugate_holomorphicExp_of_integralPer
       hdecomposition Peta
   exact C.circlePrimitive_has_holomorphic_exp PC
 
-/-- Integral periods of the normalized angular form produce a punctured
-Green plane map with the required simple-zero factorization at the pole. -/
+/--
+%%handwave
+name:
+  Punctured Green plane map from integral angular periods
+statement:
+  Under the same Green and cohomological hypotheses, there are
+  \(\eta\) and \(\theta\) with
+  \(\omega=\pm2\pi\eta+d\theta\) such that integral \(2\pi\)-periods of
+  \(2\pi\eta\) imply the existence of a punctured Green plane map with the
+  prescribed first-order pole factorization.
+proof:
+  Integral periods produce a nonvanishing holomorphic exponential
+  \(f\) with \(\log|f|=-G\).  Combining \(f\) with the fixed local pole
+  branch is exactly the punctured Green plane-map construction.
+-/
 theorem exists_puncturedAngularForm_greenConjugate_planeMap_of_integralPeriods
     [IsManifold SurfaceRealModel ∞ X] [NoncompactSpace X]
     [Subsingleton

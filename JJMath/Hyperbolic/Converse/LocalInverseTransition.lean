@@ -21,13 +21,16 @@ namespace HyperbolicMetric
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
 /--
-Fixed-chart version of the local pullback density formula.
-
-If a hyperbolic local chart is written in any surface chart `e`, then its
-ordinary complex derivative in the `e`-coordinate pulls the Poincare density
-back to the conformal density of `g` in the same fixed chart.  This is the
-formula needed for transition maps: both local models can be compared in one
-source chart before passing to an inverse branch.
+%%handwave
+name: Poincare pullback formula in an arbitrary surface coordinate
+statement:
+  Let \(U\) be a hyperbolic local chart for a metric \(g\), let \(e\) be a complex surface chart, and suppose \(z\) lies in the target of \(e\) with \(e^{-1}(z)\in\operatorname{dom}(U)\). Then
+  \[
+    \frac{|(U\circ e^{-1})'(z)|^2}{\operatorname{Im}(U(e^{-1}(z)))^2}=\rho_{g,e}(z),
+  \]
+  where \(\rho_{g,e}\) is the squared conformal density of \(g\) in the \(e\)-coordinate.
+proof:
+  Factor \(U\circ e^{-1}\) through the coordinate stored by \(U\). The chain rule and multiplicativity of the squared complex norm split the numerator into the stored-map derivative and the chart-transition derivative. Combine the stored Poincare pullback formula with the conformal-density transition law.
 -/
 theorem hyperbolicLocalChart_pullbackSquaredDensityFormulaInChart
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -139,8 +142,12 @@ theorem hyperbolicLocalChart_pullbackSquaredDensityFormulaInChart
   ring
 
 /--
-A hyperbolic local chart is holomorphic when written in any fixed surface
-chart whose inverse point lies in the local-chart domain.
+%%handwave
+name: Holomorphicity of a hyperbolic local chart in any surface coordinate
+statement:
+  Let \(U\) be a hyperbolic local chart and \(e\) a complex surface chart. If \(z\) lies in the target of \(e\) and \(e^{-1}(z)\in\operatorname{dom}(U)\), then \(U\circ e^{-1}\) is complex differentiable at \(z\).
+proof:
+  The coordinate expression remains differentiable after postcomposition with any real Mobius transformation. Specialize this fact to the identity transformation.
 -/
 theorem hyperbolicLocalChart_coordinateExpressionInChart_differentiableAt
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -162,8 +169,12 @@ theorem hyperbolicLocalChart_coordinateExpressionInChart_differentiableAt
   simpa [realMobiusRepresentativeAction_one] using hId
 
 /--
-The derivative of a hyperbolic local chart in any fixed surface chart is
-nonzero on its domain.
+%%handwave
+name: Nonvanishing derivative of a hyperbolic coordinate
+statement:
+  Under the same hypotheses, the complex derivative \((U\circ e^{-1})'(z)\) is nonzero.
+proof:
+  The Poincare pullback formula identifies the squared norm of this derivative, divided by a positive imaginary-part square, with the strictly positive conformal density of the metric. If the derivative vanished, that density would be zero.
 -/
 theorem hyperbolicLocalChart_coordinateDerivativeInChart_ne
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -194,13 +205,12 @@ theorem hyperbolicLocalChart_coordinateDerivativeInChart_ne
   exact (lt_irrefl (0 : ℝ)) hdensity_pos
 
 /--
-A holomorphic function on an open set with nonzero derivative at `a` admits a
-local inverse branch near `F a`.
-
-This is the technical bridge needed before applying the Poincare-coordinate
-local-isometry classification: `HyperbolicLocalChart.local_biholomorph_on_domain`
-is stored as nonvanishing of the derivative of a holomorphic coordinate
-expression, and this theorem turns that into actual local inverse germs.
+%%handwave
+name: Holomorphic inverse germ at a regular point
+statement:
+  Let \(D\subseteq\mathbb C\) be open, let \(a\in D\), and let \(F\) be holomorphic on \(D\) with \(F'(a)\ne0\). There is a map \(G:\mathbb C\to\mathbb C\) such that \(G(F(x))=x\) near \(a\), \(F(G(y))=y\) near \(F(a)\), and \(G\) has strict derivative \(F'(a)^{-1}\) at \(F(a)\).
+proof:
+  Holomorphicity on the open set makes \(F\) continuously differentiable near \(a\), hence strictly differentiable there. Apply the one-dimensional inverse function theorem at the nonzero derivative \(F'(a)\).
 -/
 theorem exists_eventually_inverse_of_holomorphicOn_deriv_ne
     {F : ℂ → ℂ} {D : Set ℂ} {a : ℂ}
@@ -235,14 +245,12 @@ theorem exists_eventually_inverse_of_holomorphicOn_deriv_ne
       hFStrict.to_localInverse hF_ne
 
 /--
-A holomorphic function on an open set with nonzero derivative at `a` determines
-an open partial homeomorphism germ whose forward map is the original function.
-
-This is the set-level version of `exists_eventually_inverse_of_holomorphicOn_deriv_ne`.
-The source/target are the neighborhoods produced by the inverse function
-theorem; the source is not asserted to be contained in `D`, but it contains
-`a`, and downstream arguments can shrink by intersecting with any needed open
-domain.
+%%handwave
+name: Local biholomorphism at a regular point
+statement:
+  Let \(D\subseteq\mathbb C\) be open, \(a\in D\), and let \(F\) be holomorphic on \(D\) with \(F'(a)\ne0\). Then \(F\) represents an open partial homeomorphism between neighborhoods containing \(a\) and \(F(a)\), and its inverse has strict derivative \(F'(a)^{-1}\) at \(F(a)\).
+proof:
+  Promote holomorphicity to continuous differentiability and strict differentiability at \(a\). The inverse function theorem packages the resulting inverse neighborhoods as an open partial homeomorphism with the stated inverse derivative.
 -/
 theorem exists_openPartialHomeomorph_of_holomorphicOn_deriv_ne
     {F : ℂ → ℂ} {D : Set ℂ} {a : ℂ}
@@ -278,15 +286,15 @@ theorem exists_openPartialHomeomorph_of_holomorphicOn_deriv_ne
       hFStrict.to_localInverse hF_ne
 
 /--
-A hyperbolic local chart sends every surface neighborhood of a point in its
-domain onto a genuine open upper-half-plane neighborhood of the coordinate
-value.
-
-This is the local-open-map fact used by terminal-sheet continuation: after
-passing to a fixed surface chart, the upper-half-plane coordinate has nonzero
-complex derivative, hence admits a local inverse by the inverse function
-theorem.  Shrinking the inverse-function target inside the chosen surface
-neighborhood gives the required open patch.
+%%handwave
+name: Local openness of a hyperbolic coordinate
+statement:
+  Let \(U\) be a hyperbolic local chart, let \(x\in\operatorname{dom}(U)\), and let \(W\) be a neighborhood of \(x\). There is an open set \(u\) in the upper half-plane such that
+  \[
+    U(x)\in u\subseteq U\bigl(W\cap\operatorname{dom}(U)\bigr).
+  \]
+proof:
+  Write \(U\) in a surface coordinate at \(x\). Its derivative is nonzero, so the inverse function theorem supplies a local inverse around \(U(x)\). Shrink the inverse target so that it remains in the upper half-plane and its inverse lies in the chosen surface neighborhood and in the domain of \(U\).
 -/
 theorem HyperbolicLocalChart.exists_open_upperHalfPlane_subset_image_of_mem_nhds
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -377,8 +385,15 @@ theorem HyperbolicLocalChart.exists_open_upperHalfPlane_subset_image_of_mem_nhds
     exact ⟨x', ⟨hNsub hx'N, hx'U⟩, hcoord⟩
 
 /--
-Derivative of a one-dimensional open partial homeomorphism inverse, stated for
-a forward map that is definitionally/everywhere equal to a chosen function `F`.
+%%handwave
+name: Derivative of the inverse of a complex local homeomorphism
+statement:
+  Let \(e\) be an open partial homeomorphism of \(\mathbb C\) whose forward map is \(F\). If \(w\) lies in its target, \(F\) is differentiable at \(e^{-1}(w)\), and \(F'(e^{-1}(w))\ne0\), then
+  \[
+    (e^{-1})'(w)=F'(e^{-1}(w))^{-1}.
+  \]
+proof:
+  Apply the inverse derivative theorem to the local homeomorphism, replacing its forward map by the everywhere equal function \(F\).
 -/
 theorem OpenPartialHomeomorph.hasDerivAt_symm_of_toFun_eq
     {F : ℂ → ℂ} (e : OpenPartialHomeomorph ℂ ℂ)
@@ -391,8 +406,12 @@ theorem OpenPartialHomeomorph.hasDerivAt_symm_of_toFun_eq
     simpa [hcoe] using hF)
 
 /--
-Derivative formula for the inverse branch of a one-dimensional open partial
-homeomorphism.
+%%handwave
+name: Formula for the derivative of an inverse branch
+statement:
+  Under the hypotheses above, the ordinary complex derivative of the inverse branch at \(w\) is \(F'(e^{-1}(w))^{-1}\).
+proof:
+  Take the derivative equality furnished by the inverse-derivative statement.
 -/
 theorem OpenPartialHomeomorph.deriv_symm_eq_inv_of_toFun_eq
     {F : ℂ → ℂ} (e : OpenPartialHomeomorph ℂ ℂ)
@@ -405,12 +424,21 @@ theorem OpenPartialHomeomorph.deriv_symm_eq_inv_of_toFun_eq
   (OpenPartialHomeomorph.hasDerivAt_symm_of_toFun_eq e hcoe hw hF hF_ne).deriv
 
 /--
-Algebraic metric identity for a transition map.
-
-If `F` and `G` pull the same source conformal density `rho` back from the
-Poincare metric, and `L` is a local inverse branch for `F`, then `G ∘ L`
-pulls back the Poincare metric to the standard Poincare metric in the
-`F`-value coordinate.
+%%handwave
+name: Poincare metric identity for a coordinate transition
+statement:
+  Let \(F,G,L,\rho:\mathbb C\to\mathbb C\), and suppose on \(W\) that \(F\circ L\) is the identity, \(L'=1/(F'\circ L)\), the relevant derivatives and imaginary parts are nonzero, and
+  \[
+    \frac{|F'(L(w))|^2}{\operatorname{Im}(F(L(w)))^2}=\operatorname{Re}\rho(L(w))
+    =\frac{|G'(L(w))|^2}{\operatorname{Im}(G(L(w)))^2}.
+  \]
+  Then
+  \[
+    \frac{|(G\circ L)'(w)|^2}{\operatorname{Im}(G(L(w)))^2}=\frac1{\operatorname{Im}(w)^2}
+  \]
+  for every \(w\in W\).
+proof:
+  The chain rule gives \((G\circ L)'=(G'\circ L)L'\). Substitute the inverse derivative and the two common-density identities, use \(F(L(w))=w\), and cancel the nonzero factor \(|F'(L(w))|^2\).
 -/
 theorem poincareTransition_metric_of_common_pullback_density
     {F G L rho : ℂ → ℂ} {W : Set ℂ}
@@ -471,12 +499,12 @@ theorem poincareTransition_metric_of_common_pullback_density
         field_simp [hnormF_ne, hw_im_ne w hw]
 
 /--
-Generic Poincare-coordinate transition rigidity.
-
-This is the surface-free core of the one-jet openness argument.  Two maps
-`F` and `G` pull back the same source density, `L` is a local inverse branch
-of `F`, and the transition `G ∘ L` has the same one-jet as a fixed real Mobius
-map at `p`.  Then the transition equals that real Mobius map locally.
+%%handwave
+name: Local rigidity of a Poincare coordinate transition
+statement:
+  Let \(W\subseteq\mathbb C\) be open and \(p\in W\). Suppose \(F\circ L\) is the identity on \(W\), \(F\) and \(G\) pull the same density back from the Poincare metric, all relevant derivatives are nonzero, and \(w\) and \(G(L(w))\) lie in the upper half-plane for \(w\in W\). If \(G\circ L\) has at \(p\) the same value and derivative as a real Mobius transformation \(A\), then there is an open neighborhood \(V\) of \(p\), contained in \(W\), on which \(G\circ L=A\).
+proof:
+  The inverse derivative and chain rules show that \(G\circ L\) is a holomorphic local diffeomorphism. The common-density calculation shows that it preserves the Poincare metric. Apply local rigidity of Poincare isometries with the prescribed one-jet at \(p\), and shrink to the resulting neighborhood.
 -/
 theorem poincareTransition_eq_realMobius_near_of_common_pullback_density
     {F G L rho : ℂ → ℂ} {W : Set ℂ} {p : ℂ}
@@ -556,11 +584,20 @@ theorem poincareTransition_eq_realMobius_near_of_common_pullback_density
     simpa [T] using hV w hw⟩
 
 /--
-Surface version of the coordinate transition rigidity theorem.
-
-If two hyperbolic local charts have the same value and pointed first-order
-data as a fixed real Mobius transformation at `y`, then that value equality
-holds on a genuine surface neighborhood of `y`.
+%%handwave
+name: Local real-Mobius rigidity for hyperbolic charts
+statement:
+  Let \(U,V\) be hyperbolic local charts containing \(y\), and let \(A\) be a real Mobius transformation. If
+  \[
+    V(y)=A(U(y))
+  \]
+  and the first-order data of \(V\) and \(A\circ U\) agree at \(y\), then there is an open neighborhood \(W\) of \(y\) such that
+  \[
+    V(z)=A(U(z))
+  \]
+  whenever \(z\in W\cap\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  Express both charts in a common surface coordinate and construct a local inverse branch \(L\) for the \(U\)-coordinate. On a sufficiently small upper-half-plane neighborhood, both coordinate maps pull the same conformal density back from the Poincare metric. Their transition \(V\circ L\) therefore satisfies local Poincare rigidity, and the assumed value and first-order data identify it with \(A\). Pull this identity back to the surface.
 -/
 theorem hyperbolicLocalChart_realMobiusTransition_value_eq_near_of_oneJet
     [ComplexOneManifold X] {g : HyperbolicMetric X}

@@ -864,6 +864,17 @@ noncomputable def chartPullback {H X E : Type}
     (fderivWithin ℝ
       (fun w : H ↦ chartAt H (e.symm z) (e.symm w)) e.target z)
 
+/--
+%%handwave
+name:
+  Evaluation of a differential field pulled back to a chart
+statement:
+  The chart pullback of a manifold differential field \(du\), evaluated at
+  \(z\) and \(v\), is the fiber differential at \(e^{-1}(z)\) applied to the
+  tangent image of \(v\) under the inverse chart.
+proof:
+  This is the defining formula for the chart pullback.
+-/
 @[simp]
 theorem chartPullback_apply {H X E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -931,6 +942,8 @@ name:
 statement:
   A uniformly locally \(W^{1,2}\)-bounded Euclidean family has each value
   function in \(L^2\) on the compact set.
+proof:
+  Unpack the uniform local Sobolev bound; its first component states \(L^2\)-membership of every value function on the compact set.
 -/
 theorem BoundedInEuclideanLocalSobolevH1WithValues.value_memLp {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -949,6 +962,8 @@ name:
 statement:
   A uniformly locally \(W^{1,2}\)-bounded Euclidean family has each weak
   derivative field in \(L^2\) on the compact set.
+proof:
+  Unpack the second component of the boundedness hypothesis, which supplies \(L^2\)-membership of every weak derivative on the compact set.
 -/
 theorem BoundedInEuclideanLocalSobolevH1WithValues.derivative_memLp {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -967,6 +982,8 @@ name:
 statement:
   A uniformly locally \(W^{1,2}\)-bounded Euclidean family has uniformly
   bounded \(L^2\) norms of its value functions on the compact set.
+proof:
+  Use the common bound furnished by the definition for the value component at the chosen family index.
 -/
 theorem BoundedInEuclideanLocalSobolevH1WithValues.value_eLpNorm_bound {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -986,6 +1003,8 @@ name:
 statement:
   A uniformly locally \(W^{1,2}\)-bounded Euclidean family has uniformly
   bounded \(L^2\) norms of its weak derivative fields on the compact set.
+proof:
+  Use the derivative component of the uniform bound at the chosen index.
 -/
 theorem BoundedInEuclideanLocalSobolevH1WithValues.derivative_eLpNorm_bound {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -1228,6 +1247,21 @@ abbrev EuclideanL2TranslationTightOnCompact {H : Type}
     (K : Set H) (u : ℕ → H → ℝ) : Prop :=
   EuclideanL2TranslationTightFamilyOnCompact K u
 
+/--
+%%handwave
+name:
+  Linear translation modulus implies uniform translation tightness
+statement:
+  Suppose that for \(\lVert h\rVert<\rho\),
+  \[\lVert u_i(\,\cdot+h)-u_i\rVert_{L^2(K,\mu)}
+    \le \lVert h\rVert A\]
+  uniformly in \(i\), where \(A<\infty\). Then the family is uniformly
+  translation-tight in \(L^2(K,\mu)\).
+proof:
+  Given \(\varepsilon>0\), choose
+  \(\delta<\min(\rho,\varepsilon/(2A))\). The linear modulus is then below
+  \(\varepsilon\); the cases \(A=0\) and \(\varepsilon=\infty\) are immediate.
+-/
 private theorem euclideanL2TranslationTightFamilyOnCompactForMeasure_of_linear_modulus
     {ι H : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasurableSpace H]
@@ -1629,6 +1663,17 @@ def smoothCompactlySupportedManifoldCoordinateFunction_translate
     rw [tsupport_comp_eq_preimage]
     exact (Homeomorph.addRight (-v)).isCompact_preimage.2 ψ.compact_support
 
+/--
+%%handwave
+name:
+  Value of a translated compactly supported test function
+statement:
+  If translating the support of a smooth test \(\psi\) by \(v\) stays in the
+  target region, then its translated test satisfies
+  \(\psi_v(z)=\psi(z-v)\).
+proof:
+  Unfold translation as composition with addition by \(-v\).
+-/
 @[simp]
 theorem smoothCompactlySupportedManifoldCoordinateFunction_translate_apply
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1640,6 +1685,17 @@ theorem smoothCompactlySupportedManifoldCoordinateFunction_translate_apply
       ψ (z - v) := by
   simp [smoothCompactlySupportedManifoldCoordinateFunction_translate, sub_eq_add_neg]
 
+/--
+%%handwave
+name:
+  Derivative of a translated compactly supported test function
+statement:
+  For the translated test \(\psi_v(z)=\psi(z-v)\),
+  \[D\psi_v(z)(h)=D\psi(z-v)(h).\]
+proof:
+  Differentiate composition with the translation \(z\mapsto z-v\), whose
+  derivative is the identity.
+-/
 @[simp]
 theorem smoothCompactlySupportedManifoldCoordinateFunction_translate_fderiv_apply
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1738,6 +1794,18 @@ theorem euclideanSegmentMap_quasiMeasurePreserving_restrict_prod
       (MeasureTheory.measurePreserving_add_right
         (MeasureTheory.volume : Measure H) (t • h)).quasiMeasurePreserving.restrict hmap
 
+/--
+%%handwave
+name:
+  Square of an integral on a probability space
+statement:
+  If \(\mu(\alpha)=1\) and \(g\) is strongly measurable, then
+  \[\left\lVert\int g\,d\mu\right\rVert_{\!e}^{\,2}
+    \le\int\lVert g\rVert_{\!e}^{\,2}\,d\mu.\]
+proof:
+  Bound the norm of the integral by the integral of the norm, apply
+  Hölder with exponents \(2,2\), and use that the \(L^2\)-norm of \(1\) is one.
+-/
 private theorem enorm_integral_sq_le_lintegral_enorm_sq_of_measure_univ_eq_one
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {g : α → ℝ} (hμ : μ Set.univ = 1)
@@ -2089,6 +2157,8 @@ name:
 statement:
   If \(K\subset Q\), then every vertical fiber of \(K\) is contained in the
   corresponding vertical fiber of \(Q\).
+proof:
+  If a scalar lies in the fiber of (K), the corresponding product point lies in (K); inclusion puts it in (Q), hence in the fiber of (Q).
 -/
 theorem firstCoordinateVerticalFiber_mono {d : ℕ}
     {K Q : Set (ℝ × (Fin d → ℝ))}
@@ -2104,6 +2174,8 @@ name:
 statement:
   A vertical section of a closed subset of
   \(\mathbb R\times\mathbb R^d\) is closed in \(\mathbb R\).
+proof:
+  The fiber is the preimage of the closed set under the continuous map \(t\mapsto(t,y)\).
 -/
 theorem firstCoordinateVerticalFiber_isClosed {d : ℕ}
     {K : Set (ℝ × (Fin d → ℝ))} (hK : IsClosed K)
@@ -2120,6 +2192,8 @@ name:
 statement:
   A vertical section of an open subset of
   \(\mathbb R\times\mathbb R^d\) is open in \(\mathbb R\).
+proof:
+  The fiber is the preimage of the open set under the continuous embedding \(t\mapsto(t,y)\).
 -/
 theorem firstCoordinateVerticalFiber_isOpen {d : ℕ}
     {Ω : Set (ℝ × (Fin d → ℝ))} (hΩ : IsOpen Ω)
@@ -2172,8 +2246,7 @@ statement:
   with an open transverse neighborhood \(V\) of the fiber parameter such that
   \(U\times V\subset\Omega\).
 proof:
-  Use [a product neighborhood of the fiber support inside the
-  region](lean:JJMath.Uniformization.firstCoordinateVerticalFiber_test_exists_product_tube),
+  Use [a product neighborhood of the fiber support inside the region](lean:JJMath.Uniformization.firstCoordinateVerticalFiber_test_exists_product_tube),
   and keep the same underlying smooth function.
 -/
 theorem firstCoordinateVerticalFiber_test_exists_product_tube_test {d : ℕ}
@@ -2226,6 +2299,8 @@ statement:
   If every product segment \((a,y)+t e_1\), starting from \(K\), remains in
   \(Q\), then every one-dimensional segment \(a+t\), starting from the
   vertical fiber \(K_y\), remains in the corresponding fiber \(Q_y\).
+proof:
+  Translate membership in a vertical fiber into membership of the corresponding product point, apply the product-segment hypothesis, and translate back.
 -/
 theorem firstCoordinateVerticalFiber_segments {d : ℕ}
     {K Q : Set (ℝ × (Fin d → ℝ))}
@@ -2247,6 +2322,8 @@ name:
 statement:
   The set of all points \(x+t e_1\), with \(x\) in a compact set and
   \(0\le t\le1\), is compact.
+proof:
+  It is the continuous image of the compact product \(K\times[0,1]\) under \((x,t)\mapsto x+t e_1\).
 -/
 theorem firstCoordinate_unitSegmentImage_isCompact {d : ℕ}
     {K : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) :
@@ -2267,6 +2344,8 @@ name:
 statement:
   If all vertical unit segments starting from \(K\) remain in \(Q\), then the
   compact image of those segments is contained in \(Q\).
+proof:
+  Every point of the segment image has the form (x+t e_1) with (xin K) and (tin[0,1]); apply the assumed segment containment.
 -/
 theorem firstCoordinate_unitSegmentImage_subset_of_segments {d : ℕ}
     {K Q : Set (ℝ × (Fin d → ℝ))}
@@ -2693,6 +2772,8 @@ name:
 statement:
   A Euclidean weak derivative field on a real interval gives the real-line weak
   derivative in the unit direction.
+proof:
+  Specialize the Euclidean integration-by-parts identity to the one-dimensional model and the unit tangent direction.  The continuous linear derivative field evaluated at (1) is the scalar real weak derivative.
 -/
 theorem IsWeakDerivativeOnEuclideanRegionScalar.toRealRegion
     {Ω : Set ℝ} {u : ℝ → ℝ} {du : ℝ → ℝ →L[ℝ] ℝ}
@@ -2720,6 +2801,18 @@ private noncomputable def supportedSmoothTestC1GraphMap
 private abbrev SmoothTestC1Graph (K : Set ℝ) :=
   Set.range (supportedSmoothTestC1GraphMap K)
 
+/--
+%%handwave
+name:
+  Separability of the graph space of supported smooth tests
+statement:
+  For compact \(K\subset\mathbb R\), the set of pairs
+  \((\varphi|_K,\varphi'|_K)\) arising from smooth tests supported in \(K\) is
+  a separable topological space.
+proof:
+  It is a subspace of the product \(C(K,\mathbb R)\times C(K,\mathbb R)\),
+  which is separable for compact metrizable \(K\).
+-/
 private theorem smoothTestC1Graph_separableSpace
     (K : Set ℝ) (hK : IsCompact K) :
     TopologicalSpace.SeparableSpace (SmoothTestC1Graph K) := by
@@ -2738,6 +2831,17 @@ private noncomputable def smoothTestC1GraphDenseSet
     smoothTestC1Graph_separableSpace K hK
   Classical.choose (TopologicalSpace.exists_countable_dense (SmoothTestC1Graph K))
 
+/--
+%%handwave
+name:
+  Countability of the selected dense graph tests
+statement:
+  The chosen dense subset of the \(C^1\)-graph space of tests supported in a
+  compact set \(K\) is countable.
+proof:
+  This is the countability part of the chosen countable dense subset supplied
+  by separability.
+-/
 private theorem smoothTestC1GraphDenseSet_countable
     (K : Set ℝ) (hK : IsCompact K) :
     (smoothTestC1GraphDenseSet K hK).Countable := by
@@ -2746,6 +2850,17 @@ private theorem smoothTestC1GraphDenseSet_countable
   exact (Classical.choose_spec
     (TopologicalSpace.exists_countable_dense (SmoothTestC1Graph K))).1
 
+/--
+%%handwave
+name:
+  Density of the selected graph tests
+statement:
+  The chosen countable subset is dense in the \(C^1\)-graph space of smooth
+  tests supported in \(K\).
+proof:
+  This is the density part of the choice made from separability of that graph
+  space.
+-/
 private theorem smoothTestC1GraphDenseSet_dense
     (K : Set ℝ) (hK : IsCompact K) :
     Dense (smoothTestC1GraphDenseSet K hK) := by
@@ -2759,6 +2874,17 @@ private noncomputable def smoothTestC1GraphPreimage
     SupportedSmoothTestIoo K :=
   Classical.choose p.2
 
+/--
+%%handwave
+name:
+  A chosen test represents its graph point
+statement:
+  If \(p\) is a graph point \((\varphi|_K,\varphi'|_K)\), the test chosen as a
+  preimage of \(p\) has graph exactly \(p\).
+proof:
+  This is the defining property of the chosen preimage of a point in the
+  range of the graph map.
+-/
 private theorem smoothTestC1GraphPreimage_graph
     (K : Set ℝ) (p : SmoothTestC1Graph K) :
     supportedSmoothTestC1GraphMap K (smoothTestC1GraphPreimage K p) = p.1 :=
@@ -2769,6 +2895,16 @@ private noncomputable def smoothTestC1DenseTestsOn
   (fun p : SmoothTestC1Graph K ↦ (smoothTestC1GraphPreimage K p).val) ''
     smoothTestC1GraphDenseSet K hK
 
+/--
+%%handwave
+name:
+  Countability of dense smooth tests on a compact interval
+statement:
+  For compact \(K\subset(0,1)\), the selected family of smooth tests supported
+  in \(K\) is countable.
+proof:
+  It is the image of the chosen countable dense subset of the graph space.
+-/
 private theorem smoothTestC1DenseTestsOn_countable
     (K : Set ℝ) (hK : IsCompact K) :
     (smoothTestC1DenseTestsOn K hK).Countable :=
@@ -2781,17 +2917,48 @@ private def rationalCompactSubinterval
     (j : RationalCompactSubintervalIndex) : Set ℝ :=
   Set.Icc (j.1.1 : ℝ) (j.1.2 : ℝ)
 
+/--
+%%handwave
+name:
+  Compactness of a rational closed subinterval
+statement:
+  Every closed interval \([a,b]\) with rational endpoints
+  \(0<a<b<1\) is compact.
+proof:
+  Closed bounded intervals in \(\mathbb R\) are compact.
+-/
 private theorem rationalCompactSubinterval_compact
     (j : RationalCompactSubintervalIndex) :
     IsCompact (rationalCompactSubinterval j) := by
   exact isCompact_Icc
 
+/--
+%%handwave
+name:
+  A rational compact subinterval lies in the unit interval
+statement:
+  If \(0<a<b<1\), then \([a,b]\subset(0,1)\).
+proof:
+  Combine \(a\le x\le b\) with the strict endpoint inequalities.
+-/
 private theorem rationalCompactSubinterval_subset_Ioo
     (j : RationalCompactSubintervalIndex) :
     rationalCompactSubinterval j ⊆ Set.Ioo (0 : ℝ) 1 := by
   intro x hx
   exact ⟨lt_of_lt_of_le j.2.1 hx.1, lt_of_le_of_lt hx.2 j.2.2.2⟩
 
+/--
+%%handwave
+name:
+  Rational interval covering a compact subset of the unit interval
+statement:
+  Every compact set \(S\subset(0,1)\) is contained in some
+  \([a,b]\subset(0,1)\) with rational \(a<b\).
+proof:
+  For nonempty \(S\), take its minimum and maximum and choose rational numbers
+  strictly between \(0\) and the minimum and between the maximum and \(1\).
+  The empty set is covered by any fixed rational subinterval.
+-/
 private theorem exists_rationalCompactSubinterval_cover_of_compact_subset_Ioo
     {S : Set ℝ} (hS : IsCompact S) (hSI : S ⊆ Set.Ioo (0 : ℝ) 1) :
     ∃ j : RationalCompactSubintervalIndex, S ⊆ rationalCompactSubinterval j := by
@@ -2816,6 +2983,21 @@ private theorem exists_rationalCompactSubinterval_cover_of_compact_subset_Ioo
     intro x hx
     exact False.elim (hSne ⟨x, hx⟩)
 
+/--
+%%handwave
+name:
+  Uniform \(C^1\) approximation by a countable test family
+statement:
+  Let \(K\subset(0,1)\) be compact and let \(\varphi\) be a smooth test
+  supported in \(K\). For every \(\varepsilon>0\), some selected test
+  \(\psi\), also supported in \(K\), satisfies
+  \(\sup|\psi-\varphi|<\varepsilon\) and
+  \(\sup|\psi'-\varphi'|<\varepsilon\).
+proof:
+  Approximate the graph point \((\varphi|_K,\varphi'|_K)\) by the chosen dense
+  subset in the product sup norm. Outside \(K\), both tests and their
+  derivatives vanish.
+-/
 private theorem smoothTestC1DenseTestsOn_approx
     (K : Set ℝ) (hK : IsCompact K) (φ : SupportedSmoothTestIoo K)
     {ε : ℝ} (hε : 0 < ε) :
@@ -4450,10 +4632,8 @@ statement:
   \(r\mapsto U(r,y)\) has weak derivative
   \(r\mapsto DU(r,y)[(1,0)]\) on \((0,1)\).
 proof:
-  Choose [a countable \(C^1\)-dense family of compactly supported
-  one-dimensional tests](lean:JJMath.Uniformization.exists_countable_c1_dense_smooth_tests_Ioo),
-  then apply [countable \(C^1\)-dense tests suffice for vertical
-  Sobolev slicing](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_fiberwise_realWeakDerivative_on_unit_strip_of_countable_c1_dense_tests).
+  Choose [a countable \(C^1\)-dense family of compactly supported one-dimensional tests](lean:JJMath.Uniformization.exists_countable_c1_dense_smooth_tests_Ioo),
+  then apply [countable \(C^1\)-dense tests suffice for vertical Sobolev slicing](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_fiberwise_realWeakDerivative_on_unit_strip_of_countable_c1_dense_tests).
 -/
 theorem scalarWeakSobolev_firstCoordinate_fiberwise_realWeakDerivative_on_unit_strip
     {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -6918,6 +7098,8 @@ name:
 statement:
   At every point of the open set, the candidate glued representative is the
   componentwise primitive based at the chosen base point of that component.
+proof:
+  Choose the ordered connected component containing the point and unfold the glued definition.  Membership selects that component, giving its fixed base constant plus the integral of the weak derivative from the component base point.
 -/
 theorem realWeakSobolevGluedPrimitiveRepresentative_apply_of_mem
     {Ω : Set ℝ} {hΩ_open : IsOpen Ω} {u g : ℝ → ℝ}
@@ -7984,6 +8166,18 @@ theorem firstCoordinateVerticalFiber_memLp_ae_of_memLp_restrict
     · simp [F, firstCoordinateVerticalFiber, ha]
     · simp [F, firstCoordinateVerticalFiber, ha]
 
+/--
+%%handwave
+name:
+  First-coordinate translation preserves null sets
+statement:
+  Translation by \((s,0)\) on
+  \(\mathbb R\times\mathbb R^d\) is quasi-measure-preserving for Lebesgue
+  measure.
+proof:
+  It is the product of translation by \(s\) on \(\mathbb R\) and translation
+  by zero on \(\mathbb R^d\), both measure-preserving.
+-/
 private theorem firstCoordinate_translation_quasiMeasurePreserving_core
     {d : ℕ} (s : ℝ) :
     Measure.QuasiMeasurePreserving
@@ -8018,6 +8212,18 @@ private theorem firstCoordinate_translation_quasiMeasurePreserving_core
     ext i <;> simp
   rwa [hfun] at hqmp_volume
 
+/--
+%%handwave
+name:
+  Restricted first-coordinate translation preserves null sets
+statement:
+  If every unit first-coordinate translate of points of \(K\) lies in \(Q\),
+  then \(x\mapsto x+(1,0)\) is quasi-measure-preserving from Lebesgue measure
+  restricted to \(K\) to Lebesgue measure restricted to \(Q\).
+proof:
+  The unrestricted translation is measure-preserving and maps \(K\) into
+  \(Q\); restrict its source and target measures.
+-/
 private theorem firstCoordinate_translation_quasiMeasurePreserving_restrict_core
     {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
     (hsegments :
@@ -8033,6 +8239,19 @@ private theorem firstCoordinate_translation_quasiMeasurePreserving_restrict_core
     simpa using hsegments x hx 1 (by simp)
   exact (firstCoordinate_translation_quasiMeasurePreserving_core (d := d) 1).restrict htranslateKQ
 
+/--
+%%handwave
+name:
+  Restricted first-coordinate segment map preserves null sets
+statement:
+  If \(x+t(1,0)\in Q\) for \(x\in K\) and \(t\in[0,1]\), then
+  \((x,t)\mapsto x+t(1,0)\) is quasi-measure-preserving from
+  \((\mathrm{vol}|_K)\times(\mathrm{vol}|_{[0,1]})\) to
+  \(\mathrm{vol}|_Q\).
+proof:
+  For almost every \(t\), translation by \(t(1,0)\) preserves Lebesgue null
+  sets and maps \(K\) into \(Q\). Apply the product criterion.
+-/
 private theorem firstCoordinate_segmentMap_quasiMeasurePreserving_restrict_prod_core
     {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
     (hsegments :
@@ -8494,8 +8713,7 @@ statement:
       =\int_0^1 D u(x+t e_1)e_1\,dt .
   \]
 proof:
-  This is exactly [the product first-coordinate segment
-  identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae).
+  This is exactly [the product first-coordinate segment identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae).
 -/
 theorem scalarWeakSobolev_firstCoordinate_line_integral_eq_ae
     {d : ℕ}
@@ -8539,8 +8757,7 @@ statement:
       =\int_0^1 D u(x+t e_1)e_1\,dt .
   \]
 proof:
-  Take the original representative and use [the first-coordinate segment
-  identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_line_integral_eq_ae).
+  Take the original representative and use [the first-coordinate segment identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_line_integral_eq_ae).
 -/
 theorem scalarWeakSobolev_exists_firstCoordinate_acl_representative_on_segments
     {d : ℕ}
@@ -8585,8 +8802,7 @@ statement:
   for almost every \(x\in K\).
 proof:
   The rectifying coordinate data is now unused compatibility data.  Take the
-  original representative and apply [the directional weak fundamental theorem
-  on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
+  original representative and apply [the directional weak fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
 -/
 theorem scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -8635,9 +8851,7 @@ statement:
       =\int_0^1 D u(x+t h)h\,dt .
   \]
 proof:
-  Choose coordinates sending \(h\) to the first coordinate and use [the
-  directional representative statement transported through those
-  coordinates](lean:JJMath.Uniformization.scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates).
+  Choose coordinates sending \(h\) to the first coordinate and use [the directional representative statement transported through those coordinates](lean:JJMath.Uniformization.scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates).
 -/
 theorem scalarWeakSobolev_exists_directional_acl_representative_on_nonzero_segments
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -8683,8 +8897,7 @@ statement:
       =\int_0^1 D u(x+t h)h\,dt .
   \]
 proof:
-  Take the original representative and apply [the directional weak
-  fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
+  Take the original representative and apply [the directional weak fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
 -/
 theorem scalarWeakSobolev_exists_directional_acl_representative_on_segments
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -8724,8 +8937,7 @@ statement:
     u(x+h)-u(x)=\int_0^1 D u(x+t h)h\,dt .
   \]
 proof:
-  Apply [the weak fundamental theorem on almost every
-  segment](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
+  Apply [the weak fundamental theorem on almost every segment](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
 -/
 theorem scalarWeakSobolev_directional_acl_line_integral_eq_ae
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
@@ -8851,8 +9063,7 @@ statement:
   component \(D u(\cdot)h\) are \(L^2\) on \(P\), then the \(L^2(K)\)-norm of
   \(u(\cdot+h)-u\) is bounded by the \(L^2(Q)\)-norm of \(D u(\cdot)h\).
 proof:
-  Combine [the almost-everywhere segment-integral
-  bound](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_segmentIntegral_bound_ae)
+  Combine [the almost-everywhere segment-integral bound](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_segmentIntegral_bound_ae)
   with [the \(L^2\) estimate for segment integrals](lean:JJMath.Uniformization.euclideanSegmentIntegral_eLpNorm_le_of_segments).
 -/
 theorem scalarWeakSobolev_directional_difference_quotient_eLpNorm_le_of_segments_memLp
@@ -8901,9 +9112,7 @@ statement:
   derivative \(D u\), then the \(L^2(K)\)-norm of \(u(\cdot+h)-u\) is bounded
   by the \(L^2(P)\)-norm of the directional derivative \(D u(\cdot)h\).
 proof:
-  If the directional weak derivative has finite \(L^2(P)\)-norm, apply [the
-  \(L^2\) difference-quotient estimate with an explicit \(L^2\)
-  hypothesis](lean:JJMath.Uniformization.scalarWeakSobolev_directional_difference_quotient_eLpNorm_le_of_segments_memLp)
+  If the directional weak derivative has finite \(L^2(P)\)-norm, apply [the \(L^2\) difference-quotient estimate with an explicit \(L^2\) hypothesis](lean:JJMath.Uniformization.scalarWeakSobolev_directional_difference_quotient_eLpNorm_le_of_segments_memLp)
   and then enlarge the measure from \(Q\) to \(P\).  If the norm is infinite,
   the estimate is trivial.
 -/
@@ -9005,8 +9214,7 @@ statement:
   constant times the translation length.
 proof:
   Choose a compact thickening of \(K\) inside \(Q\); short segments from \(K\)
-  stay in that thickening.  Apply [the difference quotient bound in terms of
-  the weak derivative](lean:JJMath.Uniformization.scalarWeakSobolev_difference_quotient_eLpNorm_le_of_segments)
+  stay in that thickening.  Apply [the difference quotient bound in terms of the weak derivative](lean:JJMath.Uniformization.scalarWeakSobolev_difference_quotient_eLpNorm_le_of_segments)
   and the uniform derivative bound.
 -/
 theorem scalarWeakSobolevBound_linear_translation_modulus_on_compact
@@ -9067,8 +9275,7 @@ statement:
   Euclidean region, a uniform scalar weak \(W^{1,2}\) bound gives uniform
   \(L^2\) translation tightness on the smaller compact set.
 proof:
-  Apply [the linear translation modulus from the weak Sobolev
-  bound](lean:JJMath.Uniformization.scalarWeakSobolevBound_linear_translation_modulus_on_compact)
+  Apply [the linear translation modulus from the weak Sobolev bound](lean:JJMath.Uniformization.scalarWeakSobolevBound_linear_translation_modulus_on_compact)
   and convert that linear modulus into translation tightness.
 -/
 theorem scalarWeakSobolevBound_translation_tight_on_compact
@@ -9429,6 +9636,17 @@ noncomputable def finiteRankRepresentationOperator {ι Y : Type} [Fintype ι]
     (coeff : ι → Y →L[ℝ] ℝ) (vec : ι → Y) : Y →L[ℝ] Y :=
   ∑ i, (coeff i).smulRight (vec i)
 
+/--
+%%handwave
+name:
+  Formula for a finitely represented operator
+statement:
+  An operator represented by coefficient functionals
+  \(\lambda_i:Y\to\mathbb R\) and vectors \(v_i\in Y\) satisfies
+  \(A(y)=\sum_i\lambda_i(y)v_i\).
+proof:
+  Evaluate the finite sum of rank-one continuous linear maps at \(y\).
+-/
 @[simp]
 theorem finiteRankRepresentationOperator_apply {ι Y : Type} [Fintype ι]
     [NormedAddCommGroup Y] [NormedSpace ℝ Y]
@@ -9482,6 +9700,17 @@ noncomputable def finiteRankRepresentationOperatorBetween {ι Y Z : Type} [Finty
     (coeff : ι → Y →L[ℝ] ℝ) (vec : ι → Z) : Y →L[ℝ] Z :=
   ∑ i, (coeff i).smulRight (vec i)
 
+/--
+%%handwave
+name:
+  Formula for a finitely represented operator between spaces
+statement:
+  For coefficient functionals \(\lambda_i:Y\to\mathbb R\) and target vectors
+  \(v_i\in Z\), the represented operator satisfies
+  \(A(y)=\sum_i\lambda_i(y)v_i\).
+proof:
+  Evaluate the finite sum of rank-one maps at \(y\).
+-/
 @[simp]
 theorem finiteRankRepresentationOperatorBetween_apply {ι Y Z : Type} [Fintype ι]
     [NormedAddCommGroup Y] [NormedSpace ℝ Y]
@@ -9683,6 +9912,18 @@ theorem finite_net_family_of_sequence_finite_net {ι Y : Type}
     exact hy_tendsto.cauchySeq
   exact Metric.totallyBounded_iff.mp htot
 
+/--
+%%handwave
+name:
+  Pointwise representative of a finite sum in an \(L^p\) space
+statement:
+  For finitely many \(L^p(\mu;E)\) functions \(f_i\), the canonical
+  representative of \(\sum_i f_i\) agrees almost everywhere with
+  \(x\mapsto\sum_i f_i(x)\).
+proof:
+  Induct on the finite index set, using almost-everywhere compatibility of
+  \(L^p\) representatives with zero and addition.
+-/
 private theorem lpCoeFn_finset_sum {α ι E : Type} [MeasurableSpace α]
     [NormedAddCommGroup E] {p : ℝ≥0∞} {μ : Measure α}
     (s : Finset ι) (f : ι → Lp E p μ) :
@@ -9885,6 +10126,17 @@ theorem finiteOuterCellAveragingOperator_finiteDimensional_range
         innerSL ℝ (indicatorConstLp 2 (hD_meas i) (hD_finiteP i) (1 : ℝ)))
     (fun i : Fin m ↦ indicatorConstLp 2 (hD_meas i) (hD_finiteK i) (1 : ℝ))
 
+/--
+%%handwave
+name:
+  Value of a disjoint piecewise sum inside one cell
+statement:
+  Let \(C_i\) be pairwise disjoint. If \(x\in C_k\), then
+  \(\sum_i a_i\mathbf1_{C_i}(x)=a_k\).
+proof:
+  The \(k\)-th indicator is one, while disjointness makes every other
+  indicator zero.
+-/
 private theorem finiteCell_piecewise_sum_apply_of_mem
     {α : Type} {m : ℕ} (C : Fin m → Set α) (a : Fin m → ℝ)
     (hC_disjoint : ∀ i j : Fin m, i ≠ j → Disjoint (C i) (C j))
@@ -9908,6 +10160,16 @@ private theorem finiteCell_piecewise_sum_apply_of_mem
             simp at hk
     _ = a k := by simp [Set.indicator_of_mem hx]
 
+/--
+%%handwave
+name:
+  Value of a piecewise sum outside all cells
+statement:
+  If \(x\notin\bigcup_i C_i\), then
+  \(\sum_i a_i\mathbf1_{C_i}(x)=0\).
+proof:
+  Every cell indicator vanishes at \(x\), so every summand is zero.
+-/
 private theorem finiteCell_piecewise_sum_apply_of_not_mem_iUnion
     {α : Type} {m : ℕ} (C : Fin m → Set α) (a : Fin m → ℝ)
     {x : α} (hx : x ∉ ⋃ i : Fin m, C i) :
@@ -9919,6 +10181,17 @@ private theorem finiteCell_piecewise_sum_apply_of_not_mem_iUnion
     exact hx (Set.mem_iUnion.mpr ⟨i, hxi⟩)
   simp [Set.indicator_of_notMem hnot]
 
+/--
+%%handwave
+name:
+  Cell average is independent of the chosen \(L^2\) representative
+statement:
+  If \(u\in L^2(\mu)\) and \(s\) is measurable, then the normalized integral
+  of the canonical \(L^2\) representative over \(s\) equals that of \(u\).
+proof:
+  The canonical representative equals \(u\) almost everywhere; restrict that
+  equality to \(s\) and use congruence of integrals.
+-/
 private theorem finiteCell_averageCoeff_congr_toLp
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {s : Set α} (hs : MeasurableSet s)
@@ -10149,12 +10422,31 @@ statement:
 def regularCubeOuterAveragingConstant (d : ℕ) : ℝ :=
   (2 : ℝ) ^ d + 1
 
+/--
+%%handwave
+name:
+  Positivity of the regular-cube averaging constant
+statement:
+  The dimension-dependent constant \(3+2^{d+2}\) used for regular-cube
+  averaging is strictly positive for every \(d\).
+proof:
+  The power \(2^d\) is nonnegative, so the displayed sum is positive.
+-/
 theorem regularCubeOuterAveragingConstant_pos (d : ℕ) :
     0 < regularCubeOuterAveragingConstant d := by
   have hpow_nonneg : 0 ≤ (2 : ℝ) ^ d := pow_nonneg (by norm_num) d
   dsimp [regularCubeOuterAveragingConstant]
   linarith
 
+/--
+%%handwave
+name:
+  Nonnegativity of the regular-cube averaging constant
+statement:
+  The regular-cube averaging constant is nonnegative in every dimension.
+proof:
+  This follows immediately from [its strict positivity](lean:regularCubeOuterAveragingConstant_pos).
+-/
 theorem regularCubeOuterAveragingConstant_nonneg (d : ℕ) :
     0 ≤ regularCubeOuterAveragingConstant d :=
   (regularCubeOuterAveragingConstant_pos d).le
@@ -10300,6 +10592,8 @@ name:
 statement:
   The explicit box-average coefficient is the usual Lebesgue average over the
   box.
+proof:
+  Unfold the coefficient and the definition of set average; the normalizing volume and the box integral are identical.
 -/
 theorem regularCubeBoxAverageCoeff_eq_setAverage
     {d : ℕ} (u : ℕ → (Fin d → ℝ) → ℝ)
@@ -10637,6 +10931,8 @@ name:
   A displacement slice lies in its box
 statement:
   Every displacement slice is contained in the original box.
+proof:
+  Membership in the displacement slice includes membership in the original box as one of its defining conditions.
 -/
 theorem regularCubeBoxDisplacementSlice_subset_box
     {d : ℕ} (D : BoxIntegral.Box (Fin d)) (h : Fin d → ℝ) :
@@ -10652,6 +10948,8 @@ name:
 statement:
   If \(x\) belongs to the displacement slice of a box for displacement \(h\),
   then \(h\) belongs to the difference body of the box.
+proof:
+  A point (x) in the slice satisfies both (xin B) and (x+hin B).  Thus (h=(x+h)-x) is a difference of two points of (B).
 -/
 theorem regularCubeBoxDisplacementSlice_mem_differenceBody
     {d : ℕ} (D : BoxIntegral.Box (Fin d)) {h x : Fin d → ℝ}
@@ -10684,6 +10982,8 @@ name:
 statement:
   In a disjoint finite family of boxes, the displacement slices for any fixed
   displacement are pairwise disjoint.
+proof:
+  Each displacement slice is contained in its parent box.  Distinct parent boxes are disjoint, so their slices are disjoint as well.
 -/
 theorem regularCubeBoxDisplacementSlice_pairwiseDisjoint
     {d m : ℕ} (D : Fin m → BoxIntegral.Box (Fin d))
@@ -10993,12 +11293,34 @@ theorem regularCubeBoxDifferenceBody_subset_ball_of_diameter
   rw [Metric.mem_ball, dist_eq_norm]
   simpa [dist_eq_norm] using hdist
 
+/--
+%%handwave
+name:
+  Squared extended norm of a real number
+statement:
+  For \(r\in\mathbb R\),
+  \(\lVert r\rVert_{\!e}^{\,2}=\operatorname{ofReal}(r^2)\).
+proof:
+  Write the extended norm as the nonnegative-real embedding of \(|r|\), move
+  the square through that embedding, and use \(|r|^2=r^2\).
+-/
 private theorem real_enorm_rpow_two_eq_ofReal_sq (r : ℝ) :
     ‖r‖ₑ ^ (2 : ℝ) = ENNReal.ofReal (r ^ 2) := by
   rw [← ofReal_norm]
   rw [ENNReal.ofReal_rpow_of_nonneg (norm_nonneg r) (by norm_num : 0 ≤ (2 : ℝ))]
   norm_num [Real.rpow_natCast, sq, Real.norm_eq_abs]
 
+/--
+%%handwave
+name:
+  Square-integral bound from an \(L^2\)-norm bound
+statement:
+  If \(\lVert f\rVert_{L^2(\mu)}\le\eta\), then
+  \[\int\lVert f(x)\rVert_{\!e}^{\,2}\,d\mu\le\eta^2.\]
+proof:
+  Express the \(L^2\)-norm as the square root of the extended square integral,
+  then square the inequality using monotonicity of positive powers.
+-/
 private theorem lintegral_sq_le_of_eLpNorm_two_le
     {α : Type} [MeasurableSpace α] {μ : Measure α}
     {f : α → ℝ} {η : ℝ≥0∞}
@@ -12512,10 +12834,8 @@ statement:
   \(L^2(P)\to L^2(K)\) which uniformly approximates the restrictions to the
   inner compact \(K\).
 proof:
-  Choose the translation scale from translation tightness.  Use [a finite
-  regular box cover between \(K\) and \(P\)](lean:JJMath.Uniformization.euclideanPiCompact_exists_regularCubeCover_between),
-  build the outer averaging operator, and apply [the regular-box averaging
-  error estimate](lean:JJMath.Uniformization.regularCubeOuterAveraging_dist_lt_of_translation_bound).
+  Choose the translation scale from translation tightness.  Use [a finite regular box cover between \(K\) and \(P\)](lean:JJMath.Uniformization.euclideanPiCompact_exists_regularCubeCover_between),
+  build the outer averaging operator, and apply [the regular-box averaging error estimate](lean:JJMath.Uniformization.regularCubeOuterAveraging_dist_lt_of_translation_bound).
 -/
 theorem euclideanPiFrechetKolmogorov_smoothing_finiteRank_approx_L2_sequence
     {d : ℕ} {K P : Set (Fin d → ℝ)}
@@ -12625,6 +12945,16 @@ def EuclideanSmoothingFiniteRankApproxStatement (H : Type)
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H] : Prop :=
   EuclideanSmoothingFiniteRankApproxStatementForMeasure H (volume : Measure H)
 
+/--
+%%handwave
+name:
+  \(L^p\) membership after removing a positive measure scale
+statement:
+  If \(c>0\) and \(f\in L^p(c\mu)\), then \(f\in L^p(\mu)\).
+proof:
+  The measure \(\mu\) is bounded by \(c^{-1}(c\mu)\); use monotonicity of
+  \(L^p\) membership under domination by a finite scalar multiple.
+-/
 private theorem memLp_of_smul_measure_nnreal {α E : Type}
     [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {p : ℝ≥0∞} {c : ℝ≥0} (hc : c ≠ 0)
@@ -12642,6 +12972,17 @@ private theorem memLp_of_smul_measure_nnreal {α E : Type}
       _ ≤ ((c : ℝ≥0∞)⁻¹) • (c • μ) := by simp
   exact hf.of_measure_le_smul (by simp [hc]) hμ_le
 
+/--
+%%handwave
+name:
+  Almost-everywhere descent from a positively scaled measure
+statement:
+  If \(c>0\) and a property holds almost everywhere for \(c\mu\), then it
+  holds almost everywhere for \(\mu\).
+proof:
+  Multiplication of a measure by a nonzero finite constant does not change its
+  null sets.
+-/
 private theorem ae_of_smul_measure_nnreal {α : Type} [MeasurableSpace α]
     {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0) {p : α → Prop} :
     (∀ᵐ x ∂c • μ, p x) → (∀ᵐ x ∂μ, p x) := by
@@ -12651,6 +12992,16 @@ private theorem ae_of_smul_measure_nnreal {α : Type} [MeasurableSpace α]
   change ∀ᵐ x ∂(c : ℝ≥0∞) • μ, p x at h
   rwa [hae] at h
 
+/--
+%%handwave
+name:
+  Almost-everywhere ascent to a scaled measure
+statement:
+  If a property holds \(\mu\)-almost everywhere, then it holds
+  \(c\mu\)-almost everywhere for every \(c\ge0\).
+proof:
+  Every \(\mu\)-null set remains null after multiplying the measure by \(c\).
+-/
 private theorem ae_smul_measure_nnreal {α : Type} [MeasurableSpace α]
     {μ : Measure α} (c : ℝ≥0) {p : α → Prop} :
     (∀ᵐ x ∂μ, p x) → (∀ᵐ x ∂c • μ, p x) := by
@@ -12777,6 +13128,18 @@ private noncomputable def lpOriginalToRescale {α : Type} [MeasurableSpace α]
     rw [Lp.norm_def f, hscale_real']
   exact le_of_eq hnormeq
 
+/--
+%%handwave
+name:
+  Removing a measure scale from an \(L^2\) representative
+statement:
+  If \(c>0\) and \(f\in L^2(c\mu)\), the canonical map
+  \(L^2(c\mu)\to L^2(\mu)\) sends the class of \(f\) to the class of the same
+  function \(f\).
+proof:
+  Both classes have representatives equal to \(f\) almost everywhere, and
+  \(c\mu\) and \(\mu\) have the same null sets.
+-/
 private theorem lpRescaleToOriginal_toLp {α : Type} [MeasurableSpace α]
     {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0) {f : α → ℝ}
     (hf : MemLp f 2 (c • μ)) :
@@ -12790,6 +13153,18 @@ private theorem lpRescaleToOriginal_toLp {α : Type} [MeasurableSpace α]
   refine h_to_f.trans ?_
   exact (MemLp.coeFn_toLp (memLp_of_smul_measure_nnreal (μ := μ) (c := c) hc hf)).symm
 
+/--
+%%handwave
+name:
+  Adding a measure scale to an \(L^2\) representative
+statement:
+  If \(c>0\) and \(f\in L^2(\mu)\), the canonical map
+  \(L^2(\mu)\to L^2(c\mu)\) sends the class of \(f\) to the class of \(f\)
+  for the scaled measure.
+proof:
+  The two canonical representatives agree with \(f\) outside a
+  \(c\mu\)-null set.
+-/
 private theorem lpOriginalToRescale_toLp {α : Type} [MeasurableSpace α]
     {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0) {f : α → ℝ}
     (hf : MemLp f 2 μ) :
@@ -12802,6 +13177,17 @@ private theorem lpOriginalToRescale_toLp {α : Type} [MeasurableSpace α]
   refine h_to_f.trans ?_
   exact (MemLp.coeFn_toLp (hf.smul_measure (by simp))).symm
 
+/--
+%%handwave
+name:
+  Norm bound for adding a measure scale
+statement:
+  For \(c>0\) and \(f\in L^2(\mu)\),
+  \[\lVert f\rVert_{L^2(c\mu)}\le\sqrt c\,\lVert f\rVert_{L^2(\mu)}.\]
+proof:
+  Use the exact scaling formula for the \(L^2\)-norm under multiplication of
+  the measure by \(c\), then pass from extended norms to real norms.
+-/
 private theorem lpOriginalToRescale_norm_le {α : Type} [MeasurableSpace α]
     {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0) (f : Lp ℝ 2 μ) :
     ‖lpOriginalToRescale μ hc f‖ ≤
@@ -12821,6 +13207,16 @@ private theorem lpOriginalToRescale_norm_le {α : Type} [MeasurableSpace α]
   rw [Lp.norm_def f, hscale_real']
   rfl
 
+/--
+%%handwave
+name:
+  Distance bound for adding a measure scale
+statement:
+  For \(c>0\) and \(f,g\in L^2(\mu)\),
+  \[d_{L^2(c\mu)}(f,g)\le\sqrt c\,d_{L^2(\mu)}(f,g).\]
+proof:
+  Apply [the norm scaling bound](lean:lpOriginalToRescale_norm_le) to \(f-g\).
+-/
 private theorem lpOriginalToRescale_dist_le {α : Type} [MeasurableSpace α]
     {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0) (f g : Lp ℝ 2 μ) :
     dist (lpOriginalToRescale μ hc f) (lpOriginalToRescale μ hc g) ≤
@@ -12834,6 +13230,17 @@ private noncomputable def lpMeasureEqCLM {α : Type} [MeasurableSpace α]
   subst h
   exact ContinuousLinearMap.id ℝ (Lp ℝ 2 μ)
 
+/--
+%%handwave
+name:
+  Transport across equal measures preserves an \(L^2\) representative
+statement:
+  If \(\mu=\nu\) and \(f\in L^2(\mu)\cap L^2(\nu)\), the canonical transport
+  \(L^2(\mu)\to L^2(\nu)\) sends the class of \(f\) to the class of \(f\).
+proof:
+  Substitute the equality of measures and use equality of \(L^2\) classes
+  with identical representatives.
+-/
 private theorem lpMeasureEqCLM_toLp {α : Type} [MeasurableSpace α]
     {μ ν : Measure α} (h : μ = ν) {f : α → ℝ}
     (hfμ : MemLp f 2 μ) (hfν : MemLp f 2 ν) :
@@ -12841,12 +13248,32 @@ private theorem lpMeasureEqCLM_toLp {α : Type} [MeasurableSpace α]
   subst h
   exact MemLp.toLp_congr hfμ hfν Filter.EventuallyEq.rfl
 
+/--
+%%handwave
+name:
+  Transport across equal measures is an isometry
+statement:
+  If \(\mu=\nu\), canonical transport from \(L^2(\mu)\) to \(L^2(\nu)\)
+  preserves distances.
+proof:
+  After substituting \(\mu=\nu\), the transport is the identity map.
+-/
 private theorem lpMeasureEqCLM_dist {α : Type} [MeasurableSpace α]
     {μ ν : Measure α} (h : μ = ν) (f g : Lp ℝ 2 μ) :
     dist (lpMeasureEqCLM h f) (lpMeasureEqCLM h g) = dist f g := by
   subst h
   rfl
 
+/--
+%%handwave
+name:
+  Finite rank is preserved by precomposition
+statement:
+  If \(A:E\to F\) has finite-dimensional range and \(B:G\to E\) is linear,
+  then \(A\circ B\) has finite-dimensional range.
+proof:
+  The range of \(A\circ B\) is contained in the range of \(A\).
+-/
 private theorem finiteDimensional_range_comp_right {E F G : Type}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -12858,6 +13285,17 @@ private theorem finiteDimensional_range_comp_right {E F G : Type}
     rintro y ⟨x, rfl⟩
     exact LinearMap.mem_range_self (A : E →ₗ[ℝ] F) (B x))
 
+/--
+%%handwave
+name:
+  Finite rank is preserved by postcomposition
+statement:
+  If \(A:E\to F\) has finite-dimensional range and \(L:F\to G\) is linear,
+  then \(L\circ A\) has finite-dimensional range.
+proof:
+  Its range lies in the linear image under \(L\) of the finite-dimensional
+  range of \(A\).
+-/
 private theorem finiteDimensional_range_comp_left {E F G : Type}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -12871,6 +13309,17 @@ private theorem finiteDimensional_range_comp_left {E F G : Type}
     rintro y ⟨x, rfl⟩
     exact ⟨⟨A x, LinearMap.mem_range_self (A : E →ₗ[ℝ] F) x⟩, rfl⟩)
 
+/--
+%%handwave
+name:
+  Uniform \(L^2\) bounds after removing a measure scale
+statement:
+  If \(c>0\) and a family has a finite uniform \(L^2(c\mu)\)-norm bound, then
+  it has a finite uniform \(L^2(\mu)\)-norm bound.
+proof:
+  Rescale by \(c^{-1/2}\) using the \(L^2\)-norm scaling formula; the new bound
+  is finite because both factors are finite.
+-/
 private theorem exists_eLpNorm_bound_of_smul_measure {ι α : Type}
     [MeasurableSpace α] {μ : Measure α} {c : ℝ≥0} (hc : c ≠ 0)
     {u : ι → α → ℝ} :
@@ -12896,6 +13345,17 @@ private theorem exists_eLpNorm_bound_of_smul_measure {ι α : Type}
   dsimp [s]
   exact mul_le_mul_right (hC i) _
 
+/--
+%%handwave
+name:
+  Translation tightness after removing a measure scale
+statement:
+  If \(c>0\) and a family is uniformly translation-tight in \(L^2(c\mu)\) on
+  \(K\), then it is uniformly translation-tight in \(L^2(\mu)\) on \(K\).
+proof:
+  The unscaled translation difference norm is \(c^{-1/2}\) times its scaled
+  norm. Apply tightness with the tolerance multiplied by \(\sqrt c\).
+-/
 private theorem translationTightFamilyOnCompact_of_smul_measure {ι H : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasurableSpace H]
     {μ : Measure H} {c : ℝ≥0} (hc : c ≠ 0) {K : Set H}
@@ -12935,6 +13395,20 @@ private theorem translationTightFamilyOnCompact_of_smul_measure {ι H : Type}
     _ = ε := by
       exact ENNReal.mul_inv_cancel_left hs_ne ENNReal.coe_ne_top
 
+/--
+%%handwave
+name:
+  Finite-rank approximation after scaling both measures
+statement:
+  Let \(c>0\). If finite-rank maps \(L^2(\mu_P)\to L^2(\mu_K)\) approximate a
+  sequence uniformly, then finite-rank maps
+  \(L^2(c\mu_P)\to L^2(c\mu_K)\) approximate the same sequence uniformly.
+proof:
+  Conjugate an approximating map by the canonical rescaling maps on source
+  and target, choosing the original tolerance divided by \(\sqrt c\).
+  Composition preserves finite rank and the target rescaling multiplies
+  errors by at most \(\sqrt c\).
+-/
 private theorem finiteRankApproximationBetweenMeasures_of_smul_measure
     {H : Type} [MeasurableSpace H] {μP μK : Measure H} {c : ℝ≥0} (hc : c ≠ 0)
     {u : ℕ → H → ℝ}
@@ -13016,6 +13490,19 @@ private theorem finiteRankApproximationBetweenMeasures_of_smul_measure
             ((hmemK n).toLp (u n)) (A0 ((hmemP n).toLp (u n)))
       _ < ε := hscaled_lt
 
+/--
+%%handwave
+name:
+  Finite-rank approximation transported across equal measures
+statement:
+  If \(\mu_P=\nu_P\) and \(\mu_K=\nu_K\), a uniform finite-rank approximation
+  of a sequence from \(L^2(\nu_P)\) to \(L^2(\nu_K)\) yields one from
+  \(L^2(\mu_P)\) to \(L^2(\mu_K)\).
+proof:
+  Conjugate by the canonical isometries induced by equality of measures.
+  These preserve the represented functions and distances, while composition
+  preserves finite-dimensional range.
+-/
 private theorem finiteRankApproximationBetweenMeasures_of_measure_eq
     {H : Type} [MeasurableSpace H] {μP μK νP νK : Measure H}
     (hP : μP = νP) (hK : μK = νK) {u : ℕ → H → ℝ}
@@ -13185,6 +13672,16 @@ theorem EuclideanSmoothingFiniteRankApproxStatementForMeasure.of_smul_measure
     finiteRankApproximationOnNestedCompacts_of_smul_measure
       (μ := μ) (c := c) hc_ne hmemP hmemK hmemPμ hmemKμ happrox ε hε
 
+/--
+%%handwave
+name:
+  A linear equivalence maps compact sets to compact sets
+statement:
+  If \(e:H\to V\) is a continuous linear equivalence and \(K\subset H\) is
+  compact, then \(e(K)\) is compact.
+proof:
+  Continuous images of compact sets are compact.
+-/
 private theorem isCompact_image_continuousLinearEquiv {H V : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -13192,6 +13689,17 @@ private theorem isCompact_image_continuousLinearEquiv {H V : Type}
     IsCompact (e '' K) :=
   hK.image e.continuous
 
+/--
+%%handwave
+name:
+  A linear equivalence preserves containment in an interior
+statement:
+  If \(K\subset\operatorname{int}P\) and \(e:H\to V\) is a continuous linear
+  equivalence, then \(e(K)\subset\operatorname{int}(e(P))\).
+proof:
+  The underlying homeomorphism carries interiors to interiors; apply
+  monotonicity of images to the original inclusion.
+-/
 private theorem image_subset_interior_image_continuousLinearEquiv {H V : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
     [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -13651,6 +14159,16 @@ noncomputable def euclideanTargetCoordinateMap (E : Type)
     (i : Fin (Module.finrank ℝ E)) : E →L[ℝ] ℝ :=
   (EuclideanSpace.proj i).comp (stdOrthonormalBasis ℝ E).repr.toContinuousLinearMap
 
+/--
+%%handwave
+name:
+  Orthonormal coordinate functional
+statement:
+  The \(i\)-th coordinate functional sends \(v\) to its \(i\)-th coefficient
+  in the standard orthonormal basis.
+proof:
+  This is the definition of the coordinate functional.
+-/
 @[simp]
 theorem euclideanTargetCoordinateMap_apply {E : Type}
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -13658,6 +14176,15 @@ theorem euclideanTargetCoordinateMap_apply {E : Type}
     euclideanTargetCoordinateMap E i v = (stdOrthonormalBasis ℝ E).repr v i := by
   rfl
 
+/--
+%%handwave
+name:
+  Norm bound for an orthonormal coordinate
+statement:
+  Every orthonormal coordinate satisfies \(|v_i|\le\lVert v\rVert\).
+proof:
+  A coordinate is bounded by the norm of the full coordinate vector.
+-/
 theorem euclideanTargetCoordinateMap_norm_le {E : Type}
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     (i : Fin (Module.finrank ℝ E)) (v : E) :
@@ -13801,6 +14328,16 @@ noncomputable def euclideanTargetCoordinateDerivative {H E : Type}
     H → H →L[ℝ] ℝ :=
   fun z ↦ (euclideanTargetCoordinateMap E i).comp (du z)
 
+/--
+%%handwave
+name:
+  Coordinate derivative of a vector-valued differential
+statement:
+  The \(i\)-th scalar coordinate derivative at \(z\) in direction \(v\) is
+  the \(i\)-th orthonormal coordinate of \(du(z)v\).
+proof:
+  This is the definition of the coordinate derivative.
+-/
 @[simp]
 theorem euclideanTargetCoordinateDerivative_apply {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -13811,6 +14348,17 @@ theorem euclideanTargetCoordinateDerivative_apply {H E : Type}
       euclideanTargetCoordinateMap E i (du z v) := by
   rfl
 
+/--
+%%handwave
+name:
+  Norm bound for a scalar coordinate derivative
+statement:
+  If \(A:H\to E\) and \(\lambda_i\) is an orthonormal coordinate functional,
+  then \(\lVert\lambda_i\circ A\rVert\le\lVert A\rVert\).
+proof:
+  The coordinate functional has norm at most one and operator norms are
+  submultiplicative.
+-/
 theorem euclideanTargetCoordinateDerivative_norm_le {H E : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -13971,8 +14519,7 @@ statement:
 proof:
   Choose an intermediate compact \(P\) with
   \(K\subset\operatorname{int}P\subset P\subset\operatorname{int}Q\).  The
-  Sobolev bound on \(Q\) gives [translation tightness on
-  \(P\)](lean:JJMath.Uniformization.scalarWeakSobolevBound_translation_tight_on_compact).
+  Sobolev bound on \(Q\) gives [translation tightness on \(P\)](lean:JJMath.Uniformization.scalarWeakSobolevBound_translation_tight_on_compact).
   Then apply [local regular-cube Kolmogorov--Riesz compactness](lean:JJMath.Uniformization.euclideanKolmogorovRiesz_localRegularCube_subsequence_on_compact)
   to the restrictions from \(P\) to \(K\).
 -/
@@ -14065,12 +14612,8 @@ statement:
   uniformly bounded in \(W^{1,2}(Q;E)\), then their \(L^2(K;E)\)-classes lie
   in one compact subset of \(L^2(K;E)\).
 proof:
-  For each orthonormal coordinate \(\ell_i:E\to\mathbb R\), use that [the
-  scalar coordinate classes lie in one compact subset of
-  \(L^2(K)\)](lean:JJMath.Uniformization.euclideanKolmogorovRiesz_localRegularCube_compact_containment).
-  The finite product of the coordinate compact sets is compact, and [the
-  \(L^2\)-class is reconstructed from its scalar orthonormal
-  coordinates](lean:JJMath.Uniformization.euclideanTargetCoordinateReconstructionLp_toLp).
+  For each orthonormal coordinate \(\ell_i:E\to\mathbb R\), use that [the scalar coordinate classes lie in one compact subset of \(L^2(K)\)](lean:JJMath.Uniformization.euclideanKolmogorovRiesz_localRegularCube_compact_containment).
+  The finite product of the coordinate compact sets is compact, and [the \(L^2\)-class is reconstructed from its scalar orthonormal coordinates](lean:JJMath.Uniformization.euclideanTargetCoordinateReconstructionLp_toLp).
   The continuous reconstruction map \((f_i)_i\mapsto\sum_i f_i e_i\) therefore
   sends the product compact set to a compact subset of \(L^2(K;E)\) containing
   the original sequence.
@@ -14177,9 +14720,7 @@ statement:
   uniformly bounded in \(W^{1,2}(Q;E)\), then a subsequence converges strongly
   in \(L^2(K;E)\).
 proof:
-  First put the \(L^2(K;E)\)-classes in one compact subset by [Euclidean
-  Rellich compact containment for finite-dimensional Hilbert
-  targets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact).
+  First put the \(L^2(K;E)\)-classes in one compact subset by [Euclidean Rellich compact containment for finite-dimensional Hilbert targets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact).
   Sequential compactness of that compact subset gives a strongly
   \(L^2(K;E)\)-convergent subsequence.
 -/
@@ -15312,6 +15853,16 @@ noncomputable def continuousLinearMapFiniteBasisEvalEquiv
         exact b.constr_basis ℝ y i }
   exact eLin.toContinuousLinearEquiv
 
+/--
+%%handwave
+name:
+  Finite-basis evaluation of a continuous linear map
+statement:
+  Under \(\mathcal L(H,E)\cong\prod_iE\), the \(i\)-th component of \(A\) is
+  \(A(e_i)\).
+proof:
+  Unfold the evaluation equivalence on the chosen finite basis.
+-/
 @[simp]
 theorem continuousLinearMapFiniteBasisEvalEquiv_apply
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -16080,8 +16631,7 @@ statement:
   Hilbert--Schmidt energy on \(Q\), then the coordinate pullbacks
   \(D u_n\circ d\chi^{-1}\) are uniformly bounded in \(L^2(K',dx)\).
 proof:
-  Apply [the compact chart comparison with intrinsic
-  energy](lean:JJMath.Uniformization.localRellich_chartPullback_derivative_eLpNorm_le_intrinsic_on_compact)
+  Apply [the compact chart comparison with intrinsic energy](lean:JJMath.Uniformization.localRellich_chartPullback_derivative_eLpNorm_le_intrinsic_on_compact)
   and then use the uniform bound on the intrinsic Hilbert--Schmidt energy.
 -/
 theorem localRellich_chartPullback_derivative_eLpNorm_bound_of_intrinsic_bound
@@ -16791,8 +17341,7 @@ proof:
   On each compact chart piece, pull the weak derivative identity to Euclidean
   coordinates.  Smooth positivity of the measure and continuity of the
   Riemannian metric compare the chartwise \(W^{1,2}\)-norms with the
-  intrinsic norm on \(Q\).  Thus [the Euclidean \(L^2\)-classes lie in
-  compact sets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact)
+  intrinsic norm on \(Q\).  Thus [the Euclidean \(L^2\)-classes lie in compact sets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact)
   in every chart.  A finite measurable decomposition subordinate to the
   compact chart cover gives the stated finite-sum distance estimate.
 -/
@@ -16893,9 +17442,7 @@ proof:
   The chart pullback of the weak differential gives Euclidean weak
   derivatives on the patches.  Smooth positivity of the manifold measure and
   continuity of the Riemannian metric make the chartwise \(W^{1,2}\) norms
-  uniformly controlled by the intrinsic \(W^{1,2}(Q)\) bound.  Hence [the
-  Euclidean \(L^2\)-classes lie in compact
-  sets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact)
+  uniformly controlled by the intrinsic \(W^{1,2}(Q)\) bound.  Hence [the Euclidean \(L^2\)-classes lie in compact sets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact)
   in each chart.  A finite partition of \(K\) subordinate to the chart patches
   gives the stated finite-sum distance control.
 -/
@@ -16958,9 +17505,7 @@ statement:
 proof:
   Cover \(K\) by finitely many chart neighborhoods whose larger compact
   coordinate neighborhoods are contained in \(Q\).  In each chart, the
-  manifold weak derivative identity becomes [the Euclidean weak derivative
-  identity for the pulled-back map and
-  differential](lean:JJMath.Uniformization.IsWeakDerivativeOnManifoldRegionBundle.chartPullback).
+  manifold weak derivative identity becomes [the Euclidean weak derivative identity for the pulled-back map and differential](lean:JJMath.Uniformization.IsWeakDerivativeOnManifoldRegionBundle.chartPullback).
   The smooth positive coordinate density and the Riemannian metric are
   uniformly comparable with Euclidean data on each compact chart patch, so
   the global \(W^{1,2}(Q)\) bound gives uniform Euclidean \(W^{1,2}\) bounds
@@ -17021,11 +17566,9 @@ statement:
   every selected subsequence of the \(L^2(K;E)\)-classes of \(u_n\) has a
   Cauchy subsubsequence.
 proof:
-  Use [finitely many chartwise spaces whose distances control the
-  \(L^2(K;E)\)-distance](lean:JJMath.Uniformization.localRellich_exists_finite_chartwise_cauchy_control_of_memLp).
+  Use [finitely many chartwise spaces whose distances control the \(L^2(K;E)\)-distance](lean:JJMath.Uniformization.localRellich_exists_finite_chartwise_cauchy_control_of_memLp).
   A finite diagonal extraction gives one subsequence which is Cauchy in all
-  chartwise spaces, and [finite metric control preserves
-  Cauchyness](lean:JJMath.Uniformization.cauchySeq_of_finite_dist_control) in
+  chartwise spaces, and [finite metric control preserves Cauchyness](lean:JJMath.Uniformization.cauchySeq_of_finite_dist_control) in
   \(L^2(K;E)\).
 -/
 theorem localRellich_chartwise_cauchy_subsequence_of_memLp
@@ -17076,8 +17619,7 @@ statement:
   subset of \(L^2(K;E)\).
 proof:
   Use the sequential criterion for total boundedness.  Every selected
-  subsequence has [a Cauchy
-  subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp),
+  subsequence has [a Cauchy subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp),
   so the range of the \(L^2(K;E)\)-classes is totally bounded.
 -/
 theorem localRellich_chartwise_totallyBounded_range_of_memLp
@@ -17122,8 +17664,7 @@ statement:
   \(L^2(K;E)\).  Then these \(L^2(K;E)\)-classes lie in one compact subset of
   \(L^2(K;E)\).
 proof:
-  First prove that [the \(L^2(K;E)\)-classes form a totally bounded
-  set](lean:JJMath.Uniformization.localRellich_chartwise_totallyBounded_range_of_memLp)
+  First prove that [the \(L^2(K;E)\)-classes form a totally bounded set](lean:JJMath.Uniformization.localRellich_chartwise_totallyBounded_range_of_memLp)
   by the chartwise Euclidean Rellich argument.  Then take the closure of this
   range in \(L^2(K;E)\); total boundedness and completeness make that closure
   compact.
@@ -17168,8 +17709,7 @@ statement:
   then their \(L^2(K;E)\)-classes are defined and all lie in one compact
   subset of \(L^2(K;E)\).
 proof:
-  First prove that every selected subsequence has [a Cauchy
-  subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp)
+  First prove that every selected subsequence has [a Cauchy subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp)
   in \(L^2(K;E)\).  The sequential criterion gives total boundedness of the
   range of the \(L^2(K;E)\)-classes, and its closure is compact because
   \(L^2(K;E)\) is complete.
@@ -17217,8 +17757,7 @@ statement:
   \(U\) open.  If \(u_n:U\to E\) are uniformly bounded in \(W^{1,2}(Q;E)\),
   then a subsequence converges strongly in \(L^2(K;E)\).
 proof:
-  The local Sobolev hypotheses give \(L^2(K;E)\)-classes.  Apply [the finite
-  chart diagonal Cauchy extraction](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp)
+  The local Sobolev hypotheses give \(L^2(K;E)\)-classes.  Apply [the finite chart diagonal Cauchy extraction](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp)
   to the original sequence.  Completeness of \(L^2(K;E)\) turns the Cauchy
   subsequence into a strongly convergent subsequence.
 -/
@@ -17275,8 +17814,9 @@ statement:
   \(U\) open.  If \(u_n:U\to E\) are uniformly bounded in \(W^{1,2}(Q;E)\),
   then a subsequence converges strongly in \(L^2(K;E)\).
 proof:
-  Apply [chartwise Euclidean Rellich globalizes on
-  manifolds](lean:JJMath.Uniformization.localRellich_subsequence_on_compact_from_chartwise_euclidean).
+  Apply [chartwise Euclidean Rellich globalizes on manifolds](lean:JJMath.Uniformization.localRellich_subsequence_on_compact_from_chartwise_euclidean).
+tags:
+  milestone
 -/
 theorem localRellich_subsequence_on_compact
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -17358,6 +17898,17 @@ theorem localRellich_subsequence_on_compact_with_memLp
     (fun n : ℕ ↦ u (φ n)) (fun n : ℕ ↦ hmemK (φ n))
     (a : X → E) (Lp.memLp a)).mp ha'
 
+/--
+%%handwave
+name:
+  Agreement of almost-everywhere constants on a positive overlap
+statement:
+  If \(u=a\) almost everywhere on \(s\), \(u=b\) almost everywhere on \(t\),
+  and \(\mu(s\cap t)>0\), then \(a=b\).
+proof:
+  Restrict both equalities to the intersection. Distinct constants would
+  imply false almost everywhere on a set of positive measure.
+-/
 private theorem ae_eq_const_on_positive_inter_eq_of_measure
     {X : Type} [MeasurableSpace X] {μ : Measure X}
     {s t : Set X} {u : X → ℝ} {a b : ℝ}
@@ -17640,6 +18191,16 @@ theorem euclideanPiBox_ae_const_of_zero_translation_eLpNorm
     simpa [ENNReal.rpow_eq_zero_iff] using hy
   exact sub_eq_zero.mp (by simpa using (enorm_eq_zero.mp hnorm_zero))
 
+/--
+%%handwave
+name:
+  Positivity of the volume of a Euclidean box
+statement:
+  A box in \(\mathbb R^d\) with positive side lengths has positive Lebesgue
+  volume.
+proof:
+  Its volume is the product of the positive side lengths.
+-/
 private theorem euclideanPiBox_volume_pos
     {d : ℕ} (D : BoxIntegral.Box (Fin d)) :
     0 < MeasureTheory.volume (D : Set (Fin d → ℝ)) := by
@@ -17650,6 +18211,15 @@ private theorem euclideanPiBox_volume_pos
     exact Finset.prod_pos fun i _ ↦ sub_pos.mpr (D.lower_lt_upper i)
   exact (ENNReal.toReal_pos_iff.mp htoReal_pos).1
 
+/--
+%%handwave
+name:
+  Finiteness of the volume of a Euclidean box
+statement:
+  Every bounded coordinate box in \(\mathbb R^d\) has finite Lebesgue volume.
+proof:
+  Its volume is a finite product of finite side lengths.
+-/
 private theorem euclideanPiBox_volume_ne_top
     {d : ℕ} (D : BoxIntegral.Box (Fin d)) :
     MeasureTheory.volume (D : Set (Fin d → ℝ)) ≠ (⊤ : ℝ≥0∞) :=
@@ -18049,9 +18619,7 @@ statement:
 proof:
   The hypothesis says that the \(L^2\)-class of \(u\) is locally invariant
   under all sufficiently small translations, which gives local
-  almost-everywhere constants.  Since the ball is preconnected, [local
-  almost-everywhere constants glue to one constant on a preconnected
-  Euclidean region](lean:JJMath.Uniformization.euclidean_ae_local_constants_glue_on_preconnected).
+  almost-everywhere constants.  Since the ball is preconnected, [local almost-everywhere constants glue to one constant on a preconnected Euclidean region](lean:JJMath.Uniformization.euclidean_ae_local_constants_glue_on_preconnected).
 -/
 theorem ae_const_on_ball_of_zero_local_translation_eLpNorm_finiteDimensional
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -18091,8 +18659,7 @@ proof:
   sufficiently short translation difference by the \(L^2\)-norm of the weak
   derivative on a compact collar.  Since the weak derivative is zero almost
   everywhere, all such local translation differences have zero \(L^2\)-norm.
-  Apply [the local translation-invariance
-  criterion](lean:JJMath.Uniformization.ae_const_on_ball_of_zero_local_translation_eLpNorm_finiteDimensional).
+  Apply [the local translation-invariance criterion](lean:JJMath.Uniformization.ae_const_on_ball_of_zero_local_translation_eLpNorm_finiteDimensional).
 -/
 theorem euclideanSobolev_zero_gradient_constant_on_ball_finiteDimensional
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -18198,8 +18765,7 @@ statement:
   of every point of \(U\).
 proof:
   Around the point choose a ball whose closed ball is still contained in the
-  open region.  Apply [the compactly contained ball
-  rigidity](lean:JJMath.Uniformization.euclideanSobolev_zero_gradient_constant_on_ball_finiteDimensional)
+  open region.  Apply [the compactly contained ball rigidity](lean:JJMath.Uniformization.euclideanSobolev_zero_gradient_constant_on_ball_finiteDimensional)
   on that ball.
 -/
 theorem euclideanSobolev_zero_gradient_locally_constant_finiteDimensional
@@ -18313,6 +18879,17 @@ theorem euclideanSobolev_zero_gradient_constant_on_preconnected :
     euclideanSobolev_zero_gradient_constant_on_preconnected_finiteDimensional
       hΩ_open hΩ_preconnected hweak hmem hdu_zero
 
+/--
+%%handwave
+name:
+  Equality of local constants on a positive-measure intersection
+statement:
+  If \(u=a\) almost everywhere on \(s\), \(u=b\) almost everywhere on \(t\),
+  and \(\mu(s\cap t)>0\), then \(a=b\).
+proof:
+  Restrict both statements to the intersection; distinct constants would make
+  that positive-measure set null.
+-/
 private theorem ae_eq_const_on_positive_inter_eq
     {X : Type} [MeasurableSpace X] {μ : Measure X}
     {s t : Set X} {u : X → ℝ} {a b : ℝ}
@@ -19112,6 +19689,8 @@ proof:
   [zero weak gradient gives local coordinate constants on manifolds](lean:JJMath.Uniformization.localSobolev_zero_gradient_locally_constant_on_manifold).
   Then glue those local constants across the preconnected region using
   [local almost-everywhere constants glue on preconnected manifolds](lean:JJMath.Uniformization.ae_local_constants_glue_on_preconnected_of_smooth_positive_measure).
+tags:
+  milestone
 -/
 theorem localSobolev_zero_gradient_constant_on_preconnected
     {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -19317,8 +19896,7 @@ statement:
   \(U\), then there is \(a\in\mathbb R\) such that \(u=a\) almost everywhere
   on \(U\).
 proof:
-  Apply [the smooth-positive-area statement that zero weak gradient forces
-  one almost-everywhere constant](lean:JJMath.Uniformization.localSobolev_zero_gradient_constant_on_preconnected_of_smooth_positive_area)
+  Apply [the smooth-positive-area statement that zero weak gradient forces one almost-everywhere constant](lean:JJMath.Uniformization.localSobolev_zero_gradient_constant_on_preconnected_of_smooth_positive_area)
   to the Riemannian area measure, which is smooth and positive in coordinates.
 -/
 theorem localSobolev_zero_gradient_constant_on_preconnected_on_surface

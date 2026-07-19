@@ -274,6 +274,8 @@ proof:
   exterior.  Delete them one at a time through annular Mayer--Vietoris covers;
   the nonzero angular period supplied from the exterior side makes exactness
   preserve vanishing first cohomology at every deletion.
+tags:
+  milestone
 -/
 theorem
     smoothRelativelyCompactExhaustion_exists_pointedH1Zero_filling_of_ambientDeRhamH1Zero

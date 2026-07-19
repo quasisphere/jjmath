@@ -389,6 +389,10 @@ statement:
   A finite cover of a real set whose total length is bounded by a given number
   can be regarded as a countable cover with the same total length by adding
   empty sets after the finite list.
+proof:
+  Enumerate the finite family by the first \(N\) natural numbers and assign the
+  empty set to every later index.  The resulting union still covers the set,
+  and the infinite sum reduces to the original finite sum.
 -/
 theorem real_countable_cover_of_fin_cover {E : Set ℝ} {N : ℕ}
     {A : Fin N → Set ℝ} {ε : ℝ}
@@ -422,6 +426,10 @@ name:
 statement:
   A cover indexed by any finite type can be regarded as a countable cover with
   the same total length.
+proof:
+  Identify the finite index type with an initial segment of the natural
+  numbers, transport the family along this bijection, and apply the finite-list
+  construction.
 -/
 theorem real_countable_cover_of_fintype_cover {ι : Type*} [Fintype ι]
     {E : Set ℝ} {A : ι → Set ℝ} {ε : ℝ}
@@ -452,6 +460,9 @@ statement:
   If a finite cover has each member bounded by a prescribed extended
   nonnegative length and the sum of these prescribed lengths is small, then it
   gives a countable cover with small total length.
+proof:
+  Sum the individual measure bounds over the finite index set, then apply the
+  conversion of a finite-index cover into a countable cover.
 -/
 theorem real_countable_cover_of_fintype_cover_of_uniform_volume_bound
     {ι : Type*} [Fintype ι] {E : Set ℝ} {A : ι → Set ℝ} {η : ENNReal} {ε : ℝ}
@@ -471,6 +482,9 @@ name:
 statement:
   The Lebesgue measure of the interval centered at a real number with radius
   \(r\) is the nonnegative real number \(2r\).
+proof:
+  The measure of \([a-r,a+r]\) is the nonnegative part of
+  \((a+r)-(a-r)=2r\).
 -/
 theorem real_volume_Icc_center_radius (a r : ℝ) :
     MeasureTheory.volume (Set.Icc (a - r) (a + r)) = ENNReal.ofReal (2 * r) := by
@@ -566,6 +580,10 @@ statement:
   If \(R>0\) and \(M>0\), then the closed disk of radius \(R\) is covered by
   the square grid obtained from the uniform subdivisions of the real and
   imaginary coordinate intervals \([-R,R]\).
+proof:
+  A point of the disk has both real and imaginary coordinate differences in
+  \([-R,R]\).  Choose a grid interval covering each coordinate and take the
+  corresponding pair of indices.
 -/
 theorem complex_closedBall_subset_iUnion_sardComplexGridCell
     (z : ℂ) (R : ℝ) {M : ℕ} (hR : 0 < R) (hM : 0 < M) :
@@ -593,6 +611,10 @@ name:
 statement:
   Two points in the same interval of a uniform grid differ by at most the mesh
   size.
+proof:
+  Both points lie between the same two endpoints, whose difference is the mesh
+  size; subtracting the endpoint inequalities gives the two-sided bound on
+  their difference.
 -/
 theorem real_abs_sub_le_of_mem_sardRealGridInterval
     {R : ℝ} {M : ℕ} {i : Fin (M + 1)} {x y : ℝ}
@@ -609,6 +631,10 @@ name:
 statement:
   Two points in the same complex grid cell are at distance at most
   \(\sqrt 2\) times the mesh size.
+proof:
+  The real and imaginary coordinate differences are each bounded by the mesh
+  size.  The Euclidean norm is at most \(\sqrt2\) times the larger absolute
+  coordinate, giving the stated diameter bound.
 -/
 theorem complex_norm_sub_le_of_mem_sardComplexGridCell
     {z : ℂ} {R : ℝ} {M : ℕ} {ij : Fin (M + 1) × Fin (M + 1)} {w p : ℂ}
@@ -652,6 +678,13 @@ statement:
   critical value, then the zero-Hessian critical values are covered by one
   real interval for each grid cell.  Each interval has length at most twice
   that radius.
+proof:
+  In each cell meeting the zero-Hessian critical set, select one such critical
+  point and center an interval of radius \(\rho\) at its value; use the empty
+  set for cells that do not meet the critical set.  The grid cover places every
+  relevant critical point in a cell, and the oscillation hypothesis puts its
+  value in that cell's interval.  Each nonempty interval has length \(2\rho\),
+  while the empty intervals have measure zero.
 -/
 theorem zeroSecondDerivativeCriticalValues_subset_gridIntervals_of_cell_oscillation
     {g : ℂ → ℝ} {V : Set ℂ} {z : ℂ} {R : ℝ} {M : ℕ} {ρ : ℝ}

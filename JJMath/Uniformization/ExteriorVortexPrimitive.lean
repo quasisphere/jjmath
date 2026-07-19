@@ -19,10 +19,24 @@ namespace JJMath.Uniformization
 
 noncomputable section
 
-/-- If a compact set contains the puncture and has an exterior component,
-the exterior component can absorb the compensating vortex through a smooth
-exhaustion.  The limiting unit phase on the punctured surface has a circle
-primitive. -/
+/--
+%%handwave
+name:
+  A circle primitive on a punctured surface from an exterior component
+statement:
+  Let \(E\) be a smooth relatively compact exhaustion of a Riemann surface,
+  let \(K\) be compact, let \(V\) be an exterior component of \(X\setminus K\),
+  and let \(p\in K\).  There is a smooth map \(P:X\setminus\{p\}\to S^1\)
+  whose canonical logarithmic one-form admits \(P\) as a circle primitive.
+proof:
+  Choose a nested sequence of exterior components along the exhaustion and a
+  point in each one.  Connect consecutive points by controlled atlas-vortex
+  paths inside the corresponding component, and connect \(p\) to the first
+  point.  Every compact part of the punctured surface eventually misses these
+  components, so the vortex telescope stabilizes locally.  Apply the locally
+  escaping telescope theorem to obtain the smooth unit phase and its circle
+  primitive.
+-/
 theorem IsExteriorComponent.exists_circlePrimitive_on_puncturedSurface
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -102,9 +116,24 @@ theorem IsExteriorComponent.exists_circlePrimitive_on_puncturedSurface
   exact exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths
     p W v path T₀ hpW hescape
 
-/-- Starting from any finite transport whose terminal point lies in the
-chosen exterior component, the escaping telescope preserves that transport
-exactly on the non-exterior side. -/
+/--
+%%handwave
+name:
+  Escaping circle primitive preserving an initial vortex transport
+statement:
+  In the preceding setting, let \(q\in V\) and let \(T\) be an atlas-vortex
+  transport from \(p\) to \(q\).  There is a smooth unit phase
+  \(P:X\setminus\{p\}\to S^1\) whose logarithmic form has a circle primitive
+  and such that, wherever the two-point vortex phase is defined outside
+  \(V\), \(P\) agrees exactly with the phase of \(T\).
+proof:
+  Begin the escaping telescope by extending \(T\) inside \(V\) to the first
+  point of a nested exterior sequence.  Continue with controlled transports
+  through the later nested components.  Local escape gives the limiting phase
+  and its primitive.  At a point outside \(V\), every later component is
+  absent, so each correction factor is one and the stabilized telescope
+  remains equal to the initial transport phase.
+-/
 theorem IsExteriorComponent.exists_circlePrimitive_on_puncturedSurface_of_initialTransport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -225,8 +254,20 @@ theorem IsExteriorComponent.exists_circlePrimitive_on_puncturedSurface_of_initia
         (⟨(z : X), ⟨z.2.1, hzvn 0⟩⟩ :
           coordinateVortexPairOpen p (v 0)) hzV
 
-/-- A prescribed compact atlas vortex can be transported to infinity while
-its phase is left unchanged on the non-exterior side. -/
+/--
+%%handwave
+name:
+  Transporting a prescribed atlas vortex through an exterior component
+statement:
+  Let \(p\in K\), let \(q\) lie in an exterior component \(V\) of
+  \(X\setminus K\), and prescribe an atlas vortex from \(p\) to \(q\).  There
+  is a smooth unit phase on \(X\setminus\{p\}\) with a circle primitive which
+  agrees with the prescribed vortex phase at every point outside \(V\) where
+  that phase is defined.
+proof:
+  Regard the single prescribed atlas vortex as the initial transport and
+  apply the escaping construction that preserves an initial transport.
+-/
 theorem IsExteriorComponent.exists_circlePrimitive_extending_atlasVortex
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -244,9 +285,22 @@ theorem IsExteriorComponent.exists_circlePrimitive_extending_atlasVortex
   simpa using hV.exists_circlePrimitive_on_puncturedSurface_of_initialTransport
     E hKcompact hpK hqV (AtlasVortexTransportData.single D)
 
-/-- Every compact atlas vortex based at the puncture can be transported to
-infinity while remaining literally unchanged on a coordinate neighborhood of
-the puncture. -/
+/--
+%%handwave
+name:
+  A global punctured circle primitive preserving a local vortex germ
+statement:
+  On a connected noncompact Riemann surface, a prescribed atlas vortex from
+  \(p\) to \(q\) admits a closed coordinate disk \(K\), with
+  \(p\in\operatorname{int}K\), and a smooth unit phase on
+  \(X\setminus\{p\}\) whose logarithmic form has a circle primitive and whose
+  phase agrees with the prescribed vortex throughout \(K\).
+proof:
+  Choose a centered closed coordinate disk around \(p\) that avoids \(q\).
+  Its complement is an exterior component containing \(q\).  Transport the
+  vortex through that component to infinity; the preservation theorem leaves
+  its phase unchanged on the disk.
+-/
 theorem AtlasVortexPairData.exists_globalCirclePrimitive_preserving_local
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -353,8 +407,21 @@ noncomputable def normalizedCirclePrimitive
 
 end PuncturedAtlasVortexCirclePrimitiveData
 
-/-- Transport a prescribed atlas vortex to infinity and package the resulting
-global puncture phase together with its unchanged local germ. -/
+/--
+%%handwave
+name:
+  Punctured circle-primitive data from a prescribed atlas vortex
+statement:
+  Given a smooth exhaustion and an atlas vortex from \(p\) to \(q\) on a
+  connected noncompact Riemann surface, there is packaged punctured
+  circle-primitive data whose local vortex uses the same coordinate chart as
+  the prescribed vortex.
+proof:
+  Use the global punctured phase preserving the local vortex germ, and package
+  its terminal point, local disk, unit phase, circle primitive, and local
+  agreement.  The stored vortex is the prescribed one, so the chart equality
+  is immediate.
+-/
 theorem AtlasVortexPairData.exists_puncturedCirclePrimitiveData
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -375,8 +442,17 @@ theorem AtlasVortexPairData.exists_puncturedCirclePrimitiveData
     primitive := hprimitive
     phase_eq_vortex := hlocal }, rfl⟩
 
-/-- A prescribed compact atlas vortex has a transported global puncture
-phase with a circle primitive. -/
+/--
+%%handwave
+name:
+  Nonemptiness of punctured circle-primitive data for a prescribed vortex
+statement:
+  Every prescribed atlas vortex on a connected noncompact Riemann surface,
+  together with a smooth exhaustion, determines at least one punctured
+  circle-primitive package at its pole.
+proof:
+  Forget the chart-equality conclusion from the packaged existence theorem.
+-/
 theorem AtlasVortexPairData.puncturedCirclePrimitiveData_nonempty
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -387,8 +463,18 @@ theorem AtlasVortexPairData.puncturedCirclePrimitiveData_nonempty
   rcases D.exists_puncturedCirclePrimitiveData E with ⟨A, _⟩
   exact ⟨A⟩
 
-/-- The transported puncture phase can be based in any prescribed atlas
-chart containing the puncture. -/
+/--
+%%handwave
+name:
+  Punctured vortex data based in a prescribed coordinate chart
+statement:
+  Let \(e\) be a surface coordinate chart containing \(p\).  For any smooth
+  exhaustion of a connected noncompact Riemann surface, there is punctured
+  circle-primitive data at \(p\) whose local vortex chart is exactly \(e\).
+proof:
+  Construct an atlas vortex based at \(p\) using the prescribed chart, then
+  transport it to infinity and compose the two chart equalities.
+-/
 theorem exists_puncturedAtlasVortexCirclePrimitiveData_from_chart
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -404,8 +490,19 @@ theorem exists_puncturedAtlasVortexCirclePrimitiveData_from_chart
   refine ⟨A, ?_⟩
   exact hAchart.trans hDchart
 
-/-- Every puncture on a connected noncompact Riemann surface admits a global
-unit phase with integral periods and a nontrivial compact vortex germ. -/
+/--
+%%handwave
+name:
+  Existence of punctured atlas-vortex circle-primitive data
+statement:
+  For every point \(p\) of a connected noncompact Riemann surface equipped
+  with a smooth exhaustion, there exists punctured circle-primitive data: a
+  smooth unit phase on \(X\setminus\{p\}\) with a circle primitive and an
+  unchanged compact atlas-vortex germ at \(p\).
+proof:
+  Choose an atlas vortex with pole at \(p\), then apply the nonemptiness theorem
+  for the transported punctured circle-primitive package.
+-/
 theorem puncturedAtlasVortexCirclePrimitiveData_nonempty
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

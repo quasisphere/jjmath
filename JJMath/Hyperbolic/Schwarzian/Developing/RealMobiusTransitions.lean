@@ -99,7 +99,14 @@ def realMobiusRepresentativeMapITo (p : ℍ) : RealMobiusRepresentative :=
     field_simp [hs]
     ring⟩
 
-/-- The explicit representative `realMobiusRepresentativeMapITo p` sends `i` to `p`. -/
+/--
+%%handwave
+name: An explicit real Mobius map sends $i$ to a prescribed point
+statement:
+  For $p=x+iy\in\mathbb H$, the determinant-one matrix $\begin{pmatrix}\sqrt y&x/\sqrt y\\0&1/\sqrt y\end{pmatrix}$ sends $i$ to $p$.
+proof:
+  Evaluate the fractional-linear action at $i$; its real and imaginary parts simplify to $x$ and $y$, using $(\sqrt y)^2=y$ and $y>0$.
+-/
 theorem realMobiusRepresentativeMapITo_apply_I (p : ℍ) :
     realMobiusRepresentativeAction (realMobiusRepresentativeMapITo p) UpperHalfPlane.I = p := by
   apply UpperHalfPlane.coe_injective
@@ -114,7 +121,14 @@ theorem realMobiusRepresentativeMapITo_apply_I (p : ℍ) :
   · field_simp [hs, hs_sq]
   · simpa [sq] using Real.sq_sqrt p.im_pos.le
 
-/-- Real Mobius transformations act transitively on the upper half-plane. -/
+/--
+%%handwave
+name: Transitivity of real Mobius transformations on the upper half-plane
+statement:
+  For any $p,q\in\mathbb H$, there is $A\in\operatorname{PSL}(2,\mathbb R)$ such that $A\cdot p=q$.
+proof:
+  Let $M_p$ and $M_q$ be the explicit transformations sending $i$ to $p$ and $q$. Then $A=M_qM_p^{-1}$ sends $p$ first back to $i$ and then to $q$.
+-/
 theorem realMobiusValueTransitivityOnUpperHalfPlaneTheorem :
     RealMobiusValueTransitivityOnUpperHalfPlaneTheorem := by
   intro p q
@@ -133,10 +147,12 @@ theorem realMobiusValueTransitivityOnUpperHalfPlaneTheorem :
   exact (realMobiusRepresentativeMapITo_apply_I q).symm
 
 /--
-The complex derivative of a real Mobius representative acting on `ℍ`.
-
-This is a thin wrapper around mathlib's `UpperHalfPlane.deriv_smul`, specialized
-to determinant-one representatives.
+%%handwave
+name: Derivative of a real Mobius transformation
+statement:
+  Let $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$ act by $A(z)=(az+b)/(cz+d)$ on $\mathbb H$. Then $A'(p)=(cp+d)^{-2}$.
+proof:
+  The quotient rule gives $A'(p)=(ad-bc)/(cp+d)^2$; the determinant is $1$.
 -/
 theorem realMobiusRepresentativeAction_deriv
     (A : RealMobiusRepresentative) (p : ℍ) :
@@ -164,8 +180,12 @@ theorem realMobiusRepresentativeAction_deriv
   simp
 
 /--
-The `HasDerivAt` form of the derivative formula for real Mobius
-representatives acting on `ℍ`.
+%%handwave
+name: Complex differentiability of a real Mobius transformation
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$ and $p\in\mathbb H$, the map $z\mapsto(az+b)/(cz+d)$ has complex derivative $(cp+d)^{-2}$ at $p$.
+proof:
+  Apply the strict derivative formula for the determinant-positive linear-fractional action and specialize $\det A=1$.
 -/
 theorem realMobiusRepresentativeAction_hasDerivAt
     (A : RealMobiusRepresentative) (p : ℍ) :
@@ -192,7 +212,14 @@ theorem realMobiusRepresentativeAction_hasDerivAt
   rw [hfun]
   simpa [hdet] using hstrict.hasDerivAt
 
-/-- The derivative of a real Mobius representative acting on `ℍ` is nonzero. -/
+/--
+%%handwave
+name: Nonvanishing derivative of a real Mobius transformation
+statement:
+  If $A\in\operatorname{PSL}(2,\mathbb R)$ and $p\in\mathbb H$, then $A'(p)\ne0$.
+proof:
+  The derivative is $(cp+d)^{-2}$, and $cp+d$ never vanishes in the upper half-plane.
+-/
 theorem realMobiusRepresentativeAction_deriv_ne_zero
     (A : RealMobiusRepresentative) (p : ℍ) :
     deriv
@@ -202,7 +229,14 @@ theorem realMobiusRepresentativeAction_deriv_ne_zero
   rw [realMobiusRepresentativeAction_deriv]
   exact inv_ne_zero (pow_ne_zero 2 (UpperHalfPlane.denom_ne_zero (A : GL (Fin 2) ℝ) p))
 
-/-- The denominator of a real Mobius transformation has derivative `c`. -/
+/--
+%%handwave
+name: Derivative of the Mobius denominator
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}$, the affine denominator $\delta(z)=cz+d$ has derivative $\delta'(p)=c$ at every $p$.
+proof:
+  Differentiate the affine function $cz+d$.
+-/
 theorem realMobiusRepresentative_denom_hasDerivAt
     (A : RealMobiusRepresentative) (p : ℍ) :
     HasDerivAt
@@ -212,7 +246,14 @@ theorem realMobiusRepresentative_denom_hasDerivAt
     (((hasDerivAt_id (p : ℂ)).const_mul ((A : GL (Fin 2) ℝ) 1 0 : ℂ)).const_add
       ((A : GL (Fin 2) ℝ) 1 1 : ℂ))
 
-/-- The second derivative of a real Mobius representative acting on `ℍ`. -/
+/--
+%%handwave
+name: Second derivative of a real Mobius transformation
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$ and $p\in\mathbb H$, one has $A''(p)=-2c/(cp+d)^3$.
+proof:
+  Near $p$, the first derivative is $(cz+d)^{-2}$. Differentiate this expression using $(cz+d)'=c$ and the reciprocal-power rule.
+-/
 theorem realMobiusRepresentativeAction_second_deriv
     (A : RealMobiusRepresentative) (p : ℍ) :
     deriv
@@ -268,7 +309,14 @@ theorem realMobiusRepresentativeAction_second_deriv
         (UpperHalfPlane.denom (A : GL (Fin 2) ℝ) p) ^ 3 := by
       simpa [δ, c] using hinv.deriv
 
-/-- The derivative multiplier of a real Mobius representative is differentiable. -/
+/--
+%%handwave
+name: Differentiability of the Mobius derivative multiplier
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$, the function $p\mapsto A'(p)$ has derivative $-2c/(cp+d)^3$ at every $p\in\mathbb H$.
+proof:
+  On the upper half-plane $A'(z)=(cz+d)^{-2}$; differentiate this reciprocal square, using that $cz+d\ne0$.
+-/
 theorem realMobiusRepresentativeAction_deriv_hasDerivAt
     (A : RealMobiusRepresentative) (p : ℍ) :
     HasDerivAt
@@ -312,7 +360,14 @@ theorem realMobiusRepresentativeAction_deriv_hasDerivAt
     field_simp [hδ2_ne, hδ_ne]
   exact (hinv.congr_of_eventuallyEq hEq).congr_deriv (by simp [δ, c])
 
-/-- The third derivative of a real Mobius representative acting on `ℍ`. -/
+/--
+%%handwave
+name: Third derivative of a real Mobius transformation
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$ and $p\in\mathbb H$, one has $A'''(p)=6c^2/(cp+d)^4$.
+proof:
+  Differentiate $A''(z)=-2c(cz+d)^{-3}$ and use $(cz+d)'=c$.
+-/
 theorem realMobiusRepresentativeAction_third_deriv
     (A : RealMobiusRepresentative) (p : ℍ) :
     deriv
@@ -382,7 +437,14 @@ theorem realMobiusRepresentativeAction_third_deriv
         (UpperHalfPlane.denom (A : GL (Fin 2) ℝ) p) ^ 4 := by
       simpa [δ, c] using hscaled.deriv
 
-/-- The second derivative branch of a real Mobius representative is differentiable. -/
+/--
+%%handwave
+name: Differentiability of the second Mobius derivative
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\operatorname{SL}(2,\mathbb R)$, the function $p\mapsto A''(p)$ has derivative $6c^2/(cp+d)^4$ throughout $\mathbb H$.
+proof:
+  Locally write $A''(z)=-2c/(cz+d)^3$, differentiate the reciprocal cube, and use nonvanishing of the denominator.
+-/
 theorem realMobiusRepresentativeAction_second_deriv_hasDerivAt
     (A : RealMobiusRepresentative) (p : ℍ) :
     HasDerivAt
@@ -437,7 +499,14 @@ theorem realMobiusRepresentativeAction_second_deriv_hasDerivAt
     ring
   exact (hscaled.congr_of_eventuallyEq hEq).congr_deriv (by simp [δ, c])
 
-/-- The derivative multiplier of a fixed real Mobius map is continuous on `ℍ`. -/
+/--
+%%handwave
+name: Continuity of the derivative of a real Mobius map
+statement:
+  For fixed $A\in\operatorname{PSL}(2,\mathbb R)$, the derivative $p\mapsto A'(p)$ is continuous on $\mathbb H$.
+proof:
+  Write $A'(p)=(cp+d)^{-2}$. The denominator is continuous and nonzero on $\mathbb H$, so its inverse square is continuous.
+-/
 theorem realMobiusRepresentativeAction_deriv_continuous
     (A : RealMobiusRepresentative) :
     Continuous
@@ -461,8 +530,13 @@ theorem realMobiusRepresentativeAction_deriv_continuous
   rw [realMobiusRepresentativeAction_deriv]
 
 /--
-Real Mobius representatives preserve the squared hyperbolic norm of tangent
-vectors, in derivative-density form.
+%%handwave
+name: Infinitesimal Poincare isometry of real Mobius maps
+statement:
+  For $A\in\operatorname{PSL}(2,\mathbb R)$ and $p\in\mathbb H$,
+  $$\frac{|A'(p)|^2}{(\operatorname{Im}A(p))^2}=\frac1{(\operatorname{Im}p)^2}.$$
+proof:
+  Use $A'(p)=(cp+d)^{-2}$ and $\operatorname{Im}A(p)=\operatorname{Im}p/|cp+d|^2$, then cancel the nonzero denominator factors.
 -/
 theorem realMobiusRepresentativeAction_deriv_hyperbolicNormSq
     (A : RealMobiusRepresentative) (p : ℍ) :
@@ -495,10 +569,12 @@ theorem realMobiusRepresentativeAction_deriv_hyperbolicNormSq
   field_simp [hDne, hpim]
 
 /--
-If two tangent vectors have equal hyperbolic norm and `A` sends the base point
-of the first to the base point of the second, then applying the derivative of
-`A` to the first vector gives a tangent vector with the same Euclidean norm as
-the second.
+%%handwave
+name: Euclidean norm after transporting an equal hyperbolic tangent
+statement:
+  Let $A\in\operatorname{PSL}(2,\mathbb R)$, $p\in\mathbb H$, and $v,w\in\mathbb C$. If $|v|^2/(\operatorname{Im}p)^2=|w|^2/(\operatorname{Im}A(p))^2$, then $|A'(p)v|^2=|w|^2$.
+proof:
+  Multiply the assumed equality by the infinitesimal Poincare-isometry identity for $A$ and cancel the positive squared imaginary part at $A(p)$.
 -/
 theorem realMobiusRepresentativeAction_deriv_mul_normSq_eq_of_hyperbolicNormSq
     (A : RealMobiusRepresentative) (p : ℍ) {v w : ℂ}
@@ -546,8 +622,12 @@ theorem realMobiusRepresentativeAction_deriv_mul_normSq_eq_of_hyperbolicNormSq
   simpa [d] using hmul
 
 /--
-Chain rule for derivatives of products of real Mobius representatives acting
-on `ℍ`.
+%%handwave
+name: Derivative of a product of real Mobius transformations
+statement:
+  For $A,B\in\operatorname{PSL}(2,\mathbb R)$ and $p\in\mathbb H$, the composite represented by $AB$ has derivative $(A\circ B)'(p)=A'(B(p))B'(p)$.
+proof:
+  Apply the complex chain rule to the two fractional-linear actions and use that multiplication of representatives corresponds to composition.
 -/
 theorem realMobiusRepresentativeAction_hasDerivAt_mul
     (A B : RealMobiusRepresentative) (p : ℍ) :
@@ -593,7 +673,14 @@ theorem realMobiusRepresentativeAction_hasDerivAt_mul
   rw [← hfun]
   exact hcomp
 
-/-- Chain rule for products of real Mobius representatives, in `deriv` form. -/
+/--
+%%handwave
+name: Chain rule for real Mobius derivatives
+statement:
+  For $A,B\in\operatorname{PSL}(2,\mathbb R)$ and $p\in\mathbb H$, $(AB)'(p)=A'(B(p))B'(p)$.
+proof:
+  Take the derivative value in the complex differentiability statement for the composite action.
+-/
 theorem realMobiusRepresentativeAction_deriv_mul
     (A B : RealMobiusRepresentative) (p : ℍ) :
     deriv
@@ -614,7 +701,14 @@ theorem realMobiusRepresentativeAction_deriv_mul
   have h := (realMobiusRepresentativeAction_hasDerivAt_mul A B p).deriv
   simpa [realMobiusRepresentativeAction_deriv] using h
 
-/-- The derivative of the identity real Mobius representative is `1`. -/
+/--
+%%handwave
+name: Derivative of the identity Mobius transformation
+statement:
+  The identity element of $\operatorname{PSL}(2,\mathbb R)$ has complex derivative $1$ at every point of $\mathbb H$.
+proof:
+  Its denominator is identically $1$, so the derivative formula gives $1^{-2}=1$.
+-/
 theorem realMobiusRepresentativeAction_deriv_one (p : ℍ) :
     deriv
       (fun z : ℂ ↦
@@ -626,8 +720,12 @@ theorem realMobiusRepresentativeAction_deriv_one (p : ℍ) :
   simp [UpperHalfPlane.denom]
 
 /--
-For the explicit map `M_p : i ↦ p`, the derivatives of `M_p` at `i` and
-`M_p⁻¹` at `p` multiply to `1`.
+%%handwave
+name: Reciprocal derivatives of the explicit map from $i$
+statement:
+  Let $M_p\in\operatorname{PSL}(2,\mathbb R)$ be the explicit transformation with $M_p(i)=p$. Then $M_p'(i)(M_p^{-1})'(p)=1$.
+proof:
+  Apply the chain rule to $M_p\circ M_p^{-1}=\mathrm{id}$ at $p$, using $M_p^{-1}(p)=i$ and that the identity derivative is $1$.
 -/
 theorem realMobiusRepresentativeMapITo_deriv_mul_inv_deriv
     (p : ℍ) :
@@ -692,7 +790,14 @@ def denominatorAtI (θ : RealMobiusRotationAtIParameters) : ℂ :=
 def derivativeMultiplierAtI (θ : RealMobiusRotationAtIParameters) : ℂ :=
   (θ.denominatorAtI ^ 2)⁻¹
 
-/-- The denominator `c - sI` of a rotation fixing `i` has unit norm square. -/
+/--
+%%handwave
+name: Unit norm of the denominator of a rotation at $i$
+statement:
+  If $c,s\in\mathbb R$ satisfy $c^2+s^2=1$, then the complex number $c-is$ has squared norm $1$.
+proof:
+  Compute $|c-is|^2=c^2+s^2$ and use the unit-circle relation.
+-/
 theorem denominatorAtI_normSq (θ : RealMobiusRotationAtIParameters) :
     Complex.normSq θ.denominatorAtI = 1 := by
   calc
@@ -705,21 +810,42 @@ theorem denominatorAtI_normSq (θ : RealMobiusRotationAtIParameters) :
     _ = 1 := by
       nlinarith [θ.normSq_eq_one]
 
-/-- Rotation derivative multipliers at `i` are unit complex scalars. -/
+/--
+%%handwave
+name: Rotation multipliers at $i$ have unit norm
+statement:
+  If $c^2+s^2=1$, then the multiplier $(c-is)^{-2}$ has squared complex norm $1$.
+proof:
+  The denominator has squared norm $1$; multiplicativity of the norm under squaring and inversion gives the result.
+-/
 theorem derivativeMultiplierAtI_normSq (θ : RealMobiusRotationAtIParameters) :
     Complex.normSq θ.derivativeMultiplierAtI = 1 := by
   rw [derivativeMultiplierAtI, pow_two, Complex.normSq_inv, Complex.normSq_mul,
     denominatorAtI_normSq]
   norm_num
 
-/-- The Mobius denominator of the rotation representative at `i`. -/
+/--
+%%handwave
+name: Denominator of a rotation representative at $i$
+statement:
+  For the rotation matrix $R=\begin{pmatrix}c&s\\-s&c\end{pmatrix}$, the fractional-linear denominator at $i$ is $c-is$.
+proof:
+  Substitute $z=i$ into the denominator $-sz+c$.
+-/
 theorem denom_representative_I (θ : RealMobiusRotationAtIParameters) :
     UpperHalfPlane.denom (θ.representative : GL (Fin 2) ℝ) UpperHalfPlane.I =
       θ.denominatorAtI := by
   simp [representative, denominatorAtI, UpperHalfPlane.denom, UpperHalfPlane.coe_I]
   ring
 
-/-- The rotation representative fixes `i`. -/
+/--
+%%handwave
+name: Real Mobius rotations fix $i$
+statement:
+  If $c^2+s^2=1$, the real Mobius transformation represented by $\begin{pmatrix}c&s\\-s&c\end{pmatrix}$ fixes $i\in\mathbb H$.
+proof:
+  Directly evaluate $(ci+s)/(-si+c)$ and factor the numerator as $i(c-is)$; the nonzero denominator then cancels.
+-/
 theorem representative_fixes_I (θ : RealMobiusRotationAtIParameters) :
     realMobiusRepresentativeAction θ.representative UpperHalfPlane.I =
       UpperHalfPlane.I := by
@@ -754,8 +880,12 @@ theorem representative_fixes_I (θ : RealMobiusRotationAtIParameters) :
   rw [hnum, mul_assoc, mul_inv_cancel₀ hden', mul_one]
 
 /--
-The complex derivative of the rotation action at `i` is the stored derivative
-multiplier.
+%%handwave
+name: Derivative multiplier of a rotation at $i$
+statement:
+  For $R=\begin{pmatrix}c&s\\-s&c\end{pmatrix}$ with $c^2+s^2=1$, the complex derivative at $i$ is $(c-is)^{-2}$.
+proof:
+  Apply the derivative formula $R'(i)=\delta_R(i)^{-2}$ and substitute the denominator $\delta_R(i)=c-is$.
 -/
 theorem derivative_representative_at_I (θ : RealMobiusRotationAtIParameters) :
     deriv
@@ -796,7 +926,14 @@ def realMobiusConjugatedRotationAt
   realMobiusRepresentativeMapITo p * θ.representative *
     (realMobiusRepresentativeMapITo p)⁻¹
 
-/-- Conjugated rotations fix their target point. -/
+/--
+%%handwave
+name: A conjugated rotation fixes its target point
+statement:
+  Let $M_p\in\operatorname{PSL}(2,\mathbb R)$ send $i$ to $p\in\mathbb H$, and let $R$ fix $i$. Then $M_pRM_p^{-1}$ fixes $p$.
+proof:
+  The conjugated action sends $p$ successively to $i$, then to $i$, and finally back to $p$.
+-/
 theorem realMobiusConjugatedRotationAt_fixes
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) :
     realMobiusRepresentativeAction (realMobiusConjugatedRotationAt p θ) p = p := by
@@ -814,8 +951,12 @@ theorem realMobiusConjugatedRotationAt_fixes
     RealMobiusRotationAtIParameters.representative_fixes_I, hp]
 
 /--
-The derivative of a conjugated rotation factors through the maps
-`i → p`, the rotation at `i`, and `p → i`.
+%%handwave
+name: Derivative of a conjugated rotation
+statement:
+  If $M_p(i)=p$ and $R$ fixes $i$ with multiplier $\mu=R'(i)$, then $M_pRM_p^{-1}$ is complex differentiable at $p$ with derivative $M_p'(i)\,\mu\,(M_p^{-1})'(p)$.
+proof:
+  Apply the complex chain rule to the three factors $M_p$, $R$, and $M_p^{-1}$, using $M_p^{-1}(p)=i$ and $R(i)=i$.
 -/
 theorem realMobiusConjugatedRotationAt_hasDerivAt
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) :
@@ -888,7 +1029,14 @@ theorem realMobiusConjugatedRotationAt_hasDerivAt
   rw [← hfun]
   simpa [M, Minv, R, mul_assoc] using hcomp
 
-/-- The `deriv` form of the conjugated-rotation derivative factorization. -/
+/--
+%%handwave
+name: Factorization of the conjugated-rotation derivative
+statement:
+  For $M_p(i)=p$ and a rotation $R$ fixing $i$ with multiplier $\mu$, one has $(M_pRM_p^{-1})'(p)=M_p'(i)\mu(M_p^{-1})'(p)$.
+proof:
+  Take the derivative value from the complex differentiability statement for the conjugated rotation.
+-/
 theorem realMobiusConjugatedRotationAt_deriv
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) :
     deriv
@@ -904,8 +1052,13 @@ theorem realMobiusConjugatedRotationAt_deriv
   (realMobiusConjugatedRotationAt_hasDerivAt p θ).deriv
 
 /--
-The derivative of a conjugated rotation acts on tangent vectors by moving the
-tangent vector to `i`, applying the rotation multiplier there, and moving back.
+%%handwave
+name: Tangent action of a conjugated rotation
+statement:
+  If $C=M_pRM_p^{-1}$ and $R'(i)=\mu$, then for every $v\in\mathbb C$,
+  $$C'(p)v=M_p'(i)\bigl(\mu\,(M_p^{-1})'(p)v\bigr).$$
+proof:
+  Multiply the factored derivative of the conjugated rotation by $v$ and reassociate the scalar products.
 -/
 theorem realMobiusConjugatedRotationAt_deriv_mul
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) (v : ℂ) :
@@ -931,9 +1084,12 @@ theorem realMobiusConjugatedRotationAt_deriv_mul
   ring_nf
 
 /--
-If the transported tangent vectors at `i` differ by the rotation multiplier,
-then the conjugated rotation sends the original tangent vector to the target
-tangent vector at `p`.
+%%handwave
+name: Tangent matching by a conjugated rotation
+statement:
+  Let $C=M_pRM_p^{-1}$, with $R'(i)=\mu$. If $(M_p^{-1})'(p)w=\mu(M_p^{-1})'(p)v$, then $C'(p)v=w$.
+proof:
+  Use the derivative factorization for $C$ and replace the transported rotated vector by the transported $w$. The factors $M_p'(i)$ and $(M_p^{-1})'(p)$ multiply to $1$.
 -/
 theorem realMobiusConjugatedRotationAt_deriv_mul_eq_of_transported
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) (v w : ℂ)
@@ -984,7 +1140,14 @@ theorem realMobiusConjugatedRotationAt_deriv_mul_eq_of_transported
     _ = (dM * dMinv) * w := by ring
     _ = w := by rw [hcancel]; ring
 
-/-- Product derivative rewritten using a named value of the intermediate point. -/
+/--
+%%handwave
+name: Chain rule with a named intermediate Mobius value
+statement:
+  If $A(p)=q$ for $A,R\in\operatorname{PSL}(2,\mathbb R)$, then $(RA)'(p)=R'(q)A'(p)$.
+proof:
+  Apply the Mobius chain rule and replace the intermediate value $A(p)$ by $q$.
+-/
 theorem realMobiusRepresentativeAction_deriv_mul_of_action_eq
     (R A : RealMobiusRepresentative) (p q : ℍ)
     (hA : q = realMobiusRepresentativeAction A p) :
@@ -1045,7 +1208,14 @@ def RealMobiusRotationHalfAngleMultiplierFormulaTheorem : Prop :=
     ∃ θ : RealMobiusRotationAtIParameters,
       θ.derivativeMultiplierAtI = Complex.exp (t * Complex.I)
 
-/-- The half-angle formula for rotation derivative multipliers at `i`. -/
+/--
+%%handwave
+name: Half-angle formula for rotation multipliers at $i$
+statement:
+  For every $t\in\mathbb R$, there exist $c,s\in\mathbb R$ with $c^2+s^2=1$ such that $(c-is)^{-2}=e^{it}$.
+proof:
+  Take $c=\cos(t/2)$ and $s=\sin(t/2)$. Then $c-is=e^{-it/2}$, so its inverse square is $e^{it}$.
+-/
 theorem realMobiusRotationHalfAngleMultiplierFormulaTheorem :
     RealMobiusRotationHalfAngleMultiplierFormulaTheorem := by
   intro t
@@ -1072,11 +1242,12 @@ theorem realMobiusRotationHalfAngleMultiplierFormulaTheorem :
       ring
 
 /--
-The half-angle multiplier formula implies that every unit complex scalar is a
-rotation derivative multiplier.
-
-Here the nontrivial parametrization of the unit circle by `exp (tI)` is
-provided by mathlib; only the real half-angle formula remains.
+%%handwave
+name: Unit scalars from the half-angle multiplier formula
+statement:
+  If every $e^{it}$ occurs as the derivative at $i$ of a real Mobius rotation fixing $i$, then every complex number $\mu$ with $|\mu|=1$ occurs as such a derivative.
+proof:
+  Write the unit complex number as $\mu=e^{it}$ and apply the half-angle construction at that angle.
 -/
 theorem unitComplexRotationMultiplierTheorem_of_halfAngleFormula
     (hHalf : RealMobiusRotationHalfAngleMultiplierFormulaTheorem) :
@@ -1091,18 +1262,26 @@ theorem unitComplexRotationMultiplierTheorem_of_halfAngleFormula
   refine ⟨θ, ?_⟩
   rw [← ht, ← hθ]
 
-/-- Every unit complex scalar is a rotation derivative multiplier at `i`. -/
+/--
+%%handwave
+name: Every unit scalar is a Mobius rotation multiplier
+statement:
+  For every $\mu\in\mathbb C$ with $|\mu|^2=1$, there is a real Mobius rotation fixing $i$ whose derivative at $i$ equals $\mu$.
+proof:
+  Parametrize $\mu$ as $e^{it}$ and use the half-angle rotation with coefficients $\cos(t/2)$ and $\sin(t/2)$.
+-/
 theorem unitComplexRotationMultiplierTheorem :
     UnitComplexRotationMultiplierTheorem :=
   unitComplexRotationMultiplierTheorem_of_halfAngleFormula
     realMobiusRotationHalfAngleMultiplierFormulaTheorem
 
 /--
-The unit-scalar rotation multiplier statement implies tangent transitivity at
-`i`.
-
-The proof is now just norm algebra: for nonzero `v`, the scalar `w / v` has
-unit norm square exactly when `v` and `w` have equal norm square.
+%%handwave
+name: Tangent transitivity at $i$ from unit multipliers
+statement:
+  Suppose every unit complex scalar is the derivative multiplier of a real Mobius rotation fixing $i$. If $v\ne0$ and $|v|^2=|w|^2$, then some such rotation has derivative sending $v$ to $w$.
+proof:
+  The quotient $\mu=w/v$ has unit norm. Choose a rotation with derivative multiplier $\mu$; then $\mu v=w$.
 -/
 theorem realMobiusRotationAtITangentTransitivityTheorem_of_unitMultiplier
     (hUnit : UnitComplexRotationMultiplierTheorem) :
@@ -1125,7 +1304,14 @@ theorem realMobiusRotationAtITangentTransitivityTheorem_of_unitMultiplier
   change w = (w / v) * v
   rw [div_mul_cancel₀ w hv]
 
-/-- Rotation derivative multipliers act transitively on tangent directions at `i`. -/
+/--
+%%handwave
+name: Tangent transitivity of rotations fixing $i$
+statement:
+  If $v,w\in\mathbb C$, $v\ne0$, and $|v|=|w|$, then there is a real Mobius rotation fixing $i$ whose derivative sends $v$ to $w$.
+proof:
+  Realize the unit scalar $w/v$ as the derivative multiplier of a half-angle rotation.
+-/
 theorem realMobiusRotationAtITangentTransitivityTheorem :
     RealMobiusRotationAtITangentTransitivityTheorem :=
   realMobiusRotationAtITangentTransitivityTheorem_of_unitMultiplier
@@ -1196,8 +1382,12 @@ def RealMobiusBranchPostcompositionDerivativeChainRuleTheorem : Prop :=
           deriv (fun z : ℂ ↦ (H.upperHalfPlaneMap z : ℂ)) z₀
 
 /--
-The branch postcomposition chain rule follows from the nonzero derivative
-stored by a metric-recovering upper-half-plane branch and mathlib's chain rule.
+%%handwave
+name: Chain rule for Mobius postcomposition of a branch
+statement:
+  Let $F:\Omega\to\mathbb H$ be a metric-recovering holomorphic branch, let $A\in\operatorname{PSL}(2,\mathbb R)$, and let $z_0\in\Omega$. Then $(A\circ F)'(z_0)=A'(F(z_0))F'(z_0)$.
+proof:
+  The branch derivative is nonzero and hence gives genuine complex differentiability; the Mobius derivative is also nonzero. Apply the complex chain rule to their composition.
 -/
 theorem realMobiusBranchPostcompositionDerivativeChainRuleTheorem :
     RealMobiusBranchPostcompositionDerivativeChainRuleTheorem := by
@@ -1236,8 +1426,12 @@ theorem realMobiusBranchPostcompositionDerivativeChainRuleTheorem :
   simpa [f] using hcomp.deriv
 
 /--
-The only remaining analytic input needed to transport rotation transitivity at
-`i` to stabilizer tangent transitivity is the branch postcomposition chain rule.
+%%handwave
+name: Stabilizer tangent matching from rotations and the chain rule
+statement:
+  Suppose rotations fixing $i$ act transitively on nonzero tangent vectors of equal norm, and Mobius postcomposition of holomorphic branches obeys the chain rule. Let $F_1,F_2$ have equal hyperbolic derivative norm at $z_0$, and let $A(F_1(z_0))=F_2(z_0)$. Then there is a real Mobius map $R$ fixing $F_2(z_0)$ such that $(RA\circ F_1)'(z_0)=F_2'(z_0)$.
+proof:
+  Transport both tangent vectors to $i$ using the explicit map from $i$ to $F_2(z_0)$. Hyperbolic norm preservation makes the transported vectors have equal Euclidean norm, so choose a rotation matching them. Conjugate it back to a stabilizer $R$, use the derivative factorizations to match the tangents, and apply the branch postcomposition chain rule.
 -/
 theorem realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_branchChainRule
     (hChain : RealMobiusBranchPostcompositionDerivativeChainRuleTheorem) :
@@ -1361,21 +1555,39 @@ theorem realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_bran
             z₀ := by
           exact hbranch.symm
 
-/-- Rotation transitivity at `i` transports to arbitrary stabilizers. -/
+/--
+%%handwave
+name: Rotation transitivity transports to arbitrary stabilizers
+statement:
+  If real Mobius rotations fixing $i$ act transitively on tangent vectors of equal norm, then stabilizers of arbitrary points of $\mathbb H$ can adjust matched branch values to match their derivatives as well.
+proof:
+  Apply the conjugation-and-chain-rule transport theorem, using the proved chain rule for Mobius postcomposition of a branch.
+-/
 theorem realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem :
     RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem :=
   realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_branchChainRule
     realMobiusBranchPostcompositionDerivativeChainRuleTheorem
 
-/-- Real Mobius stabilizers match pointed tangent directions of equal hyperbolic norm. -/
+/--
+%%handwave
+name: Stabilizer matching of equal-hyperbolic-norm tangents
+statement:
+  Suppose $A(F_1(z_0))=F_2(z_0)$ and the two branch derivatives have equal hyperbolic norm. Then some $R\in\operatorname{PSL}(2,\mathbb R)$ fixes $F_2(z_0)$ and makes $(RA\circ F_1)'(z_0)=F_2'(z_0)$.
+proof:
+  Use tangent transitivity of rotations fixing $i$ and transport those rotations by conjugation to the stabilizer of $F_2(z_0)$.
+-/
 theorem realMobiusStabilizerAdjustsPointedDerivativeTheorem :
     RealMobiusStabilizerAdjustsPointedDerivativeTheorem :=
   realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem
     realMobiusRotationAtITangentTransitivityTheorem
 
 /--
-Value transitivity plus stabilizer transitivity give pointed real-Mobius
-one-jet transitivity for equal hyperbolic derivative norm.
+%%handwave
+name: Pointed Mobius matching from value and stabilizer transitivity
+statement:
+  If real Mobius transformations act transitively on $\mathbb H$ and point stabilizers act transitively on tangent directions of a fixed hyperbolic norm, then any two local branches with equal hyperbolic derivative norm at $z_0$ have one-jets related by a real Mobius transformation.
+proof:
+  First choose $A$ matching the two branch values. Then choose a stabilizer $R$ of the target value matching the derivatives. The product $RA$ matches both value and derivative.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -1391,8 +1603,12 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_val
   exact hRfix.symm
 
 /--
-Since value transitivity on `ℍ` is explicit, stabilizer tangent transitivity
-alone gives pointed real-Mobius one-jet transitivity.
+%%handwave
+name: Pointed one-jet matching from stabilizer transitivity
+statement:
+  If point stabilizers in $\operatorname{PSL}(2,\mathbb R)$ match tangent directions of equal hyperbolic norm, then two local upper-half-plane branches with equal hyperbolic derivative norm at a common point have real-Mobius-equivalent one-jets there.
+proof:
+  Combine stabilizer tangent transitivity with the explicit transitivity of real Mobius transformations on $\mathbb H$.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem) :
@@ -1401,8 +1617,12 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_sta
     realMobiusValueTransitivityOnUpperHalfPlaneTheorem hStabilizer
 
 /--
-Rotation tangent transitivity at `i`, together with the conjugation transport
-to arbitrary stabilizers, gives pointed real-Mobius one-jet transitivity.
+%%handwave
+name: Pointed one-jet matching from rotations and conjugation
+statement:
+  If rotations fixing $i$ match equal-norm tangent vectors and conjugation transports this property to every point stabilizer, then equal-hyperbolic-norm branch one-jets are related by a real Mobius transformation.
+proof:
+  Transport rotation transitivity to arbitrary stabilizers, then use value transitivity followed by stabilizer derivative adjustment.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rotations
     (hRot : RealMobiusRotationAtITangentTransitivityTheorem)
@@ -1412,8 +1632,12 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rot
     (hTransport hRot)
 
 /--
-The unit-complex rotation multiplier theorem, plus transport to arbitrary
-stabilizers, gives pointed real-Mobius one-jet transitivity.
+%%handwave
+name: Pointed one-jet matching from unit rotation multipliers
+statement:
+  Suppose every unit complex scalar occurs as the derivative at $i$ of a real Mobius rotation, and rotations at $i$ transport by conjugation to arbitrary stabilizers. Then any two branch one-jets of equal hyperbolic norm are related by a real Mobius map.
+proof:
+  Unit multipliers give tangent transitivity at $i$; apply the rotation-and-conjugation one-jet matching theorem.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_unitMultiplier
     (hUnit : UnitComplexRotationMultiplierTheorem)
@@ -1424,8 +1648,12 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_uni
     hTransport
 
 /--
-Since rotation tangent transitivity at `i` is proved, conjugation transport to
-arbitrary stabilizers gives pointed real-Mobius one-jet transitivity.
+%%handwave
+name: Pointed one-jet matching from stabilizer transport
+statement:
+  If rotation transitivity at $i$ transports by conjugation to arbitrary point stabilizers, then any two local upper-half-plane branch one-jets with equal hyperbolic derivative norm are related by a real Mobius transformation.
+proof:
+  Use the proved tangent transitivity of rotations fixing $i$ in the rotation-and-conjugation matching theorem.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
@@ -1434,8 +1662,12 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rot
     realMobiusRotationAtITangentTransitivityTheorem hTransport
 
 /--
-The branch postcomposition chain rule is now the only remaining input for
-pointed real-Mobius one-jet transitivity.
+%%handwave
+name: Pointed one-jet matching from the branch chain rule
+statement:
+  If Mobius postcomposition of a holomorphic upper-half-plane branch satisfies the complex chain rule, then any two branch one-jets with equal hyperbolic derivative norm are related by a real Mobius transformation.
+proof:
+  The chain rule transports rotation transitivity at $i$ to arbitrary stabilizers; apply the resulting pointed matching theorem.
 -/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_branchChainRule
     (hChain : RealMobiusBranchPostcompositionDerivativeChainRuleTheorem) :
@@ -1444,15 +1676,26 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_bra
     (realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_branchChainRule
       hChain)
 
-/-- Pointed real-Mobius one-jet transitivity for equal hyperbolic derivative norm. -/
+/--
+%%handwave
+name: Pointed real Mobius transitivity for equal hyperbolic norm
+statement:
+  Let $F_1,F_2$ be local upper-half-plane branches defined at $z_0$. If their derivatives have equal hyperbolic norm at $z_0$, then some $A\in\operatorname{PSL}(2,\mathbb R)$ satisfies $F_2(z_0)=A(F_1(z_0))$ and $F_2'(z_0)=(A\circ F_1)'(z_0)$.
+proof:
+  Apply the chain-rule reduction together with the proved Mobius postcomposition chain rule.
+-/
 theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem :
     PointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem :=
   pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_branchChainRule
     realMobiusBranchPostcompositionDerivativeChainRuleTheorem
 
 /--
-The equal-hyperbolic-derivative-norm one-jet transitivity theorem gives
-pointed real-Mobius transitions for metric-recovering branches.
+%%handwave
+name: Pointed transitions for metric-recovering branches
+statement:
+  If equal-hyperbolic-norm branch one-jets are related by real Mobius transformations, then any two branches that recover the same conformal metric admit a pointed real Mobius transition at every common point.
+proof:
+  The two pullback formulas make the hyperbolic derivative norms equal at the common point; apply pointed one-jet transitivity.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_hyperbolicDerivativeNorm
     (h :
@@ -1463,8 +1706,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
     (H₁.hyperbolicDerivativeNormSqAt_eq_of_mem_inter H₂ hz₁ hz₂)
 
 /--
-Value transitivity plus stabilizer tangent transitivity give pointed
-real-Mobius transitions for metric-recovering branches.
+%%handwave
+name: Pointed transitions from value and stabilizer transitivity
+statement:
+  If real Mobius maps are transitive on $\mathbb H$ and their point stabilizers match tangent directions of equal hyperbolic norm, then two branches recovering the same conformal metric admit a pointed real Mobius transition at every common point.
+proof:
+  Value and stabilizer transitivity give one-jet matching for equal hyperbolic norm, while metric recovery supplies that equality.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_value_stabilizer
     (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
@@ -1475,8 +1722,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
       hValue hStabilizer)
 
 /--
-The proved value transitivity theorem reduces pointed transitions for
-metric-recovering branches to stabilizer tangent transitivity.
+%%handwave
+name: Pointed transitions from stabilizer tangent matching
+statement:
+  If real Mobius point stabilizers match tangent directions of equal hyperbolic norm, then any two local branches recovering the same conformal metric admit a pointed real Mobius transition at each common point.
+proof:
+  Combine the stabilizer hypothesis with explicit Mobius transitivity on $\mathbb H$, then use equality of the recovered hyperbolic derivative norms.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_stabilizer
     (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem) :
@@ -1485,8 +1736,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
     realMobiusValueTransitivityOnUpperHalfPlaneTheorem hStabilizer
 
 /--
-Rotation tangent transitivity at `i`, plus transport to arbitrary stabilizers,
-gives pointed transitions for metric-recovering branches.
+%%handwave
+name: Pointed transitions from rotations and stabilizer transport
+statement:
+  If rotations fixing $i$ match equal-norm tangents and this matching transports to every point stabilizer, then any two branches recovering the same conformal metric admit a pointed real Mobius transition at each common point.
+proof:
+  The rotation hypotheses yield stabilizer tangent matching; apply the metric-recovering pointed-transition theorem.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotations
     (hRot : RealMobiusRotationAtITangentTransitivityTheorem)
@@ -1496,8 +1751,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
     (hTransport hRot)
 
 /--
-The unit-complex rotation multiplier theorem, plus transport to arbitrary
-stabilizers, gives pointed transitions for metric-recovering branches.
+%%handwave
+name: Pointed transitions from unit rotation multipliers
+statement:
+  Suppose every unit complex scalar is realized by a rotation fixing $i$, and rotations transport to arbitrary stabilizers. Then any two branches recovering the same conformal metric have pointed real Mobius transitions on their common domain.
+proof:
+  Unit multipliers imply tangent transitivity at $i$; use stabilizer transport and equality of the recovered hyperbolic derivative norms.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_unitMultiplier
     (hUnit : UnitComplexRotationMultiplierTheorem)
@@ -1508,8 +1767,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
     hTransport
 
 /--
-Since rotation tangent transitivity at `i` is proved, stabilizer transport gives
-pointed transitions for metric-recovering branches.
+%%handwave
+name: Pointed transitions from rotation transport
+statement:
+  If tangent matching by rotations at $i$ transports to arbitrary point stabilizers, then metric-recovering upper-half-plane branches admit pointed real Mobius transitions at every common point.
+proof:
+  Apply stabilizer transport to the proved tangent transitivity of rotations fixing $i$, then use the metric-recovering transition theorem.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotationTransport
     (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
@@ -1518,8 +1781,12 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
     realMobiusRotationAtITangentTransitivityTheorem hTransport
 
 /--
-For metric-recovering branches, the branch postcomposition chain rule is the
-only remaining local input for pointed real-Mobius transitions.
+%%handwave
+name: Pointed transitions from the branch postcomposition chain rule
+statement:
+  If real Mobius postcomposition obeys the complex chain rule on local upper-half-plane branches, then any two branches recovering the same conformal metric admit a pointed real Mobius transition at every point of overlap.
+proof:
+  The chain rule yields one-jet transitivity for equal hyperbolic derivative norms, and the two metric-recovery identities give that norm equality.
 -/
 theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_branchChainRule
     (hChain : RealMobiusBranchPostcompositionDerivativeChainRuleTheorem) :

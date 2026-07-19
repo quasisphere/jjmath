@@ -40,7 +40,12 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable {g : HyperbolicMetric X} (U : HyperbolicLocalChart X g)
 
 /--
-The stored complex coordinate is continuous on the local-chart domain.
+%%handwave
+name: Continuity of the stored coordinate
+statement:
+  Let \(U\) be a hyperbolic local chart on \(X\). The coordinate map stored by \(U\), restricted to the domain of \(U\), is continuous.
+proof:
+  Pointwise continuity follows from the continuity of the stored coordinate relative to the chart domain, using the standard criterion for continuity of a map defined on a subspace.
 -/
 theorem storedCoordinate_continuousOnDomain :
     Continuous
@@ -54,8 +59,12 @@ theorem storedCoordinate_continuousOnDomain :
       (U.coordinate_continuousWithinAt x.property)
 
 /--
-The derivative of the stored holomorphic local map is continuous on its stored
-coordinate domain.
+%%handwave
+name: Continuity of the derivative of a stored local map
+statement:
+  Let \(U\) be a hyperbolic local chart and let \(f\) be its holomorphic complex coordinate map. The derivative \(f'\) is continuous on the coordinate domain of \(U\).
+proof:
+  Holomorphicity makes \(f\) differentiable on the open coordinate domain, hence \(C^1\) there. The derivative of a \(C^1\) function is continuous.
 -/
 theorem storedLocalMap_deriv_continuousOn_coordinateDomain :
     ContinuousOn
@@ -77,7 +86,12 @@ theorem storedLocalMap_deriv_continuousOn_coordinateDomain :
       U.local_isometry.isOpen_coordinateDomain le_rfl
 
 /--
-The stored-coordinate derivative is continuous on the local-chart domain.
+%%handwave
+name: Continuity of the stored-coordinate derivative
+statement:
+  Let \(U\) be a hyperbolic local chart with stored coordinate \(z_U\) and holomorphic local map \(f_U\). Then \(x \mapsto f_U'(z_U(x))\) is continuous on the domain of \(U\).
+proof:
+  The derivative \(f_U'\) is continuous on the coordinate domain, and the stored coordinate \(z_U\) is continuous on the chart domain. Compose these two maps.
 -/
 theorem storedCoordinateDerivative_continuousOnDomain :
     Continuous
@@ -138,7 +152,14 @@ def hyperbolicLocalChartLeftSourceCoordinateOverlap
   U.local_isometry.chart.target ∩
     U.local_isometry.chart.symm ⁻¹' (U.domain ∩ V.domain)
 
-/-- The fixed source-coordinate overlap is open. -/
+/--
+%%handwave
+name: Openness of a fixed source-coordinate overlap
+statement:
+  For hyperbolic local charts \(U\) and \(V\), the set of points in the coordinate range of \(U\) whose inverse images lie in \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\) is open in \(\mathbb C\).
+proof:
+  The common surface domain is open, and the inverse of the stored chart of \(U\) is continuous on its open target. Intersect its inverse image with that target.
+-/
 theorem hyperbolicLocalChartLeftSourceCoordinateOverlap_isOpen
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g) :
     IsOpen (hyperbolicLocalChartLeftSourceCoordinateOverlap U V) := by
@@ -147,8 +168,12 @@ theorem hyperbolicLocalChartLeftSourceCoordinateOverlap_isOpen
       (U.isOpen_domain.inter V.isOpen_domain)
 
 /--
-If `x` lies in the surface overlap, its stored `U`-coordinate lies in the
-fixed source-coordinate overlap.
+%%handwave
+name: A common point belongs to the fixed coordinate overlap
+statement:
+  If \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\), then the stored \(U\)-coordinate \(z_U(x)\) lies in the fixed source-coordinate overlap of \(U\) and \(V\).
+proof:
+  The chart sends \(x\) into its target, and applying its inverse to \(z_U(x)\) returns \(x\). These are exactly the two membership conditions defining the coordinate overlap.
 -/
 theorem hyperbolicLocalChart_coordinate_mem_leftSourceCoordinateOverlap
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g)
@@ -182,9 +207,12 @@ def HyperbolicLocalChartLeftSourceCoordinateExpressionContDiffOnTheorem
       (hyperbolicLocalChartLeftSourceCoordinateOverlap U V)
 
 /--
-The fixed-source coordinate expression is `C¹` on its coordinate overlap.
-This uses only the stored holomorphic local-map regularity and the
-Riemann-surface smoothness of chart transitions.
+%%handwave
+name: First-order regularity of a hyperbolic chart in a fixed source coordinate
+statement:
+  Let \(U,V\) be hyperbolic local charts on a complex one-manifold. On the fixed \(U\)-coordinate image of \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\), the expression \(z\mapsto V(U^{-1}(z))\) is \(C^1\).
+proof:
+  The change from the stored coordinate of \(U\) to that of \(V\) is \(C^1\), because transitions between complex-manifold charts are smooth. Its image lies in the coordinate domain of the holomorphic local map defining \(V\); composing with that map gives the asserted regularity.
 -/
 theorem hyperbolicLocalChartLeftSourceCoordinateExpressionContDiffOnTheorem
     [ComplexOneManifold X] :
@@ -264,8 +292,12 @@ theorem hyperbolicLocalChartLeftSourceCoordinateExpressionContDiffOnTheorem
     rw [hto, hcoord])
 
 /--
-The fixed-left-source coordinate expression is differentiable at every point
-of the surface overlap.
+%%handwave
+name: Differentiability in a fixed source coordinate
+statement:
+  If \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\), then the map \(z\mapsto V(U^{-1}(z))\) is complex differentiable at the stored coordinate \(z_U(x)\).
+proof:
+  The map is \(C^1\) on the open fixed source-coordinate overlap, and \(z_U(x)\) belongs to that overlap. Differentiability within the overlap therefore upgrades to differentiability at the point.
 -/
 theorem hyperbolicLocalChartLeftSourceCoordinateExpression_differentiableAt
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -296,9 +328,15 @@ theorem hyperbolicLocalChartLeftSourceCoordinateExpression_differentiableAt
         hxCoord)
 
 /--
-Ambient `chartAt` derivatives factor through the fixed source coordinate of
-the left chart.  This is the chain-rule bridge from the older ambient
-derivative to the fixed-left-source derivative.
+%%handwave
+name: Factorization of a chart derivative through a fixed source coordinate
+statement:
+  Let \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\). If \(e\) is the ambient chart at \(x\), then
+  \[
+    (V\circ e^{-1})'(e(x))=(V\circ U^{-1})'(z_U(x))\,(U\circ e^{-1})'(e(x)).
+  \]
+proof:
+  Near \(e(x)\), the ambient expression for \(V\) is the composition of its expression in the fixed \(U\)-coordinate with the transition \(U\circ e^{-1}\). Both factors are differentiable, so the formula is the complex chain rule.
 -/
 theorem hyperbolicLocalChartCoordinateDerivativeAt_eq_leftSourceCoordinateDerivativeAt_mul_chartTransitionDerivative
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -392,12 +430,12 @@ theorem hyperbolicLocalChartCoordinateDerivativeAt_eq_leftSourceCoordinateDeriva
           rfl
 
 /--
-The transition from the ambient `chartAt` coordinate at `x` to the fixed
-coordinate stored by a hyperbolic local chart has nonzero complex derivative.
-
-This is just the usual nonvanishing derivative of a holomorphic change of
-Riemann-surface coordinate, proved here from the chartwise conformal-density
-transition law.
+%%handwave
+name: Nonvanishing derivative of the transition to a stored chart
+statement:
+  Let \(x\in\operatorname{dom}(U)\), and let \(e\) be the ambient complex chart at \(x\). The coordinate transition \(U\circ e^{-1}\) has nonzero derivative at \(e(x)\).
+proof:
+  The conformal density transition law expresses the positive metric density in the \(e\)-coordinate as the density in the stored \(U\)-coordinate times the squared norm of this derivative. A zero derivative would force the positive density to vanish.
 -/
 theorem hyperbolicLocalChart_chartAt_to_storedChartTransitionDerivative_ne
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -447,8 +485,12 @@ def HyperbolicLocalChartLeftSourceCoordinateDerivativeContinuousOnOverlapTheorem
         hyperbolicLocalChartLeftSourceCoordinateDerivativeAt U V (x : X))
 
 /--
-`C¹` regularity of fixed-source coordinate expressions gives continuity of
-their scalar derivative along the surface overlap.
+%%handwave
+name: Continuous fixed-coordinate derivatives from first-order regularity
+statement:
+  Suppose every fixed-coordinate expression \(z\mapsto V(U^{-1}(z))\) is \(C^1\) on its coordinate overlap. Then \(x\mapsto (V\circ U^{-1})'(z_U(x))\) is continuous on \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  The derivative of the \(C^1\) coordinate expression is continuous on the open coordinate overlap. Compose it with the continuous stored coordinate of \(U\), restricted to the surface overlap.
 -/
 theorem hyperbolicLocalChartLeftSourceCoordinateDerivativeContinuousOnOverlapTheorem_of_contDiffOn
     (hContDiff :
@@ -494,7 +536,12 @@ theorem hyperbolicLocalChartLeftSourceCoordinateDerivativeContinuousOnOverlapThe
       hDerivAt hCoordAt)
 
 /--
-Fixed-source derivatives are continuous on overlaps for Riemann surfaces.
+%%handwave
+name: Continuity of fixed-coordinate derivatives on chart overlaps
+statement:
+  For hyperbolic local charts \(U,V\) on a complex one-manifold, the function \(x\mapsto (V\circ U^{-1})'(z_U(x))\) is continuous on \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  Fixed-coordinate expressions are \(C^1\) on their coordinate overlaps, so apply the continuity result for their derivatives along the surface overlap.
 -/
 theorem hyperbolicLocalChartLeftSourceCoordinateDerivativeContinuousOnOverlapTheorem
     [ComplexOneManifold X] :

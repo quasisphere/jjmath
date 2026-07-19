@@ -29,12 +29,28 @@ def ContDiffOnNhdAt (r : ℂ → ℝ) (z : ℂ) : Prop :=
   ∃ V : Set ℂ, V ∈ 𝓝 z ∧
     ContDiffOn ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) r V
 
+/--
+%%handwave
+name: Smoothness at a point from smoothness on a neighborhood
+statement:
+  If a real-valued function on $\mathbb C$ is smooth on some neighborhood of $z$, then it is smooth at $z$.
+proof:
+  Use the same neighborhood in the definition of smoothness at the point.
+-/
 theorem ContDiffOnNhdAt.contDiffAt {r : ℂ → ℝ} {z : ℂ}
     (h : ContDiffOnNhdAt r z) :
     ContDiffAt ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) r z := by
   rcases h with ⟨V, hV, hr⟩
   exact hr.contDiffAt hV
 
+/--
+%%handwave
+name: Local smoothness is preserved by negation
+statement:
+  If $r:\mathbb C\to\mathbb R$ is smooth on a neighborhood of $z$, then $-r$ is smooth on a neighborhood of $z$.
+proof:
+  Negation preserves smoothness on the same neighborhood.
+-/
 theorem ContDiffOnNhdAt.neg {r : ℂ → ℝ} {z : ℂ}
     (h : ContDiffOnNhdAt r z) :
     ContDiffOnNhdAt (fun w => -r w) z := by

@@ -22,8 +22,18 @@ variable {E : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 
-/-- A restriction in first de Rham cohomology is surjective if its target is
-spanned by one class which itself extends across the larger open set. -/
+/--
+%%handwave
+name:
+  Surjectivity of restriction from an extendable cyclic generator
+statement:
+  Let \(W\subseteq U\).  If \(H^1_{\mathrm{dR}}(W)\) is spanned by a class
+  \(\gamma\) and \(\gamma\) is the restriction of a class on \(U\), then
+  \(H^1_{\mathrm{dR}}(U)\to H^1_{\mathrm{dR}}(W)\) is surjective.
+proof:
+  Write a target class as \(c\gamma\), and take \(c\) times the chosen
+  extension of \(\gamma\).
+-/
 theorem deRhamH1_restriction_surjective_of_cyclic_generator_extends
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     (U W : TopologicalSpace.Opens M) (hWU : W ≤ U)
@@ -80,12 +90,21 @@ theorem deRhamH1_subsingleton_of_mayerVietoris_cyclic_overlap_generator_extends_
       generator extension hextension hcyclic
 
 set_option synthInstance.maxHeartbeats 100000 in
-/-- If the first cohomology of a Mayer--Vietoris overlap is cyclic and the
-left-hand open set has nontrivial first cohomology, ambient vanishing forces
-first cohomology of the right-hand open set to vanish.  Exactness first shows
-that every nonzero left-hand class restricts nontrivially.  Its restriction is
-therefore a nonzero element of the cyclic overlap and hence spans the overlap,
-so the left restriction is surjective. -/
+/--
+%%handwave
+name:
+  Vanishing on one side of a two-open cyclic cover
+statement:
+  Let \(M=U\cup V\) with \(H^1_{\mathrm{dR}}(M)=0\).  If
+  \(H^1_{\mathrm{dR}}(U\cap V)\) is cyclic and
+  \(H^1_{\mathrm{dR}}(U)\ne0\), then
+  \(H^1_{\mathrm{dR}}(V)=0\).
+proof:
+  By Mayer–Vietoris exactness, a nonzero class on \(U\) restricts nontrivially
+  to the overlap.  Since the overlap cohomology is cyclic, this nonzero
+  restriction spans it, making restriction from \(U\) surjective.  Exactness
+  and ambient vanishing then force every class on \(V\) to vanish.
+-/
 theorem deRhamH1_subsingleton_of_mayerVietoris_cyclic_overlap_and_left_nontrivial
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]
@@ -160,6 +179,18 @@ theorem deRhamH1_subsingleton_of_mayerVietoris_cyclic_overlap_and_left_nontrivia
   simpa [hc_ne] using hd.symm
 
 set_option synthInstance.maxHeartbeats 100000 in
+/--
+%%handwave
+name:
+  Difference of constant degree-zero de Rham classes
+statement:
+  For real constants \(c,d\),
+  \([c]-[d]=[c-d]\) in \(H^0_{\mathrm{dR}}(M)\).
+proof:
+  The quotient map from closed zero-forms is additive, and pointwise
+  subtraction of the constant zero-forms \(c\) and \(d\) is the constant
+  zero-form \(c-d\).
+-/
 theorem deRhamConstantH0Class_sub_eq
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     (c d : ℝ) :

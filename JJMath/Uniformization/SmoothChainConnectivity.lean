@@ -34,13 +34,36 @@ noncomputable def ContMDiffSingularSimplex.point
   toContinuousMap := ⟨fun _ => x, continuous_const⟩
   contMDiff := ⟨fun _ => x, contMDiff_const.contMDiffOn, fun _ => rfl⟩
 
+/--
+%%handwave
+name:
+  Evaluation of a constant smooth zero-simplex
+statement:
+  For a point \(x\in M\), the constant smooth singular zero-simplex at
+  \(x\) takes its unique simplex point to \(x\).
+proof:
+  The underlying map of the zero-simplex is, by construction, the constant
+  map with value \(x\).
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.point_apply
     (x : M) {r : WithTop ℕ∞} (q : StandardSimplex 0) :
     ContMDiffSingularSimplex.point (I := I) (r := r) x q = x :=
   rfl
 
-/-- Two smooth singular simplices are equal when they agree pointwise. -/
+/--
+%%handwave
+name:
+  Extensionality for smooth singular simplices
+statement:
+  If two smooth singular \(k\)-simplices \(\sigma\) and \(\tau\) satisfy
+  \(\sigma(q)=\tau(q)\) for every \(q\in\Delta^k\), then
+  \(\sigma=\tau\).
+proof:
+  Pointwise equality identifies the underlying continuous maps.  The
+  smoothness witnesses are propositions, so the two structured simplices
+  are equal.
+-/
 theorem ContMDiffSingularSimplex.ext_apply
     {k : ℕ} {r : WithTop ℕ∞}
     {sigma tau : ContMDiffSingularSimplex (I := I) (M := M) k r}
@@ -53,6 +76,18 @@ theorem ContMDiffSingularSimplex.ext_apply
   subst tau
   rfl
 
+/--
+%%handwave
+name:
+  Inclusion of a constant zero-simplex into the ambient manifold
+statement:
+  Let \(U\subseteq M\) be open and \(x\in U\).  Including the constant
+  zero-simplex at \(x\) from \(U\) into \(M\) gives the constant
+  zero-simplex at the ambient point \(x\in M\).
+proof:
+  Both simplices have the same constant value at every point of
+  \(\Delta^0\), so simplex extensionality applies.
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.point_openInclusion
     {U : TopologicalSpace.Opens M} (x : U) {r : WithTop ℕ∞} :
@@ -62,6 +97,17 @@ theorem ContMDiffSingularSimplex.point_openInclusion
   intro q
   rfl
 
+/--
+%%handwave
+name:
+  Nested inclusion of a constant zero-simplex
+statement:
+  If \(U\subseteq V\) are open subsets of \(M\) and \(x\in U\), then
+  including the constant zero-simplex at \(x\) from \(U\) into \(V\) gives
+  the constant zero-simplex at the image of \(x\) in \(V\).
+proof:
+  Both sides are pointwise the same constant map into \(V\).
+-/
 @[simp]
 theorem ContMDiffSingularSimplex.point_nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
@@ -111,6 +157,20 @@ noncomputable def chartAffineSimplex
           (contMDiffOn_extChartAt_symm (I := SurfaceRealModel) x).comp
             hL.contMDiff.contMDiffOn hmaps_ext }
 
+/--
+%%handwave
+name:
+  Evaluation of an affine simplex in a surface chart
+statement:
+  Suppose the affine segment from \(a\) to \(b\) lies in a surface-chart
+  target.  The corresponding smooth singular one-simplex satisfies
+  \[
+    \sigma(q)=\phi^{-1}\bigl(q_0a+q_1b\bigr)
+    \qquad(q\in\Delta^1).
+  \]
+proof:
+  This is the defining formula for the affine coordinate simplex.
+-/
 @[simp]
 theorem chartAffineSimplex_apply
     (x : X) (a b : ℂ)
@@ -121,6 +181,18 @@ theorem chartAffineSimplex_apply
       (chartAt ℂ x).symm (q 0 • a + q 1 • b) :=
   rfl
 
+/--
+%%handwave
+name:
+  Terminal face of an affine chart simplex
+statement:
+  Let \(\sigma\) be the affine chart simplex from \(x\) to \(y\).  Its
+  zeroth face is the constant zero-simplex at \(y\).
+proof:
+  On the zeroth face of \(\Delta^1\), the barycentric coordinates are
+  \((0,1)\).  Thus the affine combination is \(\phi_x(y)\), whose
+  inverse-chart image is \(y\).
+-/
 theorem chartAffineSimplex_face_zero
     (x y : X) (hy : y ∈ (chartAt ℂ x).source)
     (hsegment : ∀ q ∈ stdSimplex ℝ (Fin 2),
@@ -141,6 +213,18 @@ theorem chartAffineSimplex_face_zero
       exact simplexAmbientMap_succAbove_apply_succAbove 0 q 0]
   simp [hq, (chartAt ℂ x).left_inv hy]
 
+/--
+%%handwave
+name:
+  Initial face of an affine chart simplex
+statement:
+  Let \(\sigma\) be the affine chart simplex from \(x\) to \(y\).  Its
+  first face is the constant zero-simplex at \(x\).
+proof:
+  On the first face of \(\Delta^1\), the barycentric coordinates are
+  \((1,0)\).  The affine combination is therefore \(\phi_x(x)\), and the
+  inverse chart returns \(x\).
+-/
 theorem chartAffineSimplex_face_one
     (x y : X) (_hy : y ∈ (chartAt ℂ x).source)
     (hsegment : ∀ q ∈ stdSimplex ℝ (Fin 2),
@@ -171,10 +255,29 @@ def SmoothChainJoined (x y : X) : Prop :=
       Finsupp.single (ContMDiffSingularSimplex.point
         (I := SurfaceRealModel) x) (1 : ℤ)
 
+/--
+%%handwave
+name:
+  Reflexivity of smooth-chain joining
+statement:
+  Every point \(x\in X\) is smoothly chain joined to itself.
+proof:
+  The zero one-chain has boundary \(0=x-x\).
+-/
 theorem smoothChainJoined_refl (x : X) : SmoothChainJoined x x := by
   refine ⟨0, ?_⟩
   simp
 
+/--
+%%handwave
+name:
+  Symmetry of smooth-chain joining
+statement:
+  If a smooth singular one-chain has boundary \(y-x\), then some smooth
+  singular one-chain has boundary \(x-y\).
+proof:
+  Negating the original chain negates its boundary.
+-/
 theorem smoothChainJoined_symm {x y : X} :
     SmoothChainJoined x y → SmoothChainJoined y x := by
   rintro ⟨c, hc⟩
@@ -182,6 +285,17 @@ theorem smoothChainJoined_symm {x y : X} :
   rw [map_neg, hc]
   abel
 
+/--
+%%handwave
+name:
+  Transitivity of smooth-chain joining
+statement:
+  If \(x\) is smoothly chain joined to \(y\) and \(y\) is smoothly chain
+  joined to \(z\), then \(x\) is smoothly chain joined to \(z\).
+proof:
+  Add chains with boundaries \(y-x\) and \(z-y\); linearity of the boundary
+  operator gives the telescoping boundary \(z-x\).
+-/
 theorem smoothChainJoined_trans {x y z : X} :
     SmoothChainJoined x y → SmoothChainJoined y z → SmoothChainJoined x z := by
   rintro ⟨c, hc⟩ ⟨d, hd⟩
@@ -189,6 +303,21 @@ theorem smoothChainJoined_trans {x y z : X} :
   rw [map_add, hc, hd]
   abel
 
+/--
+%%handwave
+name:
+  Boundary of an affine chart simplex
+statement:
+  Let \(\sigma\) be the affine chart one-simplex from \(x\) to \(y\).
+  As a singular one-chain with coefficient \(1\), its boundary is
+  \[
+    \partial\sigma=[y]-[x].
+  \]
+proof:
+  The alternating boundary of a one-simplex is its zeroth face minus its
+  first face.  These faces are respectively the constant zero-simplices at
+  \(y\) and \(x\).
+-/
 theorem boundary_chartAffineSimplex_single
     (x y : X) (hy : y ∈ (chartAt ℂ x).source)
     (hsegment : ∀ q ∈ stdSimplex ℝ (Fin 2),
@@ -206,6 +335,19 @@ theorem boundary_chartAffineSimplex_single
     chartAffineSimplex_face_zero x y hy hsegment,
     chartAffineSimplex_face_one x y hy hsegment, sub_eq_add_neg]
 
+/--
+%%handwave
+name:
+  Nearby points are smoothly chain joined
+statement:
+  For every \(x\in X\), there is an open neighborhood \(W\) of \(x\) such
+  that every \(y\in W\) is smoothly chain joined to \(x\).
+proof:
+  Choose a metric ball about \(\phi_x(x)\) contained in the chart target and
+  pull it back to \(X\).  Convexity keeps the affine segment from
+  \(\phi_x(x)\) to \(\phi_x(y)\) inside the ball, so its inverse-chart image
+  is a smooth one-simplex with boundary \(y-x\).
+-/
 theorem exists_open_smoothChainJoined_from
     (x : X) : ∃ W : Set X, IsOpen W ∧ x ∈ W ∧
       ∀ y ∈ W, SmoothChainJoined x y := by

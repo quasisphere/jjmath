@@ -31,7 +31,16 @@ instance instLocallyCompactSpaceComplexUnitDisc : LocallyCompactSpace Complex.Un
   change LocallyCompactSpace (Metric.ball (0 : ℂ) 1)
   exact (Metric.isOpen_ball : IsOpen (Metric.ball (0 : ℂ) 1)).locallyCompactSpace
 
-/-- If every target fiber has a unique point, the map is surjective. -/
+/--
+%%handwave
+name:
+  Unique preimages imply surjectivity
+statement:
+  If every \(y\) has a unique \(x\) satisfying \(f(x)=y\), then \(f\) is
+  surjective.
+proof:
+  For each \(y\), discard uniqueness and retain the asserted preimage.
+-/
 theorem surjective_of_existsUnique_preimage {α β : Type*} {f : α → β}
     (hfiber : ∀ y : β, ∃! x : α, f x = y) :
     Function.Surjective f := by
@@ -39,7 +48,17 @@ theorem surjective_of_existsUnique_preimage {α β : Type*} {f : α → β}
   rcases hfiber y with ⟨x, hx, _⟩
   exact ⟨x, hx⟩
 
-/-- If every target fiber has a unique point, the map is injective. -/
+/--
+%%handwave
+name:
+  Unique preimages imply injectivity
+statement:
+  If every target fiber of \(f:\alpha\to\beta\) contains exactly one point,
+  then \(f\) is injective.
+proof:
+  If \(f(x)=f(y)\), both \(x\) and \(y\) are the unique preimage of
+  \(f(x)\), so they are equal.
+-/
 theorem injective_of_existsUnique_preimage {α β : Type*} {f : α → β}
     (hfiber : ∀ y : β, ∃! x : α, f x = y) :
     Function.Injective f := by
@@ -49,7 +68,17 @@ theorem injective_of_existsUnique_preimage {α β : Type*} {f : α → β}
   have hyw : y = w := huniq y (by simp [hxy])
   exact hxw.trans hyw.symm
 
-/-- If every target fiber has a unique point, the map is bijective. -/
+/--
+%%handwave
+name:
+  Unique preimages imply bijectivity
+statement:
+  If every target fiber of a map contains exactly one point, then the map is
+  bijective.
+proof:
+  The unique-preimage hypothesis separately gives injectivity and
+  surjectivity.
+-/
 theorem bijective_of_existsUnique_preimage {α β : Type*} {f : α → β}
     (hfiber : ∀ y : β, ∃! x : α, f x = y) :
     Function.Bijective f :=
@@ -57,9 +86,17 @@ theorem bijective_of_existsUnique_preimage {α β : Type*} {f : α → β}
     surjective_of_existsUnique_preimage hfiber⟩
 
 /--
-For an open complex coordinate on the target, eventual statements near a
-target point can be transported to and from eventual statements near its
-complex coordinate.
+%%handwave
+name:
+  Neighborhood statements through an open complex embedding
+statement:
+  Let \(\varphi:Y\to\mathbb C\) be an open embedding.  A property \(P(y)\)
+  holds for all \(y\) near \(y_0\) if and only if, for all \(z\) near
+  \(\varphi(y_0)\), every \(y\) with \(\varphi(y)=z\) satisfies \(P(y)\).
+proof:
+  Transport eventual membership through the identity between the mapped
+  neighborhood filter at \(y_0\) and the neighborhood filter at
+  \(\varphi(y_0)\), using injectivity of the embedding.
 -/
 theorem eventually_nhds_complexModel_iff
     {Y : Type} [TopologicalSpace Y] {φ : Y → ℂ}
@@ -84,7 +121,17 @@ theorem eventually_nhds_complexModel_iff
       intro y hy
       exact hy y rfl)
 
-/-- A proper map has compact fibers. -/
+/--
+%%handwave
+name:
+  Fibers of a proper map are compact
+statement:
+  If \(f:\alpha\to\beta\) is proper, then \(f^{-1}(y)\) is compact for every
+  \(y\in\beta\).
+proof:
+  The singleton \(\{y\}\) is compact, and a proper map has compact preimage of
+  every compact set.
+-/
 theorem isCompact_fiber_of_isProperMap {α β : Type*}
     [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
     (hproper : IsProperMap f) (y : β) :
@@ -93,8 +140,16 @@ theorem isCompact_fiber_of_isProperMap {α β : Type*}
     hproper.isCompact_preimage (K := {y}) isCompact_singleton
 
 /--
-For a proper map, if a property holds in a neighborhood of every point of one
-fiber, then all nearby fibers satisfy the property pointwise.
+%%handwave
+name:
+  Proper maps propagate fiberwise neighborhood properties
+statement:
+  Let \(f:\alpha\to\beta\) be proper.  If membership in a set \(S\) holds
+  near every point of \(f^{-1}(y_0)\), then
+  \(f^{-1}(y)\subseteq S\) for every sufficiently nearby \(y\).
+proof:
+  A proper map is closed.  Apply the closed-map fiber-neighborhood theorem to
+  the neighborhoods on which membership in \(S\) holds.
 -/
 theorem eventually_fiber_subset_of_isProperMap {α β : Type*}
     [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
@@ -110,8 +165,15 @@ theorem eventually_fiber_subset_of_isProperMap {α β : Type*}
   exact hy x (by simpa [Set.mem_preimage, Set.mem_singleton_iff] using hx)
 
 /--
-For a proper map, any open neighborhood of one fiber contains all nearby
-fibers.
+%%handwave
+name:
+  Nearby fibers of a proper map lie in any open fiber neighborhood
+statement:
+  If \(f\) is proper and an open set \(U\) contains \(f^{-1}(y_0)\), then
+  \(f^{-1}(y)\subseteq U\) for every sufficiently nearby \(y\).
+proof:
+  Openness makes membership in \(U\) hold near every point of the old fiber.
+  Apply the proper-map fiberwise propagation result.
 -/
 theorem eventually_fiber_subset_open_of_isProperMap {α β : Type*}
     [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
@@ -123,9 +185,18 @@ theorem eventually_fiber_subset_open_of_isProperMap {α β : Type*}
     exact hU.mem_nhds (hcover hx))
 
 /--
-A finite fiber of a proper map in a Hausdorff source can be surrounded by
-pairwise disjoint open neighborhoods, and all nearby fibers lie in their
-union.
+%%handwave
+name:
+  Disjoint neighborhoods capturing nearby fibers of a proper map
+statement:
+  Let \(f:\alpha\to\beta\) be proper with Hausdorff source and finite fiber
+  over \(y_0\).  There are pairwise disjoint open neighborhoods \(U_x\) of
+  the points \(x\in f^{-1}(y_0)\) such that every sufficiently nearby fiber is
+  contained in \(\bigcup_{x\in f^{-1}(y_0)}U_x\).
+proof:
+  Hausdorff separation supplies pairwise disjoint open neighborhoods for the
+  finite old fiber.  Their union is an open neighborhood of that fiber, and
+  properness forces all nearby fibers into it.
 -/
 theorem properMap_finite_fiber_exists_pairwiseDisjoint_open_nhds_eventually
     {α β : Type*} [TopologicalSpace α] [T2Space α] [TopologicalSpace β]
@@ -151,8 +222,16 @@ theorem properMap_finite_fiber_exists_pairwiseDisjoint_open_nhds_eventually
     exact eventually_fiber_subset_open_of_isProperMap hproper hV_open hcover
 
 /--
-In a pairwise disjoint family of neighborhoods of a fiber, a point of the
-source can lie in neighborhoods of at most one fiber point.
+%%handwave
+name:
+  Uniqueness of a disjoint fiber neighborhood containing a point
+statement:
+  If neighborhoods \((U_x)_{x\in f^{-1}(y_0)}\) are pairwise disjoint and a
+  point \(z\) belongs to both \(U_{x_0}\) and \(U_{x_1}\), then
+  \(x_0=x_1\).
+proof:
+  Distinct indices would give disjoint neighborhoods, contradicting the
+  common point \(z\).
 -/
 theorem eq_of_mem_pairwiseDisjoint_fiber_neighborhoods
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -167,8 +246,16 @@ theorem eq_of_mem_pairwiseDisjoint_fiber_neighborhoods
   exact (Set.disjoint_left.mp hdisj hz₀ hz₁).elim
 
 /--
-If each old-fiber point lies in its selected neighborhood, then a selected
-neighborhood contains no other old-fiber point.
+%%handwave
+name:
+  An old fiber point in another selected neighborhood has the same index
+statement:
+  Suppose each \(x\in f^{-1}(y_0)\) lies in \(U_x\), and these neighborhoods
+  are pairwise disjoint.  If \(z\in f^{-1}(y_0)\cap U_{x_0}\), then
+  \(z=x_0\).
+proof:
+  The point \(z\) lies in both \(U_z\) and \(U_{x_0}\).  Uniqueness of the
+  containing disjoint neighborhood makes the two indices equal.
 -/
 theorem eq_of_old_fiber_mem_pairwiseDisjoint_fiber_neighborhood
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -184,8 +271,17 @@ theorem eq_of_old_fiber_mem_pairwiseDisjoint_fiber_neighborhood
     hz hx₀ (hU_mem z hz) hzU
 
 /--
-The selected neighborhood of an old-fiber point is an isolating neighborhood
-for that point inside the old fiber.
+%%handwave
+name:
+  A selected fiber neighborhood isolates its indexed point
+statement:
+  Under pairwise disjoint selected neighborhoods containing their indexed
+  old-fiber points,
+  \(U_{x_0}\cap f^{-1}(y_0)\subseteq\{x_0\}\).
+proof:
+  Any point in the intersection is an old-fiber point lying in
+  \(U_{x_0}\), so the preceding uniqueness result identifies it with
+  \(x_0\).
 -/
 theorem fiber_neighborhood_inter_old_fiber_subset_singleton
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -200,9 +296,15 @@ theorem fiber_neighborhood_inter_old_fiber_subset_singleton
       hU_mem hpair hx₀ hz.2 hz.1)
 
 /--
-In a pairwise-disjoint family of open neighborhoods of one finite fiber, every
-other old-fiber point has a whole neighborhood disjoint from the selected
-neighborhood of `x₀`.
+%%handwave
+name:
+  Other fiber points are locally outside a selected neighborhood
+statement:
+  Let \((U_x)\) be pairwise disjoint open neighborhoods of
+  \(f^{-1}(y_0)\).  If \(z\ne x_0\) are points of that fiber, then every point
+  sufficiently near \(z\) lies outside \(U_{x_0}\).
+proof:
+  The open neighborhood \(U_z\) of \(z\) is disjoint from \(U_{x_0}\).
 -/
 theorem eventually_not_mem_fiber_neighborhood_of_pairwiseDisjoint_ne
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -221,9 +323,16 @@ theorem eventually_not_mem_fiber_neighborhood_of_pairwiseDisjoint_ne
     exact (Set.disjoint_left.mp hdisj hw hzU).elim)
 
 /--
-Once a nearby fiber is contained in the union of pairwise-disjoint
-neighborhoods of the old fiber, every point of the nearby fiber lies in a
-unique old-fiber neighborhood.
+%%handwave
+name:
+  Unique old-fiber neighborhood for a captured nearby point
+statement:
+  Suppose pairwise disjoint neighborhoods \((U_x)_{x\in f^{-1}(y_0)}\)
+  contain \(f^{-1}(y)\) in their union.  Then every \(z\in f^{-1}(y)\) lies
+  in a unique \(U_x\) indexed by \(x\in f^{-1}(y_0)\).
+proof:
+  The covering gives existence.  If two indices worked, the point would lie
+  in two pairwise disjoint neighborhoods, forcing the indices to agree.
 -/
 theorem existsUnique_fiber_neighborhood_of_mem_fiber_subset_pairwiseDisjoint
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -242,8 +351,17 @@ theorem existsUnique_fiber_neighborhood_of_mem_fiber_subset_pairwiseDisjoint
     (x₀ := x₀.1) (x₁ := x₁.1) (z := z) x₀.2 x₁.2 hzU hzU₁).symm
 
 /--
-The preceding unique-neighborhood assignment holds eventually for fibers near
-the old target value of a proper map with finite fiber.
+%%handwave
+name:
+  Eventual unique assignment to old-fiber neighborhoods
+statement:
+  Let \(f\) be proper with Hausdorff source and finite fiber over \(y_0\).
+  There are pairwise disjoint open neighborhoods of the old fiber points such
+  that, for every sufficiently nearby \(y\), each point of \(f^{-1}(y)\) lies
+  in exactly one selected neighborhood.
+proof:
+  Choose disjoint neighborhoods whose union eventually contains every nearby
+  fiber, then apply uniqueness of the containing neighborhood pointwise.
 -/
 theorem eventually_existsUnique_fiber_neighborhood_of_properMap_finite_fiber
     {α β : Type*} [TopologicalSpace α] [T2Space α] [TopologicalSpace β]
@@ -263,8 +381,16 @@ theorem eventually_existsUnique_fiber_neighborhood_of_properMap_finite_fiber
     hpair hcover hz
 
 /--
-For an open map, an open neighborhood of a point in the fiber over `y₀`
-continues to meet all fibers over target points sufficiently near `y₀`.
+%%handwave
+name:
+  Nearby fibers of an open map meet an open source neighborhood
+statement:
+  Let \(f:\alpha\to\beta\) be open, let \(f(x_0)=y_0\), and let \(U\) be an
+  open neighborhood of \(x_0\).  Then every sufficiently nearby \(y\) has a
+  preimage in \(U\).
+proof:
+  The image \(f(U)\) is an open neighborhood of \(y_0\).  Every point of this
+  image has, by definition, a preimage in \(U\).
 -/
 theorem eventually_exists_mem_open_of_isOpenMap
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -279,8 +405,17 @@ theorem eventually_exists_mem_open_of_isOpenMap
   exact ⟨z, hzU, hzF⟩
 
 /--
-For an open map and finitely many selected open neighborhoods of one fiber,
-all nearby fibers meet each selected neighborhood.
+%%handwave
+name:
+  Nearby fibers meet every selected neighborhood of a finite old fiber
+statement:
+  Let \(f\) be open and let \(f^{-1}(y_0)\) be finite.  If each old-fiber
+  point \(x_0\) has a selected open neighborhood \(U_{x_0}\), then for every
+  sufficiently nearby \(y\), each \(U_{x_0}\) contains a point of
+  \(f^{-1}(y)\).
+proof:
+  Openness gives the assertion eventually for each individual old-fiber
+  point.  Intersect the finitely many resulting target neighborhoods.
 -/
 theorem eventually_forall_fiber_neighborhood_exists_of_isOpenMap
     {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
@@ -309,8 +444,20 @@ theorem eventually_forall_fiber_neighborhood_exists_of_isOpenMap
     simp [s, hfinite.mem_toFinset.mpr x₀.2])
 
 /--
-If each element of a finite set belongs to exactly one indexed part, then a
-sum over the set is the iterated sum over the corresponding filtered parts.
+%%handwave
+name:
+  Reindexing a finite sum by a unique partition
+statement:
+  Let \(S\) and \(T\) be finite sets, and suppose each \(x\in S\) belongs to
+  exactly one part indexed by \(i\in T\).  For any additive weights \(m(x)\),
+  \[
+    \sum_{x\in S}m(x)
+      =\sum_{i\in T}\sum_{\substack{x\in S\\P(x,i)}}m(x).
+  \]
+proof:
+  Replace each summand \(m(x)\) by the sum over indices which is zero except at
+  its unique index.  Interchange the two finite sums and identify the inner
+  conditional sums with sums over the filtered parts.
 -/
 theorem finset_sum_eq_sum_filter_of_existsUnique
     {α ι M : Type*} [AddCommMonoid M]
@@ -346,8 +493,16 @@ theorem finset_sum_eq_sum_filter_of_existsUnique
       rw [Finset.sum_filter]
 
 /--
-A compact set is finite if the family of its singleton subsets is locally
-finite in the ambient space.
+%%handwave
+name:
+  Compactness plus locally finite singleton family implies finiteness
+statement:
+  Let \(S\) be compact.  If the family \((\{x\})_{x\in S}\) is locally finite
+  in the ambient space, then \(S\) is finite.
+proof:
+  A locally finite family has only finitely many members meeting a fixed
+  compact set.  Every singleton indexed by \(S\) meets \(S\), so only finitely
+  many indices occur.
 -/
 theorem finite_of_isCompact_of_locallyFinite_singletons {α : Type*}
     [TopologicalSpace α] {s : Set α}
@@ -362,7 +517,17 @@ theorem finite_of_isCompact_of_locallyFinite_singletons {α : Type*}
   haveI : Finite s := Set.finite_univ_iff.mp hfin_univ
   exact Set.toFinite s
 
-/-- A proper-map fiber is finite once its singleton family is locally finite. -/
+/--
+%%handwave
+name:
+  A proper fiber with locally finite singletons is finite
+statement:
+  If \(f\) is proper and the singleton family indexed by \(f^{-1}(y)\) is
+  locally finite, then the fiber \(f^{-1}(y)\) is finite.
+proof:
+  Properness makes the fiber compact.  Apply the compactness criterion for a
+  locally finite family of its singleton subsets.
+-/
 theorem finite_fiber_of_isProperMap_of_locallyFinite_singletons {α β : Type*}
     [TopologicalSpace α] [TopologicalSpace β] {f : α → β} (hproper : IsProperMap f)
     (y : β)
@@ -372,8 +537,17 @@ theorem finite_fiber_of_isProperMap_of_locallyFinite_singletons {α β : Type*}
     (isCompact_fiber_of_isProperMap hproper y) hloc
 
 /--
-A closed subset whose points are isolated in the subset has a locally finite
-family of singleton subsets.
+%%handwave
+name:
+  Isolated points of a closed set form a locally finite singleton family
+statement:
+  Let \(S\) be closed, and suppose every \(x\in S\) has an open neighborhood
+  meeting \(S\) only at \(x\).  Then the family \((\{x\})_{x\in S}\) is
+  locally finite.
+proof:
+  At a point of \(S\), use its isolating neighborhood, which meets only one
+  indexed singleton.  At a point outside \(S\), use the open complement,
+  which meets none.
 -/
 theorem locallyFinite_singletons_of_isClosed_of_isolated_points {α : Type*}
     [TopologicalSpace α] {s : Set α} (hclosed : IsClosed s)
@@ -403,7 +577,19 @@ theorem locallyFinite_singletons_of_isClosed_of_isolated_points {α : Type*}
     exact False.elim (by
       exact hz_not_s (by simp [hz_eq, y.2]))
 
-/-- Fibers of a nonconstant holomorphic map are locally finite. -/
+/--
+%%handwave
+name:
+  Fibers of a nonconstant holomorphic map are locally finite
+statement:
+  If \(f:X\to\mathbb C\) is a nonconstant holomorphic map from a Riemann
+  surface, then the singleton family indexed by each fiber \(f^{-1}(a)\) is
+  locally finite.
+proof:
+  Continuity makes the fiber closed.  The isolated-zero theorem for a
+  nonconstant holomorphic map gives an isolating neighborhood at each fiber
+  point, so the closed isolated-set criterion applies.
+-/
 theorem nonconstant_holomorphicMap_fiber_singletons_locallyFinite
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {f : X → ℂ}
@@ -426,7 +612,17 @@ theorem nonconstant_holomorphicMap_fiber_singletons_locallyFinite
       hP_iso (y : X) hyP hne
     exact hvalue_ne (by rw [y.2, x.2])
 
-/-- Proper nonconstant holomorphic maps to the plane have finite fibers. -/
+/--
+%%handwave
+name:
+  Proper nonconstant holomorphic maps to the plane have finite fibers
+statement:
+  A proper nonconstant holomorphic map from a Riemann surface to
+  \(\mathbb C\) has finite fibers.
+proof:
+  Each fiber is compact by properness and its singleton family is locally
+  finite by isolation of zeros.  Hence the fiber is finite.
+-/
 theorem proper_nonconstant_holomorphicMap_fiber_finite
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {F : X → ℂ}
@@ -438,7 +634,19 @@ theorem proper_nonconstant_holomorphicMap_fiber_finite
     (nonconstant_holomorphicMap_fiber_singletons_locallyFinite
       (f := F) hF hnonconstant z)
 
-/-- Nonconstant holomorphic maps from Riemann surfaces to the plane are open maps. -/
+/--
+%%handwave
+name:
+  Open mapping theorem for Riemann surfaces
+statement:
+  A nonconstant holomorphic map from a Riemann surface to \(\mathbb C\) is an
+  open map.
+proof:
+  In a chart at each source point, the map becomes a one-variable analytic
+  function which is not locally constant.  The analytic open mapping theorem
+  makes the coordinate germ open; transporting its neighborhood-filter
+  statement through the chart proves that the surface map is open.
+-/
 theorem nonconstant_holomorphicMap_isOpenMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {F : X → ℂ}
@@ -496,7 +704,18 @@ theorem nonconstant_holomorphicMap_isOpenMap
       simp [e.left_inv hy])
   simpa [hmap_eq] using hlocal_surface
 
-/-- A proper nonconstant holomorphic map from a Riemann surface to the plane is onto. -/
+/--
+%%handwave
+name:
+  A proper nonconstant holomorphic map to the plane is surjective
+statement:
+  Every proper nonconstant holomorphic map from a Riemann surface to
+  \(\mathbb C\) is surjective.
+proof:
+  Its range is open by the open mapping theorem and closed by properness.  It
+  is nonempty, and the complex plane is connected, so the range is all of
+  \(\mathbb C\).
+-/
 theorem proper_nonconstant_holomorphicMap_surjective
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {F : X → ℂ}
@@ -522,7 +741,18 @@ theorem proper_nonconstant_holomorphicMap_surjective
     exact Set.mem_univ z
   simpa [Set.mem_range] using hz
 
-/-- Fibers of a nonconstant pointed disk map are locally finite. -/
+/--
+%%handwave
+name:
+  Fibers of a nonconstant pointed disk map are locally finite
+statement:
+  For a pointed holomorphic map \(F:X\to\mathbb D\) whose complex range is
+  nontrivial, the singleton family indexed by each fiber is locally finite.
+proof:
+  The fiber is closed by continuity.  After composing with the inclusion
+  \(\mathbb D\hookrightarrow\mathbb C\), nonconstancy gives isolated fiber
+  points, so the closed isolated-set criterion applies.
+-/
 theorem nonconstant_pointedDiskMap_fiber_singletons_locallyFinite
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -551,7 +781,17 @@ theorem nonconstant_pointedDiskMap_fiber_singletons_locallyFinite
       hP_iso (y : X) hyP hne
     exact hvalue_ne (by rw [y.2, x.2])
 
-/-- Proper nonconstant pointed disk maps have finite fibers. -/
+/--
+%%handwave
+name:
+  Proper nonconstant pointed disk maps have finite fibers
+statement:
+  A proper pointed holomorphic map to the unit disk with nontrivial complex
+  range has finite fibers.
+proof:
+  Properness makes each fiber compact, while nonconstancy makes its singleton
+  family locally finite.  Compactness then forces finiteness.
+-/
 theorem proper_nonconstant_pointedDiskMap_fiber_finite
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -563,7 +803,19 @@ theorem proper_nonconstant_pointedDiskMap_fiber_finite
   finite_fiber_of_isProperMap_of_locallyFinite_singletons hproper z
     (nonconstant_pointedDiskMap_fiber_singletons_locallyFinite F hnonconstant z)
 
-/-- Nonconstant pointed holomorphic disk maps are open maps. -/
+/--
+%%handwave
+name:
+  Open mapping theorem for pointed disk maps
+statement:
+  A pointed holomorphic map \(F:X\to\mathbb D\) with nontrivial complex range
+  is open.
+proof:
+  Its composite with the inclusion into \(\mathbb C\) is nonconstant and
+  holomorphic, hence open.  Since the disk has the subspace topology, the
+  image under \(F\) of any open set is the inverse image in the disk of that
+  open complex image.
+-/
 theorem nonconstant_pointedDiskMap_isOpenMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -589,7 +841,18 @@ theorem nonconstant_pointedDiskMap_isOpenMap
   rw [himage_eq]
   exact hcomplex_open.preimage continuous_subtype_val
 
-/-- A proper nonconstant pointed holomorphic disk map is onto the disk. -/
+/--
+%%handwave
+name:
+  A proper nonconstant pointed disk map is surjective
+statement:
+  A proper pointed holomorphic map to \(\mathbb D\) with nontrivial complex
+  range is onto the disk.
+proof:
+  Its range is open by the disk open mapping theorem and closed by properness.
+  The range is nonempty, and the disk is connected, so it equals the whole
+  disk.
+-/
 theorem proper_nonconstant_pointedDiskMap_surjective
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -616,8 +879,17 @@ theorem proper_nonconstant_pointedDiskMap_surjective
   simpa [Set.mem_range] using hz
 
 /--
-A holomorphic map whose target is represented by an open complex coordinate is
-open, provided the complex-coordinate expression is nonconstant.
+%%handwave
+name:
+  Open mapping theorem for a target with an open complex model
+statement:
+  Let \(F:X\to Y\) be a map from a Riemann surface and let
+  \(\varphi:Y\to\mathbb C\) be an open embedding.  If \(\varphi\circ F\) is
+  holomorphic with nontrivial range, then \(F\) is open.
+proof:
+  The complex-coordinate expression is open by the Riemann-surface open
+  mapping theorem.  Openness of \(\varphi\) identifies this with openness of
+  \(F\).
 -/
 theorem nonconstant_holomorphicMap_to_openComplexModel_isOpenMap
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -632,7 +904,19 @@ theorem nonconstant_holomorphicMap_to_openComplexModel_isOpenMap
   exact (hφ_open.isOpenMap_iff (f := F)).mpr (by
     simpa [Function.comp_def] using hcomplex_open)
 
-/-- Fibers are locally finite for a nonconstant holomorphic map to an open complex model. -/
+/--
+%%handwave
+name:
+  Local finiteness of fibers in an open complex target model
+statement:
+  Under an open embedding \(\varphi:Y\to\mathbb C\), if
+  \(\varphi\circ F\) is nonconstant and holomorphic, then the singleton family
+  indexed by each fiber \(F^{-1}(y)\) is locally finite.
+proof:
+  Injectivity of \(\varphi\) identifies the fiber with a level set of the
+  complex-coordinate expression.  That level set is closed and has isolated
+  points by the nonconstant holomorphic isolated-zero theorem.
+-/
 theorem nonconstant_holomorphicMap_to_openComplexModel_fiber_singletons_locallyFinite
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -663,7 +947,18 @@ theorem nonconstant_holomorphicMap_to_openComplexModel_fiber_singletons_locallyF
       hP_iso (x' : X) hx'P hne
     exact hvalue_ne (by rw [x'.2, x.2])
 
-/-- Proper nonconstant holomorphic maps to an open complex model have finite fibers. -/
+/--
+%%handwave
+name:
+  Proper nonconstant maps to an open complex model have finite fibers
+statement:
+  A proper map \(F:X\to Y\) whose expression in an open complex target model
+  is nonconstant and holomorphic has finite fibers.
+proof:
+  Properness makes each fiber compact, while holomorphic nonconstancy makes
+  its singleton family locally finite.  The compactness criterion gives
+  finiteness.
+-/
 theorem proper_nonconstant_holomorphicMap_to_openComplexModel_fiber_finite
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -678,8 +973,17 @@ theorem proper_nonconstant_holomorphicMap_to_openComplexModel_fiber_finite
       hφ_open hF hnonconstant y)
 
 /--
-A proper nonconstant holomorphic map to a preconnected open complex model is
-surjective.
+%%handwave
+name:
+  Surjectivity of a proper nonconstant map to a preconnected complex model
+statement:
+  Let \(Y\) be preconnected and openly embedded in \(\mathbb C\).  A proper
+  map \(F:X\to Y\) whose complex-coordinate expression is nonconstant and
+  holomorphic is surjective.
+proof:
+  The range of \(F\) is open by the open mapping theorem and closed by
+  properness.  It is nonempty, so preconnectedness forces it to be all of
+  \(Y\).
 -/
 theorem proper_nonconstant_holomorphicMap_to_openComplexModel_surjective
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -711,8 +1015,17 @@ theorem proper_nonconstant_holomorphicMap_to_openComplexModel_surjective
   simpa [Set.mem_range] using hy
 
 /--
-For a nonconstant holomorphic map to an open complex coordinate, finitely many
-selected neighborhoods of one fiber all continue to meet nearby fibers.
+%%handwave
+name:
+  Nearby fibers meet selected neighborhoods in an open complex model
+statement:
+  Let \(F:X\to Y\) have nonconstant holomorphic expression in an open complex
+  target model, and suppose \(F^{-1}(y_0)\) is finite.  For any selected open
+  neighborhood of each old-fiber point, every sufficiently nearby fiber meets
+  every selected neighborhood.
+proof:
+  The map \(F\) is open by the open mapping theorem.  Apply the general
+  finite-fiber neighborhood result for open maps.
 -/
 theorem eventually_forall_fiber_neighborhood_exists_of_holomorphicMap_to_openComplexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -733,11 +1046,21 @@ theorem eventually_forall_fiber_neighborhood_exists_of_holomorphicMap_to_openCom
     hU hfinite
 
 /--
-Topological skeleton for local degree constancy: near a target value of a
-proper nonconstant holomorphic map to an open complex coordinate, fibers are
-contained in pairwise-disjoint neighborhoods of the old fiber; every nearby
-preimage has a unique such neighborhood, and every old-fiber neighborhood is
-hit by the nearby fiber.
+%%handwave
+name:
+  Fiber-neighborhood data for local degree constancy
+statement:
+  Let \(F:X\to Y\) be proper, with a nonconstant holomorphic expression in an
+  open complex target model, and suppose \(F^{-1}(y_0)\) is finite.  There are
+  pairwise disjoint open neighborhoods \(U_x\) of the old-fiber points such
+  that, for every sufficiently nearby \(y\): the fiber \(F^{-1}(y)\) is
+  contained in their union; each nearby preimage lies in a unique \(U_x\);
+  and every \(U_x\) is met by the nearby fiber.
+proof:
+  Properness supplies disjoint old-fiber neighborhoods whose union captures
+  nearby fibers.  Pairwise disjointness gives unique assignment, while the
+  open mapping theorem guarantees that each selected neighborhood continues
+  to meet every nearby fiber.
 -/
 theorem proper_holomorphicMap_to_openComplexModel_eventually_fiber_neighborhood_data
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -788,7 +1111,20 @@ noncomputable def holomorphicMapLocalOrderInCoordinate
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) : ℕ∞ :=
   holomorphicMapLocalOrderAtValueInCoordinate χ F (F x)
 
-/-- An injective map cannot have infinite local analytic order in a coordinate. -/
+/--
+%%handwave
+name:
+  An injective map has finite local analytic order
+statement:
+  Let \(F:X\to\mathbb C\) be injective and let \(\chi\) be a pointed
+  coordinate at \(x\).  Then the local analytic order of
+  \(F\circ\chi^{-1}-F(x)\) at \(\chi(x)\) is not infinite.
+proof:
+  Infinite analytic order would make the coordinate expression equal to
+  \(F(x)\) on a neighborhood of \(\chi(x)\).  A punctured neighborhood
+  contains a point distinct from \(\chi(x)\), giving a distinct source point
+  with the same value and contradicting injectivity.
+-/
 theorem holomorphicMapLocalOrderInCoordinate_ne_top_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) {F : X → ℂ}
@@ -841,7 +1177,18 @@ noncomputable def holomorphicMapLocalMultiplicityInCoordinate
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) : ℕ :=
   holomorphicMapLocalMultiplicityAtValueInCoordinate χ F (F x)
 
-/-- An injective surface map has injective coordinate expression on a coordinate target. -/
+/--
+%%handwave
+name:
+  Injectivity of a surface map in source coordinates
+statement:
+  If \(F:X\to\mathbb C\) is injective and \(\chi\) is a pointed coordinate,
+  then \(z\mapsto F(\chi^{-1}(z))\) is injective on the chart target.
+proof:
+  Equality of two coordinate-expression values gives equality of their
+  inverse-chart source points by injectivity of \(F\).  Applying the chart and
+  using its right inverse recovers equality of the coordinate points.
+-/
 theorem coordinateExpression_injOn_chartTarget_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) {F : X → ℂ}
@@ -854,7 +1201,18 @@ theorem coordinateExpression_injOn_chartTarget_of_injective
     _ = χ.chart (χ.chart.symm w) := by rw [hsymm_eq]
     _ = w := χ.chart.right_inv hw
 
-/-- Subtracting the base value preserves injectivity of the coordinate expression. -/
+/--
+%%handwave
+name:
+  Injectivity of the coordinate difference of an injective map
+statement:
+  If \(F:X\to\mathbb C\) is injective, then
+  \(z\mapsto F(\chi^{-1}(z))-F(x)\) is injective on the chart target of a
+  pointed coordinate \(\chi\) at \(x\).
+proof:
+  Addition of the constant \(F(x)\) cancels the subtraction, reducing equality
+  of the differences to equality of the injective coordinate expression.
+-/
 theorem coordinateDifference_injOn_chartTarget_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) {F : X → ℂ}
@@ -866,8 +1224,22 @@ theorem coordinateDifference_injOn_chartTarget_of_injective
   simpa [sub_eq_add_neg, add_assoc] using hcancel
 
 /--
-Finite local analytic order gives the standard coordinate factorization
-`F(χ⁻¹ z) - a = (z - χ x)^n g(z)` with `g(χ x) ≠ 0`.
+%%handwave
+name:
+  Factorization of a finite-order coordinate germ
+statement:
+  Let \(F:X\to\mathbb C\) be holomorphic and let \(\chi\) be pointed at
+  \(x\).  If \(F\circ\chi^{-1}-a\) has finite analytic order at
+  \(z_0=\chi(x)\), then there is a function \(g\), analytic near \(z_0\) with
+  \(g(z_0)\ne0\), such that
+  \[
+    F(\chi^{-1}(z))-a=(z-z_0)^n g(z)
+  \]
+  near \(z_0\), where \(n\) is the local multiplicity.
+proof:
+  The coordinate expression is analytic by holomorphicity of \(F\).  Apply
+  the standard analytic factorization theorem for a zero of finite order and
+  identify the natural order with the defined local multiplicity.
 -/
 theorem holomorphicMapLocalOrderAtValueInCoordinate_factorization_of_ne_top
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -900,8 +1272,19 @@ theorem holomorphicMapLocalOrderAtValueInCoordinate_factorization_of_ne_top
       smul_eq_mul] using hfactor
 
 /--
-Finite local analytic order at the image value gives the standard coordinate
-factorization of `F(χ⁻¹ z) - F x`.
+%%handwave
+name:
+  Factorization at the image value in a pointed coordinate
+statement:
+  If the local analytic order of \(F-F(x)\) at \(x\) is finite, then in a
+  pointed coordinate \(z_0=\chi(x)\),
+  \[
+    F(\chi^{-1}(z))-F(x)=(z-z_0)^n g(z)
+  \]
+  near \(z_0\), where \(g\) is analytic, \(g(z_0)\ne0\), and \(n\) is the
+  local multiplicity.
+proof:
+  Apply the finite-order factorization theorem with target value \(a=F(x)\).
 -/
 theorem holomorphicMapLocalOrderInCoordinate_factorization_of_ne_top
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -919,7 +1302,19 @@ theorem holomorphicMapLocalOrderInCoordinate_factorization_of_ne_top
     holomorphicMapLocalOrderAtValueInCoordinate_factorization_of_ne_top
       χ hF hfinite
 
-/-- A nonzero coordinate derivative gives local multiplicity one. -/
+/--
+%%handwave
+name:
+  A noncritical zero has local multiplicity one
+statement:
+  Let \(F:X\to\mathbb C\) be holomorphic with \(F(x)=a\).  If the complex
+  derivative of \(F\) in a pointed coordinate at \(x\) is nonzero, then the
+  local multiplicity of \(F-a\) at \(x\) is one.
+proof:
+  The coordinate germ vanishes at the base point and has nonzero first
+  derivative.  The analytic-order criterion therefore gives order exactly
+  one, whose natural value is the local multiplicity.
+-/
 theorem holomorphicMapLocalMultiplicityAtValueInCoordinate_eq_one_of_deriv_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -950,7 +1345,16 @@ theorem holomorphicMapLocalMultiplicityAtValueInCoordinate_eq_one_of_deriv_ne_ze
   simp [holomorphicMapLocalMultiplicityAtValueInCoordinate, fcoord, z₀,
     analyticOrderNatAt, horder]
 
-/-- A nonzero coordinate derivative gives local multiplicity one at the image value. -/
+/--
+%%handwave
+name:
+  A noncritical point has multiplicity one at its image
+statement:
+  If a holomorphic map has nonzero coordinate derivative at \(x\), then its
+  local multiplicity over the value \(F(x)\) is one.
+proof:
+  Apply the noncritical-zero result to the value \(a=F(x)\).
+-/
 theorem holomorphicMapLocalMultiplicityInCoordinate_eq_one_of_deriv_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -962,7 +1366,19 @@ theorem holomorphicMapLocalMultiplicityInCoordinate_eq_one_of_deriv_ne_zero
     holomorphicMapLocalMultiplicityAtValueInCoordinate_eq_one_of_deriv_ne_zero
       χ hF rfl hderiv
 
-/-- A finite fiber rules out infinite local order at a point of that fiber. -/
+/--
+%%handwave
+name:
+  A point of a finite fiber has finite local order
+statement:
+  If \(F^{-1}(a)\) is finite and \(F(x)=a\), then in every pointed coordinate
+  at \(x\), the analytic order of \(F-a\) is not infinite.
+proof:
+  Infinite order would make the coordinate germ identically zero near the
+  base point.  After removing the finitely many other points of the fiber,
+  choose a distinct coordinate point in this zero neighborhood; its inverse
+  chart point is a new point of the fiber, a contradiction.
+-/
 theorem holomorphicMapLocalOrderAtValueInCoordinate_ne_top_of_finite_fiber
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -1022,7 +1438,19 @@ theorem holomorphicMapLocalOrderAtValueInCoordinate_ne_top_of_finite_fiber
     exact hz_ne hz_eq
   exact hz_notS ⟨hfiber, by simpa [Set.mem_singleton_iff] using hsymm_ne⟩
 
-/-- A point in a finite fiber contributes positive natural local multiplicity. -/
+/--
+%%handwave
+name:
+  Positivity of local multiplicity in a finite fiber
+statement:
+  Let \(F:X\to\mathbb C\) be holomorphic, let \(F(x)=a\), and suppose
+  \(F^{-1}(a)\) is finite.  Then the local multiplicity of \(F-a\) at \(x\)
+  is at least one.
+proof:
+  The analytic coordinate germ vanishes at the base point, so its order is
+  nonzero.  Finiteness of the fiber rules out infinite order.  Thus its
+  natural-number order, which is the local multiplicity, is positive.
+-/
 theorem one_le_holomorphicMapLocalMultiplicityAtValueInCoordinate_of_mem_finite_fiber
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -1114,8 +1542,19 @@ noncomputable def holomorphicMapComplexFiberMultiplicityOnSet
       (chartAtPointedSurfaceCoordinate X x) f a
 
 /--
-At the base value, the complex-fiber contribution from an isolating
-neighborhood is the local multiplicity of the isolated point.
+%%handwave
+name:
+  Multiplicity in an isolating set equals the isolated local multiplicity
+statement:
+  Let \(f:X\to\mathbb C\) have finite fibers, with \(f(x_0)=a_0\).  If a set
+  \(U\) contains \(x_0\) and
+  \(U\cap f^{-1}(a_0)\subseteq\{x_0\}\), then the total multiplicity of the
+  old fiber inside \(U\) equals the local multiplicity of \(f-a_0\) at
+  \(x_0\).
+proof:
+  The isolation and membership hypotheses identify the filtered finite fiber
+  inside \(U\) with the singleton \(\{x_0\}\).  Its multiplicity sum therefore
+  consists of the single local summand at \(x_0\).
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_localMultiplicity_at_base
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1148,8 +1587,16 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_localMultiplicity_at_base
   simp [holomorphicMapComplexFiberMultiplicityOnSet, s, hfilter]
 
 /--
-The complex-fiber contribution over two source sets is the same if the two
-sets have the same intersection with the relevant fiber.
+%%handwave
+name:
+  Fiber multiplicity depends only on membership along the fiber
+statement:
+  Let \(f:X\to\mathbb C\) have finite fibers.  If two sets \(U,W\subseteq X\)
+  contain exactly the same points of \(f^{-1}(a)\), then the total local
+  multiplicity of that fiber in \(U\) equals its total multiplicity in \(W\).
+proof:
+  The membership equivalence makes the two filtered finite fiber sets equal.
+  The multiplicity sums over these equal finite sets are identical.
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_of_mem_iff_on_fiber
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1185,9 +1632,20 @@ def IsProperOverComplexNeighborhood
     ∀ K : Set ℂ, IsCompact K → K ⊆ V → IsCompact (f ⁻¹' K)
 
 /--
-Local properness gives the closed-map fiber-neighborhood consequence near the
-proper target value: if a property holds in a neighborhood of every point of
-the fiber over `a₀`, then all nearby fibers satisfy that property pointwise.
+%%handwave
+name:
+  Fiberwise neighborhood control from local properness
+statement:
+  Let \(f:X\to\mathbb C\) be continuous and proper over a neighborhood of
+  \(a_0\).  Suppose a property \(P\) holds near every point of
+  \(f^{-1}(a_0)\).  Then for all \(a\) sufficiently close to \(a_0\), every
+  point of \(f^{-1}(a)\) satisfies \(P\).
+proof:
+  Restrict to the compact preimage of a small closed ball about \(a_0\).
+  There the restricted map is a continuous map from a compact space and hence
+  closed.  The closed-map fiber-neighborhood theorem propagates the local
+  property to nearby fibers; shrinking the target neighborhood keeps every
+  such fiber inside the compact restriction.
 -/
 theorem eventually_fiber_forall_of_isProperOverComplexNeighborhood
     {X : Type} [TopologicalSpace X] {f : X → ℂ} {a₀ : ℂ}
@@ -1226,9 +1684,17 @@ theorem eventually_fiber_forall_of_isProperOverComplexNeighborhood
   exact ha ⟨x, hxL⟩ (by simpa [g] using hx)
 
 /--
-Local properness gives the closed-map fiber-neighborhood consequence near the
-proper target value: any open set containing the fiber over `a₀` contains all
-nearby fibers.
+%%handwave
+name:
+  Nearby fibers lie in any open neighborhood of a locally proper fiber
+statement:
+  Let \(f:X\to\mathbb C\) be continuous and proper over a neighborhood of
+  \(a_0\).  If an open set \(U\) contains \(f^{-1}(a_0)\), then
+  \(f^{-1}(a)\subseteq U\) for every sufficiently close \(a\) to \(a_0\).
+proof:
+  Apply fiberwise neighborhood control to the property of belonging to
+  \(U\).  Openness makes this property hold on a neighborhood of every old
+  fiber point.
 -/
 theorem eventually_fiber_subset_open_of_isProperOverComplexNeighborhood
     {X : Type} [TopologicalSpace X] {f : X → ℂ} {a₀ : ℂ}
@@ -1244,9 +1710,18 @@ theorem eventually_fiber_subset_open_of_isProperOverComplexNeighborhood
   exact ha x hx
 
 /--
-If `F` is proper into a target represented by an open complex coordinate, then
-the complex-coordinate expression is proper over a neighborhood of every
-target value.
+%%handwave
+name:
+  Properness over complex neighborhoods from a proper open-model map
+statement:
+  Let \(F:X\to Y\) be proper and let
+  \(\varphi:Y\to\mathbb C\) be an open embedding.  For every \(y_0\in Y\),
+  the coordinate expression \(\varphi\circ F\) is proper over the complex
+  neighborhood \(\varphi(Y)\) of \(\varphi(y_0)\).
+proof:
+  A compact subset of the open range of \(\varphi\) has compact preimage in
+  \(Y\) because \(\varphi\) is an inducing embedding.  Properness of \(F\)
+  then makes its preimage in \(X\) compact.
 -/
 theorem isProperOverComplexNeighborhood_of_proper_openComplexModel
     {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
@@ -1263,8 +1738,17 @@ theorem isProperOverComplexNeighborhood_of_proper_openComplexModel
     hproper.isCompact_preimage hpre_compact
 
 /--
-Finite fibers for a map into an open complex model imply finite fibers for the
-complex-coordinate expression.
+%%handwave
+name:
+  Finite fibers persist in an injective complex model
+statement:
+  Let \(F:X\to Y\) have finite fibers and let
+  \(\varphi:Y\to\mathbb C\) be injective.  Then every level set
+  \(\{x:\varphi(F(x))=a\}\) is finite.
+proof:
+  If \(a=\varphi(y)\), injectivity identifies this level set with a subset of
+  the finite fiber \(F^{-1}(y)\).  If \(a\) is outside the range of
+  \(\varphi\), the level set is empty.
 -/
 theorem finite_complexModel_fiber_of_finite_target_fibers
     {X Y : Type} [TopologicalSpace X] [TopologicalSpace Y]
@@ -1290,9 +1774,18 @@ theorem finite_complexModel_fiber_of_finite_target_fibers
     exact Set.finite_empty
 
 /--
-Counting with respect to an open complex model is the same as counting the
-fibers of the complex-coordinate expression at the corresponding complex
-value.
+%%handwave
+name:
+  Coordinate-model fiber multiplicity equals complex level multiplicity
+statement:
+  Let \(F:X\to Y\) have finite fibers and let
+  \(\varphi:Y\to\mathbb C\) be injective.  For any \(U\subseteq X\) and
+  \(y\in Y\), the sum of local multiplicities of \(F^{-1}(y)\cap U\) equals
+  the corresponding level-set multiplicity of \(\varphi\circ F\) at
+  \(\varphi(y)\) in \(U\).
+proof:
+  Injectivity of \(\varphi\) identifies the two finite fibers pointwise, and
+  both definitions use the same local coordinate multiplicity at each point.
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eq_complexFiberMultiplicity
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1326,9 +1819,19 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eq_complexFiberMul
     holomorphicMapComplexFiberMultiplicityOnSet, hfiber]
 
 /--
-If a nearby fiber is contained in the union of pairwise-disjoint
-neighborhoods of the old fiber, then its total multiplicity decomposes as the
-sum of the contributions lying in those neighborhoods.
+%%handwave
+name:
+  Decomposition of fiber multiplicity over disjoint old-fiber neighborhoods
+statement:
+  Let the finite fiber \(F^{-1}(y_0)\) have pairwise disjoint neighborhoods
+  \((U_{x_0})\).  If another finite fiber \(F^{-1}(y)\) is contained in their
+  union, then its total multiplicity is the sum, over
+  \(x_0\in F^{-1}(y_0)\), of the multiplicities contributed inside
+  \(U_{x_0}\).
+proof:
+  Every point of the new fiber lies in exactly one of the pairwise disjoint
+  neighborhoods.  Partition the finite sum of its local multiplicities by
+  this unique neighborhood.
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_sum_on_fiber_neighborhoods
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1372,8 +1875,18 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_sum_on_fiber_neighbo
       (fun z x₀ ↦ z ∈ U x₀) hunique
 
 /--
-At the old target value, the contribution from one isolating neighborhood is
-exactly the local multiplicity of its old-fiber point.
+%%handwave
+name:
+  Old-fiber contribution of one isolating neighborhood
+statement:
+  Let \((U_x)_{x\in F^{-1}(y_0)}\) be pairwise disjoint neighborhoods, each
+  containing its indexed old-fiber point.  Then the multiplicity contributed
+  by \(F^{-1}(y_0)\) inside \(U_{x_0}\) is exactly the local multiplicity at
+  \(x_0\).
+proof:
+  Pairwise disjointness and the self-membership conditions show that
+  \(U_{x_0}\) contains no other point of the old fiber.  The filtered finite
+  sum therefore reduces to its single summand at \(x_0\).
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eq_localMultiplicity_at_base
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1417,7 +1930,20 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eq_localMultiplici
         ⟨(hfinite y₀).mem_toFinset.mpr x₀.2, hU_mem x₀.1 x₀.2⟩
   simp [holomorphicMapFiberMultiplicityInCoordinateModelOnSet, s, hfilter]
 
-/-- Every point in a finite fiber gives positive total fiber multiplicity. -/
+/--
+%%handwave
+name:
+  A nonempty finite fiber has positive total multiplicity
+statement:
+  Let \(F:X\to Y\) have finite fibers, and suppose an injective complex model
+  \(\varphi:Y\to\mathbb C\) makes \(\varphi\circ F\) holomorphic.  If
+  \(F(x)=y\), then the total multiplicity of the fiber over \(y\) is at least
+  one.
+proof:
+  The local multiplicity at \(x\) is at least one because it is a finite
+  zero of the holomorphic coordinate expression.  This nonnegative summand is
+  bounded above by the sum over the whole finite fiber.
+-/
 theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1462,9 +1988,16 @@ theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
   exact le_trans hxpos htotal_le
 
 /--
-Every nonempty finite fiber contributes positive total multiplicity.  In
-particular, a surjective map has fiber multiplicity at least one over every
-target point.
+%%handwave
+name:
+  Surjectivity gives positive total multiplicity in every fiber
+statement:
+  Under the finite-fiber holomorphic coordinate-model hypotheses, if
+  \(F:X\to Y\) is surjective, then every fiber has total multiplicity at least
+  one.
+proof:
+  For each \(y\), choose \(x\) with \(F(x)=y\) and apply positivity of the
+  total multiplicity of a nonempty finite fiber.
 -/
 theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_surjective
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1481,7 +2014,19 @@ theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_surjective
     one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
       hφ_inj hF hfinite hx
 
-/-- The finite fiber multiplicity sum vanishes exactly when the fiber is empty. -/
+/--
+%%handwave
+name:
+  Zero total multiplicity characterizes an empty fiber
+statement:
+  Under the finite-fiber holomorphic coordinate-model hypotheses, the total
+  multiplicity over \(y\) is zero if and only if there is no \(x\) with
+  \(F(x)=y\).
+proof:
+  A nonempty fiber has total multiplicity at least one.  Conversely, if the
+  fiber is empty, its finite multiplicity sum is the empty sum and equals
+  zero.
+-/
 theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_no_fiber
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1515,7 +2060,17 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_no_fiber
         cases hxempty
     simp [holomorphicMapFiberMultiplicityInCoordinateModel, hfiber_empty]
 
-/-- The fiber multiplicity sum vanishes exactly off the range. -/
+/--
+%%handwave
+name:
+  Zero total fiber multiplicity characterizes points outside the range
+statement:
+  The total multiplicity of the fiber over \(y\) is zero if and only if
+  \(y\notin F(X)\).
+proof:
+  Membership in the range is exactly the existence of a preimage.  Rewrite
+  the empty-fiber characterization using this equivalence.
+-/
 theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_not_mem_range
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1530,7 +2085,17 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_not_mem_ran
     holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_no_fiber
       hφ_inj hF hfinite y
 
-/-- The fiber multiplicity sum is positive exactly on the range. -/
+/--
+%%handwave
+name:
+  Positive total fiber multiplicity characterizes the range
+statement:
+  The total multiplicity of the fiber over \(y\) is positive if and only if
+  \(y\in F(X)\).
+proof:
+  Outside the range the total multiplicity is zero.  If \(y=F(x)\), positivity
+  follows from the local contribution at \(x\).
+-/
 theorem holomorphicMapFiberMultiplicityInCoordinateModel_pos_iff_mem_range
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1554,7 +2119,17 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModel_pos_iff_mem_range
       (one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
         hφ_inj hF hfinite rfl)
 
-/-- A fiber with total multiplicity one is nonempty. -/
+/--
+%%handwave
+name:
+  A fiber of total multiplicity one is nonempty
+statement:
+  If the total multiplicity of a finite fiber \(F^{-1}(y)\) is one, then there
+  exists \(x\) with \(F(x)=y\).
+proof:
+  An empty fiber has total multiplicity zero, contradicting the assumed value
+  one.
+-/
 theorem exists_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1576,8 +2151,16 @@ theorem exists_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
   norm_num at this
 
 /--
-If one finite nonempty fiber has total multiplicity one, then that fiber is a
-singleton.
+%%handwave
+name:
+  A finite fiber of total multiplicity one is a singleton
+statement:
+  If \(F^{-1}(y)\) is nonempty and its total holomorphic multiplicity equals
+  one, then there is a unique \(x\) with \(F(x)=y\).
+proof:
+  Choose one preimage \(x\).  If a distinct preimage \(z\) existed, both
+  local multiplicities would be at least one, so the total fiber multiplicity
+  would be at least two, contradicting that it equals one.
 -/
 theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_at
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1644,8 +2227,16 @@ theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_at
   exact (by norm_num : ¬ (2 : ℕ) ≤ 1) this
 
 /--
-If every finite fiber has total multiplicity one, then every fiber is a
-singleton.  The nonemptiness is forced by the multiplicity count itself.
+%%handwave
+name:
+  Unit total multiplicity makes every fiber a singleton
+statement:
+  If every finite fiber of \(F:X\to Y\) has total holomorphic multiplicity
+  one, then every \(y\in Y\) has a unique preimage.
+proof:
+  Unit multiplicity first implies that the fiber is nonempty.  The
+  single-fiber unit-multiplicity result then shows that it contains only one
+  point.
 -/
 theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_of_all
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1665,7 +2256,17 @@ theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_of_all
       hφ_inj hF hfinite (hmult y))
     (hmult y)
 
-/-- Multiplicity one over every target value implies surjectivity. -/
+/--
+%%handwave
+name:
+  Unit multiplicity in every fiber implies surjectivity
+statement:
+  If every finite fiber of \(F:X\to Y\) has total multiplicity one, then
+  \(F\) is surjective.
+proof:
+  For every target point, unit total multiplicity rules out the empty fiber
+  and therefore supplies a preimage.
+-/
 theorem surjective_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [TopologicalSpace Y]
@@ -1682,8 +2283,16 @@ theorem surjective_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
     hφ_inj hF hfinite (hmult y)
 
 /--
-If every finite fiber has total multiplicity one, then every fiber is a
-singleton.
+%%handwave
+name:
+  Every unit-multiplicity fiber has a unique point
+statement:
+  Under the finite-fiber holomorphic coordinate-model hypotheses, if every
+  fiber has total multiplicity one, then every \(y\) has a unique preimage.
+proof:
+  Apply the result that unit multiplicity itself forces both existence and
+  uniqueness in each fiber; the additional surjectivity hypothesis is
+  redundant.
 -/
 theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1701,8 +2310,18 @@ theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one
     hφ_inj hF hfinite hmult
 
 /--
-If the model value `0` has exactly one simple preimage, then the corresponding
-fiber multiplicity sum is one.
+%%handwave
+name:
+  Total multiplicity of a unique simple zero fiber
+statement:
+  Suppose the complex coordinate expression \(\varphi\circ F\) vanishes
+  exactly at \(p\), and its local multiplicity there is one in every pointed
+  coordinate.  Then the total multiplicity of the fiber over \(F(p)\) equals
+  one.
+proof:
+  Injectivity of the zero condition identifies the finite fiber over \(F(p)\)
+  with the singleton \(\{p\}\).  The total fiber sum therefore reduces to the
+  single local multiplicity at \(p\), which is one.
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_one_at_simple_single_zero
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1814,8 +2433,19 @@ theorem pointedCoordinate_transition_deriv_ne_zero
   simpa [F, z₀] using hF_ne
 
 /--
-The local multiplicity of a complex-valued map at a point is independent of
-the pointed coordinate used at that point.
+%%handwave
+name:
+  Local holomorphic multiplicity is independent of pointed coordinate
+statement:
+  Let \(\chi\) and \(\psi\) be pointed complex coordinates at the same point
+  \(x\).  For every complex-valued map \(F\) and value \(a\), the local
+  multiplicity of \(F-a\) computed in \(\chi\) equals that computed in
+  \(\psi\).
+proof:
+  The two coordinate expressions differ by composition with the holomorphic
+  chart transition.  This transition has nonzero derivative at the base
+  point, so analytic order, and hence its natural-number multiplicity, is
+  invariant under the composition.
 -/
 theorem holomorphicMapLocalMultiplicityAtValueInCoordinate_congr_coordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2713,12 +3343,24 @@ theorem complexAnalyticLevelMultiplicityOnBall_eventually_eq_localMultiplicity_o
       _ = analyticOrderNatAt (fun z : ℂ ↦ F z - a₀) z₀ := _hn
 
 /--
-Local conservation of analytic zero count once nearby level fibers have
-already been confined to arbitrarily small neighborhoods of the old zero.
-
-This is the remaining one-variable input after the compact annulus has been
-removed: the germ of `F - a₀` at `z₀` controls all nearby roots because there
-are no roots escaping the germ neighborhood.
+%%handwave
+name:
+  Local zero-count conservation under localization of nearby fibers
+statement:
+  Let \(F\) be analytic on a closed ball \(\overline B(z_0,r)\), with finite
+  level fibers in \(B(z_0,r)\), and suppose \(F(z_0)=a_0\).  If, for every
+  neighborhood \(U\) of \(z_0\), all roots of \(F(z)=a\) in the ball lie in
+  \(U\) for every sufficiently close \(a\) to \(a_0\), then eventually
+  \[
+    \sum_{\substack{z\in B(z_0,r)\\F(z)=a}}
+      \operatorname{ord}_z(F-a)
+      =\operatorname{ord}_{z_0}(F-a_0).
+  \]
+proof:
+  Finiteness of the old level set makes the germ \(F-a_0\) have finite order.
+  Factor it as \((z-z_0)^n g(z)\) with \(g(z_0)\ne0\), and apply the local
+  conservation theorem for this factorization.  The localization hypothesis
+  ensures that no nearby roots escape the factorization neighborhood.
 -/
 theorem complexAnalyticLevelMultiplicityOnBall_eventually_eq_localMultiplicity_of_eventually_localized
     {F : ℂ → ℂ} {a₀ z₀ : ℂ} {r : ℝ}
@@ -2761,11 +3403,20 @@ theorem complexAnalyticLevelMultiplicityOnBall_eventually_eq_localMultiplicity_o
       _hF hfinite _hr hg hg_ne hfactor_mul hn _hlocalized
 
 /--
-Local conservation of analytic zero count inside an isolating plane ball.
-
-This is the classical one-variable input: if a level value has a unique zero in
-the closed ball, then all nearby level values have the same total multiplicity
-inside the open ball.
+%%handwave
+name:
+  Conservation of analytic zero count in an isolating ball
+statement:
+  Let \(F\) be analytic on \(\overline B(z_0,r)\), with finite level fibers in
+  \(B(z_0,r)\), and suppose \(F(z_0)=a_0\).  If \(z_0\) is the only solution
+  of \(F(z)=a_0\) in the closed ball, then for every sufficiently close
+  \(a\) to \(a_0\), the total multiplicity of \(F(z)=a\) in the open ball is
+  \(\operatorname{ord}_{z_0}(F-a_0)\).
+proof:
+  On the compact closed ball minus an arbitrary neighborhood of \(z_0\),
+  continuity and isolation keep nearby level sets away from that complement.
+  Thus all nearby roots localize at \(z_0\), and the localized conservation
+  theorem applies.
 -/
 theorem complexAnalyticLevelMultiplicityOnBall_eventually_eq_localMultiplicity
     {F : ℂ → ℂ} {a₀ z₀ : ℂ} {r : ℝ}
@@ -2796,8 +3447,19 @@ theorem complexAnalyticLevelMultiplicityOnBall_eventually_eq_localMultiplicity
       _hF hfinite _hz₀ _hr hlocalized
 
 /--
-Counting level-set multiplicity on a coordinate preimage agrees with the
-corresponding one-variable count in the coordinate plane.
+%%handwave
+name:
+  Fiber multiplicity agrees with its coordinate-plane zero count
+statement:
+  Let \(\chi\) be a pointed surface coordinate and \(U\) a subset of its chart
+  target.  For a complex-valued map \(f\) with finite fibers, the total local
+  multiplicity of the fiber \(f^{-1}(a)\) in
+  \(\chi^{-1}(U)\) equals the analytic zero count of
+  \(z\mapsto f(\chi^{-1}(z))-a\) in \(U\).
+proof:
+  The chart is a bijection between the two finite level sets.  Reindex the
+  finite sum by this bijection; invariance of local multiplicity under a
+  change of pointed coordinate identifies corresponding summands.
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_complexAnalyticLevelMultiplicityOnSet_coordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2875,13 +3537,21 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_complexAnalyticLevelMulti
     complexAnalyticLevelMultiplicityOnSet, W, s, t, mX, mZ] using hsum
 
 /--
-Local conservation of zero count inside an isolating coordinate ball.
-
-This is the remaining coordinate-level analytic input: in a coordinate centered
-at `x₀`, the equation `f = a` has, for all nearby `a`, exactly the local
-analytic order of `f - a₀` many solutions counted with multiplicity inside an
-open coordinate ball whose closed version contains no other point of the old
-fiber.
+%%handwave
+name:
+  Conservation of fiber multiplicity in an isolating coordinate ball
+statement:
+  Let \(f:X\to\mathbb C\) be holomorphic with finite fibers and
+  \(f(x_0)=a_0\).  Suppose a closed ball about \(\chi(x_0)\) lies in the chart
+  target and its coordinate preimage contains no other point of
+  \(f^{-1}(a_0)\).  Then, for all \(a\) near \(a_0\), the total multiplicity
+  of \(f^{-1}(a)\) in the corresponding open coordinate ball equals the local
+  multiplicity of \(f-a_0\) at \(x_0\).
+proof:
+  Transport the problem through \(\chi\) to the coordinate plane.  The
+  isolating hypothesis becomes uniqueness of the old zero in a closed ball,
+  so one-variable zero-count conservation applies.  The coordinate
+  multiplicity identity transports the resulting count back to the surface.
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_localMultiplicity_on_coordinate_ball
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2975,11 +3645,20 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_localMultiplic
           simp [holomorphicMapLocalMultiplicityAtValueInCoordinate, F, z₀]
 
 /--
-Local conservation of zero count in a sufficiently small source
-neighborhood.
-
-This chooses a coordinate ball compactly inside both the chart and the supplied
-open neighborhood, then applies the coordinate-ball conservation statement.
+%%handwave
+name:
+  A small neighborhood conserving local fiber multiplicity
+statement:
+  Let \(f:X\to\mathbb C\) be holomorphic with finite fibers, let
+  \(f(x_0)=a_0\), and let \(U\) be an open neighborhood of \(x_0\).  There is
+  an open \(W\) with \(x_0\in W\subseteq U\) such that, for every sufficiently
+  close \(a\) to \(a_0\), the multiplicity of \(f^{-1}(a)\) in \(W\) equals
+  the local multiplicity of \(f-a_0\) at \(x_0\).
+proof:
+  Remove the finitely many other points of the old fiber and choose a small
+  closed coordinate ball inside both \(U\) and this complement.  Its open
+  preimage is \(W\); the closed ball isolates \(x_0\), so coordinate-ball
+  conservation gives the asserted eventual equality.
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_localMultiplicity_on_small_nhds
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3062,11 +3741,21 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_localMultiplic
         (f := f) hf hfinite χ hx₀ hr hclosed_target hclosed_isolating
 
 /--
-Local conservation of the contribution from one isolating neighborhood.
-
-This is the analytic zero-counting input in its complex-valued form: in an
-isolating neighborhood of a single point of the old fiber, nearby level sets
-contribute the same total local multiplicity as the old level set.
+%%handwave
+name:
+  Conservation of multiplicity in one isolating neighborhood
+statement:
+  Let \(f:X\to\mathbb C\) be holomorphic with finite fibers and proper over a
+  neighborhood of \(a_0\).  Let \(U\) be an open neighborhood of
+  \(x_0\in f^{-1}(a_0)\) which contains no other old fiber point, and assume
+  every other old fiber point has a neighborhood disjoint from \(U\).  Then,
+  for all \(a\) near \(a_0\), the total multiplicity of \(f^{-1}(a)\) inside
+  \(U\) equals its value at \(a_0\).
+proof:
+  Choose a smaller neighborhood \(W\subseteq U\) on which local zero-count
+  conservation gives the multiplicity at \(x_0\).  Properness confines every
+  nearby preimage either to \(W\) or outside \(U\), so the counts in \(U\) and
+  \(W\) agree.  The old count in \(U\) is the same local multiplicity.
 -/
 theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_base
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3128,8 +3817,22 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eventually_eq_base
     _ = holomorphicMapComplexFiberMultiplicityOnSet f hfinite U a₀ := hbase.symm
 
 /--
-Local conservation of the contribution from one isolating neighborhood,
-transported back from the open complex coordinate on the target.
+%%handwave
+name:
+  Coordinate-model conservation in one fiber neighborhood
+statement:
+  Let \(F:X\to Y\) be proper and let an open embedding
+  \(\varphi:Y\to\mathbb C\) make \(\varphi\circ F\) holomorphic.  Around the
+  finite fiber over \(y_0\), choose pairwise disjoint open neighborhoods
+  \(U_x\), one for each old fiber point.  For each \(x_0\in F^{-1}(y_0)\), the
+  total multiplicity of \(F^{-1}(y)\) inside \(U_{x_0}\) is eventually equal
+  to its value at \(y_0\).
+proof:
+  The coordinate embedding turns target neighborhoods into complex
+  neighborhoods and preserves fiber equations by injectivity.  Each
+  \(U_{x_0}\) is isolating by pairwise disjointness, while the other old fiber
+  points are eventually outside it.  Apply complex-valued local conservation
+  and pull the eventual statement back through \(\varphi\).
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eventually_eq_base
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3206,15 +3909,20 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eventually_eq_base
           (F := F) (φ := φ) hφ_open.injective hfinite (U x₀.1) y₀).symm
 
 /--
-Local analytic conservation of multiplicity in one isolating neighborhood of
-an old fiber point.
-
-The proof is the usual local degree argument: in a source coordinate around
-`x₀`, the holomorphic function `φ ∘ F - φ y₀` factors as
-`(z - z₀)^n g(z)` with `g z₀ ≠ 0`; after shrinking inside the isolating
-neighborhood, nearby level sets have exactly `n` zeros counted with
-multiplicity.  Properness keeps all relevant nearby preimages in the chosen
-finite family of isolating neighborhoods.
+%%handwave
+name:
+  Local fiber contribution equals the old local multiplicity
+statement:
+  Under the proper holomorphic coordinate-model hypotheses and a pairwise
+  disjoint system of neighborhoods of the fiber over \(y_0\), the
+  multiplicity contributed inside the neighborhood of
+  \(x_0\in F^{-1}(y_0)\) is, for all nearby \(y\), equal to the local
+  multiplicity of \(\varphi\circ F-\varphi(y_0)\) at \(x_0\).
+proof:
+  Local coordinate-model conservation first identifies the nearby
+  contribution with the contribution at \(y_0\).  Pairwise disjointness makes
+  \(x_0\) the only old fiber point in its neighborhood, so the old
+  contribution is exactly its local multiplicity.
 -/
 theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eventually_eq_localMultiplicity
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3248,8 +3956,23 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModelOnSet_eventually_eq_loca
   exact hy.trans hbase
 
 /--
-Near any target value of a proper holomorphic map, the total fiber
-multiplicity is unchanged.
+%%handwave
+name:
+  Local conservation of total multiplicity for a proper holomorphic map
+statement:
+  Let \(F:X\to Y\) be proper with finite fibers and surjective image, and let
+  an open embedding \(\varphi:Y\to\mathbb C\) make \(\varphi\circ F\)
+  holomorphic.  For every \(y_0\in Y\), all sufficiently nearby \(y\) satisfy
+  \[
+    \sum_{x\in F^{-1}(y)}m_x(F)
+      =\sum_{x\in F^{-1}(y_0)}m_x(F).
+  \]
+proof:
+  In the nonconstant case, properness gives finitely many pairwise disjoint
+  neighborhoods of the old fiber which capture each nearby fiber exactly
+  once.  Sum the locally conserved contribution from each neighborhood.  In
+  the constant-range case, surjectivity and injectivity of \(\varphi\) make
+  the target a singleton, so the assertion is immediate.
 -/
 theorem proper_holomorphicMap_fiberMultiplicity_eventually_eq_to_complexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3325,7 +4048,19 @@ theorem proper_holomorphicMap_fiberMultiplicity_eventually_eq_to_complexModel
     simp [hy]
 
 /--
-Proper holomorphic maps have locally constant total fiber multiplicity.
+%%handwave
+name:
+  Local constancy of total multiplicity for a proper holomorphic map
+statement:
+  Let \(F:X\to Y\) be proper with finite fibers and surjective image, and
+  suppose an open embedding \(\varphi:Y\to\mathbb C\) makes
+  \(\varphi\circ F\) holomorphic.  Then
+  \(y\mapsto\sum_{x\in F^{-1}(y)}m_x(F)\) is locally constant.
+proof:
+  The local multiplicity theorem supplies, at each target point, a
+  neighborhood on which the total fiber multiplicity equals its value at the
+  center.  This is exactly the neighborhood characterization of local
+  constancy.
 -/
 theorem proper_holomorphicMap_fiberMultiplicity_isLocallyConstant_to_complexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3344,8 +4079,18 @@ theorem proper_holomorphicMap_fiberMultiplicity_isLocallyConstant_to_complexMode
       hφ_open hF hproper hfinite hsurjective)
 
 /--
-Proper holomorphic maps have constant total fiber multiplicity on a connected
-target.
+%%handwave
+name:
+  Constancy of total multiplicity on a preconnected target
+statement:
+  Under the proper holomorphic finite-fiber hypotheses above, if \(Y\) is
+  preconnected, then for every \(y,y_0\in Y\),
+  \[
+    \sum_{x\in F^{-1}(y)}m_x(F)=\sum_{x\in F^{-1}(y_0)}m_x(F).
+  \]
+proof:
+  The total multiplicity is locally constant, and a locally constant function
+  on a preconnected space takes the same value at every two points.
 -/
 theorem proper_holomorphicMap_fiberMultiplicity_constant_to_complexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3365,8 +4110,18 @@ theorem proper_holomorphicMap_fiberMultiplicity_constant_to_complexModel
       hφ_open hF hproper hfinite hsurjective).apply_eq_of_preconnectedSpace y y₀
 
 /--
-In the degree-one situation, the single simple zero fiber fixes the constant
-fiber multiplicity to one.
+%%handwave
+name:
+  A simple single zero fixes every fiber multiplicity to one
+statement:
+  Suppose the proper holomorphic finite-fiber map \(F:X\to Y\) has a unique
+  point \(p\) over the model value \(0\), and this point has local multiplicity
+  one in every pointed coordinate.  Then the total multiplicity of every
+  fiber \(F^{-1}(y)\) equals one.
+proof:
+  Total fiber multiplicity is constant on the preconnected target.  Evaluate
+  it at \(F(p)\): the unique-zero hypothesis reduces that fiber to \(p\), and
+  its local multiplicity is one.
 -/
 theorem proper_holomorphicMap_fiberMultiplicity_eq_one_of_simple_single_zero_to_complexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3394,14 +4149,19 @@ theorem proper_holomorphicMap_fiberMultiplicity_eq_one_of_simple_single_zero_to_
         hfinite hzero hsimple
 
 /--
-The shared degree-one input for proper holomorphic maps to a one-dimensional
-target represented by a complex coordinate model.
-
-If a proper holomorphic map from a Riemann surface has finite fibers,
-is onto its target, and has one simple point over the model value \(0\), then
-every target fiber consists of exactly one point.  This packages the
-constant-degree theorem for proper holomorphic maps, with local multiplicities
-counted in source coordinates.
+%%handwave
+name:
+  Degree one from a unique simple model zero
+statement:
+  Let \(F:X\to Y\) be a proper surjective map with finite fibers from a
+  Riemann surface to a preconnected target openly embedded in \(\mathbb C\).
+  Suppose its coordinate expression is holomorphic, the model value \(0\) has
+  the unique preimage \(p\), and that preimage has local multiplicity one.
+  Then every \(y\in Y\) has a unique preimage under \(F\).
+proof:
+  Total fiber multiplicity is constant and the unique simple zero fiber fixes
+  it to one.  A finite fiber whose positive local multiplicities sum to one
+  contains exactly one point.
 -/
 theorem proper_holomorphicMap_degree_one_of_simple_single_zero_to_complexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3422,7 +4182,20 @@ theorem proper_holomorphicMap_degree_one_of_simple_single_zero_to_complexModel
     (proper_holomorphicMap_fiberMultiplicity_eq_one_of_simple_single_zero_to_complexModel
       hφ_open hF hproper hfinite hsurjective hzero hsimple)
 
-/-- A critical coordinate derivative gives local analytic order at least two. -/
+/--
+%%handwave
+name:
+  A critical holomorphic germ has order at least two
+statement:
+  Let \(F:X\to\mathbb C\) be holomorphic, let \(\chi\) be a pointed coordinate
+  at \(x\), and suppose \(F(x)=a\).  If the complex derivative of \(F\) in
+  this coordinate vanishes, then the analytic order at \(x\) of \(F-a\) is at
+  least two.
+proof:
+  In the coordinate expression, both the value and first derivative of
+  \(F-a\) vanish at the base coordinate.  The characterization of analytic
+  order by vanishing iterated derivatives gives order at least two.
+-/
 theorem two_le_holomorphicMapLocalOrderAtValueInCoordinate_of_deriv_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -3454,7 +4227,17 @@ theorem two_le_holomorphicMapLocalOrderAtValueInCoordinate_of_deriv_eq_zero
   · simpa [iteratedDeriv_zero] using hfcoord_zero
   · simpa [iteratedDeriv_one] using hderiv_coord
 
-/-- A critical coordinate derivative gives local analytic order at least two at the image value. -/
+/--
+%%handwave
+name:
+  Criticality gives local order at least two at the image value
+statement:
+  If a holomorphic map \(F:X\to\mathbb C\) has zero complex derivative at
+  \(x\) in a pointed coordinate, then the local analytic order of
+  \(F-F(x)\) at \(x\) is at least two.
+proof:
+  Apply the critical-order result with the target value \(a=F(x)\).
+-/
 theorem two_le_holomorphicMapLocalOrderInCoordinate_of_deriv_eq_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
@@ -3467,8 +4250,17 @@ theorem two_le_holomorphicMapLocalOrderInCoordinate_of_deriv_eq_zero
       χ hF rfl hderiv
 
 /--
-For an injective holomorphic map, a critical point has finite local analytic
-order at least two.
+%%handwave
+name:
+  Finite order at an injective critical point
+statement:
+  Let \(F:X\to\mathbb C\) be an injective holomorphic map and let \(\chi\) be
+  a pointed coordinate at a critical point \(x\).  Then the local analytic
+  order of \(F-F(x)\) is finite and at least two.
+proof:
+  Vanishing of the coordinate derivative gives order at least two.  Injectivity
+  prevents the coordinate germ from being identically zero, so its analytic
+  order is not infinite.
 -/
 theorem critical_holomorphicMapLocalOrderInCoordinate_finite_two_le_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3485,8 +4277,17 @@ theorem critical_holomorphicMapLocalOrderInCoordinate_finite_two_le_of_injective
       holomorphicMapLocalOrderInCoordinate_ne_top_of_injective χ hinj⟩
 
 /--
-For an injective holomorphic map, a critical point contributes natural local
-multiplicity at least two.
+%%handwave
+name:
+  Multiplicity at an injective critical point is at least two
+statement:
+  If an injective holomorphic map \(F:X\to\mathbb C\) has zero complex
+  derivative at \(x\), then its local multiplicity at \(x\) in any pointed
+  coordinate is at least two.
+proof:
+  The local analytic order is finite and at least two.  For a finite-order
+  holomorphic germ, the natural local multiplicity is precisely that order,
+  so it inherits the same lower bound.
 -/
 theorem two_le_holomorphicMapLocalMultiplicityInCoordinate_of_deriv_eq_zero_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3515,8 +4316,21 @@ theorem two_le_holomorphicMapLocalMultiplicityInCoordinate_of_deriv_eq_zero_of_i
   exact ENat.coe_le_coe.mp hle_enat
 
 /--
-At an injective critical point, the coordinate expression has the standard
-local branch form `(z - z₀)^n g(z)` with `n ≥ 2` and `g(z₀) ≠ 0`.
+%%handwave
+name:
+  Local factorization at an injective critical point
+statement:
+  Let \(F:X\to\mathbb C\) be injective and holomorphic, and suppose its
+  coordinate derivative vanishes at \(x\).  Writing \(z_0=\chi(x)\), there
+  are an integer \(n\ge2\) and a function \(g\), analytic near \(z_0\) with
+  \(g(z_0)\ne0\), such that near \(z_0\),
+  \[
+    F(\chi^{-1}(z))-F(x)=(z-z_0)^n g(z).
+  \]
+proof:
+  Criticality and injectivity give a finite local order \(n\ge2\).  Apply the
+  standard analytic factorization of a finite-order zero to the coordinate
+  expression of \(F-F(x)\).
 -/
 theorem critical_holomorphicMap_coordinate_factorization_of_injective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3540,7 +4354,18 @@ theorem critical_holomorphicMap_coordinate_factorization_of_injective
       χ hF hcrit.2 with ⟨g, hg, hg_ne, hfactor⟩
   exact ⟨n, hn, g, hg, hg_ne, by simpa [n] using hfactor⟩
 
-/-- The complex power map `z ↦ z^n` is not injective on any neighborhood of `0` for `n ≥ 2`. -/
+/--
+%%handwave
+name:
+  A higher complex power is not injective near zero
+statement:
+  If \(n\ge2\), then for every neighborhood \(U\) of \(0\) in \(\mathbb C\),
+  the map \(z\mapsto z^n\) is not injective on \(U\).
+proof:
+  Choose a small radius \(R>0\) whose circle lies in \(U\).  The distinct
+  points \(R\) and \(Re^{2\pi i/n}\) both lie in \(U\) and have the same
+  \(n\)-th power.
+-/
 theorem complex_pow_not_injOn_of_mem_nhds_zero {n : ℕ} (hn : 2 ≤ n)
     {U : Set ℂ} (hU : U ∈ 𝓝 (0 : ℂ)) :
     ¬ Set.InjOn (fun z : ℂ ↦ z ^ n) U := by
@@ -3594,7 +4419,17 @@ theorem complex_pow_not_injOn_of_mem_nhds_zero {n : ℕ} (hn : 2 ≤ n)
   intro hinj
   exact hzw_ne (hinj hzU hwU hpow)
 
-/-- The complex power map `z ↦ z^n` has no injective neighborhood of `0` for `n ≥ 2`. -/
+/--
+%%handwave
+name:
+  A higher complex power is not locally injective at zero
+statement:
+  If \(n\ge2\), there is no neighborhood of \(0\) on which
+  \(z\mapsto z^n\) is injective.
+proof:
+  Any proposed injective neighborhood contradicts the noninjectivity of the
+  power map on every neighborhood of zero.
+-/
 theorem complex_pow_not_locally_injective_at_zero {n : ℕ} (hn : 2 ≤ n) :
     ¬ ∃ U : Set ℂ, U ∈ 𝓝 (0 : ℂ) ∧
       Set.InjOn (fun z : ℂ ↦ z ^ n) U := by
@@ -3602,8 +4437,19 @@ theorem complex_pow_not_locally_injective_at_zero {n : ℕ} (hn : 2 ≤ n) :
   exact complex_pow_not_injOn_of_mem_nhds_zero hn hU hinj
 
 /--
-An injective holomorphic map from a Riemann surface to the complex plane has
-no critical points.
+%%handwave
+name:
+  An injective holomorphic map has nonzero coordinate derivative
+statement:
+  Let \(F:X\to\mathbb C\) be an injective holomorphic map from a complex
+  one-manifold.  Then its complex derivative in every pointed coordinate is
+  nonzero.
+proof:
+  If the derivative vanished, the coordinate expression would factor as
+  \((z-z_0)^n g(z)\) with \(n\ge2\) and \(g(z_0)\ne0\).  Taking an analytic
+  \(n\)-th root of \(g\) gives a local coordinate in which the expression is
+  an \(n\)-th power.  Injectivity of \(F\) would make this power map injective
+  near zero, contradicting its rotational symmetry for \(n\ge2\).
 -/
 theorem injective_holomorphicMap_surfaceComplexDerivative_ne_zero
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -3674,7 +4520,18 @@ theorem injective_holomorphicMap_surfaceComplexDerivative_ne_zero
     exact congr_arg H hz_eq_hζ
   exact complex_pow_not_injOn_of_mem_nhds_zero hn hHU_nhds hpow_inj
 
-/-- Harmonicity on an open surface region is unchanged by pointwise equality there. -/
+/--
+%%handwave
+name:
+  Harmonicity is preserved by equality on an open set
+statement:
+  Let \(U\) be open in a complex surface.  If \(u\) is harmonic on \(U\) and
+  \(v=u\) pointwise on \(U\), then \(v\) is harmonic on \(U\).
+proof:
+  In every complex chart, the two coordinate expressions agree on an open
+  neighborhood of each point of \(U\).  Harmonicity is local and invariant
+  under equality of germs, so harmonicity transfers from \(u\) to \(v\).
+-/
 theorem harmonicOnSurface_congr_on_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {U : Set X} {u v : X → ℝ}
@@ -4033,6 +4890,10 @@ name:
 statement:
   On the circle \(|z-c|=\rho\), the logarithmic annulus barrier equals
   \(B\).
+proof:
+  Substitute \(|z-c|=\rho\).  Since \(0<\rho<R\), the logarithmic denominator
+  \(\log R-\log\rho\) is nonzero, so it cancels with the identical numerator
+  factor and leaves \(B\).
 -/
 theorem complexAnnularLogBarrier_inner_boundary
     (c : ℂ) {ρ R B : ℝ} (hρ : 0 < ρ) (hρR : ρ < R)
@@ -4055,6 +4916,9 @@ name:
   The logarithmic annulus barrier has the outer boundary value
 statement:
   On the circle \(|z-c|=R\), the logarithmic annulus barrier equals \(0\).
+proof:
+  Substituting \(|z-c|=R\) makes the final factor
+  \(\log R-\log R\) vanish.
 -/
 theorem complexAnnularLogBarrier_outer_boundary
     (c : ℂ) {ρ R B : ℝ} {z : ℂ} (hznorm : ‖z - c‖ = R) :
@@ -5104,8 +5968,7 @@ statement:
   harmonic extension on some full neighborhood of the puncture.
 proof:
   Transport the function to a punctured planar neighborhood and apply
-  [the bounded punctured-disk removable singularity
-  theorem](lean:JJMath.Uniformization.bounded_harmonicOn_punctured_complex_ball_has_removable_extension).
+  [the bounded punctured-disk removable singularity theorem](lean:JJMath.Uniformization.bounded_harmonicOn_punctured_complex_ball_has_removable_extension).
   Pull the planar harmonic extension back to the surface.
 -/
 theorem bounded_harmonicOn_punctured_pointed_coordinate_has_local_removable_extension
@@ -5268,6 +6131,18 @@ theorem bounded_harmonicOn_punctured_pointed_coordinate_removable
   exact bounded_harmonicOn_punctured_pointed_coordinate_local_extension_globalizes
     X χ g h₀ hharm hN_open hpN hN_source hh₀ heq
 
+/--
+%%handwave
+name:
+  A Riemann surface has at least two points
+statement:
+  Every Riemann surface containing a point \(p\) is a nontrivial topological
+  space.
+proof:
+  If the surface were a singleton, the target of a chart at \(p\) would be
+  the singleton consisting of the coordinate of \(p\).  But a chart target is
+  open in \(\mathbb C\), whereas no singleton in \(\mathbb C\) is open.
+-/
 theorem riemannSurface_nontrivial
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (p : X) :
@@ -5289,7 +6164,18 @@ theorem riemannSurface_nontrivial
   haveI : Filter.NeBot (𝓝[≠] (e p)) := inferInstance
   exact not_isOpen_singleton (e p) (by simpa [htarget_eq] using e.open_target)
 
-/-- A complex-valued map with a unique zero on a connected surface is nonconstant. -/
+/--
+%%handwave
+name:
+  A function with a unique zero on a Riemann surface has nontrivial range
+statement:
+  Let \(X\) be a Riemann surface and \(F:X\to\mathbb C\).  If
+  \(F(x)=0\) exactly when \(x=p\), then the range of \(F\) contains at least
+  two distinct values.
+proof:
+  Choose \(q\ne p\), which exists because a Riemann surface is nontrivial.
+  Then \(F(p)=0\), while uniqueness of the zero gives \(F(q)\ne0\).
+-/
 theorem range_nontrivial_of_unique_zero_on_riemannSurface
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X} {F : X → ℂ}
@@ -5306,8 +6192,16 @@ theorem range_nontrivial_of_unique_zero_on_riemannSurface
   exact hq ((hzero q).mp hq_zero)
 
 /--
-The complex-coordinate expression of a map with a unique model zero on a
-connected surface is nonconstant.
+%%handwave
+name:
+  Nontrivial coordinate range from a unique model zero
+statement:
+  Let \(F:X\to Y\) be a map from a Riemann surface and
+  \(\varphi:Y\to\mathbb C\).  If \(\varphi(F(x))=0\) exactly when \(x=p\),
+  then the range of \(\varphi\circ F\) contains at least two distinct values.
+proof:
+  Apply the unique-zero nontrivial-range result to the complex-valued function
+  \(\varphi\circ F\).
 -/
 theorem complexModel_range_nontrivial_of_unique_zero_on_riemannSurface
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5319,9 +6213,20 @@ theorem complexModel_range_nontrivial_of_unique_zero_on_riemannSurface
     X (F := fun x : X ↦ φ (F x)) hzero
 
 /--
-The shared degree-one criterion for proper holomorphic maps to an open complex
-target model.  The unique simple zero gives nonconstancy; properness and the
-open mapping theorem give finite fibers and surjectivity.
+%%handwave
+name:
+  Degree-one criterion for a proper map to an open complex model
+statement:
+  Let \(X\) be a Riemann surface, let \(Y\) be preconnected and openly
+  embedded in \(\mathbb C\) by \(\varphi\), and let \(F:X\to Y\) be proper
+  with \(\varphi\circ F\) holomorphic.  Suppose \(\varphi(F(x))=0\) exactly
+  at \(p\), and the local multiplicity there is one in every pointed
+  coordinate.  Then every \(y\in Y\) has a unique preimage under \(F\).
+proof:
+  The unique zero makes the coordinate range nontrivial.  Properness and the
+  open mapping theorem give finite fibers and surjectivity.  The constant
+  degree theorem then makes every fiber have the multiplicity of the simple
+  zero fiber, namely one, and hence exactly one point.
 -/
 theorem proper_holomorphicMap_degree_one_of_simple_single_zero_to_openComplexModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5348,8 +6253,16 @@ theorem proper_holomorphicMap_degree_one_of_simple_single_zero_to_openComplexMod
     hφ_open hF hproper hfinite hsurjective hzero hsimple
 
 /--
-The complex coordinate of a pointed disk map with a unique zero on a connected
-surface is nonconstant.
+%%handwave
+name:
+  A pointed disk map with a unique zero has nontrivial complex range
+statement:
+  Let \(F:X\to\mathbb D\) be a pointed holomorphic map from a Riemann surface,
+  taking \(p\) to \(0\).  If its complex value is zero exactly at \(p\), then
+  its complex range contains two distinct values.
+proof:
+  Choose \(q\ne p\).  The pointed value at \(p\) is zero, while uniqueness of
+  the zero forces the complex value at \(q\) to be nonzero.
 -/
 theorem pointedDiskMap_complex_range_nontrivial_of_unique_zero
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5672,6 +6585,12 @@ statement:
   If the inner logarithmic model, the annular support, and the exterior
   constant are nonnegative on their respective pieces, then the whole
   constant-exterior annular patch is nonnegative.
+proof:
+  Split according to whether the point is the pole, lies in the inner
+  coordinate ball, lies in the surrounding coordinate ball, or lies outside.
+  The four values are respectively \(0\), the logarithmic model, the annular
+  support, and the exterior constant, so the corresponding hypothesis applies
+  in each case.
 -/
 theorem pointedCoordinateLogarithmicConstantAnnularPatch_nonnegative
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -5714,6 +6633,10 @@ name:
 statement:
   On the punctured inner coordinate ball, the constant-exterior annular patch
   agrees with \(-\log |z-z(p)|\) plus the chosen constant.
+proof:
+  At a non-pole point of the inner coordinate ball, the first nontrivial branch
+  of the piecewise definition is selected, and that branch is exactly the
+  stated logarithmic model.
 -/
 theorem pointedCoordinateLogarithmicConstantAnnularPatch_eq_model
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]

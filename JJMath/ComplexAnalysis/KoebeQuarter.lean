@@ -21,6 +21,8 @@ noncomputable section
 
 namespace JJMath.ComplexAnalysis
 
+set_option backward.isDefEq.respectTransparency false
+
 /--
 %%handwave
 name:
@@ -50,6 +52,14 @@ theorem planar_annulus_stokes_identity
     (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ) (k := 1) (r := (⊤ : WithTop ℕ∞))
     (show (2 : WithTop ℕ∞) ≤ (⊤ : WithTop ℕ∞) by simp) omega c
 
+/--
+%%handwave
+name: Two-mode Fourier energy bound
+statement:
+  If $F:[0,2\pi]\to\mathbb C$ is continuous and $\widehat F(n)=(2\pi)^{-1}\int_0^{2\pi}e^{-int}F(t)\,dt$, then $|\widehat F(0)|^2+|\widehat F(2)|^2\le(2\pi)^{-1}\int_0^{2\pi}|F(t)|^2\,dt$.
+proof:
+  Continuity makes $F$ square-integrable. Apply Parseval's identity and retain only the nonnegative summands with indices $0$ and $2$.
+-/
 private theorem two_fourier_coeff_sq_le_average
     {F : ℝ → ℂ} (hF : Continuous F) :
     ‖fourierCoeffOn (by positivity : (0 : ℝ) < 2 * Real.pi) F 0‖ ^ 2 +
@@ -74,10 +84,26 @@ private def exteriorCircleDerivative (b : ℂ) (h : ℂ → ℂ) (s t : ℝ) : �
   1 - b * reciprocalCircle s t ^ 2 -
     deriv h (reciprocalCircle s t) * reciprocalCircle s t ^ 2
 
+/--
+%%handwave
+name: Norm of the reciprocal-circle parametrization
+statement:
+  For $s>0$ and $t\in\mathbb R$, the point $s^{-1}e^{it}$ has modulus $s^{-1}$.
+proof:
+  Use $|e^{it}|=1$ and positivity of $s$.
+-/
 private theorem norm_reciprocalCircle {s t : ℝ} (hs : 0 < s) :
     ‖reciprocalCircle s t‖ = s⁻¹ := by
   simp [reciprocalCircle, Complex.norm_exp, Complex.mul_re, hs.le]
 
+/--
+%%handwave
+name: Continuity of the exterior derivative along a circle
+statement:
+  Let $h$ be holomorphic on the unit disk and $s>1$. For $w(t)=s^{-1}e^{it}$, the function $t\mapsto1-bw(t)^2-h'(w(t))w(t)^2$ is continuous on $\mathbb R$.
+proof:
+  The circle parametrization is continuous and lies in the unit disk. The derivative $h'$ is continuous there, and sums and products preserve continuity.
+-/
 private theorem continuous_exteriorCircleDerivative
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     {s : ℝ} (hs : 1 < s) :
@@ -95,6 +121,14 @@ private theorem continuous_exteriorCircleDerivative
   unfold exteriorCircleDerivative
   fun_prop
 
+/--
+%%handwave
+name: Constant Fourier mode of the exterior derivative
+statement:
+  Let $h$ be holomorphic on the unit disk and $s>1$. The zeroth Fourier coefficient of $1-bw(t)^2-h'(w(t))w(t)^2$, where $w(t)=s^{-1}e^{it}$, is $1$.
+proof:
+  This integrand is the restriction to $|w|=s^{-1}$ of the holomorphic function $1-bw^2-h'(w)w^2$. Its circle average is its value at $0$, namely $1$.
+-/
 private theorem exteriorCircleDerivative_fourierCoeff_zero
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     {s : ℝ} (hs : 1 < s) :
@@ -128,6 +162,14 @@ private theorem exteriorCircleDerivative_fourierCoeff_zero
   simp only [hparam] at havg
   simpa [φ, exteriorCircleDerivative, reciprocalCircle, smul_eq_mul] using havg
 
+/--
+%%handwave
+name: Vanishing integral of the second negative Fourier mode
+statement:
+  One has $\int_0^{2\pi}e^{-2it}\,dt=0$.
+proof:
+  Integrate the derivative relation $(e^{-2it})'=-2i e^{-2it}$ and use the equality of the endpoint values.
+-/
 private theorem integral_exp_neg_two_mul_I :
     ∫ t in (0 : ℝ)..2 * Real.pi,
       Complex.exp ((-2 : ℂ) * (t : ℂ) * Complex.I) = 0 := by
@@ -160,6 +202,14 @@ private theorem integral_exp_neg_two_mul_I :
   · norm_num [Complex.I_ne_zero] at hzero
   · exact hzero
 
+/--
+%%handwave
+name: Second Fourier mode of the exterior derivative
+statement:
+  Let $h$ be holomorphic on the unit disk with $h'(0)=0$, and let $s>1$. The second Fourier coefficient of $1-bw(t)^2-h'(w(t))w(t)^2$, where $w(t)=s^{-1}e^{it}$, is $-b/s^2$.
+proof:
+  Multiplication by $e^{-2it}$ turns the $bw(t)^2$ term into the constant $b/s^2$. The pure exponential integrates to zero, while the mean-value theorem applied to $h'$ makes its remaining circle average equal to $h'(0)=0$.
+-/
 private theorem exteriorCircleDerivative_fourierCoeff_two
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     (h1 : deriv h 0 = 0) {s : ℝ} (hs : 1 < s) :
@@ -274,7 +324,15 @@ private theorem exteriorCircleDerivative_fourierCoeff_two
   rw [hscalar, one_smul]
   rw [neg_div]
 
-/-- The two Laurent modes give the sharp circle-energy lower bound. -/
+/-- The two Laurent modes give the sharp circle-energy lower bound.
+
+%%handwave
+name: Circle-energy lower bound for an exterior Laurent map
+statement:
+  Let $h$ be holomorphic on the unit disk with $h'(0)=0$, let $b\in\mathbb C$, and let $s>1$. If $D_s(t)=1-bw(t)^2-h'(w(t))w(t)^2$ for $w(t)=s^{-1}e^{it}$, then $1+|b|^2/s^4\le(2\pi)^{-1}\int_0^{2\pi}|D_s(t)|^2\,dt$.
+proof:
+  Apply the two-mode Fourier energy bound. The zeroth coefficient is $1$ and the second coefficient is $-b/s^2$, giving the stated left-hand side.
+-/
 theorem exteriorCircleDerivative_energy_lower
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     (h1 : deriv h 0 = 0) {s : ℝ} (hs : 1 < s) :
@@ -290,10 +348,26 @@ theorem exteriorCircleDerivative_energy_lower
   simp [norm_pow, Complex.norm_real, Real.norm_eq_abs, abs_of_pos hs0]
   field_simp [hs0.ne']
 
+/--
+%%handwave
+name: Polar-coordinate inverse formula
+statement:
+  For $r,t\in\mathbb R$, the inverse polar-coordinate map sends $(r,t)$ to $re^{it}$, the standard parametrization of the circle of radius $r$ about $0$.
+proof:
+  Expand the two parametrizations and use $e^{it}=\cos t+i\sin t$.
+-/
 private theorem polarCoord_symm_eq_circleMap (r t : ℝ) :
     Complex.polarCoord.symm (r, t) = circleMap (0 : ℂ) r t := by
   simp [Complex.polarCoord_symm_apply, circleMap, Complex.exp_mul_I]
 
+/--
+%%handwave
+name: Polar-coordinate integral over an open annulus
+statement:
+  Let $0<r<R$ and let $F:\mathbb C\to\mathbb R$ be continuous on $r\le|z|\le R$. Then $\int_{r<|z|<R}F(z)\,dz=\int_{(r,R)\times(-\pi,\pi)}\rho F(\rho e^{it})\,d\rho\,dt$.
+proof:
+  Apply the planar polar-coordinate change of variables to the indicator of the annulus. On the polar chart, that indicator is exactly the indicator of $(r,R)\times(-\pi,\pi)$, and the Jacobian is $\rho$.
+-/
 private theorem setIntegral_openAnnulus_eq_polar
     {F : ℂ → ℝ} {r R : ℝ} (hr : 0 < r) (_hrR : r < R)
     (_hF : ContinuousOn F {z : ℂ | r ≤ ‖z‖ ∧ ‖z‖ ≤ R}) :
@@ -355,6 +429,14 @@ private theorem setIntegral_openAnnulus_eq_polar
       rw [hset]
     _ = _ := rfl
 
+/--
+%%handwave
+name: Iterated polar integral over an annulus
+statement:
+  Under the same hypotheses, $\int_{r<|z|<R}F(z)\,dz=\int_r^R\int_{-\pi}^{\pi}\rho F(\rho e^{it})\,dt\,d\rho$.
+proof:
+  The polar integrand is continuous on the compact closed rectangle and hence integrable. Fubini's theorem converts the product integral to the displayed iterated integral; changing open rectangles to interval integrals does not affect the value.
+-/
 private theorem setIntegral_openAnnulus_eq_iterated
     {F : ℂ → ℝ} {r R : ℝ} (hr : 0 < r) (hrR : r < R)
     (hF : ContinuousOn F {z : ℂ | r ≤ ‖z‖ ∧ ‖z‖ ≤ R}) :
@@ -388,6 +470,14 @@ private theorem setIntegral_openAnnulus_eq_iterated
     intervalIntegral.integral_of_le hpile, integral_Ioc_eq_integral_Ioo]
   simp [K, circleMap, Complex.exp_mul_I, Complex.polarCoord_symm_apply]
 
+/--
+%%handwave
+name: Periodicity of the reciprocal-circle parametrization
+statement:
+  For every $s\in\mathbb R$, the function $t\mapsto s^{-1}e^{it}$ has period $2\pi$.
+proof:
+  Use $e^{i(t+2\pi)}=e^{it}e^{2\pi i}=e^{it}$.
+-/
 private theorem periodic_reciprocalCircle (s : ℝ) :
     Function.Periodic (reciprocalCircle s) (2 * Real.pi) := by
   intro t
@@ -400,12 +490,28 @@ private theorem periodic_reciprocalCircle (s : ℝ) :
     simp [Complex.exp_mul_I]
   rw [this, mul_one]
 
+/--
+%%handwave
+name: Periodicity of the exterior derivative along a circle
+statement:
+  For $b\in\mathbb C$, $h:\mathbb C\to\mathbb C$, and $s\in\mathbb R$, the function $t\mapsto1-bw(t)^2-h'(w(t))w(t)^2$, with $w(t)=s^{-1}e^{it}$, has period $2\pi$.
+proof:
+  Every occurrence of $t$ factors through the $2\pi$-periodic function $w$.
+-/
 private theorem periodic_exteriorCircleDerivative (b : ℂ) (h : ℂ → ℂ) (s : ℝ) :
     Function.Periodic (exteriorCircleDerivative b h s) (2 * Real.pi) := by
   intro t
   unfold exteriorCircleDerivative
   rw [periodic_reciprocalCircle s t]
 
+/--
+%%handwave
+name: Exterior derivative on a geometric circle
+statement:
+  Let $G(z)=z+bz^{-1}+h(z^{-1})$, with $h$ holomorphic on the unit disk. If $s>1$, then $G'(se^{it})=1-bw(-t)^2-h'(w(-t))w(-t)^2$, where $w(t)=s^{-1}e^{it}$.
+proof:
+  Insert $z=se^{it}$ into the derivative formula for $G$ and use $(se^{it})^{-1}=s^{-1}e^{-it}$.
+-/
 private theorem actualCircleDerivative_eq
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     {s t : ℝ} (hs : 1 < s) :
@@ -425,6 +531,14 @@ private theorem actualCircleDerivative_eq
   rw [hinv]
   rfl
 
+/--
+%%handwave
+name: Geometric circle-energy lower bound
+statement:
+  Let $G(z)=z+bz^{-1}+h(z^{-1})$, where $h$ is holomorphic on the unit disk and $h'(0)=0$. For every $s>1$, $2\pi(1+|b|^2/s^4)\le\int_{-\pi}^{\pi}|G'(se^{it})|^2\,dt$.
+proof:
+  Rewrite $G'(se^{it})$ using the reciprocal-circle formula, reverse $t$, and translate one period from $[-\pi,\pi]$ to $[0,2\pi]$. The preceding normalized circle-energy estimate then gives the bound after multiplying by $2\pi$.
+-/
 private theorem actualCircleDerivative_energy_lower
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     (h1 : deriv h 0 = 0) {s : ℝ} (hs : 1 < s) :
@@ -466,7 +580,14 @@ private theorem actualCircleDerivative_energy_lower
         ‖deriv (exteriorLaurentMap b h) (circleMap (0 : ℂ) s t)‖ ^ 2
       rw [actualCircleDerivative_eq hh hs]
 
-set_option backward.isDefEq.respectTransparency false in
+/--
+%%handwave
+name: Area formula for an exterior Laurent map on an annulus
+statement:
+  Let $1<r<R$ and let $G(z)=z+bz^{-1}+h(z^{-1})$, where $h$ is holomorphic on the unit disk. If $G$ is injective on $|z|>1$, then $\operatorname{area}(G(\{r<|z|<R\}))=\int_{r<|z|<R}|G'(z)|^2\,dz$.
+proof:
+  Apply the change-of-variables formula to the injective restriction of $G$ to the annulus. Its real derivative is multiplication by $G'(z)$, whose real Jacobian determinant is $|G'(z)|^2$.
+-/
 private theorem exterior_annulus_area_eq_energy
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     {r R : ℝ} (hr : 1 < r) (_hrR : r < R)
@@ -494,6 +615,16 @@ private theorem exterior_annulus_area_eq_energy
   simpa [MeasureTheory.Measure.real_def, complexMulReal_det, abs_of_nonneg,
     sq_nonneg, A, G] using hchange
 
+set_option backward.isDefEq.respectTransparency true
+
+/--
+%%handwave
+name: Integrated lower energy bound on an annulus
+statement:
+  Under the holomorphic hypotheses above, if $h'(0)=0$ and $1<r<R$, then $\pi(R^2-r^2)+\pi|b|^2(r^{-2}-R^{-2})\le\int_{r<|z|<R}|G'(z)|^2\,dz$.
+proof:
+  Express the annular integral in polar coordinates and apply the geometric circle-energy bound at each radius $\rho$. Integrating $2\pi\rho(1+|b|^2/\rho^4)$ from $r$ to $R$ gives the stated expression.
+-/
 private theorem exterior_annulus_energy_lower
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     (h1 : deriv h 0 = 0) {r R : ℝ} (hr : 1 < r) (hrR : r < R) :
@@ -604,6 +735,14 @@ private theorem exterior_annulus_energy_lower
   rw [hcalc] at hmono
   exact hmono
 
+/--
+%%handwave
+name: Upper energy bound from the omitted exterior area
+statement:
+  Let $G(z)=z+bz^{-1}+h(z^{-1})$ be injective on $|z|>1$, with $h(0)=0$ and $|h(w)|\le C|w|^2$ for $|w|<\rho$. If $1<r<R$, $|b|<R^2$, and $R^{-1}<\rho$, then $\int_{r<|z|<R}|G'(z)|^2\,dz\le\pi(1-|b|^2/R^4)\bigl(R+(C/R^2)/(1-|b|/R^2)\bigr)^2$.
+proof:
+  Injectivity makes the image of the annulus disjoint from the image of $|z|>R$, so it lies in the omitted exterior set. Bound that set by the ellipse estimate, convert its disk measure to $\pi s^2$, and use the annular area formula to identify image area with derivative energy.
+-/
 private theorem exterior_annulus_energy_upper
     {b : ℂ} {h : ℂ → ℂ} (hh : AnalyticOnNhd ℂ h (ball 0 1))
     (h0 : h 0 = 0) {ρ C r R : ℝ} (hρ : 0 < ρ) (hC : 0 ≤ C)
@@ -816,11 +955,27 @@ theorem gronwall_area_first_coefficient
 def diskNormalizedQuotient (f : ℂ → ℂ) (z : ℂ) : ℂ :=
   if z = 0 then deriv f 0 else f z / z
 
+/--
+%%handwave
+name: Normalized quotient at the origin
+statement:
+  For every function $f:\mathbb C\to\mathbb C$, its normalized quotient is defined at $0$ by $q(0)=f'(0)$.
+proof:
+  This is the zero branch of the definition.
+-/
 @[simp]
 theorem diskNormalizedQuotient_zero (f : ℂ → ℂ) :
     diskNormalizedQuotient f 0 = deriv f 0 := by
   simp [diskNormalizedQuotient]
 
+/--
+%%handwave
+name: Factorization through the normalized quotient
+statement:
+  If $f(0)=0$ and $q(0)=f'(0)$ while $q(z)=f(z)/z$ for $z\ne0$, then $zq(z)=f(z)$ for every $z\in\mathbb C$.
+proof:
+  At $z=0$ both sides vanish. For $z\ne0$, cancel $z$ in the defining quotient.
+-/
 theorem diskNormalizedQuotient_mul
     {f : ℂ → ℂ} (h0 : f 0 = 0) (z : ℂ) :
     z * diskNormalizedQuotient f z = f z := by
@@ -829,6 +984,14 @@ theorem diskNormalizedQuotient_mul
   · rw [diskNormalizedQuotient, if_neg hz]
     field_simp
 
+/--
+%%handwave
+name: Holomorphic extension of the normalized quotient
+statement:
+  If $f$ is holomorphic on the unit disk and $f(0)=0$, then the function $q(z)=f(z)/z$ for $z\ne0$, extended by $q(0)=f'(0)$, is holomorphic on the unit disk.
+proof:
+  Away from $0$, divide by the nonvanishing coordinate function. Near $0$, factor the power series as $f(z)=zH(z)$; differentiating at $0$ gives $H(0)=f'(0)$, so $H$ agrees with the prescribed extension.
+-/
 theorem diskNormalizedQuotient_analyticOnNhd
     {f : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f (ball 0 1)) (h0 : f 0 = 0) :
     AnalyticOnNhd ℂ (diskNormalizedQuotient f) (ball 0 1) := by
@@ -862,7 +1025,15 @@ theorem diskNormalizedQuotient_analyticOnNhd
 
 /-- Differentiating `f(z) = z q(z)` twice at the origin, where `q` is the
 normalized analytic quotient, identifies the second derivative of `f` with
-twice the first derivative of `q`. -/
+twice the first derivative of `q`.
+
+%%handwave
+name: Second derivative from the normalized quotient
+statement:
+  If $f$ is holomorphic on the unit disk, $f(0)=0$, and $q$ is the holomorphic extension of $f(z)/z$, then $f''(0)=2q'(0)$.
+proof:
+  Differentiate $f(z)=zq(z)$ once to obtain $f'(z)=q(z)+zq'(z)$ near $0$, then differentiate again at $0$.
+-/
 theorem deriv_deriv_eq_two_mul_deriv_diskNormalizedQuotient
     {f : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f (ball 0 1)) (h0 : f 0 = 0) :
     deriv (deriv f) 0 = 2 * deriv (diskNormalizedQuotient f) 0 := by
@@ -893,6 +1064,14 @@ theorem deriv_deriv_eq_two_mul_deriv_diskNormalizedQuotient
       simp [two_mul]
   exact hright.deriv
 
+/--
+%%handwave
+name: Nonvanishing of the normalized quotient
+statement:
+  If $f$ is injective on the unit disk, $f(0)=0$, and $f'(0)=1$, then the holomorphic extension $q$ of $f(z)/z$ has no zero in the unit disk.
+proof:
+  At $0$, $q(0)=1$. If $z\ne0$ and $q(z)=0$, then $f(z)=0=f(0)$, contradicting injectivity.
+-/
 private theorem diskNormalizedQuotient_ne_zero
     {f : ℂ → ℂ} (hinj : Set.InjOn f (ball 0 1))
     (h0 : f 0 = 0) (h1 : deriv f 0 = 1) :
@@ -904,6 +1083,14 @@ private theorem diskNormalizedQuotient_ne_zero
     exact div_ne_zero (fun hfz ↦ hz0 (hinj hz (mem_ball_self zero_lt_one)
       (by simpa [h0] using hfz))) hz0
 
+/--
+%%handwave
+name: Normalized holomorphic square root on the disk
+statement:
+  If $q$ is holomorphic and nonvanishing on the unit disk with $q(0)=1$, then there is a holomorphic $u$ on the disk such that $u(0)=1$ and $u(z)^2=q(z)$.
+proof:
+  Integrate the holomorphic logarithmic derivative $q'/q$ to a primitive $L$ with $L(0)=0$. The derivative of $e^L/q$ vanishes, so this quotient is constantly $1$. Then $u=e^{L/2}$ has the required normalization and square.
+-/
 private theorem analytic_square_root_on_ball
     {q : ℂ → ℂ} (hq : AnalyticOnNhd ℂ q (ball 0 1))
     (hq0 : q 0 = 1) (hne : ∀ z ∈ ball (0 : ℂ) 1, q z ≠ 0) :
@@ -960,6 +1147,14 @@ private theorem analytic_square_root_on_ball
 private def oddExteriorRemainder (v : ℂ → ℂ) (b w : ℂ) : ℂ :=
   if w = 0 then 0 else (v (w ^ 2) - 1 - b * w ^ 2) / w
 
+/--
+%%handwave
+name: Cubic odd remainder after quadratic substitution
+statement:
+  Let $v$ be holomorphic on the unit disk with $v(0)=1$ and $v'(0)=b$. The function $r(w)=(v(w^2)-1-bw^2)/w$ for $w\ne0$, extended by $r(0)=0$, is holomorphic on the unit disk and satisfies $r(0)=r'(0)=0$.
+proof:
+  Taylor expansion gives $v(t)=1+bt+t^2H(t)$ near $0$, hence $r(w)=w^3H(w^2)$. This formula proves holomorphicity and the two vanishing conditions at $0$; away from $0$ the original quotient is holomorphic.
+-/
 private theorem oddExteriorRemainder_properties
     {v : ℂ → ℂ} (hv : AnalyticOnNhd ℂ v (ball 0 1))
     (hv0 : v 0 = 1) {b : ℂ} (hb : deriv v 0 = b) :

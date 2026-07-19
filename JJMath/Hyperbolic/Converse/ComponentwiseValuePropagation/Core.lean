@@ -33,9 +33,16 @@ def HyperbolicLocalChartLeftSourceConcreteFirstOrderMatch
       hyperbolicLocalChartLeftSourceCoordinateDerivativeAt U U x
 
 /--
-A fixed-left-source first-order match implies the older ambient-coordinate
-concrete first-order match.  The same source chart-transition derivative is
-introduced on both sides, so no moving chart continuity is involved.
+%%handwave
+name: First-order matching is independent of the chosen source coordinate
+statement:
+  Let \(U,V\) be hyperbolic local charts containing \(x\), and let \(A\) be a real Mobius transformation. If
+  \[
+    (V\circ U^{-1})'(z_U(x))=A'(U(x))\,(U\circ U^{-1})'(z_U(x)),
+  \]
+  then the corresponding derivative identity holds when both sides are written in the ambient chart at \(x\).
+proof:
+  By the chain rule, each ambient derivative is its fixed-\(U\)-coordinate derivative multiplied by the same derivative of the transition from the ambient chart to the stored \(U\)-chart. Substitute the assumed identity and reassociate the products.
 -/
 theorem hyperbolicLocalChartConcreteFirstOrderMatch_of_leftSourceConcreteFirstOrderMatch
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -68,9 +75,19 @@ theorem hyperbolicLocalChartConcreteFirstOrderMatch_of_leftSourceConcreteFirstOr
   ring
 
 /--
-If the value equality persists in the fixed source coordinate of `U`, then
-the fixed-left-source first-order equation follows by differentiating that
-local equality.
+%%handwave
+name: A local real-Mobius identity implies first-order matching
+statement:
+  Let \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\). If, near \(z_U(x)\),
+  \[
+    V\circ U^{-1}=A\circ U\circ U^{-1}
+  \]
+  for a real Mobius transformation \(A\), then
+  \[
+    (V\circ U^{-1})'(z_U(x))=A'(U(x))\,(U\circ U^{-1})'(z_U(x)).
+  \]
+proof:
+  Equal germs have equal derivatives. Differentiate the right-hand side by the chain rule, using that the self-expression of \(U\) is differentiable and takes \(z_U(x)\) to \(U(x)\).
 -/
 theorem hyperbolicLocalChartLeftSourceConcreteFirstOrderMatch_of_eventuallyEq_realMobius
     [ComplexOneManifold X] {g : HyperbolicMetric X}
@@ -224,8 +241,18 @@ def pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderM
     hValueClosed.inter hDerivativeClosed
 
 /--
-Continuity of fixed-left-source derivatives gives the exact derivative
-continuity needed for the value-plus-first-order comparison locus.
+%%handwave
+name: Continuity of the two sides of the fixed-coordinate first-order equation
+statement:
+  Suppose that \(x\mapsto (V\circ U^{-1})'(z_U(x))\) is continuous on every chart overlap. Then, for any real Mobius transformation \(A\), both
+  \[
+    x\mapsto (V\circ U^{-1})'(z_U(x))
+    \quad\text{and}\quad
+    x\mapsto A'(U(x))(U\circ U^{-1})'(z_U(x))
+  \]
+  are continuous on \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  The first function is continuous by hypothesis. For the second, compose the continuous derivative of \(A\) with the continuous map \(U\), multiply by the continuous self-coordinate derivative, and restrict all maps to the overlap.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderDerivativeContinuityTheorem_of_leftSourceCoordinateDerivativeContinuity
     (hDeriv :
@@ -271,9 +298,18 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOr
   exact ⟨hLeft, hMobiusOnU.mul hUDeriv⟩
 
 /--
-The fixed-left-source derivative-continuity boundary is unconditional on a
-Riemann surface: it follows from chart-transition regularity and holomorphic
-local maps.
+%%handwave
+name: Continuity of fixed-coordinate real-Mobius derivative comparisons
+statement:
+  On a complex one-manifold, for any two hyperbolic local charts \(U,V\) and real Mobius transformation \(A\), the functions
+  \[
+    x\mapsto (V\circ U^{-1})'(z_U(x)),
+    \qquad
+    x\mapsto A'(U(x))(U\circ U^{-1})'(z_U(x))
+  \]
+  are continuous on their common domain.
+proof:
+  Fixed-coordinate chart derivatives are continuous on overlaps; applying the preceding product-and-composition argument gives both asserted continuities.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderDerivativeContinuityTheorem
     [ComplexOneManifold X] :
@@ -297,10 +333,18 @@ def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderM
             U V A)
 
 /--
-Intrinsic one-jet openness opens the fixed-left-source concrete first-order
-locus.  At a point of the locus, the fixed-source derivative equation first
-gives the intrinsic one-jet; the resulting local value equality is then
-differentiated again in the same fixed source coordinate.
+%%handwave
+name: Openness of fixed-coordinate first-order matching from one-jet rigidity
+statement:
+  Assume that equality of the value and intrinsic first-order data of two hyperbolic charts with a real Mobius transformation persists on a neighborhood. Then the subset of their overlap where both
+  \[
+    V(x)=A(U(x))
+    \quad\text{and}\quad
+    (V\circ U^{-1})'(z_U(x))=A'(U(x))(U\circ U^{-1})'(z_U(x))
+  \]
+  hold is open.
+proof:
+  At a point of this subset, convert the fixed-coordinate derivative equation into the ambient first-order equation and hence into intrinsic one-jet matching. By the assumed rigidity, value and first-order matching persist on a surface neighborhood. Pull that neighborhood back to the overlap; the persistent value identity, differentiated in the fixed \(U\)-coordinate, supplies the required derivative identity at every point there.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderMatchSetIsOpenTheorem_of_oneJetEqualitySetOpen
     [ComplexOneManifold X]
@@ -395,9 +439,15 @@ def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderA
         HyperbolicLocalChartLeftSourceConcreteFirstOrderMatch U V A x₀
 
 /--
-The pointed real-Mobius first-order condition implies the fixed-left-source
-concrete first-order equation.  The only cancellation needed is the nonzero
-derivative of the transition from `chartAt` to the stored left source chart.
+%%handwave
+name: Pointed first-order matching in a fixed source coordinate
+statement:
+  If two hyperbolic local charts \(U,V\) have at \(x_0\) the same value and first-order data up to a real Mobius transformation \(A\), then
+  \[
+    (V\circ U^{-1})'(z_U(x_0))=A'(U(x_0))(U\circ U^{-1})'(z_U(x_0)).
+  \]
+proof:
+  Express the ambient derivatives of \(U\) and \(V\) as their fixed-\(U\)-coordinate derivatives times the derivative of the common coordinate transition. Substitute these factorizations into the pointed first-order identity and cancel the transition derivative, which is nonzero.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderAtPointedTransitionTheorem
     [ComplexOneManifold X] :
@@ -451,9 +501,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOr
   exact mul_right_cancel₀ hτ_ne hmul
 
 /--
-Closedness, openness, and base-point membership of the fixed-left-source
-first-order locus propagate value equality on the connected overlap
-component.
+%%handwave
+name: Propagation of a real-Mobius identity along an overlap component
+statement:
+  Let \(U,V\) be hyperbolic local charts and \(A\) a real Mobius transformation matching them to first order at \(x_0\). Suppose the locus in \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\) where value and fixed-coordinate first-order matching hold is both closed and open, and contains \(x_0\). Then \(V(x)=A(U(x))\) throughout the connected component of \(x_0\) in the overlap.
+proof:
+  Pull the matching locus back to the connected component. It is clopen and nonempty there, so it is the whole component. Projecting membership back to the overlap yields the value identity at every point of the component.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem_of_leftSourceConcreteFirstOrderMatchSet_closed_open_and_pointedFirstOrder
     (hClosed :
@@ -514,8 +567,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponent
         using hx_E.1)
 
 /--
-The fixed-left-source route with derivative continuity supplying the closed
-side of the clopen argument.
+%%handwave
+name: Componentwise propagation from derivative continuity and openness
+statement:
+  Suppose the two sides of the fixed-coordinate derivative equation are continuous, its joint value-and-derivative matching locus is open, and pointed first-order matching implies the fixed-coordinate equation. Then a pointed real-Mobius relation between two hyperbolic charts extends over the connected component of their overlap.
+proof:
+  Continuity makes the derivative equality locus closed, while the value equality locus is also closed; hence their intersection is closed. Combine this with the assumed openness and base-point membership, and apply the clopen propagation argument on the connected component.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem_of_leftSourceConcreteFirstOrderDerivativeContinuity_open_and_pointedFirstOrder
     (hDeriv :
@@ -535,8 +592,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponent
     hOpen hPoint
 
 /--
-The fixed-left-source route with the open side supplied by intrinsic one-jet
-openness.
+%%handwave
+name: Componentwise propagation from one-jet openness
+statement:
+  On a complex one-manifold, assume intrinsic one-jet matching with a real Mobius transformation is locally persistent, and that pointed first-order matching yields the fixed-coordinate derivative equation. Then the corresponding real-Mobius identity extends across the connected component of a chart overlap.
+proof:
+  Fixed-coordinate derivatives and their real-Mobius comparison are continuous, while intrinsic one-jet persistence makes the joint matching locus open. Apply componentwise propagation from derivative continuity, openness, and the pointed first-order bridge.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem_of_leftSourceConcreteFirstOrder_oneJetEqualitySetOpen_and_pointedFirstOrder
     [ComplexOneManifold X]
@@ -555,8 +616,12 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponent
     hPoint
 
 /--
-With one-jet openness proved, fixed-left-source componentwise propagation now
-only needs the pointed first-order bridge.
+%%handwave
+name: Componentwise propagation from the pointed fixed-coordinate bridge
+statement:
+  On a complex one-manifold, if pointed real-Mobius first-order matching implies the fixed-source derivative equation, then the real-Mobius value identity extends over the connected component of the two chart domains containing the pointed point.
+proof:
+  Intrinsic one-jet matching is locally persistent. Insert this fact together with the assumed pointed derivative bridge into the componentwise propagation theorem based on one-jet openness.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem_of_leftSourceConcreteFirstOrder_pointedFirstOrder
     [ComplexOneManifold X]
@@ -570,8 +635,16 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponent
     hPoint
 
 /--
-The fixed-left-source componentwise value-propagation theorem is now
-unconditional on Riemann surfaces.
+%%handwave
+name: Componentwise real-Mobius propagation for hyperbolic local charts
+statement:
+  Let \(U,V\) be hyperbolic local charts on a complex one-manifold. If a real Mobius transformation \(A\) matches their value and first-order data at \(x_0\), then
+  \[
+    V(x)=A(U(x))
+  \]
+  for every \(x\) in the connected component of \(x_0\) in \(\operatorname{dom}(U)\cap\operatorname{dom}(V)\).
+proof:
+  Pointed first-order matching yields the fixed-source derivative equation because the intervening chart transition has nonzero derivative. Apply componentwise propagation from this pointed fixed-coordinate bridge.
 -/
 theorem pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem
     [ComplexOneManifold X] :

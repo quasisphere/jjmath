@@ -21,7 +21,15 @@ variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
 omit [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X] in
 /-- Exterior components of the complements of successive exhaustion
-closures have locally finite closures. -/
+closures have locally finite closures.
+
+%%handwave
+name: Local finiteness of exterior components along an exhaustion
+statement:
+  Let $(\Omega_n)$ be a smooth relatively compact exhaustion and, for each $n$, let $U_n$ be an exterior component of $X\setminus\overline{\Omega_{N+n}}$. Then the family $(\overline{U_n})$ is locally finite.
+proof:
+  Given $y$, choose an exhaustion member $\Omega_q$ containing it. For $n\ge q$, monotonicity puts $\Omega_q$ inside $\overline{\Omega_{N+n}}$, while $U_n$ lies in its complement; hence $\overline{U_n}$ misses $\Omega_q$. Only the finitely many indices $n<q$ can meet this neighborhood.
+-/
 theorem locallyFinite_closure_exteriorComponents_along_smoothExhaustion
     (E : SmoothRelativelyCompactExhaustion X) (N : ℕ)
     (U : ℕ → Set X)
@@ -48,7 +56,15 @@ theorem locallyFinite_closure_exteriorComponents_along_smoothExhaustion
 
 /-- A compactly supported two-form carried by the first chart of a nested
 exterior path chain has a global primitive supported in the union of the
-exterior components. -/
+exterior components.
+
+%%handwave
+name: Supported primitive along a nested exterior chain
+statement:
+  Let $U_n$ be exterior components along an exhaustion, joined by paths through $U_n$. If a smooth two-form is compactly supported in a planar chart inside $U_0$, then it has a global primitive $\theta$ that vanishes outside $\bigcup_nU_n$.
+proof:
+  Join the chart's marked point to the first path chain inside $U_0$, forming a compatible transport sequence. The exterior closures are locally finite, so the locally finite corridor-transport theorem yields the primitive and its support bound.
+-/
 theorem exists_primitive_of_compactSupport_exteriorChain_with_support
     (E : SmoothRelativelyCompactExhaustion X) (N : ℕ)
     (U : ℕ → Set X) (x : ℕ → X)
@@ -117,7 +133,15 @@ theorem exists_primitive_of_compactSupport_exteriorChain_with_support
   simpa [W] using hy
 
 /-- A compactly supported two-form carried by the first chart of a nested
-exterior path chain has a global primitive. -/
+exterior path chain has a global primitive.
+
+%%handwave
+name: Primitive along a nested exterior chain
+statement:
+  Under the same exterior-chain hypotheses, a two-form compactly supported in the initial planar chart is globally exact.
+proof:
+  Apply the supported exterior-chain theorem and discard the support conclusion.
+-/
 theorem exists_primitive_of_compactSupport_exteriorChain
     (E : SmoothRelativelyCompactExhaustion X) (N : ℕ)
     (U : ℕ → Set X) (x : ℕ → X)
@@ -147,7 +171,15 @@ theorem exists_primitive_of_compactSupport_exteriorChain
 /-- A two-form compactly supported in a full-plane coordinate chart inside
 an exterior component is globally exact, with a primitive supported in that
 component.  The compact mass is first moved to the nested exterior chain and
-is then transported to infinity. -/
+is then transported to infinity.
+
+%%handwave
+name: Supported primitive for chartwise mass in an exterior component
+statement:
+  Let $V$ be an exterior component and let $\omega$ be supported in a compact subset of a full-plane coordinate chart contained in $V$. Then there is a smooth one-form $\theta$ with $d\theta=\omega$ and $\theta=0$ on $X\setminus V$.
+proof:
+  Choose an escaping nested chain of exterior components inside $V$. First transport the compact mass along a path in $V$ into the initial member of that chain; then transport the remainder to infinity along the chain. Add the two corrections, whose supports both remain in $V$.
+-/
 theorem IsExteriorComponent.exists_primitive_of_compactSupport_in_coordinateChart_with_support
     (E : SmoothRelativelyCompactExhaustion X)
     {K V : Set X} (hKcompact : IsCompact K)
@@ -203,7 +235,15 @@ theorem IsExteriorComponent.exists_primitive_of_compactSupport_in_coordinateChar
       exact hyV (hU0V (hUanti (Nat.zero_le n) hyn))
 
 /-- A two-form compactly supported in a full-plane coordinate chart inside
-an exterior component is globally exact. -/
+an exterior component is globally exact.
+
+%%handwave
+name: Exactness of chartwise compact mass in an exterior component
+statement:
+  A smooth two-form compactly supported in a full-plane coordinate chart inside an exterior component is globally exact.
+proof:
+  Apply the supported chartwise primitive theorem and forget the support property.
+-/
 theorem IsExteriorComponent.exists_primitive_of_compactSupport_in_coordinateChart
     (E : SmoothRelativelyCompactExhaustion X)
     {K V : Set X} (hKcompact : IsCompact K)
@@ -391,7 +431,15 @@ theorem IsExteriorComponent.exists_primitive_of_compactSupport_with_support
     simp
 
 /-- A two-form whose support is contained in a compact subset of an exterior
-component is globally exact. -/
+component is globally exact.
+
+%%handwave
+name: Exactness of compactly supported mass in an exterior component
+statement:
+  Let $V$ be an exterior component and let $C\subseteq V$ be compact. Every smooth two-form that vanishes outside $C$ is globally exact.
+proof:
+  Use the supported primitive theorem for compact mass in $V$ and discard its support conclusion.
+-/
 theorem IsExteriorComponent.exists_primitive_of_compactSupport
     (E : SmoothRelativelyCompactExhaustion X)
     {K V C : Set X} (hKcompact : IsCompact K)

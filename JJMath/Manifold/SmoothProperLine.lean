@@ -26,6 +26,17 @@ def smoothPathChainPatch : Option ℕ → Set ℝ
   | some n =>
       {t | (n : ℝ) - 1 / 4 < t ∧ t < (n : ℝ) + 5 / 4}
 
+/--
+%%handwave
+name:
+  Openness of the time patches for a smooth path chain
+statement:
+  The initial patch \((-\infty,1/4)\) and every path patch
+  \((n-1/4,n+5/4)\) are open subsets of \(\mathbb R\).
+proof:
+  They are open intervals, with each path patch written as the intersection
+  of two open half-lines.
+-/
 theorem isOpen_smoothPathChainPatch (i : Option ℕ) :
     IsOpen (smoothPathChainPatch i) := by
   cases i with
@@ -53,6 +64,20 @@ def smoothPathChainLocalMap
             (2 * ((t.1 : ℝ) - (n : ℝ)) - 1 / 2)
           continuous_toFun := (hgamma_cont n).comp (by fun_prop) }
 
+/--
+%%handwave
+name:
+  Agreement of local maps in a sitting path chain
+statement:
+  Suppose each path \(\gamma_n\) is constant at \(x_n\) before time \(0\)
+  and at \(x_{n+1}\) after time \(1\).  Then any two local representatives of
+  the countable path chain agree wherever their time patches overlap.
+proof:
+  The initial patch overlaps only the zeroth path patch, where both maps equal
+  \(x_0\).  Two numbered patches can overlap only when their indices are equal
+  or adjacent; in the adjacent case the sitting-end hypotheses make both
+  values the common vertex.
+-/
 theorem smoothPathChainLocalMap_agree
     {X : Type*} [TopologicalSpace X]
     (x : ℕ → X) (gamma : ℕ → ℝ → X)
@@ -166,6 +191,18 @@ theorem smoothPathChainLocalMap_agree
                 push_cast at hti
                 linarith)]
 
+/--
+%%handwave
+name:
+  The time patches cover the real line
+statement:
+  Every \(t\in\mathbb R\) has a neighborhood contained in one of the sitting
+  path-chain patches.
+proof:
+  If \(t<1/4\), use the initial patch.  Otherwise choose
+  \(n=\lfloor t\rfloor\); then
+  \(n-1/4<t<n+5/4\), so the \(n\)-th open patch is a neighborhood of \(t\).
+-/
 theorem smoothPathChainPatch_cover (t : ℝ) :
     ∃ i : Option ℕ, smoothPathChainPatch i ∈ 𝓝 t := by
   by_cases ht : t < 1 / 4
@@ -192,6 +229,17 @@ noncomputable def smoothSittingPathChainLine
     (smoothPathChainLocalMap_agree x gamma hgamma_cont hleft hright)
     smoothPathChainPatch_cover
 
+/--
+%%handwave
+name:
+  A glued sitting path chain equals each local representative
+statement:
+  On every time patch, the globally glued countable path chain agrees with
+  the corresponding local path-chain map.
+proof:
+  This is the defining local equality supplied by gluing continuous maps that
+  agree on overlaps.
+-/
 theorem smoothSittingPathChainLine_eq_local
     {X : Type*} [TopologicalSpace X]
     (x : ℕ → X) (gamma : ℕ → ℝ → X)
@@ -203,6 +251,19 @@ theorem smoothSittingPathChainLine_eq_local
       smoothPathChainLocalMap x gamma hgamma_cont i ⟨t, ht⟩ := by
   exact ContinuousMap.liftCover_coe ⟨t, ht⟩
 
+/--
+%%handwave
+name:
+  Smoothness of a countable sitting path chain
+statement:
+  If every \(\gamma_n:\mathbb R\to X\) is smooth and has the prescribed
+  sitting ends, then the glued map \(\Gamma:\mathbb R\to X\) is smooth.
+proof:
+  Smoothness is local.  On the initial patch, \(\Gamma\) is constant; on the
+  \(n\)-th patch, it is \(\gamma_n\) composed with an affine time change.
+  The local agreement theorem transfers these smooth descriptions to the
+  glued map.
+-/
 theorem contMDiff_smoothSittingPathChainLine
     {X : Type*} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -238,6 +299,19 @@ theorem contMDiff_smoothSittingPathChainLine
       exact smoothSittingPathChainLine_eq_local x gamma
         (fun n => (hgamma n).continuous) hleft hright (some n) y hy
 
+/--
+%%handwave
+name:
+  Tail containment for a countable sitting path chain
+statement:
+  Let \(U_0\supseteq U_1\supseteq\cdots\), with the image of \(\gamma_k\)
+  contained in \(U_k\).  If \(n\le t\), then the glued path-chain value
+  \(\Gamma(t)\) lies in \(U_n\).
+proof:
+  Put \(k=\lfloor t\rfloor\).  The local formula places \(\Gamma(t)\) on
+  \(\gamma_k\), hence in \(U_k\); since \(n\le k\) and the family is
+  decreasing, \(U_k\subseteq U_n\).
+-/
 theorem smoothSittingPathChainLine_mem_of_le
     {X : Type*} [TopologicalSpace X]
     {U : ℕ → Set X} (x : ℕ → X) (gamma : ℕ → ℝ → X)

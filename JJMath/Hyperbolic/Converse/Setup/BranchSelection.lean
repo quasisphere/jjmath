@@ -682,7 +682,14 @@ def SurfaceRealUpperHalfPlaneBranchAtlasPreDataOverlapComponentsGood
             (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart).domain)
           p)
 
-/-- Selected overlap components are open and preconnected on locally path-connected surfaces. -/
+/--
+%%handwave
+name: Components of selected branch overlaps are open and preconnected
+statement:
+  On a locally path-connected surface, for any two selected local upper-half-plane chart domains $U_x,U_y$ and any point $p$, the component of $p$ in $U_x\cap U_y$ is open and preconnected.
+proof:
+  The intersection $U_x\cap U_y$ is open. In a locally path-connected space its component containing $p$ is open, and every connected component in a set is preconnected.
+-/
 theorem surfaceRealUpperHalfPlaneBranchAtlasPreDataOverlapComponentsGood
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [LocPathConnectedSpace X]
     {g : HyperbolicMetric X}
@@ -963,7 +970,14 @@ def toHyperbolicLocalModelLocalTransitionAtlas
   surfaceRealUpperHalfPlaneBranchAtlasPreData_toHyperbolicLocalModelLocalTransitionAtlas
     S.preData S.local_transition
 
-/-- Selected local-transition branch data gives the metric-level local-transition target. -/
+/--
+%%handwave
+name: Local transition models from selected real branches
+statement:
+  If each chart of a local metric-formula atlas has a selected upper-half-plane branch and the selected branches are related locally on overlaps by real Mobius transformations, then the metric admits an atlas of upper-half-plane local models with local real-Mobius transitions.
+proof:
+  Assemble the selected branches and their local transition witnesses into the corresponding local-model atlas.
+-/
 theorem hasUpperHalfPlaneLocalTransitionModels
     (S :
       SurfaceRealUpperHalfPlaneBranchAtlasLocalTransitionSelection
@@ -1553,8 +1567,12 @@ def CanonicalChartedCurvatureSurfaceOverlapPreconnectedTheorem
         |>.toLocalLiouvilleMetricFormulaAtlas)
 
 /--
-The selected surface domain attached to a branch predata object is exactly
-the original formula domain restricted by the chosen coordinate branch domain.
+%%handwave
+name: Domain of a selected surface branch chart
+statement:
+  Let a local metric formula at $x$ have surface domain $U_x$, coordinate $\phi_x$, and selected coordinate branch domain $V_x$. The associated surface upper-half-plane chart has domain $\{y\in U_x:\phi_x(y)\in V_x\}$.
+proof:
+  The surface formula is restricted by definition to the inverse image of the chosen coordinate branch domain.
 -/
 @[simp]
 theorem surfaceRealUpperHalfPlaneBranchAtlasPreData_solutionAt_toHyperbolicLocalChart_domain
@@ -1574,8 +1592,13 @@ theorem surfaceRealUpperHalfPlaneBranchAtlasPreData_solutionAt_toHyperbolicLocal
   rfl
 
 /--
-The overlap of two selected surface domains is the explicit conjunction of the
-two formula-domain and coordinate-branch-domain conditions.
+%%handwave
+name: Explicit overlap of two selected surface branch charts
+statement:
+  If selected charts at $x,y$ have formula domains $U_x,U_y$, coordinates $\phi_x,\phi_y$, and branch domains $V_x,V_y$, then their surface-domain overlap is
+  $$\{z:z\in U_x,\ \phi_x(z)\in V_x,\ z\in U_y,\ \phi_y(z)\in V_y\}.$$
+proof:
+  Substitute the inverse-image description of each selected chart domain and rearrange the four membership conditions.
 -/
 theorem surfaceRealUpperHalfPlaneBranchAtlasPreData_solutionAt_toHyperbolicLocalChart_domain_inter
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

@@ -32,8 +32,18 @@ noncomputable def controlledAtlasVortexPathTransport
       ((path n).exists_append_transport
         (controlledAtlasVortexPathTransport p W v path T₀ hpW n) (hpW n))
 
-/-- Appending the next controlled block does not change the transport phase
-outside that block's control set. -/
+/--
+%%handwave
+name:
+  A controlled transport block preserves the phase outside its control set
+statement:
+  When the \(n\)-th controlled vortex path inside \(W_n\) is appended to a
+  transport, the new phase agrees with the preceding transport phase at every
+  point outside \(W_n\).
+proof:
+  This is the exterior phase-preservation identity supplied by appending the
+  controlled path, specialized to the recursively chosen transport.
+-/
 theorem controlledAtlasVortexPathTransport_phase_succ
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -63,6 +73,17 @@ noncomputable def controlledAtlasVortexPathTransportPartialPhase
       ⟨(z : X), ⟨z.2, hzt⟩⟩
   else 1
 
+/--
+%%handwave
+name:
+  Unit norm of a blockwise partial transport phase
+statement:
+  At every stage, the totalized blockwise transport phase on the surface
+  punctured at the fixed initial point has complex modulus one.
+proof:
+  Away from the moving terminal point it is the unit phase of the current
+  finite transport, while at that terminal point it is defined to be \(1\).
+-/
 theorem norm_controlledAtlasVortexPathTransportPartialPhase
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -80,8 +101,18 @@ theorem norm_controlledAtlasVortexPathTransportPartialPhase
     exact (controlledAtlasVortexPathTransport p W v path T₀ hpW n).norm_phase _
   · simp [controlledAtlasVortexPathTransportPartialPhase, hzt]
 
-/-- Away from the moving terminal point, a blockwise partial phase is
-smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of a blockwise partial phase off its moving endpoint
+statement:
+  The stage-\(n\) blockwise partial phase is smooth at every point other than
+  its moving terminal point \(v_n\).
+proof:
+  On the open complement of \(v_n\), the partial phase is the smooth phase of
+  the current finite transport, composed with the inclusion into the
+  twice-punctured surface.
+-/
 theorem contMDiffAt_controlledAtlasVortexPathTransportPartialPhase_of_ne
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -126,8 +157,18 @@ theorem contMDiffAt_controlledAtlasVortexPathTransportPartialPhase_of_ne
   rw [heq]
   exact hsmooth.contMDiffAt
 
-/-- Consecutive blockwise partial phases agree at every point outside the
-next block's control set. -/
+/--
+%%handwave
+name:
+  Successive blockwise partial phases agree outside the next control set
+statement:
+  If \(z\notin W_n\), then the stage-\(n+1\) and stage-\(n\) totalized
+  transport phases take the same value at \(z\).
+proof:
+  Both endpoints of the \(n\)-th controlled path lie in \(W_n\), so \(z\)
+  differs from them.  Expand both partial phases into the corresponding
+  transport phases and apply preservation outside the control set.
+-/
 theorem controlledAtlasVortexPathTransportPartialPhase_succ_eq
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -153,8 +194,23 @@ theorem controlledAtlasVortexPathTransportPartialPhase_succ_eq
       p W v path T₀ hpW n ⟨(z : X), ⟨z.2, hzRight⟩⟩ hzW]
   simp [controlledAtlasVortexPathTransportPartialPhase, hzLeft]
 
-/-- Escaping controlled finite paths give a global smooth unit phase and a
-circle primitive on the surface punctured at the fixed initial point. -/
+/--
+%%handwave
+name:
+  Stable circle primitive from locally escaping controlled vortex paths
+statement:
+  Suppose a sequence of controlled vortex paths has control sets \(W_n\) that
+  eventually miss a neighborhood of every point of
+  \(X\setminus\{p\}\), and suppose \(p\notin W_n\) for all \(n\).  Then the
+  blockwise phases stabilize locally to a smooth unit phase \(P\) on the
+  punctured surface.  Pointwise, \(P\) equals every sufficiently late partial
+  phase, and its logarithmic one-form has a circle primitive.
+proof:
+  On an escaping neighborhood, a sufficiently late partial phase is smooth
+  and every subsequent block leaves it unchanged.  Thus the phases are
+  locally eventually constant and have unit norm.  Apply the locally stable
+  unit-phase theorem, retaining its pointwise stability conclusion.
+-/
 theorem exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths_with_stability
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -202,8 +258,18 @@ theorem exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths_wit
   exact exists_circlePrimitive_of_locally_eventuallyEq_unitPhase_with_stability
     SurfaceRealModel f hlocal hnorm
 
-/-- Escaping controlled finite paths give a global smooth unit phase and a
-circle primitive on the surface punctured at the fixed initial point. -/
+/--
+%%handwave
+name:
+  Circle primitive from locally escaping controlled vortex paths
+statement:
+  Under the same local escape hypotheses, there is a smooth unit phase on
+  \(X\setminus\{p\}\) whose canonical logarithmic one-form admits a circle
+  primitive.
+proof:
+  Apply the stable escaping-path construction and discard its additional
+  pointwise stabilization statement.
+-/
 theorem exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))

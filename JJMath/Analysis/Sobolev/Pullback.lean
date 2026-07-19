@@ -26,6 +26,17 @@ noncomputable section
 
 open ContinuousLinearMap
 
+/--
+%%handwave
+name:
+  Global \(L^2\) membership from supported restricted membership
+statement:
+  If \(f\) is integrable, is \(L^2\) for the measure restricted to \(s\), and
+  vanishes outside \(s\), then \(f\in L^2(\mu)\).
+proof:
+  Integrability gives strong measurability, while support in \(s\) identifies
+  the global \(L^2\)-norm with the norm for the restricted measure.
+-/
 theorem memLp_of_integrable_and_restrict_support
     {α E : Type} [MeasurableSpace α] [NormedAddCommGroup E]
     {μ : Measure α} {s : Set α} {f : α → E}
@@ -39,6 +50,17 @@ theorem memLp_of_integrable_and_restrict_support
     eLpNorm_restrict_eq_of_support_subset hsupport
   simpa [hnorm] using hf_restrict.2
 
+/--
+%%handwave
+name:
+  Multiplication by a continuous function on a compact set preserves \(L^2\)
+statement:
+  If \(K\) is compact, \(a\) is continuous on \(K\), and
+  \(g\in L^2(K)\), then \(ag\in L^2(K)\).
+proof:
+  The continuous multiplier is strongly measurable and bounded on \(K\).
+  Thus \(|ag|\le C|g|\), which preserves \(L^2\)-integrability.
+-/
 theorem memLp_restrict_mul_left_of_isCompact_of_continuousOn
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -66,6 +88,17 @@ theorem memLp_restrict_mul_left_of_isCompact_of_continuousOn
         _ ≤ C * ‖g z‖ :=
           mul_le_mul_of_nonneg_right (hC_bound z hz) (norm_nonneg _))
 
+/--
+%%handwave
+name:
+  A continuous function on a compact set is \(L^2\)
+statement:
+  A function continuous on a compact subset \(K\) of a finite-dimensional
+  real vector space belongs to \(L^2(K)\).
+proof:
+  It is strongly measurable and bounded on \(K\), while \(K\) has finite
+  Haar measure.
+-/
 private theorem memLp_restrict_of_isCompact_of_continuousOn
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -86,6 +119,17 @@ private theorem memLp_restrict_of_isCompact_of_continuousOn
       hf_aesm C
       (ae_restrict_of_forall_mem hK.measurableSet hC)
 
+/--
+%%handwave
+name:
+  Global \(L^2\) functions are locally integrable
+statement:
+  On a finite-dimensional real vector space, every \(L^2\) function is
+  locally \(L^1\) on the whole space.
+proof:
+  Restrict to a compact set.  Its measure is finite, so Hölder embeds
+  \(L^2\) into \(L^1\) there.
+-/
 theorem memLp_two_locallyIntegrableOn_univ
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -103,6 +147,17 @@ theorem memLp_two_locallyIntegrableOn_univ
     isFiniteMeasure_restrict.2 hK.measure_ne_top
   exact hK_mem.integrable (by norm_num : (1 : ℝ≥0∞) ≤ 2)
 
+/--
+%%handwave
+name:
+  Restricted \(L^2\) membership gives local integrability on an open subset
+statement:
+  If \(U\subseteq P\), \(U\) is open, and \(f\in L^2(P)\), then \(f\) is
+  locally integrable on \(U\).
+proof:
+  Every compact \(K\subseteq U\) is contained in \(P\); restrict the
+  \(L^2(P)\) bound to \(K\), then use finite measure to obtain \(L^1(K)\).
+-/
 private theorem memLp_two_locallyIntegrableOn_of_subset
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -120,6 +175,20 @@ private theorem memLp_two_locallyIntegrableOn_of_subset
     isFiniteMeasure_restrict.2 hK.measure_ne_top
   exact hK_mem.integrable (by norm_num : (1 : ℝ≥0∞) ≤ 2)
 
+/--
+%%handwave
+name:
+  \(L^2\) convergence of linear-map fields from convergence on a basis
+statement:
+  Let \(F_n:\alpha\to\mathcal L(H,E)\) with \(H,E\) finite dimensional.  If
+  every basis evaluation \(F_n(\cdot)e_i\) lies in \(L^2\) and its \(L^2\)-norm
+  tends to zero, then each \(F_n\) lies in \(L^2\) and
+  \(\lVert F_n\rVert_{L^2}\to0\).
+proof:
+  The operator norm is bounded, up to a finite-dimensional constant, by the
+  finite sum of norms on a basis.  Apply the finite-sum \(L^2\) estimate and
+  pass to the limit term by term.
+-/
 private theorem continuousLinearMap_sequence_memLp_and_eLpNorm_tendsto_zero_of_basis_eval'
     {α H E : Type} [MeasurableSpace α]
     [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
@@ -245,6 +314,16 @@ theorem lipschitzOnWith_volume_image_le_smul
     simpa [mul_assoc, mul_left_comm, mul_comm] using hright
   simpa [hvol_eq, Measure.smul_apply, smul_eq_mul, mul_assoc] using hscaled
 
+/--
+%%handwave
+name:
+  Translation preserves volume
+statement:
+  For every \(c\) in a finite-dimensional real vector space, the translation
+  \(z\mapsto z+c\) preserves Haar volume.
+proof:
+  Translation is measurable and Haar volume is invariant under addition.
+-/
 theorem measurePreserving_add_right_volume
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -257,6 +336,15 @@ theorem measurePreserving_add_right_volume
   · simpa [add_comm] using
       MeasureTheory.map_add_left_eq_self (MeasureTheory.volume : Measure H) c
 
+/--
+%%handwave
+name:
+  Translation is a measurable embedding
+statement:
+  For every \(c\), the map \(z\mapsto z+c\) is a measurable embedding.
+proof:
+  It is the homeomorphism given by translation, hence a measurable embedding.
+-/
 theorem measurableEmbedding_add_right
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasurableSpace H] [BorelSpace H]
@@ -264,6 +352,18 @@ theorem measurableEmbedding_add_right
     MeasurableEmbedding (fun z : H ↦ z + c) := by
   simpa [add_comm] using (measurableEmbedding_addLeft c)
 
+/--
+%%handwave
+name:
+  Translating a centered ball
+statement:
+  For every \(c\) and radius \(r\),
+  \[
+    \{z:z+c\in B(c,r)\}=B(0,r).
+  \]
+proof:
+  Translation preserves the distance: \(d(z+c,c)=d(z,0)\).
+-/
 theorem preimage_add_right_ball_center
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (c : H) (r : ℝ) :
@@ -277,6 +377,18 @@ theorem preimage_add_right_ball_center
   change z + c ∈ Metric.ball c r ↔ z ∈ Metric.ball (0 : H) r
   rw [Metric.mem_ball, Metric.mem_ball, hdist]
 
+/--
+%%handwave
+name:
+  Translating a ball back to the origin
+statement:
+  For every \(c\) and radius \(r\),
+  \[
+    \{z:z-c\in B(0,r)\}=B(c,r).
+  \]
+proof:
+  The defining distances agree: \(d(z-c,0)=d(z,c)\).
+-/
 theorem preimage_add_right_neg_ball_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     (c : H) (r : ℝ) :
@@ -290,6 +402,19 @@ theorem preimage_add_right_neg_ball_zero
   change z + (-c) ∈ Metric.ball (0 : H) r ↔ z ∈ Metric.ball c r
   rw [Metric.mem_ball, Metric.mem_ball, hdist]
 
+/--
+%%handwave
+name:
+  Preimage of a ball under positive dilation
+statement:
+  If \(a>0\), then
+  \[
+    \{z:az\in B(0,aR)\}=B(0,R).
+  \]
+proof:
+  Since \(\lVert az\rVert=a\lVert z\rVert\), division by the positive scalar
+  \(a\) preserves the strict radius inequality.
+-/
 theorem preimage_const_smul_ball_zero_of_pos
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {a R : ℝ} (ha_pos : 0 < a) :
@@ -304,6 +429,19 @@ theorem preimage_const_smul_ball_zero_of_pos
   rw [Metric.mem_ball, Metric.mem_ball, hdist]
   constructor <;> intro h <;> nlinarith [ha_pos, h]
 
+/--
+%%handwave
+name:
+  Haar-volume scaling under scalar dilation
+statement:
+  If \(a\ne0\) on a real vector space of dimension \(d\), then
+  \[
+    (z\mapsto az)_*(dz)=|a^d|^{-1}\,dz.
+  \]
+proof:
+  Apply the standard change-of-variables formula for scalar multiplication on
+  a finite-dimensional Haar space.
+-/
 private theorem map_const_smul_volume_eq_smul
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -317,6 +455,20 @@ private theorem map_const_smul_volume_eq_smul
     MeasureTheory.Measure.map_addHaar_smul
       (MeasureTheory.volume : Measure H) ha
 
+/--
+%%handwave
+name:
+  Dilation of volume restricted to a ball
+statement:
+  If \(a>0\) and \(d=\dim H\), then pushing volume on \(B(0,R)\) forward by
+  \(z\mapsto az\) gives
+  \[
+    |a^d|^{-1}\,dz\big|_{B(0,aR)}.
+  \]
+proof:
+  The preimage of \(B(0,aR)\) is \(B(0,R)\).  Commute restriction with the
+  measurable dilation and use the global Haar-volume scaling formula.
+-/
 private theorem map_const_smul_restrict_ball_zero_eq_smul
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -356,6 +508,18 @@ private theorem map_const_smul_restrict_ball_zero_eq_smul
         MeasureTheory.volume.restrict (Metric.ball (0 : H) (a * R)) := by
             rfl
 
+/--
+%%handwave
+name:
+  Pulling an \(L^2\) function back by dilation on a ball
+statement:
+  If \(a>0\) and \(f\in L^2(B(0,aR))\), then
+  \(z\mapsto f(az)\) belongs to \(L^2(B(0,R))\).
+proof:
+  The pushforward of volume on \(B(0,R)\) is a finite scalar multiple of
+  volume on \(B(0,aR)\).  \(L^2\) membership is preserved under this finite
+  measure scaling and measurable pullback.
+-/
 theorem memLp_comp_const_smul_of_memLp_restrict_ball_zero
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -392,6 +556,17 @@ theorem memLp_comp_const_smul_of_memLp_restrict_ball_zero
     simpa [hmap] using hf.smul_measure hJ_ne_top
   simpa [T, Function.comp_def] using hf_map.comp_of_map hT_aemeas
 
+/--
+%%handwave
+name:
+  Pulling a global \(L^2\) function back by nonzero dilation
+statement:
+  If \(a\ne0\) and \(f\in L^2(H)\), then \(z\mapsto f(az)\) also belongs to
+  \(L^2(H)\).
+proof:
+  Dilation pushes Haar volume to a finite scalar multiple of itself.  Pull
+  the \(L^2\) function back through this measurable map.
+-/
 theorem memLp_comp_const_smul_of_memLp_volume
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -419,6 +594,18 @@ theorem memLp_comp_const_smul_of_memLp_volume
     simpa [hmap] using hf.smul_measure hJ_ne_top
   simpa [T, Function.comp_def] using hf_map.comp_of_map hT_aemeas
 
+/--
+%%handwave
+name:
+  Dilation is quasi-measure-preserving between balls
+statement:
+  If \(a>0\), the dilation \(z\mapsto az\) is quasi-measure-preserving from
+  \(B(0,R)\) to \(B(0,aR)\), each with restricted volume.
+proof:
+  Its pushforward measure is a scalar multiple of the target restricted
+  volume, and every scalar multiple is absolutely continuous with respect to
+  that measure.
+-/
 theorem quasiMeasurePreserving_const_smul_restrict_ball_zero
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -434,6 +621,19 @@ theorem quasiMeasurePreserving_const_smul_restrict_ball_zero
         (H := H) (a := a) (R := R) ha_pos]
     exact Measure.smul_absolutelyContinuous
 
+/--
+%%handwave
+name:
+  Translation invariance of weak derivatives
+statement:
+  If \(du\) is the weak derivative of \(u\) on \(\Omega\), then
+  \(z\mapsto du(z+c)\) is the weak derivative of \(z\mapsto u(z+c)\) on
+  \(\{z:z+c\in\Omega\}\).
+proof:
+  Translate a compactly supported test function by \(-c\), apply the original
+  weak integration-by-parts identity, and change variables using
+  translation invariance of volume.
+-/
 theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_add_right
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -513,6 +713,18 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_add_right
           exact Filter.Eventually.of_forall fun z ↦ by
             simp [right, T, sub_eq_add_neg, add_assoc]
 
+/--
+%%handwave
+name:
+  Integrability under nonzero dilation
+statement:
+  If \(a\ne0\) and \(f\) is integrable on \(s\), then
+  \(z\mapsto f(az)\) is integrable on the preimage of \(s\) under dilation.
+proof:
+  Dilation is a measurable embedding whose pushforward scales Haar volume by
+  a finite constant.  Change variables and use stability of integrability
+  under finite measure scaling.
+-/
 private theorem integrableOn_comp_const_smul_of_integrableOn
     {H F : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
@@ -2126,6 +2338,23 @@ theorem lipschitzOnWith_nhds_support_ACL_weak_test_integral_eq_fderiv_volume
         ∂MeasureTheory.volume := by
           simp [smul_eq_mul, mul_comm]
 
+/--
+%%handwave
+name:
+  Integration by parts for a locally Lipschitz function near a test support
+statement:
+  Let \(g\) be Lipschitz on a neighborhood of the closed support of a smooth
+  compactly supported test \(\varphi\).  Whenever both sides are integrable,
+  \[
+    \int_U D\varphi(z)v\,g(z)\,dz
+    =-\int_U \varphi(z)\,Dg(z)v\,dz.
+  \]
+proof:
+  Extend \(g\) to a globally Lipschitz function agreeing with it near the
+  test support.  The global ACL integration-by-parts formula applies to the
+  extension, while the support of \(\varphi\) and of its derivative makes all
+  integrands vanish where the extension may differ from \(g\).
+-/
 theorem lipschitzOnWith_nhds_support_ACL_weak_test_integral_eq_fderiv
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]

@@ -23,7 +23,20 @@ variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- The partition-of-unity Mayer--Vietoris connecting map is additive. -/
+/--
+%%handwave
+name:
+  Additivity of the de Rham Mayer–Vietoris connecting map
+statement:
+  For an open cover \(M=U\cup V\), the partition-of-unity connecting map
+  \(\delta:H^n_{\mathrm{dR}}(U\cap V)\to H^{n+1}_{\mathrm{dR}}(M)\) satisfies
+  \(\delta(\alpha+\beta)=\delta(\alpha)+\delta(\beta)\).
+proof:
+  Choose lift-and-glue data for representatives of \(\alpha\) and \(\beta\).
+  Adding the two lifts and the two glued closed forms gives valid data for
+  their sum.  The quotient map to cohomology is additive, yielding the
+  identity.
+-/
 theorem deRhamMayerVietorisConnectingOfPartitionOfUnity_add
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]
@@ -173,7 +186,18 @@ theorem deRhamMayerVietorisConnectingOfPartitionOfUnity_add
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- The partition-of-unity Mayer--Vietoris connecting map commutes with real scalars. -/
+/--
+%%handwave
+name:
+  Homogeneity of the de Rham Mayer–Vietoris connecting map
+statement:
+  For an open cover \(M=U\cup V\), the partition-of-unity connecting map
+  satisfies \(\delta(c\alpha)=c\,\delta(\alpha)\) for every \(c\in\mathbb R\).
+proof:
+  Scale the chosen lift-and-glue data for a representative of \(\alpha\) by
+  \(c\).  This gives valid connecting data for \(c\alpha\), and the quotient
+  map to de Rham cohomology respects scalar multiplication.
+-/
 theorem deRhamMayerVietorisConnectingOfPartitionOfUnity_smul
     (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
     [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]

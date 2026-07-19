@@ -28,6 +28,17 @@ def exteriorComponentCollarDepthPatch
   | false => {y | (y : X) ∈ W}
   | true => {y | (y : X) ∈ V}
 
+/--
+%%handwave
+name:
+  Openness of the two collar-depth patches
+statement:
+  In the open union \(W\cup V\) of a collar and a complementary component,
+  both the collar patch and the component patch are open.
+proof:
+  Each patch is the inverse image of the ambient open set \(W\) or \(V\)
+  under the continuous inclusion \(W\cup V\hookrightarrow X\).
+-/
 theorem isOpen_exteriorComponentCollarDepthPatch
     (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V)
     (b : Bool) :
@@ -52,6 +63,19 @@ noncomputable def exteriorComponentCollarDepthLocalMap
       { toFun := fun _ => 0
         continuous_toFun := continuous_const }
 
+/--
+%%handwave
+name:
+  Agreement of local collar-depth functions
+statement:
+  On the overlap of a side-preserving collar \(W\) with an exterior component
+  \(V\), the nonnegative inward depth \(\max\{-t,0\}\) agrees with the
+  constant zero function.
+proof:
+  Points of \(V\cap W\) lie on the exterior side, so their collar coordinate
+  satisfies \(t>0\).  Consequently \(-t\le0\), and its nonnegative part is
+  zero.
+-/
 theorem exteriorComponentCollarDepthLocalMap_agree
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -82,6 +106,17 @@ theorem exteriorComponentCollarDepthLocalMap_agree
     exact (Real.toNNReal_of_nonpos (neg_nonpos.mpr hpositive.le)).symm
   · rfl
 
+/--
+%%handwave
+name:
+  The collar and component patches form a neighborhood cover
+statement:
+  Every point of \(W\cup V\) has a neighborhood lying in either the collar
+  patch or the component patch.
+proof:
+  A point of the union lies in \(W\) or \(V\), and the corresponding patch is
+  open and hence a neighborhood of the point.
+-/
 theorem exteriorComponentCollarDepthPatch_cover
     (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V)
     (y : exteriorComponentCollarUnion W V hVopen) :
@@ -116,6 +151,21 @@ noncomputable def exteriorComponentCollarDepth
     (exteriorComponentCollarDepthPatch_cover W V
       (hV.isOpen_of_isOpen isClosed_closure.isOpen_compl))
 
+/--
+%%handwave
+name:
+  Formula for the glued depth on the collar
+statement:
+  At a point \(y\) of the collar, the globally glued nonnegative depth on
+  \(W\cup V\) is
+  \[
+    \max\{-t(y),0\},
+  \]
+  where \(t\) is the collar's transverse coordinate.
+proof:
+  Evaluate the function obtained by gluing the two local depth maps using the
+  collar member of the open cover.
+-/
 theorem exteriorComponentCollarDepth_apply_of_mem_collar
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -155,6 +205,17 @@ noncomputable def exteriorComponentCollarNegativeRay
       Or.inl (phi.symm (v, -(s : ℝ))).2⟩
   continuous_toFun := by fun_prop
 
+/--
+%%handwave
+name:
+  Depth along the inward radial collar ray
+statement:
+  Along the ray \(s\mapsto\phi^{-1}(v,-s)\), \(s\ge0\), the glued collar depth
+  is exactly \(s\).
+proof:
+  Substitute the collar coordinate \(t=-s\) into the depth formula; the
+  nonnegative part of \(-t=s\) is \(s\).
+-/
 theorem exteriorComponentCollarDepth_negativeRay
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -173,8 +234,18 @@ theorem exteriorComponentCollarDepth_negativeRay
     rw [phi.apply_symm_apply]
     simp
 
-/-- The inward radial collar ray is proper in the union of the collar and the
-exterior component. -/
+/--
+%%handwave
+name:
+  Properness of the inward radial collar ray
+statement:
+  The map \([0,\infty)\to W\cup V\) given by
+  \(s\mapsto\phi^{-1}(v,-s)\) is proper.
+proof:
+  The continuous depth function on \(W\cup V\) restricts to the identity
+  along this ray.  For a compact set \(C\), the preimage under the ray is a
+  closed subset of the compact depth image of \(C\), and is therefore compact.
+-/
 theorem isProperMap_exteriorComponentCollarNegativeRay
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -224,6 +295,19 @@ noncomputable def exteriorProperRayInCollarUnion
     Continuous.subtype_mk r.continuous
       (fun t => Or.inr (hrange ⟨t, rfl⟩))
 
+/--
+%%handwave
+name:
+  A proper exterior ray remains proper in the collar union
+statement:
+  If a proper ray in \(X\) has image contained in an exterior component
+  \(V\), then regarding it as a ray in the open subspace \(W\cup V\) preserves
+  properness.
+proof:
+  The ambient image of a compact subset of \(W\cup V\) is compact in \(X\).
+  Its preimage under the original proper ray is compact, and the preimage in
+  the subspace-valued ray is a closed subset of it.
+-/
 theorem isProperMap_exteriorProperRayInCollarUnion
     (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V)
     (r : C(NNReal, X)) (hrange : Set.range r ⊆ V)
@@ -246,9 +330,27 @@ theorem isProperMap_exteriorProperRayInCollarUnion
   intro t ht
   exact ⟨exteriorProperRayInCollarUnion W V hVopen r hrange t, ht, rfl⟩
 
-/-- An incident exterior component supplies a proper continuous line through
-the collar union: one end runs inward through the collar, while the other
-runs to infinity inside the exterior component. -/
+/--
+%%handwave
+name:
+  A proper line through an exterior-component collar with prescribed negative ray
+statement:
+  Let \(V\) be an exterior component incident to a side-preserving annular
+  collar \(W\) at \(p\).  There is a proper line
+  \(\ell:\mathbb R\to W\cup V\) such that for \(t\le0\),
+  \[
+    \ell(t)=\phi^{-1}(v,t),
+    \qquad v=\operatorname{pr}_1\phi(p),
+  \]
+  expressed as the inward nonnegative collar ray at parameter \(-t\).
+proof:
+  Choose a proper ray escaping inside \(V\).  Connect its initial point to the
+  outward collar point \(\phi^{-1}(v,1)\) by a path in \(V\), and connect that
+  point radially to the boundary point of the inward collar ray.  Prepend this
+  compact connector to the exterior ray, then glue it to the inward proper
+  ray.  The two-ray gluing theorem gives a proper line and preserves the
+  prescribed negative half.
+-/
 theorem IsExteriorComponent.exists_proper_line_in_collarUnion_with_negativeRay
     (E : SmoothRelativelyCompactExhaustion X)
     (D : SmoothBoundaryDomain X)
@@ -339,8 +441,17 @@ theorem IsExteriorComponent.exists_proper_line_in_collarUnion_with_negativeRay
   intro t ht
   simp [line, twoRaysLine, ht, rneg, v]
 
-/-- An incident exterior component supplies a proper continuous line through
-the collar union. -/
+/--
+%%handwave
+name:
+  Existence of a proper line through an exterior-component collar
+statement:
+  An exterior component incident to a side-preserving annular collar admits a
+  proper continuous line \(\mathbb R\to W\cup V\).
+proof:
+  Use the proper line whose negative half is the inward radial collar ray and
+  discard the additional formula for that half.
+-/
 theorem IsExteriorComponent.exists_proper_line_in_collarUnion
     (E : SmoothRelativelyCompactExhaustion X)
     (D : SmoothBoundaryDomain X)

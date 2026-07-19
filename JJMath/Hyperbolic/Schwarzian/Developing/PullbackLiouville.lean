@@ -94,6 +94,14 @@ def conformalFactor
   pullbackConformalFactorFromLogDensity N P.logDensity
     P.logDensity_contDiffOn P.twice_differentiable_on_domain
 
+/--
+%%handwave
+name: Domain of the explicit pullback conformal factor
+statement:
+  The conformal factor assembled from pullback formula data on a normalized branch has coordinate domain equal to the normalization domain.
+proof:
+  This is immediate from the definition of the assembled conformal factor.
+-/
 @[simp]
 theorem conformalFactor_coordinateDomain
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -103,6 +111,14 @@ theorem conformalFactor_coordinateDomain
     P.conformalFactor.coordinateDomain = N.domain :=
   rfl
 
+/--
+%%handwave
+name: Logarithmic density of the explicit pullback conformal factor
+statement:
+  The conformal factor assembled from explicit pullback formula data has the prescribed logarithmic density.
+proof:
+  This is immediate from the definition of the assembled conformal factor.
+-/
 @[simp]
 theorem conformalFactor_logDensity
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -113,8 +129,12 @@ theorem conformalFactor_logDensity
   rfl
 
 /--
-The explicit formula package identifies the pullback conformal factor's base
-first Frechet-Wirtinger derivative with the original conformal factor.
+%%handwave
+name: Base Wirtinger derivative of an explicit pullback factor
+statement:
+  Let $u$ be a local conformal factor, let $F$ be a normalized upper-half-plane branch based at $z_0$, and let $v$ be explicit pullback formula data whose prescribed base derivative is the normalized two-jet. Then the conformal factor with logarithmic density $v$ satisfies $\partial_z v(z_0)=\partial_z u(z_0)$.
+proof:
+  The formula data identify $\partial_z v(z_0)$ with the derivative component of the normalized two-jet, while normalization identifies that component with $\partial_z u(z_0)$.
 -/
 theorem conformalFactor_wirtingerZ_base_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -190,8 +210,12 @@ structure LocalHyperbolicCanonicalPullbackLiouvilleFormulaData
 namespace LocalHyperbolicCanonicalPullbackLiouvilleFormulaData
 
 /--
-Branch smoothness gives smoothness of the canonical pullback logarithmic
-density.
+%%handwave
+name: Smoothness of the canonical pullback logarithmic density
+statement:
+  If a normalized upper-half-plane branch $F$ and its derivative $F'$ are $C^3$ on a domain $\Omega$, then $v=\frac12\log\bigl(|F'|^2/(\operatorname{Im}F)^2\bigr)$ is $C^3$ on $\Omega$.
+proof:
+  Apply the smoothness theorem for the logarithm of the Poincare pullback density to the given $C^3$ branch and derivative.
 -/
 theorem logDensity_contDiffOn
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -203,8 +227,12 @@ theorem logDensity_contDiffOn
     P.upperHalfPlaneMap_contDiffOn P.affineMapDeriv_contDiffOn
 
 /--
-The canonical Laplacian calculation plus the already-proved squared-density
-identity gives the hyperbolic Liouville equation.
+%%handwave
+name: Liouville equation for the canonical pullback density
+statement:
+  Let $F:\Omega\to\mathbb H$ be a normalized branch and set $v=\frac12\log\bigl(|F'|^2/(\operatorname{Im}F)^2\bigr)$. If $\Delta v=|F'|^2/(\operatorname{Im}F)^2$ on $\Omega$, then $\Delta v=e^{2v}$ on $\Omega$.
+proof:
+  Substitute the assumed Laplacian identity and use the canonical identity $e^{2v}=|F'|^2/(\operatorname{Im}F)^2$.
 -/
 theorem solvesLiouville
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -219,7 +247,12 @@ theorem solvesLiouville
   exact (N.exp_two_pullbackLogDensity_eq_pullbackDensitySq hz).symm
 
 /--
-The derivative of the derivative branch gives numerator differentiability.
+%%handwave
+name: Differentiability of the pullback numerator at the base point
+statement:
+  If the derivative branch $F'$ has complex derivative $F''(z_0)$ at $z_0$, then the real-valued function $z\mapsto |F'(z)|^2$ is real differentiable at $z_0$.
+proof:
+  Complex differentiability of $F'$ implies real differentiability, and the squared norm is a real-differentiable polynomial in the real and imaginary parts.
 -/
 theorem numerator_differentiableAt_base
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -232,7 +265,12 @@ theorem numerator_differentiableAt_base
     P.affineMapDeriv_hasDerivAt_base
 
 /--
-The derivative of the derivative branch gives the numerator derivative formula.
+%%handwave
+name: Wirtinger derivative of the pullback numerator at the base point
+statement:
+  For a normalized branch with $(F')'(z_0)=F''(z_0)$ and positive real $F'(z_0)$, one has $\partial_z|F'|^2(z_0)=|F'(z_0)|^2F''(z_0)/F'(z_0)$.
+proof:
+  Apply the squared-norm Wirtinger derivative formula to the genuine derivative of $F'$, then use that the normalized value $F'(z_0)$ is positive real.
 -/
 theorem numerator_base_derivative_formula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -244,8 +282,12 @@ theorem numerator_base_derivative_formula
     P.affineMapDeriv_hasDerivAt_base
 
 /--
-The derivative of the upper-half-plane branch gives denominator
-differentiability.
+%%handwave
+name: Differentiability of the pullback denominator at the base point
+statement:
+  If an upper-half-plane branch $F$ has complex derivative $F'(z_0)$ at $z_0$, then $z\mapsto(\operatorname{Im}F(z))^2$ is real differentiable at $z_0$.
+proof:
+  The imaginary-part map and squaring are real differentiable, so the claim follows by composition with the real-differentiable map $F$.
 -/
 theorem denominator_differentiableAt_base
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -258,8 +300,12 @@ theorem denominator_differentiableAt_base
     P.upperHalfPlaneMap_hasDerivAt_base
 
 /--
-The derivative of the upper-half-plane branch gives the denominator derivative
-formula.
+%%handwave
+name: Wirtinger derivative of the pullback denominator at the base point
+statement:
+  For a normalized branch satisfying $F(z_0)=i$ and $F'(z_0)$ equal to its prescribed complex derivative, $\partial_z(\operatorname{Im}F)^2(z_0)=-iF'(z_0)$.
+proof:
+  Differentiate the squared imaginary part by the Wirtinger chain rule and substitute $\operatorname{Im}F(z_0)=1$.
 -/
 theorem denominator_base_derivative_formula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -271,8 +317,12 @@ theorem denominator_base_derivative_formula
     P.upperHalfPlaneMap_hasDerivAt_base
 
 /--
-The numerator and denominator derivative formulas give the full
-squared-density derivative formula.
+%%handwave
+name: Base derivative of the Poincare pullback squared density
+statement:
+  For $\rho=|F'|^2/(\operatorname{Im}F)^2$ at a normalized base point $F(z_0)=i$, the branch derivative hypotheses imply $\partial_z\rho(z_0)=\rho(z_0)\bigl(F''(z_0)/F'(z_0)+iF'(z_0)\bigr)$.
+proof:
+  Apply the quotient rule to the established numerator and denominator derivatives, using their differentiability and the positivity of $(\operatorname{Im}F(z_0))^2$.
 -/
 theorem densitySq_base_derivative_formula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -287,8 +337,12 @@ theorem densitySq_base_derivative_formula
     P.denominator_base_derivative_formula
 
 /--
-The numerator and denominator differentiability facts give differentiability of
-the pullback squared density at the base point.
+%%handwave
+name: Differentiability of the Poincare pullback squared density
+statement:
+  If $|F'|^2$ and $(\operatorname{Im}F)^2$ are real differentiable at $z_0$ and $F(z_0)\in\mathbb H$, then $\rho=|F'|^2/(\operatorname{Im}F)^2$ is real differentiable at $z_0$.
+proof:
+  The denominator is positive at an upper-half-plane value, hence nonzero; differentiability follows from the product and reciprocal rules.
 -/
 theorem densitySq_differentiableAt_base
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -306,8 +360,12 @@ theorem densitySq_differentiableAt_base
         (N.upperHalfPlaneMap_im_sq_pos z₀).ne')
 
 /--
-The squared-density base derivative formula gives the logarithmic base
-derivative formula.
+%%handwave
+name: Base derivative of the canonical pullback logarithmic density
+statement:
+  Let $v=\frac12\log\rho$, where $\rho=|F'|^2/(\operatorname{Im}F)^2$. At a normalized base point, the squared-density derivative formula implies $\partial_zv(z_0)=\frac12\bigl(F''(z_0)/F'(z_0)+iF'(z_0)\bigr)$.
+proof:
+  Differentiate $v=\frac12\log\rho$, use positivity of $\rho(z_0)$, and substitute the established formula for $\partial_z\rho(z_0)$.
 -/
 theorem base_derivative_formula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -319,7 +377,12 @@ theorem base_derivative_formula
     P.densitySq_differentiableAt_base P.densitySq_base_derivative_formula
 
 /--
-The canonical base derivative formula gives the concrete base `u_z` equality.
+%%handwave
+name: Canonical pullback derivative equals the normalized jet
+statement:
+  At the normalized base point $z_0$, the canonical pullback logarithmic density satisfies $\partial_zv(z_0)=u_z^{\mathrm{jet}}$, the derivative prescribed by the hyperbolic two-jet.
+proof:
+  Substitute the base derivative formula $\partial_zv(z_0)=\frac12(F''/F'+iF')$ and use the defining algebraic identity for the normalized hyperbolic two-jet.
 -/
 theorem base_uZ_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -330,8 +393,12 @@ theorem base_uZ_eq
   N.pullbackLogDensity_base_uZ_eq_of_derivativeFormula P.base_derivative_formula
 
 /--
-The canonical pullback logarithmic density has the same base first
-Frechet-Wirtinger derivative as the original conformal factor.
+%%handwave
+name: Canonical pullback and original factors have the same base derivative
+statement:
+  If $v$ is the canonical Poincare pullback logarithmic density determined by a normalized two-jet for $u$ at $z_0$, then $\partial_zv(z_0)=\partial_zu(z_0)$.
+proof:
+  The base derivative of $v$ equals the derivative component of the normalized two-jet, and that component was chosen to equal $\partial_zu(z_0)$.
 -/
 theorem base_wirtingerZ_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -376,9 +443,12 @@ def toFormulaData
     P.base_uZ_eq
 
 /--
-After forgetting to the older explicit formula package, the induced pullback
-conformal factor has the same base first Frechet-Wirtinger derivative as the
-original conformal factor.
+%%handwave
+name: Base derivative survives passage to explicit pullback data
+statement:
+  Forgetting the canonical presentation of a Poincare pullback factor does not change its logarithmic density; the resulting conformal factor therefore still satisfies $\partial_zv(z_0)=\partial_zu(z_0)$.
+proof:
+  Expand the forgetful construction and apply the canonical base-derivative equality.
 -/
 theorem toFormulaData_conformalFactor_wirtingerZ_base_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -393,9 +463,12 @@ theorem toFormulaData_conformalFactor_wirtingerZ_base_eq
     using P.base_wirtingerZ_eq
 
 /--
-The canonical pullback formula package exposes the metric Schwarzian
-compatibility as an equality for the conformal factor obtained after forgetting
-to `LocalHyperbolicPullbackLiouvilleFormulaData`.
+%%handwave
+name: Schwarzian compatibility of the forgotten canonical pullback factor
+statement:
+  Let $S$ be the prescribed Schwarzian coefficient and let $v$ be the canonical Poincare pullback logarithmic density on $\Omega$. After forgetting the canonical presentation, the metric Schwarzian of $v$ still equals $S(z)$ for every $z\in\Omega$.
+proof:
+  The forgetful construction leaves the pullback conformal factor unchanged, so the conclusion is exactly the Schwarzian-compatibility assumption of the canonical formula data.
 -/
 theorem toFormulaData_metricSchwarzian_eq_coefficient
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -418,8 +491,12 @@ end LocalHyperbolicCanonicalPullbackLiouvilleFormulaData
 namespace LocalHyperbolicTwoJetUpperHalfPlaneNormalization
 
 /--
-The mixed-Wirtinger Poincare calculation implies the real Laplacian identity
-for the canonical pullback logarithmic density.
+%%handwave
+name: Real Laplacian identity from the mixed Wirtinger formula
+statement:
+  Let $v=\frac12\log\bigl(|F'|^2/(\operatorname{Im}F)^2\bigr)$ on $\Omega$. If $\partial_{\bar z}\partial_zv=\frac14|F'|^2/(\operatorname{Im}F)^2$ on $\Omega$, then $\Delta v=|F'|^2/(\operatorname{Im}F)^2$ there.
+proof:
+  For a twice differentiable real-valued function, $\partial_{\bar z}\partial_zv=\frac14\Delta v$. Equate this with the assumed mixed Wirtinger formula, cancel the nonzero scalar $1/4$ in $\mathbb C$, and use injectivity of the real embedding.
 -/
 theorem laplacian_eq_pullbackDensitySq_of_mixedWirtingerLaplacianFormula
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2059,8 +2136,12 @@ def ofFormulaData
   base_uZ_eq := P.conformalFactor_wirtingerZ_base_eq
 
 /--
-The pullback candidate obtained from canonical formula data has the stored
-metric Schwarzian coefficient `S.coefficient`.
+%%handwave
+name: Schwarzian coefficient of the canonical pullback candidate
+statement:
+  Let $S$ be a prescribed Schwarzian coefficient on $\Omega$ and let $v$ be the canonical Poincare pullback logarithmic density packaged as a Liouville candidate. Then the metric Schwarzian of $v$ equals $S(z)$ for every $z\in\Omega$.
+proof:
+  Unpack the candidate and apply the Schwarzian compatibility of the canonical pullback formula.
 -/
 theorem ofCanonicalFormulaData_metricSchwarzian_eq_coefficient
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2077,9 +2158,12 @@ theorem ofCanonicalFormulaData_metricSchwarzian_eq_coefficient
     P.toFormulaData_metricSchwarzian_eq_coefficient z hz
 
 /--
-If the original Schwarzian data are identified with the metric Schwarzian of
-`u`, then the canonical pullback candidate has the same metric Schwarzian
-coefficient as `u`.
+%%handwave
+name: Equality of the original and pullback metric Schwarzians
+statement:
+  Let $u$ be a local conformal factor and $v$ its canonical Poincare pullback candidate on $\Omega$. If a coefficient $S$ equals the metric Schwarzian of $u$ on $\Omega$ and the metric Schwarzian of $v$ equals $S$, then the metric Schwarzians of $u$ and $v$ agree pointwise on $\Omega$.
+proof:
+  At each point, identify the metric Schwarzian of $v$ with $S$ and then use the assumed identification of $S$ with the metric Schwarzian of $u$.
 -/
 theorem ofCanonicalFormulaData_same_metricSchwarzian_of_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2107,7 +2191,14 @@ theorem ofCanonicalFormulaData_same_metricSchwarzian_of_original
     _ = LocalSchwarzianData.metricSchwarzianCoefficient
         u.halfSchwarzianCoefficient z := hOriginal z hz
 
-/-- Equality of log-densities implies equality of squared conformal densities. -/
+/--
+%%handwave
+name: Equal logarithmic densities give equal squared densities
+statement:
+  If two conformal logarithmic densities satisfy $u(z)=v(z)$ at a point $z$, then their squared densities satisfy $e^{2u(z)}=e^{2v(z)}$.
+proof:
+  Substitute the equality into the definition of squared conformal density.
+-/
 theorem densitySq_eq_of_logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2119,8 +2210,12 @@ theorem densitySq_eq_of_logDensity_eq
   simp [LocalConformalFactor.densitySq, hEq]
 
 /--
-Equality of squared densities at the base point gives equality of
-log-densities there.
+%%handwave
+name: Equal positive squared densities give equal logarithmic densities
+statement:
+  If two conformal factors have equal squared densities at $z_0$, then their logarithmic densities agree at $z_0$.
+proof:
+  The hypothesis is $e^{2v(z_0)}=e^{2u(z_0)}$. Injectivity of the real exponential gives $2v(z_0)=2u(z_0)$, and cancellation of $2$ yields the claim.
 -/
 theorem base_logDensity_eq
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2138,7 +2233,14 @@ theorem base_logDensity_eq
     Real.exp_injective hExp
   linarith
 
-/-- The candidate density formula rewritten with the original factor on the left. -/
+/--
+%%handwave
+name: Recovery of the original density from a pullback candidate
+statement:
+  Let $F:\Omega\to\mathbb H$ be a normalized branch and let $v$ be a pullback Liouville candidate satisfying $e^{2v}=|F'|^2/(\operatorname{Im}F)^2$. If $e^{2u(z)}=e^{2v(z)}$ at $z\in\Omega$, then $e^{2u(z)}=|F'(z)|^2/(\operatorname{Im}F(z))^2$.
+proof:
+  Replace the original squared density by the candidate squared density and apply the candidate's Poincare pullback formula.
+-/
 theorem pullback_eq_densitySq_of_eq_original
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2208,7 +2310,14 @@ def toLocalProjectiveDevelopingMap
     LocalProjectiveDevelopingMap S :=
   N.normalized.toLocalProjectiveDevelopingMap
 
-/-- The normalized upper-half-plane map recovers the conformal factor. -/
+/--
+%%handwave
+name: Density formula for a metric-recovering normalization
+statement:
+  If $F:\Omega\to\mathbb H$ is a metric-recovering normalized branch for a conformal factor $u$, then $e^{2u(z)}=|F'(z)|^2/(\operatorname{Im}F(z))^2$ for every $z\in\Omega$.
+proof:
+  This is the Poincare pullback identity stored by the normalized metric-recovering branch.
+-/
 theorem densitySq_eq_pullback
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S}
@@ -2231,8 +2340,12 @@ def HasRealMobiusTransition
   N₁.normalized.HasRealMobiusTransition N₂.normalized
 
 /--
-The local uniqueness theorem for metric-recovering upper-half-plane branches,
-applied to two chosen metric-recovering normalizations.
+%%handwave
+name: Real Mobius transition between metric-recovering normalizations
+statement:
+  Let $u$ solve the Liouville equation, and let $F_1,F_2$ be two metric-recovering normalized upper-half-plane branches whose domains have preconnected intersection. If metric-recovering branches are unique up to real Mobius postcomposition on such overlaps, then $F_1$ and $F_2$ differ by a real Mobius transformation there.
+proof:
+  Apply the branch-level uniqueness theorem directly to the two normalized branches and their preconnected overlap.
 -/
 theorem hasRealMobiusTransition_of_branches
     (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem)

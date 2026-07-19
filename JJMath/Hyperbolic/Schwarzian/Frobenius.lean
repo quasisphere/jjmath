@@ -70,7 +70,23 @@ structure SchwarzianLinearODEFrame (q : ℂ → ℂ) (U : Set ℂ) where
 
 namespace SchwarzianLinearODEFrame
 
-/-- The Schwarzian of the ratio of two linear ODE solutions is the coefficient `q`. -/
+/--
+%%handwave
+name:
+  Schwarzian from the quotient identities and the denominator equation
+statement:
+  Let \(y_0\) and \(W\) be nonvanishing on \(V\), suppose
+  \(y_0''=-\tfrac12Qy_0\), and let the prescribed derivatives of a function
+  \(f\) satisfy
+  \(f'=W/y_0^2\), \(f''=-2Wy_0'/y_0^3\), and
+  \(f'''=-2Wy_0''/y_0^3+6W(y_0')^2/y_0^4\). Then their symbolic Schwarzian
+  satisfies \(\{f,z\}=Q(z)\) throughout \(V\).
+proof:
+  Substitute \(f'=W/y_0^2\), \(f''=-2Wy_0'/y_0^3\), and
+  \(f'''=-2Wy_0''/y_0^3+6W(y_0')^2/y_0^4\) into the Schwarzian expression.
+  The quadratic terms cancel, and the differential equation gives
+  \(-2y_0''/y_0=Q\).
+-/
 theorem schwarzianExpression_eq_coefficient
     {q : ℂ → ℂ} {U : Set ℂ} (F : SchwarzianLinearODEFrame q U) :
     ∀ z, z ∈ U →
@@ -85,7 +101,18 @@ theorem schwarzianExpression_eq_coefficient
   field_simp [hy, hW]
   ring
 
-/-- The first derivative of the developing ratio is nonzero on the frame domain. -/
+/--
+%%handwave
+name:
+  Nonvanishing of the prescribed first quotient derivative
+statement:
+  If \(y_0\) and \(W\) are nonzero throughout \(V\) and the prescribed first
+  derivative of \(f\) is \(f'=W/y_0^2\), then \(f'\) is nonzero throughout
+  \(V\).
+proof:
+  The quotient \(W/y_0^2\) is a quotient of two nonzero complex numbers at
+  every point of \(V\).
+-/
 theorem localMapDeriv_ne_zero
     {q : ℂ → ℂ} {U : Set ℂ} (F : SchwarzianLinearODEFrame q U) :
     ∀ z, z ∈ U → F.localMapDeriv z ≠ 0 := by
@@ -193,18 +220,19 @@ def toSchwarzianLinearODEFrame {q : ℂ → ℂ} {U : Set ℂ}
 /--
 %%handwave
 name:
-  Schwarzian of a ratio of ODE solutions
+  Symbolic Schwarzian of a ratio satisfying the linear ODE identities
 statement:
-  Let $Q$ be a complex function on $V$, and let $y_0,y_1$ solve
-  $y''+\tfrac12Qy=0$. Wherever $y_0$ and the Wronskian
-  $W=y_1'y_0-y_1y_0'$ are nonzero, the quotient $f=y_1/y_0$ has Schwarzian
-  derivative $\{f,z\}=Q$.
+  Let \(y_0,y_1\), together with prescribed first and second derivatives,
+  satisfy the pointwise identities \(y_j''+\tfrac12Qy_j=0\) on \(V\).
+  Wherever \(y_0\) and \(W=y_1'y_0-y_1y_0'\) are nonzero, the canonical
+  quotient-derivative expressions for \(f=y_1/y_0\) have symbolic Schwarzian
+  \(\{f,z\}=Q\).
 proof:
-  The quotient rule gives $f'=W/y_0^2$,
-  $f''=-2Wy_0'/y_0^3$, and
-  $f'''=-2Wy_0''/y_0^3+6W(y_0')^2/y_0^4$. Substitution into
-  $\{f,z\}=f'''/f'-\tfrac32(f''/f')^2$ leaves
-  $-2y_0''/y_0=Q$.
+  The canonical expressions are \(f'=W/y_0^2\),
+  \(f''=-2Wy_0'/y_0^3\), and
+  \(f'''=-2Wy_0''/y_0^3+6W(y_0')^2/y_0^4\). Substitution into
+  \(\{f,z\}=f'''/f'-\tfrac32(f''/f')^2\) leaves
+  \(-2y_0''/y_0=Q\).
 tags:
   milestone
 -/
@@ -216,8 +244,17 @@ theorem schwarzianExpression_eq_coefficient
   P.toSchwarzianLinearODEFrame.schwarzianExpression_eq_coefficient
 
 /--
-For two solutions of the same linear Schwarzian ODE, the Wronskian has zero
-derivative.
+%%handwave
+name:
+  Vanishing derivative of the Wronskian
+statement:
+  If \(y_0\) and \(y_1\) are twice complex differentiable at \(z\) and both satisfy
+  \(y''+\tfrac12Qy=0\) there, then the derivative at \(z\) of
+  \(W=y_1'y_0-y_1y_0'\) is zero.
+proof:
+  Differentiate the two products. The mixed terms cancel, leaving
+  \(W'=y_1''y_0-y_1y_0''\), which vanishes after substituting the two copies of
+  the differential equation.
 -/
 theorem wronskian_hasDerivAt_zero
     {q : ℂ → ℂ} {U : Set ℂ} (P : SchwarzianLinearODESolutionPair q U)
@@ -254,8 +291,17 @@ theorem wronskian_hasDerivAt_zero
   ring
 
 /--
-The canonical first quotient derivative `W/y₀²` has derivative
-`-2Wy₀'/y₀³`.
+%%handwave
+name:
+  Derivative of the first quotient expression
+statement:
+  At a point \(z\in V\) where the prescribed first and second derivatives of
+  the two solutions are their actual complex derivatives, the derivative of
+  \(W/y_0^2\) is
+  \(-2Wy_0'/y_0^3\).
+proof:
+  The Wronskian has derivative zero. Apply the quotient rule to \(W/y_0^2\) and
+  use \(y_0(z)\ne0\) to simplify the resulting expression.
 -/
 theorem localMapDeriv_hasDerivAt
     {q : ℂ → ℂ} {U : Set ℂ} (P : SchwarzianLinearODESolutionPair q U)
@@ -296,8 +342,18 @@ theorem localMapDeriv_hasDerivAt
 set_option maxHeartbeats 800000
 
 /--
-The canonical second quotient derivative `-2Wy₀'/y₀³` has derivative the stored
-third quotient derivative.
+%%handwave
+name:
+  Derivative of the second quotient expression
+statement:
+  At a point \(z\in V\) where the prescribed first and second derivatives of
+  the two solutions are their actual complex derivatives, the derivative of
+  \(-2Wy_0'/y_0^3\) is
+  \(-2Wy_0''/y_0^3+6W(y_0')^2/y_0^4\).
+proof:
+  Differentiate the numerator and denominator, using \(W'=0\), and apply the
+  quotient rule. Since \(y_0(z)\ne0\), collecting powers of \(y_0\) gives the
+  stated formula.
 -/
 theorem localMapSecondDeriv_hasDerivAt
     {q : ℂ → ℂ} {U : Set ℂ} (P : SchwarzianLinearODESolutionPair q U)
@@ -378,7 +434,17 @@ structure NormalizedSchwarzianLinearODESolutionPair
 
 namespace NormalizedSchwarzianLinearODESolutionPair
 
-/-- The normalized solution pair has Wronskian `1` at the basepoint. -/
+/--
+%%handwave
+name:
+  Wronskian of the normalized solution pair
+statement:
+  If \(y_0(z_0)=1\), \(y_0'(z_0)=0\), \(y_1(z_0)=0\), and \(y_1'(z_0)=1\), then
+  \(W(z_0)=1\).
+proof:
+  Substitute the four initial values into
+  \(W=y_1'y_0-y_1y_0'\).
+-/
 theorem wronskian_base
     {q : ℂ → ℂ} {U : Set ℂ} {z₀ : ℂ}
     (P : NormalizedSchwarzianLinearODESolutionPair q U z₀) :
@@ -427,8 +493,15 @@ def nextSchwarzianFrobeniusCoefficient (a b : ℕ → ℂ) (n : ℕ) : ℂ :=
     (((n + 2 : ℕ) : ℂ) * ((n + 1 : ℕ) : ℂ))
 
 /--
-The product coefficient only depends on the coefficients of the second factor
-up to degree `n`.
+%%handwave
+name:
+  Dependence of a product coefficient on lower coefficients
+statement:
+  Let \(a,b,c:\mathbb N\to\mathbb C\). If \(b_m=c_m\) for every \(m\le n\), then
+  \(\sum_{k=0}^n a_kb_{n-k}=\sum_{k=0}^n a_kc_{n-k}\).
+proof:
+  For each \(0\le k\le n\), the index \(n-k\) is at most \(n\), so the corresponding
+  summands are equal. Sum these equalities.
 -/
 theorem powerSeriesCoeffProduct_congr_of_eq_on_le
     {a b c : ℕ → ℂ} {n : ℕ}
@@ -440,8 +513,16 @@ theorem powerSeriesCoeffProduct_congr_of_eq_on_le
   rw [h (n - k) (Nat.sub_le n k)]
 
 /--
-The next Frobenius coefficient only depends on the previously constructed
-coefficients `b_0, ..., b_n`.
+%%handwave
+name:
+  Dependence of the next Frobenius coefficient
+statement:
+  If \(b_m=c_m\) for every \(m\le n\), then the next coefficients prescribed by
+  the equation \(y''+\tfrac12Qy=0\) from \(a\) and either \(b\) or \(c\) are equal.
+proof:
+  The two formulas have the same denominator and their numerators are the
+  equal product coefficients \(\sum_{k=0}^n a_kb_{n-k}\) and
+  \(\sum_{k=0}^n a_kc_{n-k}\).
 -/
 theorem nextSchwarzianFrobeniusCoefficient_congr_of_eq_on_le
     {a b c : ℕ → ℂ} {n : ℕ}
@@ -491,17 +572,46 @@ termination_by m => m
 decreasing_by
   exact _h
 
-/-- The normalized Frobenius sequence has constant coefficient `1`. -/
+/--
+%%handwave
+name:
+  Constant normalized Frobenius coefficient
+statement:
+  The recursively defined normalized solution of \(y''+\tfrac12Qy=0\) has
+  constant coefficient \(b_0=1\).
+proof:
+  This is the constant initial condition in the recursive definition.
+-/
 theorem schwarzianFrobeniusCoefficients_zero (a : ℕ → ℂ) :
     schwarzianFrobeniusCoefficients a 0 = 1 := by
   simp [schwarzianFrobeniusCoefficients]
 
-/-- The normalized Frobenius sequence has linear coefficient `0`. -/
+/--
+%%handwave
+name:
+  Linear normalized Frobenius coefficient
+statement:
+  The recursively defined normalized solution of \(y''+\tfrac12Qy=0\) has
+  linear coefficient \(b_1=0\).
+proof:
+  This is the linear initial condition in the recursive definition.
+-/
 theorem schwarzianFrobeniusCoefficients_one (a : ℕ → ℂ) :
     schwarzianFrobeniusCoefficients a 1 = 0 := by
   simp [schwarzianFrobeniusCoefficients]
 
-/-- The normalized Frobenius coefficients satisfy the intended recurrence. -/
+/--
+%%handwave
+name:
+  Recurrence for the normalized Frobenius coefficients
+statement:
+  For every \(n\ge0\), the normalized coefficients satisfy
+  \(b_{n+2}=-\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n a_kb_{n-k}\).
+proof:
+  By the recursive clause at \(n+2\), the truncated auxiliary sequence
+  agrees with \(b\) through degree \(n\), which is all that the convolution for
+  the next coefficient uses.
+-/
 theorem schwarzianFrobeniusCoefficients_succ_succ (a : ℕ → ℂ) (n : ℕ) :
     schwarzianFrobeniusCoefficients a (n + 2) =
       nextSchwarzianFrobeniusCoefficient a (schwarzianFrobeniusCoefficients a) n := by
@@ -511,19 +621,48 @@ theorem schwarzianFrobeniusCoefficients_succ_succ (a : ℕ → ℂ) (n : ℕ) :
   have hlt : m < n + 2 := by omega
   simp [hlt]
 
-/-- The arbitrary-initial-data Frobenius sequence has constant coefficient `b₀`. -/
+/--
+%%handwave
+name:
+  Constant Frobenius coefficient with prescribed initial data
+statement:
+  The recursively defined solution with initial coefficients \(b_0,b_1\) has
+  constant coefficient \(b_0\).
+proof:
+  This is the constant initial clause of the recursive definition.
+-/
 theorem schwarzianFrobeniusCoefficientsWithInitial_zero
     (a : ℕ → ℂ) (b₀ b₁ : ℂ) :
     schwarzianFrobeniusCoefficientsWithInitial a b₀ b₁ 0 = b₀ := by
   simp [schwarzianFrobeniusCoefficientsWithInitial]
 
-/-- The arbitrary-initial-data Frobenius sequence has linear coefficient `b₁`. -/
+/--
+%%handwave
+name:
+  Linear Frobenius coefficient with prescribed initial data
+statement:
+  The recursively defined solution with initial coefficients \(b_0,b_1\) has
+  linear coefficient \(b_1\).
+proof:
+  This is the linear initial clause of the recursive definition.
+-/
 theorem schwarzianFrobeniusCoefficientsWithInitial_one
     (a : ℕ → ℂ) (b₀ b₁ : ℂ) :
     schwarzianFrobeniusCoefficientsWithInitial a b₀ b₁ 1 = b₁ := by
   simp [schwarzianFrobeniusCoefficientsWithInitial]
 
-/-- The arbitrary-initial-data Frobenius coefficients satisfy the recurrence. -/
+/--
+%%handwave
+name:
+  Frobenius recurrence with prescribed initial data
+statement:
+  For every \(n\ge0\), the coefficients with arbitrary initial data satisfy
+  \(b_{n+2}=-\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n a_kb_{n-k}\).
+proof:
+  By the recursive clause at \(n+2\), the auxiliary truncated sequence
+  agrees with the constructed sequence through degree \(n\), so the next
+  coefficient is unchanged when the full sequence is substituted.
+-/
 theorem schwarzianFrobeniusCoefficientsWithInitial_succ_succ
     (a : ℕ → ℂ) (b₀ b₁ : ℂ) (n : ℕ) :
     schwarzianFrobeniusCoefficientsWithInitial a b₀ b₁ (n + 2) =
@@ -535,7 +674,18 @@ theorem schwarzianFrobeniusCoefficientsWithInitial_succ_succ
   have hlt : m < n + 2 := by omega
   simp [hlt]
 
-/-- The earlier normalized sequence is the arbitrary-initial-data sequence with `b₀=1,b₁=0`. -/
+/--
+%%handwave
+name:
+  Agreement of the two normalized Frobenius constructions
+statement:
+  The normalized coefficient sequence equals the arbitrary-initial-data
+  sequence specialized to \(b_0=1\) and \(b_1=0\).
+proof:
+  Use strong induction on the degree. The degrees zero and one are the same
+  initial conditions; at degree \(n+2\), the recurrence depends only on the
+  coefficients through degree \(n\), where the induction hypothesis applies.
+-/
 theorem schwarzianFrobeniusCoefficients_eq_withInitial (a : ℕ → ℂ) :
     schwarzianFrobeniusCoefficients a =
       schwarzianFrobeniusCoefficientsWithInitial a 1 0 := by
@@ -557,8 +707,17 @@ theorem schwarzianFrobeniusCoefficients_eq_withInitial (a : ℕ → ℂ) :
           exact ih m (by omega)
 
 /--
-The Frobenius recurrence coefficient really makes the `w^n` coefficient of the
-linear ODE vanish.
+%%handwave
+name:
+  Vanishing of an ODE coefficient under the Frobenius recurrence
+statement:
+  If
+  \(b_{n+2}=-\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n a_kb_{n-k}\), then the coefficient
+  of \(w^n\) in \(y''+\tfrac12Qy\) is zero.
+proof:
+  Substitute the recurrence into
+  \((n+2)(n+1)b_{n+2}+\tfrac12\sum_{k=0}^n a_kb_{n-k}\). The positive integer
+  factors in the denominator are nonzero, and the two terms cancel.
 -/
 theorem schwarzianLinearODECoeff_eq_zero_of_nextCoeff
     (a b : ℕ → ℂ) (n : ℕ)
@@ -580,8 +739,18 @@ theorem schwarzianLinearODECoeff_eq_zero_of_nextCoeff
   ring
 
 /--
-The coefficient of a product of two formal power series is bounded by the
-convolution of the coefficient norms.
+%%handwave
+name:
+  Norm bound for a product coefficient
+statement:
+  For complex sequences \(a,b\) and \(n\ge0\),
+  \[
+  \left\|\sum_{k=0}^n a_kb_{n-k}\right\|\le
+  \sum_{k=0}^n\|a_k\|\,\|b_{n-k}\|.
+  \]
+proof:
+  Apply the triangle inequality to the finite sum and multiplicativity of the
+  complex norm to each summand.
 -/
 theorem norm_powerSeriesCoeffProduct_le (a b : ℕ → ℂ) (n : ℕ) :
     ‖powerSeriesCoeffProduct a b n‖ ≤
@@ -595,15 +764,35 @@ theorem norm_powerSeriesCoeffProduct_le (a b : ℕ → ℂ) (n : ℕ) :
         intro k hk
         rw [norm_mul]
 
-/-- The real norm of the Frobenius denominator. -/
+/--
+%%handwave
+name:
+  Norm of the Frobenius denominator
+statement:
+  For \(n\ge0\), the complex norm of \((n+2)(n+1)\) is the real number
+  \((n+2)(n+1)\).
+proof:
+  The complex norm is multiplicative and sends each nonnegative integer to
+  the corresponding real number.
+-/
 theorem norm_schwarzianFrobeniusDenominator (n : ℕ) :
     ‖(((n + 2 : ℕ) : ℂ) * ((n + 1 : ℕ) : ℂ))‖ =
       ((n + 2 : ℕ) : ℝ) * ((n + 1 : ℕ) : ℝ) := by
   rw [norm_mul, norm_natCast, norm_natCast]
 
 /--
-The next Frobenius coefficient is bounded by the norm convolution divided by
-`(n+2)(n+1)`.
+%%handwave
+name:
+  Norm bound for the next Frobenius coefficient
+statement:
+  The coefficient prescribed at degree \(n+2\) by the recurrence satisfies
+  \[
+  \|b_{n+2}\|\le\frac{1}{2(n+2)(n+1)}
+  \sum_{k=0}^n\|a_k\|\,\|b_{n-k}\|.
+  \]
+proof:
+  Take norms in the recurrence, use the convolution norm bound for the
+  numerator, and evaluate the norm of the positive-integer denominator.
 -/
 theorem norm_nextSchwarzianFrobeniusCoefficient_le
     (a b : ℕ → ℂ) (n : ℕ) :
@@ -636,7 +825,18 @@ theorem norm_nextSchwarzianFrobeniusCoefficient_le
           rw [norm_schwarzianFrobeniusDenominator]
 
 /--
-Majorized coefficient bounds propagate through the next Frobenius coefficient.
+%%handwave
+name:
+  Propagation of coefficient majorants
+statement:
+  Suppose \(A_k\ge0\), \(\|a_k\|\le A_k\), and \(\|b_k\|\le B_k\) for every
+  \(k\le n\). Then the coefficient prescribed at degree \(n+2\) by the
+  recurrence has norm at most
+  \(\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n A_kB_{n-k}\).
+proof:
+  Bound each term of the norm convolution by \(A_kB_{n-k}\) using
+  nonnegativity, sum the inequalities, and divide by the nonnegative
+  Frobenius denominator.
 -/
 theorem norm_nextSchwarzianFrobeniusCoefficient_le_of_bounds
     {a b : ℕ → ℂ} {A B : ℕ → ℝ} {n : ℕ}
@@ -683,7 +883,17 @@ def SchwarzianFrobeniusMajorantRecurrence (A B : ℕ → ℝ) : Prop :=
         (∑ k ∈ Finset.range (n + 1), A k * B (n - k))) /
       (((n + 2 : ℕ) : ℝ) * ((n + 1 : ℕ) : ℝ)) ≤ B (n + 2)
 
-/-- The convolution of two geometric coefficient bounds is again explicit. -/
+/--
+%%handwave
+name:
+  Convolution of geometric sequences
+statement:
+  For real \(C,D,T\) and \(n\ge0\),
+  \(\sum_{k=0}^n CT^k\,DT^{n-k}=(n+1)CDT^n\).
+proof:
+  Each summand equals \(CDT^n\) because \(k+(n-k)=n\). The sum contains exactly
+  \(n+1\) identical terms.
+-/
 theorem geometric_frobeniusConvolution_sum
     (C D T : ℝ) (n : ℕ) :
     (∑ k ∈ Finset.range (n + 1), C * T ^ k * (D * T ^ (n - k))) =
@@ -704,8 +914,17 @@ theorem geometric_frobeniusConvolution_sum
           simp
 
 /--
-A geometric coefficient majorant satisfies the Frobenius majorant recurrence
-once the coefficient bound `C` is controlled by `T^2`.
+%%handwave
+name:
+  Geometric Frobenius majorant recurrence
+statement:
+  If \(D,T\ge0\) and \(C\le4T^2\), then \(A_n=CT^n\) and \(B_n=DT^n\) satisfy
+  \(\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n A_kB_{n-k}\le B_{n+2}\) for every \(n\).
+proof:
+  Evaluate the convolution as \((n+1)CDT^n\) and cancel the positive factor
+  \(n+1\). Since \(D T^n\ge0\), it suffices to multiply
+  \(C\le2(n+2)T^2\) by this factor; the required inequality follows from
+  \(C\le4T^2\) and \(n+2\ge2\).
 -/
 theorem geometric_schwarzianFrobeniusMajorantRecurrence
     {C D T : ℝ} (hD : 0 ≤ D) (hT : 0 ≤ T)
@@ -741,9 +960,19 @@ theorem geometric_schwarzianFrobeniusMajorantRecurrence
   nlinarith
 
 /--
-If `A` bounds the Schwarzian-coefficient series and `B` satisfies the real
-majorant recurrence, then `B` bounds the recursively constructed Frobenius
-coefficients with arbitrary initial data.
+%%handwave
+name:
+  Frobenius coefficients are bounded by a recurrence majorant
+statement:
+  Let \(\|a_n\|\le A_n\) with \(A_n\ge0\). If
+  \(\|b_0\|\le B_0\), \(\|b_1\|\le B_1\), and
+  \(\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n A_kB_{n-k}\le B_{n+2}\), then every
+  recursively constructed Frobenius coefficient satisfies \(\|b_n\|\le B_n\).
+proof:
+  Use strong induction on \(n\). The first two cases are the assumed initial
+  bounds. In degree \(n+2\), the induction hypotheses bound every coefficient
+  in the convolution, and the next-coefficient estimate followed by the
+  majorant recurrence gives the result.
 -/
 theorem coefficientNormMajorizes_schwarzianFrobeniusCoefficientsWithInitial
     {a : ℕ → ℂ} {A B : ℕ → ℝ} {b₀ b₁ : ℂ}
@@ -776,8 +1005,16 @@ theorem coefficientNormMajorizes_schwarzianFrobeniusCoefficientsWithInitial
             (hBstep n)
 
 /--
-Geometric majorants bound the recursively constructed Frobenius coefficients,
-provided the initial coefficients are bounded by the same geometric sequence.
+%%handwave
+name:
+  Geometric bound for Frobenius coefficients
+statement:
+  Suppose \(C,D,T\ge0\), \(C\le4T^2\), \(\|a_n\|\le CT^n\),
+  \(\|b_0\|\le D\), and \(\|b_1\|\le DT\). Then the Frobenius coefficients with
+  these initial values satisfy \(\|b_n\|\le DT^n\) for every \(n\).
+proof:
+  The geometric sequences \(CT^n\) and \(DT^n\) satisfy the majorant recurrence.
+  Apply the recurrence-majorant induction with the two assumed initial bounds.
 -/
 theorem coefficientNormMajorizes_schwarzianFrobeniusCoefficientsWithInitial_geometric
     {a : ℕ → ℂ} {C D T : ℝ} {b₀ b₁ : ℂ}
@@ -830,7 +1067,15 @@ structure SchwarzianFrobeniusSeriesWithInitial
 
 namespace SchwarzianFrobeniusSeries
 
-/-- A Frobenius series solves the coefficient recurrence for the linear ODE. -/
+/--
+%%handwave
+name:
+  The normalized Frobenius coefficients satisfy the ODE recurrence
+statement:
+  If \(b_0=1\), \(b_1=0\), and \(b_{n+2}=-\frac{1}{2(n+2)(n+1)}\sum_{k=0}^n a_k b_{n-k}\), then \((n+2)(n+1)b_{n+2}+\tfrac12 \sum_{k=0}^n a_k b_{n-k}=0\) for every \(n\).
+proof:
+  Substitute the defining next-coefficient formula into the coefficient equation and clear the nonzero denominator.
+-/
 theorem solves_recurrence {a : ℕ → ℂ} (Y : SchwarzianFrobeniusSeries a) :
     SolvesSchwarzianFrobeniusRecurrence a Y.coeff := by
   intro n
@@ -840,7 +1085,15 @@ end SchwarzianFrobeniusSeries
 
 namespace SchwarzianFrobeniusSeriesWithInitial
 
-/-- A Frobenius series with arbitrary initial data solves the coefficient recurrence. -/
+/--
+%%handwave
+name:
+  Frobenius coefficients with arbitrary initial data satisfy the recurrence
+statement:
+  The recursively defined coefficients with prescribed \(b_0,b_1\) satisfy \((n+2)(n+1)b_{n+2}+\tfrac12 \sum_{k=0}^n a_k b_{n-k}=0\) for every \(n\).
+proof:
+  Apply the algebraic equivalence between the next-coefficient formula and the vanishing ODE coefficient.
+-/
 theorem solves_recurrence {a : ℕ → ℂ} {b₀ b₁ : ℂ}
     (Y : SchwarzianFrobeniusSeriesWithInitial a b₀ b₁) :
     SolvesSchwarzianFrobeniusRecurrence a Y.coeff := by
@@ -882,11 +1135,13 @@ noncomputable def schwarzianFrobeniusSeriesWithInitial
   coeff_succ_succ := schwarzianFrobeniusCoefficientsWithInitial_succ_succ a b₀ b₁
 
 /--
-Formal existence of normalized Frobenius coefficients for
-`y'' + (1 / 2) q y = 0`.
-
-This closes the purely algebraic recurrence-existence boundary.  Convergence of
-the resulting series remains a separate analytic theorem.
+%%handwave
+name:
+  Existence of normalized formal Frobenius coefficients
+statement:
+  For every sequence \((a_n)\) there exists a sequence \((b_n)\) with \(b_0=1\), \(b_1=0\), and the Frobenius recurrence for \(y''+\tfrac12 qy=0\).
+proof:
+  Take the recursively constructed normalized sequence.
 -/
 theorem schwarzianFrobeniusRecurrenceExistence :
     SchwarzianFrobeniusRecurrenceExistenceTheorem := by
@@ -894,10 +1149,13 @@ theorem schwarzianFrobeniusRecurrenceExistence :
   exact ⟨normalizedSchwarzianFrobeniusSeries a⟩
 
 /--
-Formal existence of Frobenius coefficients for arbitrary initial data.
-
-This supplies both normalized solutions needed for the Schwarzian ratio:
-`(b₀,b₁)=(1,0)` for the denominator and `(b₀,b₁)=(0,1)` for the numerator.
+%%handwave
+name:
+  Existence of formal Frobenius coefficients with prescribed initial data
+statement:
+  For every \((a_n)\) and every \(b_0,b_1 \in ℂ\), there is a coefficient sequence satisfying those initial values and the Frobenius recurrence.
+proof:
+  Take the recursively constructed sequence with the prescribed first two coefficients.
 -/
 theorem schwarzianFrobeniusRecurrenceWithInitialExistence :
     SchwarzianFrobeniusRecurrenceWithInitialExistenceTheorem := by
@@ -916,7 +1174,15 @@ def powerSeriesDerivativeCoefficients (b : ℕ → ℂ) : ℕ → ℂ :=
 def powerSeriesSecondDerivativeCoefficients (b : ℕ → ℂ) : ℕ → ℂ :=
   fun n ↦ ((n + 2 : ℕ) : ℂ) * ((n + 1 : ℕ) : ℂ) * b (n + 2)
 
-/-- Taking formal derivative coefficients twice gives the second-derivative coefficients. -/
+/--
+%%handwave
+name:
+  Twice differentiating a coefficient sequence
+statement:
+  If \(b'_n=(n+1)b_{n+1}\), then \((b')'_n=(n+2)(n+1)b_{n+2}\).
+proof:
+  Expand both definitions and simplify the natural-number factors.
+-/
 theorem powerSeriesDerivativeCoefficients_derivative
     (b : ℕ → ℂ) :
     powerSeriesDerivativeCoefficients (powerSeriesDerivativeCoefficients b) =
@@ -926,8 +1192,13 @@ theorem powerSeriesDerivativeCoefficients_derivative
   ring
 
 /--
-A geometric bound on scalar coefficients gives summability of the norm-weighted
-formal multilinear series inside the corresponding geometric radius.
+%%handwave
+name:
+  Summability from a geometric coefficient bound
+statement:
+  If \(T \ge 0\), \(\lVert b_n\rVert \le DT^n\), and \(Tr<1\), then \(\sum_{n \ge 0}\lVert b_n\rVert r^n\) converges.
+proof:
+  Dominate termwise by the convergent geometric series \(D(Tr)^n\).
 -/
 theorem scalarFormalPowerSeries_summable_norm_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
@@ -950,8 +1221,13 @@ theorem scalarFormalPowerSeries_summable_norm_of_geometric_bound
         rw [mul_assoc, ← mul_pow]
 
 /--
-A geometric coefficient bound gives a lower bound on the radius of convergence
-of the associated scalar formal power series.
+%%handwave
+name:
+  A radius bound from geometric coefficient growth
+statement:
+  If \(\lVert b_n\rVert \le DT^n\) with \(T \ge 0\) and \(Tr<1\), then the scalar power series \(\sum_{n \ge 0} b_n z^n\) has convergence radius at least \(r\).
+proof:
+  Use summability of the norm-weighted series at \(r\).
 -/
 theorem scalarFormalPowerSeries_radius_ge_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
@@ -963,8 +1239,13 @@ theorem scalarFormalPowerSeries_radius_ge_of_geometric_bound
     (scalarFormalPowerSeries_summable_norm_of_geometric_bound hT hb hTr)
 
 /--
-A geometric coefficient bound gives an actual convergent power-series expansion
-for the canonical sum of the scalar formal power series.
+%%handwave
+name:
+  Convergence of a geometrically bounded scalar power series
+statement:
+  If \(r>0\), \(T \ge 0\), \(\lVert b_n\rVert \le DT^n\), and \(Tr<1\), then \(\sum_{n \ge 0} b_n z^n\) defines its canonical analytic sum on \(|z|<r\).
+proof:
+  The radius estimate gives positive convergence radius; restrict the canonical power-series expansion to the radius \(r\).
 -/
 theorem scalarFormalPowerSeries_hasFPowerSeriesOnBall_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
@@ -981,8 +1262,13 @@ theorem scalarFormalPowerSeries_hasFPowerSeriesOnBall_of_geometric_bound
     (by exact_mod_cast hr) hle
 
 /--
-A geometric bound on scalar coefficients gives summability for the termwise
-first derivative series on the same geometric radius.
+%%handwave
+name:
+  Summability of the first derivative series
+statement:
+  If \(\lVert b_n\rVert \le DT^n\), \(T \ge 0\), and \(Tr<1\), then \(\sum_{n \ge 0}(n+1)\lVert b_{n+1}\rVert r^n\) converges.
+proof:
+  Bound by \(DT \sum_{n \ge 0}(n+1)(Tr)^n\), which converges for \(Tr<1\).
 -/
 theorem scalarFormalPowerSeries_derivative_summable_norm_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
@@ -1020,8 +1306,13 @@ theorem scalarFormalPowerSeries_derivative_summable_norm_of_geometric_bound
             ring
 
 /--
-A geometric bound on scalar coefficients gives summability for the termwise
-second derivative series on the same geometric radius.
+%%handwave
+name:
+  Summability of the second derivative series
+statement:
+  If \(\lVert b_n\rVert \le DT^n\), \(T \ge 0\), and \(Tr<1\), then \(\sum_{n \ge 0}(n+2)(n+1)\lVert b_{n+2}\rVert r^n\) converges.
+proof:
+  Bound by \(DT^2 \sum_{n \ge 0}(n+2)(n+1)(Tr)^n\) and use convergence of a polynomially weighted geometric series.
 -/
 theorem scalarFormalPowerSeries_second_derivative_summable_norm_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
@@ -1068,7 +1359,15 @@ theorem scalarFormalPowerSeries_second_derivative_summable_norm_of_geometric_bou
             rw [show T ^ (n + 2) = T ^ 2 * T ^ n by ring_nf, mul_pow]
             ring
 
-/-- A geometric coefficient bound gives a radius lower bound for the first derivative series. -/
+/--
+%%handwave
+name:
+  A radius bound for the first derivative series
+statement:
+  Under \(\lVert b_n\rVert \le DT^n\), \(T \ge 0\), and \(Tr<1\), the series \(\sum_{n \ge 0} (n+1)b_{n+1} z^n\) has radius at least \(r\).
+proof:
+  Apply the radius criterion to the summability estimate for the derivative coefficients.
+-/
 theorem scalarFormalPowerSeries_derivative_radius_ge_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
     (hT : 0 ≤ T)
@@ -1079,7 +1378,15 @@ theorem scalarFormalPowerSeries_derivative_radius_ge_of_geometric_bound
     (scalarFormalPowerSeries (powerSeriesDerivativeCoefficients b))
     (scalarFormalPowerSeries_derivative_summable_norm_of_geometric_bound hT hb hTr)
 
-/-- A geometric coefficient bound gives a radius lower bound for the second derivative series. -/
+/--
+%%handwave
+name:
+  A radius bound for the second derivative series
+statement:
+  Under the same geometric bound, \(\sum_{n \ge 0} (n+2)(n+1)b_{n+2} z^n\) has radius at least \(r\) whenever \(Tr<1\).
+proof:
+  Apply the radius criterion to the second-derivative summability estimate.
+-/
 theorem scalarFormalPowerSeries_second_derivative_radius_ge_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
     (hT : 0 ≤ T)
@@ -1091,7 +1398,15 @@ theorem scalarFormalPowerSeries_second_derivative_radius_ge_of_geometric_bound
     (scalarFormalPowerSeries (powerSeriesSecondDerivativeCoefficients b))
     (scalarFormalPowerSeries_second_derivative_summable_norm_of_geometric_bound hT hb hTr)
 
-/-- A geometric coefficient bound gives a convergent first derivative power series. -/
+/--
+%%handwave
+name:
+  Convergence of the first derivative power series
+statement:
+  If \(r>0\) and \(\lVert b_n\rVert \le DT^n\) with \(T \ge 0\) and \(Tr<1\), then \(\sum_{n \ge 0} (n+1)b_{n+1} z^n\) is the canonical analytic sum on \(|z|<r\).
+proof:
+  Use the radius lower bound and restrict the canonical expansion to \(r\).
+-/
 theorem scalarFormalPowerSeries_derivative_hasFPowerSeriesOnBall_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
     (hr : 0 < r) (hT : 0 ≤ T)
@@ -1124,9 +1439,13 @@ def ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem : Prop :=
         (scalarFormalPowerSeries (powerSeriesDerivativeCoefficients b)) 0 r
 
 /--
-The Frechet derivative series of a scalar formal power series, evaluated in
-the unit tangent direction, is the scalar formal power series with coefficients
-`(n+1)b_{n+1}`.
+%%handwave
+name:
+  Formal differentiation gives the shifted scalar coefficients
+statement:
+  Evaluating the formal derivative of \(\sum_{n \ge 0} b_n z^n\) on the unit tangent vector gives the scalar series \(\sum_{n \ge 0} (n+1)b_{n+1} z^n\).
+proof:
+  Compare each homogeneous multilinear coefficient on arbitrary inputs and reduce it to its value on the diagonal.
 -/
 theorem scalarFormalPowerSeries_derivSeries_apply_eq
     (b : ℕ → ℂ) :
@@ -1164,12 +1483,13 @@ theorem scalarFormalPowerSeries_derivSeries_apply_eq
           rw [FormalMultilinearSeries.apply_eq_prod_smul_coeff]
 
 /--
-Termwise differentiation for scalar complex formal power series.
-
-This is the project-local specialization of mathlib's
-`HasFPowerSeriesOnBall.fderiv`: after taking the Frechet derivative of the
-analytic function and evaluating it on the unit tangent vector, the resulting
-one-variable derivative has coefficient sequence `(n+1)b_{n+1}`.
+%%handwave
+name:
+  Termwise differentiation of a scalar complex power series
+statement:
+  If \(f(z)=\sum_{n \ge 0} b_n z^n\) on \(|z|<r\), then \(f'(z)=\sum_{n \ge 0} (n+1)b_{n+1} z^n\) on the same ball.
+proof:
+  Differentiate the Fréchet power series, evaluate the resulting linear map on \(1\), and identify its coefficients.
 -/
 theorem scalarFormalPowerSeries_deriv_hasFPowerSeriesOnBall
     {f : ℂ → ℂ} {b : ℕ → ℂ} {r : ENNReal}
@@ -1186,13 +1506,29 @@ theorem scalarFormalPowerSeries_deriv_hasFPowerSeriesOnBall
     (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall hfderiv
   simpa [deriv, scalarFormalPowerSeries_derivSeries_apply_eq b] using happ
 
-/-- The scalar termwise-derivative boundary is now discharged from mathlib. -/
+/--
+%%handwave
+name:
+  Universal termwise differentiation for scalar power series
+statement:
+  Every scalar complex power-series expansion differentiates termwise on its convergence ball.
+proof:
+  Apply the preceding termwise-differentiation theorem.
+-/
 theorem scalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem :
     ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem := by
   intro f b r h
   exact scalarFormalPowerSeries_deriv_hasFPowerSeriesOnBall h
 
-/-- A geometric coefficient bound gives a convergent second derivative power series. -/
+/--
+%%handwave
+name:
+  Convergence of the second derivative power series
+statement:
+  If \(r>0\) and \(\lVert b_n\rVert \le DT^n\) with \(T \ge 0\) and \(Tr<1\), then \(\sum_{n \ge 0} (n+2)(n+1)b_{n+2} z^n\) is analytic on \(|z|<r\).
+proof:
+  Use the second-derivative radius estimate and restrict the canonical expansion.
+-/
 theorem scalarFormalPowerSeries_second_derivative_hasFPowerSeriesOnBall_of_geometric_bound
     {b : ℕ → ℂ} {D T : ℝ} {r : NNReal}
     (hr : 0 < r) (hT : 0 ≤ T)
@@ -1211,7 +1547,15 @@ theorem scalarFormalPowerSeries_second_derivative_hasFPowerSeriesOnBall_of_geome
   exact (scalarFormalPowerSeries (powerSeriesSecondDerivativeCoefficients b)).hasFPowerSeriesOnBall
     hpos |>.mono (by exact_mod_cast hr) hle
 
-/-- The sum of a scalar formal power series at the center is its constant coefficient. -/
+/--
+%%handwave
+name:
+  Value of a scalar power series at its center
+statement:
+  If \(f(z)=\sum_{n \ge 0} b_n z^n\) on a ball centered at \(0\), then \(f(0)=b_0\).
+proof:
+  The constant homogeneous coefficient is the value at the center.
+-/
 theorem scalarFormalPowerSeries_sum_zero
     {b : ℕ → ℂ} {r : ENNReal}
     (h : HasFPowerSeriesOnBall
@@ -1221,8 +1565,13 @@ theorem scalarFormalPowerSeries_sum_zero
   simpa [scalarFormalPowerSeries, FormalMultilinearSeries.ofScalars] using hz.symm
 
 /--
-The sum of the termwise first derivative series at the center is the original
-linear coefficient.
+%%handwave
+name:
+  Value of the derivative series at the center
+statement:
+  The sum of \(\sum_{n \ge 0} (n+1)b_{n+1} z^n\) at \(z=0\) is \(b_1\).
+proof:
+  Apply the center-value formula to the shifted derivative coefficients.
 -/
 theorem scalarFormalPowerSeries_derivative_sum_zero
     {b : ℕ → ℂ} {r : ENNReal}
@@ -1235,14 +1584,13 @@ theorem scalarFormalPowerSeries_derivative_sum_zero
     powerSeriesDerivativeCoefficients] using hz.symm
 
 /--
-The recurrence `y'' + (1 / 2) q y = 0` implies the corresponding identity for
-ordinary sums at one point, provided the two input series are absolutely
-summable there.
-
-This is the analytic Cauchy-product step: the coefficient recurrence identifies
-the second derivative coefficients with `-1/2` times the convolution
-coefficients, while absolute summability identifies the convolution series with
-the product of the two sums.
+%%handwave
+name:
+  The Frobenius recurrence implies the summed ODE
+statement:
+  Suppose the series for \(q\), \(y\), and \(y''\) converge absolutely at \(w\) and their coefficients satisfy the Frobenius recurrence. Then \(y''(w)=-\tfrac12 q(w)y(w)\).
+proof:
+  Use the Cauchy product to identify the convolution with \(q(w)y(w)\), scale by \(-\tfrac12\), and use uniqueness of sums.
 -/
 theorem schwarzianFrobenius_tsum_ode_identity_of_recurrence
     {a b : ℕ → ℂ} {w qv yv yddv : ℂ}
@@ -1295,8 +1643,13 @@ theorem schwarzianFrobenius_tsum_ode_identity_of_recurrence
   simpa [mul_assoc] using huniq
 
 /--
-On a power-series ball, the Frobenius coefficient recurrence gives the analytic
-ODE identity for the canonical sums.
+%%handwave
+name:
+  The analytic Frobenius sum solves the ODE on its ball
+statement:
+  If the power series for \(q(z_0+w)\), \(y(w)\), and \(y''(w)\) converge on a ball and the coefficients satisfy the recurrence, then \(y''(w)=-\tfrac12 q(z_0+w)y(w)\) throughout that ball.
+proof:
+  At each point, extract the three sums and their absolute summability, then apply the summed recurrence identity.
 -/
 theorem schwarzianFrobenius_sum_ode_identityOnBall_of_recurrence
     {q : ℂ → ℂ} {z₀ : ℂ} {a b : ℕ → ℂ} {r : ENNReal}
@@ -1347,14 +1700,13 @@ theorem schwarzianFrobenius_sum_ode_identityOnBall_of_recurrence
     hqsum hysum hddsum hqa hyb hrec
 
 /--
-Geometric majorants give a convergent Frobenius solution series for the
-recursively constructed coefficients.
-
-This is the convergence half of the Frobenius method: once the holomorphic
-coefficient `q` has Taylor coefficients bounded by `C * T ^ n`, and the
-initial data fit under the same geometric majorant `D * T ^ n`, the solution
-coefficients define an honest analytic power series on every disc with
-`T * r < 1`.
+%%handwave
+name:
+  Convergence of geometrically majorized Frobenius coefficients
+statement:
+  Assume \(0 \le C,D,T\), \(C \le 4T^2\), \(\lVert a_n\rVert \le CT^n\), \(\lVert b_0\rVert \le D\), \(\lVert b_1\rVert \le DT\), and \(Tr<1\). Then the recursive Frobenius series \(\sum_{n \ge 0} b_n z^n\) converges on \(|z|<r\).
+proof:
+  The Frobenius majorant gives \(\lVert b_n\rVert \le DT^n\); apply scalar power-series convergence.
 -/
 theorem schwarzianFrobeniusCoefficientsWithInitial_hasFPowerSeriesOnBall_of_geometric_majorant
     {a : ℕ → ℂ} {C D T : ℝ} {b₀ b₁ : ℂ} {r : NNReal}
@@ -1380,8 +1732,13 @@ theorem schwarzianFrobeniusCoefficientsWithInitial_hasFPowerSeriesOnBall_of_geom
     hTr
 
 /--
-The first termwise derivative series of the recursively constructed Frobenius
-solution converges under the same geometric majorant hypotheses.
+%%handwave
+name:
+  Convergence of the first derivative Frobenius series
+statement:
+  Under the same geometric majorant hypotheses, \(\sum_{n \ge 0} (n+1)b_{n+1} z^n\) converges on \(|z|<r\).
+proof:
+  Combine the Frobenius coefficient majorant with convergence of the termwise derivative series.
 -/
 theorem schwarzianFrobeniusCoefficientsWithInitial_derivative_hasFPowerSeriesOnBall_of_geometric_majorant
     {a : ℕ → ℂ} {C D T : ℝ} {b₀ b₁ : ℂ} {r : NNReal}
@@ -1409,8 +1766,13 @@ theorem schwarzianFrobeniusCoefficientsWithInitial_derivative_hasFPowerSeriesOnB
     hTr
 
 /--
-The second termwise derivative series of the recursively constructed Frobenius
-solution converges under the same geometric majorant hypotheses.
+%%handwave
+name:
+  Convergence of the second derivative Frobenius series
+statement:
+  Under the same hypotheses, \(\sum_{n \ge 0} (n+2)(n+1)b_{n+2} z^n\) converges on \(|z|<r\).
+proof:
+  Combine the coefficient majorant with convergence of the second derivative series.
 -/
 theorem schwarzianFrobeniusCoefficientsWithInitial_second_derivative_hasFPowerSeriesOnBall_of_geometric_majorant
     {a : ℕ → ℂ} {C D T : ℝ} {b₀ b₁ : ℂ} {r : NNReal}
@@ -1438,8 +1800,13 @@ theorem schwarzianFrobeniusCoefficientsWithInitial_second_derivative_hasFPowerSe
     hTr
 
 /--
-Convergence of the normalized numerator Frobenius series with initial
-coefficients `(0, 1)`.
+%%handwave
+name:
+  Convergence of the normalized numerator series
+statement:
+  If the coefficient majorant holds, \(1 \le DT\), and \(Tr<1\), then the Frobenius series with \((b_0,b_1)=(0,1)\) converges on \(|z|<r\).
+proof:
+  Specialize the general convergence theorem and verify the two initial coefficient bounds.
 -/
 theorem schwarzianFrobeniusNumerator_hasFPowerSeriesOnBall_of_geometric_majorant
     {a : ℕ → ℂ} {C D T : ℝ} {r : NNReal}
@@ -1459,8 +1826,13 @@ theorem schwarzianFrobeniusNumerator_hasFPowerSeriesOnBall_of_geometric_majorant
     hr hC hD hT hCT ha (by simpa using hD) (by simpa using hDT_one) hTr
 
 /--
-Convergence of the normalized denominator Frobenius series with initial
-coefficients `(1, 0)`.
+%%handwave
+name:
+  Convergence of the normalized denominator series
+statement:
+  If the coefficient majorant holds, \(1 \le D\), and \(Tr<1\), then the Frobenius series with \((b_0,b_1)=(1,0)\) converges on \(|z|<r\).
+proof:
+  Specialize the general convergence theorem and verify the normalized initial bounds.
 -/
 theorem schwarzianFrobeniusDenominator_hasFPowerSeriesOnBall_of_geometric_majorant
     {a : ℕ → ℂ} {C D T : ℝ} {r : NNReal}
@@ -1484,13 +1856,29 @@ theorem schwarzianFrobeniusDenominator_hasFPowerSeriesOnBall_of_geometric_majora
 def centeredBallDomain (z₀ : ℂ) (r : ENNReal) : Set ℂ :=
   {z | z - z₀ ∈ Metric.eball (0 : ℂ) r}
 
-/-- A centered power-series ball gives an open domain in the original coordinate. -/
+/--
+%%handwave
+name:
+  Openness of a recentered power-series ball
+statement:
+  For \(z_0 \in ℂ\) and radius \(r\), the set \({z:|z-z_0|<r}\) is open.
+proof:
+  It is the inverse image of an open ball under the continuous translation \(z \mapsto z-z_0\).
+-/
 theorem isOpen_centeredBallDomain (z₀ : ℂ) (r : ENNReal) :
     IsOpen (centeredBallDomain z₀ r) := by
   change IsOpen ((fun z : ℂ => z - z₀) ⁻¹' Metric.eball (0 : ℂ) r)
   exact IsOpen.preimage (continuous_id.sub continuous_const) Metric.isOpen_eball
 
-/-- The center belongs to every centered ball of positive radius. -/
+/--
+%%handwave
+name:
+  The center lies in every positive recentered ball
+statement:
+  If \(r>0\), then \(z_0 \in {z:|z-z_0|<r}\).
+proof:
+  At the center the translated coordinate is \(0\), whose distance from \(0\) is less than \(r\).
+-/
 theorem mem_centeredBallDomain_center {z₀ : ℂ} {r : ENNReal} (hr : 0 < r) :
     z₀ ∈ centeredBallDomain z₀ r := by
   rw [centeredBallDomain]
@@ -1706,7 +2094,15 @@ def restrict
     intro w hw
     exact Y.solves_ode w (Metric.eball_subset_eball hle hw)
 
-/-- A centered Frobenius solution is continuous at every point of its ball. -/
+/--
+%%handwave
+name:
+  Continuity of a centered Frobenius sum
+statement:
+  A convergent centered Frobenius sum is continuous at every point of its convergence ball.
+proof:
+  A power-series expansion is analytic, hence continuous, throughout its ball.
+-/
 theorem solution_continuousAt
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r)
@@ -1714,7 +2110,15 @@ theorem solution_continuousAt
     ContinuousAt Y.solution w :=
   Y.has_series.continuousOn.continuousAt (Metric.isOpen_eball.mem_nhds hw)
 
-/-- The scalar termwise-derivative theorem gives the actual stored derivative. -/
+/--
+%%handwave
+name:
+  The stored first derivative is the actual derivative
+statement:
+  If \(y=\sum_{n \ge 0} b_n w^n\) and the stored field is \(y_1=\sum_{n \ge 0} (n+1)b_{n+1} w^n\) on the same ball, then \(y'(w)=y_1(w)\).
+proof:
+  Termwise differentiation gives a power series for \(y'\); uniqueness of power-series sums identifies it with the stored field.
+-/
 theorem solution_hasDerivAt_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem)
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
@@ -1733,8 +2137,13 @@ theorem solution_hasDerivAt_of_scalarFormalPowerSeriesDeriv
   simpa [hderiv_eq] using hactual
 
 /--
-The scalar termwise-derivative theorem applied to the stored first-derivative
-series gives the stored second derivative.
+%%handwave
+name:
+  The stored second derivative is the derivative of the first
+statement:
+  If \(y_1=\sum_{n \ge 0} (n+1)b_{n+1} w^n\) and \(y_2=\sum_{n \ge 0} (n+2)(n+1)b_{n+2} w^n\), then \(y_1'(w)=y_2(w)\).
+proof:
+  Differentiate the first-derivative series, identify the twice-shifted coefficients, and use uniqueness.
 -/
 theorem solutionDeriv_hasDerivAt_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem)
@@ -1788,8 +2197,13 @@ def CenteredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem : Prop :=
         HasDerivAt Y.solutionDeriv (Y.solutionSecondDeriv w) w
 
 /--
-The scalar termwise-derivative theorem proves the centered Frobenius solution
-derivative theorem.
+%%handwave
+name:
+  Termwise differentiation proves the centered derivative theorem
+statement:
+  If scalar complex power series differentiate termwise, then every centered Frobenius sum has its stored first-derivative field as its actual derivative on the convergence ball.
+proof:
+  Apply termwise differentiation and uniqueness to each centered solution.
 -/
 theorem centeredSchwarzianFrobeniusSolutionHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem) :
@@ -1797,32 +2211,57 @@ theorem centeredSchwarzianFrobeniusSolutionHasDerivAtTheorem_of_scalarFormalPowe
   intro q z₀ a b₀ b₁ r Y w hw
   exact Y.solution_hasDerivAt_of_scalarFormalPowerSeriesDeriv hScalarDeriv hw
 
-/-- Centered Frobenius solutions have the stored termwise derivative as their actual derivative. -/
+/--
+%%handwave
+name:
+  Centered Frobenius sums have their stored first derivative
+statement:
+  Every centered Frobenius sum satisfies \(y'(w)=y_1(w)\) on its convergence ball.
+proof:
+  Use universal termwise differentiation in the preceding implication.
+-/
 theorem centeredSchwarzianFrobeniusSolutionHasDerivAtTheorem :
     CenteredSchwarzianFrobeniusSolutionHasDerivAtTheorem :=
   centeredSchwarzianFrobeniusSolutionHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     scalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem
 
-/-- The scalar power-series derivative theorem proves the centered second derivative. -/
+/--
+%%handwave
+name:
+  Termwise differentiation proves the centered second-derivative theorem
+statement:
+  If scalar complex power series differentiate termwise, then every stored first-derivative Frobenius sum satisfies \(y_1'(w)=y_2(w)\).
+proof:
+  Apply termwise differentiation to the first derivative series and identify its coefficients with the second derivative series.
+-/
 theorem centeredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem) :
     CenteredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem := by
   intro q z₀ a b₀ b₁ r Y w hw
   exact Y.solutionDeriv_hasDerivAt_of_scalarFormalPowerSeriesDeriv hScalarDeriv hw
 
-/-- Centered Frobenius first-derivative fields have the stored second derivative. -/
+/--
+%%handwave
+name:
+  Centered first-derivative sums have their stored second derivative
+statement:
+  Every centered Frobenius solution satisfies \(y_1'(w)=y_2(w)\) on its convergence ball.
+proof:
+  Use universal scalar termwise differentiation in the preceding implication.
+-/
 theorem centeredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem :
     CenteredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem :=
   centeredSchwarzianFrobeniusSolutionDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     scalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem
 
 /--
-A scalar complex power series on a ball is `C^3` when viewed as a real map.
-
-Mathlib gives analyticity at every point of the convergence ball.  The final
-step is restriction of scalars from complex to real differentiability; the
-explicit application avoids a typeclass search corner for `ℂ` as both source
-and target.
+%%handwave
+name:
+  Real smoothness of a complex power-series sum
+statement:
+  A complex power-series sum on a ball is \(C^3\) there when regarded as a map between real planes.
+proof:
+  Complex analyticity gives complex \(C^3\) regularity, which restricts to real \(C^3\) regularity.
 -/
 theorem hasFPowerSeriesOnBall_contDiffOn_real_three
     {f : ℂ → ℂ} {p : FormalMultilinearSeries ℂ ℂ ℂ} {r : ENNReal}
@@ -1841,28 +2280,60 @@ theorem hasFPowerSeriesOnBall_contDiffOn_real_three
 
 namespace CenteredSchwarzianFrobeniusSolution
 
-/-- The analytic Frobenius sum is `C^3` on its centered convergence ball. -/
+/--
+%%handwave
+name:
+  Third-order regularity of a centered Frobenius sum
+statement:
+  The analytic Frobenius sum \(y\) is real \(C^3\) on its centered convergence ball.
+proof:
+  Apply real smoothness of complex power-series sums to the series for \(y\).
+-/
 theorem solution_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
     ContDiffOn ℝ 3 Y.solution (Metric.eball (0 : ℂ) r) :=
   hasFPowerSeriesOnBall_contDiffOn_real_three Y.has_series
 
-/-- The stored first-derivative Frobenius sum is `C^3` on the centered ball. -/
+/--
+%%handwave
+name:
+  Third-order regularity of the first derivative sum
+statement:
+  The stored first-derivative sum \(y_1\) is real \(C^3\) on the centered ball.
+proof:
+  Apply the same smoothness theorem to its convergent power series.
+-/
 theorem solutionDeriv_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
     ContDiffOn ℝ 3 Y.solutionDeriv (Metric.eball (0 : ℂ) r) :=
   hasFPowerSeriesOnBall_contDiffOn_real_three Y.has_deriv_series
 
-/-- The stored second-derivative Frobenius sum is `C^3` on the centered ball. -/
+/--
+%%handwave
+name:
+  Third-order regularity of the second derivative sum
+statement:
+  The stored second-derivative sum \(y_2\) is real \(C^3\) on the centered ball.
+proof:
+  Apply the same smoothness theorem to the second-derivative series.
+-/
 theorem solutionSecondDeriv_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
     ContDiffOn ℝ 3 Y.solutionSecondDeriv (Metric.eball (0 : ℂ) r) :=
   hasFPowerSeriesOnBall_contDiffOn_real_three Y.has_second_deriv_series
 
-/-- The analytic Frobenius sum is `C^3` after recentering at `z₀`. -/
+/--
+%%handwave
+name:
+  Regularity after recentering the Frobenius sum
+statement:
+  The function \(z \mapsto y(z-z_0)\) is real \(C^3\) on \(|z-z_0|<r\).
+proof:
+  Compose the \(C^3\) sum with the affine translation \(z \mapsto z-z_0\).
+-/
 theorem solution_comp_sub_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
@@ -1876,7 +2347,15 @@ theorem solution_comp_sub_contDiffOn
     exact hz
   simpa [Function.comp_def] using Y.solution_contDiffOn.comp hsub hmap
 
-/-- The stored first derivative is `C^3` after recentering at `z₀`. -/
+/--
+%%handwave
+name:
+  Regularity after recentering the first derivative sum
+statement:
+  The function \(z \mapsto y_1(z-z_0)\) is real \(C^3\) on \(|z-z_0|<r\).
+proof:
+  Compose the \(C^3\) first-derivative sum with translation.
+-/
 theorem solutionDeriv_comp_sub_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
@@ -1891,7 +2370,15 @@ theorem solutionDeriv_comp_sub_contDiffOn
     exact hz
   simpa [Function.comp_def] using Y.solutionDeriv_contDiffOn.comp hsub hmap
 
-/-- The stored second derivative is `C^3` after recentering at `z₀`. -/
+/--
+%%handwave
+name:
+  Regularity after recentering the second derivative sum
+statement:
+  The function \(z \mapsto y_2(z-z_0)\) is real \(C^3\) on \(|z-z_0|<r\).
+proof:
+  Compose the \(C^3\) second-derivative sum with translation.
+-/
 theorem solutionSecondDeriv_comp_sub_contDiffOn
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusSolution q z₀ a b₀ b₁ r) :
@@ -1926,7 +2413,15 @@ def toCenteredSchwarzianFrobeniusSolution
   solutionDeriv_zero := Y.solutionDeriv_zero
   solves_ode := Y.solves_ode
 
-/-- The first derivative field is continuous at the center. -/
+/--
+%%handwave
+name:
+  Continuity of the termwise first derivative at the center
+statement:
+  For a termwise centered Frobenius solution, the sum \(y_1\) is continuous at \(0\).
+proof:
+  Its convergent power-series expansion is analytic at the center.
+-/
 theorem solutionDeriv_continuousAt
     {q : ℂ → ℂ} {z₀ : ℂ} {a : ℕ → ℂ} {b₀ b₁ : ℂ} {r : ENNReal}
     (Y : CenteredSchwarzianFrobeniusTermwiseSolution q z₀ a b₀ b₁ r) :
@@ -1934,8 +2429,13 @@ theorem solutionDeriv_continuousAt
   Y.has_deriv_series.hasFPowerSeriesAt.continuousAt
 
 /--
-The scalar termwise-derivative theorem applied to the first-derivative series
-gives the stored second derivative.
+%%handwave
+name:
+  The termwise first derivative has the stored second derivative
+statement:
+  For a termwise centered solution, \(y_1'(w)=y_2(w)\) throughout the convergence ball.
+proof:
+  Differentiate the series for \(y_1\), identify its coefficients with those of \(y_2\), and use uniqueness.
 -/
 theorem solutionDeriv_hasDerivAt_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem)
@@ -1972,14 +2472,30 @@ def CenteredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem : Prop :=
     ∀ {w : ℂ}, w ∈ Metric.eball (0 : ℂ) r →
       HasDerivAt Y.solutionDeriv (Y.solutionSecondDeriv w) w
 
-/-- The scalar power-series derivative theorem proves the termwise second derivative. -/
+/--
+%%handwave
+name:
+  Termwise differentiation proves the termwise second-derivative theorem
+statement:
+  Universal scalar termwise differentiation implies \(y_1'=y_2\) for every termwise centered Frobenius solution.
+proof:
+  Apply the preceding derivative calculation to each solution.
+-/
 theorem centeredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
     (hScalarDeriv : ScalarFormalPowerSeriesDerivHasFPowerSeriesOnBallTheorem) :
     CenteredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem := by
   intro q z₀ a b₀ b₁ r Y w hw
   exact Y.solutionDeriv_hasDerivAt_of_scalarFormalPowerSeriesDeriv hScalarDeriv hw
 
-/-- The termwise Frobenius first derivative has the stored second derivative. -/
+/--
+%%handwave
+name:
+  The termwise first derivative has its stored derivative
+statement:
+  Every termwise centered Frobenius solution satisfies \(y_1'(w)=y_2(w)\) on its convergence ball.
+proof:
+  Use universal scalar termwise differentiation.
+-/
 theorem centeredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem :
     CenteredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem :=
   centeredSchwarzianFrobeniusTermwiseSolutionDerivHasDerivAtTheorem_of_scalarFormalPowerSeriesDeriv
@@ -2088,35 +2604,75 @@ def wronskian
     P.numerator.solutionDeriv w * P.denominator.solution w -
       P.numerator.solution w * P.denominator.solutionDeriv w
 
-/-- The denominator has value `1` at the center. -/
+/--
+%%handwave
+name:
+  Normalized denominator value at the center
+statement:
+  For the normalized denominator solution \(y_0\), \(y_0(0)=1\).
+proof:
+  This is its prescribed constant coefficient.
+-/
 theorem denominator_zero_eq_one
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
     P.denominator.solution 0 = 1 :=
   P.denominator.solution_zero
 
-/-- The numerator has value `0` at the center. -/
+/--
+%%handwave
+name:
+  Normalized numerator value at the center
+statement:
+  For the normalized numerator solution \(y_1\), \(y_1(0)=0\).
+proof:
+  This is its prescribed constant coefficient.
+-/
 theorem numerator_zero_eq_zero
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
     P.numerator.solution 0 = 0 :=
   P.numerator.solution_zero
 
-/-- The denominator derivative has value `0` at the center. -/
+/--
+%%handwave
+name:
+  Normalized denominator derivative at the center
+statement:
+  For the normalized denominator \(y_0\), \(y_0'(0)=0\).
+proof:
+  This is its prescribed linear coefficient.
+-/
 theorem denominatorDeriv_zero_eq_zero
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
     P.denominator.solutionDeriv 0 = 0 :=
   P.denominator.solutionDeriv_zero
 
-/-- The numerator derivative has value `1` at the center. -/
+/--
+%%handwave
+name:
+  Normalized numerator derivative at the center
+statement:
+  For the normalized numerator \(y_1\), \(y_1'(0)=1\).
+proof:
+  This is its prescribed linear coefficient.
+-/
 theorem numeratorDeriv_zero_eq_one
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
     P.numerator.solutionDeriv 0 = 1 :=
   P.numerator.solutionDeriv_zero
 
-/-- The centered Wronskian has value `1` at the center. -/
+/--
+%%handwave
+name:
+  Normalized Wronskian at the center
+statement:
+  For \(W=y_1'y_0-y_1y_0'\), the normalized initial data give \(W(0)=1\).
+proof:
+  Substitute the four center values and simplify.
+-/
 theorem wronskian_zero_eq_one
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
@@ -2125,7 +2681,15 @@ theorem wronskian_zero_eq_one
     P.numerator_zero_eq_zero, P.denominatorDeriv_zero_eq_zero]
   ring
 
-/-- The denominator is nonzero at the center. -/
+/--
+%%handwave
+name:
+  The normalized denominator is nonzero at the center
+statement:
+  The normalized denominator satisfies \(y_0(0) \ne 0\).
+proof:
+  Use \(y_0(0)=1\).
+-/
 theorem denominator_ne_zero_at_zero
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
@@ -2133,7 +2697,15 @@ theorem denominator_ne_zero_at_zero
   rw [P.denominator_zero_eq_one]
   norm_num
 
-/-- The Wronskian is nonzero at the center. -/
+/--
+%%handwave
+name:
+  The normalized Wronskian is nonzero at the center
+statement:
+  The normalized Wronskian satisfies \(W(0) \ne 0\).
+proof:
+  Use \(W(0)=1\).
+-/
 theorem wronskian_ne_zero_at_zero
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a) :
@@ -2216,7 +2788,15 @@ end CenteredNormalizedSchwarzianFrobeniusTermwisePrePair
 
 namespace CenteredFrobeniusDerivativeContinuity
 
-/-- The denominator solution is continuous at the center. -/
+/--
+%%handwave
+name:
+  Continuity of the denominator at the center
+statement:
+  The denominator Frobenius sum \(y_0\) is continuous at \(0\).
+proof:
+  Its convergent power series is analytic at the center.
+-/
 theorem denominator_continuousAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     {P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a}
@@ -2224,7 +2804,15 @@ theorem denominator_continuousAt
     ContinuousAt P.denominator.solution 0 :=
   P.denominator.has_series.hasFPowerSeriesAt.continuousAt
 
-/-- The numerator solution is continuous at the center. -/
+/--
+%%handwave
+name:
+  Continuity of the numerator at the center
+statement:
+  The numerator Frobenius sum \(y_1\) is continuous at \(0\).
+proof:
+  Its convergent power series is analytic at the center.
+-/
 theorem numerator_continuousAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     {P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a}
@@ -2232,7 +2820,15 @@ theorem numerator_continuousAt
     ContinuousAt P.numerator.solution 0 :=
   P.numerator.has_series.hasFPowerSeriesAt.continuousAt
 
-/-- The centered Wronskian is continuous at the center. -/
+/--
+%%handwave
+name:
+  Continuity of the Wronskian at the center
+statement:
+  If \(y_0,y_1,y_0',y_1'\) are continuous at \(0\), then \(W=y_1'y_0-y_1y_0'\) is continuous there.
+proof:
+  Use closure of continuity under products and subtraction.
+-/
 theorem wronskian_continuousAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     {P : CenteredNormalizedSchwarzianFrobeniusPrePair q V z₀ a}
@@ -2249,10 +2845,13 @@ theorem wronskian_continuousAt
 end CenteredFrobeniusDerivativeContinuity
 
 /--
-Continuity at the center implies the nonvanishing shrinking step.
-
-The proof uses `denominator(0)=1` and `Wronskian(0)=1`, then chooses a small
-positive radius contained in the original convergence ball.
+%%handwave
+name:
+  A positive ball with nonvanishing denominator and Wronskian
+statement:
+  If \(y_0\) and \(W\) are continuous at \(0\) with \(y_0(0)=W(0)=1\), then some \(0<ρ \le r\) has \(y_0(w) \ne 0\) and \(W(w) \ne 0\) for \(|w|<ρ\).
+proof:
+  Continuity makes both functions nonzero near \(0\); intersect that neighborhood with the original convergence ball.
 -/
 theorem centeredFrobeniusNonvanishingShrink_of_derivativeContinuity
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2316,7 +2915,15 @@ def derivativeContinuity
 
 end CenteredNormalizedSchwarzianFrobeniusPrePair
 
-/-- Every centered Frobenius pre-pair admits the standard nonvanishing shrink. -/
+/--
+%%handwave
+name:
+  Every normalized pre-pair admits a nonvanishing shrink
+statement:
+  Every normalized centered Frobenius pre-pair can be restricted to a positive smaller ball on which its denominator and Wronskian never vanish.
+proof:
+  The convergent derivative series give the needed continuity, so apply the nonvanishing-neighborhood argument.
+-/
 theorem centeredFrobeniusNonvanishingShrinkTheorem :
     CenteredFrobeniusNonvanishingShrinkTheorem :=
   centeredFrobeniusNonvanishingShrinkTheorem_of_derivativeContinuity
@@ -2374,8 +2981,13 @@ def ofPrePairShrink
     exact N.wronskian_ne_zero w hw
 
 /--
-The affine ratio `y₁/y₀` associated to a centered Frobenius pair is continuous
-at every point of its centered domain.
+%%handwave
+name:
+  Continuity of the Frobenius quotient
+statement:
+  If \(y_0(z-z_0) \ne 0\) on the centered ball, then \(f(z)=y_1(z-z_0)/y_0(z-z_0)\) is continuous at every point of that ball.
+proof:
+  Recenter the continuous numerator and denominator sums and use continuity of division by a nonzero value.
 -/
 theorem localMap_continuousAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2409,7 +3021,15 @@ theorem localMap_continuousAt
     simpa [Function.comp_def] using hden_comp
   exact hnum.div hden (P.denominator_ne_zero (z - z₀) hz)
 
-/-- The numerator Frobenius solution, recentered on the coordinate domain, is `C^3`. -/
+/--
+%%handwave
+name:
+  Regularity of the recentered numerator
+statement:
+  The function \(z \mapsto y_1(z-z_0)\) is real \(C^3\) on the centered ball.
+proof:
+  Apply the recentered regularity theorem to the numerator solution.
+-/
 theorem numerator_comp_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPair q V z₀ a) :
@@ -2417,7 +3037,15 @@ theorem numerator_comp_contDiffOn
       (centeredBallDomain z₀ P.radius) :=
   P.numerator.solution_comp_sub_contDiffOn
 
-/-- The denominator Frobenius solution, recentered on the coordinate domain, is `C^3`. -/
+/--
+%%handwave
+name:
+  Regularity of the recentered denominator
+statement:
+  The function \(z \mapsto y_0(z-z_0)\) is real \(C^3\) on the centered ball.
+proof:
+  Apply the recentered regularity theorem to the denominator solution.
+-/
 theorem denominator_comp_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPair q V z₀ a) :
@@ -2425,7 +3053,15 @@ theorem denominator_comp_contDiffOn
       (centeredBallDomain z₀ P.radius) :=
   P.denominator.solution_comp_sub_contDiffOn
 
-/-- The numerator first-derivative Frobenius field, recentered, is `C^3`. -/
+/--
+%%handwave
+name:
+  Regularity of the recentered numerator derivative
+statement:
+  The function \(z \mapsto y_1'(z-z_0)\) is real \(C^3\) on the centered ball.
+proof:
+  Apply recentered regularity to the stored numerator derivative.
+-/
 theorem numeratorDeriv_comp_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPair q V z₀ a) :
@@ -2433,7 +3069,15 @@ theorem numeratorDeriv_comp_contDiffOn
       (centeredBallDomain z₀ P.radius) :=
   P.numerator.solutionDeriv_comp_sub_contDiffOn
 
-/-- The denominator first-derivative Frobenius field, recentered, is `C^3`. -/
+/--
+%%handwave
+name:
+  Regularity of the recentered denominator derivative
+statement:
+  The function \(z \mapsto y_0'(z-z_0)\) is real \(C^3\) on the centered ball.
+proof:
+  Apply recentered regularity to the stored denominator derivative.
+-/
 theorem denominatorDeriv_comp_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPair q V z₀ a) :
@@ -2441,7 +3085,15 @@ theorem denominatorDeriv_comp_contDiffOn
       (centeredBallDomain z₀ P.radius) :=
   P.denominator.solutionDeriv_comp_sub_contDiffOn
 
-/-- The Frobenius quotient map `y₁ / y₀` is `C^3` on its centered domain. -/
+/--
+%%handwave
+name:
+  Third-order regularity of the Frobenius quotient
+statement:
+  If \(y_0\) never vanishes on the centered ball, then \(f=y_1/y_0\) is real \(C^3\) there.
+proof:
+  Multiply the \(C^3\) numerator by the reciprocal of the nonvanishing \(C^3\) denominator.
+-/
 theorem localMap_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
     (P : CenteredNormalizedSchwarzianFrobeniusPair q V z₀ a) :
@@ -2456,8 +3108,13 @@ theorem localMap_contDiffOn
         exact P.denominator_ne_zero (z - z₀) hz))
 
 /--
-The canonical first derivative of the Frobenius quotient map is `C^3` on its
-centered domain.
+%%handwave
+name:
+  Regularity of the quotient derivative formula
+statement:
+  If \(y_0\) never vanishes, then \(W/y_0^2\) is real \(C^3\) on the centered ball.
+proof:
+  The Wronskian is built from \(C^3\) fields; divide it by the nonvanishing square of \(y_0\).
 -/
 theorem localMapDeriv_contDiffOn
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2492,9 +3149,13 @@ theorem localMapDeriv_contDiffOn
         exact pow_ne_zero 2 (P.denominator_ne_zero (z - z₀) hz)))
 
 /--
-If the two centered Frobenius solution functions have their stored actual
-derivatives, then their quotient has the canonical Wronskian-over-square
-derivative.
+%%handwave
+name:
+  Derivative of the normalized Frobenius quotient
+statement:
+  If the centered solutions have actual derivatives \(y_0',y_1'\) and \(y_0 \ne 0\), then \((y_1/y_0)'=W/y_0^2\) with \(W=y_1'y_0-y_1y_0'\).
+proof:
+  Apply the chain rule for recentering and the quotient rule.
 -/
 theorem localMap_hasDerivAt_of_solutionHasDerivAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2572,9 +3233,13 @@ def toNormalizedSchwarzianLinearODESolutionPair
     simpa using P.numerator.solutionDeriv_zero
 
 /--
-If the two centered Frobenius solution functions and their stored derivative
-fields have their expected actual derivatives, then the canonical first
-derivative of their quotient has the stored second derivative.
+%%handwave
+name:
+  Second derivative of the normalized Frobenius quotient
+statement:
+  If \(y_j'=v_j\) and \(v_j'=y_j''\) for \(j=0,1\), both solve \(y_j''=-\tfrac12 qy_j\), and \(y_0 \ne 0\), then \((W/y_0^2)'=-2Wy_0'/y_0^3\).
+proof:
+  Use the previously proved quotient-derivative calculation for the two ODE solutions; their second-derivative terms cancel in \(W'\).
 -/
 theorem localMapDeriv_hasDerivAt_of_solutionHasDerivAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2640,10 +3305,13 @@ theorem localMapDeriv_hasDerivAt_of_solutionHasDerivAt
     SchwarzianLinearODESolutionPair.wronskian, w] using hQ
 
 /--
-If the two centered Frobenius solution functions and their stored derivative
-fields have their expected actual derivatives through the first derivative,
-then the canonical second derivative of their quotient has the stored third
-derivative.
+%%handwave
+name:
+  Third derivative of the normalized Frobenius quotient
+statement:
+  Under the same derivative and ODE hypotheses, \((-2Wy_0'/y_0^3)'=-2Wy_0''/y_0^3+6W(y_0')^2/y_0⁴\).
+proof:
+  Apply the established second-derivative quotient calculation and simplify the recentered formulas.
 -/
 theorem localMapSecondDeriv_hasDerivAt_of_solutionHasDerivAt
     {q : ℂ → ℂ} {V : Set ℂ} {z₀ : ℂ} {a : ℕ → ℂ}
@@ -2830,12 +3498,13 @@ def HolomorphicSchwarzianCoefficientScalarTaylorTheorem : Prop :=
           (scalarFormalPowerSeries a) 0 (R : ENNReal)
 
 /--
-In one complex variable, the scalar coefficients `p.coeff n` give an equivalent
-scalar formal power series expansion.
-
-This is a small bridge to mathlib's `HasFPowerSeriesAt` API: mathlib's general
-one-variable analytic expansion already supplies the scalar coefficient
-sequence via `FormalMultilinearSeries.coeff`.
+%%handwave
+name:
+  Scalarization of a one-variable power series
+statement:
+  If \(f\) has a complex power-series expansion with formal series \(p\) at \(z_0\), then it also has the scalar expansion \(\sum_{n \ge 0} p_n (z-z_0)^n\) using the diagonal coefficients \(p_n\).
+proof:
+  One-variable multilinear terms equal their scalar diagonal coefficients times powers, so the two series have the same sum near \(z_0\).
 -/
 theorem hasFPowerSeriesAt_scalarFormalPowerSeries_coeff
     {f : ℂ → ℂ} {p : FormalMultilinearSeries ℂ ℂ ℂ} {z₀ : ℂ}
@@ -2846,11 +3515,13 @@ theorem hasFPowerSeriesAt_scalarFormalPowerSeries_coeff
   simpa [scalarFormalPowerSeries] using hz
 
 /--
-The holomorphicity already stored in `LocalSchwarzianData` gives pointwise
-scalar Taylor expansions.
-
-This closes the coefficient-side boundary down to mathlib's ordinary
-`AnalyticOnNhd` data plus the one-variable scalar-coefficient bridge above.
+%%handwave
+name:
+  Local holomorphicity gives scalar Taylor coefficients
+statement:
+  If \(q\) is holomorphic near \(z_0\), then for some \(R>0\) there are coefficients \(a_n\) with \(q(z_0+w)=\sum_{n \ge 0} a_n w^n\) on \(|w|<R\).
+proof:
+  Take a local analytic power series, recenter it at \(0\), scalarize its coefficients, and choose a positive radius below its convergence radius.
 -/
 theorem holomorphicSchwarzianCoefficientScalarTaylor_of_localAnalytic :
     HolomorphicSchwarzianCoefficientScalarTaylorTheorem := by
@@ -2865,7 +3536,15 @@ theorem holomorphicSchwarzianCoefficientScalarTaylor_of_localAnalytic :
   · exact_mod_cast hr_pos
   · exact hR.mono hr_pos hr_lt.le
 
-/-- Every point of an open coordinate domain has a positive centered ball inside it. -/
+/--
+%%handwave
+name:
+  An open set contains a positive centered ball
+statement:
+  If \(U \subseteq ℂ\) is open and \(z_0 \in U\), then some \(R>0\) satisfies \({z:|z-z_0|<R} \subseteq U\).
+proof:
+  Choose a metric ball from the neighborhood characterization of openness and reduce its radius by half.
+-/
 theorem exists_centeredBallDomain_subset_of_isOpen
     {U : Set ℂ} (hU : IsOpen U) {z₀ : ℂ} (hz₀ : z₀ ∈ U) :
     ∃ R : NNReal, 0 < R ∧ centeredBallDomain z₀ (R : ENNReal) ⊆ U := by
@@ -2888,11 +3567,13 @@ theorem exists_centeredBallDomain_subset_of_isOpen
     simpa using hdist
 
 /--
-Pointwise scalar Taylor expansions imply Taylor-control data.
-
-The proof only chooses radii: one ball comes from the scalar Taylor expansion,
-one from openness of the coordinate domain, and the control radius is half of
-their minimum.
+%%handwave
+name:
+  Scalar Taylor data give nested control radii
+statement:
+  Given a scalar Taylor expansion of \(q(z_0+w)\) and an open coordinate domain containing \(z_0\), there are \(0<s<R\) such that the expansion holds on \(|w|<R\) and \(|z-z_0|<R\) lies in the domain.
+proof:
+  Intersect the Taylor radius with an interior-domain radius and take \(s=R/2\).
 -/
 theorem holomorphicSchwarzianCoefficientTaylorControl_of_scalarTaylor
     (hScalar : HolomorphicSchwarzianCoefficientScalarTaylorTheorem) :
@@ -2923,13 +3604,13 @@ theorem holomorphicSchwarzianCoefficientTaylorControl_of_scalarTaylor
     exact hDomain (Metric.eball_subset_eball hR_le_domain hz)
 
 /--
-Taylor-control data imply the geometric-majorant data needed by the Frobenius
-construction.
-
-The only analytic estimate used here is mathlib's
-`FormalMultilinearSeries.norm_le_div_pow_of_pos_of_lt_radius`, applied to the
-strictly smaller control radius `s`.  We then enlarge the geometric rate `T`
-and shrink the final Frobenius radius so that `T * r < 1`.
+%%handwave
+name:
+  Taylor control gives a Frobenius geometric majorant
+statement:
+  From a Taylor expansion on radius \(R\) and \(0<s<R\), one can choose \(C,D,T \ge 0\) and \(r>0\) with \(C \le 4T^2\), \(\lVert a_n\rVert \le CT^n\), \(1 \le D\), \(1 \le DT\), \(Tr<1\), and the radius-\(r\) ball inside the domain.
+proof:
+  Use the coefficient estimate \(\lVert a_n\rVert \le C/s^n\), enlarge \(T\) to dominate \(1,C,s^{-1}\), set \(D=1\), and shrink \(r\) below both \(R\) and \(1/(2T)\).
 -/
 theorem holomorphicSchwarzianCoefficientGeometricMajorant_of_taylorControl
     (hTaylor : HolomorphicSchwarzianCoefficientTaylorControlTheorem) :
@@ -3003,9 +3684,13 @@ theorem holomorphicSchwarzianCoefficientGeometricMajorant_of_taylorControl
   · simpa using hT_one
 
 /--
-The coefficient majorant target implies the termwise Frobenius pre-pair
-existence theorem.  All solution-side work is handled by the previously proved
-Frobenius recurrence, convergence estimates, and Cauchy-product identity.
+%%handwave
+name:
+  Coefficient majorants produce termwise normalized Frobenius pre-pairs
+statement:
+  If the Taylor coefficients of a holomorphic Schwarzian coefficient satisfy the geometric majorant data, then the normalized numerator and denominator Frobenius series, with their first and second derivative series, exist on a positive ball inside the coordinate domain.
+proof:
+  Apply the geometric-majorant constructor to the two normalized initial conditions.
 -/
 theorem holomorphicSchwarzianFrobeniusTermwisePrePairExistence_of_coefficientGeometricMajorant
     (hCoeff : HolomorphicSchwarzianCoefficientGeometricMajorantTheorem) :
@@ -3018,7 +3703,15 @@ theorem holomorphicSchwarzianFrobeniusTermwisePrePairExistence_of_coefficientGeo
     (C := C) (D := D) (T := T) (r := r)
     hr hC hD hT hCT ha hD_one hDT_one hTr hq hDomain⟩⟩
 
-/-- Termwise Frobenius pre-pair existence forgets to ordinary pre-pair existence. -/
+/--
+%%handwave
+name:
+  Forgetting termwise data gives a Frobenius pre-pair
+statement:
+  Existence of normalized termwise Frobenius pre-pairs implies existence of normalized pre-pairs with the same coefficient series and domain.
+proof:
+  Discard only the extra termwise derivative-series structure.
+-/
 theorem holomorphicSchwarzianFrobeniusPrePairExistence_of_termwise
     (h : HolomorphicSchwarzianFrobeniusTermwisePrePairExistenceTheorem) :
     HolomorphicSchwarzianFrobeniusPrePairExistenceTheorem := by
@@ -3027,8 +3720,13 @@ theorem holomorphicSchwarzianFrobeniusPrePairExistence_of_termwise
   exact ⟨a, ⟨P.toPrePair⟩⟩
 
 /--
-The coefficient majorant target gives ordinary pre-shrinking Frobenius
-existence by forgetting the termwise derivative data.
+%%handwave
+name:
+  Coefficient majorants produce normalized Frobenius pre-pairs
+statement:
+  The geometric coefficient majorant implies existence of a normalized convergent Frobenius pre-pair on a positive coordinate ball.
+proof:
+  First construct a termwise pre-pair, then forget the extra derivative-series structure.
 -/
 theorem holomorphicSchwarzianFrobeniusPrePairExistence_of_coefficientGeometricMajorant
     (hCoeff : HolomorphicSchwarzianCoefficientGeometricMajorantTheorem) :
@@ -3038,19 +3736,13 @@ theorem holomorphicSchwarzianFrobeniusPrePairExistence_of_coefficientGeometricMa
       hCoeff)
 
 /--
-Pre-shrinking Frobenius existence with derivative-continuity data forgets to
-ordinary pre-shrinking Frobenius existence.
--/
-theorem holomorphicSchwarzianFrobeniusPrePairExistence_of_prePairWithDerivativeContinuity
-    (h : HolomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuityTheorem) :
-    HolomorphicSchwarzianFrobeniusPrePairExistenceTheorem := by
-  intro u S z₀ hz₀
-  rcases h S hz₀ with ⟨a, P, _hC⟩
-  exact ⟨a, ⟨P⟩⟩
-
-/--
-Pre-shrinking Frobenius existence plus the nonvanishing shrinking theorem gives
-the full Frobenius-pair existence target.
+%%handwave
+name:
+  Shrinking a pre-pair gives a nonvanishing Frobenius pair
+statement:
+  If a normalized pre-pair exists and every pre-pair has a positive shrink on which \(y_0\) and \(W\) are nonzero, then a normalized Frobenius pair exists.
+proof:
+  Choose the pre-pair and its shrink, then restrict both solutions and their coefficient expansion.
 -/
 theorem holomorphicSchwarzianFrobeniusPairExistence_of_prePair_and_shrink
     (hPre : HolomorphicSchwarzianFrobeniusPrePairExistenceTheorem)
@@ -3062,8 +3754,13 @@ theorem holomorphicSchwarzianFrobeniusPairExistence_of_prePair_and_shrink
   exact ⟨a, ⟨CenteredNormalizedSchwarzianFrobeniusPair.ofPrePairShrink P N⟩⟩
 
 /--
-Pre-shrinking Frobenius existence now gives the full Frobenius-pair existence
-target, because the nonvanishing shrink is proved for every pre-pair.
+%%handwave
+name:
+  Every pre-pair produces a full Frobenius pair
+statement:
+  Existence of a normalized pre-pair implies existence of a normalized pair with nonvanishing denominator and Wronskian.
+proof:
+  Apply the universal nonvanishing-shrink theorem to the chosen pre-pair.
 -/
 theorem holomorphicSchwarzianFrobeniusPairExistence_of_prePair
     (hPre : HolomorphicSchwarzianFrobeniusPrePairExistenceTheorem) :
@@ -3071,7 +3768,15 @@ theorem holomorphicSchwarzianFrobeniusPairExistence_of_prePair
   holomorphicSchwarzianFrobeniusPairExistence_of_prePair_and_shrink
     hPre centeredFrobeniusNonvanishingShrinkTheorem
 
-/-- Coefficient majorants now imply full normalized Frobenius-pair existence. -/
+/--
+%%handwave
+name:
+  Coefficient majorants produce full normalized Frobenius pairs
+statement:
+  A geometric majorant for the local Schwarzian Taylor coefficients yields two normalized solutions of \(y''+\tfrac12 qy=0\) on a positive ball where the denominator and Wronskian are nonzero.
+proof:
+  Construct a pre-pair from the majorant and apply the automatic nonvanishing shrink.
+-/
 theorem holomorphicSchwarzianFrobeniusPairExistence_of_coefficientGeometricMajorant
     (hCoeff : HolomorphicSchwarzianCoefficientGeometricMajorantTheorem) :
     HolomorphicSchwarzianFrobeniusPairExistenceTheorem :=
@@ -3104,58 +3809,6 @@ theorem holomorphicSchwarzianFrobeniusPairExistence_of_localAnalytic :
     (holomorphicSchwarzianCoefficientGeometricMajorant_of_taylorControl
       (holomorphicSchwarzianCoefficientTaylorControl_of_scalarTaylor
         holomorphicSchwarzianCoefficientScalarTaylor_of_localAnalytic))
-
-/--
-Pre-shrinking Frobenius existence with derivative-continuity data gives the full
-Frobenius-pair existence target.
--/
-theorem holomorphicSchwarzianFrobeniusPairExistence_of_prePairWithDerivativeContinuity
-    (h : HolomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuityTheorem) :
-    HolomorphicSchwarzianFrobeniusPairExistenceTheorem := by
-  intro u S z₀ hz₀
-  rcases h S hz₀ with ⟨a, P, ⟨C⟩⟩
-  rcases centeredFrobeniusNonvanishingShrink_of_derivativeContinuity P C with ⟨N⟩
-  exact ⟨a, ⟨CenteredNormalizedSchwarzianFrobeniusPair.ofPrePairShrink P N⟩⟩
-
-/--
-Ordinary pre-shrinking Frobenius existence already includes enough derivative
-continuity for the automatic nonvanishing shrink, because each centered
-solution stores its first-derivative power-series realization.
--/
-theorem holomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuity_of_prePair
-    (h : HolomorphicSchwarzianFrobeniusPrePairExistenceTheorem) :
-    HolomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuityTheorem := by
-  intro u S z₀ hz₀
-  rcases h S hz₀ with ⟨a, ⟨P⟩⟩
-  exact ⟨a, P, ⟨P.derivativeContinuity⟩⟩
-
-/--
-Coefficient majorants give the pre-pair-with-continuity target directly, after
-constructing the Frobenius pre-pair.
--/
-theorem holomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuity_of_coefficientGeometricMajorant
-    (hCoeff : HolomorphicSchwarzianCoefficientGeometricMajorantTheorem) :
-    HolomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuityTheorem :=
-  holomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuity_of_prePair
-    (holomorphicSchwarzianFrobeniusPrePairExistence_of_coefficientGeometricMajorant hCoeff)
-
-/--
-Termwise Frobenius pre-pair existence implies the pre-pair-with-continuity
-target.
--/
-theorem holomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuity_of_termwise
-    (h : HolomorphicSchwarzianFrobeniusTermwisePrePairExistenceTheorem) :
-    HolomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuityTheorem := by
-  intro u S z₀ hz₀
-  rcases h S hz₀ with ⟨a, ⟨P⟩⟩
-  exact ⟨a, P.toPrePair, ⟨P.derivativeContinuity⟩⟩
-
-/-- Termwise Frobenius pre-pair existence gives the full Frobenius-pair target. -/
-theorem holomorphicSchwarzianFrobeniusPairExistence_of_termwise
-    (h : HolomorphicSchwarzianFrobeniusTermwisePrePairExistenceTheorem) :
-    HolomorphicSchwarzianFrobeniusPairExistenceTheorem :=
-  holomorphicSchwarzianFrobeniusPairExistence_of_prePairWithDerivativeContinuity
-    (holomorphicSchwarzianFrobeniusPrePairWithDerivativeContinuity_of_termwise h)
 
 end
 

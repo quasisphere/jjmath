@@ -96,6 +96,17 @@ def mono {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     support_subset := φ.support_subset.trans hΩ
     compact_support := φ.compact_support }
 
+/--
+%%handwave
+name:
+  Enlarging the region does not change a coordinate test function
+statement:
+  If a smooth compactly supported coordinate test on \(\Omega\) is regarded
+  as a test on a larger region \(\Omega'\), its underlying function is
+  unchanged.
+proof:
+  The enlargement changes only the proof that the support lies in the region.
+-/
 @[simp]
 theorem mono_coe {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     {Ω Ω' : Set H}
@@ -441,6 +452,17 @@ noncomputable def chartTestSurfaceZeroExtension {X : Type}
     (e : OpenPartialHomeomorph X ℂ) (η : ℂ → ℝ) : X → ℝ :=
   e.source.indicator (fun x : X ↦ η (e x))
 
+/--
+%%handwave
+name:
+  Chartwise zero extension on the chart source
+statement:
+  If \(x\) lies in the source of a chart \(e\), the zero extension of a
+  coordinate function \(\eta\) satisfies
+  \(\widetilde\eta(x)=\eta(e(x))\).
+proof:
+  On the chart source, the indicator in the definition takes value one.
+-/
 theorem chartTestSurfaceZeroExtension_apply_of_mem {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : ℂ → ℝ) {x : X}
@@ -448,6 +470,16 @@ theorem chartTestSurfaceZeroExtension_apply_of_mem {X : Type}
     chartTestSurfaceZeroExtension e η x = η (e x) := by
   simp [chartTestSurfaceZeroExtension, hx]
 
+/--
+%%handwave
+name:
+  Chartwise zero extension outside the chart source
+statement:
+  If \(x\) does not lie in the source of a chart \(e\), the chartwise zero
+  extension of \(\eta\) vanishes at \(x\).
+proof:
+  Outside the chart source, the defining indicator is zero.
+-/
 theorem chartTestSurfaceZeroExtension_apply_of_notMem {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : ℂ → ℝ) {x : X}
@@ -455,6 +487,17 @@ theorem chartTestSurfaceZeroExtension_apply_of_notMem {X : Type}
     chartTestSurfaceZeroExtension e η x = 0 := by
   simp [chartTestSurfaceZeroExtension, hx]
 
+/--
+%%handwave
+name:
+  Pulling a chartwise zero extension back to coordinates
+statement:
+  If \(z\in e.target\), then
+  \(\widetilde\eta(e^{-1}(z))=\eta(z)\).
+proof:
+  The inverse-chart point lies in the chart source, and the chart and its
+  inverse cancel there.
+-/
 theorem chartTestSurfaceZeroExtension_apply_symm_of_mem {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) (η : ℂ → ℝ) {z : ℂ}
@@ -463,6 +506,17 @@ theorem chartTestSurfaceZeroExtension_apply_symm_of_mem {X : Type}
   have hx : e.symm z ∈ e.source := e.map_target hz
   simp [chartTestSurfaceZeroExtension, hx, e.right_inv hz]
 
+/--
+%%handwave
+name:
+  Support of a chartwise zero extension
+statement:
+  The pointwise support of the chartwise zero extension of \(\eta\) is
+  contained in \(e^{-1}(\operatorname{supp}\eta)\).
+proof:
+  A nonzero value must occur in the chart source and have nonzero coordinate
+  value; the inverse-chart identity then gives the claimed representation.
+-/
 theorem chartTestSurfaceZeroExtension_support_subset_image_support {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) {η : ℂ → ℝ} :
@@ -478,6 +532,20 @@ theorem chartTestSurfaceZeroExtension_support_subset_image_support {X : Type}
       rw [chartTestSurfaceZeroExtension_apply_of_mem e η hx_source, hη_zero])
   · exact e.left_inv hx_source
 
+/--
+%%handwave
+name:
+  Closed support of a chartwise zero extension
+statement:
+  If \(\operatorname{tsupp}\eta\) is compact and contained in the chart
+  target, then
+  \(\operatorname{tsupp}\widetilde\eta\subseteq
+  e^{-1}(\operatorname{tsupp}\eta)\).
+proof:
+  The inverse-chart image of the compact coordinate support is compact and
+  hence closed.  It contains the pointwise support, so it also contains its
+  closure.
+-/
 theorem chartTestSurfaceZeroExtension_tsupport_subset_image_tsupport {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) {η : ℂ → ℝ}
@@ -496,6 +564,17 @@ theorem chartTestSurfaceZeroExtension_tsupport_subset_image_tsupport {X : Type}
   rw [tsupport]
   exact closure_minimal hsupport himage_closed
 
+/--
+%%handwave
+name:
+  Closed support of a chartwise zero extension lies in the chart source
+statement:
+  If the compact closed support of \(\eta\) lies in \(e.target\), then the
+  closed support of its chartwise zero extension lies in \(e.source\).
+proof:
+  Every point in the extended closed support is the inverse-chart image of a
+  point in the coordinate closed support, hence lies in the chart source.
+-/
 theorem chartTestSurfaceZeroExtension_tsupport_subset_source {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) {η : ℂ → ℝ}
@@ -508,6 +587,19 @@ theorem chartTestSurfaceZeroExtension_tsupport_subset_source {X : Type}
     ⟨z, hz, rfl⟩
   exact e.map_target (hη_target hz)
 
+/--
+%%handwave
+name:
+  Regional support of a chartwise zero extension
+statement:
+  If
+  \(\operatorname{tsupp}\eta\subseteq e.target\cap e^{-1}(U)\),
+  then \(\operatorname{tsupp}\widetilde\eta\subseteq U\).
+proof:
+  Represent each point of the extended support as \(e^{-1}(z)\) with
+  \(z\in\operatorname{tsupp}\eta\), and use the assumed membership in
+  \(e^{-1}(U)\).
+-/
 theorem chartTestSurfaceZeroExtension_tsupport_subset_set {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) {η : ℂ → ℝ} {U : Set X}
@@ -522,6 +614,17 @@ theorem chartTestSurfaceZeroExtension_tsupport_subset_set {X : Type}
     ⟨z, hz, rfl⟩
   exact (hη_region hz).2
 
+/--
+%%handwave
+name:
+  Compact support of a chartwise zero extension
+statement:
+  If \(\eta\) has compact closed support contained in \(e.target\), then its
+  chartwise zero extension has compact support on the surface.
+proof:
+  The extended closed support is a closed subset of the compact inverse-chart
+  image of the coordinate closed support.
+-/
 theorem chartTestSurfaceZeroExtension_hasCompactSupport {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     (e : OpenPartialHomeomorph X ℂ) {η : ℂ → ℝ}
@@ -535,6 +638,20 @@ theorem chartTestSurfaceZeroExtension_hasCompactSupport {X : Type}
     (chartTestSurfaceZeroExtension_tsupport_subset_image_tsupport
       e hη_target hη_compact)
 
+/--
+%%handwave
+name:
+  Smoothness of a chartwise zero extension
+statement:
+  Let \(\eta\) be smooth with compact closed support contained in the target
+  of a surface chart \(e\).  Its extension by zero through \(e\) is smooth on
+  the entire surface.
+proof:
+  Near points of the extended support, the function is the composition of
+  \(\eta\) with the smooth chart transition.  Away from the closed support it
+  is locally zero.  These two local descriptions prove smoothness in every
+  surface chart.
+-/
 theorem chartTestSurfaceZeroExtension_smooth {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -597,6 +714,22 @@ theorem chartTestSurfaceZeroExtension_smooth {X : Type}
         |>.congr_of_eventuallyEq
           (eventually_nhdsWithin_of_eventually_nhds hcoord_zero) hz_zero
 
+/--
+%%handwave
+name:
+  Coordinate formula for the differential of a smooth surface function
+statement:
+  If \(f:X\to\mathbb R\) is smooth, then for a surface chart \(e\),
+  \(z\in e.target\), and \(v\in\mathbb C\),
+  \[
+    df_{e^{-1}z}\bigl(J_e(z)v\bigr)
+    =D(f\circ e^{-1})(z)v.
+  \]
+proof:
+  Apply the manifold chain rule to \(f\circ e^{-1}\).  The derivative of the
+  inverse chart is the chart tangent map, and openness of the chart target
+  identifies the within-set derivative with the ordinary derivative.
+-/
 theorem surfaceExteriorDerivative_apply_chartTangentMap_of_smooth {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -677,6 +810,17 @@ noncomputable def ofChartTest {X : Type}
     chartTestSurfaceZeroExtension_hasCompactSupport e
       (η.support_subset.trans hΩ_target) η.compact_support
 
+/--
+%%handwave
+name:
+  A globalized chart test recovers the coordinate test
+statement:
+  If \(z\in e.target\), the global surface test obtained from a coordinate
+  test \(\eta\) satisfies \(F(e^{-1}z)=\eta(z)\).
+proof:
+  The underlying function is the chartwise zero extension, whose pullback to
+  the chart target equals \(\eta\).
+-/
 theorem ofChartTest_apply_symm_of_mem_target {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -687,6 +831,17 @@ theorem ofChartTest_apply_symm_of_mem_target {X : Type}
     (ofChartTest e he η hΩ_target).toFun (e.symm z) = η z := by
   exact chartTestSurfaceZeroExtension_apply_symm_of_mem e η hz
 
+/--
+%%handwave
+name:
+  A globalized chart test is supported in the chart source
+statement:
+  The closed support of the global surface test obtained from \(\eta\) lies
+  in \(e.source\).
+proof:
+  The coordinate support lies in \(e.target\); apply the support theorem for
+  chartwise zero extension.
+-/
 theorem ofChartTest_tsupport_subset_source {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -698,6 +853,18 @@ theorem ofChartTest_tsupport_subset_source {X : Type}
   exact chartTestSurfaceZeroExtension_tsupport_subset_source e
     (η.support_subset.trans hΩ_target) η.compact_support
 
+/--
+%%handwave
+name:
+  Regional support of a globalized chart test
+statement:
+  If the coordinate region \(\Omega\) lies in
+  \(e.target\cap e^{-1}(U)\), then the global test built from a test supported
+  in \(\Omega\) has closed support contained in \(U\).
+proof:
+  The coordinate closed support lies in \(\Omega\), so the regional support
+  theorem for the zero extension applies.
+-/
 theorem ofChartTest_tsupport_subset_set {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -709,6 +876,21 @@ theorem ofChartTest_tsupport_subset_set {X : Type}
   exact chartTestSurfaceZeroExtension_tsupport_subset_set e
     (η.support_subset.trans hΩ_region) η.compact_support
 
+/--
+%%handwave
+name:
+  Coordinate gradient of a globalized chart test
+statement:
+  For \(z\in e.target\) and \(v\in\mathbb C\), the differential of the
+  globalized chart test \(F\) satisfies
+  \[
+    dF_{e^{-1}z}\bigl(J_e(z)v\bigr)=D\eta(z)v.
+  \]
+proof:
+  The defining gradient identity expresses the left side as the derivative
+  of \(F\circ e^{-1}\).  Near \(z\), that coordinate function equals
+  \(\eta\), so their derivatives agree.
+-/
 theorem ofChartTest_gradient_apply_symm_of_mem_target {X : Type}
     [TopologicalSpace X] [T2Space X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]

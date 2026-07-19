@@ -29,17 +29,47 @@ abbrev AnnularCylinderModel :
 def annularStep (y : ℝ) : ℝ :=
   Real.smoothTransition ((y + 1) / 2)
 
+/--
+%%handwave
+name:
+  Smoothness of the annular step function
+statement:
+  The function \(\chi(y)=\theta((y+1)/2)\), where \(\theta\) is the standard
+  smooth transition from \(0\) to \(1\), is smooth on \(\mathbb R\).
+proof:
+  It is the composition of the smooth transition function with an affine map.
+-/
 @[fun_prop]
 theorem contDiff_annularStep : ContDiff ℝ ∞ annularStep := by
   exact Real.smoothTransition.contDiff.comp
     ((contDiff_id.add contDiff_const).div_const (2 : ℝ))
 
+/--
+%%handwave
+name:
+  Value of the annular step below the transition interval
+statement:
+  If \(y\le-1\), then \(\chi(y)=0\).
+proof:
+  The rescaled argument \((y+1)/2\) is nonpositive, where the standard smooth
+  transition function vanishes.
+-/
 @[simp]
 theorem annularStep_eq_zero_of_le_neg_one {y : ℝ} (hy : y ≤ -1) :
     annularStep y = 0 := by
   apply Real.smoothTransition.zero_of_nonpos
   linarith
 
+/--
+%%handwave
+name:
+  Value of the annular step above the transition interval
+statement:
+  If \(y\ge1\), then \(\chi(y)=1\).
+proof:
+  The rescaled argument \((y+1)/2\) is at least \(1\), where the standard
+  smooth transition function equals \(1\).
+-/
 @[simp]
 theorem annularStep_eq_one_of_one_le {y : ℝ} (hy : 1 ≤ y) :
     annularStep y = 1 := by
@@ -53,6 +83,16 @@ noncomputable def annularTransitionFunction :
   property := by
     exact contDiff_annularStep.contMDiff.comp contMDiff_snd
 
+/--
+%%handwave
+name:
+  Formula for the annular transition function
+statement:
+  At \((z,t)\in S^1\times\mathbb R\), the annular transition function is
+  \(\chi(t)\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem annularTransitionFunction_apply (p : Circle × ℝ) :
     annularTransitionFunction p = annularStep p.2 :=
@@ -65,7 +105,16 @@ noncomputable def annularTransitionOneForm :
     (smoothRealFunctionToZeroForm (I0 := AnnularCylinderModel)
       annularTransitionFunction)
 
-/-- The standard annular one-form is closed. -/
+/--
+%%handwave
+name:
+  Closedness of the standard annular one-form
+statement:
+  The one-form \(d(\chi\circ\operatorname{pr}_2)\) on
+  \(S^1\times\mathbb R\) is closed.
+proof:
+  It is exact, and \(d^2=0\).
+-/
 theorem annularTransitionOneForm_closed :
     deRhamDifferential (I := AnnularCylinderModel) (M := Circle × ℝ) (A := ℝ) 1
         annularTransitionOneForm = 0 := by
@@ -74,7 +123,17 @@ theorem annularTransitionOneForm_closed :
     (smoothRealFunctionToZeroForm (I0 := AnnularCylinderModel)
       annularTransitionFunction)
 
-/-- The standard annular form vanishes outside the closed transition band. -/
+/--
+%%handwave
+name:
+  Support of the standard annular one-form
+statement:
+  If \((z,t)\in S^1\times\mathbb R\) and \(t\notin[-1,1]\), then
+  \(d(\chi\circ\operatorname{pr}_2)_{(z,t)}=0\).
+proof:
+  For \(t<-1\) and \(t>1\), the step function is locally constant,
+  respectively equal to \(0\) and \(1\), so its differential vanishes.
+-/
 theorem annularTransitionOneForm_toFun_eq_zero_of_second_not_mem_Icc
     (p : Circle × ℝ) (hp : p.2 ∉ Set.Icc (-1 : ℝ) 1) :
     annularTransitionOneForm.toFun p = 0 := by
@@ -121,6 +180,16 @@ theorem annularTransitionOneForm_toFun_eq_zero_of_second_not_mem_Icc
 def annularTransitionCore : Set (Circle × ℝ) :=
   {p | p.2 ∈ Set.Icc (-1 : ℝ) 1}
 
+/--
+%%handwave
+name:
+  Compactness of the annular transition core
+statement:
+  The band \(S^1\times[-1,1]\) is compact.
+proof:
+  Both the circle and the closed interval are compact, and finite products of
+  compact spaces are compact.
+-/
 theorem annularTransitionCore_isCompact : IsCompact annularTransitionCore := by
   have hprod :
       annularTransitionCore = (Set.univ : Set Circle) ×ˢ Set.Icc (-1 : ℝ) 1 := by
@@ -144,6 +213,17 @@ def annularCollarCore
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) : Set M :=
   (fun p : Circle × ℝ => ((phi.symm p : U) : M)) '' annularTransitionCore
 
+/--
+%%handwave
+name:
+  Compactness of the transition core in an annular collar
+statement:
+  The inverse collar chart sends \(S^1\times[-1,1]\) to a compact subset of
+  \(M\).
+proof:
+  The transition band is compact and the inverse collar chart followed by
+  inclusion in \(M\) is continuous.
+-/
 theorem annularCollarCore_isCompact
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -151,6 +231,16 @@ theorem annularCollarCore_isCompact
   exact annularTransitionCore_isCompact.image
     (continuous_subtype_val.comp phi.symm.continuous)
 
+/--
+%%handwave
+name:
+  The annular transition core lies in the collar
+statement:
+  The image in \(M\) of \(S^1\times[-1,1]\) under the inverse collar chart is
+  contained in the collar \(U\).
+proof:
+  Every value of the inverse collar chart is, by definition, a point of \(U\).
+-/
 theorem annularCollarCore_subset
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -166,6 +256,17 @@ def annularCollarExteriorOpen
   ⟨(annularCollarCore I U phi)ᶜ,
     (annularCollarCore_isCompact I U phi).isClosed.isOpen_compl⟩
 
+/--
+%%handwave
+name:
+  Cover by an annular collar and the exterior of its core
+statement:
+  If \(K\) is the transition core of an annular collar \(U\), then
+  \(U\cup(M\setminus K)=M\).
+proof:
+  Since \(K\subseteq U\), every point either belongs to \(U\) or lies outside
+  \(K\).
+-/
 theorem annularCollar_open_cover
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -185,6 +286,17 @@ noncomputable def annularCollarLocalOneForm
   smoothFormsPullbackDiffeomorph I AnnularCylinderModel phi 1
     annularTransitionOneForm
 
+/--
+%%handwave
+name:
+  Closedness of the transported annular form
+statement:
+  The pullback to an annular collar of the standard annular one-form is
+  closed.
+proof:
+  Exterior differentiation commutes with pullback by the collar
+  diffeomorphism, and the standard annular form is closed.
+-/
 theorem annularCollarLocalOneForm_closed
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -195,8 +307,17 @@ theorem annularCollarLocalOneForm_closed
     annularTransitionOneForm_closed]
   exact LinearMap.map_zero _
 
-/-- On the overlap with the exterior of its transition core, the transported
-annular form is zero. -/
+/--
+%%handwave
+name:
+  Vanishing of the annular form outside its transition core
+statement:
+  On \(U\cap(M\setminus K)\), where \(K\) is the annular transition core, the
+  transported annular one-form restricts to zero.
+proof:
+  Such a point maps under the collar chart outside
+  \(S^1\times[-1,1]\), where the standard annular form vanishes.
+-/
 theorem annularCollarLocalOneForm_overlap_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -224,7 +345,18 @@ theorem annularCollarLocalOneForm_overlap_eq_zero
   rw [hzero]
   rfl
 
-/-- The overlap condition for gluing the transported annular form to zero. -/
+/--
+%%handwave
+name:
+  Mayer--Vietoris compatibility for the annular form
+statement:
+  On the overlap of the collar \(U\) with the exterior of its transition
+  core, the difference between the transported annular form and the zero form
+  is zero.
+proof:
+  The transported form restricts to zero on the overlap, while the second
+  local form is identically zero.
+-/
 theorem annularCollarLocalOneForm_mayerVietorisDifference_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -247,6 +379,18 @@ noncomputable def annularCollarGlobalOneForm
     (annularCollarLocalOneForm I U phi) 0
     (annularCollarLocalOneForm_mayerVietorisDifference_eq_zero I U phi)
 
+/--
+%%handwave
+name:
+  Closedness of the global annular form
+statement:
+  The form obtained by gluing the transported annular form on \(U\) to zero
+  outside its transition core is closed on \(M\).
+proof:
+  Its restrictions to the two members of the open cover are respectively the
+  closed transported form and zero, so their exterior derivatives vanish
+  locally and hence globally.
+-/
 theorem annularCollarGlobalOneForm_closed
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -291,6 +435,16 @@ noncomputable def annularTransverseSimplex
       contMDiff :=
         ⟨G, hG.contMDiffOn, fun _ => rfl⟩ }
 
+/--
+%%handwave
+name:
+  Upper endpoint of an annular transverse segment
+statement:
+  The face opposite vertex \(0\) of the affine segment from \((z,a)\) to
+  \((z,b)\) is \((z,b)\).
+proof:
+  On this face the barycentric coordinates are \((0,1)\).
+-/
 @[simp]
 theorem annularTransverseSimplex_face_zero_apply
     (z : Circle) (a b : ℝ) (q : StandardSimplex 0) :
@@ -306,6 +460,16 @@ theorem annularTransverseSimplex_face_zero_apply
         exact simplexAmbientMap_succAbove_apply_succAbove 0 q 0]
   simp [hq]
 
+/--
+%%handwave
+name:
+  Lower endpoint of an annular transverse segment
+statement:
+  The face opposite vertex \(1\) of the affine segment from \((z,a)\) to
+  \((z,b)\) is \((z,a)\).
+proof:
+  On this face the barycentric coordinates are \((1,0)\).
+-/
 @[simp]
 theorem annularTransverseSimplex_face_one_apply
     (z : Circle) (a b : ℝ) (q : StandardSimplex 0) :
@@ -321,8 +485,18 @@ theorem annularTransverseSimplex_face_one_apply
         exact simplexAmbientMap_succAbove_apply_succAbove 1 q 0]
   simp [hq]
 
-/-- The standard annular form has unit period on every transverse segment
-whose endpoints lie beyond the transition region. -/
+/--
+%%handwave
+name:
+  Unit period of the standard annular form
+statement:
+  If \(a\le-1\) and \(b\ge1\), then the integral of
+  \(d(\chi\circ\operatorname{pr}_2)\) along the segment from \((z,a)\) to
+  \((z,b)\) equals \(1\).
+proof:
+  The fundamental theorem for exact one-forms gives
+  \(\chi(b)-\chi(a)=1-0=1\).
+-/
 theorem integrate_annularTransitionOneForm_transverse_eq_one
     (z : Circle) {a b : ℝ} (ha : a ≤ -1) (hb : 1 ≤ b) :
     integrateSmoothChain (I := AnnularCylinderModel) annularTransitionOneForm
@@ -349,8 +523,18 @@ noncomputable def annularCollarTransitionFunction
     C^∞⟮I, U; ℝ⟯ :=
   annularTransitionFunction.comp phi.toContMDiffMap
 
-/-- Pulling the standard zero-form back to a collar gives the zero-form of
-the transported step function. -/
+/--
+%%handwave
+name:
+  Pullback of the annular transition function
+statement:
+  Pulling the zero-form \(\chi\circ\operatorname{pr}_2\) back by the collar
+  chart gives the zero-form whose function is
+  \(\chi\circ\operatorname{pr}_2\circ\phi\).
+proof:
+  Evaluate both zero-forms at each point; pullback of a function is
+  composition.
+-/
 theorem smoothFormsPullbackDiffeomorph_annularTransitionZeroForm
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -366,8 +550,17 @@ theorem smoothFormsPullbackDiffeomorph_annularTransitionZeroForm
     smoothDifferentialFormPullbackDiffeomorph, smoothRealFunctionToZeroForm,
     annularCollarTransitionFunction]
 
-/-- On its collar, the transported annular form is the differential of the
-transported step function. -/
+/--
+%%handwave
+name:
+  The local annular form as an exact form
+statement:
+  On the annular collar \(U\), the transported annular one-form equals
+  \(d(\chi\circ\operatorname{pr}_2\circ\phi)\).
+proof:
+  Exterior differentiation commutes with pullback, and pullback of the
+  transverse zero-form is composition with the collar chart.
+-/
 theorem annularCollarLocalOneForm_eq_d_transitionFunction
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -396,6 +589,16 @@ noncomputable def annularCollarTransverseSimplex
           phi.symm.contMDiff.comp_contMDiffOn sigma.extension_contMDiffOn,
           fun q => congrArg phi.symm (sigma.extension_eq q)⟩ }
 
+/--
+%%handwave
+name:
+  Formula for a transverse simplex in an annular collar
+statement:
+  The transverse simplex in \(U\) is obtained by applying the inverse collar
+  chart to the affine segment from \((z,a)\) to \((z,b)\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem annularCollarTransverseSimplex_apply
     (U : TopologicalSpace.Opens M)
@@ -405,6 +608,17 @@ theorem annularCollarTransverseSimplex_apply
       phi.symm (annularTransverseSimplex z a b q) :=
   rfl
 
+/--
+%%handwave
+name:
+  Upper endpoint of a transported annular segment
+statement:
+  The face opposite vertex \(0\) of the transported transverse segment is
+  \(\phi^{-1}(z,b)\).
+proof:
+  The corresponding face of the standard affine segment is \((z,b)\), and
+  the entire simplex is transported by \(\phi^{-1}\).
+-/
 @[simp]
 theorem annularCollarTransverseSimplex_face_zero_apply
     (U : TopologicalSpace.Opens M)
@@ -416,6 +630,17 @@ theorem annularCollarTransverseSimplex_face_zero_apply
   congr 1
   simp
 
+/--
+%%handwave
+name:
+  Lower endpoint of a transported annular segment
+statement:
+  The face opposite vertex \(1\) of the transported transverse segment is
+  \(\phi^{-1}(z,a)\).
+proof:
+  The corresponding face of the standard affine segment is \((z,a)\), and
+  the entire simplex is transported by \(\phi^{-1}\).
+-/
 @[simp]
 theorem annularCollarTransverseSimplex_face_one_apply
     (U : TopologicalSpace.Opens M)
@@ -427,7 +652,18 @@ theorem annularCollarTransverseSimplex_face_one_apply
   congr 1
   simp
 
-/-- The transported annular form has unit integral across the collar. -/
+/--
+%%handwave
+name:
+  Unit transverse period of the local annular form
+statement:
+  If \(a\le-1\) and \(b\ge1\), the local annular form integrates to \(1\)
+  along the transported segment from \(\phi^{-1}(z,a)\) to
+  \(\phi^{-1}(z,b)\).
+proof:
+  The local form is the differential of the transported transition function,
+  so endpoint evaluation gives \(\chi(b)-\chi(a)=1\).
+-/
 theorem integrate_annularCollarLocalOneForm_transverse_eq_one
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -440,8 +676,17 @@ theorem integrate_annularCollarLocalOneForm_transverse_eq_one
   simp [annularCollarTransitionFunction, annularTransitionFunction,
     annularStep_eq_zero_of_le_neg_one ha, annularStep_eq_one_of_one_le hb]
 
-/-- Restricting the global annular form to its collar recovers the transported
-local form. -/
+/--
+%%handwave
+name:
+  Restriction of the global annular form to its collar
+statement:
+  The global annular form restricts on \(U\) to the transported local annular
+  form.
+proof:
+  This is the left restriction identity for the two-open-set gluing
+  construction.
+-/
 theorem annularCollarGlobalOneForm_restrict_collar
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -451,8 +696,16 @@ theorem annularCollarGlobalOneForm_restrict_collar
   rw [annularCollarGlobalOneForm,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_left]
 
-/-- The global annular form restricts to zero off its compact transition
-core. -/
+/--
+%%handwave
+name:
+  Vanishing of the global annular form on the exterior
+statement:
+  The global annular form restricts to zero on the complement of its compact
+  transition core.
+proof:
+  The form was defined there as the zero member of the two-open-set gluing.
+-/
 theorem annularCollarGlobalOneForm_restrict_exterior
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -462,8 +715,18 @@ theorem annularCollarGlobalOneForm_restrict_exterior
   rw [annularCollarGlobalOneForm,
     restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_right]
 
-/-- The compactly supported global annular form has unit integral across the
-collar. -/
+/--
+%%handwave
+name:
+  Unit transverse period of the global annular form
+statement:
+  If \(a\le-1\) and \(b\ge1\), the global annular form integrates to \(1\)
+  along the transverse segment included from \(U\) into \(M\).
+proof:
+  Integration after open inclusion equals integration of the restricted form,
+  whose restriction to \(U\) is the local annular form with unit transverse
+  period.
+-/
 theorem integrate_annularCollarGlobalOneForm_transverse_eq_one
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -476,8 +739,17 @@ theorem integrate_annularCollarGlobalOneForm_transverse_eq_one
   rw [annularCollarGlobalOneForm_restrict_collar]
   exact integrate_annularCollarLocalOneForm_transverse_eq_one I U phi z ha hb
 
-/-- Every smooth chain lying off the compact transition core has zero integral
-against the global annular form. -/
+/--
+%%handwave
+name:
+  Zero annular period on chains outside the transition core
+statement:
+  Every smooth \(1\)-chain supported in the exterior of the compact transition
+  core has integral \(0\) against the global annular form.
+proof:
+  Move the integral across the open inclusion; the restricted global form is
+  zero on the exterior.
+-/
 theorem integrate_annularCollarGlobalOneForm_exterior_chain_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -490,8 +762,17 @@ theorem integrate_annularCollarGlobalOneForm_exterior_chain_eq_zero
   rw [annularCollarGlobalOneForm_restrict_exterior]
   exact integrateSmoothChain_zero_form I c
 
-/-- Every smooth path lying off the compact transition core has zero integral
-against the global annular form. -/
+/--
+%%handwave
+name:
+  Zero annular period on exterior paths
+statement:
+  Every smooth path lying in the exterior of the compact transition core has
+  integral \(0\) against the global annular form.
+proof:
+  Regard the path as a single-simplex chain and apply the vanishing result for
+  arbitrary exterior chains.
+-/
 theorem integrate_annularCollarGlobalOneForm_exterior_eq_zero
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -505,8 +786,20 @@ theorem integrate_annularCollarGlobalOneForm_exterior_eq_zero
     integrate_annularCollarGlobalOneForm_exterior_chain_eq_zero
       I U phi (Finsupp.single sigma (1 : ℤ))
 
-/-- A transverse collar crossing closed by an arbitrary return chain outside
-the compact transition core forces first de Rham cohomology to be nontrivial. -/
+/--
+%%handwave
+name:
+  Nontrivial first de Rham cohomology from an annular crossing
+statement:
+  Suppose a positive transverse collar crossing, together with a return chain
+  outside the transition core, is a cycle.  Then
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  The global annular form is closed and has period \(1\) on the cycle: the
+  crossing contributes \(1\), while the exterior return contributes \(0\).
+  Since exact forms have zero period on cycles, this form represents a nonzero
+  cohomology class.
+-/
 theorem not_subsingleton_deRhamH1_of_annularCollar_crossing_and_return_chain
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -532,9 +825,19 @@ theorem not_subsingleton_deRhamH1_of_annularCollar_crossing_and_return_chain
   · exact integrate_annularCollarGlobalOneForm_exterior_chain_eq_zero
       I U phi returning
 
-/-- It is enough to construct the exterior return chain with boundary opposite
-to that of the transverse crossing; the resulting sum is automatically a
-cycle and has nonzero annular period. -/
+/--
+%%handwave
+name:
+  Nontrivial cohomology from an annular return chain boundary
+statement:
+  Suppose a return chain outside the transition core has boundary equal, after
+  inclusion in \(M\), to the negative boundary of a positive transverse
+  crossing.  Then \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  The crossing plus the included return chain is a cycle because their
+  boundaries cancel.  Its period against the global annular form is \(1\),
+  so the annular period obstruction gives a nonzero cohomology class.
+-/
 theorem not_subsingleton_deRhamH1_of_annularCollar_return_chain_boundary
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
@@ -553,8 +856,18 @@ theorem not_subsingleton_deRhamH1_of_annularCollar_return_chain_boundary
   rw [map_add, ← SingularChain.openInclusion_boundary, hboundary]
   simp
 
-/-- A transverse collar crossing closed by a return path outside the compact
-transition core forces first de Rham cohomology to be nontrivial. -/
+/--
+%%handwave
+name:
+  Nontrivial cohomology from an annular crossing and return path
+statement:
+  Suppose a positive transverse collar crossing and a single smooth return
+  path outside the transition core form a cycle.  Then
+  \(H_{\mathrm{dR}}^1(M;\mathbb R)\) is not a singleton.
+proof:
+  Regard the return path as a one-simplex chain and apply the crossing--return
+  obstruction for arbitrary exterior chains.
+-/
 theorem not_subsingleton_deRhamH1_of_annularCollar_crossing_and_return
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)

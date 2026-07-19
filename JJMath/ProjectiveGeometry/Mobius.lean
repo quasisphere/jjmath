@@ -43,6 +43,16 @@ abbrev MobiusGroup : Type :=
 def IsMobiusMap (f : RiemannSphere → RiemannSphere) : Prop :=
   ∃ g : MobiusRepresentative, f = fun z ↦ g • z
 
+/--
+%%handwave
+name:
+  Matrix actions are Möbius maps
+statement:
+  For every \(g\in\operatorname{GL}_2(\mathbb C)\), the map
+  \(z\mapsto g\cdot z\) on \(\widehat{\mathbb C}\) is a Möbius map.
+proof:
+  Use \(g\) itself as the required matrix representative.
+-/
 theorem isMobiusMap_smul (g : MobiusRepresentative) :
     IsMobiusMap (fun z : RiemannSphere ↦ g • z) :=
   ⟨g, rfl⟩
@@ -59,7 +69,19 @@ def mobiusFiniteDenom (A : MobiusRepresentative) (z : ℂ) : ℂ :=
 def mobiusFiniteFormula (A : MobiusRepresentative) (z : ℂ) : ℂ :=
   mobiusFiniteNum A z / mobiusFiniteDenom A z
 
-/-- If the denominator is nonzero, the finite affine formula agrees with the sphere action. -/
+/--
+%%handwave
+name:
+  Finite formula for the Möbius action
+statement:
+  Let \(A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)\) and \(z\in\mathbb C\).
+  If \(a_{10}z+a_{11}\ne0\), then
+  \(A\cdot z=(a_{00}z+a_{01})/(a_{10}z+a_{11})\) as a finite point of
+  \(\widehat{\mathbb C}\).
+proof:
+  Evaluate the projective-line action; the nonzero-denominator hypothesis
+  selects its finite branch.
+-/
 theorem mobiusRepresentative_smul_coe_eq_mobiusFiniteFormula
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     A • (z : RiemannSphere) = (mobiusFiniteFormula A z : RiemannSphere) := by
@@ -67,7 +89,17 @@ theorem mobiusRepresentative_smul_coe_eq_mobiusFiniteFormula
   rw [if_neg (by simpa [mobiusFiniteDenom] using hden)]
   simp [mobiusFiniteFormula, mobiusFiniteNum, mobiusFiniteDenom]
 
-/-- If a Mobius representative sends a finite point to a finite point, its denominator is nonzero. -/
+/--
+%%handwave
+name:
+  A finite Möbius value has nonzero denominator
+statement:
+  If \(A\in\operatorname{GL}_2(\mathbb C)\) sends the finite point \(z\) to the
+  finite point \(w\), then \(a_{10}z+a_{11}\ne0\).
+proof:
+  If the denominator vanished, the projective-line action would send \(z\) to
+  infinity, contradicting the assumed finite value.
+-/
 theorem mobiusFiniteDenom_ne_zero_of_smul_coe_eq_coe
     (A : MobiusRepresentative) {z w : ℂ}
     (h : A • (z : RiemannSphere) = (w : RiemannSphere)) :
@@ -77,7 +109,18 @@ theorem mobiusFiniteDenom_ne_zero_of_smul_coe_eq_coe
   rw [if_pos (by simpa [mobiusFiniteDenom] using hden)] at h
   exact OnePoint.infty_ne_coe w h
 
-/-- Recover the finite affine formula from a finite-valued sphere action. -/
+/--
+%%handwave
+name:
+  Recovering the affine fractional-linear formula
+statement:
+  If \(A\in\operatorname{GL}_2(\mathbb C)\) sends the finite point \(z\) to the
+  finite point \(w\), then
+  \((a_{00}z+a_{01})/(a_{10}z+a_{11})=w\).
+proof:
+  First deduce that the denominator is nonzero, apply the finite action formula,
+  and use injectivity of the inclusion \(\mathbb C\hookrightarrow\widehat{\mathbb C}\).
+-/
 theorem mobiusFiniteFormula_eq_of_smul_coe_eq_coe
     (A : MobiusRepresentative) {z w : ℂ}
     (h : A • (z : RiemannSphere) = (w : RiemannSphere)) :
@@ -86,7 +129,18 @@ theorem mobiusFiniteFormula_eq_of_smul_coe_eq_coe
   have hformula := mobiusRepresentative_smul_coe_eq_mobiusFiniteFormula A hden
   exact OnePoint.coe_injective (by simpa [hformula] using h)
 
-/-- Derivative of the finite affine formula for a complex Mobius representative. -/
+/--
+%%handwave
+name:
+  Derivative of a fractional-linear map
+statement:
+  For \(A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)\) and
+  \(a_{10}z+a_{11}\ne0\), the fractional-linear map has complex derivative
+  \(\det(A)/(a_{10}z+a_{11})^2\) at \(z\).
+proof:
+  Apply the quotient rule to the affine numerator and denominator.  Expanding
+  the numerator of the derivative gives \(a_{00}a_{11}-a_{01}a_{10}=\det(A)\).
+-/
 theorem mobiusFiniteFormula_hasDerivAt
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     HasDerivAt (mobiusFiniteFormula A)
@@ -105,13 +159,32 @@ theorem mobiusFiniteFormula_hasDerivAt
   · simp [mobiusFiniteDenom, Matrix.det_fin_two]
     ring
 
-/-- The finite affine formula is holomorphic where its denominator is nonzero. -/
+/--
+%%handwave
+name:
+  Fractional-linear maps are complex differentiable off their pole
+statement:
+  If \(a_{10}z+a_{11}\ne0\), then
+  \(w\mapsto(a_{00}w+a_{01})/(a_{10}w+a_{11})\) is complex differentiable at \(z\).
+proof:
+  This is the differentiability consequence of [the derivative equals \(\det(A)/(a_{10}z+a_{11})^2\)](lean:JJMath.mobiusFiniteFormula_hasDerivAt).
+-/
 theorem mobiusFiniteFormula_differentiableAt
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     DifferentiableAt ℂ (mobiusFiniteFormula A) z :=
   (mobiusFiniteFormula_hasDerivAt A hden).differentiableAt
 
-/-- The finite affine formula for a complex Mobius representative is smooth off its pole. -/
+/--
+%%handwave
+name:
+  Fractional-linear maps are smooth off their pole
+statement:
+  If \(a_{10}z+a_{11}\ne0\), then
+  \(w\mapsto(a_{00}w+a_{01})/(a_{10}w+a_{11})\) is complex smooth at \(z\).
+proof:
+  Affine functions are smooth, and the quotient of two smooth functions is
+  smooth wherever the denominator is nonzero.
+-/
 theorem mobiusFiniteFormula_contDiffAt
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     ContDiffAt ℂ ⊤ (mobiusFiniteFormula A) z := by
@@ -124,14 +197,35 @@ theorem mobiusFiniteFormula_contDiffAt
   simpa [mobiusFiniteFormula, mobiusFiniteNum, mobiusFiniteDenom] using
     hnum.div hdenom hden
 
-/-- Derivative of the finite affine formula for a complex Mobius representative. -/
+/--
+%%handwave
+name:
+  Value of the derivative of a fractional-linear map
+statement:
+  For \(A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)\) and
+  \(a_{10}z+a_{11}\ne0\),
+  \[\frac{d}{dz}\frac{a_{00}z+a_{01}}{a_{10}z+a_{11}}
+    =\frac{\det A}{(a_{10}z+a_{11})^2}.\]
+proof:
+  Take the value supplied by [the derivative equals \(\det(A)/(a_{10}z+a_{11})^2\)](lean:JJMath.mobiusFiniteFormula_hasDerivAt).
+-/
 theorem mobiusFiniteFormula_deriv
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     deriv (mobiusFiniteFormula A) z =
       A.det.val / (mobiusFiniteDenom A z) ^ 2 :=
   (mobiusFiniteFormula_hasDerivAt A hden).deriv
 
-/-- The finite affine formula has nonzero derivative where its denominator is nonzero. -/
+/--
+%%handwave
+name:
+  A Möbius derivative never vanishes off its pole
+statement:
+  For \(A\in\operatorname{GL}_2(\mathbb C)\), the derivative
+  \(\det(A)/(a_{10}z+a_{11})^2\) is nonzero whenever \(a_{10}z+a_{11}\ne0\).
+proof:
+  Substitute the derivative formula; both the determinant and the squared
+  denominator are nonzero.
+-/
 theorem mobiusFiniteFormula_deriv_ne_zero
     (A : MobiusRepresentative) {z : ℂ} (hden : mobiusFiniteDenom A z ≠ 0) :
     deriv (mobiusFiniteFormula A) z ≠ 0 := by
@@ -146,22 +240,61 @@ def riemannSphereInvFinite (z : ℂ) : RiemannSphere :=
 def riemannSphereInv (z : RiemannSphere) : RiemannSphere :=
   z.elim ((0 : ℂ) : RiemannSphere) riemannSphereInvFinite
 
+/--
+%%handwave
+name:
+  Spherical inversion sends infinity to zero
+statement:
+  Under spherical inversion, \(\iota(\infty)=0\).
+proof:
+  This is the infinity branch in the definition of spherical inversion.
+-/
 @[simp]
 theorem riemannSphereInv_infty :
     riemannSphereInv OnePoint.infty = ((0 : ℂ) : RiemannSphere) :=
   rfl
 
+/--
+%%handwave
+name:
+  Spherical inversion sends zero to infinity
+statement:
+  Under spherical inversion, \(\iota(0)=\infty\).
+proof:
+  Evaluate the finite branch at zero.
+-/
 @[simp]
 theorem riemannSphereInv_zero :
     riemannSphereInv ((0 : ℂ) : RiemannSphere) = OnePoint.infty := by
   simp [riemannSphereInv, riemannSphereInvFinite]
 
+/--
+%%handwave
+name:
+  Spherical inversion at a nonzero finite point
+statement:
+  For \(z\in\mathbb C^\times\), spherical inversion sends the corresponding
+  finite point to the finite point \(z^{-1}\).
+proof:
+  The nonzero hypothesis selects the reciprocal branch of the definition.
+-/
 @[simp]
 theorem riemannSphereInv_coe_of_ne_zero {z : ℂ} (hz : z ≠ 0) :
     riemannSphereInv (z : RiemannSphere) = ((z⁻¹ : ℂ) : RiemannSphere) := by
   simp [riemannSphereInv, riemannSphereInvFinite, hz]
 
-/-- The finite-part inversion map into the Riemann sphere is continuous. -/
+/--
+%%handwave
+name:
+  Finite-part spherical inversion is continuous
+statement:
+  The map \(\mathbb C\to\widehat{\mathbb C}\) sending (0) to infinity and
+  \(z\ne0\) to \(z^{-1}\) is continuous.
+proof:
+  Away from zero this is ordinary inversion followed by the finite inclusion.
+  At zero, \(z^{-1}\) escapes every compact set as \(z\to0\), hence converges to
+  the point at infinity in the one-point compactification.
+-/
 theorem riemannSphereInvFinite_continuous :
     Continuous riemannSphereInvFinite := by
   rw [continuous_iff_continuousAt]
@@ -193,7 +326,17 @@ theorem riemannSphereInvFinite_continuous :
     change Tendsto riemannSphereInvFinite (𝓝 z) (𝓝 (riemannSphereInvFinite z))
     simpa [riemannSphereInvFinite, hz] using hinv.congr' hlocal.symm
 
-/-- Inversion is continuous on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Spherical inversion is continuous
+statement:
+  The map \(\iota:\widehat{\mathbb C}\to\widehat{\mathbb C}\) exchanging
+  (0) with \(\infty\) and sending \(z\ne0\) to \(z^{-1}\) is continuous.
+proof:
+  On the finite chart use finite-part continuity.  At infinity, ordinary
+  inversion tends to zero along the cocompact filter.
+-/
 theorem riemannSphereInv_continuous :
     Continuous riemannSphereInv := by
   rw [OnePoint.continuous_iff]
@@ -227,16 +370,46 @@ def complexTranslationHomeomorph (a : ℂ) : ℂ ≃ₜ ℂ where
 def riemannSphereTranslation (a : ℂ) : RiemannSphere → RiemannSphere :=
   OnePoint.map (fun z : ℂ ↦ z + a)
 
-/-- Translation is continuous on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Affine translation extends continuously to the Riemann sphere
+statement:
+  For every \(a\in\mathbb C\), the extension of \(z\mapsto z+a\) that fixes
+  infinity is continuous on \(\widehat{\mathbb C}\).
+proof:
+  Translation is a homeomorphism of \(\mathbb C\), and every homeomorphism
+  extends continuously to its one-point compactification.
+-/
 theorem riemannSphereTranslation_continuous (a : ℂ) :
     Continuous (riemannSphereTranslation a) :=
   (Homeomorph.onePointCongr (complexTranslationHomeomorph a)).continuous
 
+/--
+%%handwave
+name:
+  Translation fixes infinity
+statement:
+  For every \(a\in\mathbb C\), the extended translation satisfies
+  \(T_a(\infty)=\infty\).
+proof:
+  This is the infinity branch of the one-point extension.
+-/
 @[simp]
 theorem riemannSphereTranslation_infty (a : ℂ) :
     riemannSphereTranslation a OnePoint.infty = OnePoint.infty :=
   rfl
 
+/--
+%%handwave
+name:
+  Translation on finite points
+statement:
+  For \(a,z\in\mathbb C\), the extended translation sends the finite point
+  \(z\) to the finite point (z+a).
+proof:
+  This is the finite branch of the one-point extension.
+-/
 @[simp]
 theorem riemannSphereTranslation_coe (a z : ℂ) :
     riemannSphereTranslation a (z : RiemannSphere) = ((z + a : ℂ) : RiemannSphere) :=
@@ -246,23 +419,63 @@ theorem riemannSphereTranslation_coe (a z : ℂ) :
 def riemannSphereDilation (a : ℂ) : RiemannSphere → RiemannSphere :=
   OnePoint.map (fun z : ℂ ↦ a * z)
 
-/-- Nonzero dilation is continuous on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Nonzero dilation extends continuously to the Riemann sphere
+statement:
+  For \(a\in\mathbb C^\times\), the extension of \(z\mapsto az\) that fixes
+  infinity is continuous on \(\widehat{\mathbb C}\).
+proof:
+  Multiplication by \(a\ne0\) is a homeomorphism of \(\mathbb C\), so its
+  one-point extension is continuous.
+-/
 theorem riemannSphereDilation_continuous {a : ℂ} (ha : a ≠ 0) :
     Continuous (riemannSphereDilation a) := by
   simpa [riemannSphereDilation] using
     (Homeomorph.onePointCongr (Homeomorph.mulLeft₀ a ha)).continuous
 
+/--
+%%handwave
+name:
+  Dilation fixes infinity
+statement:
+  For every \(a\in\mathbb C\), the extended dilation satisfies
+  \(D_a(\infty)=\infty\).
+proof:
+  This is the infinity branch of the one-point extension.
+-/
 @[simp]
 theorem riemannSphereDilation_infty (a : ℂ) :
     riemannSphereDilation a OnePoint.infty = OnePoint.infty :=
   rfl
 
+/--
+%%handwave
+name:
+  Dilation on finite points
+statement:
+  For \(a,z\in\mathbb C\), the extended dilation sends the finite point \(z\)
+  to the finite point (az).
+proof:
+  This is the finite branch of the one-point extension.
+-/
 @[simp]
 theorem riemannSphereDilation_coe (a z : ℂ) :
     riemannSphereDilation a (z : RiemannSphere) = ((a * z : ℂ) : RiemannSphere) :=
   rfl
 
-/-- Upper-triangular Mobius representatives act continuously on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Upper-triangular Möbius matrices act continuously
+statement:
+  If \(A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)\) has \(a_{10}=0\), then
+  \(z\mapsto A\cdot z\) is continuous on \(\widehat{\mathbb C}\).
+proof:
+  Invertibility forces \(a_{00},a_{11}\ne0\).  Factor the action as dilation by
+  \(a_{00}/a_{11}\), followed by translation by \(a_{01}/a_{11}\).
+-/
 theorem mobiusRepresentative_smul_continuous_of_lowerLeft_eq_zero
     (A : MobiusRepresentative) (hc : A 1 0 = 0) :
     Continuous fun z : RiemannSphere ↦ A • z := by
@@ -290,7 +503,18 @@ theorem mobiusRepresentative_smul_continuous_of_lowerLeft_eq_zero
       simp [F, hc, hd]
       field_simp [hd]
 
-/-- Mobius representatives with nonzero lower-left entry act continuously on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Möbius matrices with nonzero lower-left entry act continuously
+statement:
+  If \(A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)\) has \(a_{10}\ne0\), then
+  \(z\mapsto A\cdot z\) is continuous on \(\widehat{\mathbb C}\).
+proof:
+  Writing \(\Delta=\det A\), factor the fractional-linear action into a
+  translation, inversion, the nonzero dilation \(-\Delta/a_{10}^2\), and a
+  final translation.  Each factor is continuous.
+-/
 theorem mobiusRepresentative_smul_continuous_of_lowerLeft_ne_zero
     (A : MobiusRepresentative) (hc : A 1 0 ≠ 0) :
     Continuous fun z : RiemannSphere ↦ A • z := by
@@ -333,7 +557,17 @@ theorem mobiusRepresentative_smul_continuous_of_lowerLeft_ne_zero
         field_simp [hc, hden, htrans_ne, Δ]
         ring
 
-/-- A fixed complex Mobius representative acts continuously on the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Every Möbius matrix acts continuously
+statement:
+  For every \(A\in\operatorname{GL}_2(\mathbb C)\), the fractional-linear map
+  \(z\mapsto A\cdot z\) is continuous on \(\widehat{\mathbb C}\).
+proof:
+  Split according as the lower-left entry of \(A\) is zero or nonzero and apply
+  the corresponding factorization theorem.
+-/
 theorem mobiusRepresentative_smul_continuous
     (A : MobiusRepresentative) :
     Continuous fun z : RiemannSphere ↦ A • z := by

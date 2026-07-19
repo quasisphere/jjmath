@@ -80,6 +80,20 @@ noncomputable def normalizedHolonomy {χ : HolonomyRepresentation X x₀}
     (γ : FundamentalGroup X x₀) : MobiusGroup :=
   N.postcompositionClass * χ γ * (N.postcompositionClass)⁻¹
 
+/--
+%%handwave
+name:
+  A normalized holonomy value is the complexification of its real value
+statement:
+  Let $\chi:\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb C)$ be projective
+  holonomy, and suppose a projective class $A$ normalizes it to a real
+  representation $\rho:\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb R)$. Then for
+  every $\gamma\in\pi_1(X,x_0)$,
+  $A\chi(\gamma)A^{-1}=\rho(\gamma)$ after complexification.
+proof:
+  This is precisely the pointwise conjugacy identity recorded by the chosen
+  normalization.
+-/
 @[simp]
 theorem normalizedHolonomy_eq_real {χ : HolonomyRepresentation X x₀}
     (N : ProjectiveHolonomyMobiusNormalization x₀ χ)
@@ -106,6 +120,16 @@ noncomputable def normalizedHolonomyRepresentation
 /--
 The normalized projective holonomy representation is the complexification of
 the real holonomy recorded by the normalization.
+
+%%handwave
+name:
+  Equality of normalized holonomy with complexified real holonomy
+statement:
+  With $A$, $\chi$, and $\rho$ as above, the homomorphism
+  $\gamma\mapsto A\chi(\gamma)A^{-1}$ equals the complexification of $\rho$ as
+  a homomorphism $\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb C)$.
+proof:
+  The two homomorphisms agree at every $\gamma$ by [the normalized pointwise identity](lean:JJMath.ProjectiveHolonomyMobiusNormalization.normalizedHolonomy_eq_real), so extensionality gives their equality.
 -/
 theorem normalizedHolonomyRepresentation_complexifies_real
     {χ : HolonomyRepresentation X x₀}
@@ -118,6 +142,16 @@ theorem normalizedHolonomyRepresentation_complexifies_real
 /--
 After Mobius postcomposition, the normalized complex projective holonomy is a
 literal complexification of real holonomy.
+
+%%handwave
+name:
+  Normalized holonomy is a complexification of real holonomy
+statement:
+  If a projective holonomy representation $\chi$ admits a normalization
+  $A\chi A^{-1}=\rho$ with $\rho$ real, then its normalized representation is
+  the complexification of the real representation $\rho$.
+proof:
+  Take $\rho$ as the real witness and use [the equality of the normalized homomorphism with its complexification](lean:JJMath.ProjectiveHolonomyMobiusNormalization.normalizedHolonomyRepresentation_complexifies_real).
 -/
 theorem normalizedHolonomyRepresentation_isComplexificationOfReal
     {χ : HolonomyRepresentation X x₀}
@@ -125,7 +159,19 @@ theorem normalizedHolonomyRepresentation_isComplexificationOfReal
     N.normalizedHolonomyRepresentation.IsComplexificationOfReal :=
   ⟨N.realHolonomy, N.normalizedHolonomyRepresentation_complexifies_real⟩
 
-/-- The normalized representation evaluates to the conjugated holonomy. -/
+/-- The normalized representation evaluates to the conjugated holonomy.
+
+%%handwave
+name:
+  Evaluation of the normalized holonomy representation
+statement:
+  For every loop class $\gamma\in\pi_1(X,x_0)$, evaluation of the normalized
+  representation gives the conjugated value
+  $A\chi(\gamma)A^{-1}$.
+proof:
+  The normalized representation was defined pointwise by this conjugation
+  formula.
+-/
 @[simp]
 theorem normalizedHolonomyRepresentation_apply
     {χ : HolonomyRepresentation X x₀}
@@ -152,6 +198,18 @@ def of_complexified_real
 /--
 Literal complexification is the special case of conjugacy into `PSL(2, ℝ)`
 with identity Mobius postcomposition.
+
+%%handwave
+name:
+  Real-complexified holonomy is conjugate into the real projective group
+statement:
+  If $\chi:\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb C)$ is the complexification
+  of a representation $\rho:\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb R)$, then
+  $\chi$ is conjugate into $\mathrm{PGL}_2(\mathbb R)$.
+proof:
+  Choose the identity Möbius transformation as the conjugating element and
+  the given $\rho$ as the real representation. The required conjugacy equality
+  is exactly the assumed complexification identity.
 -/
 theorem isConjugateIntoPSL2R_of_isComplexificationOfReal
     {χ : HolonomyRepresentation X x₀}
@@ -184,6 +242,17 @@ noncomputable def normalizedRepresentationOfConjugateIntoPSL2R
 /--
 The chosen normalized representation associated to a conjugacy-into-`PSL(2, ℝ)`
 witness is a literal complexification of real holonomy.
+
+%%handwave
+name:
+  A chosen real normalization produces complexified real holonomy
+statement:
+  Suppose $\chi:\pi_1(X,x_0)\to\mathrm{PGL}_2(\mathbb C)$ is conjugate into
+  $\mathrm{PGL}_2(\mathbb R)$. For a chosen such conjugacy, the resulting
+  normalized representation is the complexification of a real holonomy
+  representation.
+proof:
+  Apply [normalizing a projective representation yields the complexification of the recorded real representation](lean:JJMath.ProjectiveHolonomyMobiusNormalization.normalizedHolonomyRepresentation_isComplexificationOfReal) to the chosen normalization.
 -/
 theorem normalizedRepresentationOfConjugateIntoPSL2R_isComplexificationOfReal
     {χ : HolonomyRepresentation X x₀} (hχ : χ.IsConjugateIntoPSL2R) :
@@ -219,7 +288,20 @@ namespace ComplexProjectiveStructure.RealHolonomyData
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {x₀ : X} {P : ComplexProjectiveStructure X}
 
-/-- The stored projective holonomy is a literal complexification of real holonomy. -/
+/-- The stored projective holonomy is a literal complexification of real holonomy.
+
+%%handwave
+name:
+  Projective holonomy recorded as real is a complexification
+statement:
+  Let $P$ be a complex projective structure whose based holonomy data consists
+  of a projective representation $\chi$, a real representation $\rho$, and
+  the equality $\chi=\rho_{\mathbb C}$. Then $\chi$ is the complexification of
+  a real holonomy representation.
+proof:
+  Use the recorded real representation $\rho$ and its stored equality with
+  $\chi$ as the required witness.
+-/
 theorem projectiveHolonomy_isComplexificationOfReal
     (H : P.RealHolonomyData x₀) :
     H.projectiveHolonomy.IsComplexificationOfReal :=
@@ -288,7 +370,21 @@ def HasLiftedPSL2RHolonomy {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
   Nonempty (P.LiftedRealHolonomyData x₀)
 
-/-- Lifted real holonomy implies the unlifted `PSL(2, ℝ)` holonomy property. -/
+/-- Lifted real holonomy implies the unlifted `PSL(2, ℝ)` holonomy property.
+
+%%handwave
+name:
+  Lifted real holonomy implies real projective holonomy
+statement:
+  If the holonomy of a based complex projective structure $P$ is induced by a
+  chosen $\mathrm{SL}_2(\mathbb R)$ representation, then the projective
+  holonomy of $P$ is the complexification of a
+  $\mathrm{PGL}_2(\mathbb R)$ representation.
+proof:
+  Forget the chosen linear lift and retain the underlying real projective
+  holonomy representation and its equality with the projective holonomy of
+  $P$.
+-/
 theorem hasPSL2RHolonomy_of_hasLiftedPSL2RHolonomy
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
     {x₀ : X} {P : ComplexProjectiveStructure X}
@@ -313,6 +409,18 @@ def HasPSL2RHolonomyAfterMobiusPostcomposition
 /--
 The non-conjugated real-holonomy package is the special case with identity
 Mobius postcomposition.
+
+%%handwave
+name:
+  Real holonomy remains real after an allowed Möbius postcomposition
+statement:
+  If a based complex projective structure $P$ has projective holonomy equal to
+  the complexification of a real representation, then its holonomy can be
+  conjugated into $\mathrm{PGL}_2(\mathbb R)$ by a Möbius postcomposition.
+proof:
+  Keep the projective holonomy and its construction from the atlas, and choose
+  the identity Möbius transformation as the postcomposition. The original
+  real-complexification equality is then the normalization identity.
 -/
 theorem hasPSL2RHolonomyAfterMobiusPostcomposition_of_hasPSL2RHolonomy
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]

@@ -24,6 +24,18 @@ namespace Uniformization
 
 open ContinuousLinearMap
 
+/--
+%%handwave
+name:
+  Smooth positive area measures have no atoms
+statement:
+  If \(\mu\) is a smooth positive area measure on a surface \(X\), then
+  \(\mu(\{p\})=0\) for every \(p\in X\).
+proof:
+  In a chart about \(p\), the pushforward of \(\mu\) has a smooth density with
+  respect to planar Lebesgue measure.  A singleton has Lebesgue measure zero,
+  and injectivity of the chart transfers this back to \(\{p\}\).
+-/
 theorem smoothPositiveAreaMeasureOnSurface_measure_singleton
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [MeasurableEq X]
@@ -61,6 +73,17 @@ theorem smoothPositiveAreaMeasureOnSurface_measure_singleton
     simp [hp_source]
   exact hrestrict_singleton ▸ hsingle_restrict_zero
 
+/--
+%%handwave
+name:
+  Nonempty open sets have positive smooth area
+statement:
+  If \(\mu\) is a smooth positive area measure on a second-countable smooth
+  surface and \(W\subseteq X\) is nonempty and open, then \(\mu(W)>0\).
+proof:
+  Regard \(\mu\) as a smooth positive measure on the underlying real manifold
+  and apply positivity of such measures on nonempty open sets.
+-/
 private theorem smoothPositiveAreaMeasureOnSurface_open_measure_pos
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [SecondCountableTopology X]
@@ -76,6 +99,17 @@ private theorem smoothPositiveAreaMeasureOnSurface_open_measure_pos
     smoothPositiveMeasureOnManifold_open_measure_pos
       (I := SurfaceRealModel) hμ' hW_open hW_nonempty
 
+/--
+%%handwave
+name:
+  Open surface sets contain compact sets of positive area
+statement:
+  If \(W\) is a nonempty open subset of a surface carrying a smooth positive
+  area measure \(\mu\), then there is a compact \(K\subseteq W\) with \(\mu(K)>0\).
+proof:
+  Local compactness gives a compact \(K\subseteq W\) whose interior contains a
+  chosen point of \(W\).  The interior has positive area, so monotonicity gives \(\mu(K)>0\).
+-/
 private theorem smoothPositiveAreaMeasureOnSurface_exists_compact_pos_measure_subset_open
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [SecondCountableTopology X]
@@ -96,6 +130,17 @@ private theorem smoothPositiveAreaMeasureOnSurface_exists_compact_pos_measure_su
     lt_of_lt_of_le hKint_pos (measure_mono interior_subset)
   exact ⟨K, hK_compact, hKW, hK_pos⟩
 
+/--
+%%handwave
+name:
+  A real Lipschitz bound implies continuity
+statement:
+  If \(L\ge0\) and \(T:\mathbb R\to\mathbb R\) satisfies
+  \(\lvert T(s)-T(t)\rvert\le L\lvert s-t\rvert\) for all \(s,t\), then \(T\) is continuous.
+proof:
+  The displayed inequality is precisely the Lipschitz condition with
+  nonnegative constant \(L\), and every Lipschitz map is continuous.
+-/
 private theorem continuous_of_real_lipschitz_bound
     {T : ℝ → ℝ} {L : ℝ}
     (hL_nonneg : 0 ≤ L)
@@ -137,6 +182,16 @@ noncomputable def greenSmoothCoreElement {X : Type}
     exact ⟨F, hF, rfl⟩
   exact ⟨D, smoothCompactlySupportedGreenDifferentialClass_mem_core hD⟩
 
+/--
+%%handwave
+name:
+  Underlying class of a smooth core element
+statement:
+  For a smooth compactly supported \(F\) with \(L^2\) differential, the
+  underlying intrinsic cotangent class of its associated core element is \([dF]\).
+proof:
+  This is the defining first component of the core element.
+-/
 @[simp]
 theorem greenSmoothCoreElement_coe {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
@@ -832,6 +887,18 @@ theorem TendstoInLocalL2OnSurface.ae_eq_zero_of_const_zero
   filter_upwards [hdiff_zero] with x hx
   simpa using hx
 
+/--
+%%handwave
+name:
+  A smooth core element is represented by its primitive
+statement:
+  If \(F\) is smooth and compactly supported with \(L^2\) differential, then
+  the image of \([dF]\) in the pure \(H^1_0\) completion has scalar
+  representative \(F\).
+proof:
+  Use the constant approximating sequence \(F_n=F\).  It converges to the core
+  element in the completion, and \(F_n-F=0\) has zero local \(L^2\)-seminorm on every compact set.
+-/
 theorem HasPureH10ScalarRepresentative.of_smoothCompactlySupported
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [MeasurableEq X]
@@ -1493,6 +1560,19 @@ theorem localEnergyGreenPotential_chartwise_ae_eq_compact
   intro K _hK
   simpa [raw] using ae_restrict_of_ae hglobal
 
+/--
+%%handwave
+name:
+  Finite sums of pure scalar representatives
+statement:
+  Let \(s\) be a nonempty finite set.  If each \(u_i\), \(i\in s\), has scalar
+  representative \(\varphi_i\), locally measurable on compact sets, then
+  \(\sum_{i\in s}u_i\) has representative \(\sum_{i\in s}\varphi_i\), which is
+  again locally measurable on compact sets.
+proof:
+  Induct on the nonempty finite set, using closure of scalar representatives
+  and almost-everywhere strong measurability under addition.
+-/
 private theorem HasPureH10ScalarRepresentative.finset_sum_nonempty
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [MeasurableEq X]
@@ -1678,6 +1758,18 @@ theorem lipschitzZero_has_smooth_zero_uniform_approx
         _ = ε := by ring
     simpa [Real.norm_eq_abs] using hlt
 
+/--
+%%handwave
+name:
+  Mollification preserves a Lipschitz constant
+statement:
+  Let \(k\ge0\) be a normalized smooth compactly supported bump on \(\mathbb R\).
+  If \(\lvert T(s)-T(t)\rvert\le L\lvert s-t\rvert\) with \(L\ge0\), then
+  \(k*T\) is also \(L\)-Lipschitz.
+proof:
+  Subtract the two convolution integrals, use the Lipschitz estimate for \(T\),
+  and integrate against \(k\).  Positivity and \(\int k=1\) leave the same constant \(L\).
+-/
 private theorem normedBump_convolution_lipschitz
     (φ : ContDiffBump (0 : ℝ))
     {T : ℝ → ℝ} {L : ℝ}
@@ -1964,6 +2056,17 @@ noncomputable def compSmoothZero
       hF.comp_left hS_zero
     simpa [HasCompactSupportOnSurface, HasCompactSupport, Function.comp_def] using hcomp
 
+/--
+%%handwave
+name:
+  Value of smooth composition
+statement:
+  If \(F\) is a smooth compactly supported surface function and
+  \(S:\mathbb R\to\mathbb R\) is smooth with \(S(0)=0\), then the compactly
+  supported composition satisfies \((S\circ F)(x)=S(F(x))\).
+proof:
+  This is the defining value of the composition construction.
+-/
 @[simp]
 theorem compSmoothZero_toFun
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1973,6 +2076,16 @@ theorem compSmoothZero_toFun
     (F.compSmoothZero S hS_smooth hS_zero).toFun x = S (F.toFun x) :=
   rfl
 
+/--
+%%handwave
+name:
+  Differential of smooth composition
+statement:
+  Under the same hypotheses, the stored differential of \(S\circ F\) at \(x\)
+  is \(DS_{F(x)}\circ dF_x\).
+proof:
+  This is the chain-rule formula built into the composition construction.
+-/
 @[simp]
 theorem compSmoothZero_gradient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -2029,6 +2142,18 @@ theorem compSmoothZero_gradient_eq_smul_derivative
 
 end SmoothCompactlySupportedGlobalSurfaceFunction
 
+/--
+%%handwave
+name:
+  The chart tangent map at its base point is the identity
+statement:
+  For every \(x\) on a complex surface, the tangent map of the chart transition
+  from the chart at \(x\) to itself, evaluated at the coordinate of \(x\), is
+  \(\operatorname{id}_{\mathbb C}\).
+proof:
+  On the chart target, the chart followed by its inverse is the identity.
+  Differentiate this equality within the open target.
+-/
 private theorem surfaceChartTangentMap_chartAt_self
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (x : X) :
@@ -2049,6 +2174,17 @@ private theorem surfaceChartTangentMap_chartAt_self
   rw [fderivWithin_congr' hcongr hz]
   exact fderivWithin_id (e.open_target.uniqueDiffWithinAt hz)
 
+/--
+%%handwave
+name:
+  The stored gradient is the exterior differential
+statement:
+  For every smooth compactly supported real function \(F\) on a surface, its
+  stored cotangent field equals its exterior differential: \(\nabla F=dF\).
+proof:
+  Evaluate both fields in the chart at each point.  The self-transition tangent
+  map there is the identity, so their coordinate derivative formulas coincide.
+-/
 theorem SmoothCompactlySupportedGlobalSurfaceFunction.gradient_eq_surfaceExteriorDerivative
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -2180,6 +2316,18 @@ theorem SmoothCompactlySupportedGlobalSurfaceFunction.differential_memHilbertSch
         (by intro x hx; simp) hψ_compact
     simpa [ψ] using hψ_int
 
+/--
+%%handwave
+name:
+  Gradient energy density is bounded on compact support
+statement:
+  For a smooth compactly supported surface function \(F\), there is \(C\ge0\)
+  such that \(\langle\nabla F,\nabla F\rangle_g(x)\le C\) for every
+  \(x\in\operatorname{tsupp}F\).
+proof:
+  The squared fiber norm of \(dF\) is continuous and equals the metric gradient
+  pairing.  It is bounded on the compact topological support; enlarge the bound to be nonnegative.
+-/
 private theorem SmoothCompactlySupportedGlobalSurfaceFunction.gradientInner_self_bound_on_tsupport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [MeasurableEq X]
@@ -2252,6 +2400,17 @@ private theorem SmoothCompactlySupportedGlobalSurfaceFunction.gradientInner_self
   rw [← hψ_eq]
   exact hψ_le.trans (le_max_left C₀ 0)
 
+/--
+%%handwave
+name:
+  The gradient vanishes off the topological support
+statement:
+  If \(x\notin\operatorname{tsupp}F\) for a smooth compactly supported function
+  \(F\), then \(\nabla F(x)=0\).
+proof:
+  The exterior differential of a smooth function vanishes away from its
+  topological support, and the stored gradient equals that exterior differential.
+-/
 private theorem SmoothCompactlySupportedGlobalSurfaceFunction.gradient_eq_zero_of_notMem_tsupport
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -2267,6 +2426,21 @@ private theorem SmoothCompactlySupportedGlobalSurfaceFunction.gradient_eq_zero_o
       (surfaceExteriorDerivative_isSurfaceDifferential F.smooth) hx
   simpa [hgrad_eq] using hdiff
 
+/--
+%%handwave
+name:
+  Quadratic bound for the sum of two cotangent vectors
+statement:
+  For cotangent vectors \(\xi,\eta\) at \(x\),
+  \[
+    \langle\xi+\eta,\xi+\eta\rangle_g
+    \le 2\langle\xi,\xi\rangle_g+2\langle\eta,\eta\rangle_g.
+  \]
+proof:
+  Identify the metric pairing with squared Hilbert norm, apply
+  \(\lVert\xi+\eta\rVert\le\lVert\xi\rVert+\lVert\eta\rVert\), and use
+  \((a+b)^2\le2a^2+2b^2\).
+-/
 private theorem BackgroundSurfaceMetricOnSurface.gradientInner_add_le_two
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
@@ -2341,6 +2515,19 @@ private theorem BackgroundSurfaceMetricOnSurface.gradientInner_add_le_two
     nlinarith [sq_nonneg (‖ξV‖ - ‖ηV‖)]
   exact hsquare.trans htwice
 
+/--
+%%handwave
+name:
+  Squared \(L^2\)-seminorm equals the integral of the square
+statement:
+  If \(u:X\to\mathbb R\) belongs to \(L^2(\mu|_K)\), then
+  \[
+    \lVert u\rVert_{L^2(\mu|_K)}^2=\int_K u(x)^2\,d\mu(x).
+  \]
+proof:
+  Use the integral formula for the finite \(L^2\)-norm, identify the exponent
+  \(1/2\) with the square root, and square it using nonnegativity of the integral.
+-/
 private theorem eLpNorm_two_toReal_sq_eq_integral_norm_sq_restrict
     {X : Type} [MeasurableSpace X] {μ : Measure X} {K : Set X}
     {u : X → ℝ}
@@ -2403,6 +2590,19 @@ private noncomputable def smoothCompactProduct
     F.compact_support
     (by intro x _hx; exact Set.mem_univ x)
 
+/--
+%%handwave
+name:
+  Product rule for compactly supported surface functions
+statement:
+  For smooth compactly supported functions \(M,F\) on a surface,
+  \[
+    \nabla(MF)=M\,\nabla F+F\,\nabla M.
+  \]
+proof:
+  Express the stored gradients in the chart at \(x\), apply the ordinary
+  Fréchet product rule, and identify the self-transition tangent map with the identity.
+-/
 private theorem smoothCompactProduct_gradient_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -2466,6 +2666,18 @@ private theorem smoothCompactProduct_gradient_eq
       rw [← hM_grad, ← hF_grad]
       simp [mul_comm, add_comm]
 
+/--
+%%handwave
+name:
+  Gradient of a multiplied difference
+statement:
+  For smooth compactly supported \(M,F,H\),
+  \[
+    \nabla\!\bigl(M(F-H)\bigr)=M(\nabla F-\nabla H)+(F-H)\nabla M.
+  \]
+proof:
+  Apply the product rule to \(MF\) and \(MH\), subtract, and collect terms.
+-/
 private theorem smoothCompactProduct_difference_gradient_eq
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -2487,6 +2699,19 @@ private theorem smoothCompactProduct_difference_gradient_eq
     sub_eq_add_neg]
   ring
 
+/--
+%%handwave
+name:
+  Arithmetic estimate for small multiplier energy
+statement:
+  Let \(A,B\ge0\), \(C=A+B+1\), \(0\le r\le1\), and
+  \(r\le\varepsilon^2/(4C)\).  If
+  \(I\le A I_H+B I_{L^2}\), \(I_H<r^2\), and \(I_{L^2}\le r^2\), then
+  \(I<\varepsilon^2\).
+proof:
+  Bound \(I\) by \((A+B)r^2\le Cr\), then by
+  \(\varepsilon^2/4<\varepsilon^2\).
+-/
 private theorem smoothCompactMultiplier_energy_small_arithmetic
     {A B C ε r IH IL2 Iprod : ℝ}
     (hA_nonneg : 0 ≤ A) (hB_nonneg : 0 ≤ B)
@@ -5100,6 +5325,8 @@ name:
   Fixed-level clipping is nonnegative
 statement:
   The fixed-level clipping function takes nonnegative values.
+proof:
+  Unfold the clipping function.  It is the minimum of one and the maximum of zero with an affine expression, hence is nonnegative.
 -/
 theorem fixedLevelClip_nonneg
     {b a t : ℝ} :
@@ -5138,6 +5365,8 @@ name:
 statement:
   If the signed value \(\sigma G(x)\) is larger than \(b\), then the signed
   fixed-level clip is strictly positive at \(x\).
+proof:
+  The strict signed-level inequality places the value above the lower clipping threshold, so the corresponding branch of the clip is strictly positive.
 -/
 theorem fixedLevelSignedClip_pos_of_signed_level_gt
     {X : Type} {G : X → ℝ} {σ b a : ℝ} {x : X}
@@ -6917,6 +7146,8 @@ statement:
   On every compact set contained in the chosen component, the component-local
   fixed-level clip agrees almost everywhere with the original signed
   fixed-level clip.
+proof:
+  On the compact subdomain, the escaping component indicator is eventually one on the relevant component.  Unfold both clips and use the component containment almost everywhere.
 -/
 theorem escapingDomainFixedLevelClip_eq_clip_ae_restrict_of_subset
     {X : Type} [TopologicalSpace X] [T2Space X]
@@ -6939,6 +7170,8 @@ statement:
   If the signed fixed-level clip is measurable on compact sets and the chosen
   component is open, then the component-local fixed-level clip is measurable
   on compact sets.
+proof:
+  On each compact subdomain the local clip agrees almost everywhere with the globally measurable fixed-level clip; strong measurability transfers across that equality and restriction.
 -/
 theorem escapingDomainFixedLevelClip_aestronglyMeasurable_on_compacts
     {X : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]

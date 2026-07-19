@@ -30,11 +30,33 @@ This is only used on the upper-half-plane chart target `{z : ℂ | 0 < z.im}`.
 def poincareDensitySqInChart (z : ℂ) : ℝ :=
   (z.im ^ 2)⁻¹
 
+/--
+%%handwave
+name:
+  The chart and intrinsic Poincaré densities agree
+statement:
+  For every $z\in\mathbb H$, evaluating the ambient density
+  $\operatorname{Im}(w)^{-2}$ at $w=z$ gives the intrinsic squared
+  Poincaré density: $\rho_{\mathbb H}^2(z)=\operatorname{Im}(z)^{-2}$.
+proof:
+  This is immediate from the definitions of the two density functions.
+-/
 @[simp]
 theorem poincareDensitySqInChart_coe (z : ℍ) :
     poincareDensitySqInChart (z : ℂ) = poincareDensitySq z :=
   rfl
 
+/--
+%%handwave
+name:
+  Positivity of the Poincaré density
+statement:
+  The squared Poincaré density satisfies $\rho_{\mathbb H}^2(z)>0$ for every
+  $z\in\mathbb H$.
+proof:
+  The imaginary part of a point of $\mathbb H$ is positive, so its square and
+  the reciprocal of that square are positive.
+-/
 theorem poincareDensitySq_pos (z : ℍ) : 0 < poincareDensitySq z := by
   exact inv_pos.mpr (sq_pos_of_pos z.im_pos)
 
@@ -42,12 +64,36 @@ theorem poincareDensitySq_pos (z : ℍ) : 0 < poincareDensitySq z := by
 def offRealLineInComplexPlane : Set ℂ :=
   {z | z.im ≠ 0}
 
-/-- The squared hyperbolic density is positive off the real line. -/
+/-- The squared hyperbolic density is positive off the real line.
+
+%%handwave
+name:
+  Positivity of the off-real-line density
+statement:
+  If $z\in\mathbb C$ has $\operatorname{Im}z\ne0$, then
+  $(\operatorname{Im}z)^{-2}>0$.
+proof:
+  A nonzero real number has positive square, and the reciprocal of a positive
+  number is positive.
+-/
 theorem poincareDensitySqInChart_pos_of_im_ne_zero {z : ℂ} (hz : z.im ≠ 0) :
     0 < poincareDensitySqInChart z :=
   inv_pos.mpr (sq_pos_of_ne_zero hz)
 
-/-- Real projective transformations preserve the finite off-real locus. -/
+/-- Real projective transformations preserve the finite off-real locus.
+
+%%handwave
+name:
+  A real Möbius transformation has nonreal image off the real line
+statement:
+  Let $A\in\mathrm{GL}_2(\mathbb R)$ and let $z\in\mathbb C$ satisfy
+  $\operatorname{Im}z\ne0$. Then the real projective action of $A$ at $z$
+  also has nonzero imaginary part.
+proof:
+  The imaginary-part formula is
+  $\operatorname{Im}(A\cdot z)=|\det A|\operatorname{Im}z/|cz+d|^2$.
+  Its determinant, numerator height, and denominator are all nonzero.
+-/
 theorem pgl2r_smulAux'_im_ne_zero
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     (UpperHalfPlane.smulAux' A z).im ≠ 0 := by
@@ -58,13 +104,37 @@ theorem pgl2r_smulAux'_im_ne_zero
     UpperHalfPlane.normSq_denom_ne_zero A hz
   exact div_ne_zero (mul_ne_zero hdet hz) hden
 
-/-- Real projective transformations map the finite off-real locus to itself. -/
+/-- Real projective transformations map the finite off-real locus to itself.
+
+%%handwave
+name:
+  Invariance of the finite off-real locus
+statement:
+  Every $A\in\mathrm{GL}_2(\mathbb R)$ maps
+  $\mathbb C\setminus\mathbb R$ into $\mathbb C\setminus\mathbb R$ under its
+  real projective action.
+proof:
+  Apply [the image has nonzero imaginary part whenever the original point does](lean:JJMath.pgl2r_smulAux'_im_ne_zero).
+-/
 theorem pgl2r_smulAux'_mem_offRealLine
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z ∈ offRealLineInComplexPlane) :
     UpperHalfPlane.smulAux' A z ∈ offRealLineInComplexPlane :=
   pgl2r_smulAux'_im_ne_zero A hz
 
-/-- The holomorphic real projective formula preserves the finite off-real locus. -/
+/-- The holomorphic real projective formula preserves the finite off-real locus.
+
+%%handwave
+name:
+  The holomorphic real Möbius formula remains nonreal
+statement:
+  If $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\mathrm{GL}_2(\mathbb R)$ and
+  $\operatorname{Im}z\ne0$, then
+  $\operatorname{Im}((az+b)/(cz+d))\ne0$.
+proof:
+  Use
+  $\operatorname{Im}((az+b)/(cz+d))=(\det A)\operatorname{Im}z/|cz+d|^2$;
+  all three factors relevant to nonvanishing are nonzero.
+-/
 theorem pgl2r_holomorphic_smul_im_ne_zero
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     (UpperHalfPlane.num A z / UpperHalfPlane.denom A z).im ≠ 0 := by
@@ -74,13 +144,36 @@ theorem pgl2r_holomorphic_smul_im_ne_zero
     UpperHalfPlane.normSq_denom_ne_zero A hz
   exact div_ne_zero (mul_ne_zero A.det_ne_zero hz) hden
 
-/-- The holomorphic real projective formula maps the finite off-real locus to itself. -/
+/-- The holomorphic real projective formula maps the finite off-real locus to itself.
+
+%%handwave
+name:
+  The holomorphic real Möbius formula preserves the off-real locus
+statement:
+  For $A\in\mathrm{GL}_2(\mathbb R)$, the map
+  $z\mapsto(az+b)/(cz+d)$ sends $\mathbb C\setminus\mathbb R$ into itself.
+proof:
+  Apply [the transformed point has nonzero imaginary part](lean:JJMath.pgl2r_holomorphic_smul_im_ne_zero).
+-/
 theorem pgl2r_holomorphic_smul_mem_offRealLine
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z ∈ offRealLineInComplexPlane) :
     UpperHalfPlane.num A z / UpperHalfPlane.denom A z ∈ offRealLineInComplexPlane :=
   pgl2r_holomorphic_smul_im_ne_zero A hz
 
-/-- Derivative of the holomorphic real projective formula off the real line. -/
+/-- Derivative of the holomorphic real projective formula off the real line.
+
+%%handwave
+name:
+  Derivative of a real Möbius transformation
+statement:
+  Let $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\mathrm{GL}_2(\mathbb R)$.
+  At every $z$ with $\operatorname{Im}z\ne0$, the map
+  $f(w)=(aw+b)/(cw+d)$ has complex derivative
+  $f'(z)=\det(A)/(cz+d)^2$.
+proof:
+  Since $cz+d\ne0$, the quotient rule gives
+  $f'(z)=(a(cz+d)-c(az+b))/(cz+d)^2$; the numerator is $ad-bc=\det A$.
+-/
 theorem pgl2r_holomorphic_smul_hasDerivAt
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     HasDerivAt (fun w : ℂ ↦ UpperHalfPlane.num A w / UpperHalfPlane.denom A w)
@@ -93,14 +186,37 @@ theorem pgl2r_holomorphic_smul_hasDerivAt
   · simp [UpperHalfPlane.denom, Matrix.det_fin_two]
     ring
 
-/-- Derivative of the holomorphic real projective formula off the real line. -/
+/-- Derivative of the holomorphic real projective formula off the real line.
+
+%%handwave
+name:
+  Value of the derivative of a real Möbius transformation
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\mathrm{GL}_2(\mathbb R)$ and
+  $\operatorname{Im}z\ne0$,
+  $\frac{d}{dz}\frac{az+b}{cz+d}=\det(A)/(cz+d)^2$.
+proof:
+  This is the derivative value supplied by [the corresponding differentiability formula](lean:JJMath.pgl2r_holomorphic_smul_hasDerivAt).
+-/
 theorem pgl2r_holomorphic_smul_deriv
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     deriv (fun w : ℂ ↦ UpperHalfPlane.num A w / UpperHalfPlane.denom A w) z =
       (A.det.val : ℂ) / UpperHalfPlane.denom A z ^ 2 :=
   (pgl2r_holomorphic_smul_hasDerivAt A hz).deriv
 
-/-- Norm-squared derivative scale of the holomorphic real projective formula. -/
+/-- Norm-squared derivative scale of the holomorphic real projective formula.
+
+%%handwave
+name:
+  Conformal scale of a real Möbius transformation
+statement:
+  For $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\mathrm{GL}_2(\mathbb R)$ and
+  $\operatorname{Im}z\ne0$, the squared norm of the complex derivative of
+  $f(z)=(az+b)/(cz+d)$ is
+  $|f'(z)|^2=(|\det A|/|cz+d|^2)^2$.
+proof:
+  Substitute [the formula $f'(z)=\det(A)/(cz+d)^2$](lean:JJMath.pgl2r_holomorphic_smul_deriv) and take complex norm-squares.
+-/
 theorem pgl2r_holomorphic_smul_deriv_normSq
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
     Complex.normSq
@@ -144,6 +260,18 @@ theorem pgl2r_preserves_offRealLineDensity
 /--
 The holomorphic real projective formula preserves the off-real-line
 hyperbolic density with the derivative scale.
+
+%%handwave
+name:
+  Möbius invariance of the off-real-line hyperbolic density
+statement:
+  Let $A=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in\mathrm{GL}_2(\mathbb R)$,
+  $f(z)=(az+b)/(cz+d)$, and $\operatorname{Im}z\ne0$. Then
+  $\operatorname{Im}(f(z))^{-2}|f'(z)|^2=\operatorname{Im}(z)^{-2}$.
+proof:
+  Substitute
+  $\operatorname{Im}(f(z))=(\det A)\operatorname{Im}z/|cz+d|^2$ and
+  [$|f'(z)|^2=(|\det A|/|cz+d|^2)^2$](lean:JJMath.pgl2r_holomorphic_smul_deriv_normSq); the determinant and denominator factors cancel.
 -/
 theorem pgl2r_preserves_offRealLineDensity_holomorphic
     (A : GL (Fin 2) ℝ) {z : ℂ} (hz : z.im ≠ 0) :
@@ -167,7 +295,19 @@ theorem pgl2r_preserves_offRealLineDensity_holomorphic
   field_simp [pow_ne_zero 2 hz]
   field_simp [A.det_ne_zero]
 
-/-- The off-real-line density computation specialized to the upper half-plane. -/
+/-- The off-real-line density computation specialized to the upper half-plane.
+
+%%handwave
+name:
+  Real projective invariance of the Poincaré density
+statement:
+  For $A\in\mathrm{GL}_2(\mathbb R)$ and $z\in\mathbb H$,
+  $\rho_{\mathbb H}^2(A\cdot z)(|\det A|/|cz+d|^2)^2=
+  \rho_{\mathbb H}^2(z)$.
+proof:
+  Regard $z$ as a complex number with nonzero imaginary part and apply
+  [the off-real-line density transformation formula](lean:JJMath.pgl2r_preserves_offRealLineDensity).
+-/
 theorem pgl2r_preserves_poincareDensitySq
     (A : GL (Fin 2) ℝ) (z : ℍ) :
     poincareDensitySq (A • z) *
@@ -176,6 +316,17 @@ theorem pgl2r_preserves_poincareDensitySq
   simpa [poincareDensitySq, UpperHalfPlane.smulAux]
     using pgl2r_preserves_offRealLineDensity A (z := (z : ℂ)) z.im_ne_zero
 
+/--
+%%handwave
+name:
+  Positivity of the Poincaré density in every atlas chart
+statement:
+  If $e$ is a complex-manifold chart of $\mathbb H$ and $z$ lies in its
+  coordinate target, then $\operatorname{Im}(z)^{-2}>0$.
+proof:
+  The upper half-plane has its standard global chart, whose target consists
+  of points with positive imaginary part; the reciprocal square is positive.
+-/
 theorem poincareDensitySqInChart_pos
     (e : OpenPartialHomeomorph ℍ ℂ) (he : e ∈ atlas ℂ ℍ) (z : ℂ)
     (hz : z ∈ e.target) : 0 < poincareDensitySqInChart z := by
@@ -186,6 +337,19 @@ theorem poincareDensitySqInChart_pos
     simpa using hz
   exact inv_pos.mpr (sq_pos_of_pos hz_im)
 
+/--
+%%handwave
+name:
+  Smoothness of the Poincaré density in upper-half-plane coordinates
+statement:
+  In every complex-manifold chart $e$ of $\mathbb H$, the function
+  $z\mapsto\operatorname{Im}(z)^{-2}$ is smooth on the coordinate target of
+  $e$.
+proof:
+  Every atlas chart is the standard chart. The imaginary-part map is linear
+  and smooth, squaring preserves smoothness, and inversion is smooth because
+  the imaginary part is positive on the chart target.
+-/
 theorem poincareDensitySqInChart_contDiffOn :
     ∀ (e : OpenPartialHomeomorph ℍ ℂ),
       e ∈ atlas ℂ ℍ → ContDiffOn ℝ ⊤ poincareDensitySqInChart e.target := by
@@ -207,13 +371,35 @@ theorem poincareDensitySqInChart_contDiffOn :
     simpa using hz
   exact pow_ne_zero 2 (ne_of_gt hz_im)
 
-/-- The finite `C^3` regularity of the Poincare squared density. -/
+/-- The finite `C^3` regularity of the Poincare squared density.
+
+%%handwave
+name:
+  Three-times differentiability of the Poincaré density
+statement:
+  In every complex-manifold chart $e$ of $\mathbb H$, the squared Poincaré
+  density $z\mapsto\operatorname{Im}(z)^{-2}$ is of class $C^3$ on the
+  coordinate target of $e$.
+proof:
+  [The density is smooth on every chart target](lean:JJMath.poincareDensitySqInChart_contDiffOn), hence in particular it is $C^3$ there.
+-/
 theorem poincareDensitySqInChart_contDiffOn_three :
     ∀ (e : OpenPartialHomeomorph ℍ ℂ),
       e ∈ atlas ℂ ℍ → ContDiffOn ℝ 3 poincareDensitySqInChart e.target :=
   fun e he ↦ (poincareDensitySqInChart_contDiffOn e he).of_le le_top
 
-/-- The off-real-line squared density is smooth on the complement of the real line. -/
+/-- The off-real-line squared density is smooth on the complement of the real line.
+
+%%handwave
+name:
+  Smoothness of the reciprocal-square height off the real line
+statement:
+  The function $z\mapsto\operatorname{Im}(z)^{-2}$ is smooth on
+  $\mathbb C\setminus\mathbb R$.
+proof:
+  The imaginary-part map is linear and smooth. Its square is smooth and
+  nonzero away from the real line, so its reciprocal is smooth there.
+-/
 theorem poincareDensitySqInChart_contDiffOn_offRealLine :
     ContDiffOn ℝ ⊤ poincareDensitySqInChart offRealLineInComplexPlane := by
   have him' : ContDiff ℝ ⊤ (Complex.imCLM : ℂ → ℝ) :=
@@ -227,6 +413,19 @@ theorem poincareDensitySqInChart_contDiffOn_offRealLine :
   intro z hz
   exact pow_ne_zero 2 hz
 
+/--
+%%handwave
+name:
+  Coordinate transformation law for the Poincaré density
+statement:
+  If $e,e'$ are complex-manifold charts of $\mathbb H$, $z$ lies in the
+  target of $e$, and the corresponding point lies in the source of $e'$, then
+  $$\operatorname{Im}(z)^{-2}=\operatorname{Im}(e'(e^{-1}z))^{-2}
+  \left|\frac{d}{dz}(e'\circ e^{-1})(z)\right|^2.$$
+proof:
+  Both atlas charts are the standard global coordinate, so their transition
+  is locally the identity. Its value is $z$ and its derivative is $1$.
+-/
 theorem poincareDensitySqInChart_transition :
     ∀ (e : OpenPartialHomeomorph ℍ ℂ), e ∈ atlas ℂ ℍ →
       ∀ (e' : OpenPartialHomeomorph ℍ ℂ), e' ∈ atlas ℂ ℍ → ∀ z,
@@ -254,6 +453,18 @@ theorem poincareDensitySqInChart_transition :
   rw [hval, hderiv]
   simp [poincareDensitySqInChart]
 
+/--
+%%handwave
+name:
+  Differential of negative logarithmic height
+statement:
+  For $z\in\mathbb C$ with $y=\operatorname{Im}z\ne0$, the real differential
+  of $w\mapsto-\log(\operatorname{Im}w)$ at $z$ is
+  $h\mapsto-y^{-1}\operatorname{Im}h$.
+proof:
+  Compose the differential $h\mapsto\operatorname{Im}h$ with the derivative
+  of $t\mapsto-\log t$, namely multiplication by $-1/y$.
+-/
 private theorem neg_log_im_hasFDerivAt (z : ℂ) (hz : z.im ≠ 0) :
     HasFDerivAt (fun w : ℂ ↦ - Real.log w.im)
       (- (z.im)⁻¹ • (Complex.imCLM : ℂ →L[ℝ] ℝ)) z := by
@@ -264,6 +475,20 @@ private theorem neg_log_im_hasFDerivAt (z : ℂ) (hz : z.im ≠ 0) :
   · ext w
     simp
 
+/--
+%%handwave
+name:
+  Differential of the first derivative of negative logarithmic height
+statement:
+  Let $L(h)=\operatorname{Im}h$. For $z\in\mathbb C$ with
+  $y=\operatorname{Im}z\ne0$, the operator-valued map
+  $w\mapsto-(\operatorname{Im}w)^{-1}L$ has differential at $z$ equal to the
+  rank-one bilinear operator $(h,k)\mapsto y^{-2}L(h)L(k)$.
+proof:
+  Differentiate $t\mapsto-t^{-1}$ at $t=y$, compose with the linear map
+  $w\mapsto\operatorname{Im}w$, and multiply the resulting scalar derivative
+  by the fixed functional $L$.
+-/
 private theorem neg_inv_im_smul_hasFDerivAt (z : ℂ) (hz : z.im ≠ 0) :
     HasFDerivAt
       (fun w : ℂ ↦ (- (w.im)⁻¹) • (Complex.imCLM : ℂ →L[ℝ] ℝ))
@@ -318,7 +543,17 @@ theorem laplacian_neg_log_im (z : ℂ) (hz : z.im ≠ 0) :
   rw [Filter.EventuallyEq.fderiv_eq hfderiv_ev, hAderiv]
   simp [Complex.imCLM_apply]
 
-/-- The logarithm of the imaginary coordinate has Laplacian `-1 / y^2`. -/
+/-- The logarithm of the imaginary coordinate has Laplacian `-1 / y^2`.
+
+%%handwave
+name:
+  Laplacian of logarithmic height
+statement:
+  For $z\in\mathbb C$ with $y=\operatorname{Im}z\ne0$,
+  $\Delta\log(\operatorname{Im}w)|_{w=z}=-y^{-2}$.
+proof:
+  [The Laplacian of $-\log(\operatorname{Im}w)$ is $y^{-2}$](lean:JJMath.laplacian_neg_log_im), and the Laplacian changes sign when the function is negated.
+-/
 theorem laplacian_log_im (z : ℂ) (hz : z.im ≠ 0) :
     Laplacian.laplacian (fun w : ℂ ↦ Real.log w.im) z = - (z.im ^ 2)⁻¹ := by
   have hneg := laplacian_neg_log_im z hz
@@ -332,6 +567,20 @@ theorem laplacian_log_im (z : ℂ) (hz : z.im ≠ 0) :
     simpa using hneg
   linarith
 
+/--
+%%handwave
+name:
+  Logarithmic Poincaré density
+statement:
+  For every $z\in\mathbb C$, the logarithmic density associated with
+  $\operatorname{Im}(z)^{-2}$ is $-\log(\operatorname{Im}z)$; equivalently,
+  $\tfrac12\log((\operatorname{Im}z)^2)^{-1}=-\log(\operatorname{Im}z)$.
+proof:
+  Apply the logarithm identities for reciprocals and squares. The real
+  logarithm depends only on absolute value, so the formula also holds when
+  the imaginary part is negative; at zero both sides use the same extended
+  convention.
+-/
 private theorem logDensity_poincareDensitySqInChart_eq_neg_log_im (z : ℂ) :
     logDensityFromDensitySq poincareDensitySqInChart z = - Real.log z.im := by
   simp [logDensityFromDensitySq, poincareDensitySqInChart]
@@ -384,6 +633,16 @@ Computed Gaussian curvature of the off-real-line density on either half-plane.
 
 The density is the same formula as the Poincare density, but this form only
 requires that the point is not on the real line.
+
+%%handwave
+name:
+  Curvature of reciprocal-square height on both half-planes
+statement:
+  At every $z\in\mathbb C$ with $\operatorname{Im}z\ne0$, the conformal
+  density $\operatorname{Im}(z)^{-2}$ has Gaussian curvature $-1$.
+proof:
+  Its logarithmic density is $u(z)=-\log(\operatorname{Im}z)$ and
+  [$\Delta u(z)=\operatorname{Im}(z)^{-2}$](lean:JJMath.laplacian_neg_log_im). Since $e^{2u}=\operatorname{Im}(z)^{-2}$, the formula $K=-e^{-2u}\Delta u$ gives $K=-1$.
 -/
 theorem offRealLineDensitySq_gaussianCurvature_eq_minus_one
     {z : ℂ} (hz : z.im ≠ 0) :
@@ -411,6 +670,17 @@ theorem offRealLineDensitySq_gaussianCurvature_eq_minus_one
 
 /--
 Continuity of the Poincare squared density on the upper half-plane.
+
+%%handwave
+name:
+  Continuity of the Poincaré density
+statement:
+  The function $z\mapsto\operatorname{Im}(z)^{-2}$ is continuous on
+  $\mathbb H$.
+proof:
+  The imaginary-part function is continuous and never vanishes on
+  $\mathbb H$; squaring and then taking the reciprocal therefore preserves
+  continuity.
 -/
 theorem poincareDensitySq_continuous : Continuous poincareDensitySq := by
   have him : Continuous fun z : ℍ ↦ (z : ℂ).im :=

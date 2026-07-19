@@ -64,7 +64,15 @@ noncomputable def smoothFrontierCenteredChartCovector
     (smoothBoundaryFrontierChart D q) q
 
 omit [RiemannSurface X] in
-/-- The centered frontier-chart covector is nonzero. -/
+/-- The centered frontier-chart covector is nonzero.
+
+%%handwave
+name: Nonvanishing of the centered frontier covector
+statement:
+  At every point $q$ of the smooth boundary of a surface domain, the differential of the centered one-dimensional boundary chart is a nonzero covector on $T_q\partial\Omega$.
+proof:
+  In its own centered chart this differential is the identity map of $\mathbb R$, which does not vanish at $1$.
+-/
 theorem smoothFrontierCenteredChartCovector_ne_zero
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) :
     smoothFrontierCenteredChartCovector D q ≠ 0 := by
@@ -86,7 +94,15 @@ theorem smoothFrontierCenteredChartCovector_ne_zero
 
 omit [RiemannSurface X] in
 /-- A continuously differentiable real function on a compact connected
-frontier component has a critical point on that component. -/
+frontier component has a critical point on that component.
+
+%%handwave
+name: Critical point on a compact boundary component
+statement:
+  Let $C$ be the connected boundary component containing $p$. Every continuously differentiable function $f:\partial\Omega\to\mathbb R$ has a point $q\in C$ at which $df_q=0$.
+proof:
+  The component $C$ is compact, so $f|_C$ attains a maximum at some $q$. Since $C$ is also open in the boundary one-manifold, this is a local maximum of $f$, and the derivative in a boundary chart vanishes there.
+-/
 theorem exists_mfderiv_eq_zero_on_frontierComponent
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     (f : frontier D.carrier → ℝ) :
@@ -170,7 +186,15 @@ theorem no_primitive_of_frontierComponent_covector_ne_zero
 
 omit [RiemannSurface X] in
 /-- The pointwise oriented chart covectors on a compact frontier component
-have no continuously differentiable global primitive. -/
+have no continuously differentiable global primitive.
+
+%%handwave
+name: No global primitive for the centered boundary covectors
+statement:
+  On a connected component $C$ of the smooth boundary of a relatively compact surface domain, there is no continuously differentiable function $f$ satisfying $df_q=d\xi_q$ for every $q\in C$, where $\xi_q$ is the centered boundary chart at $q$.
+proof:
+  Every centered chart covector is nonzero, whereas any continuously differentiable real function has a critical point on the compact component. Apply the general obstruction for a nowhere-zero covector field.
+-/
 theorem smoothFrontierCenteredChartCovector_has_no_primitive
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     letI := smoothBoundaryFrontierChartedSpace D

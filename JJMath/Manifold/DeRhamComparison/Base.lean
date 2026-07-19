@@ -181,6 +181,19 @@ instance sheafCompose_additive [Preadditive A] [Preadditive B] [F.Additive] :
     rw [hfg]
     simp
 
+/--
+%%handwave
+name:
+  Composition of sheaves preserves limits when the coefficient functor does
+statement:
+  Let a functor \(F:A\to B\) preserve limits of diagrams of shape \(K\) and
+  commute with the sheaf condition.  Then applying \(F\) objectwise to
+  \(A\)-valued sheaves preserves \(K\)-shaped limits.
+proof:
+  After forgetting sheaves to presheaves, objectwise composition with \(F\)
+  preserves the limit.  The forgetful functor from sheaves reflects limits,
+  so the same is true in the sheaf category.
+-/
 theorem sheafCompose_preservesLimitsOfShape_of_preserves
     [HasLimitsOfShape K A] [HasLimitsOfShape K B] [PreservesLimitsOfShape K F] :
     PreservesLimitsOfShape K (sheafCompose J F) := by
@@ -373,8 +386,6 @@ proof:
   complex in the derived category.  The exact functor commutes with the single
   complex embedding and with shifts, and the induced derived functor is fully
   faithful, so the corresponding map on these morphism groups is bijective.
-tags:
-  milestone
 -/
 theorem mapExtAddHom_bijective_of_mapDerivedCategory_fullyFaithful
     [HasDerivedCategory.{t₁} C] [HasDerivedCategory.{t₂} D]
@@ -417,8 +428,6 @@ proof:
   Compare the two Ext classes as shifted morphisms in the derived category.
   The exact functor commutes with single complexes and with shifts, and the
   shifted-morphism map respects composition and degree-zero morphisms.
-tags:
-  milestone
 -/
 theorem mapExtAddHom_comp_mk₀
     [HasDerivedCategory.{t₁} C] [HasDerivedCategory.{t₂} D]
@@ -587,6 +596,18 @@ namespace AddCommGrpCat
 
 universe u
 
+/--
+%%handwave
+name:
+  Evaluation of a finite sum of homomorphisms
+statement:
+  For homomorphisms \(f_i:A\to B\), a finite set \(s\), and \(x\in A\),
+  \[
+    \left(\sum_{i\in s}f_i\right)(x)=\sum_{i\in s}f_i(x).
+  \]
+proof:
+  Induct on the finite set, using pointwise evaluation of addition.
+-/
 theorem finset_sum_apply {A B : AddCommGrpCat.{u}} {ι : Type*}
     (s : Finset ι) (f : ι → (A ⟶ B)) (x : A) :
     (∑ i ∈ s, f i) x = ∑ i ∈ s, (f i) x := by
@@ -1108,6 +1129,18 @@ noncomputable def deRham_boundarylessExtendedChart_restrictionDiffeomorph
         exact hφcoe.trans hwcoe
       · simp [TopologicalSpace.Opens.chartAt_eq]
 
+/--
+%%handwave
+name:
+  Coordinate value of the restricted extended-chart diffeomorphism
+statement:
+  The diffeomorphism obtained by restricting a boundaryless extended chart
+  has, after forgetting the target subtype, the same value as the extended
+  chart itself.
+proof:
+  Restriction changes only the source and target membership data, not the
+  underlying coordinate function.
+-/
 @[simp]
 theorem deRham_boundarylessExtendedChart_restrictionDiffeomorph_coe_apply
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -1140,8 +1173,6 @@ proof:
   for partial homeomorphisms.  Its forward smoothness is the smoothness of
   extended charts, and its inverse smoothness is the smoothness of inverse
   extended charts.
-tags:
-  milestone
 -/
 theorem deRham_boundarylessExtendedChart_restriction_diffeomorph
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -1407,8 +1438,6 @@ proof:
   image to a convex open subset contained in the prescribed neighborhood.
   The convex Poincare lemma gives vanishing on the model open set, and the
   restricted extended chart transports it back to the manifold.
-tags:
-  milestone
 -/
 theorem deRham_local_poincareBasis_boundarylessModel
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -1656,8 +1685,6 @@ proof:
   homeomorphic to an open subset of the model space, hence has a basis of
   contractible neighborhoods.  Transport those neighborhoods back through the
   chart and view them as neighborhoods in the ambient space.
-tags:
-  milestone
 -/
 theorem chartedSpace_stronglyLocallyContractibleSpace_of_model
     [StronglyLocallyContractibleSpace H] :
@@ -1684,8 +1711,6 @@ proof:
   with corners.  Straight-line contraction in the ambient finite-dimensional
   vector space stays inside the convex neighborhood and gives the required
   null-homotopy after transporting back through the chart.
-tags:
-  milestone
 -/
 theorem smoothManifold_locallyContractibleSpace
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -2470,8 +2495,6 @@ proof:
   Compatibility on pairwise overlaps makes this independent of the choice.
   Smoothness follows from the local open-cover smoothness criterion, and
   uniqueness follows because the \(U_i\) cover the union.
-tags:
-  milestone
 -/
 theorem existsUnique_smoothForms_iSup_gluing [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) (n : ℕ) [IsManifold Iℝ ∞ M]
@@ -2505,8 +2528,6 @@ proof:
   Glue the underlying alternating forms pointwise on tangent spaces.  The
   compatibility hypotheses make this independent of the chosen member of the
   cover, and smoothness is local in charts.
-tags:
-  milestone
 -/
 theorem smoothFormsAddPresheaf_isSheafUniqueGluing [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) (n : ℕ) [IsManifold Iℝ ∞ M] :
@@ -2538,8 +2559,6 @@ statement:
   sheaf on the open-set site.
 proof:
   Apply the unique-gluing criterion to [compatible smooth forms glue uniquely](lean:JJMath.Manifold.smoothFormsAddPresheaf_isSheafUniqueGluing).
-tags:
-  milestone
 -/
 theorem smoothFormsAddPresheaf_isSheaf [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) (n : ℕ) [IsManifold Iℝ ∞ M] :
@@ -2813,8 +2832,6 @@ proof:
   neighborhood inside the complement of the support.  On that smaller
   neighborhood the scalar function vanishes, so the restricted cutoff multiple
   is the zero form and hence has zero germ.
-tags:
-  milestone
 -/
 theorem smoothFormsPointwiseSMulAddSheafHom_point_presheafFiber_map_eq_zero_of_notMem_tsupport
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -2893,10 +2910,7 @@ statement:
   The germ support of multiplication by a smooth function on the sheaf of
   smooth forms is contained in the topological support of that function.
 proof:
-  At any point outside the topological support, [cutoff multiplication is zero
-  on the stalk](lean:JJMath.Manifold.smoothFormsPointwiseSMulAddSheafHom_point_presheafFiber_map_eq_zero_of_notMem_tsupport).
-tags:
-  milestone
+  At any point outside the topological support, [cutoff multiplication is zero on the stalk](lean:JJMath.Manifold.smoothFormsPointwiseSMulAddSheafHom_point_presheafFiber_map_eq_zero_of_notMem_tsupport).
 -/
 theorem smoothFormsPointwiseSMulAddSheafHom_germSupport_subset_tsupport
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -2930,8 +2944,6 @@ proof:
   the finite topological support at the point.  On that neighborhood the finite
   sum of the corresponding smooth functions is \(1\), so multiplication by the
   finite sum is the identity on every representative of every germ.
-tags:
-  milestone
 -/
 theorem smoothPartitionOfUnity_smoothFormsPointwiseSMulAddSheafHom_stalk_sum_eq_identity
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -3072,8 +3084,6 @@ proof:
   \(\rho_i\) are nonzero.  On that neighborhood their finite sum is the
   constant function \(1\), so the corresponding finite sum of cutoff
   endomorphisms sends every germ of a form to itself.
-tags:
-  milestone
 -/
 theorem smoothPartitionOfUnity_smoothFormsPointwiseSMulAddSheafHom_stalk_partitionOfIdentity
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -3225,8 +3235,6 @@ proof:
   This is the \(C^\infty\)-linearity of exterior differentiation for constant
   functions: \(d(r\omega)=r\,d\omega\).  Check the identity on each open set
   of the sheaf.
-tags:
-  milestone
 -/
 theorem smoothFormsPointwiseSMulAddSheafHom_const_comp_d [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -4255,8 +4263,6 @@ proof:
   Check after pulling back to the constant presheaf.  A constant section sent
   to its associated zero-form and then multiplied by \(r\) is the same
   zero-form as first multiplying the constant section by \(r\).
-tags:
-  milestone
 -/
 theorem realConstantAddSheafToSmoothFormsAddSheaf_comp_scalarEnd [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -4327,6 +4333,20 @@ def liftedPointsGrothendieckTopology (X : Type uTop) [TopologicalSpace X] :
   ObjectProperty.ofObj liftedPointGrothendieckTopology
   deriving ObjectProperty.Small.{max uLift uTop}
 
+/--
+%%handwave
+name:
+  Lifted ordinary points form a conservative family on an open-set site
+statement:
+  For a topological space \(X\), the site points obtained from ordinary
+  points \(x\in X\), with universe-lifted neighborhood fibers, form a
+  conservative family of points of the open-set site.
+proof:
+  If every lifted point lying in an open \(U\) locally factors through a
+  covering sieve, evaluate at each ordinary \(x\in U\).  The factorization
+  supplies a covering neighborhood of \(x\), proving that the sieve covers
+  \(U\).
+-/
 lemma isConservativeFamilyOfPoints_liftedPointsGrothendieckTopology
     (X : Type uTop) [TopologicalSpace X] :
     (liftedPointsGrothendieckTopology.{uLift, uTop} X).IsConservativeFamilyOfPoints :=
@@ -4341,6 +4361,19 @@ lemma isConservativeFamilyOfPoints_liftedPointsGrothendieckTopology
     have hV : x ∈ V := hVΦ.down.down
     exact ⟨V, f, hf, hV⟩)
 
+/--
+%%handwave
+name:
+  Exactness of sheaves detected by a conservative family of points
+statement:
+  For a conservative family \(P\) of points of the open-set site, a short
+  complex of abelian-group sheaves is exact if and only if its image under
+  every sheaf-fiber functor associated to a point of \(P\) is exact.
+proof:
+  Exactness is preserved by each exact fiber functor.  Conversely, vanishing
+  of homology at every point in a conservative family forces the homology
+  sheaf to vanish.
+-/
 theorem sheaf_exact_iff_sheafFiber_map_exact_of_conservativePoints
     {X : Type m} [TopologicalSpace X]
     [HasSheafify (Opens.grothendieckTopology (TopCat.of X : TopCat.{m}))
@@ -4423,8 +4456,6 @@ proof:
   function is zero.  The mean-value theorem then shows that the function is
   constant on the coordinate ball, and this constant gives the required
   zero-form.
-tags:
-  milestone
 -/
 theorem closed_zeroForm_eq_realConstantZeroForm_near_liftedPoint
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -4523,8 +4554,6 @@ proof:
   that the canonical morphism to smooth zero-forms is induced by the presheaf
   map sending constants to constant zero-forms, and the point-fiber map
   respects this natural transformation.
-tags:
-  milestone
 -/
 theorem realConstantAddSheafToSmoothFormsAddSheaf_liftedPoint_const_germ
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -4628,8 +4657,6 @@ proof:
   fibers and the defining property of sheafification identify its image with
   the germ of the corresponding constant zero-form, which is the given germ
   after restricting to the smaller neighborhood.
-tags:
-  milestone
 -/
 theorem realConstantAddSheafToSmoothFormsAddSheaf_liftedPoint_lift_of_eq_on_open
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -4708,8 +4735,6 @@ proof:
   there, hence is constant on the ball by the mean-value theorem.  The
   resulting real constant defines a local section of the constant real sheaf,
   and the sheafification map sends its germ to the original zero-form germ.
-tags:
-  milestone
 -/
 theorem realConstantAddSheafToSmoothFormsAddSheaf_liftedPoint_lift_closed_representative
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -4755,8 +4780,6 @@ proof:
   zero there; by the mean-value argument on connected coordinate balls the
   function is constant on a smaller neighborhood.  This constant represents a
   section of the constant real sheaf with the required germ.
-tags:
-  milestone
 -/
 theorem realConstantAddSheaf_to_smoothFormsAddSheaf_liftedPoint_lift_closed_germ
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -4870,10 +4893,7 @@ statement:
   real germs, smooth zero-form germs, and smooth one-form germs is exact.
 proof:
   Use the elementwise exactness criterion for short complexes of abelian
-  groups, together with [every closed smooth zero-form germ at a lifted point
-  lifts to a constant real germ](lean:JJMath.Manifold.realConstantAddSheaf_to_smoothFormsAddSheaf_liftedPoint_lift_closed_germ).
-tags:
-  milestone
+  groups, together with [every closed smooth zero-form germ at a lifted point lifts to a constant real germ](lean:JJMath.Manifold.realConstantAddSheaf_to_smoothFormsAddSheaf_liftedPoint_lift_closed_germ).
 -/
 theorem realConstantAddSheaf_to_smoothFormsAddSheaf_liftedPoint_exact
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -4920,8 +4940,6 @@ proof:
   derivative of that function is zero, so the function is constant on a
   smaller connected coordinate ball.  Thus the germ comes from the constant
   real sheaf, and constants are already known to have zero differential.
-tags:
-  milestone
 -/
 theorem realConstantAddSheaf_to_smoothFormsAddSheaf_exact [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
@@ -4962,12 +4980,9 @@ statement:
   same universe, the constant real sheaf, the sheaf of smooth zero-forms, and
   exterior differentiation form an exact short complex of sheaves.
 proof:
-  Specialize [the sheaf-level local constancy statement for closed smooth
-  zero-forms](lean:JJMath.Manifold.realConstantAddSheaf_to_smoothFormsAddSheaf_exact)
+  Specialize [the sheaf-level local constancy statement for closed smooth zero-forms](lean:JJMath.Manifold.realConstantAddSheaf_to_smoothFormsAddSheaf_exact)
   to the case where the model vector space and the manifold have the same
   universe.
-tags:
-  milestone
 -/
 theorem realConstantAddSheaf_to_smoothFormsAddSheaf_exact_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
@@ -4997,8 +5012,6 @@ proof:
   The map sends a locally constant real function to the corresponding smooth
   zero-form.  Exactness says precisely that a smooth zero-form has zero
   differential iff it is locally constant.
-tags:
-  milestone
 -/
 theorem exists_realConstantAddSheaf_to_smoothFormsAddSheaf_exact
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -5052,6 +5065,20 @@ theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_stalk_exact_sameUniver
     (TopCat.Sheaf.exact_iff_stalkFunctor_map_exact
       ((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1))).2 hstalk
 
+/--
+%%handwave
+name:
+  Local Poincaré lemma lifts closed stalk germs
+statement:
+  Assume every point has a neighborhood basis with vanishing positive de
+  Rham cohomology.  In equal universes, every closed germ of a smooth
+  \((n+1)\)-form at \(x\) is the exterior derivative of a germ of a smooth
+  \(n\)-form.
+proof:
+  Represent the germ on an open neighborhood and shrink until its derivative
+  vanishes as a section.  The local Poincaré hypothesis gives a primitive on
+  a still smaller neighborhood; taking its germ yields the desired lift.
+-/
 theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
     {H0 : Type w} [TopologicalSpace H0]
@@ -5155,6 +5182,18 @@ theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_sameUnivers
         iW₀W.op x hxW₀ omega)
   exact hgerm_restrict_W.trans homega
 
+/--
+%%handwave
+name:
+  Closed stalk germs lift through the forgotten sheaf differential
+statement:
+  Under the local Poincaré hypothesis, if a stalk germ of a smooth
+  \((n+1)\)-form is killed by the differential after forgetting the sheaf
+  structure, it is the differential of a germ of a smooth \(n\)-form.
+proof:
+  Identify the forgotten differential on stalks with the underlying
+  presheaf differential and apply the closed-germ lifting theorem.
+-/
 theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_forget_map_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
     {H0 : Type w} [TopologicalSpace H0]
@@ -5183,6 +5222,20 @@ theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_forget_map_
   refine ⟨θ, ?_⟩
   simpa [ObjectProperty.homMk_hom] using hθ
 
+/--
+%%handwave
+name:
+  Local Poincaré exactness of the three-term stalk complex
+statement:
+  Under the local Poincaré hypothesis, the three-term stalk complex
+  \[
+    \Omega^n_x\longrightarrow\Omega^{n+1}_x\longrightarrow\Omega^{n+2}_x
+  \]
+  is exact.
+proof:
+  A germ in the kernel of the second differential is closed.  Lift it to a
+  primitive germ by the local Poincaré closed-germ theorem.
+-/
 theorem smoothFormsAddSheafCochainComplex_stalk_scPrime_exact_of_local_poincare_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
     {H0 : Type w} [TopologicalSpace H0]
@@ -5235,8 +5288,6 @@ proof:
   actually vanishes, and then shrink again to a Poincare neighborhood.
   Vanishing of \(H^{n+1}\) there gives a primitive, and the primitive
   represents a germ mapping to the original germ.
-tags:
-  milestone
 -/
 theorem smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
@@ -5280,10 +5331,7 @@ statement:
   smooth forms is exact in every positive degree at every point.
 proof:
   Use the elementwise exactness criterion for short complexes of abelian
-  groups.  Exactness is precisely [the statement that every closed
-  positive-degree form germ has a local primitive germ](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse).
-tags:
-  milestone
+  groups.  Exactness is precisely [the statement that every closed positive-degree form germ has a local primitive germ](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse).
 -/
 theorem smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
@@ -5318,10 +5366,7 @@ statement:
   positive-degree real de Rham cohomology, then the sheaf de Rham complex is
   exact in every positive degree.
 proof:
-  Apply the stalk criterion for sheaf exactness to [the germwise exactness
-  supplied by local Poincare neighborhoods](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse).
-tags:
-  milestone
+  Apply the stalk criterion for sheaf exactness to [the germwise exactness supplied by local Poincare neighborhoods](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse).
 -/
 theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare_sameUniverse
     {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
@@ -5341,6 +5386,20 @@ theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare_sameUni
           (M0 := M0) Iℝ hlocal n x)
 
 
+/--
+%%handwave
+name:
+  Local Poincaré lemma lifts closed germs at a universe-lifted point
+statement:
+  For the universe-lifted site point associated to \(x\in M\), every closed
+  fiber element represented by a smooth \((n+1)\)-form is the differential
+  of a fiber element represented by a smooth \(n\)-form.
+proof:
+  Represent the fiber element on a neighborhood of \(x\), shrink until its
+  derivative vanishes, and use the local Poincaré hypothesis to obtain a
+  primitive on a smaller neighborhood.  Map that primitive into the point
+  fiber.
+-/
 theorem smoothFormsAddSheaf_liftedPoint_lift_closed_germ_of_local_poincare
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
     [IsManifold Iℝ ∞ M]
@@ -5475,6 +5534,20 @@ theorem smoothFormsAddSheaf_liftedPoint_lift_closed_germ_of_local_poincare
       smoothFormsPresheaf, Fnp1, Subsingleton.elim (Φ.fiber.map iW₀W hxW₀Φ) hxWΦ] using h
   exact hto_W.trans homega
 
+/--
+%%handwave
+name:
+  Exactness of the three-term de Rham complex at a lifted point
+statement:
+  At every universe-lifted point \(x\), the fiber sequence
+  \[
+    \Omega^n_x\longrightarrow\Omega^{n+1}_x\longrightarrow\Omega^{n+2}_x
+  \]
+  is exact under the local Poincaré hypothesis.
+proof:
+  Translate membership in the kernel into closedness of the fiber element and
+  apply the lifted-point primitive construction.
+-/
 theorem smoothFormsAddSheafCochainComplex_liftedPoint_scPrime_exact_of_local_poincare
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
     [IsManifold Iℝ ∞ M]
@@ -5510,6 +5583,17 @@ theorem smoothFormsAddSheafCochainComplex_liftedPoint_scPrime_exact_of_local_poi
   simpa [K, Point.sheafFiber, HomologicalComplex.shortComplexFunctor',
     smoothFormsAddSheafCochainComplex_d_succ] using hθ
 
+/--
+%%handwave
+name:
+  Positive-degree exactness of the de Rham complex at a lifted point
+statement:
+  Under the local Poincaré hypothesis, the fiber of the smooth de Rham sheaf
+  complex at every universe-lifted point is exact in degree \(n+1\).
+proof:
+  Rewrite exactness at degree \(n+1\) as exactness of the corresponding
+  three-term short complex and apply the preceding lifted-point result.
+-/
 theorem smoothFormsAddSheafCochainComplex_liftedPoint_exactAt_succ_of_local_poincare
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
     [IsManifold Iℝ ∞ M]
@@ -5546,12 +5630,10 @@ statement:
   If a short part of the sheaf de Rham complex becomes exact after taking the
   fiber at every lifted topological point, then it is exact as a sheaf complex.
 proof:
-  This is the conservative-points criterion for exactness, with the usual
-  topological points lifted to the universe of the coefficient groups.  The
-  statement is kept separate because the `TopCat` sheaf category uses a
-  wrapper category instance around the underlying site-sheaf category.
-tags:
-  milestone
+  Exactness of a complex of sheaves can be checked on a conservative family
+  of stalk functors. The lifted point functors compute the ordinary
+  topological stalks in the universe of the coefficient groups, so the
+  assumed stalkwise exactness implies exactness of the sheaf complex.
 -/
 theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_liftedPoint_exact
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -5605,8 +5687,6 @@ proof:
   neighborhood from the hypothesis; vanishing de Rham cohomology there
   supplies a primitive, and hence the original germ lies in the image of the
   previous exterior derivative.
-tags:
-  milestone
 -/
 theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare_enlarged_points
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -5635,8 +5715,6 @@ proof:
   Exactness of sheaves may be checked on germs.  A germ of a closed
   positive-degree form is represented on a local Poincare neighborhood, where
   it has a primitive by hypothesis.
-tags:
-  milestone
 -/
 theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -5663,8 +5741,6 @@ proof:
   endomorphisms of the sheaf of smooth differential forms.  Their germ
   supports lie in the corresponding open sets, and the local finiteness of the
   cover makes the pointwise germwise sum equal to the identity.
-tags:
-  milestone
 -/
 theorem smoothFormsAddSheaf_isFine [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H)
@@ -5730,8 +5806,6 @@ statement:
 proof:
   Use the equivalence induced by the isomorphism of complexes.  The
   chain-level isomorphism [intertwines constant scalar multiplication](lean:JJMath.Manifold.smoothFormsAddSheafGlobalSectionsCochainComplexIsoTopCochainComplex_hom_comp_scalarEnd), and functoriality of homology turns that square into the desired equality on homology classes.
-tags:
-  milestone
 -/
 theorem exists_smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -5878,8 +5952,6 @@ statement:
 proof:
   This is the naturality of the homology isomorphism attached to the explicit
   left-homology data for short complexes of abelian groups.
-tags:
-  milestone
 -/
 theorem smoothFormsAddPresheafTopCohomologyExplicitQuotientAddEquiv_symm_scalarEnd
     [NormedSpace ℝ E]
@@ -5982,8 +6054,6 @@ proof:
   The terminal open subset is the whole underlying set.  The inclusion of the
   terminal open subset into the manifold and its inverse are both smooth in
   the inherited open-submanifold chart structure.
-tags:
-  milestone
 -/
 theorem topOpen_diffeomorph [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M] :
@@ -6023,8 +6093,6 @@ proof:
   diffeomorphic, to the original manifold.  Pulling forms back along the two
   inverse smooth maps gives mutually inverse cochain maps, hence mutually
   inverse maps on the quotient of closed forms by exact forms.
-tags:
-  milestone
 -/
 theorem deRhamCohomology_addEquiv_topOpenDeRhamCohomology
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6050,8 +6118,6 @@ statement:
 proof:
   Use the linear equivalence induced by the smooth diffeomorphism between the
   manifold and its terminal open subset.
-tags:
-  milestone
 -/
 theorem exists_deRhamCohomology_addEquiv_topOpenDeRhamCohomology_with_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6355,8 +6421,6 @@ proof:
   differentiation in the previous degree.  In degree zero, the exact
   subgroup is zero and the incoming differential in the natural-number
   cochain complex is also zero.
-tags:
-  milestone
 -/
 theorem topOpenDeRhamExactClosedForms_map_cycles_eq_boundaries [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H)
@@ -6499,8 +6563,6 @@ proof:
   degree the incoming differential is the previous exterior derivative, so its
   image is the subgroup of exact forms; in degree zero the incoming map is
   zero, matching the convention that exact zero-forms form the zero subgroup.
-tags:
-  milestone
 -/
 theorem topOpenDeRhamCycleBoundaryIdentification [NormedSpace ℝ E]
     (Iℝ : ModelWithCorners ℝ E H)
@@ -6525,8 +6587,6 @@ proof:
   is determined by its inclusion into the middle term of the short complex,
   where it is exactly the degree-\(n\) cochain endomorphism, namely
   multiplication by \(r\).
-tags:
-  milestone
 -/
 theorem smoothFormsAddPresheafTopCochainHomologyQuotientScalarEnd_mk_cycles
     [NormedSpace ℝ E]
@@ -6606,8 +6666,6 @@ proof:
   incoming differential is the previous exterior derivative, so its boundaries
   are exact forms; in degree \(0\) the incoming differential is zero because
   the natural-number-indexed cochain complex has no negative predecessor.
-tags:
-  milestone
 -/
 theorem topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6657,8 +6715,6 @@ statement:
   isomorphic to the homology of the terminal-open presheaf de Rham complex.
 proof:
   Compose [the identification of terminal-open de Rham cohomology with the explicit cycle-boundary quotient](lean:JJMath.Manifold.topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient) with [the explicit quotient model for terminal-open smooth-form homology](lean:JJMath.Manifold.smoothFormsAddPresheafTopCohomology_addEquiv_explicitQuotient).
-tags:
-  milestone
 -/
 theorem topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6696,8 +6752,6 @@ proof:
   forms with terminal-open cycles carries \(r\omega\) to the cycle obtained by
   applying the degree-\(n\) scalar endomorphism to the cycle represented by
   \(\omega\).
-tags:
-  milestone
 -/
 theorem exists_topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient_with_leftHomologyMap_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6777,8 +6831,6 @@ proof:
   identification of closed forms with cycles it is the same operation as the
   chain endomorphism obtained by evaluating the presheaf scalar endomorphism
   on the terminal open subset.
-tags:
-  milestone
 -/
 theorem exists_topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6837,8 +6889,6 @@ statement:
   complex.
 proof:
   Compose [the isomorphism induced by restriction to the terminal open subset](lean:JJMath.Manifold.deRhamCohomology_addEquiv_topOpenDeRhamCohomology) with [the quotient comparison for the terminal-open complex](lean:JJMath.Manifold.topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology).
-tags:
-  milestone
 -/
 theorem deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6866,8 +6916,6 @@ statement:
   multiplying top-open forms by the same constant.
 proof:
   Compose [the scalar-compatible comparison with the terminal open subset](lean:JJMath.Manifold.exists_deRhamCohomology_addEquiv_topOpenDeRhamCohomology_with_smul) with [the scalar-compatible quotient comparison for the terminal open subset](lean:JJMath.Manifold.exists_topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul).
-tags:
-  milestone
 -/
 theorem exists_deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6911,8 +6959,6 @@ statement:
   sheaf de Rham complex.
 proof:
   Combine [the quotient comparison with top-open smooth-form homology](lean:JJMath.Manifold.deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology) and [the homology equivalence between global sections and top-open sections](lean:JJMath.Manifold.smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology).
-tags:
-  milestone
 -/
 theorem deRhamCohomology_addEquiv_smoothFormsAddSheafGlobalSectionsCohomology
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -6943,8 +6989,6 @@ statement:
   induced by multiplying each sheaf of smooth forms by the same constant.
 proof:
   Compose [the scalar-compatible comparison with top-open smooth-form homology](lean:JJMath.Manifold.exists_deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul) with [the scalar-compatible comparison between global smooth-form homology and top-open smooth-form homology](lean:JJMath.Manifold.exists_smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_with_map_smul).
-tags:
-  milestone
 -/
 theorem exists_deRhamCohomology_addEquiv_smoothFormsAddSheafGlobalSectionsCohomology_with_map_smul
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
@@ -7075,8 +7119,6 @@ proof:
   functor for abelian groups preserves the required cover colimits and
   multiequalizer limits, and the forgetful functors detect the concrete
   sheafification construction.
-tags:
-  milestone
 -/
 theorem addCommGrp_uliftFunctor_preservesSheafification_of_plusPlus
     {C : Type uC} [Category.{vC} C] (J : GrothendieckTopology C)
@@ -7114,8 +7156,6 @@ proof:
   cover-indexed colimits and the multiequalizer limits used in the plus-plus
   construction, and the forgetful functors preserve the corresponding cover
   colimits.  Apply the plus-plus compatibility theorem.
-tags:
-  milestone
 -/
 theorem opens_addCommGrp_uliftFunctor_preservesSheafification
     (X : TopCat.{m}) :
@@ -7149,8 +7189,6 @@ statement:
 proof:
   Use compatibility of universe lift with sheafification and the canonical
   additive isomorphism between the two universe-lifted copies of \(\mathbb Z\).
-tags:
-  milestone
 -/
 theorem intConstantAddSheafUniverse_iso_sheafCompose_ulift_intConstantAddSheaf
     (X : TopCat.{m})
@@ -7373,8 +7411,6 @@ proof:
   morphism in the homotopy category is a quasi-isomorphism precisely when it
   induces isomorphisms on all homology objects, so exactness carries this
   property across universe change.
-tags:
-  milestone
 -/
 theorem sheafCompose_uliftFunctor_mapHomotopyCategory_preserves_quasiIso
     (X : TopCat.{m})
@@ -7512,8 +7548,6 @@ proof:
   constant presheaves.  The two coefficient groups
   \(\mathrm{ULift}^{\max(v,m)}\mathbb R\) and the universe lift of
   \(\mathrm{ULift}^{m}\mathbb R\) are canonically additively isomorphic.
-tags:
-  milestone
 -/
 theorem realConstantAddSheafSmoothFormsUniverse_iso_sheafCompose_ulift_realConstantAddSheaf
     (X : TopCat.{m})
@@ -7558,8 +7592,6 @@ proof:
   multiplication by each real number.  Naturality of constant sheaves and of
   the compatibility isomorphism between sheafification and universe lift then
   gives the corresponding commutative square of sheaves.
-tags:
-  milestone
 -/
 theorem exists_realConstantAddSheafSmoothFormsUniverse_iso_sheafCompose_ulift_realConstantAddSheaf_with_scalarEnd
     (X : TopCat.{m})
@@ -7661,8 +7693,6 @@ proof:
   the large integer constant sheaf with the universe lift of the ordinary
   integer constant sheaf, then apply the Ext bijection induced by universe
   lift.
-tags:
-  milestone
 -/
 theorem sheafCompose_ulift_realConstantAddSheaf_cohomology_addEquiv_realConstantSheafCohomology_of_mapExt
     (X : TopCat.{m})
@@ -7751,8 +7781,6 @@ proof:
   the direct lift of \(\mathbb R\) and the iterated universe lift of
   \(\mathbb R\).  This identification commutes with multiplication by every
   real scalar, and applying sheaf cohomology preserves the commutative square.
-tags:
-  milestone
 -/
 theorem exists_realConstantSheafSmoothFormsUniverseCohomology_addEquiv_sheafCompose_ulift_realConstantAddSheaf_cohomology_with_map_smul
     (X : TopCat.{m})

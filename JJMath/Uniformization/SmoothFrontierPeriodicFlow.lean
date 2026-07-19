@@ -30,8 +30,19 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
-/-- A smooth map whose image lies in an open set is smooth as a map to the
-corresponding open submanifold. -/
+/--
+%%handwave
+name:
+  Smooth restriction to an open codomain
+statement:
+  Let \(f:M\to N\) be a \(C^n\) map between smooth manifolds, and let
+  \(U\subseteq N\) be open.  If \(f(M)\subseteq U\), then the same function,
+  regarded as a map \(M\to U\), is \(C^n\).
+proof:
+  Near each value \(f(x)\), the inclusion into \(U\) has a smooth local
+  retraction equal to the identity on \(U\).  Compose this retraction with
+  \(f\) and use local equality.
+-/
 theorem ContMDiff.codRestrict_open
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -157,8 +168,20 @@ noncomputable def symmetricOpenIntervalDiffeomorphReal
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- The standard diffeomorphism from a symmetric interval to the real line
-preserves the sign of its coordinate. -/
+/--
+%%handwave
+name:
+  The tangent coordinate preserves negativity
+statement:
+  For \(\rho>0\) and \(x\in(-\rho,\rho)\),
+  \[
+    \tan\!\left(\frac{\pi x}{2\rho}\right)<0
+    \quad\Longleftrightarrow\quad x<0.
+  \]
+proof:
+  The scaled argument lies in \((-\pi/2,\pi/2)\), where the tangent function
+  has the same sign as its argument; the scaling factor is positive.
+-/
 theorem symmetricOpenIntervalDiffeomorphReal_lt_zero_iff
     (rho : ℝ) (hrho : 0 < rho) (x : symmetricOpenInterval rho) :
     symmetricOpenIntervalDiffeomorphReal rho hrho x < 0 ↔ (x : ℝ) < 0 := by
@@ -188,8 +211,20 @@ theorem symmetricOpenIntervalDiffeomorphReal_lt_zero_iff
     exact Real.tan_neg_of_neg_of_pi_div_two_lt
       (mul_neg_of_pos_of_neg hkpos hx) hleft
 
-/-- The standard diffeomorphism from a symmetric interval to the real line
-also preserves strict positivity. -/
+/--
+%%handwave
+name:
+  The tangent coordinate preserves positivity
+statement:
+  For \(\rho>0\) and \(x\in(-\rho,\rho)\),
+  \[
+    0<\tan\!\left(\frac{\pi x}{2\rho}\right)
+    \quad\Longleftrightarrow\quad 0<x.
+  \]
+proof:
+  The scaled argument lies in \((-\pi/2,\pi/2)\), where tangent preserves
+  strict sign, and the scaling factor is positive.
+-/
 theorem symmetricOpenIntervalDiffeomorphReal_pos_iff
     (rho : ℝ) (hrho : 0 < rho) (x : symmetricOpenInterval rho) :
     0 < symmetricOpenIntervalDiffeomorphReal rho hrho x ↔ 0 < (x : ℝ) := by
@@ -325,7 +360,20 @@ arcsine branch is valid.  Only its germ at `z` is used. -/
 noncomputable def circleLocalAngle (z w : Circle) : ℝ :=
   Real.arcsin (circleLocalSine z w)
 
-/-- The short signed angle is smooth at its center. -/
+/--
+%%handwave
+name:
+  Smoothness of the centered local angle on the circle
+statement:
+  For \(z\in S^1\), the function
+  \[
+    w\longmapsto \arcsin\!\bigl(\operatorname{Im}(\overline z w)\bigr)
+  \]
+  is smooth at \(w=z\).
+proof:
+  The imaginary part of \(\overline z w\) is smooth in \(w\) and vanishes at
+  \(w=z\).  The arcsine function is smooth in a neighborhood of zero.
+-/
 theorem circleLocalAngle_contMDiffAt (z : Circle) :
     ContMDiffAt (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin 1)))
       (modelWithCornersSelf ℝ ℝ) ∞
@@ -354,8 +402,19 @@ theorem circleLocalAngle_contMDiffAt (z : Circle) :
     exact Real.contDiffAt_arcsin (by norm_num) (by norm_num)
   exact harcsin.contMDiffAt.comp z hsine
 
-/-- Along the exponential parametrization, the local sine is the ordinary
-sine of the difference of parameters. -/
+/--
+%%handwave
+name:
+  Local circle sine along exponential coordinates
+statement:
+  For all \(a,b\in\mathbb R\),
+  \[
+    \operatorname{Im}\!\left(\overline{e^{ia}}e^{ib}\right)
+      =\sin(b-a).
+  \]
+proof:
+  The product is \(e^{i(b-a)}\); taking its imaginary part gives the sine.
+-/
 theorem circleLocalSine_exp (a b : ℝ) :
     circleLocalSine (Circle.exp a) (Circle.exp b) = Real.sin (b - a) := by
   rw [circleLocalSine, ← Circle.coe_inv_eq_conj, ← Circle.coe_mul]
@@ -366,8 +425,24 @@ theorem circleLocalSine_exp (a b : ℝ) :
   rw [hcircle, Circle.coe_exp]
   exact Complex.exp_ofReal_mul_I_im (b - a)
 
-/-- A centered arcsine branch is a local right inverse to the circle
-exponential. -/
+/--
+%%handwave
+name:
+  A centered angle is a local inverse to the circle exponential
+statement:
+  For \(t_0\in\mathbb R\), the map
+  \[
+    z\longmapsto
+    \exp\!\left(i\left[t_0+
+      \arcsin\operatorname{Im}(e^{-it_0}z)\right]\right)
+  \]
+  agrees with \(z\) in a neighborhood of \(e^{it_0}\in S^1\).
+proof:
+  For \(t\) near \(t_0\), the difference \(t-t_0\) lies in
+  \([-\pi/2,\pi/2]\), so arcsine inverts sine.  The circle exponential is a
+  local homeomorphism and transfers this identity to a neighborhood of
+  \(e^{it_0}\).
+-/
 theorem circleExp_add_circleLocalAngle_eventuallyEq (t₀ : ℝ) :
     (fun z : Circle =>
       Circle.exp (t₀ + circleLocalAngle (Circle.exp t₀) z)) =ᶠ[
@@ -404,9 +479,18 @@ theorem circleExp_add_circleLocalAngle_eventuallyEq (t₀ : ℝ) :
   simp only [id_eq]
   rw [ht]
 
-/-- Under the standard homeomorphism from an additive circle of period `P`,
-the inverse image of the ordinary circle exponential is the correspondingly
-rescaled real parameter. -/
+/--
+%%handwave
+name:
+  Exponential coordinates on an additive circle
+statement:
+  For \(P\ne0\) and \(t\in\mathbb R\), the standard homeomorphism
+  \(\mathbb R/P\mathbb Z\cong S^1\) sends the class of
+  \(Pt/(2\pi)\) to \(e^{it}\).
+proof:
+  Substitute the class \(Pt/(2\pi)\) into the defining exponential of the
+  homeomorphism and cancel the nonzero constants.
+-/
 theorem addCircle_homeomorphCircle_symm_exp
     (P : ℝ) (hP : P ≠ 0) (t : ℝ) :
     (AddCircle.homeomorphCircle hP).symm (Circle.exp t) =
@@ -431,8 +515,19 @@ noncomputable def smoothFrontierProductCoordinateVelocity
     (⟨x, smoothFrontierTangentVectorField D x⟩ :
       TangentBundle SurfaceRealModel X)).2
 
-/-- The product-coordinate velocity varies continuously at the center of
-the boundary chart. -/
+/--
+%%handwave
+name:
+  Continuity of the boundary-flow velocity in product coordinates
+statement:
+  At a frontier point \(q\), express the oriented tangent vector field in a
+  centered boundary product chart.  Its coordinate velocity is continuous
+  at \(q\).
+proof:
+  The tangent-vector section is continuous, and the tangent map of the
+  smooth product chart is continuous on its source.  Compose these maps and
+  project to the vector component.
+-/
 theorem smoothFrontierProductCoordinateVelocity_continuousAt
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) :
     ContinuousAt (smoothFrontierProductCoordinateVelocity D q) (q : X) := by
@@ -467,8 +562,24 @@ theorem smoothFrontierProductCoordinateVelocity_continuousAt
   simpa [smoothFrontierProductCoordinateVelocity, C, tangentSection,
     Function.comp_def] using hsnd.continuousAt.comp hcomp
 
-/-- In a centered product chart, an integral curve has derivative equal to
-the product-coordinate velocity. -/
+/--
+%%handwave
+name:
+  Derivative of a frontier trajectory in product coordinates
+statement:
+  Let \(\gamma\) be an integral curve of the oriented frontier tangent field
+  with \(\gamma(t_0)=q\).  For all \(t\) sufficiently near \(t_0\),
+  \[
+    \frac{d}{ds}\bigg|_{s=t} C(\gamma(s))
+      = dC_{\gamma(t)}\bigl(V(\gamma(t))\bigr),
+  \]
+  where \(C\) is the centered product chart and \(V\) is the tangent field.
+proof:
+  Near \(t_0\) the trajectory lies in the chart source.  Apply the chain
+  rule to \(C\circ\gamma\), use the integral-curve equation
+  \(\gamma'=V\circ\gamma\), and identify the derivative with the coordinate
+  velocity.
+-/
 theorem smoothFrontierProductCoordinate_eventually_hasDerivAt
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier)
     {gamma : ℝ → X} {t₀ : ℝ}
@@ -519,8 +630,20 @@ theorem smoothFrontierProductCoordinate_eventually_hasDerivAt
         (C.coordinate.open_source.uniqueMDiffOn (gamma t) ht) hcoordAt]
   simpa [C, hvelocity] using hordinary
 
-/-- The angular coordinate of an integral curve has derivative equal to the
-angular component of the product-coordinate velocity. -/
+/--
+%%handwave
+name:
+  Derivative of the angular product coordinate
+statement:
+  Under the hypotheses above, for \(t\) near \(t_0\) the angular component
+  \(\theta(s)=C(\gamma(s))_2\) satisfies
+  \[
+    \theta'(t)=\bigl(dC_{\gamma(t)}V(\gamma(t))\bigr)_2.
+  \]
+proof:
+  Project the product-coordinate derivative formula onto its second
+  component.
+-/
 theorem smoothFrontierProductAngularCoordinate_eventually_hasDerivAt
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier)
     {gamma : ℝ → X} {t₀ : ℝ}
@@ -538,8 +661,19 @@ theorem smoothFrontierProductAngularCoordinate_eventually_hasDerivAt
   rw [hasDerivAt_iff_hasFDerivAt]
   convert ht.hasFDerivAt.snd using 1
 
-/-- The oriented nonvanishing tangent field has a complete integral curve
-through every frontier point. -/
+/--
+%%handwave
+name:
+  Complete tangent trajectories through frontier points
+statement:
+  For every \(p\in\partial D\), there is an integral curve
+  \(\gamma:\mathbb R\to X\) of the oriented tangent field such that
+  \(\gamma(0)=p\).
+proof:
+  The frontier is compact, so local integral curves through its points have
+  a uniform positive existence time.  Tangency makes the frontier invariant;
+  iterating the uniform local solutions gives a complete curve.
+-/
 theorem exists_smoothFrontierTangentIntegralCurve
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ gamma : ℝ → X, gamma 0 = p ∧
@@ -560,8 +694,20 @@ theorem exists_smoothFrontierTangentIntegralCurve
       tangentIntegralCurveOn_Ioo_mem_frontier D hgamma ht₀ hfrontier)
     hε hlocal p.2
 
-/-- At the center of a product chart, the tangent flow has zero transverse
-coordinate velocity. -/
+/--
+%%handwave
+name:
+  Vanishing of the transverse frontier velocity
+statement:
+  At the center \(q\in\partial D\) of a boundary product chart, the first,
+  transverse component of the coordinate velocity of the oriented tangent
+  field is zero.
+proof:
+  Take a complete integral curve through \(q\).  It remains on the frontier,
+  where the transverse product coordinate is locally identically zero.
+  Uniqueness of derivatives then forces its transverse velocity at \(q\) to
+  vanish.
+-/
 theorem smoothFrontierProductCoordinateVelocity_fst_eq_zero
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) :
     (smoothFrontierProductCoordinateVelocity D q (q : X)).1 = 0 := by
@@ -609,7 +755,18 @@ theorem smoothFrontierProductCoordinateVelocity_fst_eq_zero
   rw [hgamma0] at hfst
   exact hfst.unique hzero
 
-/-- The full product-coordinate velocity is nonzero at the center. -/
+/--
+%%handwave
+name:
+  Nonvanishing of the frontier velocity in product coordinates
+statement:
+  At every frontier point \(q\), the full coordinate velocity of the
+  oriented tangent field in a centered boundary product chart is nonzero.
+proof:
+  The differential of a local diffeomorphism is injective.  If the
+  coordinate velocity vanished, injectivity would make the original tangent
+  vector vanish, contradicting nonvanishing of the oriented frontier field.
+-/
 theorem smoothFrontierProductCoordinateVelocity_ne_zero
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) :
     smoothFrontierProductCoordinateVelocity D q (q : X) ≠ 0 := by
@@ -649,7 +806,17 @@ theorem smoothFrontierProductCoordinateVelocity_ne_zero
     rfl
   exact smoothFrontierTangentVectorField_ne_zero D q.2 hTzero
 
-/-- Hence the angular coordinate velocity at the chart center is nonzero. -/
+/--
+%%handwave
+name:
+  Nonvanishing of the angular frontier velocity
+statement:
+  At the center of a boundary product chart, the angular component of the
+  oriented tangent-field velocity is nonzero.
+proof:
+  The transverse component is zero, while the full coordinate velocity is
+  nonzero; therefore its angular component cannot vanish.
+-/
 theorem smoothFrontierProductCoordinateVelocity_snd_ne_zero
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) :
     (smoothFrontierProductCoordinateVelocity D q (q : X)).2 ≠ 0 := by
@@ -659,8 +826,20 @@ theorem smoothFrontierProductCoordinateVelocity_snd_ne_zero
   · exact smoothFrontierProductCoordinateVelocity_fst_eq_zero D q
   · exact hsecond
 
-/-- The angular product coordinate is a local real coordinate along every
-tangent trajectory. -/
+/--
+%%handwave
+name:
+  Strict derivative of the angular coordinate along the frontier flow
+statement:
+  If \(\gamma(t_0)=q\) is an integral curve of the oriented frontier field,
+  then the angular product coordinate \(\theta(t)=C(\gamma(t))_2\) has a
+  strict derivative at \(t_0\), equal to the nonzero angular coordinate
+  velocity at \(q\).
+proof:
+  Near \(t_0\), the ordinary derivative of \(\theta\) is the angular velocity.
+  That velocity varies continuously along \(\gamma\), so the derivative is
+  strict and evaluates at \(q\).
+-/
 theorem smoothFrontierProductAngularCoordinate_hasStrictDerivAt
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier)
     {gamma : ℝ → X} {t₀ : ℝ}
@@ -690,7 +869,19 @@ theorem smoothFrontierProductAngularCoordinate_hasStrictDerivAt
     hasStrictDerivAt_of_hasDerivAt_of_continuousAt hder hang
   simpa only [hgamma0] using hstrict
 
-/-- Every complete tangent trajectory remains on the frontier. -/
+/--
+%%handwave
+name:
+  Complete tangent trajectories remain on the frontier
+statement:
+  If a complete integral curve \(\gamma:\mathbb R\to X\) of the oriented
+  frontier field starts on \(\partial D\), then
+  \(\gamma(t)\in\partial D\) for every \(t\in\mathbb R\).
+proof:
+  For a fixed \(t\), restrict the complete curve to a bounded open interval
+  containing both \(0\) and \(t\).  Invariance of the frontier for local
+  tangent integral curves gives the conclusion at \(t\).
+-/
 theorem smoothFrontierTangentIntegralCurve_mem_frontier
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X}
     (hgamma : IsMIntegralCurve gamma
@@ -715,8 +906,20 @@ theorem smoothFrontierTangentIntegralCurve_mem_frontier
   exact tangentIntegralCurveOn_Ioo_mem_frontier D
     (hgamma.isMIntegralCurveOn (Ioo a b)) hzero hgamma0 t ht
 
-/-- A complete tangent trajectory is smooth when regarded as a curve in the
-one-dimensional frontier manifold. -/
+/--
+%%handwave
+name:
+  Smoothness of a tangent trajectory in the frontier manifold
+statement:
+  A complete integral curve of the oriented frontier field that remains in
+  \(\partial D\) is smooth as a map
+  \(\mathbb R\to\partial D\), where the frontier carries its natural smooth
+  one-manifold structure.
+proof:
+  The ambient integral curve is smooth.  In a frontier chart, its coordinate
+  is the angular component of a boundary product chart, hence is smooth by
+  composition with the ambient curve.
+-/
 theorem smoothFrontierTangentIntegralCurve_contMDiff_frontier
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X}
     (hgamma : IsMIntegralCurve gamma
@@ -767,8 +970,22 @@ theorem smoothFrontierTangentIntegralCurve_contMDiff_frontier
     rw [heq]
     exact hang
 
-/-- A complete tangent trajectory through a frontier point stays in that
-point's connected frontier component. -/
+/--
+%%handwave
+name:
+  A tangent trajectory stays in its frontier component
+statement:
+  If an integral curve \(\gamma\) of the oriented frontier field satisfies
+  \(\gamma(0)=p\in\partial D\), then
+  \[
+    \gamma(t)\in\operatorname{Comp}_{\partial D}(p)
+    \qquad(t\in\mathbb R).
+  \]
+proof:
+  The image of the connected line under the continuous curve is connected,
+  lies in the frontier, and contains \(p\); it is therefore contained in the
+  connected component of \(p\).
+-/
 theorem smoothFrontierTangentIntegralCurve_mem_connectedComponentIn
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     {gamma : ℝ → X} (hgamma0 : gamma 0 = p)
@@ -787,8 +1004,19 @@ theorem smoothFrontierTangentIntegralCurve_mem_connectedComponentIn
       |>.subset_connectedComponentIn hp_range hfrontier
   exact fun t => hrange (mem_range_self t)
 
-/-- A complete tangent trajectory, regarded as a map into the frontier, is
-an open map. -/
+/--
+%%handwave
+name:
+  Tangent trajectories are open maps onto the frontier
+statement:
+  A complete integral curve of the nonvanishing oriented frontier field,
+  regarded as a map \(\mathbb R\to\partial D\), is an open map.
+proof:
+  At every time, the angular boundary coordinate has nonzero strict
+  derivative, so it maps a neighborhood of that time onto a neighborhood of
+  the corresponding angular coordinate.  The boundary product chart then
+  transfers this neighborhood back to the frontier.
+-/
 theorem smoothFrontierTangentIntegralCurve_isOpenMap
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X}
     (hgamma : IsMIntegralCurve gamma
@@ -867,8 +1095,19 @@ theorem smoothFrontierTangentIntegralCurve_isOpenMap
     exact Subtype.ext hxEq.symm
   exact Filter.mem_of_superset (hSopen.mem_nhds hqS) hSsubset
 
-/-- The image of a complete nonstationary tangent trajectory is relatively
-open in the smooth frontier. -/
+/--
+%%handwave
+name:
+  Openness of a complete tangent orbit in the frontier
+statement:
+  The image of a complete integral curve of the nonvanishing oriented
+  frontier field is open relative to \(\partial D\).
+proof:
+  At each point of the orbit, the angular coordinate along the trajectory
+  has nonzero strict derivative and hence covers an interval.  Injectivity of
+  the local product chart shows that the corresponding frontier neighborhood
+  lies in the orbit.
+-/
 theorem smoothFrontierTangentIntegralCurve_range_isOpen
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X}
     (hgamma : IsMIntegralCurve gamma
@@ -941,8 +1180,19 @@ theorem smoothFrontierTangentIntegralCurve_range_isOpen
     exact ⟨s, hxEq.symm⟩
   exact Filter.mem_of_superset (hSopen.mem_nhds hqS) hSsubset
 
-/-- Complete tangent trajectories partition the frontier into relatively
-clopen orbits. -/
+/--
+%%handwave
+name:
+  Complete tangent orbits are clopen in the frontier
+statement:
+  The image of a complete integral curve of the oriented frontier field is
+  both open and closed relative to \(\partial D\).
+proof:
+  The orbit is open.  Through any point outside it, take another complete
+  orbit, which is open as well.  If the two orbits met, uniqueness of integral
+  curves after translating time would make the second point lie on the first
+  orbit.  Thus these exterior orbits form an open complement.
+-/
 theorem smoothFrontierTangentIntegralCurve_range_isClopen
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X}
     (hgamma : IsMIntegralCurve gamma
@@ -989,8 +1239,19 @@ theorem smoothFrontierTangentIntegralCurve_range_isClopen
       (hOeta_open.mem_nhds hqOeta) hOeta_subset
   exact ⟨(isOpen_compl_iff.mp hOcompl_open), hOopen⟩
 
-/-- A complete tangent trajectory through a frontier point covers its whole
-connected frontier component. -/
+/--
+%%handwave
+name:
+  A complete tangent orbit is the whole frontier component
+statement:
+  If \(\gamma(0)=p\in\partial D\), then the range of the complete oriented
+  tangent trajectory is exactly
+  \(\operatorname{Comp}_{\partial D}(p)\).
+proof:
+  The range lies in the component.  As a subset of the frontier it is clopen
+  and contains \(p\), so connectedness of the component forces the reverse
+  inclusion.
+-/
 theorem smoothFrontierTangentIntegralCurve_range_eq_frontierComponent
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     {gamma : ℝ → X} (hgamma0 : gamma 0 = p)
@@ -1016,8 +1277,19 @@ theorem smoothFrontierTangentIntegralCurve_range_eq_frontierComponent
     rintro x ⟨q, hq, rfl⟩
     exact hcomponent_subset_O hq
 
-/-- A complete tangent trajectory on a compact frontier component cannot be
-injective. -/
+/--
+%%handwave
+name:
+  A complete frontier trajectory is not injective
+statement:
+  A complete oriented tangent trajectory through a point of the compact
+  smooth frontier cannot be injective as a map \(\mathbb R\to X\).
+proof:
+  Its range is the compact connected frontier component, and the trajectory
+  is continuous, open, and surjective onto that component.  If it were also
+  injective it would be a homeomorphism from \(\mathbb R\) onto a compact
+  space, contradicting noncompactness of the real line.
+-/
 theorem smoothFrontierTangentIntegralCurve_not_injective
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
     {gamma : ℝ → X} (hgamma0 : gamma 0 = p)
@@ -1092,8 +1364,19 @@ theorem smoothFrontierTangentIntegralCurve_not_injective
   have hcompactReal : CompactSpace ℝ := homeo.symm.compactSpace
   exact (not_compactSpace_iff.mpr inferInstance) hcompactReal
 
-/-- Every compact connected frontier component is traversed periodically by
-the complete oriented tangent flow. -/
+/--
+%%handwave
+name:
+  Periodicity of the tangent flow on a frontier component
+statement:
+  For every \(p\in\partial D\), there are an integral curve
+  \(\gamma:\mathbb R\to X\) and a period \(T>0\) such that
+  \(\gamma(0)=p\) and \(\gamma(t+T)=\gamma(t)\) for every \(t\).
+proof:
+  A complete integral curve through \(p\) exists.  The uniqueness theorem
+  gives the dichotomy that such a curve is periodic or injective; compactness
+  of its frontier component excludes injectivity.
+-/
 theorem exists_periodic_smoothFrontierTangentIntegralCurve
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ gamma : ℝ → X, ∃ T : ℝ,
@@ -1111,7 +1394,22 @@ theorem exists_periodic_smoothFrontierTangentIntegralCurve
   · exact (smoothFrontierTangentIntegralCurve_not_injective
       D p hgamma0 hgamma hinjective.1).elim
 
-/-- The periodic tangent parametrization has a least positive period. -/
+/--
+%%handwave
+name:
+  Existence of a fundamental period for the frontier flow
+statement:
+  For every \(p\in\partial D\), there are an integral curve \(\gamma\) through
+  \(p\) and \(P>0\) such that \(P\) is a period of \(\gamma\) and
+  \(P\le d\) for every positive period \(d\) of \(\gamma\).
+proof:
+  A nonzero angular derivative makes the curve locally injective near time
+  zero, so there are no sufficiently small positive returns.  Starting from
+  any positive period \(T\), minimize the return time on a compact interval
+  bounded away from zero.  Uniqueness of integral curves turns the minimizing
+  return into a period, and a smaller positive period would contradict its
+  minimality or local injectivity.
+-/
 theorem exists_fundamentalPeriod_smoothFrontierTangentIntegralCurve
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ gamma : ℝ → X, ∃ P : ℝ,
@@ -1186,8 +1484,18 @@ theorem exists_fundamentalPeriod_smoothFrontierTangentIntegralCurve
     · exact hPS.1.2.trans (le_of_not_ge hdT)
   exact ⟨gamma, P, hgamma0, hPpos, hgamma, hPperiodic, hminimal⟩
 
-/-- Equality along a trajectory with a least positive period is exactly
-congruence modulo that period. -/
+/--
+%%handwave
+name:
+  Equal points differ by an integral multiple of the fundamental period
+statement:
+  Let \(\gamma\) be an integral curve with least positive period \(P\).  If
+  \(\gamma(a)=\gamma(b)\), then \(a-b\in P\mathbb Z\).
+proof:
+  The return equality makes \(a-b\) a period.  Subtract an integral multiple
+  of \(P\) to obtain a representative \(r\in[0,P\)).  This remainder is also
+  a period; minimality of \(P\) forces \(r=0\).
+-/
 theorem sub_mem_zmultiples_of_eq_of_fundamentalPeriod
     (D : SmoothBoundaryDomain X) {gamma : ℝ → X} {P : ℝ}
     (hgamma : IsMIntegralCurve gamma
@@ -1217,8 +1525,23 @@ theorem sub_mem_zmultiples_of_eq_of_fundamentalPeriod
   dsimp [r] at hrzero
   linarith
 
-/-- A connected frontier component is homeomorphic to the additive circle
-whose circumference is the fundamental flow period. -/
+/--
+%%handwave
+name:
+  A frontier component is an additive circle
+statement:
+  For every \(p\in\partial D\), there is a number \(P>0\) and a homeomorphism
+  \[
+    \mathbb R/P\mathbb Z\ \cong\
+    \operatorname{Comp}_{\partial D}(p).
+  \]
+proof:
+  Lift a fundamental-period trajectory to the additive circle.  Equality of
+  two lifted values implies that their parameters differ by an integral
+  multiple of \(P\), giving injectivity, while the orbit-component theorem
+  gives surjectivity.  Compactness of the additive circle upgrades the
+  continuous bijection to a homeomorphism.
+-/
 theorem exists_homeomorph_addCircle_frontierComponent
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ P : ℝ, 0 < P ∧
@@ -1294,8 +1617,23 @@ theorem exists_homeomorph_addCircle_frontierComponent
       continuous_invFun := hinverse_continuous }
   exact ⟨P, hPpos, ⟨homeo⟩⟩
 
-/-- A connected frontier component admits a smooth one-to-one circle
-parametrization whose range is exactly that component. -/
+/--
+%%handwave
+name:
+  Smooth circle parametrization of a frontier component
+statement:
+  Every connected component \(C\) of a smooth compact frontier admits a
+  smooth injective parametrization \(\phi:S^1\to\partial D\) with range \(C\).
+  Moreover, at every \(z\in S^1\), \(\phi\) has a smooth local left inverse
+  near \(\phi(z)\).
+proof:
+  Rescale a fundamental-period tangent trajectory and descend it from
+  \(\mathbb R/P\mathbb Z\) to \(S^1\).  Centered angle branches prove local
+  smoothness on the circle, while the fundamental-period property gives
+  injectivity and the orbit-component theorem gives the range.  A boundary
+  product coordinate has nonzero derivative along the trajectory, so the
+  inverse function theorem supplies the local left inverses.
+-/
 theorem exists_smooth_circle_frontierComponent_parametrization
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     letI := smoothBoundaryFrontierChartedSpace D
@@ -1598,8 +1936,19 @@ noncomputable def smoothFrontierComponentOpen
       ChartedSpace.locallyConnectedSpace ℝ (frontier D.carrier)
     exact isOpen_connectedComponent
 
-/-- Every connected smooth frontier component is smoothly diffeomorphic to
-the unit circle. -/
+/--
+%%handwave
+name:
+  A connected smooth frontier component is a circle
+statement:
+  Every connected component of the smooth compact frontier is smoothly
+  diffeomorphic to \(S^1\).
+proof:
+  Use the smooth injective circle parametrization whose image is the
+  component.  Compactness makes it a homeomorphism.  Smooth local left
+  inverses of the parametrization agree locally with the inverse
+  homeomorphism, proving that the inverse is smooth.
+-/
 theorem exists_diffeomorph_circle_smoothFrontierComponent
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     letI := smoothBoundaryFrontierChartedSpace D
@@ -1704,8 +2053,26 @@ theorem exists_diffeomorph_circle_smoothFrontierComponent
       contMDiff_invFun := hhomeoInvSmooth }
   exact ⟨diffeo⟩
 
-/-- Every connected smooth frontier component has an open collar smoothly
-diffeomorphic to the annular cylinder. -/
+/--
+%%handwave
+name:
+  Side-preserving annular collar of a frontier component
+statement:
+  Let \(C\) be the frontier component through \(p\).  There is an open
+  neighborhood \(W\subseteq X\) containing \(C\) and a diffeomorphism
+  \(\Phi:W\to S^1\times\mathbb R\) such that
+  \[
+    y\in D\iff \Phi(y)_2<0,
+    \qquad
+    y\notin\overline D\iff \Phi(y)_2>0.
+  \]
+proof:
+  Start with the smooth product collar \(C\times(-\rho,\rho)\to X\).  Identify
+  \(C\) smoothly with \(S^1\), and identify the transverse interval with
+  \(\mathbb R\) by the sign-preserving tangent coordinate.  Their product,
+  composed with the collar, is the desired diffeomorphism; the collar side
+  formulas and sign preservation give the two equivalences.
+-/
 theorem exists_sidePreservingDiffeomorph_annularCylinder_smoothFrontierComponentCollar
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ W : TopologicalSpace.Opens X,
@@ -1917,8 +2284,18 @@ theorem exists_sidePreservingDiffeomorph_annularCylinder_smoothFrontierComponent
   exact ⟨W, hpW, hcomponentW, diffeo,
     hdiffeoSide, hdiffeoExteriorSide⟩
 
-/-- Every connected smooth frontier component has an open collar smoothly
-diffeomorphic to the annular cylinder. -/
+/--
+%%handwave
+name:
+  Annular collar of a smooth frontier component
+statement:
+  Every point \(p\) of a smooth compact frontier has an open neighborhood
+  \(W\subseteq X\) smoothly diffeomorphic to the annular cylinder
+  \(S^1\times\mathbb R\).
+proof:
+  Forget the side-preserving conclusions of the annular collar
+  diffeomorphism constructed for the frontier component through \(p\).
+-/
 theorem exists_diffeomorph_annularCylinder_smoothFrontierComponentCollar
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ W : TopologicalSpace.Opens X,
@@ -1931,7 +2308,20 @@ theorem exists_diffeomorph_annularCylinder_smoothFrontierComponentCollar
     ⟨W, hpW, _hcomponentW, phi, _hside, _hexteriorSide⟩
   exact ⟨W, hpW, ⟨phi⟩⟩
 
-/-- The exterior half of a side-preserving annular collar is preconnected. -/
+/--
+%%handwave
+name:
+  Preconnectedness of the exterior half of an annular collar
+statement:
+  Suppose a diffeomorphism \(\Phi:W\to S^1\times\mathbb R\) identifies
+  \(W\setminus\overline D\) with \(S^1\times(0,\infty)\).  Then
+  \(W\setminus\overline D\) is preconnected.
+proof:
+  The circle is the continuous image of the connected real line, hence is
+  preconnected, and so is its product with \((0,\infty)\).  The inverse collar
+  map sends that product continuously and surjectively onto the exterior
+  half, preserving preconnectedness.
+-/
 theorem sidePreservingAnnularCollar_exteriorSide_isPreconnected
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -2046,8 +2436,19 @@ noncomputable def sidePreservingAnnularCollarDomainDiffeomorph
   (sidePreservingAnnularCollarDomainRestriction D W phi hside).trans
     negativeAnnularCylinderOpenDiffeomorphAnnularCylinder
 
-/-- Every smooth frontier component has a one-sided open collar inside the
-domain which is smoothly diffeomorphic to the annular cylinder. -/
+/--
+%%handwave
+name:
+  An interior annular collar of every smooth frontier component
+statement:
+  For every \(p\in\partial D\), there is an open set \(W\subseteq D\) smoothly
+  diffeomorphic to \(S^1\times\mathbb R\).
+proof:
+  Take a side-preserving annular collar of the frontier component through
+  \(p\), restrict it to its negative-coordinate half inside \(D\), and use
+  the logarithmic diffeomorphism from that half-cylinder to the full annular
+  cylinder.
+-/
 theorem exists_diffeomorph_annularCylinder_smoothFrontierComponent_domainCollar
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ∃ W : TopologicalSpace.Opens X,

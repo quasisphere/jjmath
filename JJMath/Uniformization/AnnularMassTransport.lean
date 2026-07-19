@@ -50,7 +50,15 @@ structure CompactSupportTransportStep
     ∀ y : X, y ∉ W n → correction.toFun y = 0
 
 /-- A path from one marked point to the next produces one compactly
-supported transport step. -/
+supported transport step.
+
+%%handwave
+name: One step of compactly supported mass transport
+statement:
+  Suppose a compactly supported two-form is carried in a planar chart inside an open corridor $W_n$, and a path in $W_n$ joins its marked point to a point of $W_{n+1}$. Then there is a one-form correction supported in $W_n$ and a new compactly supported two-form in a planar chart inside $W_{n+1}$ whose difference from the old form is the correction's differential.
+proof:
+  Apply the pathwise compact-support transport theorem to the current chart, core, form, and joining path. Package the returned target chart, remainder, and correction as the next transport state and step.
+-/
 theorem CompactSupportTransportState.step_nonempty
     (W : ℕ → TopologicalSpace.Opens X) (x : ℕ → X) (n : ℕ)
     (state : CompactSupportTransportState W x n)
@@ -81,7 +89,15 @@ theorem CompactSupportTransportState.step_nonempty
       correction_zero_outside := heta }⟩
 
 /-- Iterating the pathwise transport step yields a telescoping sequence of
-two-form remainders and corridor-supported correction one-forms. -/
+two-form remainders and corridor-supported correction one-forms.
+
+%%handwave
+name: Iterated compact-support transport sequence
+statement:
+  Given compatible paths through corridors $W_n$ and an initial compact-support state, there are two-forms $\beta_n$ and one-forms $\eta_n$ with $\beta_0$ equal to the initial form, $d\eta_n=\beta_n-\beta_{n+1}$, and both $\eta_n$ and $\beta_n$ vanishing outside $W_n$.
+proof:
+  Recursively choose one transport step at every index. Reading off its remainder and correction gives the two sequences; the differential and support identities are exactly the fields of each chosen step.
+-/
 theorem exists_compactSupport_transport_sequences
     (W : ℕ → TopologicalSpace.Opens X) (x : ℕ → X)
     (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
@@ -127,7 +143,15 @@ theorem exists_compactSupport_transport_sequences
 
 omit [IsManifold SurfaceRealModel ∞ X] [T2Space X] in
 /-- Vanishing outside a locally finite family of corridors makes the closed
-supports of the corresponding forms locally finite. -/
+supports of the corresponding forms locally finite.
+
+%%handwave
+name: Local finiteness of supports from locally finite corridors
+statement:
+  If the closures of open sets $W_n$ form a locally finite family and each smooth form $\eta_n$ vanishes outside $W_n$, then the closed supports of the $\eta_n$ form a locally finite family.
+proof:
+  The support of $\eta_n$ is contained in $W_n$, hence its closure is contained in $\overline{W_n}$. Local finiteness passes to pointwise smaller families.
+-/
 theorem locallyFinite_smoothFormTSupport_of_zero_outside
     (W : ℕ → TopologicalSpace.Opens X)
     (eta : ℕ → SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
@@ -143,7 +167,15 @@ theorem locallyFinite_smoothFormTSupport_of_zero_outside
 
 /-- A locally finite sequence of path corridors transports every compactly
 supported initial two-form to infinity and therefore gives it a global
-primitive.  The primitive is supported in the union of the corridors. -/
+primitive.  The primitive is supported in the union of the corridors.
+
+%%handwave
+name: Supported primitive from transport through locally finite corridors
+statement:
+  Under the iterated transport hypotheses, if the corridor closures are locally finite, then the initial two-form has a global primitive $\theta$ that vanishes outside $\bigcup_nW_n$.
+proof:
+  Form the locally finite sum $\theta=\sum_n\eta_n$. Differentiating termwise and using $d\eta_n=\beta_n-\beta_{n+1}$ telescopes pointwise; local finiteness makes the remainders eventually vanish at each point, leaving $d\theta=\beta_0$. The support statement follows termwise.
+-/
 theorem exists_primitive_of_compactSupport_transport_along_paths_with_support
     (W : ℕ → TopologicalSpace.Opens X) (x : ℕ → X)
     (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
@@ -207,7 +239,15 @@ theorem exists_primitive_of_compactSupport_transport_along_paths_with_support
 
 /-- A locally finite sequence of path corridors transports every compactly
 supported initial two-form to infinity and therefore gives it a global
-primitive. -/
+primitive.
+
+%%handwave
+name: Primitive from transport through locally finite corridors
+statement:
+  Under the same locally finite path-transport hypotheses, the initial compactly supported two-form is globally exact.
+proof:
+  Apply the supported primitive theorem and discard its support conclusion.
+-/
 theorem exists_primitive_of_compactSupport_transport_along_paths
     (W : ℕ → TopologicalSpace.Opens X) (x : ℕ → X)
     (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))

@@ -28,8 +28,16 @@ namespace HyperbolicMetric
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
 /--
-An affine real-linear expression in one upper-half-plane point determines its
-real coefficients.
+%%handwave
+name: A real affine function is determined at a nonreal point
+statement:
+  Let \(a,b,c,d\in\mathbb R\) and \(p\in\mathbb H\). If
+  \[
+    ap+b=cp+d,
+  \]
+  then \(a=c\) and \(b=d\).
+proof:
+  Taking imaginary parts gives \((a-c)\operatorname{Im}p=0\). Since \(\operatorname{Im}p>0\), this yields \(a=c\), and the original equality then gives \(b=d\).
 -/
 theorem real_affine_eq_at_upperHalfPlane
     {a b c d : ℝ} (p : ℍ)
@@ -61,15 +69,12 @@ theorem real_affine_eq_at_upperHalfPlane
     exact_mod_cast hbd
 
 /--
-Two real Mobius representatives with the same value and complex derivative at
-one upper-half-plane point induce the same upper-half-plane map.
-
-This is the algebraic part of the “local isometry is PSL, and the derivative
-fixes the representative” argument.  The proof is just denominator algebra:
-equality of derivatives gives equality of squared denominators, so the
-denominators agree up to sign at the nonreal point.  The value equation then
-forces the numerators to agree with the same sign, and the real-affine helper
-propagates those coefficient equalities to every point.
+%%handwave
+name: A real Mobius transformation is determined by one complex one-jet
+statement:
+  Let \(A,B\) be real Mobius transformations and \(p\in\mathbb H\). If \(A(p)=B(p)\) and \(A'(p)=B'(p)\), then \(A(z)=B(z)\) for every \(z\in\mathbb H\).
+proof:
+  Equality of the derivatives makes the squares of the two denominators equal at \(p\), so the denominators differ by a sign. The value equality forces the numerators to carry the same sign. Since the coefficients are real and \(p\) is nonreal, the affine coefficient lemma identifies the corresponding matrix rows up to that common sign; the two fractional-linear actions are therefore identical.
 -/
 theorem realMobiusRepresentativeAction_eq_of_value_derivative_eq
     (A B : RealMobiusRepresentative) (p : ℍ)
@@ -254,9 +259,12 @@ def PointedHyperbolicLocalChartRealMobiusTransitionLocalPSLClassificationTheorem
                 realMobiusRepresentativeAction B (U.toUpperHalfPlane z)
 
 /--
-On a Riemann surface, the concrete pullback-density formula and tangent-frame
-transitivity give the pointed PSL match at any one overlap point.  No
-connectedness or global propagation is involved in this pointwise step.
+%%handwave
+name: Pointed real-Mobius matching of two hyperbolic charts
+statement:
+  Let \(U,V\) be hyperbolic local charts on a complex one-manifold and let \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\). There exists a real Mobius transformation whose value and oriented first-order data carry \(U\) to \(V\) at \(x\).
+proof:
+  The Poincare pullback formula provides nonzero coordinate derivatives with equal hyperbolic norm. Transitivity of oriented orthonormal frames in the upper half-plane then supplies the required real Mobius transformation.
 -/
 theorem hyperbolicLocalChartsAdmitPointedRealMobiusTransitionTheorem_of_complexOneManifold
     [ComplexOneManifold X] :
@@ -266,9 +274,12 @@ theorem hyperbolicLocalChartsAdmitPointedRealMobiusTransitionTheorem_of_complexO
       hyperbolicLocalChartPullbackSquaredDensityFormulaTheorem)
 
 /--
-Value-stability for pointed holomorphic local isometries gives local PSL
-classification: choose the pointed PSL match at the same point and propagate
-its value equality locally.
+%%handwave
+name: Local real-Mobius classification from pointed value stability
+statement:
+  Suppose that a real Mobius transformation matching two holomorphic hyperbolic local charts to first order at a point also matches their values on a neighborhood. Then any two such charts are related near each common point by some real Mobius transformation.
+proof:
+  At the chosen common point, select a real Mobius transformation matching the two chart values and oriented first-order data. Apply the assumed pointed value-stability result to extend that value equality to a neighborhood.
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionLocalPSLClassificationTheorem_of_valueStabilityFromHolomorphicLocalIsometry
@@ -290,9 +301,12 @@ theorem
   exact ⟨A, W, hWopen, hyW, hW⟩
 
 /--
-Componentwise propagation of pointed PSL matches gives local PSL
-classification.  The local neighborhood is the connected component of the
-open overlap containing the point.
+%%handwave
+name: Local real-Mobius classification from componentwise propagation
+statement:
+  On a locally path-connected complex one-manifold, suppose every pointed real-Mobius match of two hyperbolic charts extends over the connected component of their overlap. Then near every common point the charts differ by a real Mobius transformation.
+proof:
+  Choose a pointed real-Mobius match at the common point. Its connected component in the open chart overlap is itself an open neighborhood, and componentwise propagation gives the desired identity there.
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionLocalPSLClassificationTheorem_of_overlapComponentExtension
@@ -318,12 +332,16 @@ theorem
       (by simpa [component, overlap] using hzComponent)
 
 /--
-If two compared hyperbolic local charts agree locally after real-Mobius
-postcomposition, then their ambient-coordinate derivatives satisfy the
-concrete first-order chain-rule identity at the point.
-
-This is a local formal calculation: differentiate the persisted equality in
-the ambient chart at the point.
+%%handwave
+name: First-order matching obtained by differentiating a local Mobius identity
+statement:
+  Let \(x\in\operatorname{dom}(U)\cap\operatorname{dom}(V)\). If, in the ambient coordinate at \(x\), the germs of \(V\) and \(A\circ U\) agree for a real Mobius transformation \(A\), then
+  \[
+    V'(x)=A'(U(x))U'(x)
+  \]
+  in that coordinate.
+proof:
+  Equal germs have equal derivatives. Apply the complex chain rule to the derivative of \(A\circ U\).
 -/
 theorem hyperbolicLocalChartConcreteFirstOrderMatch_of_eventuallyEq_realMobius_atPoint
     [ComplexOneManifold X] {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
@@ -398,15 +416,12 @@ theorem hyperbolicLocalChartConcreteFirstOrderMatch_of_eventuallyEq_realMobius_a
   simpa [e, z₀, F] using hderiv_eq.trans hchain
 
 /--
-Local PSL classification implies value-level local rigidity once the fixed
-representative has the correct pointed one-jet.
-
-The local classification supplies a nearby representative `B`.  Differentiating
-that local equality gives the concrete first-order identity for `B`; comparing
-it with the pointed first-order identity for `A` and cancelling the nonzero
-source derivative shows that `A` and `B` have the same value and derivative at
-`U y`.  The algebraic PSL faithfulness lemma above then makes their actions
-identical everywhere.
+%%handwave
+name: Pointed value rigidity from local real-Mobius classification
+statement:
+  Suppose any two hyperbolic local charts are locally related by some real Mobius transformation. If a fixed real Mobius transformation \(A\) matches the values and first-order data of charts \(U,V\) at a common point \(y\), then \(V=A\circ U\) on a neighborhood of \(y\) inside their common domain.
+proof:
+  Local classification gives \(V=B\circ U\) near \(y\) for some real Mobius transformation \(B\). Differentiating gives the first-order relation for \(B\); comparison with the one for \(A\), followed by cancellation of the nonzero derivative of \(U\), shows that \(A\) and \(B\) have the same value and derivative at \(U(y)\). A real Mobius transformation is determined by that one-jet, so \(A=B\).
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetValueAtPointLocalRigidityTheorem_of_localPSLClassification
@@ -508,10 +523,14 @@ def PointedHyperbolicLocalChartRealMobiusTransitionOneJetAtPointLocalRigidityThe
                   realMobiusRepresentativeAction A (U.toUpperHalfPlane z) ∧
                 HyperbolicLocalChartPointedFirstOrderMatch U V A z
 
-/-- Value-level local rigidity is enough to recover full one-jet local
-rigidity on a Riemann surface: once value equality persists on a neighborhood,
-differentiating it gives the concrete first-order identity, and the already
-proved pullback formula rebuilds the intrinsic pointed-frame match. -/
+/--
+%%handwave
+name: Full one-jet rigidity from value rigidity
+statement:
+  On a complex one-manifold, suppose that value and first-order matching at a point imply the local value identity \(V=A\circ U\). Then, after shrinking to that neighborhood, both the value identity and the intrinsic first-order matching hold at every common point.
+proof:
+  Differentiate the persistent value identity at each point to obtain the concrete coordinate derivative relation. The Poincare pullback formula supplies the nonzero coordinate derivative data that convert this relation back into intrinsic oriented first-order matching.
+-/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetAtPointLocalRigidityTheorem_of_valueAtPointLocalRigidity
     [ComplexOneManifold X]
@@ -561,9 +580,14 @@ theorem
     HyperbolicLocalChartPointedFirstOrderMatch_of_concreteFirstOrderMatch
       DU DV hzValue hConcrete⟩
 
-/-- The at-point local rigidity statement immediately supplies the existing
-basepointed local-stability theorem.  The basepointed hypothesis is irrelevant
-for this purely local step. -/
+/--
+%%handwave
+name: Basepointed one-jet stability from pointwise rigidity
+statement:
+  If a pointed real-Mobius one-jet match of two hyperbolic charts persists locally at every overlap point, then it satisfies the corresponding basepointed local-stability property.
+proof:
+  Apply pointwise rigidity at the point under consideration. The additional distinguished base point used to select the transformation is irrelevant to this local conclusion.
+-/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetLocalStabilityFromHolomorphicLocalIsometryTheorem_of_atPointLocalRigidity
     (hRigidity :
@@ -573,8 +597,14 @@ theorem
   exact
     hRigidity g U V A y hUhol hUbih hUpull hVhol hVbih hVpull hyU hyV hval hfirst
 
-/-- Hence the at-point local rigidity theorem gives the public one-jet openness
-theorem used by the componentwise route. -/
+/--
+%%handwave
+name: Openness of the one-jet equality locus from pointwise rigidity
+statement:
+  If value and first-order matching with a fixed real Mobius transformation persist locally at each matching point, then the joint one-jet equality locus in the overlap of two hyperbolic charts is open.
+proof:
+  Pointwise rigidity gives the required local stability for holomorphic local isometries. The general stability-to-openness argument then supplies an open neighborhood of every point in the equality locus.
+-/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_atPointLocalRigidity
     (hRigidity :
@@ -585,8 +615,14 @@ theorem
       (pointedHyperbolicLocalChartRealMobiusTransitionOneJetLocalStabilityFromHolomorphicLocalIsometryTheorem_of_atPointLocalRigidity
         hRigidity))
 
-/-- The value-level local rigidity statement gives the public one-jet openness
-theorem on a Riemann surface. -/
+/--
+%%handwave
+name: Openness of the one-jet equality locus from value rigidity
+statement:
+  On a complex one-manifold, if a pointed one-jet match implies local equality of chart values up to the fixed real Mobius transformation, then the locus of value and first-order matching is open.
+proof:
+  Persistent value equality differentiates to persistent first-order equality, giving pointwise one-jet rigidity. Apply openness of the equality locus from that pointwise rigidity.
+-/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_valueAtPointLocalRigidity
     [ComplexOneManifold X]
@@ -598,7 +634,12 @@ theorem
       hValue)
 
 /--
-Local PSL classification is enough for the public one-jet openness theorem.
+%%handwave
+name: Openness of one-jet matching from local real-Mobius classification
+statement:
+  On a complex one-manifold, if the transition between any two hyperbolic local charts is locally a real Mobius transformation, then the locus where a fixed real Mobius transformation matches their values and first-order data is open.
+proof:
+  Local classification and determination of a real Mobius transformation by one complex one-jet give value-level rigidity for the fixed transformation. Apply the resulting openness theorem.
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem_of_localPSLClassification
@@ -613,8 +654,12 @@ theorem
       hClass)
 
 /--
-The value-level one-jet rigidity input is now proved by the fixed-chart
-inverse-transition and Schwarzian/local-isometry classification route.
+%%handwave
+name: Local value rigidity for hyperbolic chart one-jets
+statement:
+  Let \(U,V\) be hyperbolic local charts on a complex one-manifold, containing \(y\). If a real Mobius transformation \(A\) satisfies \(V(y)=A(U(y))\) and matches the oriented first-order data at \(y\), then \(V=A\circ U\) on a neighborhood of \(y\) inside the common chart domain.
+proof:
+  Pass to a fixed surface coordinate and invert the \(U\)-coordinate locally. The transition to \(V\) preserves the Poincare metric and has the same one-jet as \(A\), so local Schwarzian rigidity identifies the transition with \(A\). Pull the identity back to the surface.
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetValueAtPointLocalRigidityTheorem
@@ -628,7 +673,12 @@ theorem
       U V A hyU hyV hyValue hyFirst
 
 /--
-The public one-jet openness theorem is unconditional on Riemann surfaces.
+%%handwave
+name: Openness of real-Mobius one-jet matching for hyperbolic charts
+statement:
+  For two hyperbolic local charts on a complex one-manifold and a fixed real Mobius transformation, the subset of their overlap where their values and oriented first-order data match is open.
+proof:
+  Local value rigidity holds for every matching point. The value identity can be differentiated to recover local first-order matching, so the one-jet equality locus is open.
 -/
 theorem
     pointedHyperbolicLocalChartRealMobiusTransitionOneJetEqualitySetIsOpenTheorem
@@ -647,6 +697,14 @@ structure HyperbolicLocalChartOneJetOpenBoundaryTheorems
 
 namespace HyperbolicLocalChartOneJetOpenBoundaryTheorems
 
+/--
+%%handwave
+name: One-jet stability supplied by a value-rigidity package
+statement:
+  A package asserting local value rigidity for pointed real-Mobius one-jets on a complex one-manifold also yields local persistence of both values and first-order data.
+proof:
+  Convert value rigidity into pointwise one-jet rigidity by differentiating the local value identity, then forget the irrelevant distinguished base point.
+-/
 theorem oneJetLocalStability
     [ComplexOneManifold X]
     (B : HyperbolicLocalChartOneJetOpenBoundaryTheorems X) :
@@ -655,6 +713,14 @@ theorem oneJetLocalStability
     (pointedHyperbolicLocalChartRealMobiusTransitionOneJetAtPointLocalRigidityTheorem_of_valueAtPointLocalRigidity
       B.valueAtPointLocalRigidity)
 
+/--
+%%handwave
+name: One-jet openness supplied by a value-rigidity package
+statement:
+  A package asserting local value rigidity for pointed real-Mobius one-jets on a complex one-manifold implies that the corresponding one-jet equality locus is open.
+proof:
+  Apply the general passage from value-level local rigidity to openness of joint value-and-first-order matching.
+-/
 theorem oneJetOpen
     [ComplexOneManifold X]
     (B : HyperbolicLocalChartOneJetOpenBoundaryTheorems X) :
@@ -672,6 +738,14 @@ structure HyperbolicLocalChartOneJetOpenClassificationBoundaryTheorems
 
 namespace HyperbolicLocalChartOneJetOpenClassificationBoundaryTheorems
 
+/--
+%%handwave
+name: Value rigidity supplied by local real-Mobius classification
+statement:
+  A package asserting that every transition of hyperbolic local charts is locally real Mobius implies rigidity for any fixed real Mobius transformation having the prescribed one-jet.
+proof:
+  Local classification produces a possibly different real Mobius transformation; equality of its one-jet with the prescribed transformation identifies their actions.
+-/
 theorem valueAtPointLocalRigidity
     [ComplexOneManifold X]
     (B : HyperbolicLocalChartOneJetOpenClassificationBoundaryTheorems X) :
@@ -680,6 +754,14 @@ theorem valueAtPointLocalRigidity
   pointedHyperbolicLocalChartRealMobiusTransitionOneJetValueAtPointLocalRigidityTheorem_of_localPSLClassification
     B.localPSLClassification
 
+/--
+%%handwave
+name: One-jet openness supplied by local real-Mobius classification
+statement:
+  A package of local real-Mobius classification for hyperbolic chart transitions implies openness of the locus where a fixed real Mobius transformation matches the chart one-jets.
+proof:
+  Apply the classification-to-openness theorem to the packaged local classification hypothesis.
+-/
 theorem oneJetOpen
     [ComplexOneManifold X]
     (B : HyperbolicLocalChartOneJetOpenClassificationBoundaryTheorems X) :

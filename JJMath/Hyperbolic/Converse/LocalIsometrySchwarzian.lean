@@ -27,7 +27,14 @@ namespace HyperbolicMetric
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
-/-- Frechet-Wirtinger `∂z` only depends on the germ of a function. -/
+/--
+%%handwave
+name: Germ invariance of the Wirtinger derivative
+statement:
+  If two functions \(f,g:\mathbb C\to\mathbb C\) agree on a neighborhood of \(z\), then \(\partial_z f(z)=\partial_z g(z)\).
+proof:
+  Equal germs have equal real Frechet derivatives at \(z\); apply the linear operation that extracts the \(\partial_z\)-component.
+-/
 theorem frechetDZValue_congr_of_eventuallyEq
     {f g : ℂ → ℂ} {z : ℂ}
     (h : f =ᶠ[nhds z] g) :
@@ -35,7 +42,17 @@ theorem frechetDZValue_congr_of_eventuallyEq
   rw [frechetDZValue, frechetDZValue]
   rw [Filter.EventuallyEq.fderiv_eq (𝕜 := ℝ) h]
 
-/-- Frechet-Wirtinger `∂z` of `(a - b) / c` for a constant `c`. -/
+/--
+%%handwave
+name: Wirtinger derivative of a constant quotient of a difference
+statement:
+  If \(a,b:\mathbb C\to\mathbb C\) are real differentiable at \(z\) and \(c\in\mathbb C\), then
+  \[
+    \partial_z\!\left(\frac{a-b}{c}\right)(z)=\frac{\partial_z a(z)-\partial_z b(z)}{c}.
+  \]
+proof:
+  Rewrite division by \(c\) as multiplication by the constant \(c^{-1}\), then use linearity of the Wirtinger derivative under subtraction and constant multiplication.
+-/
 theorem frechetDZValue_sub_div_const_of_differentiableAt
     {a b : ℂ → ℂ} {z c : ℂ}
     (ha : DifferentiableAt ℝ a z) (hb : DifferentiableAt ℝ b z) :
@@ -51,13 +68,16 @@ theorem frechetDZValue_sub_div_const_of_differentiableAt
   ring
 
 /--
-If the scalar pre-Schwarzian satisfies the Riccati equation
-`∂z P = (1 / 2) P^2` at a point, then the Schwarzian vanishes there.
-
-This is the formal core of the proposed argument: the hyperbolic metric
-identity should supply the Riccati equation by a Wirtinger calculation, while
-the standard pre-Schwarzian derivative formula supplies
-`∂z P = S(f) + (1 / 2) P^2`.
+%%handwave
+name: Vanishing Schwarzian from the pre-Schwarzian Riccati equation
+statement:
+  Let \(f\) have three complex derivatives at \(z\), with \(f'(z)\ne0\), and put \(P=f''/f'\). If
+  \[
+    \partial_zP(z)=\tfrac12P(z)^2,
+  \]
+  then the Schwarzian \(S(f)(z)\) vanishes.
+proof:
+  The derivative formula for the pre-Schwarzian gives \(\partial_zP=S(f)+\tfrac12P^2\). Compare it with the assumed Riccati equation and cancel the common quadratic term.
 -/
 theorem actualSchwarzian_eq_zero_of_scalarPreSchwarzian_riccati
     {f : ℂ → ℂ} {z : ℂ}
@@ -88,17 +108,19 @@ theorem actualSchwarzian_eq_zero_of_scalarPreSchwarzian_riccati
   exact add_right_cancel hcancel
 
 /--
-The algebraic Riccati calculation behind the hyperbolic metric equation.
-
-In the intended application
-
-* `P = f'' / f'`,
-* `a = f' / Im f`,
-* `b = 1 / Im z`.
-
-The first-order metric identity gives `P = (a - b) / I`.  Differentiating
-`a` and `b` by `∂z` gives the two displayed derivative identities.  These
-purely algebraic data force `∂z P = (1 / 2) P^2`.
+%%handwave
+name: Algebraic Riccati identity for hyperbolic pre-Schwarzian data
+statement:
+  Let \(P,a,b:\mathbb C\to\mathbb C\). At a point \(z\), suppose
+  \[
+    P=\frac{a-b}{i},\qquad
+    \partial_zP=\frac{\partial_za-\partial_zb}{i},\qquad
+    \partial_za=Pa-\frac{a^2}{2i},\qquad
+    \partial_zb=-\frac{b^2}{2i}.
+  \]
+  Then \(\partial_zP=\tfrac12P^2\) at \(z\).
+proof:
+  Substitute the last three identities into the formula for \(\partial_zP\), replace \(P\) by \((a-b)/i\), and simplify using \(i^2=-1\).
 -/
 theorem frechetDZValue_riccati_of_hyperbolic_preSchwarzian_data
     {P a b : ℂ → ℂ} {z : ℂ}
@@ -118,10 +140,16 @@ theorem frechetDZValue_riccati_of_hyperbolic_preSchwarzian_data
   ring_nf
 
 /--
-The fixed Poincare height term satisfies the Riccati derivative identity
-needed in the hyperbolic calculation:
-
-`∂z (1 / Im z) = -(1 / Im z)^2 / (2 I)`.
+%%handwave
+name: Wirtinger derivative of the reciprocal height
+statement:
+  If \(\operatorname{Im}z\ne0\), then
+  \[
+    \partial_z\!\left(\frac1{\operatorname{Im}z}\right)
+      =-\frac1{2i}\left(\frac1{\operatorname{Im}z}\right)^2.
+  \]
+proof:
+  The identity \(\partial_z\operatorname{Im}z=-i/2\), followed by the reciprocal rule, gives the formula.
 -/
 theorem frechetDZValue_inv_complex_ofReal_im
     {z : ℂ} (hz : (((z.im : ℝ) : ℂ)) ≠ 0) :
@@ -149,13 +177,15 @@ theorem frechetDZValue_inv_complex_ofReal_im
         rw [pow_two, Complex.I_mul_I]
 
 /--
-The moving height term in the hyperbolic calculation.
-
-For a holomorphic branch `f`, the function `a = f' / Im f` satisfies
-
-`∂z a = (f'' / f') a - a^2 / (2 I)`.
-
-Here `f'' / f'` is written as `scalarPreSchwarzian f`.
+%%handwave
+name: Wirtinger derivative of the normalized holomorphic derivative
+statement:
+  Let \(f\) be twice complex differentiable at \(z\), with \(f'(z)\ne0\) and \(\operatorname{Im}f(z)\ne0\). If \(P=f''/f'\) and \(a=f'/\operatorname{Im}f\), then
+  \[
+    \partial_za(z)=P(z)a(z)-\frac{a(z)^2}{2i}.
+  \]
+proof:
+  Apply the quotient rule to \(f'/\operatorname{Im}f\), using \(\partial_z f'=f''\) and \(\partial_z\operatorname{Im}f=-if'/2\). Rewrite \(f''\) as \(Pf'\) and simplify.
 -/
 theorem frechetDZValue_deriv_div_complex_ofReal_im
     {f : ℂ → ℂ} {z : ℂ}
@@ -206,8 +236,17 @@ theorem frechetDZValue_deriv_div_complex_ofReal_im
         ring_nf
 
 /--
-Derivative of the Poincare squared-density expression
-`|f'|^2 / (Im f)^2`.
+%%handwave
+name: Wirtinger derivative of a pulled-back Poincare density
+statement:
+  Let \(f\) be twice complex differentiable at \(z\), with \(f'(z)\ne0\) and \(\operatorname{Im}f(z)\ne0\), and let \(P=f''/f'\). Then
+  \[
+    \partial_z\!\left(\frac{|f'|^2}{(\operatorname{Im}f)^2}\right)(z)
+    =\frac{|f'(z)|^2}{\operatorname{Im}f(z)^2}
+      \left(P(z)+i\frac{f'(z)}{\operatorname{Im}f(z)}\right).
+  \]
+proof:
+  Differentiate the squared norm of \(f'\) and the squared imaginary part of \(f\) by the real quotient rule, then express their Wirtinger derivatives as \(\overline{f'}f''\) and \(-i\operatorname{Im}(f)f'\). Factor out the original density and use \(P=f''/f'\).
 -/
 theorem frechetDZValue_hyperbolic_pullback_densitySq
     {f : ℂ → ℂ} {z : ℂ}
@@ -285,7 +324,16 @@ theorem frechetDZValue_hyperbolic_pullback_densitySq
             (by simpa using him_ne)
 
 /--
-Derivative of the model squared Poincare density `1 / (Im z)^2`.
+%%handwave
+name: Wirtinger derivative of the squared reciprocal height
+statement:
+  If \(\operatorname{Im}z\ne0\), then
+  \[
+    \partial_z\!\left(\frac1{(\operatorname{Im}z)^2}\right)
+      =\frac{i}{(\operatorname{Im}z)^3}.
+  \]
+proof:
+  Differentiate \((\operatorname{Im}z)^2\) using \(\partial_z\operatorname{Im}z=-i/2\), then apply the reciprocal rule and simplify.
 -/
 theorem frechetDZValue_inv_complex_ofReal_im_sq
     {z : ℂ} (hz : (((z.im : ℝ) : ℂ)) ≠ 0) :
@@ -326,8 +374,22 @@ theorem frechetDZValue_inv_complex_ofReal_im_sq
         field_simp [hz]
 
 /--
-Pointwise extraction of the pre-Schwarzian relation from the differentiated
-squared hyperbolic metric identity.
+%%handwave
+name: Pre-Schwarzian determined by preservation of the Poincare density
+statement:
+  Let \(f\) be twice complex differentiable at \(z\), with \(f'(z)\), \(\operatorname{Im}f(z)\), and \(\operatorname{Im}z\) nonzero. If the values and Wirtinger derivatives at \(z\) of
+  \[
+    \frac{|f'|^2}{(\operatorname{Im}f)^2}
+    \quad\text{and}\quad
+    \frac1{(\operatorname{Im}z)^2}
+  \]
+  agree, then
+  \[
+    \frac{f''(z)}{f'(z)}
+      =\frac1i\left(\frac{f'(z)}{\operatorname{Im}f(z)}-rac1{\operatorname{Im}z}\right).
+  \]
+proof:
+  Substitute the derivative formulas for the pulled-back and model Poincare densities. Use equality of the density values to cancel the common nonzero factor and solve the resulting linear equation for \(f''/f'\).
 -/
 theorem scalarPreSchwarzian_eq_of_hyperbolic_densitySq_derivative
     {f : ℂ → ℂ} {z : ℂ}
@@ -416,10 +478,20 @@ theorem scalarPreSchwarzian_eq_of_hyperbolic_densitySq_derivative
           simp [pow_two, Complex.I_mul_I]
 
 /--
-Open-neighborhood version of the metric-to-pre-Schwarzian calculation.
-
-The squared hyperbolic metric identity is assumed on an open set, so at every
-nearby point it is available as a germ and may be differentiated there.
+%%handwave
+name: Local pre-Schwarzian formula for a Poincare local isometry
+statement:
+  Let \(U\subseteq\mathbb C\) be open, \(z\in U\), and let \(f\) be twice holomorphic on \(U\), with \(f'\), \(\operatorname{Im}f\), and the coordinate height nonzero there. If
+  \[
+    \frac{|f'(w)|^2}{\operatorname{Im}f(w)^2}=\frac1{\operatorname{Im}(w)^2}
+    \quad(w\in U),
+  \]
+  then near \(z\),
+  \[
+    \frac{f''}{f'}=\frac1i\left(\frac{f'}{\operatorname{Im}f}-\frac1{\operatorname{Im}w}\right).
+  \]
+proof:
+  At every point near \(z\), the metric identity holds as an equality of germs and may therefore be differentiated. Apply the pointwise pre-Schwarzian calculation to the equality and its Wirtinger derivative.
 -/
 theorem eventually_hyperbolic_preSchwarzian_of_hyperbolic_densitySq_on
     {f : ℂ → ℂ} {U : Set ℂ} {z : ℂ}
@@ -456,13 +528,16 @@ theorem eventually_hyperbolic_preSchwarzian_of_hyperbolic_densitySq_on
     (frechetDZValue_congr_of_eventuallyEq hMetricGerm)
 
 /--
-Once the differentiated hyperbolic metric identity has supplied the local
-pre-Schwarzian relation
-
-`P = (f' / Im f - 1 / Im z) / I`,
-
-the scalar pre-Schwarzian satisfies the Riccati equation
-`∂z P = (1 / 2) P^2`.
+%%handwave
+name: Riccati equation from the local hyperbolic pre-Schwarzian formula
+statement:
+  Let \(f\) be twice complex differentiable at \(z\), with \(f'(z)\), \(\operatorname{Im}f(z)\), and \(\operatorname{Im}z\) nonzero. If near \(z\)
+  \[
+    P=\frac{f''}{f'}=\frac1i\left(\frac{f'}{\operatorname{Im}f}-\frac1{\operatorname{Im}w}\right),
+  \]
+  then \(\partial_zP(z)=\tfrac12P(z)^2\).
+proof:
+  Differentiate the local identity. The normalized derivative \(f'/\operatorname{Im}f\) and reciprocal height satisfy their respective first-order formulas; substituting them reduces the result to the algebraic Riccati identity.
 -/
 theorem frechetDZValue_scalarPreSchwarzian_riccati_of_eventually_hyperbolic_preSchwarzian
     {f : ℂ → ℂ} {z : ℂ}
@@ -531,8 +606,16 @@ theorem frechetDZValue_scalarPreSchwarzian_riccati_of_eventually_hyperbolic_preS
       (P := P) (a := a) (b := b) hPz hPdz ha hb
 
 /--
-The Schwarzian-zero conclusion from the differentiated hyperbolic metric
-identity.
+%%handwave
+name: Vanishing Schwarzian from the local hyperbolic pre-Schwarzian formula
+statement:
+  Let \(f\) have three complex derivatives at \(z\), with \(f'(z)\), \(\operatorname{Im}f(z)\), and \(\operatorname{Im}z\) nonzero. If near \(z\)
+  \[
+    \frac{f''}{f'}=\frac1i\left(\frac{f'}{\operatorname{Im}f}-\frac1{\operatorname{Im}w}\right),
+  \]
+  then \(S(f)(z)=0\).
+proof:
+  The local pre-Schwarzian formula implies the Riccati equation \(\partial_zP=\tfrac12P^2\). The Schwarzian identity \(\partial_zP=S(f)+\tfrac12P^2\) then gives \(S(f)(z)=0\).
 -/
 theorem actualSchwarzian_eq_zero_of_eventually_hyperbolic_preSchwarzian
     {f : ℂ → ℂ} {z : ℂ}
@@ -561,8 +644,17 @@ theorem actualSchwarzian_eq_zero_of_eventually_hyperbolic_preSchwarzian
       hf hf₁ hf_ne him_ne hz_im_ne hPre)
 
 /--
-Zero-Schwarzian consequence of the squared hyperbolic metric identity on an
-open neighborhood.
+%%handwave
+name: Pointwise vanishing Schwarzian for a Poincare local isometry
+statement:
+  Let \(U\subseteq\mathbb C\) be open and \(z\in U\). Suppose \(f\) is three times complex differentiable as required at \(z\), twice so throughout \(U\), has nonzero derivative and nonzero source and target heights, and satisfies
+  \[
+    \frac{|f'(w)|^2}{\operatorname{Im}f(w)^2}=\frac1{\operatorname{Im}(w)^2}
+    \quad(w\in U).
+  \]
+  Then \(S(f)(z)=0\).
+proof:
+  Differentiate the metric identity locally to obtain the hyperbolic pre-Schwarzian formula near \(z\), and apply the resulting Schwarzian-vanishing criterion.
 -/
 theorem actualSchwarzian_eq_zero_of_hyperbolic_densitySq_on
     {f : ℂ → ℂ} {U : Set ℂ} {z : ℂ}
@@ -594,7 +686,17 @@ theorem actualSchwarzian_eq_zero_of_hyperbolic_densitySq_on
       hUopen hzU hf hf₁ hf_ne him_ne hz_im_ne hMetric)
 
 /--
-Setwise zero-Schwarzian consequence of the squared hyperbolic metric identity.
+%%handwave
+name: Vanishing Schwarzian on a Poincare-isometric domain
+statement:
+  Let \(U\subseteq\mathbb C\) be open. If \(f\) is sufficiently holomorphic on \(U\), has nonzero derivative and nonzero source and target heights there, and
+  \[
+    \frac{|f'(w)|^2}{\operatorname{Im}f(w)^2}=\frac1{\operatorname{Im}(w)^2}
+    \quad(w\in U),
+  \]
+  then \(S(f)(z)=0\) for every \(z\in U\).
+proof:
+  Fix \(z\in U\) and apply the pointwise vanishing theorem using the derivative hypotheses at that point.
 -/
 theorem actualSchwarzian_eq_zero_on_of_hyperbolic_densitySq_on
     {f : ℂ → ℂ} {U : Set ℂ}
@@ -625,16 +727,16 @@ theorem actualSchwarzian_eq_zero_on_of_hyperbolic_densitySq_on
     hUopen hzU hf hf₁ (hf₂ z hzU) hf_ne him_ne hz_im_ne hMetric
 
 /--
-One-jet rigidity for local Poincare isometries in the standard upper-half-plane
-coordinate.
-
-This is the useful “zero Schwarzian implies Mobius” form for the continuation
-argument.  A holomorphic map `f : U → ℍ` pulling back the Poincare squared
-density to the standard Poincare squared density has zero Schwarzian.  If its
-value and first derivative agree at `z` with a fixed real Mobius
-representative, then the differentiated metric identity also identifies the
-second derivative at `z`; scalar Schwarzian uniqueness then gives local
-equality.
+%%handwave
+name: One-jet rigidity of local Poincare isometries
+statement:
+  Let \(U\subseteq\mathbb C\) be open in the upper half-plane, let \(z\in U\), and let \(f:U\to\mathbb H\) be sufficiently holomorphic with \(f'\ne0\) and
+  \[
+    \frac{|f'(w)|^2}{\operatorname{Im}f(w)^2}=\frac1{\operatorname{Im}(w)^2}.
+  \]
+  If \(f(z)=A(z)\) and \(f'(z)=A'(z)\) for a real Mobius transformation \(A\), then \(f=A\) on some open neighborhood of \(z\) contained in \(U\).
+proof:
+  The metric identity implies that both \(f\) and \(A\) have zero Schwarzian. Its first Wirtinger derivative also determines \(f''(z)\) from the common value and first derivative, so their two-jets agree. Local uniqueness for the scalar Schwarzian equation then identifies the two maps near \(z\).
 -/
 theorem poincareLocalIsometry_eq_realMobius_near_of_oneJet
     {f : ℂ → ℂ} {U : Set ℂ} {z : ℂ}
@@ -820,12 +922,12 @@ theorem poincareLocalIsometry_eq_realMobius_near_of_oneJet
     hSchwarzian hvalue hderiv hsecond
 
 /--
-Open-set holomorphic version of
-`poincareLocalIsometry_eq_realMobius_near_of_oneJet`.
-
-For complex functions, holomorphicity on an open set gives the iterated
-derivative hypotheses needed by the Schwarzian calculation, so the coordinate
-classification can be used from the usual `DifferentiableOn` API.
+%%handwave
+name: Holomorphic one-jet rigidity of local Poincare isometries
+statement:
+  Let \(U\subseteq\mathbb C\) be open in the upper half-plane, and let \(f:U\to\mathbb H\) be holomorphic with nonzero derivative and preserving the Poincare density. If \(f\) and a real Mobius transformation \(A\) have the same value and derivative at \(z\in U\), then they agree on an open neighborhood of \(z\) contained in \(U\).
+proof:
+  Holomorphicity on an open set implies holomorphicity of the first and second derivatives, providing all iterated derivative hypotheses needed for one-jet rigidity. Apply that theorem to \(f\) and \(A\).
 -/
 theorem poincareLocalIsometry_eq_realMobius_near_of_oneJet_differentiableOn
     {f : ℂ → ℂ} {U : Set ℂ} {z : ℂ}

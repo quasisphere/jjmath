@@ -35,6 +35,17 @@ def puncturedPhase
       (puncturedSurfaceOpen p) ℂ ∞ := by
   simpa [puncturedSurfaceOpen, atlasVortexInitialOpen] using D.phase
 
+/--
+%%handwave
+name:
+  Unit modulus of the transported puncture phase
+statement:
+  The transported puncture phase has modulus one at every point of
+  \(X\setminus\{p\}\).
+proof:
+  This is the unit-modulus property of the global transported vortex phase,
+  restricted to the punctured surface.
+-/
 theorem norm_puncturedPhase
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -100,6 +111,18 @@ def puncturedExpandedOpenDiskToLocalRadialGerm
   exact ⟨D.vortex.toLeftGermOfMemNeighborhood
     (y : X) hyN.1 y.2.1, hyN.2⟩
 
+/--
+%%handwave
+name:
+  Smooth inclusion of a punctured coordinate disk into the radial germ
+statement:
+  A punctured doubled coordinate disk contained in the stationary radial
+  neighborhood maps smoothly into the local radial vortex germ.
+proof:
+  The map is the ambient subtype inclusion, successively restricted through
+  the chart patch, the left-pole germ, and the radial neighborhood; each is
+  an open submanifold restriction of a smooth map.
+-/
 theorem contMDiff_puncturedExpandedOpenDiskToLocalRadialGerm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -168,6 +191,17 @@ def puncturedExpandedOpenDiskPhaseMap
   D.localRadialGermPhaseMap.comp
     (D.puncturedExpandedOpenDiskToLocalRadialGermMap K hdouble hsubset)
 
+/--
+%%handwave
+name:
+  Unit modulus of the phase on the punctured coordinate disk
+statement:
+  The transported phase restricted to the punctured doubled coordinate disk
+  has modulus one everywhere.
+proof:
+  Evaluate the unit-modulus property of the local radial-germ phase at the
+  image of the point.
+-/
 theorem norm_puncturedExpandedOpenDiskPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -180,8 +214,18 @@ theorem norm_puncturedExpandedOpenDiskPhaseMap
   D.norm_localRadialGermPhaseMap
     (D.puncturedExpandedOpenDiskToLocalRadialGerm K hdouble hsubset y)
 
-/-- The phase obtained through the stationary radial germ is the restriction
-of the transported global puncture phase. -/
+/--
+%%handwave
+name:
+  The local radial phase is the restricted global puncture phase
+statement:
+  On the stationary punctured coordinate disk, the phase obtained through
+  the local radial germ equals the restriction of the global transported
+  puncture phase.
+proof:
+  Both sides are definitionally the same global phase evaluated at the
+  underlying punctured-surface point.
+-/
 theorem puncturedExpandedOpenDiskPhaseMap_eq_puncturedPhase
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -195,8 +239,18 @@ theorem puncturedExpandedOpenDiskPhaseMap_eq_puncturedPhase
         (TopologicalSpace.Opens.inclusion inf_le_left y) := by
   rfl
 
-/-- Restricting the global transported logarithmic form to the stationary
-punctured disk gives the logarithmic form constructed there directly. -/
+/--
+%%handwave
+name:
+  Restriction of the global logarithmic vortex form
+statement:
+  On the stationary punctured coordinate disk, the restriction of the global
+  logarithmic one-form equals the logarithmic one-form of the restricted
+  phase.
+proof:
+  Formation of the logarithmic one-form of a smooth unit phase commutes with
+  restriction to an open submanifold, and the restricted phases agree.
+-/
 theorem restrict_puncturedClosedOneForm_eq_puncturedExpandedOpenDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -232,6 +286,16 @@ def puncturedExpandedOpenDiskUnrotatedPhaseMap
   D.localRadialGermUnrotatedPhaseMap.comp
     (D.puncturedExpandedOpenDiskToLocalRadialGermMap K hdouble hsubset)
 
+/--
+%%handwave
+name:
+  Unit modulus of the unrotated radial phase
+statement:
+  The unrotated coordinate-direction phase on the punctured doubled disk has
+  modulus one everywhere.
+proof:
+  Restrict the unit-modulus property of the unrotated local radial-germ phase.
+-/
 theorem norm_puncturedExpandedOpenDiskUnrotatedPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -260,8 +324,21 @@ def puncturedExpandedOpenDiskCorrectionSmooth
     (D.contMDiff_puncturedExpandedOpenDiskToLocalRadialGerm
       K hdouble hsubset)
 
-/-- On the punctured doubled disk, the transported phase is the ordinary
-coordinate direction times an exact smooth phase correction. -/
+/--
+%%handwave
+name:
+  Local factorization of the transported puncture phase
+statement:
+  On the punctured doubled disk, the transported phase is
+  \[
+    u=u_0e^{ih},
+  \]
+  where \(u_0\) is the unrotated coordinate-direction phase and \(h\) is a
+  smooth real correction.
+proof:
+  Restrict the corresponding stationary radial-germ factorization to the
+  punctured coordinate disk.
+-/
 theorem puncturedExpandedOpenDiskPhase_eq_unrotated_mul_exp_correction
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -277,8 +354,20 @@ theorem puncturedExpandedOpenDiskPhase_eq_unrotated_mul_exp_correction
   D.localRadialGermPhase_eq_unrotated_mul_exp_totalCorrection
     (D.puncturedExpandedOpenDiskToLocalRadialGerm K hdouble hsubset y)
 
-/-- On the punctured doubled disk, the transported logarithmic one-form is
-the coordinate radial form plus the differential of the smooth correction. -/
+/--
+%%handwave
+name:
+  The transported logarithmic form differs from the radial form by an exact form
+statement:
+  If \(u=u_0e^{ih}\) on the punctured doubled disk, then their logarithmic
+  one-forms satisfy
+  \[
+    \alpha_u=\alpha_{u_0}+dh.
+  \]
+proof:
+  Apply the logarithmic differentiation formula for two unit phases related
+  by multiplication by the exponential of a smooth real function.
+-/
 theorem puncturedExpandedOpenDiskOneForm_eq_unrotated_addExact
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -331,8 +420,18 @@ def puncturedExpandedOpenDiskNormalizedClosedOneForm
       (D.norm_puncturedExpandedOpenDiskPhaseMap K hdouble hsubset)
       |>.toClosedForm SurfaceRealModel)
 
-/-- Restriction also commutes with the `2 * pi` normalization of the
-transported puncture form. -/
+/--
+%%handwave
+name:
+  Restriction commutes with normalization of the vortex form
+statement:
+  Restricting the globally normalized puncture form to the stationary
+  punctured disk gives the normalized logarithmic form of the restricted
+  phase.
+proof:
+  Restriction is linear, so it commutes with multiplication by
+  \((2\pi)^{-1}\); then use the unnormalized restriction identity.
+-/
 theorem restrict_puncturedNormalizedClosedOneForm_eq_puncturedExpandedOpenDisk
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -379,8 +478,17 @@ def puncturedExpandedOpenDiskRadialNormalizedClosedOneForm
         K hdouble hsubset)
       |>.toClosedForm SurfaceRealModel)
 
-/-- The normalized transported phase and the normalized coordinate direction
-define the same first de Rham class on the punctured doubled disk. -/
+/--
+%%handwave
+name:
+  The transported and radial puncture forms define the same class
+statement:
+  On the stationary punctured doubled disk, the normalized logarithmic form
+  of the transported phase and that of the coordinate-direction phase
+  represent the same class in \(H^1_{\mathrm{dR}}\).
+proof:
+  Their difference is \((2\pi)^{-1}dh\), hence is exact.
+-/
 theorem puncturedExpandedOpenDiskNormalizedClass_eq_radial
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -422,8 +530,17 @@ theorem puncturedExpandedOpenDiskNormalizedClass_eq_radial
     D.puncturedExpandedOpenDiskOneForm_eq_unrotated_addExact]
   module
 
-/-- The restriction of the global normalized vortex form has the standard
-radial class on the stationary punctured disk. -/
+/--
+%%handwave
+name:
+  The restricted global vortex form has the radial class
+statement:
+  On a stationary punctured doubled disk, the restriction of the global
+  normalized vortex form represents the normalized radial de Rham class.
+proof:
+  Identify the restriction with the locally normalized transported form and
+  use equality of that class with the radial class.
+-/
 theorem puncturedExpandedOpenDiskGlobalNormalizedClass_eq_radial
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -468,6 +585,16 @@ def radialPuncturedCollarPhaseMap
         (K.radialPuncturedCollarDiffeomorph
           p hp_source hcenter hdouble).contMDiff)
 
+/--
+%%handwave
+name:
+  Unit modulus of the radial collar phase
+statement:
+  The first circle coordinate of the radial punctured-disk collar has modulus
+  one.
+proof:
+  Its value lies on the unit circle by construction.
+-/
 theorem norm_radialPuncturedCollarPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -479,6 +606,20 @@ theorem norm_radialPuncturedCollarPhaseMap
     ‖radialPuncturedCollarPhaseMap K p hp_source hcenter hdouble y‖ = 1 :=
   Circle.norm_coe _
 
+/--
+%%handwave
+name:
+  Formula for the radial collar phase
+statement:
+  The circle coordinate of the radial collar at \(y\) is
+  \[
+    \frac{z(y)-z(p)}{|z(y)-z(p)|},
+  \]
+  where \(z\) is the centered coordinate chart.
+proof:
+  Expand the normalized-vector definition of the radial collar and rewrite
+  inverse norm multiplication as division.
+-/
 theorem radialPuncturedCollarPhaseMap_apply
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -500,9 +641,19 @@ theorem radialPuncturedCollarPhaseMap_apply
   rw [div_eq_mul_inv, Complex.ofReal_inv]
   ring
 
-/-- When the stationary vortex disk uses the vortex chart and is centered at
-the pole, its unrotated phase is literally the normalized coordinate
-direction. -/
+/--
+%%handwave
+name:
+  Coordinate formula for the unrotated vortex phase
+statement:
+  When the stationary disk uses the vortex chart and is centered at \(p\),
+  its unrotated phase is
+  \[
+    \frac{z(y)-z(p)}{|z(y)-z(p)|}.
+  \]
+proof:
+  Substitute the equal chart and center into the defining radial-germ formula.
+-/
 theorem puncturedExpandedOpenDiskUnrotatedPhaseMap_eq_radial
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -523,8 +674,16 @@ theorem puncturedExpandedOpenDiskUnrotatedPhaseMap_eq_radial
         ‖K.openDisk.chart (y : X) - K.openDisk.center‖
   rw [hchart, hcenter]
 
-/-- In a concentric stationary vortex disk, the unrotated vortex phase is
-the first coordinate of the radial annular diffeomorphism. -/
+/--
+%%handwave
+name:
+  The unrotated vortex phase is the radial collar circle coordinate
+statement:
+  On a concentric stationary punctured disk, the unrotated vortex phase
+  equals the first \(S^1\)-coordinate of the radial annular diffeomorphism.
+proof:
+  Both quantities equal the normalized coordinate direction from the center.
+-/
 theorem puncturedExpandedOpenDiskUnrotatedPhaseMap_eq_radialPuncturedCollarPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -543,8 +702,19 @@ theorem puncturedExpandedOpenDiskUnrotatedPhaseMap_eq_radialPuncturedCollarPhase
       K hchart hcenter hdouble hsubset y,
     radialPuncturedCollarPhaseMap_apply]
 
-/-- The local unrotated logarithmic form is the pullback of the ordinary
-annular circle-coordinate form. -/
+/--
+%%handwave
+name:
+  The radial logarithmic form is pulled back from the annulus
+statement:
+  The logarithmic one-form of the unrotated puncture phase is the pullback,
+  under the radial annular diffeomorphism, of the standard circle-coordinate
+  logarithmic form on \(S^1\times\mathbb R\).
+proof:
+  The two circle primitives agree pointwise because both are the first circle
+  coordinate; equality of unit phases gives equality of their logarithmic
+  one-forms.
+-/
 theorem puncturedExpandedOpenDiskRadialOneForm_eq_pullback_annular
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -587,8 +757,17 @@ theorem puncturedExpandedOpenDiskRadialOneForm_eq_pullback_annular
   exact (D.puncturedExpandedOpenDiskUnrotatedPhaseMap_eq_radialPuncturedCollarPhaseMap
     K hchart hcenter hdouble hsubset y).symm
 
-/-- The normalized local radial form is the pullback of the normalized
-annular radial form. -/
+/--
+%%handwave
+name:
+  The normalized radial form is pulled back from the annulus
+statement:
+  The normalized radial closed one-form on the punctured disk is the pullback
+  of the normalized radial form on the annular cylinder.
+proof:
+  Pullback is linear and therefore commutes with multiplication by
+  \((2\pi)^{-1}\); apply the unnormalized pullback identity.
+-/
 theorem puncturedExpandedOpenDiskRadialNormalizedClosedOneForm_eq_pullback_annular
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -627,8 +806,17 @@ theorem puncturedExpandedOpenDiskRadialNormalizedClosedOneForm_eq_pullback_annul
   exact D.puncturedExpandedOpenDiskRadialOneForm_eq_pullback_annular
     K hchart hcenter hdouble hsubset
 
-/-- On a concentric stationary disk, the normalized radial vortex class is
-the pullback of the chosen annular angular class, up to orientation. -/
+/--
+%%handwave
+name:
+  The local radial class is the annular angular class up to orientation
+statement:
+  Under the radial annular diffeomorphism, the normalized radial vortex class
+  equals either the pullback of the standard angular class or its negative.
+proof:
+  Pull back the annular theorem identifying the normalized radial class with
+  the angular class up to sign; linearity of pullback preserves the negative.
+-/
 theorem puncturedExpandedOpenDiskRadialNormalizedClass_eq_or_neg_angular
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -702,9 +890,20 @@ theorem puncturedExpandedOpenDiskRadialNormalizedClass_eq_or_neg_angular
       Submodule.mapQ_apply] using hpull
 
 set_option synthInstance.maxHeartbeats 100000 in
-/-- On the inner half of a concentric stationary disk, the restriction of
-the global normalized vortex form is the pullback of the chosen angular
-class on the negative half-cylinder, up to orientation. -/
+/--
+%%handwave
+name:
+  The global puncture class on the inner disk is angular up to orientation
+statement:
+  On the inner half of a concentric stationary disk, the restricted global
+  normalized vortex form represents either the pullback of the standard
+  angular class from the negative half-cylinder or its negative.
+proof:
+  First identify the global class on the doubled punctured disk with the
+  radial class, then with the annular angular class up to sign.  Restrict this
+  equality to the inner half and use compatibility of restriction with the
+  side-preserving collar pullback.
+-/
 theorem puncturedInnerDiskGlobalNormalizedClass_eq_or_neg_angular
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -885,9 +1084,20 @@ theorem puncturedInnerDiskGlobalNormalizedClass_eq_or_neg_angular
     rw [htauRestrict, hbetaRestrict] at h
     exact h
 
-/-- Every transported puncture vortex admits a concentric doubled coordinate
-disk on which its normalized class is the standard radial class and its
-radial phase has the expected coordinate formula. -/
+/--
+%%handwave
+name:
+  Local radial normal form for a transported puncture vortex
+statement:
+  Every transported puncture vortex admits a concentric coordinate disk whose
+  doubled punctured disk lies in the stationary radial neighborhood, on which
+  the normalized transported class equals the radial class and the unrotated
+  phase is \((z-z(p))/|z-z(p)|\).
+proof:
+  Choose the stationary radial coordinate disk supplied by the vortex germ.
+  Apply the local equality of normalized classes and the coordinate formula
+  for the unrotated phase on that disk.
+-/
 theorem exists_localRadialNormalizedClassCertificate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

@@ -438,8 +438,6 @@ statement:
 proof:
   Use the standard plus-plus sheafification construction for concrete
   categories with finite limits, specialized to abelian groups.
-tags:
-  milestone
 -/
 theorem opens_addCommGrp_hasSheafify (X : TopCat.{v}) :
     HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v} := by
@@ -529,11 +527,31 @@ def realULiftScalarAddMonoidHom (r : ℝ) : ULift.{v} ℝ →+ ULift.{v} ℝ whe
     ext
     simp [mul_add]
 
+/--
+%%handwave
+name:
+  Evaluation of scalar multiplication on the lifted real line
+statement:
+  Multiplication by \(r\) sends a lifted real number \(x\) to the lift of
+  \(r\,x\).
+proof:
+  This is the defining formula for the additive endomorphism.
+-/
 @[simp]
 theorem realULiftScalarAddMonoidHom_apply (r : ℝ) (x : ULift.{v} ℝ) :
     realULiftScalarAddMonoidHom.{v} r x = ULift.up (r * x.down) :=
   rfl
 
+/--
+%%handwave
+name:
+  Multiplication by one on the lifted real line
+statement:
+  Scalar multiplication by \(1\) is the identity additive endomorphism of the
+  lifted real line.
+proof:
+  Evaluate at a lifted real number and simplify \(1x=x\).
+-/
 @[simp]
 theorem realULiftScalarAddMonoidHom_one :
     realULiftScalarAddMonoidHom.{v} (1 : ℝ) =
@@ -542,6 +560,16 @@ theorem realULiftScalarAddMonoidHom_one :
   cases x
   simp
 
+/--
+%%handwave
+name:
+  Composition of scalar multiplications on the lifted real line
+statement:
+  Multiplication by \(rs\) equals multiplication by \(s\), followed by
+  multiplication by \(r\).
+proof:
+  Evaluate at \(x\) and use associativity \(r(sx)=(rs)x\).
+-/
 theorem realULiftScalarAddMonoidHom_mul (r s : ℝ) :
     realULiftScalarAddMonoidHom.{v} (r * s) =
       (realULiftScalarAddMonoidHom.{v} r).comp
@@ -550,6 +578,16 @@ theorem realULiftScalarAddMonoidHom_mul (r s : ℝ) :
   cases x
   simp [mul_assoc]
 
+/--
+%%handwave
+name:
+  Multiplication by zero on the lifted real line
+statement:
+  Scalar multiplication by \(0\) is the zero additive endomorphism of the
+  lifted real line.
+proof:
+  Evaluate at \(x\) and simplify \(0x=0\).
+-/
 @[simp]
 theorem realULiftScalarAddMonoidHom_zero :
     realULiftScalarAddMonoidHom.{v} (0 : ℝ) =
@@ -558,6 +596,16 @@ theorem realULiftScalarAddMonoidHom_zero :
   cases x
   simp
 
+/--
+%%handwave
+name:
+  Additivity of scalar endomorphisms on the lifted real line
+statement:
+  Multiplication by \(r+s\) is the sum of multiplication by \(r\) and
+  multiplication by \(s\).
+proof:
+  Evaluate at \(x\) and distribute: \((r+s)x=rx+sx\).
+-/
 theorem realULiftScalarAddMonoidHom_add (r s : ℝ) :
     realULiftScalarAddMonoidHom.{v} (r + s) =
       realULiftScalarAddMonoidHom.{v} r +
@@ -584,12 +632,34 @@ noncomputable def realConstantSheafScalarEnd (X : TopCat.{v})
   (constantSheaf (Opens.grothendieckTopology X) AddCommGrpCat.{v}).map
     (AddCommGrpCat.ofHom (realULiftScalarAddMonoidHom.{v} r))
 
+/--
+%%handwave
+name:
+  Multiplication by one on the constant real sheaf
+statement:
+  The scalar endomorphism of the constant real sheaf associated to \(1\) is
+  the identity.
+proof:
+  The underlying coefficient endomorphism is the identity, and the
+  constant-sheaf functor preserves identities.
+-/
 @[simp]
 theorem realConstantSheafScalarEnd_one (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}] :
     realConstantSheafScalarEnd X (1 : ℝ) = 𝟙 (RealConstantAddSheaf X) := by
   simp [realConstantSheafScalarEnd]
 
+/--
+%%handwave
+name:
+  Multiplication by zero on the constant real sheaf
+statement:
+  The scalar endomorphism of the constant real sheaf associated to \(0\) is
+  the zero morphism.
+proof:
+  The coefficient endomorphism is zero, and the additive constant-sheaf
+  functor preserves zero morphisms.
+-/
 @[simp]
 theorem realConstantSheafScalarEnd_zero (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}] :
@@ -597,6 +667,17 @@ theorem realConstantSheafScalarEnd_zero (X : TopCat.{v})
   rw [realConstantSheafScalarEnd, realULiftScalarAddMonoidHom_zero]
   exact Functor.map_zero _ _ _
 
+/--
+%%handwave
+name:
+  Additivity of scalar endomorphisms of the constant real sheaf
+statement:
+  On the constant real sheaf, multiplication by \(r+s\) is the sum of
+  multiplication by \(r\) and multiplication by \(s\).
+proof:
+  Coefficient multiplication is additive in the scalar, and the
+  constant-sheaf functor preserves addition of morphisms.
+-/
 theorem realConstantSheafScalarEnd_add (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
     (r s : ℝ) :
@@ -605,6 +686,17 @@ theorem realConstantSheafScalarEnd_add (X : TopCat.{v})
   rw [realConstantSheafScalarEnd, realULiftScalarAddMonoidHom_add]
   exact Functor.map_add _
 
+/--
+%%handwave
+name:
+  Composition of scalar endomorphisms of the constant real sheaf
+statement:
+  On the constant real sheaf, multiplication by \(rs\) is multiplication by
+  \(s\), followed by multiplication by \(r\).
+proof:
+  Apply functoriality of the constant-sheaf construction to the corresponding
+  composition identity on the coefficient group.
+-/
 theorem realConstantSheafScalarEnd_mul (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
     (r s : ℝ) :
@@ -1631,6 +1723,17 @@ theorem standardRealConstantOpenPresheafToSingularCochainZeroPresheaf_scalar
       (singularZeroCochainOfConstant_smul
         ((Opens.toTopCat X).obj U) r c)
 
+/--
+%%handwave
+name:
+  Successor for the reversed complex shape
+statement:
+  For every complex shape \(c\) and degree \(i\), the successor of \(i\) in
+  the reversed shape is the predecessor of \(i\) in \(c\).
+proof:
+  If an incoming relation exists, both sides are its source.  Otherwise both
+  operations fix \(i\).
+-/
 private lemma complexShape_symm_next_eq_prev_for_singularCohomology
     {ι : Type*} (c : ComplexShape ι) (i : ι) :
     c.symm.next i = c.prev i := by
@@ -1643,11 +1746,36 @@ private lemma complexShape_symm_next_eq_prev_for_singularCohomology
       exact (c.symm).next_eq_self' i (by simpa [ComplexShape.symm] using h)
     exact hnext.trans hprev.symm
 
+/--
+%%handwave
+name:
+  Predecessor for the reversed complex shape
+statement:
+  For every complex shape \(c\) and degree \(i\), the predecessor of \(i\) in
+  the reversed shape is the successor of \(i\) in \(c\).
+proof:
+  Apply the corresponding successor identity to the reversed shape and use
+  that reversing twice returns the original shape.
+-/
 private lemma complexShape_symm_prev_eq_next_for_singularCohomology
     {ι : Type*} (c : ComplexShape ι) (i : ι) :
     c.symm.prev i = c.next i := by
   simpa using (complexShape_symm_next_eq_prev_for_singularCohomology c.symm i).symm
 
+/--
+%%handwave
+name:
+  A homotopy survives passage out of an opposite category
+statement:
+  If two maps of complexes in an opposite preadditive category are homotopic,
+  then the maps obtained by taking opposites and passing to the corresponding
+  complexes in the original category are homotopic.
+proof:
+  Reverse the two degree indices of every homotopy component and take its
+  opposite.  Taking opposites reverses composition, while the successor and
+  predecessor of the reversed complex shape interchange, yielding the
+  required homotopy identity.
+-/
 private theorem homotopy_unopFunctor_map_op_for_singularCohomology
     {V : Type*} [Category* V] [Preadditive V] {ι : Type*} {c : ComplexShape ι}
     {K L : HomologicalComplex Vᵒᵖ c} {f g : K ⟶ L}
@@ -1676,6 +1804,19 @@ private theorem homotopy_unopFunctor_map_op_for_singularCohomology
       complexShape_symm_prev_eq_next_for_singularCohomology, unop_add, add_assoc,
       add_comm, add_left_comm] using h
 
+/--
+%%handwave
+name:
+  Chain homotopies induce cochain homotopies
+statement:
+  A homotopy between the singular-chain maps induced by \(f,g:X\to Y\)
+  gives a homotopy between the pullback maps
+  \(C^\bullet(Y;R)\to C^\bullet(X;R)\).
+proof:
+  Apply the contravariant linear-dual functor to the chain homotopy, then pass
+  from complexes in the opposite module category to cochain complexes in the
+  module category.
+-/
 private theorem singularCochainMap_homotopy_of_chainHomotopy_for_singularCohomology
     (R : Type u) [CommRing R] {X Y : TopCat.{v}} {f g : X ⟶ Y}
     (H :
@@ -1911,6 +2052,22 @@ noncomputable def realConstantOpenPresheafToSingularCochainZeroPresheaf
       (realSingularCochainOpenPresheafComplex X).X 0 :=
   standardRealConstantOpenPresheafToSingularCochainZeroPresheaf X
 
+/--
+%%handwave
+name:
+  Full specification of the constant singular zero-cochain augmentation
+statement:
+  The standard natural map
+  \(\eta:\underline{\mathbb R}\to C^0(-;\mathbb R)\) has four properties:
+  \(d\eta=0\); it commutes with multiplication by every \(r\in\mathbb R\);
+  after restriction along a null-homotopic inclusion \(V\subseteq U\), every
+  closed zero-cochain on \(U\) is in the image of \(\eta_V\); and a constant
+  section whose image has zero germ already has zero germ.
+proof:
+  Combine the previously proved closedness, scalar compatibility, local
+  constancy under null-homotopic restriction, and germ-detection properties
+  of the standard augmentation.
+-/
 private theorem realConstantOpenPresheafToSingularCochainZeroPresheaf_full_spec
     (X : TopCat.{v}) :
     ∃ _ :
@@ -1940,6 +2097,18 @@ private theorem realConstantOpenPresheafToSingularCochainZeroPresheaf_full_spec
     standardRealConstantOpenPresheafToSingularCochainZeroPresheaf_local_constant X,
     standardRealConstantOpenPresheafToSingularCochainZeroPresheaf_germ_eq_zero X⟩
 
+/--
+%%handwave
+name:
+  Closedness and scalar compatibility of the constant augmentation
+statement:
+  The standard map
+  \(\eta:\underline{\mathbb R}\to C^0(-;\mathbb R)\) satisfies
+  \(d\eta=0\) and \(M_r\eta=\eta S_r\) for every real scalar \(r\).
+proof:
+  Extract these first two conclusions from the full specification of the
+  standard augmentation.
+-/
 private theorem realConstantOpenPresheafToSingularCochainZeroPresheaf_spec
     (X : TopCat.{v}) :
     ∃ _ :
@@ -2105,6 +2274,16 @@ noncomputable def realConstantSheafCohomologySMul (X : TopCat.{v})
       (CategoryTheory.Abelian.Ext.mk₀ (realConstantSheafScalarEnd X r))
       (add_zero n)
 
+/--
+%%handwave
+name:
+  Unit scalar on real constant-sheaf cohomology
+statement:
+  For every cohomology class \(\alpha\), one has \(1\cdot\alpha=\alpha\).
+proof:
+  Multiplication by \(1\) is the identity coefficient morphism, and composing
+  an Ext class with the identity leaves it unchanged.
+-/
 @[simp]
 theorem realConstantSheafCohomologySMul_one (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
@@ -2113,6 +2292,16 @@ theorem realConstantSheafCohomologySMul_one (X : TopCat.{v})
     realConstantSheafCohomologySMul X n (1 : ℝ) α = α := by
   simp [realConstantSheafCohomologySMul]
 
+/--
+%%handwave
+name:
+  Zero scalar on real constant-sheaf cohomology
+statement:
+  For every cohomology class \(\alpha\), one has \(0\cdot\alpha=0\).
+proof:
+  Multiplication by \(0\) is the zero coefficient morphism, so postcomposition
+  of the Ext class is zero.
+-/
 @[simp]
 theorem realConstantSheafCohomologySMul_zero_scalar (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
@@ -2121,6 +2310,17 @@ theorem realConstantSheafCohomologySMul_zero_scalar (X : TopCat.{v})
     realConstantSheafCohomologySMul X n (0 : ℝ) α = 0 := by
   simp [realConstantSheafCohomologySMul, realConstantSheafScalarEnd_zero]
 
+/--
+%%handwave
+name:
+  Scalar multiplication preserves the zero cohomology class
+statement:
+  For every real \(r\), one has \(r\cdot0=0\) in real constant-sheaf
+  cohomology.
+proof:
+  The zero Ext class remains zero after composition with any coefficient
+  endomorphism.
+-/
 @[simp]
 theorem realConstantSheafCohomologySMul_zero (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
@@ -2134,6 +2334,16 @@ theorem realConstantSheafCohomologySMul_zero (X : TopCat.{v})
     (n := n)
     (CategoryTheory.Abelian.Ext.mk₀ (realConstantSheafScalarEnd X r)) n (add_zero n)
 
+/--
+%%handwave
+name:
+  Distributivity over addition of cohomology classes
+statement:
+  For \(r\in\mathbb R\) and cohomology classes \(\alpha,\beta\),
+  \(r\cdot(\alpha+\beta)=r\cdot\alpha+r\cdot\beta\).
+proof:
+  Composition in Ext is additive in its first argument.
+-/
 theorem realConstantSheafCohomologySMul_add (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
     [HasExt.{v} (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{v})]
@@ -2146,6 +2356,17 @@ theorem realConstantSheafCohomologySMul_add (X : TopCat.{v})
       (CategoryTheory.Abelian.Ext.mk₀ (realConstantSheafScalarEnd X r))
       (add_zero n)
 
+/--
+%%handwave
+name:
+  Distributivity over addition of scalars
+statement:
+  For \(r,s\in\mathbb R\) and a cohomology class \(\alpha\),
+  \((r+s)\cdot\alpha=r\cdot\alpha+s\cdot\alpha\).
+proof:
+  The coefficient endomorphism for \(r+s\) is the sum of those for \(r\) and
+  \(s\), and composition in Ext is additive in the second argument.
+-/
 theorem realConstantSheafCohomologySMul_add_scalar (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
     [HasExt.{v} (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{v})]
@@ -2157,6 +2378,17 @@ theorem realConstantSheafCohomologySMul_add_scalar (X : TopCat.{v})
     realConstantSheafScalarEnd_add, CategoryTheory.Abelian.Ext.mk₀_add,
     CategoryTheory.Abelian.Ext.comp_add]
 
+/--
+%%handwave
+name:
+  Associativity of scalar multiplication on constant-sheaf cohomology
+statement:
+  For \(r,s\in\mathbb R\) and a cohomology class \(\alpha\),
+  \((rs)\cdot\alpha=r\cdot(s\cdot\alpha)\).
+proof:
+  Multiplication by \(rs\) is the composite of the coefficient endomorphisms
+  for \(s\) and \(r\); associativity of Ext composition gives the result.
+-/
 theorem realConstantSheafCohomologySMul_mul (X : TopCat.{v})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{v}]
     [HasExt.{v} (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{v})]
@@ -2876,6 +3108,18 @@ theorem cochainMap_lift_closed_of_homologyMap_zero
   rw [← ConcreteCategory.comp_apply, L.XIsoOfEq_hom_comp_d hprev (m + 1)]
   simpa [S] using hβ
 
+/--
+%%handwave
+name:
+  Homotopic maps induce the same singular-cohomology pullback
+statement:
+  If \(f,g:X\to Y\) are homotopic, then their induced maps
+  \(H^n(Y;R)\to H^n(X;R)\) are equal for every \(n\).
+proof:
+  The homotopy induces a chain homotopy on singular chains.  Dualizing gives
+  a cochain homotopy between the pullback maps, and homotopic cochain maps
+  induce the same map on cohomology.
+-/
 private theorem singularCohomologyMap_eq_of_homotopy_on_homologyMap
     (R : Type u) [CommRing R] {X Y : TopCat.{v}} {f g : X ⟶ Y}
     (H : TopCat.Homotopy f g) (n : ℕ) :
@@ -2887,6 +3131,18 @@ private theorem singularCohomologyMap_eq_of_homotopy_on_homologyMap
     ⟨h⟩
   exact h.homologyMap_eq n
 
+/--
+%%handwave
+name:
+  The dual of a degree-zero complex has no positive cohomology
+statement:
+  Let \(A\) be an \(R\)-module and regard it as a chain complex concentrated
+  in degree \(0\).  Its linear-dual cochain complex has zero cohomology in
+  every degree \(m+1\).
+proof:
+  After taking opposites, the dual complex is still concentrated in degree
+  zero, so it is exact in every positive degree.
+-/
 private theorem linearYonedaObj_single₀_positive_isZero
     (R : Type u) [CommRing R]
     (A : ModuleCat.{max u v} R)
@@ -2904,6 +3160,19 @@ private theorem linearYonedaObj_single₀_positive_isZero
     (ChainComplex.exactAt_succ_single_obj (C := (ModuleCat.{max u v} R)ᵒᵖ)
       (F.obj A) m).of_iso e.symm
 
+/--
+%%handwave
+name:
+  The dual alternating constant complex has no positive cohomology
+statement:
+  For an \(R\)-module \(A\), the linear dual of the alternating constant chain
+  complex on \(A\) has zero cohomology in every degree \(m+1\).
+proof:
+  The alternating constant complex is chain-homotopy equivalent to the
+  complex concentrated in degree zero.  Linear duality preserves this
+  homotopy equivalence, and the latter dual complex has no positive
+  cohomology.
+-/
 private theorem linearYonedaObj_alternatingConst_positive_isZero
     (R : Type u) [CommRing R]
     (A : ModuleCat.{max u v} R)
@@ -2982,6 +3251,18 @@ theorem singularCohomology_point_positive_isZero
   change (((F.mapHomologicalComplex (ComplexShape.down ℕ)).obj K).unop).ExactAt (m + 1)
   exact hExactK
 
+/--
+%%handwave
+name:
+  A constant map induces zero in positive singular cohomology
+statement:
+  For \(m\ge0\), the pullback in degree \(m+1\) induced by a constant map
+  \(V\to U\) is the zero map.
+proof:
+  Factor the constant map through a point.  Contravariance factors its
+  cohomology pullback through the positive-degree cohomology of a point,
+  which is zero.
+-/
 private theorem singularCohomologyMap_eq_zero_of_constant_positive
     (R : Type u) [CommRing R] {U V : TopCat.{v}} (y : U) (m : ℕ) :
     HomologicalComplex.homologyMap
@@ -7759,6 +8040,21 @@ private noncomputable def sheafSectionGeneratorHomEquiv (X : TopCat.{v}) (U : Op
     ((AddCommGrpCat.adj).whiskerRight (Opens X)ᵒᵖ).homEquiv _ _
   exact e₁.trans (e₂.trans CategoryTheory.yonedaEquiv)
 
+/--
+%%handwave
+name:
+  Naturality of the sheaf-section generator correspondence
+statement:
+  Let \(U\to V\) be an inclusion of opens and let \(G_V\to F\) be a morphism
+  from the sheafified free representable generator.  Under the canonical
+  correspondence
+  \(\operatorname{Hom}(G_U,F)\cong F(U)\), precomposition with
+  \(G_U\to G_V\) corresponds to restricting the section of \(F(V)\) to
+  \(F(U)\).
+proof:
+  Successively use naturality of the sheafification adjunction, naturality of
+  the free-forgetful adjunction, and naturality of the Yoneda correspondence.
+-/
 private lemma sheafSectionGeneratorHomEquiv_map (X : TopCat.{v}) {U V : Opens X}
     (f : U ⟶ V) (F : Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{v})
     (g : sheafSectionGenerator X V ⟶ F) :
@@ -8124,6 +8420,17 @@ theorem singularCohomology_subsingleton_of_isZero
     Subsingleton (SingularCohomology R X n) :=
   (ModuleCat.isZero_iff_subsingleton (M := SingularCohomology R X n)).1 h
 
+/--
+%%handwave
+name:
+  Successor in a reversed complex shape
+statement:
+  For a complex shape \(c\), the successor of a degree \(i\) after reversing
+  the shape is the predecessor of \(i\) before reversal.
+proof:
+  When an incoming relation exists, both sides select its source; when none
+  exists, both sides equal \(i\).
+-/
 private lemma complexShape_symm_next_eq_prev
     {ι : Type*} (c : ComplexShape ι) (i : ι) :
     c.symm.next i = c.prev i := by
@@ -8136,6 +8443,16 @@ private lemma complexShape_symm_next_eq_prev
       exact (c.symm).next_eq_self' i (by simpa [ComplexShape.symm] using h)
     exact hnext.trans hprev.symm
 
+/--
+%%handwave
+name:
+  Predecessor in a reversed complex shape
+statement:
+  For a complex shape \(c\), the predecessor of a degree \(i\) after reversing
+  the shape is the successor of \(i\) before reversal.
+proof:
+  Apply the successor identity to the reversed shape and reverse once more.
+-/
 private lemma complexShape_symm_prev_eq_next
     {ι : Type*} (c : ComplexShape ι) (i : ι) :
     c.symm.prev i = c.next i := by

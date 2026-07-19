@@ -133,6 +133,15 @@ omit [RiemannSurface X] in
 /--
 The terminal value forced by terminal-branch continuation is invariant under
 endpoint-fixed homotopy of representative paths.
+
+
+%%handwave
+name:
+  Homotopic paths have the same terminal branch value
+statement:
+  Let continuation along a path $p:x_0\to x$ produce a terminal chart center $c_p$ and real Möbius transformation $M_p$, with terminal value $M_p\cdot U_{c_p}(x)$. If $p$ and $q$ are endpoint-fixed homotopic paths from $x_0$ to $x$, then $M_p\cdot U_{c_p}(x)=M_q\cdot U_{c_q}(x)$.
+proof:
+  Homotopy invariance identifies both the terminal center and terminal Möbius transformation for $p$ and $q$; substitute these equalities into the terminal-value formula.
 -/
 theorem terminalValue_homotopic
     (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
@@ -185,6 +194,15 @@ def terminalNeighborhoodAt
     exact C.neighborhood_homotopic hp
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Terminal value on a represented path class
+statement:
+  For a path $p:x_0\to x$, the terminal-value function on homotopy classes satisfies $V_x([p])=V(p)$.
+proof:
+  The function on path classes is defined by evaluating the terminal value on a representative.
+-/
 @[simp]
 theorem terminalValueAt_mk
     (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
@@ -193,32 +211,7 @@ theorem terminalValueAt_mk
       C.terminalValue p :=
   rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalCenterAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalCenterAt x (Path.Homotopic.Quotient.mk p) =
-      C.centerAlong p :=
-  rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalMobiusAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalMobiusAt x (Path.Homotopic.Quotient.mk p) =
-      C.mobiusAlong p :=
-  rfl
-
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalNeighborhoodAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalNeighborhoodAt x (Path.Homotopic.Quotient.mk p) =
-      C.neighborhoodAlong p :=
-  rfl
 
 /-- Terminal-branch continuation data give representative-path continuation data. -/
 def toPathAnalyticContinuationData
@@ -253,14 +246,6 @@ def toPathAnalyticContinuationData
     intro x p y' p' hy' hclass
     exact C.terminalValue_eq_on_neighborhood p y' p' hy' hclass
 
-omit [RiemannSurface X] in
-@[simp]
-theorem toPathAnalyticContinuationData_valueAlong
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathAnalyticContinuationData.valueAlong p = C.terminalValue p :=
-  rfl
-
 /-- The canonical-cover developing map forced by terminal-branch continuation. -/
 def coverDev
     (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels) :
@@ -294,45 +279,9 @@ def coverNeighborhood
     C.terminalNeighborhoodAt (PathHomotopyUniversalCover.endpoint y)
       (PathHomotopyUniversalCover.pathClass y)
 
-@[simp]
-theorem coverDev_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverDev
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.terminalValue p :=
-  rfl
 
-@[simp]
-theorem coverCenter_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverCenter
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.centerAlong p :=
-  rfl
 
-@[simp]
-theorem coverMobius_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverMobius
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.mobiusAlong p :=
-  rfl
 
-@[simp]
-theorem coverNeighborhood_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverNeighborhood
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.neighborhoodAlong p :=
-  rfl
 
 /--
 Terminal-branch continuation data give sheetwise continuation data directly on
@@ -391,114 +340,17 @@ def toCanonicalCoverLocalContinuationData
                   PathHomotopyUniversalCover X x₀)
                 p' hy' rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_dev
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.dev = C.coverDev :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_centerAt
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.centerAt = C.coverCenter :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_mobiusAt
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.mobiusAt = C.coverMobius :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_neighborhoodAt
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.neighborhoodAt = C.coverNeighborhood :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_dev_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.dev
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.terminalValue p :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_centerAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.centerAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.centerAlong p :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_mobiusAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.mobiusAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.mobiusAlong p :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_neighborhoodAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.neighborhoodAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.neighborhoodAlong p :=
-  rfl
 
-/-- The terminal-branch cover sheet attached to a point is open. -/
-theorem isOpen_coverNeighborhood
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    IsOpen (C.coverNeighborhood y) := by
-  simpa [coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.isOpen_neighborhoodAt y
 
-/-- A cover point lies in the terminal-branch sheet it determines. -/
-theorem mem_coverNeighborhood
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    y ∈ C.coverNeighborhood y := by
-  simpa [coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.mem_neighborhoodAt y
 
-/--
-Every point of a terminal-branch sheet projects into the terminal local model
-domain attached to the sheet.
--/
-theorem endpoint_mem_coverCenter_domain
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y y' : (canonicalContinuationCover x₀).total)
-    (hy' : y' ∈ C.coverNeighborhood y) :
-    PathHomotopyUniversalCover.endpoint y' ∈
-      (localModels.chartAt (C.coverCenter y)).domain := by
-  simpa [coverCenter, coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.projection_mem_model_domain y y' hy'
 
-/--
-On a terminal-branch sheet, the canonical-cover value is exactly the terminal
-local model of that sheet, postcomposed by its terminal real Mobius
-representative.
--/
-theorem coverDev_eq_on_coverNeighborhood
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y y' : (canonicalContinuationCover x₀).total)
-    (hy' : y' ∈ C.coverNeighborhood y) :
-    C.coverDev y' =
-      realMobiusRepresentativeAction (C.coverMobius y)
-        ((localModels.chartAt (C.coverCenter y)).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y')) := by
-  simpa [coverDev, coverCenter, coverMobius, coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.dev_eq_on_neighborhood y y' hy'
 
 end PathTerminalBranchAnalyticContinuationData
 
@@ -625,38 +477,23 @@ def terminalValue
   realMobiusRepresentativeAction C.terminalMobius
     ((localModels.chartAt C.terminalCenter).toUpperHalfPlane x)
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalCenter_def
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.terminalCenter = C.centerAt (Fin.last C.length) :=
-  rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalMobius_def
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.terminalMobius = C.mobiusAt (Fin.last C.length) :=
-  rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem initialCenter_eq_basepoint
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.initialCenter = x₀ := by
-  simpa [initialCenter] using C.initial_center_eq
 
-omit [RiemannSurface X] in
-@[simp]
-theorem initialMobius_eq_one
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.initialMobius = 1 := by
-  simpa [initialMobius] using C.initial_mobius_eq
 
 omit [RiemannSurface X] in
 /--
 A finite continuation chain has at least one subinterval: the first and last
 subdivision parameters are forced to be `0` and `1`.
+
+
+%%handwave
+name:
+  A continuation chain has positive length
+statement:
+  The number $n$ of segments in a finite local-model continuation chain along a path is strictly positive.
+proof:
+  If $n=0$, the initial and terminal subdivision parameters are the same index, forcing $0=1$ in the unit interval, a contradiction.
 -/
 theorem length_pos
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
@@ -679,7 +516,16 @@ theorem length_pos
       simp
 
 omit [RiemannSurface X] in
-/-- The number of subintervals in a finite continuation chain is nonzero. -/
+/-- The number of subintervals in a finite continuation chain is nonzero.
+
+%%handwave
+name:
+  A continuation chain has nonzero length
+statement:
+  The number of segments in a finite local-model continuation chain is not zero.
+proof:
+  It is strictly positive.
+-/
 theorem length_ne_zero
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
     C.length ≠ 0 :=
@@ -697,15 +543,17 @@ def lastSegmentIndex
     Fin C.length :=
   ⟨C.length - 1, Nat.pred_lt C.length_ne_zero⟩
 
-omit [RiemannSurface X] in
-@[simp]
-theorem firstSegmentIndex_castSucc
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.firstSegmentIndex.castSucc = (0 : Fin (C.length + 1)) := by
-  ext
-  simp [firstSegmentIndex]
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Successor of the last segment index
+statement:
+  If a continuation chain has $n>0$ segments indexed by $0,\ldots,n-1$, then the successor endpoint index of its last segment is the last subdivision index $n$.
+proof:
+  The last segment index is $n-1$, and $(n-1)+1=n$ because $n>0$.
+-/
 @[simp]
 theorem lastSegmentIndex_succ_eq_last
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
@@ -715,43 +563,36 @@ theorem lastSegmentIndex_succ_eq_last
   exact Nat.sub_add_cancel (Nat.succ_le_of_lt C.length_pos)
 
 omit [RiemannSurface X] in
-/-- Consecutive subdivision parameters are strictly ordered. -/
+/-- Consecutive subdivision parameters are strictly ordered.
+
+%%handwave
+name:
+  Consecutive subdivision parameters are strictly increasing
+statement:
+  For every segment index $k$ of a continuation chain, its left and right parameters satisfy $t_k<t_{k+1}$.
+proof:
+  This is the strict monotonicity condition of the chain's subdivision.
+-/
 theorem parameterAt_castSucc_lt_succ
     (C : PathLocalModelContinuationChain x₀ g localModels p)
     (k : Fin C.length) :
     (C.parameterAt k.castSucc : ℝ) < (C.parameterAt k.succ : ℝ) :=
   C.parameterAt_strictMono k
 
-omit [RiemannSurface X] in
-/-- The weak monotonicity condition follows from the strict subdivision order. -/
-theorem parameterAt_castSucc_le_succ_of_strict
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    (C.parameterAt k.castSucc : ℝ) ≤ (C.parameterAt k.succ : ℝ) :=
-  le_of_lt (C.parameterAt_castSucc_lt_succ k)
+
+
 
 omit [RiemannSurface X] in
-/-- Consecutive subdivision vertices are distinct as unit-interval points. -/
-theorem parameterAt_castSucc_ne_succ
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    C.parameterAt k.castSucc ≠ C.parameterAt k.succ := by
-  intro h
-  have hreal :
-      (C.parameterAt k.castSucc : ℝ) = (C.parameterAt k.succ : ℝ) := by
-    simp [h]
-  exact (ne_of_lt (C.parameterAt_castSucc_lt_succ k)) hreal
+/-- The initial branch value is the basepoint local model value.
 
-omit [RiemannSurface X] in
-/-- The basepoint lies in the initial model domain forced by the chain. -/
-theorem basepoint_mem_initial_model_domain
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    x₀ ∈ (localModels.chartAt x₀).domain := by
-  have hsample := C.sample_mem_model_domain 0
-  simpa [C.parameterAt_zero, C.initial_center_eq] using hsample
-
-omit [RiemannSurface X] in
-/-- The initial branch value is the basepoint local model value. -/
+%%handwave
+name:
+  The initial branch equals the base local model
+statement:
+  At the initial point $x_0$, the first continued branch value is $U_{x_0}(x_0)$.
+proof:
+  The first chart center is $x_0$ and the first Möbius transformation is the identity, whose action leaves $U_{x_0}(x_0)$ fixed.
+-/
 theorem initialBranchValue_eq_baseModel
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
     realMobiusRepresentativeAction (C.mobiusAt 0)
@@ -760,28 +601,34 @@ theorem initialBranchValue_eq_baseModel
   simp [C.initial_center_eq, C.initial_mobius_eq, realMobiusRepresentativeAction_one]
 
 omit [RiemannSurface X] in
-/-- The first sampled branch value is the basepoint local model value. -/
+/-- The first sampled branch value is the basepoint local model value.
+
+%%handwave
+name:
+  Branch value at the initial subdivision point
+statement:
+  For a continuation chain along $p:x_0\to x$, the branch value at subdivision index $0$ equals the selected base model value $U_{x_0}(x_0)$.
+proof:
+  The initial parameter is $t_0=0$, so the branch-value definition reduces to the initial branch, which is the identity transform of the base model.
+-/
 theorem branchValueAt_zero_eq_baseModel
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
     C.branchValueAt 0 = (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
   simpa [branchValueAt, C.parameterAt_zero] using
     C.initialBranchValue_eq_baseModel
 
-omit [RiemannSurface X] in
-/--
-The segment branch is defined on the whole corresponding closed subinterval of
-the representative path.
--/
-theorem segmentBranchValue_mem_model_domain
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) {t : unitInterval}
-    (ht_left : (C.parameterAt k.castSucc : ℝ) ≤ (t : ℝ))
-    (ht_right : (t : ℝ) ≤ (C.parameterAt k.succ : ℝ)) :
-    p t ∈ (localModels.chartAt (C.centerAt k.castSucc)).domain :=
-  C.path_segment_mem_model_domain k t ht_left ht_right
 
 omit [RiemannSurface X] in
-/-- At the left endpoint, a segment branch gives the sampled branch value. -/
+/-- At the left endpoint, a segment branch gives the sampled branch value.
+
+%%handwave
+name:
+  Segment value at its left endpoint
+statement:
+  For every segment $k$ of a continuation chain, evaluating its continued local branch at the left parameter $t_k$ gives the branch value recorded at subdivision vertex $k$.
+proof:
+  The two expressions are identical by their definitions.
+-/
 theorem segmentBranchValue_leftEndpoint
     (C : PathLocalModelContinuationChain x₀ g localModels p)
     (k : Fin C.length) :
@@ -789,18 +636,18 @@ theorem segmentBranchValue_leftEndpoint
       C.branchValueAt k.castSucc :=
   rfl
 
-omit [RiemannSurface X] in
-/-- The first segment starts with the basepoint local model value. -/
-theorem firstSegmentBranchValue_leftEndpoint_eq_baseModel
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.segmentBranchValue C.firstSegmentIndex
-        (C.parameterAt C.firstSegmentIndex.castSucc) =
-      (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
-  simpa [segmentBranchValue, branchValueAt] using
-    C.branchValueAt_zero_eq_baseModel
 
 omit [RiemannSurface X] in
-/-- The endpoint lies in the domain of the terminal center of the chain. -/
+/-- The endpoint lies in the domain of the terminal center of the chain.
+
+%%handwave
+name:
+  The path endpoint lies in the terminal chart domain
+statement:
+  If a continuation chain along $p:x_0\to x$ ends in the local model centered at $c$, then $x$ lies in the domain of the selected chart $U_c$.
+proof:
+  This is the terminal endpoint membership condition of the continuation chain, rewritten using the definition of its terminal center.
+-/
 theorem endpoint_mem_terminalCenter_domain
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
     x ∈ (localModels.chartAt C.terminalCenter).domain := by
@@ -811,6 +658,15 @@ omit [RiemannSurface X] in
 The transition point between two consecutive subintervals lies in both
 adjacent model domains.  Thus the nonempty overlap is forced by path coverage,
 not merely postulated separately.
+
+
+%%handwave
+name:
+  A subdivision point lies in both adjacent chart domains
+statement:
+  For every segment index $k$, the transition point $p(t_{k+1})$ belongs to the intersection of the domains of the local models used on segments $k$ and $k+1$.
+proof:
+  Membership in the left domain follows from coverage of segment $k$ up to its right endpoint; membership in the right domain is the sampled-chart condition at vertex $k+1$.
 -/
 theorem transitionPoint_mem_adjacent_overlap
     (C : PathLocalModelContinuationChain x₀ g localModels p)
@@ -823,34 +679,22 @@ theorem transitionPoint_mem_adjacent_overlap
       (C.parameterAt_mono k) le_rfl
   · exact C.sample_mem_model_domain k.succ
 
-omit [RiemannSurface X] in
-/-- Adjacent overlap nonemptiness follows from the shared transition point. -/
-theorem adjacent_overlap_nonempty_from_transition
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    Set.Nonempty
-      ((localModels.chartAt (C.centerAt k.castSucc)).domain ∩
-        (localModels.chartAt (C.centerAt k.succ)).domain) :=
-  ⟨p (C.parameterAt k.succ), C.transitionPoint_mem_adjacent_overlap k⟩
 
-omit [RiemannSurface X] in
-/-- Adjacent normalized branches agree at the actual subdivision transition. -/
-theorem adjacent_branch_eq_at_transition
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    realMobiusRepresentativeAction (C.mobiusAt k.succ)
-        ((localModels.chartAt (C.centerAt k.succ)).toUpperHalfPlane
-          (p (C.parameterAt k.succ))) =
-      realMobiusRepresentativeAction (C.mobiusAt k.castSucc)
-        ((localModels.chartAt (C.centerAt k.castSucc)).toUpperHalfPlane
-          (p (C.parameterAt k.succ))) := by
-  exact C.adjacent_branch_agrees_at_transition k
 
 omit [RiemannSurface X] in
 /--
 The sampled value at the next vertex equals the previous branch evaluated at
 the transition point.  This is the finite-chain form of analytic continuation
 across one overlap.
+
+
+%%handwave
+name:
+  Successor branch value agrees with the preceding transition value
+statement:
+  At a transition parameter $t_{k+1}$, the branch value attached to the next chart equals $M_k\cdot U_{c_k}(p(t_{k+1}))$, the value obtained from the branch on segment $k$.
+proof:
+  This is the adjacent-branch agreement imposed at each transition point, rewritten in terms of the branch-value function.
 -/
 theorem branchValueAt_succ_eq_leftTransitionValue
     (C : PathLocalModelContinuationChain x₀ g localModels p)
@@ -865,6 +709,15 @@ omit [RiemannSurface X] in
 /--
 At the right endpoint, a segment branch gives the next sampled value.  This is
 the endpoint gluing statement for one finite continuation step.
+
+
+%%handwave
+name:
+  Segment value at its right endpoint
+statement:
+  For every segment $k$, evaluating its continued branch at the right parameter $t_{k+1}$ gives the branch value recorded at subdivision vertex $k+1$.
+proof:
+  Adjacent-branch agreement identifies the value from segment $k$ with the successor branch value.
 -/
 theorem segmentBranchValue_rightEndpoint
     (C : PathLocalModelContinuationChain x₀ g localModels p)
@@ -874,22 +727,18 @@ theorem segmentBranchValue_rightEndpoint
   simpa [segmentBranchValue] using
     (C.branchValueAt_succ_eq_leftTransitionValue k).symm
 
-omit [RiemannSurface X] in
-/--
-Adjacent segment branches glue at a shared subdivision vertex.  The hypothesis
-`k.succ = l.castSucc` says that the right endpoint of segment `k` is the left
-endpoint of segment `l`.
--/
-theorem segmentBranchValue_glues_at_shared_endpoint
-    (C : PathLocalModelContinuationChain x₀ g localModels p)
-    (k l : Fin C.length) (h : k.succ = l.castSucc) :
-    C.segmentBranchValue k (C.parameterAt k.succ) =
-      C.segmentBranchValue l (C.parameterAt l.castSucc) := by
-  rw [C.segmentBranchValue_rightEndpoint k,
-    C.segmentBranchValue_leftEndpoint l, h]
 
 omit [RiemannSurface X] in
-/-- The terminal value of the chain is the last sampled branch value. -/
+/-- The terminal value of the chain is the last sampled branch value.
+
+%%handwave
+name:
+  Terminal value is the last subdivision branch value
+statement:
+  The terminal value of a continuation chain with $n$ segments equals its branch value at the final subdivision index $n$.
+proof:
+  At the last subdivision parameter $t_n=1$, the path evaluates to its endpoint, while the last center and Möbius transformation are precisely the terminal ones.
+-/
 theorem terminalValue_eq_branchValueAt_last
     (C : PathLocalModelContinuationChain x₀ g localModels p) :
     C.terminalValue = C.branchValueAt (Fin.last C.length) := by
@@ -900,6 +749,15 @@ omit [RiemannSurface X] in
 /--
 If a subinterval ends at the final subdivision vertex, its segment branch value
 at that endpoint is the terminal value of the whole chain.
+
+
+%%handwave
+name:
+  The last segment ends at the terminal value
+statement:
+  If the right endpoint index $k+1$ of a segment is the final subdivision index, then the value of that segment at $t_{k+1}$ equals the terminal value of the chain.
+proof:
+  The segment value at its right endpoint is the branch value at $k+1$; replace $k+1$ by the final index and use that the final branch value is the terminal value.
 -/
 theorem segmentBranchValue_rightEndpoint_eq_terminalValue_of_succ_eq_last
     (C : PathLocalModelContinuationChain x₀ g localModels p)
@@ -908,15 +766,6 @@ theorem segmentBranchValue_rightEndpoint_eq_terminalValue_of_succ_eq_last
   rw [C.segmentBranchValue_rightEndpoint k, hk]
   exact C.terminalValue_eq_branchValueAt_last.symm
 
-omit [RiemannSurface X] in
-/-- The last segment ends at the terminal value of the whole chain. -/
-theorem lastSegmentBranchValue_rightEndpoint_eq_terminalValue
-    (C : PathLocalModelContinuationChain x₀ g localModels p) :
-    C.segmentBranchValue C.lastSegmentIndex
-        (C.parameterAt C.lastSegmentIndex.succ) =
-      C.terminalValue :=
-  C.segmentBranchValue_rightEndpoint_eq_terminalValue_of_succ_eq_last
-    C.lastSegmentIndex C.lastSegmentIndex_succ_eq_last
 
 end PathLocalModelContinuationChain
 
@@ -993,18 +842,20 @@ def terminalValue
   realMobiusRepresentativeAction ((C.chainAlong p).terminalMobius)
     ((localModels.chartAt ((C.chainAlong p).terminalCenter)).toUpperHalfPlane x)
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalValue_eq_chain_terminalValue
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.chainAlong p).terminalValue :=
-  rfl
 
 omit [RiemannSurface X] in
 /--
 The terminal value produced by finite-chain continuation is invariant under
 endpoint-fixed homotopy of representative paths.
+
+
+%%handwave
+name:
+  Chain continuation has homotopy-invariant terminal value
+statement:
+  For finite-chain continuation along paths $p,q:x_0\to x$, if $p$ and $q$ are endpoint-fixed homotopic, then their terminal values $M_p\cdot U_{c_p}(x)$ and $M_q\cdot U_{c_q}(x)$ are equal.
+proof:
+  The continuation data identify the terminal chart centers and terminal Möbius transformations for homotopic paths; substituting both equalities proves equality of terminal values.
 -/
 theorem terminalValue_homotopic
     (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
@@ -1059,6 +910,15 @@ def terminalNeighborhoodAt
     exact C.neighborhood_homotopic hp
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Chain terminal value on a represented path class
+statement:
+  For a path $p:x_0\to x$, the terminal-value function induced on path homotopy classes satisfies $V_x([p])=V(p)$.
+proof:
+  This is the defining value of the descended function on the class represented by $p$.
+-/
 @[simp]
 theorem terminalValueAt_mk
     (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
@@ -1067,32 +927,8 @@ theorem terminalValueAt_mk
       C.terminalValue p :=
   rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalCenterAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalCenterAt x (Path.Homotopic.Quotient.mk p) =
-      (C.chainAlong p).terminalCenter :=
-  rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalMobiusAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalMobiusAt x (Path.Homotopic.Quotient.mk p) =
-      (C.chainAlong p).terminalMobius :=
-  rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalNeighborhoodAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalNeighborhoodAt x (Path.Homotopic.Quotient.mk p) =
-      C.neighborhoodAlong p :=
-  rfl
 
 /--
 Finite-chain terminal data give the previous terminal-branch boundary by
@@ -1128,15 +964,6 @@ def toPathTerminalBranchAnalyticContinuationData
   terminalValue_eq_on_neighborhood := by
     intro x p y' p' hy' hclass
     exact C.terminalValue_eq_on_neighborhood p y' p' hy' hclass
-
-omit [RiemannSurface X] in
-@[simp]
-theorem toPathTerminalBranchAnalyticContinuationData_terminalValue
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathTerminalBranchAnalyticContinuationData.terminalValue p =
-      C.terminalValue p :=
-  rfl
 
 end PathChainTerminalBranchAnalyticContinuationData
 
@@ -1207,15 +1034,17 @@ def terminalValue
     {x : X} (p : Path x₀ x) : ℍ :=
   (C.chainAlong p).terminalValue
 
-omit [RiemannSurface X] in
-@[simp]
-theorem terminalValue_eq_chain_terminalValue
-    (C : PathChainTerminalBranchAnalyticContinuationValueData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.chainAlong p).terminalValue :=
-  rfl
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
+/--
+%%handwave
+name:
+  A chosen representative is homotopic to the represented path
+statement:
+  If $[p]$ is the endpoint-fixed homotopy class of a path $p$, then the representative selected from the quotient class $[p]$ is endpoint-fixed homotopic to $p$.
+proof:
+  The selected representative has quotient class $[p]$; equality in the path-homotopy quotient is exactly endpoint-fixed homotopy.
+-/
 theorem out_homotopic_mk
     {x : X} (p : Path x₀ x) :
     Path.Homotopic
@@ -1329,38 +1158,9 @@ def toCanonicalCoverLocalContinuationData
         (PathHomotopyUniversalCover.endpoint y)
         (PathHomotopyUniversalCover.pathClass y) y' hy'
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_dev
-    (C : PathClassAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.dev = C.dev :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_centerAt
-    (C : PathClassAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    C.toCanonicalCoverLocalContinuationData.centerAt y =
-      C.centerAt (PathHomotopyUniversalCover.endpoint y)
-        (PathHomotopyUniversalCover.pathClass y) :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_mobiusAt
-    (C : PathClassAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    C.toCanonicalCoverLocalContinuationData.mobiusAt y =
-      C.mobiusAt (PathHomotopyUniversalCover.endpoint y)
-        (PathHomotopyUniversalCover.pathClass y) :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_neighborhoodAt
-    (C : PathClassAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    C.toCanonicalCoverLocalContinuationData.neighborhoodAt y =
-      C.neighborhoodAt (PathHomotopyUniversalCover.endpoint y)
-        (PathHomotopyUniversalCover.pathClass y) :=
-  rfl
 
 end PathClassAnalyticContinuationData
 
@@ -1399,6 +1199,15 @@ noncomputable def terminalNeighborhoodAt
   C.neighborhoodAlong (Quot.out q)
 
 omit [RiemannSurface X] in
+/--
+%%handwave
+name:
+  Value-level chain continuation descends to path classes
+statement:
+  For value-level finite-chain continuation and a path $p:x_0\to x$, the descended terminal-value function satisfies $V_x([p])=V(p)$.
+proof:
+  The quotient chooses a representative homotopic to $p$, and homotopy invariance of terminal values identifies its value with $V(p)$.
+-/
 @[simp]
 theorem terminalValueAt_mk
     (C : PathChainTerminalBranchAnalyticContinuationValueData x₀ g localModels)
@@ -1531,15 +1340,6 @@ def toPathClassAnalyticContinuationData
                   PathHomotopyUniversalCover X x₀)
                 p' hy' rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem toPathClassAnalyticContinuationData_valueAt_mk
-    (C : PathTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathClassAnalyticContinuationData.valueAt x
-        (Path.Homotopic.Quotient.mk p) =
-      C.terminalValue p :=
-  rfl
 
 end PathTerminalBranchAnalyticContinuationData
 
@@ -1581,45 +1381,9 @@ def coverNeighborhood
     C.terminalNeighborhoodAt (PathHomotopyUniversalCover.endpoint y)
       (PathHomotopyUniversalCover.pathClass y)
 
-@[simp]
-theorem coverDev_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverDev
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.terminalValue p :=
-  rfl
 
-@[simp]
-theorem coverCenter_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverCenter
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      (C.chainAlong p).terminalCenter :=
-  rfl
 
-@[simp]
-theorem coverMobius_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverMobius
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      (C.chainAlong p).terminalMobius :=
-  rfl
 
-@[simp]
-theorem coverNeighborhood_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.coverNeighborhood
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.neighborhoodAlong p :=
-  rfl
 
 /--
 Finite-chain terminal continuation data descend directly to path-class
@@ -1665,15 +1429,6 @@ def toPathClassAnalyticContinuationData
                   PathHomotopyUniversalCover X x₀)
                 p' hy' rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem toPathClassAnalyticContinuationData_valueAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathClassAnalyticContinuationData.valueAt x
-        (Path.Homotopic.Quotient.mk p) =
-      C.terminalValue p :=
-  rfl
 
 /--
 Finite-chain terminal continuation data give sheetwise continuation data
@@ -1684,114 +1439,17 @@ def toCanonicalCoverLocalContinuationData
     CanonicalCoverLocalContinuationData x₀ g localModels :=
   C.toPathClassAnalyticContinuationData.toCanonicalCoverLocalContinuationData
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_dev
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.dev = C.coverDev :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_centerAt
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.centerAt = C.coverCenter :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_mobiusAt
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.mobiusAt = C.coverMobius :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_neighborhoodAt
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels) :
-    C.toCanonicalCoverLocalContinuationData.neighborhoodAt = C.coverNeighborhood :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_dev_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.dev
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.terminalValue p :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_centerAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.centerAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      (C.chainAlong p).terminalCenter :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_mobiusAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.mobiusAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      (C.chainAlong p).terminalMobius :=
-  rfl
 
-@[simp]
-theorem toCanonicalCoverLocalContinuationData_neighborhoodAt_mk
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toCanonicalCoverLocalContinuationData.neighborhoodAt
-        (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-          PathHomotopyUniversalCover X x₀) =
-      C.neighborhoodAlong p :=
-  rfl
 
-/-- The finite-chain cover sheet attached to a point is open. -/
-theorem isOpen_coverNeighborhood
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    IsOpen (C.coverNeighborhood y) := by
-  simpa [coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.isOpen_neighborhoodAt y
 
-/-- A cover point lies in the finite-chain terminal sheet it determines. -/
-theorem mem_coverNeighborhood
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y : (canonicalContinuationCover x₀).total) :
-    y ∈ C.coverNeighborhood y := by
-  simpa [coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.mem_neighborhoodAt y
 
-/--
-Every point of a finite-chain terminal sheet projects into the terminal local
-model domain attached to the sheet.
--/
-theorem endpoint_mem_coverCenter_domain
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y y' : (canonicalContinuationCover x₀).total)
-    (hy' : y' ∈ C.coverNeighborhood y) :
-    PathHomotopyUniversalCover.endpoint y' ∈
-      (localModels.chartAt (C.coverCenter y)).domain := by
-  simpa [coverCenter, coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.projection_mem_model_domain y y' hy'
 
-/--
-On a finite-chain terminal sheet, the canonical-cover value is exactly the
-terminal local model of that sheet, postcomposed by its terminal real Mobius
-representative.
--/
-theorem coverDev_eq_on_coverNeighborhood
-    (C : PathChainTerminalBranchAnalyticContinuationData x₀ g localModels)
-    (y y' : (canonicalContinuationCover x₀).total)
-    (hy' : y' ∈ C.coverNeighborhood y) :
-    C.coverDev y' =
-      realMobiusRepresentativeAction (C.coverMobius y)
-        ((localModels.chartAt (C.coverCenter y)).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y')) := by
-  simpa [coverDev, coverCenter, coverMobius, coverNeighborhood] using
-    C.toCanonicalCoverLocalContinuationData.dev_eq_on_neighborhood y y' hy'
 
 end PathChainTerminalBranchAnalyticContinuationData
 
@@ -1839,15 +1497,6 @@ def toPathClassAnalyticContinuationData
                   PathHomotopyUniversalCover X x₀)
                 p' hy' rfl
 
-omit [RiemannSurface X] in
-@[simp]
-theorem toPathClassAnalyticContinuationData_valueAt_mk
-    (C : PathAnalyticContinuationData x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathClassAnalyticContinuationData.valueAt x
-        (Path.Homotopic.Quotient.mk p) =
-      C.valueAlong p :=
-  rfl
 
 end PathAnalyticContinuationData
 

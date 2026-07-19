@@ -64,8 +64,22 @@ noncomputable def openWithinOpenDiffeomorph
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- Mayer--Vietoris removes one annularly attached open piece from a nested
-open ambient manifold while preserving vanishing first cohomology. -/
+/--
+%%handwave
+name:
+  One nested annular removal preserves vanishing first cohomology
+statement:
+  Let \(L,N\subseteq R\) be open subsets covering \(R\), with
+  \(L\cap N\cong S^1\times\mathbb R\).  If
+  \(H^1_{\mathrm{dR}}(R;\mathbb R)=0\) and
+  \(H^1_{\mathrm{dR}}(L;\mathbb R)\ne0\), then
+  \(H^1_{\mathrm{dR}}(N;\mathbb R)=0\).
+proof:
+  Regard \(L\) and \(N\) as open submanifolds of \(R\) and apply the
+  annular Mayer--Vietoris reduction.  Canonical diffeomorphisms identify
+  their cohomology with that of the original open subsets of the ambient
+  surface.
+-/
 theorem subsingleton_deRhamH1_of_nested_annular_removal
     (R L N : TopologicalSpace.Opens X)
     (hLR : L ≤ R) (hNR : N ≤ R)
@@ -110,8 +124,20 @@ theorem subsingleton_deRhamH1_of_nested_annular_removal
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- A finite sequence of annular removals preserves vanishing first de Rham
-cohomology. -/
+/--
+%%handwave
+name:
+  Vanishing first cohomology along a sequence of annular removals
+statement:
+  Let \(R_0\supseteq R_1\supseteq\cdots\) be open sets such that each
+  \(R_n\) is covered by \(L_n\) and \(R_{n+1}\), their overlap is an annular
+  cylinder, and \(H^1_{\mathrm{dR}}(L_n;\mathbb R)\ne0\).  If
+  \(H^1_{\mathrm{dR}}(R_0;\mathbb R)=0\), then
+  \(H^1_{\mathrm{dR}}(R_n;\mathbb R)=0\) for every \(n\).
+proof:
+  Induct on \(n\), applying the one-step annular Mayer--Vietoris removal at
+  each successor.
+-/
 theorem subsingleton_deRhamH1_of_finite_nested_annular_removals
     (R L : ℕ → TopologicalSpace.Opens X)
     (hnext : ∀ n : ℕ, R (n + 1) ≤ R n)
@@ -200,8 +226,21 @@ theorem subsingleton_deRhamH1_of_bounded_nested_annular_removals
             (phi n hnm) (v n) (ih (Nat.le_of_lt hnm)) (hleft n hnm)
   exact haux m le_rfl
 
-/-- Distinct components of the complement of a smooth-domain closure have
-disjoint closures. -/
+/--
+%%handwave
+name:
+  Complementary components with meeting closures coincide
+statement:
+  Let \(D\) be a smooth boundary domain.  If two connected components
+  \(V,Z\) of \(X\setminus\overline D\) have
+  \(\overline V\cap\overline Z\ne\varnothing\), then \(V=Z\).
+proof:
+  If a meeting point lies in either open component, the components intersect
+  and hence coincide.  Otherwise it lies on both frontiers and therefore on
+  the smooth boundary of \(D\).  Local uniqueness of the complementary
+  component incident to a boundary interval then again identifies \(V\) and
+  \(Z\).
+-/
 theorem smoothBoundaryDomain_complement_components_eq_of_closures_meet
     (D : SmoothBoundaryDomain X)
     (V Z : Set X)
@@ -260,8 +299,20 @@ theorem smoothBoundaryDomain_complement_components_eq_of_closures_meet
     Set.mem_singleton_iff.mp (hunique hZmem)
   exact congrArg Subtype.val (hVV0.trans hZV0.symm)
 
-/-- The domain is disjoint from the closure of every component of the
-complement of its closure. -/
+/--
+%%handwave
+name:
+  A smooth domain misses the closure of every complementary component
+statement:
+  If \(Z\) is a connected component of
+  \(X\setminus\overline D\), then
+  \(D\cap\overline Z=\varnothing\).
+proof:
+  If a point of the open set \(D\) lay in \(\overline Z\), every
+  neighborhood of it, in particular \(D\), would meet \(Z\).  Such a point
+  would belong both to \(D\) and to the complement of \(\overline D\), a
+  contradiction.
+-/
 theorem smoothBoundaryDomain_carrier_disjoint_complement_component_closure
     (D : SmoothBoundaryDomain X)
     (Z : Set X) (hZ : IsComponentOf Z (closure D.carrier)ᶜ) :
@@ -272,8 +323,22 @@ theorem smoothBoundaryDomain_carrier_disjoint_complement_component_closure
     ⟨y, hyD, hyZ⟩
   exact hZ.subset hyZ (subset_closure hyD)
 
-/-- A side-preserving full collar lies in the domain together with the
-closure of its incident complementary component. -/
+/--
+%%handwave
+name:
+  A side-preserving collar lies in the domain and incident component closure
+statement:
+  Let \(W\cong S^1\times\mathbb R\) be a side-preserving collar, with
+  \(t<0\) in \(D\) and \(t>0\) in the complementary component \(V\).
+  Then
+  \[
+    W\subseteq D\cup\overline V.
+  \]
+proof:
+  Split according to the sign of the collar coordinate.  Negative points lie
+  in \(D\), positive points lie in \(V\), and zero-slice points are limits of
+  the positive side and hence lie in \(\overline V\).
+-/
 theorem sidePreservingAnnularCollar_subset_carrier_union_componentClosure
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -303,8 +368,19 @@ theorem sidePreservingAnnularCollar_subset_carrier_union_componentClosure
       D W phi hexteriorSide V hV p hpW hpV
         ⟨hxW, (hexteriorSide y).mpr hpos⟩
 
-/-- A collar-component union is disjoint from the closure of every other
-complementary component. -/
+/--
+%%handwave
+name:
+  An exterior collar-component union misses every other component closure
+statement:
+  Let \(V\ne Z\) be complementary components of a smooth boundary domain,
+  and let \(W\) be a side-preserving collar incident to \(V\).  Then
+  \((W\cup V)\cap\overline Z=\varnothing\).
+proof:
+  The collar-component union lies in \(D\cup\overline V\).  The domain is
+  disjoint from \(\overline Z\), while an intersection of
+  \(\overline V\) and \(\overline Z\) would force \(V=Z\).
+-/
 theorem exteriorComponentCollarUnion_disjoint_componentClosure_of_ne
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -352,8 +428,21 @@ structure ComplementComponentCollarData
   exterior_side :
     ∀ y : W, ((y : X) ∉ closure D.carrier ↔ 0 < (phi y).2)
 
-/-- Every complementary component has side-preserving annular-collar data
-when ambient first cohomology vanishes. -/
+/--
+%%handwave
+name:
+  Existence of side-preserving collar data for a complementary component
+statement:
+  Let \(X\) be a noncompact Riemann surface with vanishing first de Rham
+  cohomology, and let \(D\) be a preconnected smooth relatively compact
+  domain.  Every component \(V\) of \(X\setminus\overline D\) admits a full
+  annular collar whose negative side is in \(D\), whose positive side is
+  outside \(\overline D\), and which contains the frontier of \(V\).
+proof:
+  Apply the side-preserving annular-collar theorem for complementary
+  components and package the boundary point, collar, chart, incidence, and
+  side conditions into the stated data.
+-/
 theorem complementComponentCollarData_nonempty
     [Subsingleton
       (DeRhamCohomology
@@ -397,7 +486,18 @@ noncomputable def annularAngularClosedForm (v : Circle) :
       (M := Circle × ℝ) (A := ℝ) 1 :=
   (annularAngularConnectingData v).glued
 
-/-- The chosen angular form represents the standard nonzero annular class. -/
+/--
+%%handwave
+name:
+  Cohomology class of the chosen angular form
+statement:
+  The closed one-form obtained by gluing the Mayer--Vietoris local
+  primitives represents the connecting class of the locally constant step
+  function on the overlap of the two punctured-cylinder charts.
+proof:
+  This is the defining property of the partition-of-unity construction of
+  the Mayer--Vietoris connecting form.
+-/
 theorem annularAngularClosedForm_class (v : Circle) :
     (DeRhamExactClosedForms (I := AnnularCylinderModel)
       (M := Circle × ℝ) (A := ℝ) 1).mkQ
@@ -459,6 +559,17 @@ noncomputable def annularPunctureAffineSimplex (v : Circle)
         ⟨fun q ↦ F q, hF.continuous.comp continuous_subtype_val⟩
       contMDiff := ⟨F, hF.contMDiffOn, fun _ ↦ rfl⟩ }
 
+/--
+%%handwave
+name:
+  Terminal face of the affine punctured-cylinder path
+statement:
+  For the affine one-simplex joining \(a\) to \(b\) in a global chart of a
+  punctured cylinder, its zeroth face is \(b\).
+proof:
+  The zeroth face of the standard one-simplex has barycentric coordinates
+  \((0,1)\), so the affine combination is \(b\).
+-/
 @[simp]
 theorem annularPunctureAffineSimplex_face_zero_apply (v : Circle)
     (a b : annularPunctureOpen v) (q : StandardSimplex 0) :
@@ -479,6 +590,17 @@ theorem annularPunctureAffineSimplex_face_zero_apply (v : Circle)
       exact simplexAmbientMap_succAbove_apply_succAbove 0 q 0]
   simp [hq]
 
+/--
+%%handwave
+name:
+  Initial face of the affine punctured-cylinder path
+statement:
+  For the affine one-simplex joining \(a\) to \(b\) in a global chart of a
+  punctured cylinder, its first face is \(a\).
+proof:
+  The first face has barycentric coordinates \((1,0)\), so the affine
+  combination reduces to \(a\).
+-/
 @[simp]
 theorem annularPunctureAffineSimplex_face_one_apply (v : Circle)
     (a b : annularPunctureOpen v) (q : StandardSimplex 0) :
@@ -555,6 +677,17 @@ noncomputable def annularNegativeSimplexOfPuncture (v : Circle)
   sigma.postcompose (I := AnnularCylinderModel)
     (annularPunctureToNegativeMap v)
 
+/--
+%%handwave
+name:
+  Value of a squeezed punctured-cylinder simplex
+statement:
+  Squeezing a simplex \(\sigma\) toward the negative end sends
+  \(\sigma(q)=(z,t)\) to \((z,-e^t)\).
+proof:
+  This is the pointwise definition of postcomposition by the negative
+  squeeze map.
+-/
 @[simp]
 theorem annularPunctureSqueezedSimplex_apply (v : Circle)
     (sigma : ContMDiffSingularSimplex
@@ -565,6 +698,17 @@ theorem annularPunctureSqueezedSimplex_apply (v : Circle)
       ((sigma q : Circle × ℝ).1, -Real.exp (sigma q : Circle × ℝ).2) :=
   rfl
 
+/--
+%%handwave
+name:
+  Value of the negative-half simplex associated to a punctured simplex
+statement:
+  Viewing the negatively squeezed simplex in the negative half-cylinder
+  sends \(\sigma(q)=(z,t)\) to \((z,-e^t)\).
+proof:
+  This is the definition of the postcomposition map into the negative
+  half-cylinder.
+-/
 @[simp]
 theorem annularNegativeSimplexOfPuncture_apply (v : Circle)
     (sigma : ContMDiffSingularSimplex
@@ -575,8 +719,19 @@ theorem annularNegativeSimplexOfPuncture_apply (v : Circle)
       ((sigma q : Circle × ℝ).1, -Real.exp (sigma q : Circle × ℝ).2) :=
   rfl
 
-/-- Pointwise form of the defining difference between the two local
-primitives of the angular connecting form. -/
+/--
+%%handwave
+name:
+  Difference of the two angular local primitives
+statement:
+  On the double-puncture overlap, the value of the first local primitive
+  minus the value of the second is the locally constant overlap step
+  function.
+proof:
+  Evaluate the Mayer--Vietoris lift-difference identity at the point.  For
+  zero-forms, restriction merely evaluates the same scalar at the included
+  point, yielding the stated pointwise formula.
+-/
 theorem annularAngularLift_difference_apply (v : Circle)
     (x : annularDoublePunctureOpen v) :
     (annularAngularConnectingData v).lift.1.toFun
@@ -644,8 +799,19 @@ theorem annularAngularLift_difference_apply (v : Circle)
   rw [hleft, hright] at h
   exact h
 
-/-- On the first punctured chart, the angular form integrates as the endpoint
-difference of the first local primitive. -/
+/--
+%%handwave
+name:
+  Integral of the angular form on a squeezed path in the first chart
+statement:
+  On the first punctured-cylinder chart, the integral of the chosen angular
+  form along a negatively squeezed path equals the value of the first local
+  primitive at the terminal face minus its value at the initial face.
+proof:
+  The glued angular form restricts on this chart to the exterior derivative
+  of the first primitive.  Apply the fundamental theorem for the integral of
+  an exact one-form over a smooth one-simplex.
+-/
 theorem integrate_annularAngularClosedForm_left_squeezed (v : Circle)
     (sigma : ContMDiffSingularSimplex
       (I := AnnularCylinderModel) (M := annularPunctureOpen v) 1 ∞) :
@@ -675,8 +841,19 @@ theorem integrate_annularAngularClosedForm_left_squeezed (v : Circle)
     (I := AnnularCylinderModel) (annularAngularConnectingData v).lift.1
       (annularPunctureSqueezedSimplex v sigma)
 
-/-- On the second punctured chart, the angular form integrates as the endpoint
-difference of the second local primitive. -/
+/--
+%%handwave
+name:
+  Integral of the angular form on a squeezed path in the second chart
+statement:
+  On the opposite punctured-cylinder chart, the integral of the chosen
+  angular form along a negatively squeezed path is the endpoint difference
+  of the second local primitive.
+proof:
+  The glued angular form restricts here to the derivative of the second
+  primitive.  The integral of this exact one-form over the simplex is its
+  terminal value minus its initial value.
+-/
 theorem integrate_annularAngularClosedForm_right_squeezed (v : Circle)
     (sigma : ContMDiffSingularSimplex
       (I := AnnularCylinderModel)
@@ -726,6 +903,17 @@ noncomputable def annularOverlapNegativeSqueeze (v : Circle)
       ((mem_annularPunctureOpen_iff (annularOpposite v)
         (x : Circle × ℝ)).mp x.2.2)⟩
 
+/--
+%%handwave
+name:
+  Compatibility of negative squeezing with the first overlap inclusion
+statement:
+  Including a negatively squeezed overlap point into the first punctured
+  cylinder equals first including the point and then applying the negative
+  squeeze there.
+proof:
+  Both maps have the same underlying cylinder point \((z,t)\mapsto(z,-e^t)\).
+-/
 @[simp]
 theorem annularOverlapNegativeSqueeze_inclusion_left (v : Circle)
     (x : annularDoublePunctureOpen v) :
@@ -736,6 +924,16 @@ theorem annularOverlapNegativeSqueeze_inclusion_left (v : Circle)
   apply Subtype.ext
   rfl
 
+/--
+%%handwave
+name:
+  Compatibility of negative squeezing with the second overlap inclusion
+statement:
+  Including a negatively squeezed overlap point into the opposite punctured
+  cylinder equals including first and then applying its negative squeeze.
+proof:
+  Both constructions send \((z,t)\) to the same point \((z,-e^t)\).
+-/
 @[simp]
 theorem annularOverlapNegativeSqueeze_inclusion_right (v : Circle)
     (x : annularDoublePunctureOpen v) :
@@ -746,6 +944,19 @@ theorem annularOverlapNegativeSqueeze_inclusion_right (v : Circle)
   apply Subtype.ext
   rfl
 
+/--
+%%handwave
+name:
+  The overlap step remains one after squeezing the positive angular component
+statement:
+  If a point lies in the positive connected component of the double-puncture
+  overlap, then its negative radial squeeze still lies in that component and
+  the overlap step function has value \(1\) there.
+proof:
+  The squeeze changes only the radial coordinate, so it preserves the angular
+  component.  The step function is defined to be one on the positive
+  component.
+-/
 theorem annularOverlapStepFunction_negativeSqueeze_positive (v : Circle)
     (x : annularPositiveComponent v) :
     annularOverlapStepFunction v
@@ -767,6 +978,18 @@ theorem annularOverlapStepFunction_negativeSqueeze_positive (v : Circle)
     (annularOverlapNegativeSqueeze v xOverlap) = 1
   simp [annularOverlapStepFunction, hpos]
 
+/--
+%%handwave
+name:
+  The overlap step remains zero after squeezing the negative angular component
+statement:
+  If a point lies in the negative connected component of the double-puncture
+  overlap, then its negative radial squeeze has overlap step value \(0\).
+proof:
+  Radial squeezing preserves the angular component, hence preserves the
+  negative component.  The two angular components are disjoint, so the
+  squeezed point is not in the positive component where the step equals one.
+-/
 theorem annularOverlapStepFunction_negativeSqueeze_negative (v : Circle)
     (x : annularNegativeComponent v) :
     annularOverlapStepFunction v
@@ -795,8 +1018,24 @@ theorem annularOverlapStepFunction_negativeSqueeze_negative (v : Circle)
     (annularOverlapNegativeSqueeze v xOverlap) = 0
   simp [annularOverlapStepFunction, hnot]
 
-/-- The chosen angular connecting form has period `-1` on a smooth cycle
-contained entirely in the negative half-cylinder. -/
+/--
+%%handwave
+name:
+  A negative annular cycle with angular period minus one
+statement:
+  For every deleted direction \(v\in S^1\), there is a smooth one-cycle
+  \(c\) contained in \(S^1\times(-\infty,0)\) such that the chosen angular
+  form satisfies
+  \[
+    \partial c=0,\qquad \int_c\omega_v=-1.
+  \]
+proof:
+  Join a point of the positive overlap component to a point of the negative
+  component in the first punctured chart, return in the second chart, and
+  squeeze both paths into the negative half-cylinder.  Their endpoints
+  cancel.  The two exact-chart integrals telescope to the difference of the
+  overlap step values, namely \(0-1=-1\).
+-/
 theorem exists_negativeAnnularCycle_angular_period_eq_neg_one (v : Circle) :
     ∃ c : SingularChain (I := AnnularCylinderModel)
         (M := negativeAnnularCylinderOpen) 1 ∞,
@@ -1021,6 +1260,18 @@ one onward. -/
 def annularExteriorCutoff (t : ℝ) : ℝ :=
   1 - Real.smoothTransition (2 * t - 1)
 
+/--
+%%handwave
+name:
+  Smoothness of the exterior cutoff
+statement:
+  The function \(\rho(t)=1-\sigma(2t-1)\), where \(\sigma\) is the standard
+  smooth transition function, is smooth on \(\mathbb R\).
+proof:
+  Smoothness follows by composition of the smooth transition function with
+  the affine map \(t\mapsto2t-1\), followed by subtraction from the constant
+  function one.
+-/
 @[fun_prop]
 theorem contDiff_annularExteriorCutoff :
     ContDiff ℝ ∞ annularExteriorCutoff := by
@@ -1028,6 +1279,16 @@ theorem contDiff_annularExteriorCutoff :
     (Real.smoothTransition.contDiff.comp
       (contDiff_const.mul contDiff_id |>.sub contDiff_const))
 
+/--
+%%handwave
+name:
+  The exterior cutoff equals one before the midpoint
+statement:
+  If \(t\le\tfrac12\), then \(\rho(t)=1\).
+proof:
+  In this range \(2t-1\le0\), so the standard smooth transition function
+  vanishes.
+-/
 @[simp]
 theorem annularExteriorCutoff_eq_one_of_le_half {t : ℝ}
     (ht : t ≤ 1 / 2) :
@@ -1036,11 +1297,29 @@ theorem annularExteriorCutoff_eq_one_of_le_half {t : ℝ}
   apply Real.smoothTransition.zero_of_nonpos
   linarith
 
+/--
+%%handwave
+name:
+  The exterior cutoff equals one on the nonpositive half-line
+statement:
+  If \(t\le0\), then \(\rho(t)=1\).
+proof:
+  This is the preceding midpoint identity, since \(t\le0\le\tfrac12\).
+-/
 @[simp]
 theorem annularExteriorCutoff_eq_one_of_nonpos {t : ℝ} (ht : t ≤ 0) :
     annularExteriorCutoff t = 1 := by
   exact annularExteriorCutoff_eq_one_of_le_half (ht.trans (by norm_num))
 
+/--
+%%handwave
+name:
+  The exterior cutoff vanishes after one
+statement:
+  If \(t\ge1\), then \(\rho(t)=0\).
+proof:
+  Here \(2t-1\ge1\), so the standard smooth transition function equals one.
+-/
 @[simp]
 theorem annularExteriorCutoff_eq_zero_of_one_le {t : ℝ} (ht : 1 ≤ t) :
     annularExteriorCutoff t = 0 := by
@@ -1055,6 +1334,17 @@ noncomputable def annularExteriorCutoffFunction :
   val := fun p ↦ annularExteriorCutoff p.2
   property := contDiff_annularExteriorCutoff.contMDiff.comp contMDiff_snd
 
+/--
+%%handwave
+name:
+  Value of the cylindrical exterior cutoff
+statement:
+  At \((z,t)\in S^1\times\mathbb R\), the cylindrical cutoff function has
+  value \(\rho(t)\).
+proof:
+  This is its definition as the pullback of \(\rho\) along the second
+  projection.
+-/
 @[simp]
 theorem annularExteriorCutoffFunction_apply (p : Circle × ℝ) :
     annularExteriorCutoffFunction p = annularExteriorCutoff p.2 :=
@@ -1071,12 +1361,33 @@ angular form. -/
 def annularCutoffAngularCore : Set (Circle × ℝ) :=
   (univ : Set Circle) ×ˢ Icc (1 / 2 : ℝ) 1
 
+/--
+%%handwave
+name:
+  Compactness of the angular cutoff defect band
+statement:
+  The cylinder band \(S^1\times[\tfrac12,1]\), containing the derivative of
+  the cutoff, is compact.
+proof:
+  It is the product of the compact circle with a compact interval.
+-/
 theorem annularCutoffAngularCore_isCompact :
     IsCompact annularCutoffAngularCore := by
   exact isCompact_univ.prod isCompact_Icc
 
-/-- Outside the compact transition band, the cutoff angular form is locally
-either the original closed form or zero, so its derivative vanishes. -/
+/--
+%%handwave
+name:
+  The cutoff angular form is closed outside its transition band
+statement:
+  For the one-form \(\rho(t)\,d\theta\) on
+  \(S^1\times\mathbb R\), its exterior derivative vanishes at every point
+  outside \(S^1\times[\tfrac12,1]\).
+proof:
+  Below \(t=\tfrac12\), the cutoff is locally one and the form is the closed
+  angular form.  Above \(t=1\), it is locally zero.  Locality of the exterior
+  derivative gives the result in both cases.
+-/
 theorem annularCutoffAngularOneForm_derivative_eq_zero_of_not_mem_core
     (v : Circle) (p : Circle × ℝ) (hp : p ∉ annularCutoffAngularCore) :
     (deRhamDifferential (I := AnnularCylinderModel)
@@ -1116,8 +1427,16 @@ theorem annularCutoffAngularOneForm_derivative_eq_zero_of_not_mem_core
             (M := Circle × ℝ) ℝ 1) = 0 := LinearMap.map_zero _
     exact congrArg (fun omega ↦ omega.toFun p) hzero
 
-/-- On the nonpositive half-cylinder the cutoff form is exactly the chosen
-closed angular representative. -/
+/--
+%%handwave
+name:
+  The cutoff angular form equals the angular form on the negative side
+statement:
+  If \((z,t)\in S^1\times\mathbb R\) with \(t\le0\), then the cutoff angular
+  form \(\rho(t)\,d\theta\) equals \(d\theta\) at \((z,t)\).
+proof:
+  The cutoff satisfies \(\rho(t)=1\) on the nonpositive half-line.
+-/
 theorem annularCutoffAngularOneForm_eq_angular_of_nonpos
     (v : Circle) (p : Circle × ℝ) (hp : p.2 ≤ 0) :
     (annularCutoffAngularOneForm v).toFun p =
@@ -1145,6 +1464,17 @@ def exteriorCutoffAngularDefectCore
   (fun q : Circle × ℝ ↦ ((phi.symm q : W) : X)) ''
     annularCutoffAngularCore
 
+/--
+%%handwave
+name:
+  Compactness of the transported cutoff defect band
+statement:
+  The image in a full annular collar of
+  \(S^1\times[\tfrac12,1]\) is a compact subset of the ambient surface.
+proof:
+  It is the continuous image of the compact cylindrical band under the
+  inverse collar chart followed by inclusion into the surface.
+-/
 theorem exteriorCutoffAngularDefectCore_isCompact
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1152,6 +1482,17 @@ theorem exteriorCutoffAngularDefectCore_isCompact
   exact annularCutoffAngularCore_isCompact.image
     (continuous_subtype_val.comp phi.symm.continuous)
 
+/--
+%%handwave
+name:
+  The transported defect band lies in the collar
+statement:
+  The ambient image of the cylindrical transition band is contained in the
+  full annular collar.
+proof:
+  Each point is the ambient image of a point obtained from the inverse collar
+  chart.
+-/
 theorem exteriorCutoffAngularDefectCore_subset_collar
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1159,8 +1500,19 @@ theorem exteriorCutoffAngularDefectCore_subset_collar
   rintro _ ⟨q, _hq, rfl⟩
   exact (phi.symm q).2
 
-/-- The compact defect band lies strictly on the exterior side of a
-side-preserving collar. -/
+/--
+%%handwave
+name:
+  The cutoff defect band lies in the incident exterior component
+statement:
+  Suppose a full annular collar meets a complementary component \(V\) on its
+  positive side at a common boundary point.  Then the transported band
+  corresponding to \(\tfrac12\le t\le1\) is contained in \(V\).
+proof:
+  Every point of the band has strictly positive collar coordinate, hence lies
+  outside the closed domain.  The collar-side connectedness theorem places
+  the entire positive side in the component \(V\).
+-/
 theorem exteriorCutoffAngularDefectCore_subset_component
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1179,8 +1531,19 @@ theorem exteriorCutoffAngularDefectCore_subset_component
   rw [phi.apply_symm_apply]
   exact lt_of_lt_of_le (by norm_num) hq.2.1
 
-/-- The derivative of the transported cutoff form vanishes away from the
-ambient compact defect band. -/
+/--
+%%handwave
+name:
+  The transported cutoff form is closed outside the defect band
+statement:
+  The exterior derivative of the cutoff angular form pulled back to a full
+  annular collar vanishes at every collar point outside the transported
+  transition band.
+proof:
+  Such a point maps outside the cylindrical transition band.  Exterior
+  differentiation commutes with pullback by the collar diffeomorphism, and
+  the cylindrical cutoff form is closed there.
+-/
 theorem exteriorCutoffAngularCollarOneForm_derivative_eq_zero_outside
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -1214,6 +1577,16 @@ zero slice; that is what makes zero-gluing across the exterior side possible. -/
 def annularCutoffAngularSupportCore : Set (Circle × ℝ) :=
   (univ : Set Circle) ×ˢ Icc (0 : ℝ) 1
 
+/--
+%%handwave
+name:
+  Compactness of the angular cutoff support band
+statement:
+  The wider cylinder band \(S^1\times[0,1]\), containing the nonnegative
+  part of the cutoff angular form, is compact.
+proof:
+  It is a product of the compact circle and a compact interval.
+-/
 theorem annularCutoffAngularSupportCore_isCompact :
     IsCompact annularCutoffAngularSupportCore := by
   exact isCompact_univ.prod isCompact_Icc
@@ -1226,6 +1599,17 @@ def exteriorCutoffAngularSupportCore
   (fun q : Circle × ℝ ↦ ((phi.symm q : W) : X)) ''
     annularCutoffAngularSupportCore
 
+/--
+%%handwave
+name:
+  Compactness of the transported cutoff support band
+statement:
+  The image of \(S^1\times[0,1]\) in a full annular collar is compact in the
+  ambient surface.
+proof:
+  It is the continuous image of a compact set under the inverse collar chart
+  followed by inclusion.
+-/
 theorem exteriorCutoffAngularSupportCore_isCompact
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1241,8 +1625,19 @@ def exteriorCutoffAngularSupportExteriorOpen
   ⟨(exteriorCutoffAngularSupportCore W phi)ᶜ,
     (exteriorCutoffAngularSupportCore_isCompact W phi).isClosed.isOpen_compl⟩
 
-/-- On the exterior side of a side-preserving collar, the cutoff angular form
-vanishes once one leaves the wider compact band. -/
+/--
+%%handwave
+name:
+  Vanishing of the cutoff angular form in the far exterior
+statement:
+  Let an annular collar meet a complementary component on its positive side.
+  At a collar point belonging to that component but lying outside the wider
+  cutoff band, the pulled-back cutoff angular one-form vanishes.
+proof:
+  The component condition makes the radial collar coordinate positive.
+  Being outside the band \(0\le t\le1\) then forces \(t\ge1\), where the
+  cutoff function is zero.
+-/
 theorem exteriorCutoffAngularCollarOneForm_eq_zero_of_component_and_supportExterior
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1281,6 +1676,17 @@ private def twoOpenUnionFamily (U V : TopologicalSpace.Opens X) :
   | false => U
   | true => V
 
+/--
+%%handwave
+name:
+  Supremum of a two-open family
+statement:
+  The supremum of the family indexed by two truth values and taking the
+  values \(U\) and \(V\) is the open union \(U\cup V\).
+proof:
+  Membership in the supremum means membership in one of the two indexed
+  opens, which is exactly membership in their union.
+-/
 private theorem iSup_twoOpenUnionFamily
     (U V : TopologicalSpace.Opens X) :
     iSup (twoOpenUnionFamily U V) = U ⊔ V := by
@@ -1307,6 +1713,19 @@ def opensDiffeomorphOfMutualLE
   contMDiff_toFun := contMDiff_inclusion hUV
   contMDiff_invFun := contMDiff_inclusion hVU
 
+/--
+%%handwave
+name:
+  Derivative of a composite of open inclusions
+statement:
+  For open subsets \(W\subseteq U\subseteq V\), the derivative of the
+  inclusion \(U\hookrightarrow V\), composed with that of
+  \(W\hookrightarrow U\), equals the derivative of the direct inclusion
+  \(W\hookrightarrow V\).
+proof:
+  This is the chain rule, since the composite inclusion is definitionally the
+  direct inclusion.
+-/
 private theorem mfderiv_opens_inclusion_comp_inclusion_eq
     (W U V : TopologicalSpace.Opens X) (hWU : W ≤ U) (hUV : U ≤ V)
     (x : W) :
@@ -1330,9 +1749,21 @@ private theorem mfderiv_opens_inclusion_comp_inclusion_eq
       (TopologicalSpace.Opens.inclusion (hWU.trans hUV)) x = _ at h
   exact h.symm
 
-/-- Restricting a form pulled back from a side-preserving annular collar to
-the domain side is the same as first restricting the annular form to the
-negative half-cylinder and then pulling it back. -/
+/--
+%%handwave
+name:
+  Restriction of an annular pullback to the domain half-collar
+statement:
+  In a side-preserving collar, restricting the pullback of a smooth annular
+  form to the part lying inside the domain agrees with first restricting the
+  form to \(S^1\times(-\infty,0)\) and then pulling it back by the restricted
+  collar chart.
+proof:
+  Both constructions evaluate the annular form at the same cylinder point.
+  The chain rule identifies the derivative of the full collar chart followed
+  by inclusion with that of the restricted chart followed by half-cylinder
+  inclusion.
+-/
 theorem restrict_annularPullback_domain_eq_pullback_negative
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1407,8 +1838,19 @@ theorem restrict_annularPullback_domain_eq_pullback_negative
   rw [hxcoord, hderiv]
   rfl
 
-/-- On the domain side of a side-preserving collar, the cutoff angular form
-is the pullback of the angular form restricted to the negative half-cylinder. -/
+/--
+%%handwave
+name:
+  The cutoff form restricts to the angular form on the domain half-collar
+statement:
+  On the domain side of a side-preserving annular collar, the cutoff angular
+  one-form equals the pullback of the normalized angular form restricted to
+  the negative half-cylinder.
+proof:
+  Domain points have collar coordinate \(t<0\), where the cutoff is identically
+  one.  The general restriction-pullback identity then identifies the two
+  forms, including their tangent maps.
+-/
 theorem restrict_exteriorCutoffAngularCollarOneForm_domain_eq_pullback_negative
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1493,8 +1935,22 @@ theorem restrict_exteriorCutoffAngularCollarOneForm_domain_eq_pullback_negative
   rw [hform, hxcoord, hderiv]
   rfl
 
-/-- The angular form on the domain half of a side-preserving collar has a
-smooth cycle of period `-1`. -/
+/--
+%%handwave
+name:
+  A side-preserving half-collar has angular period minus one
+statement:
+  Let \(Q\) be the part of a side-preserving annular collar lying inside the
+  domain.  The pullback to \(Q\) of the normalized angular form on the
+  negative half-cylinder has a smooth singular one-cycle \(c\) satisfying
+  \[
+    \partial c=0,\qquad \int_c\omega=-1.
+  \]
+proof:
+  Transport the standard negative annular cycle of angular period \(-1\)
+  through the collar diffeomorphism.  Naturality of the boundary and of
+  integration under diffeomorphisms gives both identities.
+-/
 theorem exists_sidePreservingAnnularCollarDomainCycle_angular_period_eq_neg_one
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1553,6 +2009,20 @@ noncomputable def smoothFormsTransportOpenMutualLE
   smoothFormsPullbackDiffeomorph SurfaceRealModel SurfaceRealModel
     (opensDiffeomorphOfMutualLE V U hVU hUV) n alpha
 
+/--
+%%handwave
+name:
+  Restriction after identifying equal open sets
+statement:
+  Suppose \(U\) and \(V\) are mutually contained open subsets of a manifold,
+  and \(W\subseteq U,V\).  Transporting a smooth differential form from
+  \(U\) to \(V\) through the canonical identification and then restricting
+  to \(W\) agrees with restricting the original form directly from \(U\).
+proof:
+  Evaluate both forms at a point of \(W\).  The two underlying points agree,
+  and the chain rule identifies the composite derivatives of the open-set
+  inclusions.
+-/
 theorem restrictSmoothFormsOfLE_transportOpenMutualLE
     (W U V : TopologicalSpace.Opens X)
     (hWU : W ≤ U) (hWV : W ≤ V) (hUV : U ≤ V) (hVU : V ≤ U)
@@ -1584,6 +2054,20 @@ theorem restrictSmoothFormsOfLE_transportOpenMutualLE
         (TopologicalSpace.Opens.inclusion hWU) x) ∘ w)
   rw [hx, hderivV]
 
+/--
+%%handwave
+name:
+  Gluing a smooth form to zero across two open sets
+statement:
+  Let \(U,V\) be open and let \(\alpha\) be a smooth differential form on
+  \(U\) that vanishes at every point of \(U\cap V\).  There is a smooth form
+  \(\gamma\) on \(U\cup V\) such that
+  \(\gamma|_U=\alpha\) and \(\gamma|_V=0\).
+proof:
+  The forms \(\alpha\) and \(0\) agree on the overlap, so the sheaf gluing
+  theorem produces a form on the supremum of the two opens.  Transport it
+  through the canonical identification of that supremum with \(U\cup V\).
+-/
 private theorem exists_smoothFormsTwoOpenUnionZeroGlue
     (U V : TopologicalSpace.Opens X) {n : ℕ}
     (alpha : SmoothForms (I := SurfaceRealModel) (M := U) ℝ n)
@@ -1638,7 +2122,17 @@ private theorem exists_smoothFormsTwoOpenUnionZeroGlue
       V (iSup F) (U ⊔ V) (le_iSup F true) le_sup_right hsup.le hsup.ge]
     simpa only [F, forms, twoOpenUnionFamily] using hgamma true
 
-/-- The wider cutoff band lies in the full collar. -/
+/--
+%%handwave
+name:
+  The cutoff support band lies in the collar
+statement:
+  The image in the surface of the compact annular band supporting the cutoff
+  angular form is contained in the full collar.
+proof:
+  Every point of the band is, by construction, the image under the inverse
+  collar chart of a cylinder point.
+-/
 theorem exteriorCutoffAngularSupportCore_subset_collar
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1653,8 +2147,21 @@ def exteriorCutoffAngularFarExteriorOpen
     (V : Set X) (hVopen : IsOpen V) : TopologicalSpace.Opens X :=
   ⟨V, hVopen⟩ ⊓ exteriorCutoffAngularSupportExteriorOpen W phi
 
-/-- The collar together with the far part of the exterior component is the
-same open set as the collar together with the whole component. -/
+/--
+%%handwave
+name:
+  The collar and far exterior cover the collar-component union
+statement:
+  If the far exterior is the part of an exterior component outside the
+  cutoff support band, then
+  \[
+    W\cup V_{\mathrm{far}}=W\cup V.
+  \]
+proof:
+  One inclusion is immediate.  For the reverse inclusion, a point of \(V\)
+  is either outside the support band, hence in the far exterior, or inside
+  the band, which is contained in the collar \(W\).
+-/
 theorem collar_sup_farExteriorOpen
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -1672,8 +2179,20 @@ theorem collar_sup_farExteriorOpen
       · exact Or.inl (exteriorCutoffAngularSupportCore_subset_collar W phi hxCore)
       · exact Or.inr ⟨hxV, hxCore⟩
 
-/-- The cutoff angular form on the collar extends smoothly over the incident
-exterior component and is zero sufficiently far out in that component. -/
+/--
+%%handwave
+name:
+  Smooth extension of the cutoff angular form to an exterior component
+statement:
+  Let an annular collar meet a complementary component \(V\) on its positive
+  side.  The cutoff angular one-form on the collar extends to a smooth
+  one-form on \(W\cup V\) which vanishes on the part of \(V\) beyond the
+  cutoff support band.
+proof:
+  On the overlap of the collar with the far exterior, positivity of the
+  collar coordinate forces the cutoff form to vanish.  Glue it there to the
+  zero form and identify the resulting union with \(W\cup V\).
+-/
 theorem exists_exteriorCutoffAngularExtension
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -1717,6 +2236,20 @@ theorem exists_exteriorCutoffAngularExtension
         hUnion.le hUnion.ge]
     exact halphaZ
 
+/--
+%%handwave
+name:
+  Pointwise vanishing detected by restriction
+statement:
+  Let \(W\subseteq V\) be open subsets and let \(\omega\) be a smooth
+  differential form on \(V\).  If its restriction equals a form \(\beta\) on
+  \(W\) and \(\beta_x=0\), then \(\omega_x=0\) at the corresponding point
+  of \(V\).
+proof:
+  Restriction composes the multilinear form with the derivative of the open
+  inclusion.  That derivative is surjective, so vanishing of the composite
+  forces the original multilinear form to vanish.
+-/
 private theorem smoothForms_toFun_eq_zero_of_restriction_eq_local
     (W V : TopologicalSpace.Opens X) (hWV : W ≤ V) {n : ℕ}
     (omega : SmoothForms (I := SurfaceRealModel) (M := V) ℝ n)
@@ -1740,8 +2273,18 @@ private theorem smoothForms_toFun_eq_zero_of_restriction_eq_local
     (mfderiv_opens_inclusion_isInvertible
       (I := SurfaceRealModel) W V hWV x).surjective hpoint
 
-/-- Restricting a smooth form through two nested open subsets agrees with
-direct restriction. -/
+/--
+%%handwave
+name:
+  Transitivity of restriction for smooth forms
+statement:
+  For open subsets \(W\subseteq V\subseteq U\), restricting a smooth
+  differential form directly from \(U\) to \(W\) agrees with first
+  restricting to \(V\) and then to \(W\).
+proof:
+  Evaluate at a point of \(W\) and use the chain rule for the two open-set
+  inclusions.
+-/
 theorem restrictSmoothFormsOfLE_trans
     (W V U : TopologicalSpace.Opens X) (hWV : W ≤ V) (hVU : V ≤ U)
     {n : ℕ} (omega : SmoothForms (I := SurfaceRealModel) (M := U) ℝ n) :
@@ -1769,8 +2312,18 @@ theorem restrictSmoothFormsOfLE_trans
           (TopologicalSpace.Opens.inclusion hWV) x)) ∘ w)
   rw [hx, hderiv]
 
-/-- Restricting a de Rham class through two nested open subsets agrees with
-direct restriction. -/
+/--
+%%handwave
+name:
+  Transitivity of restriction in de Rham cohomology
+statement:
+  For open subsets \(W\subseteq V\subseteq U\), restriction of a de Rham
+  class from \(U\) directly to \(W\) equals the composite of its restrictions
+  from \(U\) to \(V\) and from \(V\) to \(W\).
+proof:
+  Represent the class by a closed form and apply transitivity of restriction
+  for smooth forms before passing to the quotient by exact forms.
+-/
 theorem deRhamCohomologyRestrictionOfLE_trans
     (W V U : TopologicalSpace.Opens X) (hWV : W ≤ V) (hVU : V ≤ U)
     (n : ℕ)
@@ -1790,8 +2343,21 @@ theorem deRhamCohomologyRestrictionOfLE_trans
   apply Subtype.ext
   exact restrictSmoothFormsOfLE_trans W V U hWV hVU omega.1
 
-/-- The derivative of an exterior extension is supported in the compact
-transition band of the collar cutoff. -/
+/--
+%%handwave
+name:
+  The exterior extension is closed outside the cutoff defect band
+statement:
+  Let \(\alpha\) be a smooth extension to \(W\cup V\) of the cutoff angular
+  form on the collar which vanishes far out in \(V\).  Then
+  \(d\alpha=0\) at every point outside the compact transition band of the
+  cutoff.
+proof:
+  The collar and far exterior cover \(W\cup V\).  On the collar, naturality
+  of \(d\) reduces the assertion to the corresponding support statement for
+  the cutoff angular form; on the far exterior, \(\alpha\) restricts to zero,
+  so its derivative does also.
+-/
 theorem deRhamDifferential_exteriorCutoffAngularExtension_eq_zero_outside_defectCore
     (D : SmoothBoundaryDomain X)
     (W : TopologicalSpace.Opens X)
@@ -2175,8 +2741,24 @@ theorem IsExteriorComponent.not_subsingleton_deRhamH1_exteriorComponentCollarUni
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- Removing the closure of one exterior complementary component preserves
-vanishing of first de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Removing one exterior component preserves vanishing first cohomology
+statement:
+  Let \(X\) be a noncompact Riemann surface with
+  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  If \(D\subseteq X\) is a
+  preconnected smooth relatively compact domain and \(V\) is an exterior
+  component of \(X\setminus\overline D\), then
+  \[
+    H^1_{\mathrm{dR}}(X\setminus\overline V;\mathbb R)=0.
+  \]
+proof:
+  Choose an annular collar of the boundary component incident to \(V\).
+  The collar together with \(V\) has nonzero first cohomology, while its
+  overlap with \(X\setminus\overline V\) is an annulus.  The annular
+  Mayer--Vietoris criterion and the vanishing on \(X\) give the result.
+-/
 theorem IsExteriorComponent.subsingleton_deRhamH1_complementComponentClosureOpen
     [Subsingleton
       (DeRhamCohomology
@@ -2221,8 +2803,20 @@ theorem IsExteriorComponent.subsingleton_deRhamH1_complementComponentClosureOpen
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- A smooth domain complementary to the closure of one exterior component
-has vanishing first de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Vanishing first cohomology for the complement of an exterior component
+statement:
+  Let \(D\) be a preconnected smooth relatively compact domain in a
+  noncompact Riemann surface \(X\) with
+  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  If \(V\) is an exterior component
+  of \(X\setminus\overline D\) and \(D=X\setminus\overline V\), then
+  \(H^1_{\mathrm{dR}}(D;\mathbb R)=0\).
+proof:
+  Identify \(D\) with the open complement of \(\overline V\) and apply the
+  preceding exterior-component removal theorem.
+-/
 theorem SmoothBoundaryDomain.deRhamH1Zero_of_exteriorComponent_complement
     [Subsingleton
       (DeRhamCohomology

@@ -135,7 +135,18 @@ def HasTransitionInGroup
   ∀ x ∈ e.source ∩ e'.source,
     Nonempty (TransitionInGroupData G e e' x)
 
-/-- Forget subgroup membership from local transition data. -/
+/--
+%%handwave
+name:
+  Subgroup-valued transitions are local Möbius transitions
+statement:
+  If the transition between projective charts \(e,e'\) is locally represented
+  near every overlap point by a Möbius transformation belonging to a subgroup
+  \(G\le\operatorname{PGL}_2(\mathbb C)\), then \(e,e'\) have local Möbius transitions.
+proof:
+  At each overlap point, retain the chosen Möbius representative and its local
+  transition identity; membership in \(G\) is not needed for the conclusion.
+-/
 theorem hasLocalMobiusTransition_of_hasTransitionInGroup
     {G : Subgroup MobiusGroup} {X : Type} [TopologicalSpace X]
     {e e' : ProjectiveChart X}
@@ -273,6 +284,17 @@ def atlasSet (P : ComplexProjectiveStructure X) : Set (ProjectiveChart X) :=
   letI := P.projectiveChartedSpace
   atlas RiemannSphere X
 
+/--
+%%handwave
+name:
+  Transitions between projective-atlas charts are locally Möbius
+statement:
+  If \(e,e'\) belong to the atlas of a complex projective structure \(P\),
+  then near every point of \(e.source\cap e'.source\) their coordinate change
+  agrees with a Möbius transformation.
+proof:
+  Apply the transition-compatibility field of \(P\) to the two atlas-membership hypotheses.
+-/
 theorem transition_mobius_of_mem (P : ComplexProjectiveStructure X)
     {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet) :
     HasLocalMobiusTransition e e' := by
@@ -298,7 +320,18 @@ noncomputable def localTransitionRepresentative (P : ComplexProjectiveStructure 
     {x : X} → x ∈ e.source ∩ e'.source → MobiusRepresentative :=
   fun hx ↦ (P.localTransitionData he he' hx).representative
 
-/-- The chart transition agrees locally with the chosen Mobius representative. -/
+/--
+%%handwave
+name:
+  Formula for a chosen local projective transition
+statement:
+  Let \(e,e'\) be charts of \(P\), let \(x\) lie in their source overlap, and
+  let \(z\) lie in the coordinate-change domain.  If \(e^{-1}(z)\) lies in the
+  chosen neighborhood of \(x\), then
+  \((e^{-1}\circ e')(z)=A_x\cdot z\), where \(A_x\) is the selected Möbius representative.
+proof:
+  This is exactly the transition equation in the selected local transition data.
+-/
 theorem transition_eq_localTransitionRepresentative (P : ComplexProjectiveStructure X)
     {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet)
     {x : X} (hx : x ∈ e.source ∩ e'.source)
@@ -308,14 +341,30 @@ theorem transition_eq_localTransitionRepresentative (P : ComplexProjectiveStruct
       (P.localTransitionRepresentative he he' hx • z : RiemannSphere) :=
   (P.localTransitionData he he' hx).transition_eq z hz hzx
 
-/-- Each projective chart source in the stored projective atlas is open. -/
+/--
+%%handwave
+name:
+  Sources of projective-atlas charts are open
+statement:
+  If \(e\) belongs to the projective atlas of \(P\), then \(e.source\) is open in \(X\).
+proof:
+  Apply the projective-source openness field of the compatibility data stored in \(P\).
+-/
 theorem chart_source_open_of_mem (P : ComplexProjectiveStructure X)
     {e : ProjectiveChart X} (he : e ∈ P.atlasSet) :
     IsOpen e.source := by
   simpa [atlasSet] using
     P.compatible_with_riemann_surface.projective_source_open e he
 
-/-- Each ambient complex chart source is open. -/
+/--
+%%handwave
+name:
+  Sources of ambient complex charts are open
+statement:
+  If \(e\) belongs to the complex atlas of \(X\), then \(e.source\) is open in \(X\).
+proof:
+  Apply the complex-source openness field of the compatibility data stored in \(P\).
+-/
 theorem complex_chart_source_open_of_mem (P : ComplexProjectiveStructure X)
     {e : OpenPartialHomeomorph X ℂ} (he : e ∈ atlas ℂ X) :
     IsOpen e.source := by
@@ -384,7 +433,16 @@ theorem chart_mdifferentiableAt_of_mem (P : ComplexProjectiveStructure X)
     _ = D.representative⁻¹ •
         (D.finiteCoordinate (C y) : RiemannSphere) := congrArg _ hEq'
 
-/-- Every projective chart is holomorphic throughout its source. -/
+/--
+%%handwave
+name:
+  Projective charts are holomorphic on their sources
+statement:
+  If \(e\) is a chart of a complex projective structure \(P\), then
+  \(e:e.source\to\widehat{\mathbb C}\) is holomorphic at every point of \(e.source\).
+proof:
+  At each \(x\in e.source\), apply [the projective chart is holomorphic at \(x\)](lean:JJMath.ComplexProjectiveStructure.chart_mdifferentiableAt_of_mem) and restrict the resulting pointwise differentiability to the source.
+-/
 theorem chart_mdifferentiableOn_of_mem (P : ComplexProjectiveStructure X)
     {e : ProjectiveChart X} (he : e ∈ P.atlasSet) :
     MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ) e e.source := by
@@ -402,7 +460,17 @@ variable {G : Subgroup MobiusGroup} {X : Type} [TopologicalSpace X]
 def atlasSet (P : ProjectiveStructureWithGroup G X) : Set (ProjectiveChart X) :=
   P.toComplexProjectiveStructure.atlasSet
 
-/-- Coordinate changes in a grouped projective structure lie in the chosen subgroup. -/
+/--
+%%handwave
+name:
+  Projective transitions lie in the prescribed structure group
+statement:
+  Let \(P\) be a projective structure with group
+  \(G\le\operatorname{PGL}_2(\mathbb C)\).  If \(e,e'\) belong to its atlas,
+  then every local transition representative between them has projective class in \(G\).
+proof:
+  Apply the transition-in-group field of \(P\) to the two atlas-membership hypotheses.
+-/
 theorem transition_in_group_of_mem (P : ProjectiveStructureWithGroup G X)
     {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet) :
     HasTransitionInGroup G e e' := by
@@ -413,8 +481,15 @@ theorem transition_in_group_of_mem (P : ProjectiveStructureWithGroup G X)
 end ProjectiveStructureWithGroup
 
 /--
-If two projective charts have disjoint source domains, their transition
-condition is vacuous.
+%%handwave
+name:
+  Disjoint projective charts have a vacuous global Möbius transition
+statement:
+  If \(e.source\cap e'.source=\varnothing\), then the transition from \(e\) to
+  \(e'\) is represented on its empty domain by the identity Möbius transformation.
+proof:
+  Choose the identity representative.  Any point in the transition domain would
+  pull back to a point of \(e.source\cap e'.source\), contradicting disjointness.
 -/
 theorem hasMobiusTransition_of_not_nonempty_source_inter {X : Type} [TopologicalSpace X]
     (e e' : ProjectiveChart X)
@@ -428,7 +503,18 @@ theorem hasMobiusTransition_of_not_nonempty_source_inter {X : Type} [Topological
     simpa using e.symm_mapsTo hz.1
   exact h ⟨e.symm z, hx_source, hz.2⟩
 
-/-- A global Mobius transition gives local transition data at every overlap point. -/
+/--
+%%handwave
+name:
+  A global Möbius transition supplies local transition data
+statement:
+  If one Möbius transformation represents the transition from \(e\) to \(e'\)
+  on the whole coordinate-change domain, then \(e,e'\) have local Möbius
+  transition data at every point of their source overlap.
+proof:
+  At an overlap point take \(e.source\cap e'.source\) as the open neighborhood
+  and reuse the global representative and transition equation.
+-/
 theorem hasLocalMobiusTransition_of_hasMobiusTransition {X : Type} [TopologicalSpace X]
     {e e' : ProjectiveChart X} (h : HasMobiusTransition e e') :
     HasLocalMobiusTransition e e' := by
@@ -444,7 +530,15 @@ theorem hasLocalMobiusTransition_of_hasMobiusTransition {X : Type} [TopologicalS
         intro z hz _hz_neighborhood
         exact T.transition_eq z hz }⟩
 
-/-- If two chart sources are disjoint, local Mobius-transition data is vacuous. -/
+/--
+%%handwave
+name:
+  Disjoint chart sources have vacuous local Möbius transitions
+statement:
+  If \(e.source\cap e'.source=\varnothing\), then \(e,e'\) have local Möbius transitions.
+proof:
+  There is no overlap point at which transition data must be supplied.
+-/
 theorem hasLocalMobiusTransition_of_not_nonempty_source_inter {X : Type}
     [TopologicalSpace X] (e e' : ProjectiveChart X)
     (h : ¬ Set.Nonempty (e.source ∩ e'.source)) :
@@ -452,7 +546,17 @@ theorem hasLocalMobiusTransition_of_not_nonempty_source_inter {X : Type}
   intro x hx
   exact (h ⟨x, hx⟩).elim
 
-/-- A projective chart has identity Mobius transition to itself. -/
+/--
+%%handwave
+name:
+  A projective chart has the identity self-transition
+statement:
+  For every projective chart \(e\), the transition from \(e\) to itself is
+  globally represented by the identity Möbius transformation.
+proof:
+  On the transition source, the right-inverse identity for the partial
+  homeomorphism gives \(e\circ e^{-1}=\mathrm{id}\).
+-/
 theorem hasMobiusTransition_self {X : Type} [TopologicalSpace X]
     (e : ProjectiveChart X) : HasMobiusTransition e e := by
   refine ⟨{ representative := 1, transition_eq := ?_ }⟩
@@ -461,7 +565,15 @@ theorem hasMobiusTransition_self {X : Type} [TopologicalSpace X]
     simpa [OpenPartialHomeomorph.trans_source, OpenPartialHomeomorph.symm_source] using hz.1
   simp [OpenPartialHomeomorph.trans_apply, OpenPartialHomeomorph.right_inv, hz_target]
 
-/-- A projective chart has identity local Mobius transition to itself. -/
+/--
+%%handwave
+name:
+  A projective chart has identity local self-transitions
+statement:
+  Every projective chart has local Möbius transitions to itself, represented by the identity.
+proof:
+  Convert [the self-transition is globally the identity](lean:JJMath.hasMobiusTransition_self) into local transition data on the source overlap.
+-/
 theorem hasLocalMobiusTransition_self {X : Type} [TopologicalSpace X]
     (e : ProjectiveChart X) : HasLocalMobiusTransition e e :=
   hasLocalMobiusTransition_of_hasMobiusTransition (hasMobiusTransition_self e)

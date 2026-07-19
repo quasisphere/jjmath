@@ -41,6 +41,14 @@ noncomputable def annularCollarExteriorPoint
   subst p
   exact ht hp
 
+/--
+%%handwave
+name: Underlying point outside an annular transition core
+statement:
+  If $t\notin[-1,1]$, the exterior point represented in annular collar coordinates by $(z,t)$ has underlying surface point $\phi^{-1}(z,t)$.
+proof:
+  This is the value used in the definition of the exterior point.
+-/
 @[simp]
 theorem annularCollarExteriorPoint_val
     (U : TopologicalSpace.Opens X)
@@ -51,6 +59,14 @@ theorem annularCollarExteriorPoint_val
       ((phi.symm (z, t) : U) : X) :=
   rfl
 
+/--
+%%handwave
+name: Inclusion of a constant exterior simplex
+statement:
+  Including the constant simplex at the exterior collar point $(z,t)$ into the ambient surface gives the constant simplex at $\phi^{-1}(z,t)$.
+proof:
+  Both simplices are pointwise constant at the same underlying surface point.
+-/
 theorem point_openInclusion_annularCollarExteriorPoint
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -66,7 +82,15 @@ theorem point_openInclusion_annularCollarExteriorPoint
   rfl
 
 /-- The boundary of a transverse collar crossing is its positive-side
-endpoint minus its negative-side endpoint. -/
+endpoint minus its negative-side endpoint.
+
+%%handwave
+name: Boundary of a transverse annular crossing
+statement:
+  The oriented one-simplex crossing an annular collar from $\phi^{-1}(z,a)$ to $\phi^{-1}(z,b)$ has boundary $[\phi^{-1}(z,b)]-[\phi^{-1}(z,a)]$.
+proof:
+  Evaluate the two faces of the affine transverse simplex: face $0$ is the endpoint at $b$ and face $1$ the endpoint at $a$. Substitute them in the singular-boundary formula.
+-/
 theorem boundary_annularCollarTransverseSimplex_single
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -105,7 +129,15 @@ theorem boundary_annularCollarTransverseSimplex_single
     hface_zero, hface_one, sub_eq_add_neg]
 
 /-- If the exterior of the compact middle of an annular collar is connected,
-the annular period form detects nontrivial first de Rham cohomology. -/
+the annular period form detects nontrivial first de Rham cohomology.
+
+%%handwave
+name: Annular collar obstruction to vanishing first cohomology
+statement:
+  If the complement of the compact middle band of an annular collar is connected, then $H^1_{\mathrm{dR}}(X;\mathbb R)$ is nonzero.
+proof:
+  Choose one point on each side of the collar and join them by a smooth return chain in the connected exterior. Adding this chain to the transverse collar crossing gives a cycle. The compactly supported angular form has period $1$ on that cycle, so its de Rham class is nonzero.
+-/
 theorem not_subsingleton_deRhamH1_of_annularCollar_exterior_connected
     (U : TopologicalSpace.Opens X)
     (phi : U ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -139,7 +171,15 @@ theorem not_subsingleton_deRhamH1_of_annularCollar_exterior_connected
   abel
 
 /-- Vanishing first de Rham cohomology forces the exterior of the compact
-middle of every annular collar to be disconnected. -/
+middle of every annular collar to be disconnected.
+
+%%handwave
+name: Disconnection of an annular-collar exterior under cohomology vanishing
+statement:
+  If $H^1_{\mathrm{dR}}(X;\mathbb R)=0$, then the complement of the compact middle band of every annular collar in $X$ is disconnected.
+proof:
+  Otherwise apply the annular-period obstruction using transverse parameters $-2$ and $2$, obtaining a nonzero first de Rham class.
+-/
 theorem annularCollar_exterior_not_connected_of_deRhamH1_subsingleton
     (hH1 : Subsingleton
       (DeRhamCohomology (I := SurfaceRealModel) (M := X) (A := ℝ) 1))

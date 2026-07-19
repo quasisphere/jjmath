@@ -16,6 +16,19 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
+/--
+%%handwave
+name:
+  Smooth corestriction to an open submanifold
+statement:
+  Let \(f:M\to N\) be a smooth map whose image is contained in an open set
+  \(U\subseteq N\).  Then the same map, regarded as a map \(M\to U\), is
+  smooth.
+proof:
+  Near each image point, the local retraction from \(N\) to \(U\) is the
+  identity.  Compose \(f\) with that local retraction and use local agreement
+  with the corestricted map.
+-/
 private theorem contMDiffCodRestrictOpen
     {E F : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -73,6 +86,20 @@ noncomputable def openInOpenDiffeomorph
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
+/--
+%%handwave
+name:
+  Nested restriction of a differential form
+statement:
+  For open sets \(U,V\subseteq M\) and a smooth \(n\)-form \(\omega\) on
+  \(M\), restricting \(\omega\) first to \(U\) and then to the part of \(V\)
+  inside \(U\) equals pulling back \(\omega|_{U\cap V}\) through the canonical
+  diffeomorphism between these two presentations of \(U\cap V\).
+proof:
+  Evaluate both forms at a point and tangent vectors.  The underlying points
+  coincide, and the chain rule identifies the two composites of tangent maps
+  with the derivative of the same inclusion into \(M\).
+-/
 theorem nested_restriction_eq_pullback_intersection
     (U V : TopologicalSpace.Opens M) {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ n) :
@@ -220,6 +247,20 @@ noncomputable def diffeomorphRestrictPreimageOpen
       right_inv := by intro x; apply Subtype.ext; simp [toFun, invFun] }
   exact { toEquiv := e, contMDiff_toFun := hto, contMDiff_invFun := hinv }
 
+/--
+%%handwave
+name:
+  Restriction commutes with pullback by a diffeomorphism
+statement:
+  Let \(\phi:N\to M\) be a diffeomorphism, let \(U\subseteq M\) be open, and
+  let \(\omega\) be a smooth \(n\)-form on \(M\).  Restricting
+  \(\phi^*\omega\) to \(\phi^{-1}(U)\) equals pulling back \(\omega|_U\) by
+  the restricted diffeomorphism \(\phi^{-1}(U)\to U\).
+proof:
+  Evaluate at a point of \(\phi^{-1}(U)\).  Both sides evaluate \(\omega\) at
+  the same point, and the chain rule shows that their tangent maps are the
+  derivative of the same composite into \(M\).
+-/
 theorem restrict_pullbackDiffeomorph_eq_pullback_restrict
     (phi : N ≃ₘ⟮J, I⟯ M) (U : TopologicalSpace.Opens M) {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ n) :
@@ -338,6 +379,20 @@ noncomputable def openInOpenOfLEDiffeomorph
       right_inv := by intro x; apply Subtype.ext; rfl }
   exact { toEquiv := e, contMDiff_toFun := hto, contMDiff_invFun := hinv }
 
+/--
+%%handwave
+name:
+  Compatibility of restriction along nested open sets
+statement:
+  If \(W\subseteq U\) are open subsets of \(M\) and \(\omega\) is a smooth
+  \(n\)-form on \(U\), then restricting \(\omega\) to the copy of \(W\) inside
+  \(U\) and transporting it through the canonical diffeomorphism to \(W\)
+  equals the direct restriction of \(\omega\) along \(W\hookrightarrow U\).
+proof:
+  At each point of \(W\), the two underlying points of \(U\) coincide.  The
+  chain rule identifies the composite tangent map through the nested subtype
+  with the derivative of the direct inclusion.
+-/
 theorem pullback_nested_open_restriction_eq_restrictOfLE
     (hWU : W ≤ U) {n : ℕ}
     (omega : SmoothForms (I := I) (M := U) ℝ n) :
@@ -396,6 +451,18 @@ noncomputable def SmoothCirclePrimitive.restrictOfLE
   exact SmoothCirclePrimitive.congr I PW
     (pullback_nested_open_restriction_eq_restrictOfLE I hWU omega)
 
+/--
+%%handwave
+name:
+  Transporting a circle primitive preserves its phase
+statement:
+  If two smooth one-forms are equal, transporting a circle primitive of the
+  first form across that equality leaves its circle-valued phase unchanged at
+  every point.
+proof:
+  Substitute the equality of the one-forms; the transported primitive is then
+  definitionally the original one.
+-/
 theorem SmoothCirclePrimitive.congr_phase
     {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
     [IsManifold I ∞ M']
@@ -405,6 +472,18 @@ theorem SmoothCirclePrimitive.congr_phase
   subst eta
   rfl
 
+/--
+%%handwave
+name:
+  Phase of a circle primitive restricted to a smaller open set
+statement:
+  If \(W\subseteq U\) are open and a circle primitive on \(U\) is restricted
+  to \(W\), then its phase at \(x\in W\) is the original phase evaluated at
+  the image of \(x\) under \(W\hookrightarrow U\).
+proof:
+  Expand the restriction construction and use that transport across equality
+  does not alter the phase.
+-/
 theorem SmoothCirclePrimitive.restrictOfLE_phase
     (hWU : W ≤ U)
     {omega : SmoothForms (I := I) (M := U) ℝ 1}
@@ -486,8 +565,20 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
-/-- The canonical logarithmic one-form of a unit phase commutes with
-restriction along an inclusion of ambient open sets. -/
+/--
+%%handwave
+name:
+  Restriction of the logarithmic one-form of a unit phase
+statement:
+  Let \(W\subseteq U\) be open subsets of a manifold.  Suppose
+  \(P:U\to S^1\) and \(Q:W\to S^1\) are smooth unit phases and
+  \(Q=P|_W\).  Then the canonical logarithmic one-form of \(P\), restricted
+  to \(W\), equals the canonical logarithmic one-form of \(Q\).
+proof:
+  Restrict the circle primitive associated with \(P\) to \(W\).  Its phase is
+  \(P|_W=Q\), so uniqueness of the one-form determined by a circle phase
+  identifies it with the circle primitive associated with \(Q\).
+-/
 theorem smoothUnitPhaseOneForm_restrictOfLE
     {U W : TopologicalSpace.Opens M} (hWU : W ≤ U)
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) U ℂ ∞)

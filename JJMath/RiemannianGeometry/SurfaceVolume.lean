@@ -208,7 +208,17 @@ def surfaceChartOverlapRange {X : Type}
     (e e' : OpenPartialHomeomorph X ℂ) : Set ℂ :=
   e.target ∩ e.symm ⁻¹' e'.source
 
-/-- The coordinate overlap domain is open. -/
+/--
+%%handwave
+name:
+  Surface-chart overlap domains are open
+statement:
+  For complex surface charts \(e,e'\), the set of \(e'\)-coordinates whose
+  inverse image lies in \(e.source\) is open in \(\mathbb C\).
+proof:
+  Intersect the open target of \(e'\) with the preimage of the open source of
+  \(e\) under the continuous inverse chart.
+-/
 theorem surfaceChartOverlapDomain_isOpen {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e e' : OpenPartialHomeomorph X ℂ) :
@@ -216,7 +226,16 @@ theorem surfaceChartOverlapDomain_isOpen {X : Type}
   simpa [surfaceChartOverlapDomain] using
     (e'.isOpen_inter_preimage_symm e.open_source)
 
-/-- The coordinate overlap range is open. -/
+/--
+%%handwave
+name:
+  Surface-chart overlap ranges are open
+statement:
+  For complex surface charts \(e,e'\), the image of their common source in
+  \(e\)-coordinates is open in \(\mathbb C\).
+proof:
+  Intersect the target of \(e\) with the inverse-chart preimage of \(e'.source\).
+-/
 theorem surfaceChartOverlapRange_isOpen {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e e' : OpenPartialHomeomorph X ℂ) :
@@ -224,7 +243,17 @@ theorem surfaceChartOverlapRange_isOpen {X : Type}
   simpa [surfaceChartOverlapRange] using
     (e.isOpen_inter_preimage_symm e'.open_source)
 
-/-- The transition map identifies the two coordinate descriptions of an overlap. -/
+/--
+%%handwave
+name:
+  A surface-chart transition maps overlap domain onto overlap range
+statement:
+  The transition \(e\circ(e')^{-1}\) carries its \(e'\)-coordinate overlap
+  domain exactly onto the corresponding \(e\)-coordinate overlap range.
+proof:
+  Use the left- and right-inverse identities for the two partial homeomorphisms
+  to prove the two set inclusions.
+-/
 theorem surfaceChartTransition_image_overlapDomain {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e e' : OpenPartialHomeomorph X ℂ) :
@@ -247,7 +276,16 @@ theorem surfaceChartTransition_image_overlapDomain {X : Type}
       exact ⟨hz_target, by simpa [e'.left_inv hy_source'] using hx_source⟩
     · simp [surfaceChartTransition, e'.left_inv hy_source', e.right_inv hy_target]
 
-/-- The transition map is injective on a coordinate overlap. -/
+/--
+%%handwave
+name:
+  Surface-chart transitions are injective on overlaps
+statement:
+  The transition \(e\circ(e')^{-1}\) is injective on its coordinate overlap domain.
+proof:
+  Injectivity of \(e\) gives equality of the inverse-chart points, and applying
+  \(e'\) recovers equality of the original coordinates.
+-/
 theorem surfaceChartTransition_injOn_overlapDomain {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (e e' : OpenPartialHomeomorph X ℂ) :
@@ -445,7 +483,18 @@ theorem surfaceChartTangentMap_comp_transition_on_overlap
   have hfinal := hderiv_target.fderivWithin huniq
   simpa [surfaceChartTangentMap, F', F, T, s, c, x, hbase_z] using hfinal
 
-/-- The concrete two-dimensional Gram determinant transforms by the square of the determinant. -/
+/--
+%%handwave
+name:
+  Two-dimensional Gram determinants transform by squared determinant
+statement:
+  For a real bilinear form \(b\) on \(\mathbb C\) and real-linear maps \(A,J\),
+  the Gram determinant of \(b\) on \(A(J1),A(Ji)\) is
+  \(\det(J)^2\) times its Gram determinant on \(A1,Ai\).
+proof:
+  Write the real matrix of \(J\) in the basis \(1,i\), expand both sides using
+  bilinearity, and collect the resulting polynomial identity.
+-/
 private theorem complex_gramDet_comp
     (b : ℂ →L[ℝ] ℂ →L[ℝ] ℝ)
     (A J : ℂ →L[ℝ] ℂ) :
@@ -518,8 +567,19 @@ private theorem complex_gramDet_comp
   rw [hb11, hb22, hb12, hb21, hJdet]
   ring
 
-/-- The Gram determinant of a positive definite symmetric bilinear form on the standard
-two-dimensional frame is positive. -/
+/--
+%%handwave
+name:
+  A positive-definite form on \(\mathbb C\) has positive Gram determinant
+statement:
+  If \(b\) is symmetric and positive definite on the real plane \(\mathbb C\), then
+  \[
+    b(1,1)b(i,i)-b(1,i)b(i,1)>0.
+  \]
+proof:
+  Set \(r=b(1,i)/b(1,1)\) and apply positivity to \(i-r1\ne0\).
+  Expanding \(b(i-r1,i-r1)>0\) and multiplying by \(b(1,1)>0\) gives the claim.
+-/
 private theorem complex_gramDet_pos_of_posDef
     (b : ℂ →L[ℝ] ℂ →L[ℝ] ℝ)
     (hsymm : ∀ v w : ℂ, b v w = b w v)
@@ -558,16 +618,33 @@ private theorem complex_gramDet_pos_of_posDef
   rw [hdet] at hmul
   simpa [a, c, d, hsymm Complex.I 1] using hmul
 
-/-- An invertible continuous linear endomorphism of the model tangent plane has nonzero
-determinant. -/
+/--
+%%handwave
+name:
+  An invertible real-linear endomorphism of \(\mathbb C\) has nonzero determinant
+statement:
+  If \(A:\mathbb C\to_{\mathbb R}\mathbb C\) is invertible, then \(\det A\ne0\).
+proof:
+  Represent \(A\) by a real-linear equivalence; the determinant of an
+  equivalence is a unit and hence is nonzero.
+-/
 private theorem complex_det_ne_zero_of_isInvertible
     (A : ℂ →L[ℝ] ℂ) (hA : A.IsInvertible) : A.det ≠ 0 := by
   rcases hA with ⟨e, rfl⟩
   change LinearMap.det (e : ℂ →ₗ[ℝ] ℂ) ≠ 0
   exact (LinearEquiv.isUnit_det' e.toLinearEquiv).ne_zero
 
-/-- The metric volume density in the preferred tangent coordinates is
-strictly positive. -/
+/--
+%%handwave
+name:
+  The intrinsic surface volume density is positive
+statement:
+  For every smooth Riemannian metric \(g\) on a surface and every \(x\in X\),
+  the preferred-coordinate density \(\rho_g(x)\) is strictly positive.
+proof:
+  The metric is symmetric positive definite, so its Gram determinant in the
+  basis \(1,i\) is positive.  The density is the positive square root of this determinant.
+-/
 theorem surfaceMetricVolumeDensityAt_pos {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X) (x : X) :
@@ -583,9 +660,21 @@ theorem surfaceMetricVolumeDensityAt_pos {X : Type}
   simpa [surfaceMetricVolumeDensityAt, surfaceMetricGramDetAt, b] using
     (Real.sqrt_pos.mpr hdet)
 
-/-- In an arbitrary real surface chart, the metric volume density is the
-preferred-coordinate density multiplied by the absolute determinant of the
-chart tangent map. -/
+/--
+%%handwave
+name:
+  Transformation law for surface volume density
+statement:
+  For a surface chart \(e\) and \(z\in e.target\),
+  \[
+    \rho_{g,e}(z)=\lvert\det J_e(z)\rvert\,\rho_g(e^{-1}z),
+  \]
+  where \(J_e(z)\) is the tangent-coordinate transition map.
+proof:
+  The coordinate Gram determinant is \(\det(J_e)^2\) times the intrinsic Gram
+  determinant.  Taking square roots gives the absolute determinant factor,
+  using nonnegativity of both determinants.
+-/
 theorem surfaceMetricVolumeDensityInChart_eq_abs_det_mul_at {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X)
@@ -1930,7 +2019,17 @@ theorem surfaceChartTransition_preimage_overlapTargetPiece_inter_overlapDomain {
       _ = surfaceChartTransition e e' z := by
         rfl
 
-/-- A chart is a.e.-measurable on its source. -/
+/--
+%%handwave
+name:
+  A partial homeomorphism is almost everywhere measurable on its source
+statement:
+  For an open partial homeomorphism \(e:X\to Y\) and any measure \(\mu\) on
+  \(X\), the map \(e\) is almost everywhere measurable for \(\mu|_{e.source}\).
+proof:
+  The map is continuous on its open source, hence measurable there and almost
+  everywhere measurable for the restricted measure.
+-/
 theorem openPartialHomeomorph_aemeasurable_restrict_source {X Y : Type}
     [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y]
@@ -1938,7 +2037,17 @@ theorem openPartialHomeomorph_aemeasurable_restrict_source {X Y : Type}
     AEMeasurable e (μ.restrict e.source) := by
   exact e.continuousOn.aemeasurable e.open_source.measurableSet
 
-/-- The inverse of a chart is a.e.-measurable on its target. -/
+/--
+%%handwave
+name:
+  The inverse partial homeomorphism is almost everywhere measurable on its target
+statement:
+  For an open partial homeomorphism \(e:X\to Y\) and any measure \(\nu\) on
+  \(Y\), the inverse \(e^{-1}\) is almost everywhere measurable for \(\nu|_{e.target}\).
+proof:
+  The inverse is continuous on the open target, hence measurable there and
+  almost everywhere measurable for the restricted measure.
+-/
 theorem openPartialHomeomorph_symm_aemeasurable_restrict_target {X Y : Type}
     [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
     [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y]
@@ -2768,6 +2877,8 @@ name:
 statement:
   The volume measure obtained from the general manifold construction has the
   metric chart densities for the surface viewed as a real smooth manifold.
+proof:
+  Specialize the general metric-volume construction to the surface model; its chart density is the square root of the metric Gram determinant.
 -/
 theorem manifoldVolume_isRiemannian {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]

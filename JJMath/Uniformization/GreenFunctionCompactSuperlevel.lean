@@ -266,6 +266,14 @@ noncomputable def compactSuperlevelGreenFunctionLocalPuncturedLogDomain
     (q : {x : X // x ≠ p}) : Set X :=
   Classical.choose (hlocal q.1 q.2)
 
+/--
+%%handwave
+name: Properties of a chosen punctured logarithm domain
+statement:
+  Given local holomorphic logarithms of $-G$ away from the pole, the chosen domain around each $q\ne p$ contains $q$, is open, avoids $p$, and supports a holomorphic function whose real part is $-G$.
+proof:
+  These are precisely the properties of the witness selected from the local-existence hypothesis at $q$.
+-/
 theorem compactSuperlevelGreenFunctionLocalPuncturedLogDomain_spec
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
@@ -299,6 +307,14 @@ noncomputable def compactSuperlevelGreenFunctionLocalPuncturedLogFunction
     (compactSuperlevelGreenFunctionLocalPuncturedLogDomain_spec
       hlocal q).2.2.2
 
+/--
+%%handwave
+name: Properties of a chosen punctured logarithm
+statement:
+  On the chosen punctured neighborhood of $q\ne p$, the chosen logarithm is holomorphic and has real part $-G$ at every point.
+proof:
+  Select the function furnished by the chosen-domain specification and retain its two defining properties.
+-/
 theorem compactSuperlevelGreenFunctionLocalPuncturedLogFunction_spec
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
@@ -1968,6 +1984,14 @@ noncomputable def compactSuperlevelGreenFunctionPuncturedPlaneMapZeroExtension
   classical
   exact fun x : X ↦ if x = p then 0 else F.toFun x
 
+/--
+%%handwave
+name: Zero extension at the Green-function pole
+statement:
+  The zero extension to $X$ of a punctured holomorphic plane map takes the value $0$ at its pole $p$.
+proof:
+  At $p$, the defining case distinction selects the value $0$.
+-/
 theorem compactSuperlevelGreenFunctionPuncturedPlaneMapZeroExtension_pole
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p : X} {G : CompactSuperlevelGreenFunctionWithPole X p}
@@ -1976,6 +2000,14 @@ theorem compactSuperlevelGreenFunctionPuncturedPlaneMapZeroExtension_pole
   classical
   simp [compactSuperlevelGreenFunctionPuncturedPlaneMapZeroExtension]
 
+/--
+%%handwave
+name: Zero extension away from the Green-function pole
+statement:
+  If $x\ne p$, the zero extension of a punctured holomorphic plane map agrees at $x$ with the original punctured map.
+proof:
+  The inequality $x\ne p$ selects the non-pole branch of the defining case distinction.
+-/
 theorem compactSuperlevelGreenFunctionPuncturedPlaneMapZeroExtension_of_ne
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {p x : X} {G : CompactSuperlevelGreenFunctionWithPole X p}

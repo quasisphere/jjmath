@@ -91,14 +91,28 @@ def toLocalLiouvilleDevelopingSolutionAtlas
   S.branchData.toLocalLiouvilleDevelopingSolutionAtlas
 
 omit [RiemannSurface X] in
-/-- Schwarzian branch solving gives the metric-level local developing-solution target. -/
+/--
+%%handwave
+name: Developing-solution atlas from surface Schwarzian branches
+statement:
+  If a local metric-formula atlas is equipped with covering upper-half-plane Schwarzian branches and compatible real Mobius transitions, then the metric admits an atlas of local Liouville developing solutions.
+proof:
+  Assemble the branch data directly into the local developing-solution atlas.
+-/
 theorem hasLocalLiouvilleDevelopingSolutionAtlas
     (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
     g.HasLocalLiouvilleDevelopingSolutionAtlas :=
   ⟨S.toLocalLiouvilleDevelopingSolutionAtlas⟩
 
 omit [RiemannSurface X] in
-/-- Schwarzian branch solving gives coordinate Poincare pullback formulas. -/
+/--
+%%handwave
+name: Coordinate Poincare formulas from surface Schwarzian branches
+statement:
+  Covering Schwarzian branches with real Mobius transitions determine an atlas of coordinate formulas expressing the metric as pullbacks of the Poincare metric.
+proof:
+  First form the local Liouville developing-solution atlas, then retain its coordinate Poincare pullback formulas.
+-/
 theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
     (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
     g.HasCoordinateUpperHalfPlanePullbackFormulaAtlas :=
@@ -106,7 +120,14 @@ theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
     S.hasLocalLiouvilleDevelopingSolutionAtlas
 
 omit [RiemannSurface X] in
-/-- Schwarzian branch solving gives local upper-half-plane models. -/
+/--
+%%handwave
+name: Local upper-half-plane models from surface Schwarzian branches
+statement:
+  Covering upper-half-plane Schwarzian branches with real Mobius transitions give local upper-half-plane models of the hyperbolic metric.
+proof:
+  Assemble the branches into a local Liouville developing-solution atlas and apply the standard passage from that atlas to local models.
+-/
 theorem hasUpperHalfPlaneLocalModels
     (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
     g.HasUpperHalfPlaneLocalModels :=
@@ -144,14 +165,28 @@ def toLocalLiouvilleDevelopingSolutionAtlas
   S.branchData.toLocalLiouvilleDevelopingSolutionAtlas
 
 omit [RiemannSurface X] in
-/-- Pointed Schwarzian branch solving gives the metric-level local target. -/
+/--
+%%handwave
+name: Developing-solution atlas from pointed Schwarzian branches
+statement:
+  Suppose each surface point has a local upper-half-plane Schwarzian branch defined at its coordinate, and after restricting the surface domains these branches have compatible real Mobius transitions. Then the metric admits an atlas of local Liouville developing solutions.
+proof:
+  Shrink every metric formula to the inverse image of its pointed branch domain and assemble the resulting branches into the developing-solution atlas.
+-/
 theorem hasLocalLiouvilleDevelopingSolutionAtlas
     (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
     g.HasLocalLiouvilleDevelopingSolutionAtlas :=
   ⟨S.toLocalLiouvilleDevelopingSolutionAtlas⟩
 
 omit [RiemannSurface X] in
-/-- Pointed Schwarzian branch solving gives coordinate Poincare pullback formulas. -/
+/--
+%%handwave
+name: Coordinate Poincare formulas from pointed Schwarzian branches
+statement:
+  Compatible pointed Schwarzian branches, after restricting their surface domains, determine an atlas of coordinate Poincare pullback formulas for the metric.
+proof:
+  Construct the restricted local developing-solution atlas and forget to its coordinate pullback formulas.
+-/
 theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
     (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
     g.HasCoordinateUpperHalfPlanePullbackFormulaAtlas :=
@@ -159,7 +194,14 @@ theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
     S.hasLocalLiouvilleDevelopingSolutionAtlas
 
 omit [RiemannSurface X] in
-/-- Pointed Schwarzian branch solving gives local upper-half-plane models. -/
+/--
+%%handwave
+name: Local models from pointed Schwarzian branches
+statement:
+  Compatible pointed upper-half-plane Schwarzian branches give local upper-half-plane models after their surface chart domains are restricted to the branch domains.
+proof:
+  Build the restricted local developing-solution atlas and apply its local-model consequence.
+-/
 theorem hasUpperHalfPlaneLocalModels
     (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
     g.HasUpperHalfPlaneLocalModels :=
@@ -422,8 +464,12 @@ def ChartedLocalCurvatureFormulaExpansionTheorem
           curvatureFormulaAtlas}
 
 /--
-Separate curvature expansion and global chart-compatibility imply the bundled
-charted curvature expansion theorem.
+%%handwave
+name: Bundling local curvature formulas with chart compatibility
+statement:
+  Suppose every hyperbolic metric admits a local curvature-formula atlas, and every such atlas has coordinates agreeing with the ambient complex charts on its domains. Then every hyperbolic metric admits a chart-compatible local curvature-formula atlas.
+proof:
+  Choose a curvature-formula atlas and equip that choice with the asserted chart-compatibility property.
 -/
 theorem chartedLocalCurvatureFormulaExpansionTheorem_of_expansion_and_coordinateCharted
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -532,7 +578,12 @@ noncomputable def localCurvatureMetricFormulaAtlasInChartAt
   mem_formulaAt_domain x := mem_chart_source ℂ x
 
 /--
-Every hyperbolic metric has a chart-compatible local curvature formula atlas.
+%%handwave
+name: Canonical chart-compatible curvature atlas
+statement:
+  Every hyperbolic metric on a charted surface admits local curvature formulas whose domain and coordinate at $x$ are the source and coordinate map of the ambient chart $\phi_x$.
+proof:
+  Use at each point the ambient chart and the logarithmic density $u=\frac12\log\rho$, where $\rho$ is the metric density in that chart. Positivity gives $e^{2u}=\rho$, smoothness gives the required regularity, and curvature $-1$ gives the local Liouville equation. The coordinate agreement is definitional.
 -/
 theorem chartedLocalCurvatureFormulaExpansionTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] :
@@ -543,11 +594,12 @@ theorem chartedLocalCurvatureFormulaExpansionTheorem
   exact ⟨fun _ hy ↦ hy, fun _ _ ↦ rfl⟩
 
 /--
-If a local formula coordinate agrees with the ambient chart on an open formula
-domain, then preimages of open coordinate subsets are open in the surface.
-
-This is the basic topological bridge used below: it is exactly mathlib's
-`ContinuousOn.isOpen_inter_preimage` applied to the chart map.
+%%handwave
+name: Openness of coordinate preimages on a formula domain
+statement:
+  Let $U$ be open and contained in the source of a chart $\phi$, and suppose a coordinate map $\psi$ agrees with $\phi$ on $U$. For every open $V\subseteq\mathbb C$, the set $\{y\in U:\psi(y)\in V\}$ is open.
+proof:
+  The chart is continuous on its source, hence $\psi$ is continuous on $U$ by the pointwise equality. The intersection of the open set $U$ with the inverse image of $V$ is therefore open.
 -/
 theorem isOpen_formulaCoordinate_preimage_of_eqOn_chartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

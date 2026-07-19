@@ -55,13 +55,33 @@ def SolvesConstantCurvatureEquation (u : LocalConformalFactor) (K : ℝ) : Prop 
   ∀ z, z ∈ u.coordinateDomain →
     Laplacian.laplacian u.logDensity z = -K * Real.exp (2 * u.logDensity z)
 
-/-- The old curvature `-1` predicate is the `K = -1` case of constant curvature. -/
+/--
+%%handwave
+name:
+  Curvature minus one as constant curvature
+statement:
+  A conformal factor \(u\) has Gaussian curvature \(-1\) in the hyperbolic
+  sense if and only if its Gaussian curvature is the constant \(-1\).
+proof:
+  The two assertions have the same pointwise curvature equation by definition.
+-/
 theorem hasGaussianCurvatureMinusOne_iff_hasGaussianCurvature_neg_one
     (u : LocalConformalFactor) :
     u.HasGaussianCurvatureMinusOne ↔ u.HasGaussianCurvature (-1) :=
   Iff.rfl
 
-/-- The old hyperbolic Liouville equation is the `K = -1` case. -/
+/--
+%%handwave
+name:
+  The hyperbolic Liouville equation is the curvature minus one equation
+statement:
+  For a conformal factor \(u\), the hyperbolic Liouville equation
+  \(\Delta u=e^{2u}\) is equivalent to the constant-curvature equation
+  \(\Delta u=-K e^{2u}\) with \(K=-1\).
+proof:
+  Substitute \(K=-1\) in the constant-curvature equation and simplify the
+  sign, pointwise on the coordinate domain.
+-/
 theorem solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one
     (u : LocalConformalFactor) :
     u.SolvesLiouvilleEquation ↔ u.SolvesConstantCurvatureEquation (-1) := by
@@ -72,8 +92,17 @@ theorem solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one
     simpa [SolvesConstantCurvatureEquation] using h z hz
 
 /--
-The local curvature formula `K = -exp (-2u) Δu` implies the
-constant-curvature Liouville equation.
+%%handwave
+name:
+  Constant Gaussian curvature implies the Liouville equation
+statement:
+  If the metric \(e^{2u}|dz|^2\) has constant Gaussian curvature \(K\), then
+  its logarithmic conformal factor satisfies
+  \[\Delta u=-K e^{2u}\]
+  throughout the coordinate domain.
+proof:
+  Start from \(K=-e^{-2u}\Delta u\). Since \(e^{-2u}\) is everywhere
+  positive, multiply by its inverse \(e^{2u}\) and rearrange.
 -/
 theorem solvesConstantCurvatureEquation_of_hasGaussianCurvature
     (u : LocalConformalFactor) (K : ℝ) (hK : u.HasGaussianCurvature K) :
@@ -102,8 +131,17 @@ theorem solvesConstantCurvatureEquation_of_hasGaussianCurvature
             ring_nf
 
 /--
-Conversely, the constant-curvature Liouville equation implies the local
-curvature formula with constant value `K`.
+%%handwave
+name:
+  The Liouville equation implies constant Gaussian curvature
+statement:
+  If a logarithmic conformal factor \(u\) satisfies
+  \(\Delta u=-K e^{2u}\), then the metric \(e^{2u}|dz|^2\) has Gaussian
+  curvature \(K\) throughout its coordinate domain.
+proof:
+  Substitute the equation into
+  \(K_u=-e^{-2u}\Delta u\). The two exponential factors cancel because
+  \(e^{2u}>0\), leaving \(K_u=K\).
 -/
 theorem hasGaussianCurvature_of_solvesConstantCurvatureEquation
     (u : LocalConformalFactor) (K : ℝ)
@@ -181,11 +219,19 @@ def frechetDZValue (f : ℂ → ℂ) (z : ℂ) : ℂ :=
     (fderiv ℝ f z (1 : ℂ) - Complex.I * fderiv ℝ f z Complex.I)
 
 /--
-The Frechet-Wirtinger decomposition reconstructs the full real Frechet
-derivative.
-
-For a real-differentiable complex-valued function,
-`df(ξ) = Re(ξ) * (∂z f + ∂bar f) + Im(ξ) * I * (∂z f - ∂bar f)`.
+%%handwave
+name:
+  Fréchet--Wirtinger decomposition of a real derivative
+statement:
+  For a real-differentiable map \(f:\mathbb C\to\mathbb C\), a point \(z\),
+  and \(\xi\in\mathbb C\),
+  \[D f(z)[\xi]=\operatorname{Re}(\xi)(\partial_zf+\partial_{\bar z}f)
+    +\operatorname{Im}(\xi)i(\partial_zf-\partial_{\bar z}f),\]
+  where the Wirtinger derivatives are evaluated at \(z\).
+proof:
+  Write \(\xi=\operatorname{Re}(\xi)\cdot1+
+  \operatorname{Im}(\xi)\cdot i\), use real linearity of \(Df(z)\), and
+  substitute the definitions of the two Wirtinger derivatives.
 -/
 theorem fderiv_apply_eq_re_smul_frechetDZValue_add_dbar
     {f : ℂ → ℂ} {z ξ : ℂ} :
@@ -208,7 +254,17 @@ theorem fderiv_apply_eq_re_smul_frechetDZValue_add_dbar
       rw [Complex.I_sq]
       ring
 
-/-- Frechet-Wirtinger `∂z` of a sum. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) sum rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_z(f+g)(z)=\partial_zf(z)+\partial_zg(z).\]
+proof:
+  The real Fréchet derivative is additive; evaluate its defining
+  \(1\)- and \(i\)-components in the formula for \(\partial_z\).
+-/
 theorem frechetDZValue_add_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -221,7 +277,17 @@ theorem frechetDZValue_add_of_differentiableAt
   simp only [ContinuousLinearMap.add_apply]
   ring
 
-/-- Frechet-Wirtinger `∂z` of a difference. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) difference rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_z(f-g)(z)=\partial_zf(z)-\partial_zg(z).\]
+proof:
+  Apply linearity of the real Fréchet derivative to the difference and
+  substitute into the definition of \(\partial_z\).
+-/
 theorem frechetDZValue_sub_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -234,7 +300,18 @@ theorem frechetDZValue_sub_of_differentiableAt
   simp only [ContinuousLinearMap.sub_apply]
   ring
 
-/-- Frechet-Wirtinger `∂bar` of a difference. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) difference rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_{\bar z}(f-g)(z)=
+    \partial_{\bar z}f(z)-\partial_{\bar z}g(z).\]
+proof:
+  Apply linearity of the real Fréchet derivative to the difference and
+  substitute into the definition of \(\partial_{\bar z}\).
+-/
 theorem frechetDBarValue_sub_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -247,7 +324,18 @@ theorem frechetDBarValue_sub_of_differentiableAt
   simp only [ContinuousLinearMap.sub_apply]
   ring
 
-/-- Frechet-Wirtinger `∂bar` of a sum. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) sum rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_{\bar z}(f+g)(z)=
+    \partial_{\bar z}f(z)+\partial_{\bar z}g(z).\]
+proof:
+  Apply additivity of the real Fréchet derivative and substitute its values
+  on \(1\) and \(i\) into the definition of \(\partial_{\bar z}\).
+-/
 theorem frechetDBarValue_add_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -261,8 +349,19 @@ theorem frechetDBarValue_add_of_differentiableAt
   ring
 
 /--
-For a real-valued function, the two complexified Frechet-Wirtinger derivatives
-are conjugate.
+%%handwave
+name:
+  Conjugacy of the Wirtinger derivatives of a real-valued function
+statement:
+  If \(\varphi:\mathbb C\to\mathbb R\) is real differentiable at \(z\), then
+  after complexification
+  \[\partial_{\bar z}\varphi(z)=
+    \overline{\partial_z\varphi(z)}.\]
+proof:
+  Express the derivative of the complexification through the real derivative
+  of \(\varphi\). Its values on \(1\) and \(i\) are real, so conjugating the
+  \(\partial_z\) formula changes exactly the sign required for
+  \(\partial_{\bar z}\).
 -/
 theorem frechetDBarValue_complex_ofReal_eq_star_frechetDZValue
     {φ : ℂ → ℝ} {z : ℂ} (hφ : DifferentiableAt ℝ φ z) :
@@ -277,8 +376,19 @@ theorem frechetDBarValue_complex_ofReal_eq_star_frechetDZValue
   simp [frechetDBarValue, frechetDZValue, L, hfd]
 
 /--
-For a real-valued function, vanishing of the complexified Frechet-Wirtinger
-`∂z` value forces the full real Frechet derivative to vanish.
+%%handwave
+name:
+  A real-valued function with vanishing \(\partial_z\) has zero derivative
+statement:
+  Let \(\varphi:\mathbb C\to\mathbb R\) be real differentiable at \(z\). If
+  its complexified Wirtinger derivative satisfies
+  \(\partial_z\varphi(z)=0\), then the full real Fréchet derivative
+  \(D\varphi(z)\) is zero.
+proof:
+  Taking real and imaginary parts of
+  \(D\varphi(z)[1]-iD\varphi(z)[i]=0\) shows that the derivative vanishes on
+  both \(1\) and \(i\). Real linearity then makes it vanish on every complex
+  direction.
 -/
 theorem fderiv_real_eq_zero_of_frechetDZValue_complex_ofReal_eq_zero
     {φ : ℂ → ℝ} {z : ℂ}
@@ -317,9 +427,18 @@ theorem fderiv_real_eq_zero_of_frechetDZValue_complex_ofReal_eq_zero
     _ = (0 : ℂ →L[ℝ] ℝ) w := rfl
 
 /--
-On a preconnected open set, equality of the Frechet-Wirtinger `∂z` values of
-two real-valued functions, after complexification, and equality at one point
-force equality everywhere.
+%%handwave
+name:
+  Real-valued functions are determined by one value and their \(\partial_z\) derivative
+statement:
+  Let \(U\subset\mathbb C\) be open and connected, and let
+  \(f,g:U\to\mathbb R\) be real differentiable. If
+  \(\partial_z f=\partial_z g\) throughout \(U\) and \(f(z_0)=g(z_0)\) at
+  one point \(z_0\in U\), then \(f=g\) on \(U\).
+proof:
+  Apply the preceding zero-derivative result to \(f-g\) at each point. Thus
+  \(D(f-g)=0\) on the connected open set, so \(f-g\) is constant; its value at
+  \(z_0\) is zero.
 -/
 theorem eqOn_of_frechetDZValue_complex_ofReal_eq
     {U : Set ℂ} {f g : ℂ → ℝ} {z₀ : ℂ}
@@ -358,7 +477,18 @@ theorem eqOn_of_frechetDZValue_complex_ofReal_eq
     simpa [fderiv_fun_sub hfz hgz] using hFsub
   exact sub_eq_zero.mp hFsub'
 
-/-- Frechet-Wirtinger `∂z` of a constant multiple. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) constant-multiple rule
+statement:
+  If \(f:\mathbb C\to\mathbb C\) is real differentiable at \(z\) and
+  \(c\in\mathbb C\), then
+  \[\partial_z(cf)(z)=c\,\partial_zf(z).\]
+proof:
+  The real derivative of \(cf\) is multiplication by \(c\) after \(Df\);
+  substitute this in the Wirtinger formula.
+-/
 theorem frechetDZValue_const_mul_of_differentiableAt
     {f : ℂ → ℂ} {z c : ℂ} (hf : DifferentiableAt ℝ f z) :
     frechetDZValue (fun w : ℂ ↦ c * f w) z =
@@ -372,7 +502,18 @@ theorem frechetDZValue_const_mul_of_differentiableAt
   simp only [smul_eq_mul]
   ring_nf
 
-/-- Frechet-Wirtinger `∂z` of a product. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) product rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_z(fg)(z)=
+    \partial_zf(z)g(z)+f(z)\partial_zg(z).\]
+proof:
+  Insert the real Fréchet product rule into the definition of
+  \(\partial_z\) and collect the two terms.
+-/
 theorem frechetDZValue_mul_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -386,7 +527,19 @@ theorem frechetDZValue_mul_of_differentiableAt
   simp only [smul_eq_mul]
   ring_nf
 
-/-- Frechet-Wirtinger `∂z` of an inverse. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) reciprocal rule
+statement:
+  If \(f:\mathbb C\to\mathbb C\) is real differentiable at \(z\) and
+  \(f(z)\ne0\), then
+  \[\partial_z(f^{-1})(z)=-\frac{\partial_zf(z)}{f(z)^2}.\]
+proof:
+  Compose the real derivative of inversion,
+  \(D(w^{-1})[v]=-v/w^2\), with \(Df(z)\), and substitute into the
+  Wirtinger formula.
+-/
 theorem frechetDZValue_inv_of_differentiableAt
     {f : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hfnz : f z ≠ 0) :
@@ -407,7 +560,19 @@ theorem frechetDZValue_inv_of_differentiableAt
   field_simp [hfnz]
   ring_nf
 
-/-- Frechet-Wirtinger quotient rule for complex-valued functions. -/
+/--
+%%handwave
+name:
+  The \(\partial_z\) quotient rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\) and
+  \(g(z)\ne0\), then
+  \[\partial_z(f/g)(z)=
+    \frac{\partial_zf(z)g(z)-f(z)\partial_zg(z)}{g(z)^2}.\]
+proof:
+  Write \(f/g=f\,g^{-1}\), apply the product rule and the reciprocal rule,
+  and combine the two terms over the common denominator.
+-/
 theorem frechetDZValue_div_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z)
@@ -426,7 +591,18 @@ theorem frechetDZValue_div_of_differentiableAt
   field_simp [hgnz]
   ring
 
-/-- Frechet-Wirtinger `∂bar` of a constant multiple. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) constant-multiple rule
+statement:
+  If \(f:\mathbb C\to\mathbb C\) is real differentiable at \(z\) and
+  \(c\in\mathbb C\), then
+  \[\partial_{\bar z}(cf)(z)=c\,\partial_{\bar z}f(z).\]
+proof:
+  Multiplication by \(c\) commutes with the two evaluations of the real
+  derivative in the definition of \(\partial_{\bar z}\).
+-/
 theorem frechetDBarValue_const_mul_of_differentiableAt
     {f : ℂ → ℂ} {z c : ℂ} (hf : DifferentiableAt ℝ f z) :
     frechetDBarValue (fun w : ℂ ↦ c * f w) z =
@@ -440,7 +616,18 @@ theorem frechetDBarValue_const_mul_of_differentiableAt
   simp only [smul_eq_mul]
   ring_nf
 
-/-- Frechet-Wirtinger `∂bar` of a product. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) product rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\), then
+  \[\partial_{\bar z}(fg)(z)=
+    \partial_{\bar z}f(z)g(z)+f(z)\partial_{\bar z}g(z).\]
+proof:
+  Insert the real Fréchet product rule into the definition of
+  \(\partial_{\bar z}\) and collect the two terms.
+-/
 theorem frechetDBarValue_mul_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z) :
@@ -454,7 +641,19 @@ theorem frechetDBarValue_mul_of_differentiableAt
   simp only [smul_eq_mul]
   ring_nf
 
-/-- Frechet-Wirtinger `∂bar` of an inverse. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) reciprocal rule
+statement:
+  If \(f:\mathbb C\to\mathbb C\) is real differentiable at \(z\) and
+  \(f(z)\ne0\), then
+  \[\partial_{\bar z}(f^{-1})(z)=
+    -\frac{\partial_{\bar z}f(z)}{f(z)^2}.\]
+proof:
+  Compose the real derivative of inversion with \(Df(z)\), then evaluate the
+  resulting map in the formula for \(\partial_{\bar z}\).
+-/
 theorem frechetDBarValue_inv_of_differentiableAt
     {f : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hfnz : f z ≠ 0) :
@@ -475,7 +674,19 @@ theorem frechetDBarValue_inv_of_differentiableAt
   field_simp [hfnz]
   ring_nf
 
-/-- Frechet-Wirtinger quotient rule for `∂bar` of complex-valued functions. -/
+/--
+%%handwave
+name:
+  The \(\partial_{\bar z}\) quotient rule
+statement:
+  If \(f,g:\mathbb C\to\mathbb C\) are real differentiable at \(z\) and
+  \(g(z)\ne0\), then
+  \[\partial_{\bar z}(f/g)(z)=
+    \frac{\partial_{\bar z}f(z)g(z)-f(z)\partial_{\bar z}g(z)}{g(z)^2}.\]
+proof:
+  Express the quotient as \(f\,g^{-1}\), use the product and reciprocal
+  rules for \(\partial_{\bar z}\), and simplify.
+-/
 theorem frechetDBarValue_div_of_differentiableAt
     {f g : ℂ → ℂ} {z : ℂ}
     (hf : DifferentiableAt ℝ f z) (hg : DifferentiableAt ℝ g z)
@@ -495,8 +706,13 @@ theorem frechetDBarValue_div_of_differentiableAt
   ring
 
 /--
-For a holomorphic one-variable function, the Frechet-Wirtinger `∂z` value is
-its ordinary complex derivative.
+%%handwave
+name:
+  The holomorphic derivative is the z-Wirtinger derivative
+statement:
+  If \(f:ℂ→ℂ\) has complex derivative \(f'(z)\) at \(z\), then \(∂_zf(z)=f'(z)\).
+proof:
+  Write the real derivative as multiplication by \(f'(z)\) and evaluate the Wirtinger formula on \(1\) and \(i\).
 -/
 theorem frechetDZValue_of_hasDerivAt
     {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' z) :
@@ -507,7 +723,15 @@ theorem frechetDZValue_of_hasDerivAt
   rw [Complex.I_mul_I]
   ring
 
-/-- For a holomorphic one-variable function, the Frechet-Wirtinger `∂bar` value vanishes. -/
+/--
+%%handwave
+name:
+  The antiholomorphic derivative of a holomorphic function vanishes
+statement:
+  If \(f:ℂ→ℂ\) is complex differentiable at \(z\), then \(∂_{bar z}f(z)=0\).
+proof:
+  Insert its complex-linear real derivative into the antiholomorphic Wirtinger formula and use \(i²=-1\).
+-/
 theorem frechetDBarValue_of_hasDerivAt
     {f : ℂ → ℂ} {z f' : ℂ} (hf : HasDerivAt f f' z) :
     frechetDBarValue f z = 0 := by
@@ -518,12 +742,13 @@ theorem frechetDBarValue_of_hasDerivAt
   ring
 
 /--
-Frechet-Wirtinger chain rule for the logarithm of a positive real-valued
-function, written after complexifying the real values.
-
-This is the local calculus bridge used for squared conformal densities:
-if `v = (1 / 2) log ρ`, then
-`∂z v = (1 / (2ρ)) ∂z ρ`.
+%%handwave
+name:
+  The z-derivative of half a logarithm
+statement:
+  If \(ρ:ℂ→ℝ\) is real differentiable at \(z₀\) and \(ρ(z₀)>0\), then \(∂_z(½log ρ)(z₀)=1/(2ρ(z₀)) ∂_zρ(z₀)\) after complexification.
+proof:
+  Apply the real chain rule to \(x↦½log x\), complexify the derivative, and evaluate the Wirtinger formula.
 -/
 theorem frechetDZValue_complex_ofReal_half_log_of_differentiableAt
     {ρ : ℂ → ℝ} {z₀ : ℂ} (hρ : DifferentiableAt ℝ ρ z₀)
@@ -564,11 +789,13 @@ theorem frechetDZValue_complex_ofReal_half_log_of_differentiableAt
   ring
 
 /--
-Frechet-Wirtinger quotient rule for complexified real-valued functions.
-
-This is the squared-density analogue of the logarithm bridge above: once the
-numerator and denominator derivatives of a real quotient are known, the
-`∂z`-derivative of the quotient follows from mathlib's Frechet calculus.
+%%handwave
+name:
+  The z-quotient rule for real-valued functions
+statement:
+  If real \(A,B\) are differentiable at \(z₀\) and \(B(z₀)≠0\), then \(∂_z(A/B)=((∂_zA)B-A∂_zB)/B²\) after complexification.
+proof:
+  Differentiate the real reciprocal and product, complexify the Fréchet derivative, and simplify.
 -/
 theorem frechetDZValue_complex_ofReal_div_of_differentiableAt
     {A B : ℂ → ℝ} {z₀ : ℂ}
@@ -622,7 +849,15 @@ theorem frechetDZValue_complex_ofReal_div_of_differentiableAt
   field_simp [show (B z₀ : ℂ) ≠ 0 by exact_mod_cast hB_ne]
   ring
 
-/-- Differentiability of the complexified imaginary part of a holomorphic branch. -/
+/--
+%%handwave
+name:
+  Real differentiability of the imaginary part
+statement:
+  If \(F:ℂ→ℂ\) is complex differentiable at \(z₀\), then the complexification of \(Im F\) is real differentiable there.
+proof:
+  Compose the real derivative with the imaginary-part map and the real-to-complex inclusion.
+-/
 theorem differentiableAt_complex_ofReal_im_of_hasDerivAt
     {F : ℂ → ℂ} {z₀ F' : ℂ} (hF : HasDerivAt F F' z₀) :
     DifferentiableAt ℝ (fun z : ℂ ↦ (((F z).im : ℝ) : ℂ)) z₀ := by
@@ -636,8 +871,13 @@ theorem differentiableAt_complex_ofReal_im_of_hasDerivAt
   exact (Complex.ofRealCLM.hasFDerivAt.comp z₀ hImF).differentiableAt
 
 /--
-Frechet-Wirtinger derivative of the imaginary part of a holomorphic branch:
-`∂z Im(F) = -i F' / 2`.
+%%handwave
+name:
+  The z-derivative of an imaginary part
+statement:
+  If \(F\) has complex derivative \(F'\) at \(z₀\), then \(∂_z Im(F)(z₀)=-iF'/2\) after complexification.
+proof:
+  Evaluate the Wirtinger combination of the real derivative of \(Im F\).
 -/
 theorem frechetDZValue_complex_ofReal_im_of_hasDerivAt_general
     {F : ℂ → ℂ} {z₀ F' : ℂ}
@@ -662,8 +902,13 @@ theorem frechetDZValue_complex_ofReal_im_of_hasDerivAt_general
   apply Complex.ext <;> simp [Complex.mul_re, Complex.mul_im] <;> ring
 
 /--
-Frechet-Wirtinger `∂bar` derivative of the imaginary part of a holomorphic
-branch: `∂bar Im(F) = i \overline{F'} / 2`.
+%%handwave
+name:
+  The antiholomorphic derivative of an imaginary part
+statement:
+  If \(F\) has complex derivative \(F'\) at \(z₀\), then \(∂_{bar z}Im(F)(z₀)=i overline{F'}/2\) after complexification.
+proof:
+  Conjugate the z-derivative formula for the real-valued function \(Im F\).
 -/
 theorem frechetDBarValue_complex_ofReal_im_of_hasDerivAt_general
     {F : ℂ → ℂ} {z₀ F' : ℂ}
@@ -684,11 +929,13 @@ theorem frechetDBarValue_complex_ofReal_im_of_hasDerivAt_general
   simp
 
 /--
-Frechet-Wirtinger derivative of `(Im F)^2` for a holomorphic branch.
-
-For a complex differentiable function `F`, the complexified real function
-`z ↦ (Im F z)^2` satisfies
-`∂z (Im F)^2 = -i (Im F) F'`.
+%%handwave
+name:
+  The z-derivative of the square of an imaginary part
+statement:
+  If \(F\) has derivative \(F'\) at \(z₀\), then \(∂_z(Im F)²(z₀)=-i Im(F(z₀))F'\).
+proof:
+  Apply the product rule to \(Im(F)²\) and use the derivative formula for \(Im F\).
 -/
 theorem frechetDZValue_complex_ofReal_im_sq_of_hasDerivAt_general
     {F : ℂ → ℂ} {z₀ F' : ℂ}
@@ -720,10 +967,13 @@ theorem frechetDZValue_complex_ofReal_im_sq_of_hasDerivAt_general
   apply Complex.ext <;> simp [Complex.mul_re, Complex.mul_im] <;> ring
 
 /--
-Frechet-Wirtinger derivative of `(Im F)^2` for a holomorphic branch.
-
-At a point where `Im F = 1`, the identity is
-`∂z (Im F)^2 = -i F'`.
+%%handwave
+name:
+  The normalized imaginary-square derivative
+statement:
+  If \(F'(z₀)\) exists and \(Im(F(z₀))=1\), then \(∂_z(Im F)²(z₀)=-iF'\).
+proof:
+  Substitute the normalization into the general imaginary-square formula.
 -/
 theorem frechetDZValue_complex_ofReal_im_sq_of_hasDerivAt
     {F : ℂ → ℂ} {z₀ F' : ℂ}
@@ -735,11 +985,13 @@ theorem frechetDZValue_complex_ofReal_im_sq_of_hasDerivAt
   norm_num
 
 /--
-Frechet-Wirtinger derivative of `|G|²` for a holomorphic function.
-
-For a complex differentiable function `G`, the complexified real function
-`z ↦ |G(z)|²` satisfies
-`∂z |G|² = conjugate(G) * G'`.
+%%handwave
+name:
+  The z-derivative of a squared modulus
+statement:
+  If \(G\) has complex derivative \(G'\) at \(z₀\), then \(∂_z‖G‖²(z₀)=overline{G(z₀)}G'\).
+proof:
+  Differentiate the squares of the real and imaginary parts, add, and simplify.
 -/
 theorem frechetDZValue_complex_ofReal_normSq_of_hasDerivAt
     {G : ℂ → ℂ} {z₀ G' : ℂ}
@@ -791,8 +1043,13 @@ structure HasFrechetDBarOn (f dbar : ℂ → ℂ) (U : Set ℂ) : Prop where
   dbar_eq_frechet : ∀ z, z ∈ U → dbar z = frechetDBarValue f z
 
 /--
-At a point, `∂_{\bar z} f = 0` in the real Frechet derivative sense is
-equivalent to complex differentiability.
+%%handwave
+name:
+  Complex differentiability and the Cauchy–Riemann condition
+statement:
+  A map \(f:ℂ→ℂ\) is complex differentiable at \(z\) exactly when it is real differentiable there and \(Df_z(i)=iDf_z(1)\).
+proof:
+  Apply the real-versus-complex differentiability criterion.
 -/
 theorem differentiableAt_complex_iff_hasDBarZeroAt (f : ℂ → ℂ) (z : ℂ) :
     DifferentiableAt ℂ f z ↔ HasDBarZeroAt f z := by
@@ -801,8 +1058,13 @@ theorem differentiableAt_complex_iff_hasDBarZeroAt (f : ℂ → ℂ) (z : ℂ) :
       (f := f) (x := z))
 
 /--
-If the Frechet/Wirtinger `∂_{\bar z}` value vanishes at a real-differentiability
-point, then the Cauchy-Riemann condition holds there.
+%%handwave
+name:
+  Vanishing antiholomorphic derivative implies Cauchy–Riemann
+statement:
+  If \(f\) is real differentiable at \(z\) and \(∂_{bar z}f(z)=0\), then \(Df_z(i)=iDf_z(1)\).
+proof:
+  Expand the vanishing Wirtinger expression and solve for the derivative on \(i\).
 -/
 theorem hasDBarZeroAt_of_frechetDBarValue_eq_zero
     {f : ℂ → ℂ} {z : ℂ}
@@ -829,7 +1091,15 @@ theorem hasDBarZeroAt_of_frechetDBarValue_eq_zero
       _ = Complex.I * a := by ring
   simpa [a, b, smul_eq_mul] using hb
 
-/-- The Cauchy-Riemann condition makes the Frechet/Wirtinger `∂_{\bar z}` value vanish. -/
+/--
+%%handwave
+name:
+  Cauchy–Riemann implies vanishing antiholomorphic derivative
+statement:
+  If \(f\) is real differentiable at \(z\) and \(Df_z(i)=iDf_z(1)\), then \(∂_{bar z}f(z)=0\).
+proof:
+  Substitute the Cauchy–Riemann relation into the Wirtinger formula.
+-/
 theorem frechetDBarValue_eq_zero_of_hasDBarZeroAt
     {f : ℂ → ℂ} {z : ℂ} (h : HasDBarZeroAt f z) :
     frechetDBarValue f z = 0 := by
@@ -839,8 +1109,13 @@ theorem frechetDBarValue_eq_zero_of_hasDBarZeroAt
   ring
 
 /--
-At a real-differentiability point, vanishing of the Frechet/Wirtinger
-`∂_{\bar z}` value is equivalent to the Cauchy-Riemann condition.
+%%handwave
+name:
+  Vanishing antiholomorphic derivative is equivalent to Cauchy–Riemann
+statement:
+  At a real-differentiability point, \(∂_{bar z}f(z)=0\) if and only if \(Df_z(i)=iDf_z(1)\).
+proof:
+  Combine the two pointwise implications.
 -/
 theorem frechetDBarValue_eq_zero_iff_hasDBarZeroAt
     {f : ℂ → ℂ} {z : ℂ} (hdiff : DifferentiableAt ℝ f z) :
@@ -862,11 +1137,13 @@ def FrechetDZValueIsComplexDerivativeTheorem : Prop :=
     HasDerivAt f (frechetDZValue f z) z
 
 /--
-The Frechet/Wirtinger `∂_z` value is the ordinary one-variable complex
-derivative whenever the Frechet/Wirtinger `∂_{\bar z}` value vanishes.
-
-This closes the local bridge from the Cauchy-Riemann criterion supplied by
-mathlib to the explicit derivative value used in the Schwarzian ODE layer.
+%%handwave
+name:
+  The z-Wirtinger value is the complex derivative
+statement:
+  If \(f\) is real differentiable at \(z\) and satisfies Cauchy–Riemann, then \(f\) has complex derivative \(∂_zf(z)\).
+proof:
+  Cauchy–Riemann makes the real derivative complex linear, and the z-Wirtinger formula reduces to its value on \(1\).
 -/
 theorem frechetDZValueIsComplexDerivativeTheorem :
     FrechetDZValueIsComplexDerivativeTheorem := by
@@ -892,15 +1169,28 @@ theorem frechetDZValueIsComplexDerivativeTheorem :
   exact complexOfReal_hasDerivAt h.1 h.2
 
 /--
-Pointwise form of `FrechetDZValueIsComplexDerivativeTheorem`, useful when
-threading canonical Wirtinger data into one-variable ODE statements.
+%%handwave
+name:
+  Pointwise complex derivative from Cauchy–Riemann
+statement:
+  At a point where \(f\) is real differentiable and satisfies Cauchy–Riemann, its complex derivative is \(∂_zf\).
+proof:
+  Apply the preceding identification.
 -/
 theorem hasDerivAt_frechetDZValue_of_hasDBarZeroAt
     {f : ℂ → ℂ} {z : ℂ} (h : HasDBarZeroAt f z) :
     HasDerivAt f (frechetDZValue f z) z :=
   frechetDZValueIsComplexDerivativeTheorem h
 
-/-- Set-level form of `FrechetDZValueIsComplexDerivativeTheorem`. -/
+/--
+%%handwave
+name:
+  Complex derivatives on a set from Cauchy–Riemann
+statement:
+  If \(f\) is real differentiable and satisfies Cauchy–Riemann throughout \(U\), then it has complex derivative \(∂_zf(z)\) at every \(z∈U\).
+proof:
+  Apply the pointwise derivative statement throughout the set.
+-/
 theorem hasDerivAt_frechetDZValue_of_hasDBarZeroOn
     {f : ℂ → ℂ} {U : Set ℂ} (h : HasDBarZeroOn f U) :
     ∀ z, z ∈ U → HasDerivAt f (frechetDZValue f z) z := by
@@ -910,9 +1200,13 @@ theorem hasDerivAt_frechetDZValue_of_hasDBarZeroOn
 namespace HasFrechetDBarOn
 
 /--
-If a symbolic `dbar` has been identified with the Frechet/Wirtinger
-`∂_{\bar z}` operator and vanishes, then the function satisfies the
-Cauchy-Riemann condition on the domain.
+%%handwave
+name:
+  A vanishing symbolic antiholomorphic derivative gives Cauchy–Riemann
+statement:
+  Suppose \(f\) is real differentiable on \(U\) and \(b=∂_{bar z}f\) there. If \(b=0\) on \(U\), then \(f\) satisfies Cauchy–Riemann throughout \(U\).
+proof:
+  Replace the antiholomorphic derivative by \(b\) and apply the pointwise criterion.
 -/
 theorem hasDBarZeroOn_of_dbar_eq_zero
     {f dbar : ℂ → ℂ} {U : Set ℂ}
@@ -926,40 +1220,88 @@ theorem hasDBarZeroOn_of_dbar_eq_zero
 
 end HasFrechetDBarOn
 
-/-- A function with `∂_{\bar z} = 0` at every point of a set is complex differentiable there. -/
+/--
+%%handwave
+name:
+  Complex differentiability on a set from Cauchy–Riemann
+statement:
+  If \(f\) is real differentiable and satisfies Cauchy–Riemann at every point of \(U\), then \(f\) is complex differentiable on \(U\).
+proof:
+  Use the pointwise equivalence and pass to differentiability within the set.
+-/
 theorem differentiableOn_complex_of_hasDBarZeroOn
     {f : ℂ → ℂ} {U : Set ℂ} (h : HasDBarZeroOn f U) :
     DifferentiableOn ℂ f U := by
   intro z hz
   exact ((differentiableAt_complex_iff_hasDBarZeroAt f z).2 (h z hz)).differentiableWithinAt
 
-/-- On an open set, `∂_{\bar z} = 0` implies holomorphicity/analyticity. -/
+/--
+%%handwave
+name:
+  Holomorphicity from Cauchy–Riemann on an open set
+statement:
+  If \(U⊆ℂ\) is open and \(f\) satisfies Cauchy–Riemann throughout \(U\), then \(f\) is analytic near every point of \(U\).
+proof:
+  Obtain complex differentiability on \(U\) and apply open-set analyticity.
+-/
 theorem analyticOnNhd_of_hasDBarZeroOn
     {f : ℂ → ℂ} {U : Set ℂ} (hU : IsOpen U) (h : HasDBarZeroOn f U) :
     AnalyticOnNhd ℂ f U :=
   (differentiableOn_complex_of_hasDBarZeroOn h).analyticOnNhd hU
 
-/-- The same criterion phrased with `AnalyticOn`. -/
+/--
+%%handwave
+name:
+  Analyticity on a set from Cauchy–Riemann
+statement:
+  If \(U⊆ℂ\) is open and \(f\) satisfies Cauchy–Riemann throughout \(U\), then \(f\) is analytic on \(U\).
+proof:
+  Convert Cauchy–Riemann to complex differentiability and apply open-set analyticity.
+-/
 theorem analyticOn_of_hasDBarZeroOn
     {f : ℂ → ℂ} {U : Set ℂ} (hU : IsOpen U) (h : HasDBarZeroOn f U) :
     AnalyticOn ℂ f U :=
   (differentiableOn_complex_of_hasDBarZeroOn h).analyticOn hU
 
-/-- The Cauchy-Riemann/`∂_{\bar z} = 0` condition is closed under scalar multiplication. -/
+/--
+%%handwave
+name:
+  Cauchy–Riemann is preserved by scalar multiplication
+statement:
+  If \(f\) satisfies Cauchy–Riemann at \(z\), then so does \(cf\) for \(c∈ℂ\).
+proof:
+  Complex differentiability is preserved by constant multiplication and is equivalent to Cauchy–Riemann.
+-/
 theorem hasDBarZeroAt_const_smul
     {f : ℂ → ℂ} {z : ℂ} (c : ℂ) (h : HasDBarZeroAt f z) :
     HasDBarZeroAt (c • f) z := by
   exact (differentiableAt_complex_iff_hasDBarZeroAt (c • f) z).1
     (((differentiableAt_complex_iff_hasDBarZeroAt f z).2 h).const_smul c)
 
-/-- The Cauchy-Riemann/`∂_{\bar z} = 0` condition on a set is closed under scalar multiplication. -/
+/--
+%%handwave
+name:
+  Setwise Cauchy–Riemann is preserved by scalar multiplication
+statement:
+  If \(f\) satisfies Cauchy–Riemann throughout \(U\), then \(cf\) does too for \(c∈ℂ\).
+proof:
+  Apply the pointwise scalar-multiplication result throughout \(U\).
+-/
 theorem hasDBarZeroOn_const_smul
     {f : ℂ → ℂ} {U : Set ℂ} (c : ℂ) (h : HasDBarZeroOn f U) :
     HasDBarZeroOn (c • f) U := by
   intro z hz
   exact hasDBarZeroAt_const_smul c (h z hz)
 
-/-- Multiplying a function by `2` preserves the `∂_{\bar z} = 0` condition. -/
+/--
+%%handwave
+name:
+  Doubling preserves the Cauchy–Riemann condition
+statement:
+  If \(f\) satisfies Cauchy–Riemann throughout \(U\), then \(z↦2f(z)\) also satisfies it there.
+proof:
+  Specialize scalar multiplication to \(c=2\).
+-/
 theorem hasDBarZeroOn_two_mul
     {f : ℂ → ℂ} {U : Set ℂ} (h : HasDBarZeroOn f U) :
     HasDBarZeroOn (fun z ↦ 2 * f z) U := by
@@ -1011,29 +1353,71 @@ def halfSchwarzianCoefficient (u : LocalConformalFactor) : ℂ → ℂ :=
 def dbarHalfSchwarzianCoefficient (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDBarValue u.halfSchwarzianCoefficient z
 
+/--
+%%handwave
+name:
+  Formula for the half-Schwarzian coefficient
+statement:
+  For a conformal log-density \(u\), its half-Schwarzian coefficient is \(q=u_{zz}-u_z²\).
+proof:
+  This is the defining formula.
+-/
 @[simp]
 theorem halfSchwarzianCoefficient_apply (u : LocalConformalFactor) (z : ℂ) :
     u.halfSchwarzianCoefficient z = u.wirtingerZZ z - u.wirtingerZ z ^ 2 :=
   rfl
 
+/--
+%%handwave
+name:
+  Complexification of the conformal density
+statement:
+  For real \(u\), complex \(exp(2u)\) equals the complexification of real \(e^{2u}\) pointwise.
+proof:
+  The complex exponential commutes with the real-to-complex inclusion.
+-/
 @[simp]
 theorem expTwoUComplex_apply (u : LocalConformalFactor) (z : ℂ) :
     u.expTwoUComplex z = (Real.exp (2 * u.logDensity z) : ℂ) :=
   by simp [expTwoUComplex, complexLogDensity, Complex.ofReal_exp]
 
-/-- The complexified log-density inherits the `C^3` regularity of `u.logDensity`. -/
+/--
+%%handwave
+name:
+  Regularity of the complexified log-density
+statement:
+  If \(u\) is \(C³\) on its coordinate domain \(Ω\), then its complexification is \(C³\) on \(Ω\).
+proof:
+  Compose \(u\) with the continuous real-linear inclusion \(ℝ→ℂ\).
+-/
 theorem complexLogDensity_contDiffOn (u : LocalConformalFactor) :
     ContDiffOn ℝ 3 u.complexLogDensity u.coordinateDomain := by
   simpa [complexLogDensity] using
     (Complex.ofRealCLM.contDiff.comp_contDiffOn u.logDensity_contDiffOn)
 
-/-- The complexified log-density is `C^3` at points of the coordinate domain. -/
+/--
+%%handwave
+name:
+  Pointwise regularity of the complexified log-density
+statement:
+  At every \(z∈Ω\), the complexified log-density is \(C³\) near \(z\).
+proof:
+  Restrict domainwise regularity to the neighborhood supplied by openness of \(Ω\).
+-/
 theorem complexLogDensity_contDiffAt (u : LocalConformalFactor) {z : ℂ}
     (hz : z ∈ u.coordinateDomain) :
     ContDiffAt ℝ 3 u.complexLogDensity z :=
   u.complexLogDensity_contDiffOn.contDiffAt (u.isOpen_coordinateDomain.mem_nhds hz)
 
-/-- The concrete field `u_z` is `C^2` at points of the coordinate domain. -/
+/--
+%%handwave
+name:
+  Second-order regularity of the first Wirtinger field
+statement:
+  At every \(z∈Ω\), \(u_z\) is \(C²\) near \(z\).
+proof:
+  Differentiate the \(C³\) complexified log-density once and evaluate on \(1\) and \(i\).
+-/
 theorem wirtingerZ_contDiffAt (u : LocalConformalFactor) {z : ℂ}
     (hz : z ∈ u.coordinateDomain) :
     ContDiffAt ℝ 2 u.wirtingerZ z := by
@@ -1047,19 +1431,43 @@ theorem wirtingerZ_contDiffAt (u : LocalConformalFactor) {z : ℂ}
     ContDiffAt.const_smul (1 / 2 : ℂ)
       (h1.sub (ContDiffAt.const_smul Complex.I hI)) using 1
 
-/-- The concrete field `u_z` is real differentiable on the coordinate domain. -/
+/--
+%%handwave
+name:
+  Real differentiability of the first Wirtinger field
+statement:
+  For every \(z∈Ω\), \(u_z\) is real differentiable at \(z\).
+proof:
+  A \(C²\) map is differentiable.
+-/
 theorem wirtingerZ_differentiableAt (u : LocalConformalFactor) {z : ℂ}
     (hz : z ∈ u.coordinateDomain) :
     DifferentiableAt ℝ u.wirtingerZ z :=
   (u.wirtingerZ_contDiffAt hz).differentiableAt (by norm_num)
 
-/-- The concrete field `u_z` is continuous on the coordinate domain. -/
+/--
+%%handwave
+name:
+  Continuity of the first Wirtinger field
+statement:
+  The first Wirtinger field \(u_z\) is continuous on \(Ω\).
+proof:
+  Its pointwise \(C²\) regularity gives continuity at every point.
+-/
 theorem wirtingerZ_continuousOn (u : LocalConformalFactor) :
     ContinuousOn u.wirtingerZ u.coordinateDomain :=
   continuousOn_of_forall_continuousAt fun _ hz ↦
     (u.wirtingerZ_contDiffAt hz).continuousAt
 
-/-- The concrete field `u_zz` is `C^1` at points of the coordinate domain. -/
+/--
+%%handwave
+name:
+  First-order regularity of the second Wirtinger field
+statement:
+  At every \(z∈Ω\), \(u_{zz}\) is \(C¹\) near \(z\).
+proof:
+  Differentiate the \(C²\) field \(u_z\) once and evaluate on \(1\) and \(i\).
+-/
 theorem wirtingerZZ_contDiffAt (u : LocalConformalFactor) {z : ℂ}
     (hz : z ∈ u.coordinateDomain) :
     ContDiffAt ℝ 1 u.wirtingerZZ z := by
@@ -1073,15 +1481,28 @@ theorem wirtingerZZ_contDiffAt (u : LocalConformalFactor) {z : ℂ}
     ContDiffAt.const_smul (1 / 2 : ℂ)
       (h1.sub (ContDiffAt.const_smul Complex.I hI)) using 1
 
-/-- The concrete field `u_zz` is real differentiable on the coordinate domain. -/
+/--
+%%handwave
+name:
+  Real differentiability of the second Wirtinger field
+statement:
+  For every \(z∈Ω\), \(u_{zz}\) is real differentiable at \(z\).
+proof:
+  A \(C¹\) map is differentiable.
+-/
 theorem wirtingerZZ_differentiableAt (u : LocalConformalFactor) {z : ℂ}
     (hz : z ∈ u.coordinateDomain) :
     DifferentiableAt ℝ u.wirtingerZZ z :=
   (u.wirtingerZZ_contDiffAt hz).differentiableAt (by norm_num)
 
 /--
-The concrete half-Schwarzian coefficient is differentiable once its two
-component Wirtinger fields are differentiable.
+%%handwave
+name:
+  Differentiability of the half-Schwarzian coefficient
+statement:
+  If \(u_z\) and \(u_{zz}\) are real differentiable at \(z\), then \(q=u_{zz}-u_z²\) is real differentiable there.
+proof:
+  Use closure under products and subtraction.
 -/
 theorem halfSchwarzianCoefficient_differentiableAt
     (u : LocalConformalFactor) {z : ℂ}
@@ -1092,8 +1513,13 @@ theorem halfSchwarzianCoefficient_differentiableAt
   simpa [pow_two] using hZZ.sub (hZ.mul hZ)
 
 /--
-The product-rule part of the concrete Wirtinger package is a mathlib
-calculus consequence of differentiability of `u_zz` and `u_z`.
+%%handwave
+name:
+  The antiholomorphic product rule for the half-Schwarzian
+statement:
+  If \(u_z\) and \(u_{zz}\) are real differentiable at \(z\), then \(∂_{bar z}(u_{zz}-u_z²)=∂_{bar z}u_{zz}-2u_z∂_{bar z}u_z\).
+proof:
+  Apply the Fréchet product rule to \(u_z²\) and evaluate the antiholomorphic Wirtinger combination.
 -/
 theorem dbarHalfSchwarzianCoefficient_eq_of_differentiableAt
     (u : LocalConformalFactor) {z : ℂ}
@@ -1159,7 +1585,15 @@ structure WirtingerDerivativePackage (u : LocalConformalFactor) (K : ℝ) where
 
 namespace WirtingerDerivativePackage
 
-/-- The concrete half-Schwarzian coefficient is real differentiable on the domain. -/
+/--
+%%handwave
+name:
+  Domainwise differentiability of the half-Schwarzian
+statement:
+  For a \(C³\) log-density, \(q=u_{zz}-u_z²\) is real differentiable throughout \(Ω\).
+proof:
+  Use inherited differentiability of \(u_z\) and \(u_{zz}\).
+-/
 theorem halfSchwarzian_differentiable_at
     {u : LocalConformalFactor} {K : ℝ}
     (_W : u.WirtingerDerivativePackage K) :
@@ -1169,7 +1603,15 @@ theorem halfSchwarzian_differentiable_at
     (u.wirtingerZZ_differentiableAt hz)
     (u.wirtingerZ_differentiableAt hz)
 
-/-- Product rule for `∂_{\bar z}(u_zz - u_z ^ 2)`, derived by mathlib calculus. -/
+/--
+%%handwave
+name:
+  The domainwise antiholomorphic product rule
+statement:
+  For a \(C³\) log-density, \(∂_{bar z}(u_{zz}-u_z²)=∂_{bar z}u_{zz}-2u_z u_{z bar z}\) throughout \(Ω\).
+proof:
+  Apply the pointwise product rule using regularity of the two fields.
+-/
 theorem dbar_halfSchwarzian_eq
     {u : LocalConformalFactor} {K : ℝ}
     (_W : u.WirtingerDerivativePackage K) :
@@ -1182,8 +1624,13 @@ theorem dbar_halfSchwarzian_eq
     (u.wirtingerZ_differentiableAt hz)
 
 /--
-The concrete `∂_{\bar z}` field of the half-Schwarzian coefficient is exactly
-the Frechet/Wirtinger `∂_{\bar z}` value.
+%%handwave
+name:
+  Identification of the half-Schwarzian antiholomorphic derivative
+statement:
+  The recorded antiholomorphic field for \(q=u_{zz}-u_z²\) equals \(∂_{bar z}q\) throughout \(Ω\).
+proof:
+  Differentiability follows from the package, and the field is defined by that Wirtinger value.
 -/
 theorem hasFrechetDBarOn_halfSchwarzian
     {u : LocalConformalFactor} {K : ℝ}
@@ -1205,8 +1652,13 @@ replacement targets for project-local proofs from the `C^3` regularity field.
 -/
 
 /--
-The complexified log-density has the complexification of the real-valued
-Laplacian.
+%%handwave
+name:
+  Laplacian of the complexified log-density
+statement:
+  For \(z∈Ω\), the Laplacian of the complexification of \(u\) is the complexification of \(Δu(z)\).
+proof:
+  A continuous real-linear map commutes with the Laplacian of a twice differentiable function.
 -/
 theorem complexLogDensity_laplacian_eq
     (u : LocalConformalFactor) {z : ℂ} (hz : z ∈ u.coordinateDomain) :
@@ -1218,7 +1670,15 @@ theorem complexLogDensity_laplacian_eq
   simpa [complexLogDensity] using
     hlog2.laplacian_CLM_comp_left (l := Complex.ofRealCLM)
 
-/-- The identity `u_{z\bar z} = (1 / 4) Δu` for the concrete Frechet fields. -/
+/--
+%%handwave
+name:
+  The mixed Wirtinger derivative and the Laplacian
+statement:
+  For every \(z∈Ω\), \(u_{z bar z}(z)=¼Δu(z)\) after complexification.
+proof:
+  Expand both Wirtinger operators through the second real derivative, use symmetry, and identify its trace.
+-/
 theorem wirtingerZBar_eq_laplacian
     (u : LocalConformalFactor) :
     ∀ z, z ∈ u.coordinateDomain →
@@ -1282,8 +1742,13 @@ theorem wirtingerZBar_eq_laplacian
   ring_nf
 
 /--
-For a `C^2` complex-valued function, the concrete Frechet-Wirtinger operators
-`∂z` and `∂bar` commute at a point.
+%%handwave
+name:
+  Commutation of the two Wirtinger derivatives
+statement:
+  If \(g:ℂ→ℂ\) is \(C²\) at \(z\), then \(∂_{bar z}∂_zg(z)=∂_z∂_{bar z}g(z)\).
+proof:
+  Expand both sides in the second real derivative and use symmetry.
 -/
 theorem frechetDBar_frechetDZ_eq_frechetDZ_frechetDBar
     {g : ℂ → ℂ} {z : ℂ} (hg : ContDiffAt ℝ 2 g z) :
@@ -1343,7 +1808,15 @@ theorem frechetDBar_frechetDZ_eq_frechetDZ_frechetDBar
   rw [hsymm.eq Complex.I (1 : ℂ)]
   ring_nf
 
-/-- Mixed derivative compatibility: `∂_{\bar z} u_zz = ∂_z u_{z\bar z}`. -/
+/--
+%%handwave
+name:
+  Mixed-derivative compatibility for a conformal factor
+statement:
+  For every \(z∈Ω\), \(∂_{bar z}u_{zz}(z)=∂_zu_{z bar z}(z)\).
+proof:
+  Apply commutation to the \(C²\) field \(u_z\).
+-/
 theorem mixed_derivatives_eq
     (u : LocalConformalFactor) :
     ∀ z, z ∈ u.coordinateDomain → u.dbarWirtingerZZ z = u.dZWirtingerZBar z := by
@@ -1351,7 +1824,15 @@ theorem mixed_derivatives_eq
   exact frechetDBar_frechetDZ_eq_frechetDZ_frechetDBar
     (u.wirtingerZ_contDiffAt hz)
 
-/-- Chain rule for the `z` derivative of `exp (2u)`. -/
+/--
+%%handwave
+name:
+  The z-derivative of the conformal density
+statement:
+  For every \(z∈Ω\), \(∂_z e^{2u}(z)=2u_z(z)e^{2u(z)}\) after complexification.
+proof:
+  Apply the real Fréchet chain rule to the complex exponential and \(2u\).
+-/
 theorem dZ_expTwoU_eq
     (u : LocalConformalFactor) :
     ∀ z, z ∈ u.coordinateDomain →
@@ -1378,11 +1859,13 @@ theorem dZ_expTwoU_eq
   ring
 
 /--
-Differentiating the constant-curvature identity
-`u_{z\bar z} = -(K / 4) exp (2u)` in the `z` direction.
-
-The pointwise identity is obtained from `u_{z\bar z} = (1 / 4) Δu` and the
-constant-curvature equation, then differentiated by neighborhood congruence.
+%%handwave
+name:
+  Differentiating the constant-curvature identity
+statement:
+  If \(Δu=-K e^{2u}\) on \(Ω\), then \(∂_zu_{z bar z}=-(K/4)∂_ze^{2u}\) throughout \(Ω\).
+proof:
+  Identify \(u_{z bar z}=-(K/4)e^{2u}\) locally and differentiate.
 -/
 theorem dZ_wirtingerZBar_eq_of_solvesConstantCurvatureEquation
     (u : LocalConformalFactor) (K : ℝ)
@@ -1478,14 +1961,13 @@ structure SchwarzianWirtingerCalculationData (u : LocalConformalFactor) (K : ℝ
 namespace SchwarzianWirtingerCalculationData
 
 /--
-The local Schwarzian calculation:
-
-if `u_{z\bar z} = -(K / 4) exp (2u)`, then
-`∂_{\bar z}(u_{zz} - u_z ^ 2) = 0`.
-
-The analytic boundary is now the construction of the Wirtinger data and the
-proofs of the two derivative identities from the current smooth local
-conformal factor.
+%%handwave
+name:
+  Schwarzian cancellation from the derivative identities
+statement:
+  If \(∂_{bar z}u_{zz}=-(K/2)u_ze^{2u}\) and \(∂_{bar z}(u_{zz}-u_z²)=∂_{bar z}u_{zz}-2u_z(-(K/4)e^{2u})\), then \(∂_{bar z}(u_{zz}-u_z²)=0\).
+proof:
+  Substitute the first identity into the second and cancel.
 -/
 theorem dbarSchwarzian_eq_zero
     {u : LocalConformalFactor} {K : ℝ}
@@ -1542,8 +2024,13 @@ structure ConstantCurvatureWirtingerIdentityData
 namespace ConstantCurvatureWirtingerIdentityData
 
 /--
-The constant-curvature equation implies the Wirtinger form
-`u_{z\bar z} = -(K / 4) exp (2u)`.
+%%handwave
+name:
+  The constant-curvature equation in Wirtinger form
+statement:
+  If \(Δu=-K e^{2u}\) and \(u_{z bar z}=¼Δu\) on \(Ω\), then \(u_{z bar z}=-(K/4)e^{2u}\) there.
+proof:
+  Substitute the curvature equation into the Laplacian identity.
 -/
 theorem uZBar_eq_of_solvesConstantCurvatureEquation
     {u : LocalConformalFactor} {K : ℝ}
@@ -1564,8 +2051,13 @@ theorem uZBar_eq_of_solvesConstantCurvatureEquation
             ring
 
 /--
-After differentiating the Wirtinger constant-curvature identity, the chain rule
-gives `∂_{\bar z} u_zz = -(K / 2) u_z exp (2u)`.
+%%handwave
+name:
+  The differentiated constant-curvature equation
+statement:
+  If mixed derivatives commute, \(∂_zu_{z bar z}=-(K/4)∂_ze^{2u}\), and \(∂_ze^{2u}=2u_ze^{2u}\), then \(∂_{bar z}u_{zz}=-(K/2)u_ze^{2u}\).
+proof:
+  Substitute the three identities and collect constants.
 -/
 theorem dbarUZZ_eq_of_differentiated_constantCurvatureEquation
     {u : LocalConformalFactor} {K : ℝ}
@@ -1605,8 +2097,13 @@ structure SchwarzianProductRuleData (u : LocalConformalFactor) (K : ℝ)
 namespace SchwarzianProductRuleData
 
 /--
-Using the constant-curvature equation, the product rule becomes the exact
-Schwarzian identity used in the final cancellation.
+%%handwave
+name:
+  The product-rule Schwarzian identity under constant curvature
+statement:
+  If \(∂_{bar z}(u_{zz}-u_z²)=∂_{bar z}u_{zz}-2u_zu_{z bar z}\) and \(u_{z bar z}=-(K/4)e^{2u}\), then the second term becomes \(-2u_z(-(K/4)e^{2u})\).
+proof:
+  Substitute the constant-curvature formula into the product rule.
 -/
 theorem dbarSchwarzian_eq_of_solvesConstantCurvatureEquation
     {u : LocalConformalFactor} {K : ℝ}
@@ -1620,9 +2117,13 @@ theorem dbarSchwarzian_eq_of_solvesConstantCurvatureEquation
     P.toConstantCurvatureWirtingerIdentityData.uZBar_eq_of_solvesConstantCurvatureEquation hK z hz]
 
 /--
-The local Schwarzian cancellation derived from the constant-curvature
-Wirtinger identity, its differentiated form, the chain rule, mixed derivatives,
-and the product rule.
+%%handwave
+name:
+  Holomorphicity of the metric Schwarzian under constant curvature
+statement:
+  Under the curvature, chain-rule, mixed-derivative, and product-rule identities, \(∂_{bar z}(u_{zz}-u_z²)=0\) throughout \(Ω\).
+proof:
+  Use the differentiated curvature equation in the product rule and cancel.
 -/
 theorem dbarSchwarzian_eq_zero_of_solvesConstantCurvatureEquation
     {u : LocalConformalFactor} {K : ℝ}
@@ -1672,12 +2173,29 @@ unscaled Liouville expression `u_zz - u_z ^ 2`.
 def metricSchwarzianCoefficient (halfCoefficient : ℂ → ℂ) : ℂ → ℂ :=
   fun z ↦ 2 * halfCoefficient z
 
+/--
+%%handwave
+name:
+  Formula for the metric Schwarzian coefficient
+statement:
+  For every coefficient \(q\) and point \(z\), the metric Schwarzian coefficient is \(2q(z)\).
+proof:
+  This is the defining scaling.
+-/
 @[simp]
 theorem metricSchwarzianCoefficient_apply (halfCoefficient : ℂ → ℂ) (z : ℂ) :
     metricSchwarzianCoefficient halfCoefficient z = 2 * halfCoefficient z :=
   rfl
 
-/-- If the unscaled Liouville expression has `∂_{\bar z} = 0`, so does the actual Schwarzian coefficient. -/
+/--
+%%handwave
+name:
+  Scaling preserves the Cauchy–Riemann condition
+statement:
+  If \(q\) satisfies Cauchy–Riemann on \(Ω\), then \(2q\) does too.
+proof:
+  Use preservation under constant scalar multiplication.
+-/
 theorem hasDBarZeroOn_metricSchwarzianCoefficient
     {u : LocalConformalFactor} {halfCoefficient : ℂ → ℂ}
     (h : HasDBarZeroOn halfCoefficient u.coordinateDomain) :
@@ -1773,6 +2291,15 @@ def toLocalSchwarzianData {u : LocalConformalFactor} (H : LocalHalfSchwarzianDat
   LocalSchwarzianData.of_halfCoefficient_hasDBarZeroOn H.halfCoefficient
     H.halfCoefficient_eq_wirtinger_formula H.has_dbar_zero_on
 
+/--
+%%handwave
+name:
+  Coefficient obtained by scaling half-Schwarzian data
+statement:
+  If half-Schwarzian data have coefficient \(q\), the associated Schwarzian data have coefficient \(2q\).
+proof:
+  This is the defining conversion to the metric coefficient.
+-/
 @[simp]
 theorem toLocalSchwarzianData_coefficient
     {u : LocalConformalFactor} (H : LocalHalfSchwarzianData u) :
@@ -1883,8 +2410,13 @@ def toLocalHalfSchwarzianData
       (P.dbarSchwarzian_eq_zero_of_solvesConstantCurvatureEquation hK))
 
 /--
-The Schwarzian data produced from the concrete Frechet-Wirtinger package has
-the canonical metric Schwarzian coefficient of `u`.
+%%handwave
+name:
+  Identification of the constructed metric Schwarzian
+statement:
+  The Schwarzian data constructed from a constant-curvature Wirtinger package have coefficient \(2(u_{zz}-u_z²)\) on \(Ω\).
+proof:
+  The half coefficient is \(u_{zz}-u_z²\) and conversion scales it by \(2\).
 -/
 theorem toLocalSchwarzianData_originalMetricIdentification
     {u : LocalConformalFactor} {K : ℝ}

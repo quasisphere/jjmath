@@ -62,12 +62,30 @@ abbrev StandardSimplex (k : ℕ) : Type :=
 def simplexCoordinateDomain (k : ℕ) : Set (Fin k → ℝ) :=
   {x | (∀ i, 0 ≤ x i) ∧ ∑ i : Fin k, x i ≤ 1}
 
+/--
+%%handwave
+name:
+  Measurability of the affine simplex domain
+statement:
+  The set \(\{x\in\mathbb R^k:x_i\ge0,\ \sum_i x_i\le1\}\) is measurable.
+proof:
+  It is cut out by finitely many measurable linear inequalities.
+-/
 theorem measurableSet_simplexCoordinateDomain (k : ℕ) :
     MeasurableSet (simplexCoordinateDomain k) := by
   classical
   simp [simplexCoordinateDomain]
   measurability
 
+/--
+%%handwave
+name:
+  Closedness of the affine simplex domain
+statement:
+  The set \(\{x\in\mathbb R^k:x_i\ge0,\ \sum_i x_i\le1\}\) is closed.
+proof:
+  It is the intersection of finitely many closed half-spaces.
+-/
 theorem isClosed_simplexCoordinateDomain (k : ℕ) :
     IsClosed (simplexCoordinateDomain k) := by
   classical
@@ -79,6 +97,15 @@ theorem isClosed_simplexCoordinateDomain (k : ℕ) :
     isClosed_le (continuous_finsetSum _ fun i _ => continuous_apply i) continuous_const
   simpa [simplexCoordinateDomain, Set.setOf_and] using hnonneg.inter hsum
 
+/--
+%%handwave
+name:
+  Compactness of the affine simplex domain
+statement:
+  The affine coordinate domain of the standard \(k\)-simplex is compact.
+proof:
+  It is closed and contained in the compact cube \([0,1]^k\).
+-/
 theorem isCompact_simplexCoordinateDomain (k : ℕ) :
     IsCompact (simplexCoordinateDomain k) := by
   classical
@@ -94,7 +121,15 @@ theorem isCompact_simplexCoordinateDomain (k : ℕ) :
       exact hsingle.trans hx.2
   exact isCompact_Icc.of_isClosed_subset (isClosed_simplexCoordinateDomain k) hsubset
 
-/-- The affine coordinate simplex is convex. -/
+/--
+%%handwave
+name:
+  Convexity of the affine simplex domain
+statement:
+  The set \(\{x\in\mathbb R^k:x_i\ge0,\ \sum_i x_i\le1\}\) is convex.
+proof:
+  Nonnegativity and the sum bound are preserved by convex combinations.
+-/
 theorem convex_simplexCoordinateDomain (k : ℕ) :
     Convex ℝ (simplexCoordinateDomain k) := by
   classical
@@ -114,7 +149,17 @@ theorem convex_simplexCoordinateDomain (k : ℕ) :
             (mul_le_mul_of_nonneg_left hy.2 hb)
       _ = 1 := by nlinarith
 
-/-- The affine coordinate simplex has nonempty interior. -/
+/--
+%%handwave
+name:
+  Nonempty interior of the affine simplex domain
+statement:
+  The affine coordinate domain of the standard \(k\)-simplex has nonempty
+  interior.
+proof:
+  The point with every coordinate \(1/(k+1)\) satisfies all coordinate
+  inequalities and the sum inequality strictly.
+-/
 theorem interior_simplexCoordinateDomain_nonempty (k : ℕ) :
     (interior (simplexCoordinateDomain k)).Nonempty := by
   classical
@@ -147,13 +192,32 @@ theorem interior_simplexCoordinateDomain_nonempty (k : ℕ) :
   have hc_u : c ∈ u := ⟨hc_pos, hc_sum⟩
   exact ⟨c, interior_maximal hu_subset hu_open hc_u⟩
 
-/-- The affine coordinate simplex is a set of unique differentiability. -/
+/--
+%%handwave
+name:
+  Unique differentiability on the affine simplex domain
+statement:
+  The affine coordinate domain of the standard simplex is a
+  unique-differentiability set.
+proof:
+  A convex set with nonempty interior is a set of unique differentiability.
+-/
 theorem uniqueDiffOn_simplexCoordinateDomain (k : ℕ) :
     UniqueDiffOn ℝ (simplexCoordinateDomain k) :=
   uniqueDiffOn_convex (convex_simplexCoordinateDomain k)
     (interior_simplexCoordinateDomain_nonempty k)
 
-/-- Every point of the closed affine simplex is a limit of interior points. -/
+/--
+%%handwave
+name:
+  Density of the interior of the affine simplex
+statement:
+  Every point of the affine simplex domain belongs to the closure of its
+  interior.
+proof:
+  For a convex set with nonempty interior, the closure of the interior equals
+  the closure of the set.
+-/
 theorem simplexCoordinateDomain_subset_closure_interior (k : ℕ) :
     simplexCoordinateDomain k ⊆ closure (interior (simplexCoordinateDomain k)) := by
   intro x hx
@@ -171,18 +235,48 @@ def simplexCoordinateSliceDomain (k : ℕ) : Set ((Fin k → ℝ) × ℝ) :=
   {p | p.1 ∈ simplexCoordinateDomain k ∧
     p.2 ∈ Icc (0 : ℝ) (1 - ∑ i : Fin k, p.1 i)}
 
+/--
+%%handwave
+name:
+  Measurability of the sliced simplex domain
+statement:
+  The set of pairs \((x,t)\) with
+  \(x\in\Delta^k_{\mathrm{aff}}\) and
+  \(0\le t\le1-\sum_i x_i\) is measurable.
+proof:
+  It is defined by finitely many measurable inequalities.
+-/
 theorem measurableSet_simplexCoordinateSliceDomain (k : ℕ) :
     MeasurableSet (simplexCoordinateSliceDomain k) := by
   classical
   simp [simplexCoordinateSliceDomain, simplexCoordinateDomain]
   measurability
 
+/--
+%%handwave
+name:
+  Initial coordinates of the last-coordinate slice map
+statement:
+  For \(i<k\), adjoining \(t\) as the last coordinate to \(x\in\mathbb R^k\)
+  leaves coordinate \(i\) equal to \(x_i\).
+proof:
+  This is the definition of adjoining a final coordinate.
+-/
 @[simp]
 theorem simplexCoordinateSliceMap_castSucc
     (k : ℕ) (x : Fin k → ℝ) (t : ℝ) (i : Fin k) :
     simplexCoordinateSliceMap k x t i.castSucc = x i := by
   simp [simplexCoordinateSliceMap]
 
+/--
+%%handwave
+name:
+  Final coordinate of the last-coordinate slice map
+statement:
+  Adjoining \(t\) as the final coordinate gives final coordinate \(t\).
+proof:
+  This is the definition of adjoining a final coordinate.
+-/
 @[simp]
 theorem simplexCoordinateSliceMap_last
     (k : ℕ) (x : Fin k → ℝ) (t : ℝ) :
@@ -190,9 +284,17 @@ theorem simplexCoordinateSliceMap_last
   simp [simplexCoordinateSliceMap]
 
 /--
-A point of the \((k+1)\)-dimensional affine simplex is the same as a point of
-the \(k\)-dimensional affine simplex together with a final coordinate between
-\(0\) and the remaining barycentric mass.
+%%handwave
+name:
+  Membership criterion for last-coordinate simplex slices
+statement:
+  The vector \((x_0,\ldots,x_{k-1},t)\) lies in the affine
+  \((k+1)\)-simplex if and only if
+  \(x\in\Delta^k_{\mathrm{aff}}\) and
+  \(0\le t\le1-\sum_i x_i\).
+proof:
+  Separate nonnegativity of the last coordinate from the other coordinates
+  and rewrite the total sum as \(\sum_i x_i+t\).
 -/
 theorem simplexCoordinateSliceMap_mem_domain_iff
     (k : ℕ) (x : Fin k → ℝ) (t : ℝ) :
@@ -231,6 +333,17 @@ noncomputable def simplexCoordinateSliceMeasurableEquiv (k : ℕ) :
       (Fin k → ℝ) × ℝ ≃ᵐ ℝ × (Fin k → ℝ)).trans
     ((MeasurableEquiv.piFinSuccAbove (fun _ : Fin (k + 1) => ℝ) (Fin.last k)).symm)
 
+/--
+%%handwave
+name:
+  Formula for the last-coordinate measurable equivalence
+statement:
+  The measurable identification
+  \(\mathbb R^k\times\mathbb R\cong\mathbb R^{k+1}\) sends
+  \((x,t)\) to \((x_0,\ldots,x_{k-1},t)\).
+proof:
+  Check the last coordinate and each preceding coordinate separately.
+-/
 @[simp]
 theorem simplexCoordinateSliceMeasurableEquiv_apply
     (k : ℕ) (x : Fin k → ℝ) (t : ℝ) :
@@ -243,7 +356,19 @@ theorem simplexCoordinateSliceMeasurableEquiv_apply
   · simp [simplexCoordinateSliceMeasurableEquiv, simplexCoordinateSliceMap,
       MeasurableEquiv.prodComm, Equiv.prodComm_apply]
 
-/-- The slicing equivalence preserves the finite-dimensional Lebesgue measure. -/
+/--
+%%handwave
+name:
+  Measure preservation of last-coordinate slicing
+statement:
+  The identification
+  \(\mathbb R^k\times\mathbb R\cong\mathbb R^{k+1}\) obtained by adjoining a
+  last coordinate preserves Lebesgue measure.
+proof:
+  It is the composition of the measure-preserving factor swap with the
+  canonical coordinate insertion, which also preserves product Lebesgue
+  measure.
+-/
 theorem measurePreserving_simplexCoordinateSliceMeasurableEquiv (k : ℕ) :
     MeasurePreserving (simplexCoordinateSliceMeasurableEquiv k) := by
   classical
@@ -265,6 +390,20 @@ theorem measurePreserving_simplexCoordinateSliceMeasurableEquiv (k : ℕ) :
         (Fin k → ℝ) × ℝ ≃ᵐ ℝ × (Fin k → ℝ)))
   exact heLast.comp hswap
 
+/--
+%%handwave
+name:
+  Preimage of the simplex under last-coordinate slicing
+statement:
+  Under \((x,t)\mapsto(x,t)\in\mathbb R^{k+1}\), the preimage of the affine
+  \((k+1)\)-simplex is exactly
+  \[
+    \{(x,t):x\in\Delta^k_{\mathrm{aff}},\
+      0\le t\le1-\sum_i x_i\}.
+  \]
+proof:
+  Apply the membership criterion for the slice map.
+-/
 theorem simplexCoordinateSliceMeasurableEquiv_preimage_domain (k : ℕ) :
     simplexCoordinateSliceMeasurableEquiv k ⁻¹'
         simplexCoordinateDomain (k + 1) =
@@ -273,6 +412,20 @@ theorem simplexCoordinateSliceMeasurableEquiv_preimage_domain (k : ℕ) :
   rcases p with ⟨x, t⟩
   simp [simplexCoordinateSliceDomain, simplexCoordinateSliceMap_mem_domain_iff]
 
+/--
+%%handwave
+name:
+  Integral over a simplex as an integral over its slice domain
+statement:
+  For \(f:\mathbb R^{k+1}\to F\),
+  \[
+    \int_{\Delta^{k+1}_{\mathrm{aff}}}f(y)\,dy
+    =\int_{\{(x,t):x\in\Delta^k_{\mathrm{aff}},\,
+      0\le t\le1-\sum x_i\}}f(x,t)\,d(x,t).
+  \]
+proof:
+  Change variables by the measure-preserving last-coordinate equivalence.
+-/
 theorem integral_simplexCoordinateDomain_succ_eq_sliceDomain
     {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {k : ℕ} (f : (Fin (k + 1) → ℝ) → F) :
@@ -294,7 +447,21 @@ theorem integral_simplexCoordinateDomain_succ_eq_sliceDomain
     simp [e]
   rw [hfun]
 
-/-- Fubini on the sliced simplex: integrate first in the last affine coordinate. -/
+/--
+%%handwave
+name:
+  Fubini theorem on the sliced simplex domain
+statement:
+  If \(f\) is integrable on the sliced simplex domain, then
+  \[
+    \int f(x,t)\,d(x,t)
+    =\int_{\Delta^k_{\mathrm{aff}}}
+      \int_0^{1-\sum_i x_i} f(x,t)\,dt\,dx.
+  \]
+proof:
+  Express the set integral using an indicator, apply Fubini to product
+  Lebesgue measure, and identify the one-dimensional fiber at each \(x\).
+-/
 theorem integral_simplexCoordinateSliceDomain_eq_iterated
     {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {k : ℕ} (f : ((Fin k → ℝ) × ℝ) → F)
@@ -358,7 +525,21 @@ theorem integral_simplexCoordinateSliceDomain_eq_iterated
           ∫ t in Icc (0 : ℝ) (1 - ∑ i : Fin k, x i), f (x, t) := by
           rfl
 
-/-- Fubini on the affine simplex, written in last-coordinate slices. -/
+/--
+%%handwave
+name:
+  Fubini theorem for an affine simplex
+statement:
+  If \(f\) is integrable on \(\Delta^{k+1}_{\mathrm{aff}}\), then
+  \[
+    \int_{\Delta^{k+1}_{\mathrm{aff}}}f(y)\,dy
+    =\int_{\Delta^k_{\mathrm{aff}}}
+      \int_0^{1-\sum_i x_i}f(x,t)\,dt\,dx.
+  \]
+proof:
+  First change variables to the sliced domain and then apply Fubini on that
+  domain.
+-/
 theorem integral_simplexCoordinateDomain_succ_eq_iterated
     {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {k : ℕ} (f : (Fin (k + 1) → ℝ) → F)
@@ -407,18 +588,49 @@ def simplexCoordinateInsertMap {k : ℕ} (i : Fin (k + 1))
     (x : Fin k → ℝ) (t : ℝ) : Fin (k + 1) → ℝ :=
   i.insertNth t x
 
+/--
+%%handwave
+name:
+  Inserted coordinate at its insertion index
+statement:
+  Inserting \(t\) into \(x\in\mathbb R^k\) at position \(i\) produces
+  coordinate \(t\) at \(i\).
+proof:
+  This is the defining property of coordinate insertion.
+-/
 @[simp]
 theorem simplexCoordinateInsertMap_same
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) (t : ℝ) :
     simplexCoordinateInsertMap i x t i = t := by
   simp [simplexCoordinateInsertMap]
 
+/--
+%%handwave
+name:
+  Other coordinates after coordinate insertion
+statement:
+  If \(t\) is inserted at position \(i\), then the coordinate indexed by the
+  shifted original index \(j\) remains \(x_j\).
+proof:
+  This is the defining property of coordinate insertion.
+-/
 @[simp]
 theorem simplexCoordinateInsertMap_succAbove
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) (t : ℝ) (j : Fin k) :
     simplexCoordinateInsertMap i x t (i.succAbove j) = x j := by
   simp [simplexCoordinateInsertMap]
 
+/--
+%%handwave
+name:
+  Sum of coordinates after insertion
+statement:
+  Inserting \(t\) into \(x\in\mathbb R^k\) gives a vector whose coordinate
+  sum is \(t+\sum_jx_j\).
+proof:
+  Split the finite coordinate sum into the inserted position and the shifted
+  original positions.
+-/
 theorem simplexCoordinateInsertMap_sum
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) (t : ℝ) :
     ∑ j : Fin (k + 1), simplexCoordinateInsertMap i x t j =
@@ -426,9 +638,19 @@ theorem simplexCoordinateInsertMap_sum
   rw [Fin.sum_univ_succAbove _ i]
   simp [simplexCoordinateInsertMap]
 
-/-- Inserting one coordinate into the affine simplex is equivalent to choosing
-the remaining coordinates in the lower-dimensional simplex and the inserted
-coordinate between zero and the remaining mass. -/
+/--
+%%handwave
+name:
+  Membership criterion for an arbitrary coordinate slice
+statement:
+  Inserting \(t\) into \(x\in\mathbb R^k\) at any position gives a point of
+  \(\Delta^{k+1}_{\mathrm{aff}}\) if and only if
+  \(x\in\Delta^k_{\mathrm{aff}}\) and
+  \(0\le t\le1-\sum_jx_j\).
+proof:
+  Separate nonnegativity of the inserted coordinate from the others and use
+  that the new coordinate sum is \(t+\sum_jx_j\).
+-/
 theorem simplexCoordinateInsertMap_mem_domain_iff
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) (t : ℝ) :
     simplexCoordinateInsertMap i x t ∈ simplexCoordinateDomain (k + 1) ↔
@@ -459,8 +681,21 @@ theorem simplexCoordinateInsertMap_mem_domain_iff
         linarith [ht.2]
       simpa [simplexCoordinateInsertMap_sum i x t] using hsum
 
-/-- The upper inserted-coordinate endpoint depends continuously on the
-remaining affine coordinates. -/
+/--
+%%handwave
+name:
+  Continuity of the upper endpoint of a coordinate slice
+statement:
+  For fixed insertion position \(i\), the map
+  \[
+    x\longmapsto\operatorname{insert}_i
+      \left(1-\sum_jx_j,x\right)
+  \]
+  is continuous.
+proof:
+  Every noninserted coordinate is a coordinate projection, while the inserted
+  coordinate is the continuous affine function \(1-\sum_jx_j\).
+-/
 theorem continuous_simplexCoordinateInsertMap_upper
     {k : ℕ} (i : Fin (k + 1)) :
     Continuous (fun x : Fin k → ℝ =>
@@ -474,8 +709,16 @@ theorem continuous_simplexCoordinateInsertMap_upper
         (continuous_finsetSum _ fun j _ => continuous_apply j))
   · simpa [simplexCoordinateInsertMap] using (continuous_apply a)
 
-/-- The lower inserted-coordinate endpoint depends continuously on the
-remaining affine coordinates. -/
+/--
+%%handwave
+name:
+  Continuity of the lower endpoint of a coordinate slice
+statement:
+  For fixed \(i\), the map \(x\mapsto\operatorname{insert}_i(0,x)\) is
+  continuous.
+proof:
+  Its coordinates are either the constant \(0\) or coordinate projections.
+-/
 theorem continuous_simplexCoordinateInsertMap_zero
     {k : ℕ} (i : Fin (k + 1)) :
     Continuous (fun x : Fin k → ℝ => simplexCoordinateInsertMap i x 0) := by
@@ -487,9 +730,18 @@ theorem continuous_simplexCoordinateInsertMap_zero
       (continuous_const : Continuous (fun _ : Fin k → ℝ => (0 : ℝ)))
   · simpa [simplexCoordinateInsertMap] using (continuous_apply a)
 
-/-- Varying the inserted coordinate is an affine line in the ambient affine
-coordinate space, with tangent vector the corresponding coordinate basis
-vector. -/
+/--
+%%handwave
+name:
+  Derivative of an inserted-coordinate line
+statement:
+  For fixed \(x\) and insertion position \(i\), the map
+  \(t\mapsto\operatorname{insert}_i(t,x)\) has derivative equal to the
+  coordinate basis vector \(e_i\), relative to any subset of \(\mathbb R\).
+proof:
+  The inserted coordinate is the identity in \(t\), while every other
+  coordinate is constant.
+-/
 theorem hasDerivWithinAt_simplexCoordinateInsertMap_line
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ)
     {s : Set ℝ} {t : ℝ} :
@@ -504,8 +756,17 @@ theorem hasDerivWithinAt_simplexCoordinateInsertMap_line
   · simpa [simplexCoordinateInsertMap] using
       (hasDerivWithinAt_const (c := x a) (x := t) (s := s))
 
-/-- Varying the inserted coordinate is smooth as a map from the line into the
-ambient affine coordinate space. -/
+/--
+%%handwave
+name:
+  Smoothness of an inserted-coordinate line
+statement:
+  For fixed \(x\) and \(i\), the map
+  \(t\mapsto\operatorname{insert}_i(t,x)\) is \(C^r\) on every subset of
+  \(\mathbb R\).
+proof:
+  Its coordinates are either the identity or constants.
+-/
 theorem contDiffOn_simplexCoordinateInsertMap_line
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ)
     {r : WithTop ℕ∞} {s : Set ℝ} :
@@ -528,6 +789,18 @@ noncomputable def simplexCoordinateInsertMeasurableEquiv
       (Fin k → ℝ) × ℝ ≃ᵐ ℝ × (Fin k → ℝ)).trans
     ((MeasurableEquiv.piFinSuccAbove (fun _ : Fin (k + 1) => ℝ) i).symm)
 
+/--
+%%handwave
+name:
+  Formula for the arbitrary-coordinate measurable equivalence
+statement:
+  The measurable identification
+  \(\mathbb R^k\times\mathbb R\cong\mathbb R^{k+1}\) associated with position
+  \(i\) sends \((x,t)\) to the vector obtained by inserting \(t\) into \(x\)
+  at \(i\).
+proof:
+  Check the inserted coordinate and every shifted original coordinate.
+-/
 @[simp]
 theorem simplexCoordinateInsertMeasurableEquiv_apply
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) (t : ℝ) :
@@ -540,8 +813,17 @@ theorem simplexCoordinateInsertMeasurableEquiv_apply
   · simp [simplexCoordinateInsertMeasurableEquiv, simplexCoordinateInsertMap,
       MeasurableEquiv.prodComm, Equiv.prodComm_apply]
 
-/-- Inserting an arbitrary coordinate preserves finite-dimensional Lebesgue
-measure. -/
+/--
+%%handwave
+name:
+  Measure preservation of arbitrary coordinate insertion
+statement:
+  The linear coordinate identification obtained by inserting one coordinate
+  at position \(i\) preserves Lebesgue measure.
+proof:
+  It is a factor swap followed by the canonical product-coordinate
+  identification, both measure preserving.
+-/
 theorem measurePreserving_simplexCoordinateInsertMeasurableEquiv
     {k : ℕ} (i : Fin (k + 1)) :
     MeasurePreserving (simplexCoordinateInsertMeasurableEquiv i) := by
@@ -564,6 +846,17 @@ theorem measurePreserving_simplexCoordinateInsertMeasurableEquiv
         (Fin k → ℝ) × ℝ ≃ᵐ ℝ × (Fin k → ℝ)))
   exact heInsert.comp hswap
 
+/--
+%%handwave
+name:
+  Preimage of the simplex under arbitrary coordinate insertion
+statement:
+  The preimage of \(\Delta^{k+1}_{\mathrm{aff}}\) under
+  \((x,t)\mapsto\operatorname{insert}_i(t,x)\) is the sliced domain
+  \(x\in\Delta^k_{\mathrm{aff}}\), \(0\le t\le1-\sum_jx_j\).
+proof:
+  Apply the membership criterion for arbitrary coordinate insertion.
+-/
 theorem simplexCoordinateInsertMeasurableEquiv_preimage_domain
     {k : ℕ} (i : Fin (k + 1)) :
     simplexCoordinateInsertMeasurableEquiv i ⁻¹'
@@ -573,6 +866,21 @@ theorem simplexCoordinateInsertMeasurableEquiv_preimage_domain
   rcases p with ⟨x, t⟩
   simp [simplexCoordinateSliceDomain, simplexCoordinateInsertMap_mem_domain_iff]
 
+/--
+%%handwave
+name:
+  Integral over a simplex in an arbitrary coordinate slice
+statement:
+  For every insertion position \(i\),
+  \[
+    \int_{\Delta^{k+1}_{\mathrm{aff}}}f(y)\,dy
+    =\int_{\text{sliced domain}}
+      f(\operatorname{insert}_i(t,x))\,d(x,t).
+  \]
+proof:
+  Change variables by the measure-preserving coordinate-insertion
+  equivalence.
+-/
 theorem integral_simplexCoordinateDomain_eq_insertSliceDomain
     {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {k : ℕ} (i : Fin (k + 1)) (f : (Fin (k + 1) → ℝ) → F) :
@@ -594,8 +902,22 @@ theorem integral_simplexCoordinateDomain_eq_insertSliceDomain
     simp [e]
   rw [hfun]
 
-/-- Fubini on the affine simplex after inserting an arbitrary affine
-coordinate. -/
+/--
+%%handwave
+name:
+  Iterated simplex integral in an arbitrary coordinate
+statement:
+  If \(f\) is integrable on \(\Delta^{k+1}_{\mathrm{aff}}\), then for every
+  coordinate \(i\),
+  \[
+    \int_{\Delta^{k+1}_{\mathrm{aff}}}f
+    =\int_{\Delta^k_{\mathrm{aff}}}
+      \int_0^{1-\sum_jx_j}
+        f(\operatorname{insert}_i(t,x))\,dt\,dx.
+  \]
+proof:
+  Change variables to the insertion slice domain and apply Fubini.
+-/
 theorem integral_simplexCoordinateDomain_eq_insertIterated
     {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {k : ℕ} (i : Fin (k + 1)) (f : (Fin (k + 1) → ℝ) → F)
@@ -652,6 +974,16 @@ noncomputable def simplexCoordinateProjectionLinearMap (k : ℕ) :
   ContinuousLinearMap.pi fun i : Fin k =>
     ContinuousLinearMap.proj (R := ℝ) i.castSucc
 
+/--
+%%handwave
+name:
+  Formula for projection from barycentric to affine coordinates
+statement:
+  The linear projection from \((y_0,\ldots,y_k)\) to affine coordinates is
+  \((y_0,\ldots,y_{k-1})\).
+proof:
+  Evaluate the product linear map at every coordinate.
+-/
 @[simp]
 theorem simplexCoordinateProjectionLinearMap_apply (k : ℕ) (y : SimplexAmbient k) :
     simplexCoordinateProjectionLinearMap k y =
@@ -659,6 +991,17 @@ theorem simplexCoordinateProjectionLinearMap_apply (k : ℕ) (y : SimplexAmbient
   ext i
   rfl
 
+/--
+%%handwave
+name:
+  Affine coordinates define barycentric simplex coordinates
+statement:
+  If \(x_i\ge0\) and \(\sum_{i<k}x_i\le1\), then
+  \((x_0,\ldots,x_{k-1},1-\sum_{i<k}x_i)\) belongs to the standard
+  \(k\)-simplex.
+proof:
+  Every coordinate is nonnegative and the displayed coordinates sum to \(1\).
+-/
 theorem simplexCoordinateMap_mem_stdSimplex {k : ℕ} {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
     simplexCoordinateMap k x ∈ stdSimplex ℝ (Fin (k + 1)) := by
@@ -670,6 +1013,16 @@ theorem simplexCoordinateMap_mem_stdSimplex {k : ℕ} {x : Fin k → ℝ}
   · rw [simplexCoordinateMap, Fin.sum_univ_castSucc]
     simp [sub_eq_add_neg, add_comm]
 
+/--
+%%handwave
+name:
+  Recovering affine coordinates after forming barycentric coordinates
+statement:
+  Taking the first \(k\) coordinates of
+  \((x_0,\ldots,x_{k-1},1-\sum_i x_i)\) recovers \(x\).
+proof:
+  This is coordinatewise immediate.
+-/
 @[simp]
 theorem simplexCoordinateOfBarycentric_simplexCoordinateMap
     (k : ℕ) (x : Fin k → ℝ) :
@@ -677,6 +1030,17 @@ theorem simplexCoordinateOfBarycentric_simplexCoordinateMap
   ext i
   simp [simplexCoordinateOfBarycentric, simplexCoordinateMap]
 
+/--
+%%handwave
+name:
+  Affine coordinates of a barycentric simplex point
+statement:
+  If \(y\in\Delta^k\), then its first \(k\) barycentric coordinates lie in
+  the affine simplex domain.
+proof:
+  They are nonnegative, and their sum is at most \(1\) because the omitted
+  last barycentric coordinate is nonnegative.
+-/
 theorem simplexCoordinateOfBarycentric_mem {k : ℕ} {y : SimplexAmbient k}
     (hy : y ∈ stdSimplex ℝ (Fin (k + 1))) :
     simplexCoordinateOfBarycentric k y ∈ simplexCoordinateDomain k := by
@@ -689,6 +1053,17 @@ theorem simplexCoordinateOfBarycentric_mem {k : ℕ} {y : SimplexAmbient k}
       simpa [Fin.sum_univ_castSucc] using hy.2
     nlinarith
 
+/--
+%%handwave
+name:
+  Recovering barycentric coordinates from affine coordinates
+statement:
+  If \(y\in\Delta^k\), then rebuilding barycentric coordinates from the
+  first \(k\) coordinates of \(y\) returns \(y\).
+proof:
+  The first coordinates are unchanged, and the last is forced by
+  \(\sum_i y_i=1\).
+-/
 theorem simplexCoordinateMap_simplexCoordinateOfBarycentric
     {k : ℕ} {y : SimplexAmbient k} (hy : y ∈ stdSimplex ℝ (Fin (k + 1))) :
     simplexCoordinateMap k (simplexCoordinateOfBarycentric k y) = y := by
@@ -701,8 +1076,18 @@ theorem simplexCoordinateMap_simplexCoordinateOfBarycentric
     nlinarith
   · simp [simplexCoordinateMap, simplexCoordinateOfBarycentric]
 
-/-- An upper endpoint for any inserted coordinate is a point on the final
-face, written in the standard last-coordinate parametrization of that face. -/
+/--
+%%handwave
+name:
+  Upper coordinate-slice endpoint in last-coordinate form
+statement:
+  A vector obtained by inserting the remaining barycentric mass
+  \(1-\sum_jx_j\) at any position can be recovered by taking its first \(k\)
+  coordinates and adjoining the final coordinate needed to make the sum \(1\).
+proof:
+  The inserted vector has coordinate sum \(1\), so its final coordinate is
+  one minus the sum of its preceding coordinates.
+-/
 theorem simplexCoordinateInsertMap_upper_eq_slice_of_barycentric
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) :
     simplexCoordinateSliceMap k
@@ -730,8 +1115,17 @@ theorem simplexCoordinateInsertMap_upper_eq_slice_of_barycentric
   | cast a =>
       simp [simplexCoordinateSliceMap, simplexCoordinateOfBarycentric]
 
-/-- The upper inserted coordinate vector is a barycentric point of the final
-face of the surrounding simplex. -/
+/--
+%%handwave
+name:
+  Upper coordinate-slice endpoint is a simplex point
+statement:
+  If \(x\in\Delta^k_{\mathrm{aff}}\), then inserting
+  \(1-\sum_jx_j\) at any position gives a barycentric point of
+  \(\Delta^k\).
+proof:
+  All coordinates are nonnegative and their sum is \(1\).
+-/
 theorem simplexCoordinateInsertMap_upper_mem_stdSimplex
     {k : ℕ} (i : Fin (k + 1)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -746,8 +1140,18 @@ theorem simplexCoordinateInsertMap_upper_mem_stdSimplex
   · rw [simplexCoordinateInsertMap_sum]
     ring
 
-/-- Taking the explicit barycentric coordinates of an upper inserted endpoint
-lands back in the standard affine coordinate simplex. -/
+/--
+%%handwave
+name:
+  Affine coordinates of an upper coordinate-slice endpoint
+statement:
+  If \(x\in\Delta^k_{\mathrm{aff}}\), then the first \(k\) coordinates of the
+  barycentric vector obtained by inserting \(1-\sum_jx_j\) again lie in
+  \(\Delta^k_{\mathrm{aff}}\).
+proof:
+  The inserted vector is a standard simplex point, whose affine coordinates
+  lie in the affine simplex domain.
+-/
 theorem simplexCoordinateOfBarycentric_insert_upper_mem
     {k : ℕ} (i : Fin (k + 1)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -766,11 +1170,31 @@ noncomputable def simplexCoordinateLinearMap (k : ℕ) :
     else
       ContinuousLinearMap.proj (R := ℝ) (j.castPred h)
 
+/--
+%%handwave
+name:
+  Initial coordinates of the barycentric derivative
+statement:
+  The linear part of the affine-to-barycentric map sends \(h\in\mathbb R^k\)
+  to a vector whose first \(k\) coordinates are \(h_i\).
+proof:
+  This is the coordinatewise definition of the linear map.
+-/
 @[simp]
 theorem simplexCoordinateLinearMap_castSucc (k : ℕ) (x : Fin k → ℝ) (i : Fin k) :
     simplexCoordinateLinearMap k x i.castSucc = x i := by
   simp [simplexCoordinateLinearMap]
 
+/--
+%%handwave
+name:
+  Last coordinate of the barycentric derivative
+statement:
+  The last coordinate of the linearized affine-to-barycentric map at \(h\)
+  is \(-\sum_i h_i\).
+proof:
+  This is the linearization of \(1-\sum_i x_i\).
+-/
 @[simp]
 theorem simplexCoordinateLinearMap_last (k : ℕ) (x : Fin k → ℝ) :
     simplexCoordinateLinearMap k x (Fin.last k) = -∑ i : Fin k, x i := by
@@ -786,10 +1210,30 @@ noncomputable def simplexTangentSubmodule (k : ℕ) :
     Submodule ℝ (SimplexAmbient k) :=
   LinearMap.ker (simplexAmbientSumLinearMap k)
 
+/--
+%%handwave
+name:
+  Formula for the barycentric coordinate-sum functional
+statement:
+  The ambient simplex sum functional sends \(y\) to
+  \(\sum_{j=0}^k y_j\).
+proof:
+  It is defined as the sum of all coordinate projections.
+-/
 theorem simplexAmbientSumLinearMap_apply (k : ℕ) (y : SimplexAmbient k) :
     simplexAmbientSumLinearMap k y = ∑ j : Fin (k + 1), y j := by
   simp [simplexAmbientSumLinearMap]
 
+/--
+%%handwave
+name:
+  The barycentric derivative lies in the tangent hyperplane
+statement:
+  For every \(h\in\mathbb R^k\), the coordinates of the linearized
+  affine-to-barycentric map sum to zero.
+proof:
+  The first coordinates sum to \(\sum_i h_i\) and the last is its negative.
+-/
 theorem simplexCoordinateLinearMap_mem_tangent
     (k : ℕ) (x : Fin k → ℝ) :
     simplexCoordinateLinearMap k x ∈ simplexTangentSubmodule k := by
@@ -825,7 +1269,16 @@ noncomputable def simplexCoordinateLinearEquivTangent (k : ℕ) :
       linarith
     · simp [simplexCoordinateOfBarycentric]
 
-/-- The affine barycentric coordinate map has this linear part and a constant last vertex. -/
+/--
+%%handwave
+name:
+  Affine decomposition of the barycentric coordinate map
+statement:
+  The affine-to-barycentric map is \(x\mapsto Lx+e_k\), where
+  \(Lx=(x_0,\ldots,x_{k-1},-\sum_i x_i)\).
+proof:
+  Compare the first \(k\) coordinates and the final coordinate separately.
+-/
 theorem simplexCoordinateMap_eq_linear_add_const
     (k : ℕ) (x : Fin k → ℝ) :
     simplexCoordinateMap k x =
@@ -836,7 +1289,16 @@ theorem simplexCoordinateMap_eq_linear_add_const
     ring
   · simp [simplexCoordinateMap]
 
-/-- The affine coordinate map to barycentric coordinates is smooth. -/
+/--
+%%handwave
+name:
+  Smoothness of the affine-to-barycentric coordinate map
+statement:
+  The map
+  \(x\mapsto(x_0,\ldots,x_{k-1},1-\sum_i x_i)\) is \(C^r\) for every \(r\).
+proof:
+  It is affine.
+-/
 theorem contDiff_simplexCoordinateMap (k : ℕ) {r : WithTop ℕ∞} :
     ContDiff ℝ r (simplexCoordinateMap k) := by
   classical
@@ -858,6 +1320,16 @@ noncomputable def simplexAmbientMap {k l : ℕ}
     SimplexAmbient k →L[ℝ] SimplexAmbient l :=
   ⟨FunOnFinite.linearMap ℝ ℝ f, FunOnFinite.continuous_linearMap ℝ ℝ f⟩
 
+/--
+%%handwave
+name:
+  Omitted coordinate of a simplex face map
+statement:
+  The ambient linear map induced by the injection omitting \(i\) assigns
+  value \(0\) to coordinate \(i\).
+proof:
+  No source coordinate maps to the omitted position.
+-/
 @[simp]
 theorem simplexAmbientMap_succAbove_apply_omitted
     {k : ℕ} (i : Fin (k + 2)) (y : SimplexAmbient k) :
@@ -872,6 +1344,16 @@ theorem simplexAmbientMap_succAbove_apply_omitted
   rw [hfilter]
   simp
 
+/--
+%%handwave
+name:
+  Retained coordinates of a simplex face map
+statement:
+  Under the ambient map omitting \(i\), the coordinate at
+  \(i.\operatorname{succAbove}(j)\) equals \(y_j\).
+proof:
+  The fiber over that shifted index consists only of \(j\).
+-/
 @[simp]
 theorem simplexAmbientMap_succAbove_apply_succAbove
     {k : ℕ} (i : Fin (k + 2)) (y : SimplexAmbient k) (j : Fin (k + 1)) :
@@ -887,8 +1369,18 @@ theorem simplexAmbientMap_succAbove_apply_succAbove
   rw [hfilter]
   simp
 
-/-- The lower endpoint of the last-coordinate slicing is the face where the
-penultimate barycentric coordinate is zero. -/
+/--
+%%handwave
+name:
+  Lower endpoint of the last affine-coordinate slice
+statement:
+  Setting the last affine coordinate to \(0\) and converting to barycentric
+  coordinates gives the face obtained by omitting the penultimate
+  barycentric coordinate.
+proof:
+  Check the omitted coordinate, all retained coordinates, and the final
+  barycentric remainder.
+-/
 theorem simplexCoordinateMap_slice_zero_eq_face
     (k : ℕ) (x : Fin k → ℝ) :
     simplexCoordinateMap (k + 1) (simplexCoordinateSliceMap k x 0) =
@@ -912,8 +1404,18 @@ theorem simplexCoordinateMap_slice_zero_eq_face
               (i := (Fin.castSucc (Fin.last k))) (y := simplexCoordinateMap k x)
               (j := Fin.castSucc j)).symm
 
-/-- The upper endpoint of the last-coordinate slicing is the final face of the
-standard simplex. -/
+/--
+%%handwave
+name:
+  Upper endpoint of the last affine-coordinate slice
+statement:
+  Setting the last affine coordinate to
+  \(1-\sum_i x_i\) and passing to barycentric coordinates gives the face
+  obtained by omitting the final barycentric coordinate.
+proof:
+  The final barycentric remainder becomes zero and every other coordinate is
+  retained.
+-/
 theorem simplexCoordinateMap_slice_upper_eq_face
     (k : ℕ) (x : Fin k → ℝ) :
     simplexCoordinateMap (k + 1)
@@ -953,6 +1455,18 @@ noncomputable def simplexFaceCoordinateLinearMap {k : ℕ} (i : Fin (k + 2)) :
   (simplexCoordinateProjectionLinearMap (k + 1)).comp
     ((simplexAmbientMap i.succAbove).comp (simplexCoordinateLinearMap k))
 
+/--
+%%handwave
+name:
+  Barycentric formula for an affine simplex face map
+statement:
+  For \(x\in\Delta^k_{\mathrm{aff}}\), converting the affine \(i\)-th face
+  coordinates to barycentric coordinates equals applying the ambient face
+  map omitting vertex \(i\) to the barycentric point determined by \(x\).
+proof:
+  The ambient face map sends a standard simplex point to the corresponding
+  face, and affine and barycentric coordinate maps are inverse on the simplex.
+-/
 theorem simplexCoordinateMap_simplexFaceCoordinateMap
     {k : ℕ} (i : Fin (k + 2)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -962,6 +1476,17 @@ theorem simplexCoordinateMap_simplexFaceCoordinateMap
   exact stdSimplex.image_linearMap i.succAbove
     ⟨simplexCoordinateMap k x, simplexCoordinateMap_mem_stdSimplex hx, rfl⟩
 
+/--
+%%handwave
+name:
+  Affine face coordinates remain in the simplex domain
+statement:
+  If \(x\in\Delta^k_{\mathrm{aff}}\), then its affine coordinates on any
+  face lie in \(\Delta^{k+1}_{\mathrm{aff}}\).
+proof:
+  The corresponding barycentric point is the image of a simplex point under a
+  face map.
+-/
 theorem simplexFaceCoordinateMap_mem
     {k : ℕ} (i : Fin (k + 2)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -970,6 +1495,17 @@ theorem simplexFaceCoordinateMap_mem
   exact stdSimplex.image_linearMap i.succAbove
     ⟨simplexCoordinateMap k x, simplexCoordinateMap_mem_stdSimplex hx, rfl⟩
 
+/--
+%%handwave
+name:
+  Affine decomposition of a simplex face coordinate map
+statement:
+  Every affine simplex face parameterization is its constant linear part plus
+  a fixed vector.
+proof:
+  Insert the affine decomposition of the barycentric coordinate map and use
+  linearity of the ambient face map and coordinate projection.
+-/
 theorem simplexFaceCoordinateMap_eq_linear_add_const
     {k : ℕ} (i : Fin (k + 2)) (x : Fin k → ℝ) :
     simplexFaceCoordinateMap i x =
@@ -980,6 +1516,17 @@ theorem simplexFaceCoordinateMap_eq_linear_add_const
   simp [simplexFaceCoordinateMap, simplexFaceCoordinateLinearMap,
     simplexCoordinateOfBarycentric, simplexCoordinateMap_eq_linear_add_const, map_add]
 
+/--
+%%handwave
+name:
+  Derivative of a simplex face coordinate map
+statement:
+  On \(\Delta^k_{\mathrm{aff}}\), the Fréchet derivative of the affine
+  \(i\)-th face parameterization is its constant linear part.
+proof:
+  The map is linear plus constant, and the simplex domain is a
+  unique-differentiability set.
+-/
 theorem fderivWithin_simplexFaceCoordinateMap
     {k : ℕ} (i : Fin (k + 2)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1000,6 +1547,17 @@ theorem fderivWithin_simplexFaceCoordinateMap
       (simplexFaceCoordinateLinearMap i)
       ((uniqueDiffOn_simplexCoordinateDomain k) x hx))
 
+/--
+%%handwave
+name:
+  Within-set derivative of a simplex face map
+statement:
+  At every \(x\in\Delta^k_{\mathrm{aff}}\), the affine \(i\)-th face map has
+  within-set derivative equal to its defining linear part.
+proof:
+  Combine differentiability of the affine map with its within-set derivative
+  formula.
+-/
 theorem hasFDerivWithinAt_simplexFaceCoordinateMap
     {k : ℕ} (i : Fin (k + 2)) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1020,8 +1578,17 @@ theorem hasFDerivWithinAt_simplexFaceCoordinateMap
     exact (simplexFaceCoordinateLinearMap i).differentiable.add_const _
   exact (hdiff x).differentiableWithinAt.hasFDerivWithinAt
 
-/-- The face omitting the penultimate barycentric coordinate is the lower
-endpoint of the last-coordinate slice. -/
+/--
+%%handwave
+name:
+  Penultimate face as the lower last-coordinate endpoint
+statement:
+  The affine face map omitting the penultimate barycentric coordinate equals
+  \(x\mapsto(x,0)\).
+proof:
+  This is the lower-endpoint barycentric face identity, converted back to
+  affine coordinates.
+-/
 @[simp]
 theorem simplexFaceCoordinateMap_castSucc_last
     (k : ℕ) (x : Fin k → ℝ) :
@@ -1032,7 +1599,19 @@ theorem simplexFaceCoordinateMap_castSucc_last
   exact simplexCoordinateOfBarycentric_simplexCoordinateMap (k + 1)
     (simplexCoordinateSliceMap k x 0)
 
-/-- The final face is the upper endpoint of the last-coordinate slice. -/
+/--
+%%handwave
+name:
+  Final face as the upper last-coordinate endpoint
+statement:
+  The affine face map omitting the final barycentric coordinate equals
+  \[
+    x\longmapsto\left(x,1-\sum_i x_i\right).
+  \]
+proof:
+  This is the upper-endpoint barycentric face identity, converted back to
+  affine coordinates.
+-/
 @[simp]
 theorem simplexFaceCoordinateMap_last
     (k : ℕ) (x : Fin k → ℝ) :
@@ -1043,8 +1622,17 @@ theorem simplexFaceCoordinateMap_last
   exact simplexCoordinateOfBarycentric_simplexCoordinateMap (k + 1)
     (simplexCoordinateSliceMap k x (1 - ∑ i : Fin k, x i))
 
-/-- Setting an arbitrary affine coordinate to zero gives the corresponding
-coordinate face. -/
+/--
+%%handwave
+name:
+  A nonfinal affine face inserts a zero coordinate
+statement:
+  The affine face map omitting a nonfinal vertex \(i\) is
+  \(x\mapsto\operatorname{insert}_i(0,x)\).
+proof:
+  Compare the omitted coordinate, all shifted coordinates, and the final
+  barycentric remainder.
+-/
 theorem simplexFaceCoordinateMap_castSucc_eq_insert_zero
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) :
     simplexFaceCoordinateMap i.castSucc x =
@@ -1085,6 +1673,17 @@ theorem simplexFaceCoordinateMap_castSucc_eq_insert_zero
   exact simplexCoordinateOfBarycentric_simplexCoordinateMap (k + 1)
     (simplexCoordinateInsertMap i x 0)
 
+/--
+%%handwave
+name:
+  Compatibility of finite-index embeddings with an omitted coordinate
+statement:
+  Embedding both indices into the next finite type commutes with shifting one
+  index past the omitted position.
+proof:
+  Compare the underlying natural-number values in the cases before and after
+  the omitted index.
+-/
 theorem castSucc_succAbove_castSucc
     {k : ℕ} (i : Fin (k + 1)) (j : Fin k) :
     i.castSucc.succAbove j.castSucc = (i.succAbove j).castSucc := by
@@ -1100,8 +1699,17 @@ theorem castSucc_succAbove_castSucc
       exact h (by exact hj)
     simp [Fin.succAbove, h', hcast]
 
-/-- The linear part of the face omitting affine coordinate `i` inserts a zero
-in the omitted coordinate. -/
+/--
+%%handwave
+name:
+  Retained coordinates of a nonfinal face derivative
+statement:
+  The linear part of the face omitting affine coordinate \(i\) satisfies
+  \(L_i(v)_{i.\operatorname{succAbove}(j)}=v_j\).
+proof:
+  The face map inserts a zero at \(i\), so every shifted original coordinate
+  is retained.
+-/
 theorem simplexFaceCoordinateLinearMap_castSucc_apply_succAbove
     {k : ℕ} (i : Fin (k + 1)) (v : Fin k → ℝ) (j : Fin k) :
     simplexFaceCoordinateLinearMap i.castSucc v (i.succAbove j) = v j := by
@@ -1113,15 +1721,30 @@ theorem simplexFaceCoordinateLinearMap_castSucc_apply_succAbove
       (i := i.castSucc) (y := simplexCoordinateLinearMap k v)
       (j := j.castSucc))
 
-/-- The linear part of the face omitting affine coordinate `i` vanishes in the
-omitted coordinate. -/
+/--
+%%handwave
+name:
+  Omitted coordinate of a nonfinal face derivative
+statement:
+  The linear part \(L_i\) of the face omitting affine coordinate \(i\)
+  satisfies \(L_i(v)_i=0\).
+proof:
+  The face map inserts the constant coordinate \(0\) at \(i\).
+-/
 theorem simplexFaceCoordinateLinearMap_castSucc_apply_self
     {k : ℕ} (i : Fin (k + 1)) (v : Fin k → ℝ) :
     simplexFaceCoordinateLinearMap i.castSucc v i = 0 := by
   simp [simplexFaceCoordinateLinearMap, simplexCoordinateOfBarycentric]
 
-/-- On basis vectors, the linear part of the face omitting affine coordinate
-`i` is the corresponding ambient coordinate basis vector. -/
+/--
+%%handwave
+name:
+  Nonfinal face derivative on coordinate basis vectors
+statement:
+  For a nonfinal face, \(L_i(e_j)=e_{i.\operatorname{succAbove}(j)}\).
+proof:
+  Apply the retained- and omitted-coordinate formulas to the basis vector.
+-/
 theorem simplexFaceCoordinateLinearMap_castSucc_basis
     {k : ℕ} (i : Fin (k + 1)) (j : Fin k) :
     simplexFaceCoordinateLinearMap i.castSucc (Pi.single j (1 : ℝ)) =
@@ -1134,8 +1757,17 @@ theorem simplexFaceCoordinateLinearMap_castSucc_basis
       simp [simplexFaceCoordinateLinearMap_castSucc_apply_succAbove]
     · simp [simplexFaceCoordinateLinearMap_castSucc_apply_succAbove, ha]
 
-/-- The linear part of the final face has the usual tangent basis
-`e_j - e_last`. -/
+/--
+%%handwave
+name:
+  Final face derivative on coordinate basis vectors
+statement:
+  The linear part of the final face sends
+  \(e_j\in\mathbb R^k\) to \(e_j-e_k\in\mathbb R^{k+1}\).
+proof:
+  The final face parameterization is
+  \(x\mapsto(x,1-\sum_i x_i)\), whose derivative has this basis action.
+-/
 theorem simplexFaceCoordinateLinearMap_last_basis
     {k : ℕ} (j : Fin k) :
     simplexFaceCoordinateLinearMap (Fin.last (k + 1)) (Pi.single j (1 : ℝ)) =
@@ -1160,6 +1792,16 @@ theorem simplexFaceCoordinateLinearMap_last_basis
         simpa [simplexFaceCoordinateLinearMap, simplexCoordinateOfBarycentric] using h
       · simpa [simplexFaceCoordinateLinearMap, simplexCoordinateOfBarycentric, hm] using h
 
+/--
+%%handwave
+name:
+  Coordinate formula for an ambient vertex permutation
+statement:
+  If \(p\) permutes the \(k+1\) vertices, then the induced ambient linear map
+  satisfies \((P_p y)_j=y_{p^{-1}(j)}\).
+proof:
+  The fiber of \(p\) over \(j\) is the singleton \(\{p^{-1}(j)\}\).
+-/
 @[simp]
 theorem simplexAmbientMap_perm_apply
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) (y : SimplexAmbient k)
@@ -1175,6 +1817,16 @@ theorem simplexAmbientMap_perm_apply
   rw [hfilter]
   simp
 
+/--
+%%handwave
+name:
+  Vertex permutations preserve the barycentric coordinate sum
+statement:
+  For every permutation \(p\),
+  \(\sum_j(P_p y)_j=\sum_jy_j\).
+proof:
+  Reindex the finite sum by \(p^{-1}\).
+-/
 theorem simplexAmbientSumLinearMap_simplexAmbientMap
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) (y : SimplexAmbient k) :
     simplexAmbientSumLinearMap k (simplexAmbientMap p y) =
@@ -1188,6 +1840,16 @@ theorem simplexAmbientSumLinearMap_simplexAmbientMap
     _ = ∑ j : Fin (k + 1), y j := by
           simpa using (Equiv.sum_comp p.symm fun j : Fin (k + 1) ↦ y j)
 
+/--
+%%handwave
+name:
+  Vertex permutations preserve the simplex tangent hyperplane
+statement:
+  The ambient linear action of a vertex permutation maps the zero-sum
+  barycentric hyperplane into itself.
+proof:
+  It preserves the total coordinate sum.
+-/
 theorem simplexAmbientMap_preserves_tangent
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     simplexTangentSubmodule k ≤
@@ -1198,6 +1860,17 @@ theorem simplexAmbientMap_preserves_tangent
   rw [simplexAmbientSumLinearMap_simplexAmbientMap p y]
   exact hy
 
+/--
+%%handwave
+name:
+  Determinant of an ambient vertex permutation
+statement:
+  The determinant of the ambient coordinate permutation \(P_p\) equals the
+  sign of \(p\), viewed as a real number.
+proof:
+  In the standard coordinate basis, \(P_p\) permutes basis vectors according
+  to \(p\), whose determinant is its permutation sign.
+-/
 theorem simplexAmbientMap_det
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     LinearMap.det (simplexAmbientMap p : SimplexAmbient k →ₗ[ℝ] SimplexAmbient k) =
@@ -1271,12 +1944,32 @@ noncomputable def extension
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r) : SimplexAmbient k → M :=
   Classical.choose σ.contMDiff
 
+/--
+%%handwave
+name:
+  Regularity of a chosen simplex extension
+statement:
+  The chosen ambient extension of a \(C^r\) singular \(k\)-simplex is \(C^r\)
+  on the standard simplex.
+proof:
+  This is the regularity property supplied by the chosen extension.
+-/
 theorem extension_contMDiffOn
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r) :
     ContMDiffOn 𝓘(ℝ, SimplexAmbient k) I r σ.extension
       (stdSimplex ℝ (Fin (k + 1))) :=
   (Classical.choose_spec σ.contMDiff).1
 
+/--
+%%handwave
+name:
+  A chosen simplex extension agrees on the simplex
+statement:
+  For every \(x\in\Delta^k\), the chosen ambient extension of a singular
+  simplex \(\sigma\) satisfies \(\widetilde\sigma(x)=\sigma(x)\).
+proof:
+  This is the agreement property supplied by the chosen extension.
+-/
 theorem extension_eq
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r)
     (x : StandardSimplex k) :
@@ -1303,7 +1996,15 @@ abbrev SmoothSingularSimplex (k : ℕ) :=
 abbrev C1SingularSimplex (k : ℕ) :=
   ContMDiffSingularSimplex (I := I) (M := M) k (1 : WithTop ℕ∞)
 
-/-- A \(C^2\) simplex is in particular \(C^1\), which is enough for integration. -/
+/--
+%%handwave
+name:
+  \(C^2\) regularity implies \(C^1\) regularity
+statement:
+  If a regularity index \(r\) satisfies \(2\le r\), then \(1\le r\).
+proof:
+  By transitivity, \(1\le2\le r\).
+-/
 theorem one_le_of_two_le_smoothness {r : WithTop ℕ∞}
     (h : (2 : WithTop ℕ∞) ≤ r) : (1 : WithTop ℕ∞) ≤ r := by
   exact (by norm_num : (1 : WithTop ℕ∞) ≤ (2 : WithTop ℕ∞)).trans h
@@ -1320,9 +2021,20 @@ noncomputable def simplexCoordinateVertexPermutationMap {k : ℕ}
   simplexCoordinateOfBarycentric k
     (FunOnFinite.linearMap ℝ ℝ p (simplexCoordinateMap k x))
 
-/-- The upper endpoint obtained by inserting the residual barycentric
-coordinate in slot `i` is the standard final-face parametrization after the
-corresponding cyclic vertex permutation of the face coordinates. -/
+/--
+%%handwave
+name:
+  Upper slice endpoint as a cyclic vertex reparameterization
+statement:
+  Inserting \(1-\sum_jx_j\) into affine coordinates at position \(i\), then
+  discarding the final barycentric coordinate, equals the affine simplex map
+  induced by the cyclic permutation
+  \(i^{-1}_{\mathrm{cycle}}\,k_{\mathrm{cycle}}\).
+proof:
+  Write insertion as adjoining the residual coordinate at the front followed
+  by a cyclic shift, then identify the resulting composition of shifts with
+  the stated vertex permutation.
+-/
 theorem simplexCoordinateOfBarycentric_insert_upper_eq_vertexPermutation
     {k : ℕ} (i : Fin (k + 1)) (x : Fin k → ℝ) :
     simplexCoordinateOfBarycentric k
@@ -1371,8 +2083,20 @@ theorem simplexCoordinateOfBarycentric_insert_upper_eq_vertexPermutation
       b (p.symm a.castSucc)
   congr 1
 
-/-- The cyclic vertex permutation used by the upper-endpoint parametrization
-has the expected orientation sign. -/
+/--
+%%handwave
+name:
+  Orientation sign of the upper-endpoint cyclic permutation
+statement:
+  The cyclic permutation used for the upper endpoint at coordinate \(i\) has
+  sign
+  \[
+    (-1)^i(-1)^k.
+  \]
+proof:
+  Multiplicativity and invariance under inversion reduce the sign to the
+  standard signs of the two finite cycles.
+-/
 theorem upperEndpointVertexPermutation_sign_int
     {k : ℕ} (i : Fin (k + 1)) :
     (((Equiv.Perm.sign
@@ -1390,6 +2114,17 @@ noncomputable def simplexCoordinateVertexPermutationLinearMap {k : ℕ}
   (simplexCoordinateProjectionLinearMap k).comp
     ((simplexAmbientMap p).comp (simplexCoordinateLinearMap k))
 
+/--
+%%handwave
+name:
+  Formula for the linear part of a vertex reparameterization
+statement:
+  The linear part of the affine coordinate map induced by a vertex
+  permutation is obtained by applying the ambient permutation to the
+  barycentric tangent vector and projecting to the first \(k\) coordinates.
+proof:
+  This is the defining composition of linear maps.
+-/
 @[simp]
 theorem simplexCoordinateVertexPermutationLinearMap_apply
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) (x : Fin k → ℝ) :
@@ -1398,6 +2133,19 @@ theorem simplexCoordinateVertexPermutationLinearMap_apply
         (FunOnFinite.linearMap ℝ ℝ p (simplexCoordinateLinearMap k x)) := by
   rfl
 
+/--
+%%handwave
+name:
+  Affine vertex permutation as the conjugate tangent action
+statement:
+  Under the identification
+  \(\mathbb R^k\cong\{y\in\mathbb R^{k+1}:\sum_jy_j=0\}\), the linear part
+  of an affine vertex permutation is conjugate to the ambient permutation
+  restricted to the tangent hyperplane.
+proof:
+  Evaluate the conjugated map coordinatewise through the affine-to-barycentric
+  tangent equivalence.
+-/
 theorem simplexCoordinateVertexPermutationLinearMap_conj_tangent
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     ((simplexCoordinateLinearEquivTangent k).symm :
@@ -1410,6 +2158,19 @@ theorem simplexCoordinateVertexPermutationLinearMap_conj_tangent
   ext x i
   rfl
 
+/--
+%%handwave
+name:
+  Determinant of an affine vertex reparameterization
+statement:
+  The determinant of the linear part of the affine coordinate map induced by
+  a vertex permutation \(p\) equals \(\operatorname{sgn}(p)\).
+proof:
+  The ambient permutation preserves the tangent hyperplane and acts trivially
+  on the one-dimensional quotient.  Hence its determinant equals the
+  determinant of the tangent restriction, which is conjugate to the affine
+  linear part.
+-/
 theorem simplexCoordinateVertexPermutationLinearMap_det
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     LinearMap.det
@@ -1458,7 +2219,17 @@ theorem simplexCoordinateVertexPermutationLinearMap_det
   rw [hconjmap] at hconj
   exact hconj.trans hrestrict
 
-/-- The coordinate self-map induced by a vertex permutation is affine. -/
+/--
+%%handwave
+name:
+  Affine decomposition of a vertex reparameterization
+statement:
+  The affine coordinate self-map induced by a vertex permutation is its
+  linear part plus the image of the final vertex.
+proof:
+  Apply the ambient permutation and affine-coordinate projection to the
+  linear-plus-constant decomposition of the barycentric coordinate map.
+-/
 theorem simplexCoordinateVertexPermutationMap_eq_linear_add_const
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) (x : Fin k → ℝ) :
     simplexCoordinateVertexPermutationMap p x =
@@ -1470,6 +2241,16 @@ theorem simplexCoordinateVertexPermutationMap_eq_linear_add_const
     simplexAmbientMap, simplexCoordinateOfBarycentric, simplexCoordinateMap_eq_linear_add_const,
     map_add]
 
+/--
+%%handwave
+name:
+  Vertex reparameterizations preserve the affine simplex
+statement:
+  A permutation of the simplex vertices sends
+  \(\Delta^k_{\mathrm{aff}}\) into itself.
+proof:
+  In barycentric coordinates it merely permutes a standard simplex point.
+-/
 theorem simplexCoordinateVertexPermutationMap_mem
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1478,6 +2259,18 @@ theorem simplexCoordinateVertexPermutationMap_mem
   exact stdSimplex.image_linearMap p
     ⟨simplexCoordinateMap k x, simplexCoordinateMap_mem_stdSimplex hx, rfl⟩
 
+/--
+%%handwave
+name:
+  Barycentric coordinates of a vertex reparameterization
+statement:
+  For \(x\in\Delta^k_{\mathrm{aff}}\), converting the affine
+  reparameterization by \(p\) to barycentric coordinates equals applying the
+  ambient vertex permutation to the barycentric coordinates of \(x\).
+proof:
+  A permuted barycentric simplex point is recovered from its first \(k\)
+  affine coordinates.
+-/
 theorem simplexCoordinateMap_vertexPermutation
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1487,6 +2280,16 @@ theorem simplexCoordinateMap_vertexPermutation
   exact stdSimplex.image_linearMap p
     ⟨simplexCoordinateMap k x, simplexCoordinateMap_mem_stdSimplex hx, rfl⟩
 
+/--
+%%handwave
+name:
+  Inverse of an affine vertex reparameterization
+statement:
+  On \(\Delta^k_{\mathrm{aff}}\), applying the coordinate map for \(p\) and
+  then that for \(p^{-1}\) returns the original point.
+proof:
+  In barycentric coordinates the two ambient permutations cancel.
+-/
 @[simp]
 theorem simplexCoordinateVertexPermutationMap_symm_apply
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {x : Fin k → ℝ}
@@ -1515,6 +2318,17 @@ theorem simplexCoordinateVertexPermutationMap_symm_apply
   simpa [simplexCoordinateVertexPermutationMap] using
     congr_arg (simplexCoordinateOfBarycentric k) hmap
 
+/--
+%%handwave
+name:
+  Smoothness of affine vertex reparameterizations
+statement:
+  The affine coordinate self-map induced by a simplex vertex permutation is
+  \(C^r\) for every \(r\).
+proof:
+  It is a composition of an affine barycentric map with continuous linear
+  permutation and projection maps.
+-/
 theorem contDiff_simplexCoordinateVertexPermutationMap
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {r : WithTop ℕ∞} :
     ContDiff ℝ r (simplexCoordinateVertexPermutationMap p) := by
@@ -1522,7 +2336,17 @@ theorem contDiff_simplexCoordinateVertexPermutationMap
     (simplexCoordinateProjectionLinearMap k).contDiff.comp
       ((simplexAmbientMap p).contDiff.comp (contDiff_simplexCoordinateMap k))
 
-/-- The coordinate self-map induced by a vertex permutation has the expected derivative. -/
+/--
+%%handwave
+name:
+  Derivative of an affine vertex reparameterization
+statement:
+  On the affine simplex domain, the derivative of the coordinate map induced
+  by a vertex permutation is its constant linear part.
+proof:
+  The map is linear plus constant and the domain has unique
+  differentiability.
+-/
 theorem fderivWithin_simplexCoordinateVertexPermutationMap
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1543,6 +2367,16 @@ theorem fderivWithin_simplexCoordinateVertexPermutationMap
       (simplexCoordinateVertexPermutationLinearMap p)
       ((uniqueDiffOn_simplexCoordinateDomain k) x hx))
 
+/--
+%%handwave
+name:
+  Within-set derivative of a vertex reparameterization
+statement:
+  At every affine simplex point, the vertex reparameterization has within-set
+  derivative equal to its linear part.
+proof:
+  Combine its differentiability with the within-set derivative formula.
+-/
 theorem hasFDerivWithinAt_simplexCoordinateVertexPermutationMap
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) {x : Fin k → ℝ}
     (hx : x ∈ simplexCoordinateDomain k) :
@@ -1555,6 +2389,16 @@ theorem hasFDerivWithinAt_simplexCoordinateVertexPermutationMap
       one_ne_zero
   exact (hdiff x).differentiableWithinAt.hasFDerivWithinAt
 
+/--
+%%handwave
+name:
+  Injectivity of a vertex reparameterization on the affine simplex
+statement:
+  The affine coordinate map induced by a vertex permutation is injective on
+  \(\Delta^k_{\mathrm{aff}}\).
+proof:
+  Apply the coordinate map induced by the inverse permutation to both sides.
+-/
 theorem simplexCoordinateVertexPermutationMap_injOn
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     InjOn (simplexCoordinateVertexPermutationMap p) (simplexCoordinateDomain k) := by
@@ -1563,6 +2407,17 @@ theorem simplexCoordinateVertexPermutationMap_injOn
   simpa [simplexCoordinateVertexPermutationMap_symm_apply p hx,
     simplexCoordinateVertexPermutationMap_symm_apply p hy] using h
 
+/--
+%%handwave
+name:
+  A vertex reparameterization maps the affine simplex onto itself
+statement:
+  The image of \(\Delta^k_{\mathrm{aff}}\) under any vertex permutation
+  coordinate map is exactly \(\Delta^k_{\mathrm{aff}}\).
+proof:
+  Preservation gives one inclusion; the inverse permutation supplies a
+  preimage for every simplex point.
+-/
 theorem simplexCoordinateVertexPermutationMap_image_domain
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1))) :
     simplexCoordinateVertexPermutationMap p '' simplexCoordinateDomain k =
@@ -1575,8 +2430,21 @@ theorem simplexCoordinateVertexPermutationMap_image_domain
       simplexCoordinateVertexPermutationMap_mem p.symm hy, ?_⟩
     simpa using simplexCoordinateVertexPermutationMap_symm_apply p.symm hy
 
-/-- Vertex permutations preserve integration over the affine coordinate
-simplex. -/
+/--
+%%handwave
+name:
+  Invariance of affine simplex integration under vertex permutations
+statement:
+  For every vertex permutation \(p\) and integrand \(g\),
+  \[
+    \int_{\Delta^k_{\mathrm{aff}}}g(q_p(x))\,dx
+    =\int_{\Delta^k_{\mathrm{aff}}}g(x)\,dx.
+  \]
+proof:
+  Apply change of variables to the affine map \(q_p\).  It maps the simplex
+  bijectively to itself and its derivative has determinant of absolute value
+  \(1\).
+-/
 theorem integral_comp_simplexCoordinateVertexPermutationMap
     {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
     {k : ℕ} (p : Equiv.Perm (Fin (k + 1)))
@@ -1613,6 +2481,17 @@ theorem integral_comp_simplexCoordinateVertexPermutationMap
     simpa [D, q] using simplexCoordinateVertexPermutationMap_image_domain p] at hcov
   simpa [D, q, habsL] using hcov.symm
 
+/--
+%%handwave
+name:
+  Vertex reparameterization preserves simplex regularity
+statement:
+  If \(\sigma:\Delta^k\to M\) admits a \(C^r\) ambient extension, then
+  \(\sigma\circ p\) does also for every vertex permutation \(p\).
+proof:
+  Compose an ambient extension of \(\sigma\) with the continuous linear
+  ambient permutation, which preserves the standard simplex.
+-/
 theorem hasContMDiffExtensionOnSimplex_comp_vertexPermutation
     {k : ℕ} {r : WithTop ℕ∞}
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r)
@@ -1649,6 +2528,17 @@ noncomputable def simplexFaceMap {k : ℕ} (i : Fin (k + 2)) :
     C(StandardSimplex k, StandardSimplex (k + 1)) :=
   ⟨stdSimplex.map i.succAbove, stdSimplex.continuous_map i.succAbove⟩
 
+/--
+%%handwave
+name:
+  Restriction to a face preserves simplex regularity
+statement:
+  If a \((k+1)\)-simplex \(\sigma\) has a \(C^r\) ambient extension, then its
+  restriction to every \(k\)-face has a \(C^r\) ambient extension.
+proof:
+  Compose the extension with the continuous linear ambient face inclusion,
+  which maps the standard \(k\)-simplex into the chosen face.
+-/
 theorem hasContMDiffExtensionOnSimplex_comp_face
     {k : ℕ} {r : WithTop ℕ∞}
     (σ : ContMDiffSingularSimplex (I := I) (M := M) (k + 1) r)
@@ -1707,8 +2597,21 @@ noncomputable def boundary {k : ℕ} {r : WithTop ℕ∞} :
 
 variable {F : Type z} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
-/-- A vector-valued top-degree alternating map is the determinant form multiplied by its
-value on an oriented basis. -/
+/--
+%%handwave
+name:
+  Alternating form evaluated through a basis determinant
+statement:
+  Let \(\omega\) be an alternating \(k\)-linear map on a \(k\)-dimensional
+  vector space with basis \(e\).  For vectors \(v_1,\ldots,v_k\),
+  \[
+    \omega(v_1,\ldots,v_k)
+      =\det_e(v_1,\ldots,v_k)\,\omega(e_1,\ldots,e_k).
+  \]
+proof:
+  A top-degree alternating form is determined by its value on a basis, and
+  change of basis multiplies that value by the determinant.
+-/
 theorem alternatingMap_eq_smulRight_basis_det
     {ι : Type*} [Fintype ι] [DecidableEq ι]
     {R : Type*} [CommRing R]
@@ -1722,8 +2625,21 @@ theorem alternatingMap_eq_smulRight_basis_det
   change form (e ∘ σ) = (e.det.smulRight (form fun i ↦ e i)) (e ∘ σ)
   simp [AlternatingMap.map_perm, Module.Basis.det_self]
 
-/-- Pulling a top-degree continuous alternating map back by a linear endomorphism scales
-its coefficient by the determinant. -/
+/--
+%%handwave
+name:
+  Pullback of a top-degree alternating form on the standard basis
+statement:
+  For a continuous alternating \(k\)-form \(\omega\) and linear map \(L\) on
+  \(\mathbb R^k\),
+  \[
+    (L^*\omega)(e_1,\ldots,e_k)
+      =\det(L)\,\omega(e_1,\ldots,e_k).
+  \]
+proof:
+  Apply the determinant evaluation formula to the vectors
+  \(Le_1,\ldots,Le_k\).
+-/
 theorem continuousAlternatingMap_compContinuousLinearMap_apply_basisFun_det
     {k : ℕ} (form : (Fin k → ℝ) [⋀^Fin k]→L[ℝ] F)
     (L : (Fin k → ℝ) →L[ℝ] (Fin k → ℝ)) :
@@ -1746,14 +2662,49 @@ theorem continuousAlternatingMap_compContinuousLinearMap_apply_basisFun_det
   simpa [e, Pi.basisFun_apply, ContinuousAlternatingMap.compContinuousLinearMap_apply,
     Function.comp_def] using h
 
+/--
+%%handwave
+name:
+  Agreement of real and integer actions for a sign
+statement:
+  For a unit \(u\in\mathbb Z^\times=\{\pm1\}\) and a real vector \(x\), scalar
+  multiplication by the real number represented by \(u\) equals integer
+  scalar multiplication by \(u\).
+proof:
+  Check the two cases \(u=1\) and \(u=-1\).
+-/
 theorem intUnit_real_smul_eq_int_smul (u : ℤˣ) (x : F) :
     ((u : ℝ) • x) = ((u : ℤ) • x) := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> simp
 
+/--
+%%handwave
+name:
+  Absolute value of an integral unit
+statement:
+  For \(u\in\mathbb Z^\times\), the absolute value of its image in
+  \(\mathbb R\) is \(1\).
+proof:
+  The only integral units are \(1\) and \(-1\).
+-/
 theorem abs_intUnit_cast_real (u : ℤˣ) :
     |((u : ℤ) : ℝ)| = (1 : ℝ) := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> simp
 
+/--
+%%handwave
+name:
+  Alternating signs commute with integration
+statement:
+  For an integrable real-vector-valued function \(f\) and \(n\in\mathbb N\),
+  \[
+    \int_A (-1)^n f(x)\,dx=(-1)^n\int_A f(x)\,dx,
+  \]
+  where the sign acts by integer scalar multiplication.
+proof:
+  Convert the sign to real scalar multiplication and use linearity of the
+  integral.
+-/
 theorem integral_negOnePow_zsmul
     {α : Type*} [MeasurableSpace α] (μ : Measure α)
     (n : ℕ) (f : α → F) :
@@ -1770,6 +2721,16 @@ theorem integral_negOnePow_zsmul
     simp [hInt, integral_neg]
 
 omit [NormedSpace ℝ F] in
+/--
+%%handwave
+name:
+  Integrability is preserved by an alternating sign
+statement:
+  If \(f\) is integrable on \(A\), then \(x\mapsto(-1)^n f(x)\) is integrable
+  on \(A\).
+proof:
+  Multiplication by the fixed sign \(\pm1\) preserves integrability.
+-/
 theorem integrable_negOnePow_zsmul
     {α : Type*} [MeasurableSpace α] (μ : Measure α)
     (n : ℕ) {f : α → F} (hf : Integrable f μ) :
@@ -1797,7 +2758,18 @@ noncomputable def simplexParametrizationUsingExtension
     {k : ℕ} (G : SimplexAmbient k → M) (x : Fin k → ℝ) : M :=
   G (simplexCoordinateMap k x)
 
-/-- A \(C^r\) ambient extension restricts to a \(C^r\) map on affine simplex coordinates. -/
+/--
+%%handwave
+name:
+  Regularity of an extended simplex in affine coordinates
+statement:
+  If \(G:\mathbb R^{k+1}\to M\) is \(C^r\) on the standard simplex, then
+  \(x\mapsto G(x_0,\ldots,x_{k-1},1-\sum_i x_i)\) is \(C^r\) on
+  \(\Delta^k_{\mathrm{aff}}\).
+proof:
+  Compose \(G\) with the smooth affine-to-barycentric map, which sends the
+  affine simplex domain into the standard simplex.
+-/
 theorem contMDiffOn_simplexParametrizationUsingExtension
     {k : ℕ} {r : WithTop ℕ∞} {G : SimplexAmbient k → M}
     (hG : ContMDiffOn 𝓘(ℝ, SimplexAmbient k) I r G
@@ -1807,7 +2779,16 @@ theorem contMDiffOn_simplexParametrizationUsingExtension
   exact hG.comp (contDiff_simplexCoordinateMap k).contMDiff.contMDiffOn
     fun x hx ↦ simplexCoordinateMap_mem_stdSimplex hx
 
-/-- The coordinate parametrization of a \(C^r\) singular simplex is \(C^r\). -/
+/--
+%%handwave
+name:
+  Regularity of a singular simplex parameterization
+statement:
+  The affine coordinate parameterization of a \(C^r\) singular simplex is
+  \(C^r\) on \(\Delta^k_{\mathrm{aff}}\).
+proof:
+  Apply regularity of an extended simplex to the chosen ambient extension.
+-/
 theorem ContMDiffSingularSimplex.contMDiffOn_simplexParametrization
     {k : ℕ} {r : WithTop ℕ∞}
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r) :
@@ -1816,6 +2797,16 @@ theorem ContMDiffSingularSimplex.contMDiffOn_simplexParametrization
   contMDiffOn_simplexParametrizationUsingExtension (I := I)
     σ.extension_contMDiffOn
 
+/--
+%%handwave
+name:
+  Pointwise regularity of a simplex parameterization
+statement:
+  At each \(x\in\Delta^k_{\mathrm{aff}}\), the affine parameterization of a
+  \(C^r\) singular simplex is \(C^r\) relative to the simplex domain.
+proof:
+  Evaluate the global within-set \(C^r\) regularity at \(x\).
+-/
 theorem ContMDiffSingularSimplex.contMDiffWithinAt_simplexParametrization
     {k : ℕ} {r : WithTop ℕ∞}
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r)
@@ -1826,6 +2817,16 @@ theorem ContMDiffSingularSimplex.contMDiffWithinAt_simplexParametrization
   (ContMDiffSingularSimplex.contMDiffOn_simplexParametrization
     (I := I) (M := M) σ) x hx
 
+/--
+%%handwave
+name:
+  Differentiability of a simplex parameterization
+statement:
+  If \(r\ne0\), the affine parameterization of a \(C^r\) singular simplex is
+  differentiable relative to \(\Delta^k_{\mathrm{aff}}\) at every point.
+proof:
+  Positive \(C^r\) regularity implies differentiability.
+-/
 theorem ContMDiffSingularSimplex.mdifferentiableWithinAt_simplexParametrization
     {k : ℕ} {r : WithTop ℕ∞}
     (σ : ContMDiffSingularSimplex (I := I) (M := M) k r)
@@ -1836,6 +2837,18 @@ theorem ContMDiffSingularSimplex.mdifferentiableWithinAt_simplexParametrization
   (ContMDiffSingularSimplex.contMDiffWithinAt_simplexParametrization
     (I := I) (M := M) σ hx).mdifferentiableWithinAt hr
 
+/--
+%%handwave
+name:
+  Chart formula for the derivative of a simplex parameterization
+statement:
+  If the image of \(x\) lies in a chart centered at \(z\), the manifold
+  derivative of the simplex parameterization at \(x\) equals the ordinary
+  derivative of its extended-chart coordinate map.
+proof:
+  Expand the manifold derivative in the source and target charts; the source
+  is a model vector space with identity chart.
+-/
 theorem mfderivWithin_simplexParametrization_eq_fderivWithin_extChartAt
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞}
@@ -1876,8 +2889,18 @@ noncomputable def simplexPullbackFormAlongUsingExtension
     (mfderivWithin 𝓘(ℝ, Fin m → ℝ) I
       (simplexParametrizationUsingExtension G) (simplexCoordinateDomain m) x)
 
-/-- In a fixed chart around the image point, the pulled-back form along a simplex is the
-ordinary model-space pullback of the coordinate representative. -/
+/--
+%%handwave
+name:
+  Chart formula for a form pulled back along a simplex
+statement:
+  If the image of \(x\in\Delta^m_{\mathrm{aff}}\) lies in a chart \(e\),
+  then the simplex pullback at \(x\) is the coordinate representative
+  \(\omega_e\), pulled back by the derivative of the charted simplex map.
+proof:
+  Expand the manifold pullback and use the chart formulas for the simplex
+  derivative and for evaluation of \(\omega\).
+-/
 theorem simplexPullbackFormAlongUsingExtension_eq_coordinateExpression_of_mem_source
     [IsManifold I ∞ M]
     {m k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -1986,8 +3009,18 @@ theorem simplexPullbackFormAlongUsingExtension_eq_coordinateExpression_of_mem_so
   rw [hleft, hderiv]
   rfl
 
-/-- Near a simplex point, the pulled-back form is represented by pulling back the fixed-chart
-coordinate expression around the image of that point. -/
+/--
+%%handwave
+name:
+  Local chart representation of a simplex pullback
+statement:
+  Near every affine simplex point, the form pulled back along a simplex
+  extension agrees with the ordinary pullback of a fixed chart coordinate
+  representative of the form.
+proof:
+  Choose a chart around the image point.  Continuity puts nearby simplex
+  points in its source, where the pointwise chart formula applies.
+-/
 theorem simplexPullbackFormAlongUsingExtension_eventuallyEq_coordinateExpression
     [IsManifold I ∞ M]
     {m k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2149,8 +3182,18 @@ theorem integral_simplexPullbackCoefficientUsingExtension_eq_of_eqOn
   exact simplexPullbackCoefficientUsingExtension_eq_of_eqOn
     (I := I) (F := F) form σ hGdiff hG'diff hG hG' hx
 
-/-- The integral over a face may be computed using the ambient extension obtained
-by composing the simplex extension with the affine face inclusion. -/
+/--
+%%handwave
+name:
+  Face integral computed from a composed ambient extension
+statement:
+  The pullback integral over the \(i\)-th face equals the affine simplex
+  integral computed using the ambient extension
+  \(\widetilde\sigma\circ P_i\).
+proof:
+  The composite is a regular ambient extension of the face simplex, so
+  extension-independence of the coefficient gives the identity.
+-/
 theorem integrateSimplexByPullback_face_eq_integral_usingExtension
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
     (form : ContinuousDifferentialForm (I := I) (M := M) (F := F) k)
@@ -2203,8 +3246,18 @@ theorem integrateSimplexByPullback_face_eq_integral_usingExtension
             (σ.extension ∘ simplexAmbientMap i.succAbove) x := by
           rfl
 
-/-- Pointwise, the coefficient of the pullback to a face is obtained by
-pulling the ambient simplex pullback form along the affine face-coordinate map. -/
+/--
+%%handwave
+name:
+  Pointwise pullback coefficient on a simplex face
+statement:
+  At \(x\in\Delta^k_{\mathrm{aff}}\), the coefficient on the \(i\)-th face
+  equals the ambient simplex pullback form at the affine face point, evaluated
+  on the images of the standard basis under the face derivative.
+proof:
+  Apply the chain rule to the simplex extension composed with the affine face
+  map.
+-/
 theorem simplexPullbackCoefficientUsingExtension_comp_face_eq_pullbackAlong
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2281,8 +3334,18 @@ theorem simplexPullbackCoefficientUsingExtension_comp_face_eq_pullbackAlong
   rw [hparam_x, hderiv_congr, hchain, hqmf]
   rfl
 
-/-- The integral over a face may be written as the ambient pulled-back form
-evaluated on the affine face-coordinate tangent vectors. -/
+/--
+%%handwave
+name:
+  Face integral as an ambient pullback integral
+statement:
+  The integral over the \(i\)-th face equals the integral over
+  \(\Delta^k_{\mathrm{aff}}\) of the ambient pulled-back form evaluated on
+  the tangent vectors from the affine face derivative.
+proof:
+  Combine the composed-extension formula with the pointwise chain-rule
+  formula for the coefficient.
+-/
 theorem integrateSimplexByPullback_face_eq_integral_pullbackAlong
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2307,8 +3370,18 @@ theorem integrateSimplexByPullback_face_eq_integral_pullbackAlong
   exact simplexPullbackCoefficientUsingExtension_comp_face_eq_pullbackAlong
     (I := I) (F := F) hcell form σ i hx
 
-/-- The lower endpoint obtained by setting affine coordinate `i` to zero is
-the coefficient of the face omitting that coordinate. -/
+/--
+%%handwave
+name:
+  Lower coordinate endpoint as a face coefficient
+statement:
+  Evaluating the ambient simplex pullback at
+  \(\operatorname{insert}_i(0,x)\) on the shifted coordinate basis gives the
+  coefficient of the face omitting affine coordinate \(i\).
+proof:
+  That face inserts zero, and its derivative sends each basis vector to the
+  corresponding shifted basis vector.
+-/
 theorem simplexPullbackFormAlongUsingExtension_insert_zero_eq_faceCoefficient
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2333,8 +3406,18 @@ theorem simplexPullbackFormAlongUsingExtension_insert_zero_eq_faceCoefficient
   · funext j
     simp [Fin.removeNth_apply, simplexFaceCoordinateLinearMap_castSucc_basis]
 
-/-- The integral over a non-final coordinate face is the integral of the
-corresponding lower-endpoint coefficient in the ambient pulled-back form. -/
+/--
+%%handwave
+name:
+  Integral over a nonfinal face as a lower-endpoint integral
+statement:
+  The integral over the face omitting affine coordinate \(i\) is the integral
+  of the ambient pullback at \(\operatorname{insert}_i(0,x)\), evaluated on
+  the shifted coordinate basis.
+proof:
+  Substitute the nonfinal face map and its basis derivative into the ambient
+  face-integral formula.
+-/
 theorem integrateSimplexByPullback_castSucc_face_eq_insert_zero_integral
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2373,8 +3456,17 @@ theorem integrateSimplexByPullback_castSucc_face_eq_insert_zero_integral
     (simplexPullbackFormAlongUsingExtension_insert_zero_eq_faceCoefficient
       (I := I) (F := F) hcell form σ i hx).symm
 
-/-- The final face integral is the upper endpoint of the last-coordinate
-slicing, evaluated on the final-face tangent basis `e_j - e_last`. -/
+/--
+%%handwave
+name:
+  Final face integral as an upper-endpoint slice integral
+statement:
+  The final face integral is the integral of the ambient pullback at
+  \((x,1-\sum_i x_i)\), evaluated on the tangent basis \(e_j-e_k\).
+proof:
+  Substitute the upper-endpoint formula and the final-face basis derivative
+  into the ambient face-integral formula.
+-/
 theorem integrateSimplexByPullback_last_face_eq_slice_upper_integral
     [IsManifold I 1 M]
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2448,8 +3540,19 @@ theorem integrableOn_simplexPullbackCoefficient
     (I := I) (F := F) hcell form σ).integrableOn_compact
       (isCompact_simplexCoordinateDomain k)
 
-/-- The pulled-back form along an `m`-simplex, evaluated on fixed tangent
-vectors in affine coordinates, is continuous on the affine simplex. -/
+/--
+%%handwave
+name:
+  Continuity of a simplex pullback form on fixed tangent vectors
+statement:
+  If \(\omega\) is continuous and \(\sigma\) is \(C^1\), then for fixed
+  \(v_1,\ldots,v_n\in\mathbb R^m\), the function
+  \(x\mapsto(\sigma^*\omega)_x(v_1,\ldots,v_n)\) is continuous on the affine
+  simplex.
+proof:
+  The simplex derivative varies continuously, so evaluate the continuous form
+  on the resulting continuous tangent fields.
+-/
 theorem continuousOn_simplexPullbackFormAlongUsingExtension_eval
     [IsManifold I 1 M]
     {m k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2467,8 +3570,17 @@ theorem continuousOn_simplexPullbackFormAlongUsingExtension_eval
       form σ.contMDiffOn_simplexParametrization hcell
       (uniqueDiffOn_simplexCoordinateDomain m) v
 
-/-- The pulled-back form along an `m`-simplex, evaluated on fixed tangent
-vectors in affine coordinates, is integrable on the affine simplex. -/
+/--
+%%handwave
+name:
+  Integrability of a simplex pullback form on fixed tangent vectors
+statement:
+  Under the same hypotheses,
+  \(x\mapsto(\sigma^*\omega)_x(v_1,\ldots,v_n)\) is integrable on the affine
+  simplex.
+proof:
+  It is continuous on the compact affine simplex domain.
+-/
 theorem integrableOn_simplexPullbackFormAlongUsingExtension_eval
     [IsManifold I 1 M] [CompleteSpace F]
     {m k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2485,13 +3597,15 @@ theorem integrableOn_simplexPullbackFormAlongUsingExtension_eval
       (isCompact_simplexCoordinateDomain m)
 
 /--
-The analytic change-of-variables statement for a pulled-back top-degree form
-under the affine coordinate self-map induced by a permutation of the vertices.
-
-This is the remaining measure-theoretic and linear-algebraic core: the chain
-rule for the pullback form, the determinant/sign calculation for the affine
-self-map of the coordinate simplex, and Bochner change of variables on that
-compact simplex.
+%%handwave
+name:
+  Pullback integral after an affine vertex permutation
+statement:
+  Reparameterizing the affine simplex by a vertex permutation \(p\) multiplies
+  the pullback integral by \(\operatorname{sgn}(p)\).
+proof:
+  The chain rule contributes the determinant of the affine permutation,
+  while change of variables preserves the domain with absolute Jacobian \(1\).
 -/
 theorem integral_simplexPullbackCoefficientUsingExtension_comp_vertexPermutation
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -2700,7 +3814,18 @@ theorem integrateSimplexByPullback_reparametrizeVertexPermutation
           integrateSimplexByPullback (I := I) (F := F) hcell form σ) := by
           simp [integrateSimplexByPullback, simplexPullbackCoefficient]
 
-/-- A pulled-back exterior derivative, written in the target chart at the point. -/
+/--
+%%handwave
+name:
+  Chart formula for a pulled-back exterior derivative coefficient
+statement:
+  At an affine simplex point \(x\), the coefficient of \(\sigma^*(d\omega)\)
+  is \(d(\omega_e)\) at the chart image of \(\sigma(x)\), evaluated on the
+  derivatives of the charted simplex parameterization.
+proof:
+  Replace the coordinate expression of \(d\omega\) by
+  \(d(\omega_e)\) and use the chart formula for the simplex derivative.
+-/
 theorem simplexPullbackCoefficient_exteriorDerivative_eq_coordinateExpression
     [IsManifold I ∞ M]
     {k : ℕ} {r : WithTop ℕ∞}
@@ -2754,10 +3879,19 @@ theorem simplexPullbackCoefficient_exteriorDerivative_eq_coordinateExpression
   rfl
 
 /--
-The model-space exterior derivative of the pulled-back form agrees pointwise with the
-chart-coordinate pullback of the model-space exterior derivative.
-
-This is the local form of the statement that exterior derivative commutes with pullback.
+%%handwave
+name:
+  Exterior derivative of a pulled-back form in simplex coordinates
+statement:
+  Let \(\omega\) be a \(C^1\) differential \(k\)-form and let \(\sigma\) be a
+  singular \((k+1)\)-simplex of class at least \(C^2\). On the affine coordinate
+  simplex, the exterior derivative of \(\sigma^*\omega\), evaluated on the
+  standard coordinate basis, equals the chart-coordinate exterior derivative
+  of \(\omega\) composed with the tangent map of \(\sigma\).
+proof:
+  In a chart centered at \(\sigma(x)\), identify the pulled-back form locally
+  with the coordinate expression of \(\omega\) composed with the charted
+  simplex. Apply [the exterior derivative of a pullback is the pullback of the exterior derivative](lean:extDerivWithin_pullback), replace the local tangent map by the manifold tangent map, and use equality on a neighborhood to return to the original pullback.
 -/
 theorem extDerivWithin_simplexPullbackFormAlong_eq_coordinateExpression
     [IsManifold I ∞ M]
@@ -2887,11 +4021,16 @@ theorem extDerivWithin_simplexPullbackFormAlong_eq_coordinateExpression
   rfl
 
 /--
-The pullback of the exterior derivative to a singular simplex agrees with the exterior derivative
-of the pulled-back form on the affine coordinate simplex.
-
-This follows from the chartwise computation of the manifold exterior derivative and the local
-pullback formula for the model-space exterior derivative.
+%%handwave
+name:
+  Exterior differentiation commutes with simplex pullback
+statement:
+  For a \(C^1\) differential \(k\)-form \(\omega\) and a singular
+  \((k+1)\)-simplex \(\sigma\) of class at least \(C^2\), the coefficient of
+  \(\sigma^*(d\omega)\) on the standard basis equals the coefficient of
+  \(d(\sigma^*\omega)\) at every point of the affine coordinate simplex.
+proof:
+  Express the coefficient of \(\sigma^*(d\omega)\) by [the chart-coordinate formula for the pullback of \(d\omega\)](lean:simplexPullbackCoefficient_exteriorDerivative_eq_coordinateExpression), then identify that coordinate expression with [the exterior derivative of the pulled-back form](lean:extDerivWithin_simplexPullbackFormAlong_eq_coordinateExpression).
 -/
 theorem simplexPullbackCoefficient_exteriorDerivative_eq_extDerivWithin_pullbackForm
     [IsManifold I ∞ M]
@@ -2928,7 +4067,19 @@ theorem simplexPullbackCoefficient_exteriorDerivative_eq_extDerivWithin_pullback
     (extDerivWithin_simplexPullbackFormAlong_eq_coordinateExpression
       (I := I) (F := F) hcell omega σ hx).symm
 
-/-- Fundamental theorem of calculus for a set integral over a closed interval. -/
+/--
+%%handwave
+name:
+  Fundamental theorem of calculus for a closed-interval set integral
+statement:
+  Let \(a\le b\), let \(f:[a,b]\to F\) be \(C^1\), and suppose that
+  \(g(t)=f'(t)\) for every \(t\in[a,b]\), with derivatives taken relative to
+  the interval. Then \(\int_{[a,b]}g(t)\,dt=f(b)-f(a)\).
+proof:
+  Replace \(g\) by the within derivative, pass from the closed-interval set
+  integral to the oriented interval integral, and apply the Banach-valued
+  fundamental theorem of calculus.
+-/
 theorem integral_Icc_eq_endpoint_sub_of_derivWithin
     [CompleteSpace F] {a b : ℝ} {f g : ℝ → F}
     (hcont : ContDiffOn ℝ 1 f (Icc a b)) (hab : a ≤ b)
@@ -2946,10 +4097,19 @@ theorem integral_Icc_eq_endpoint_sub_of_derivWithin
     _ = f b - f a :=
           intervalIntegral.integral_derivWithin_Icc_of_contDiffOn_Icc hcont hab
 
-/-- Fundamental theorem of calculus for a set integral over a closed interval,
-where the displayed integrand is only required to agree with the within
-derivative on the open interval.  The endpoints do not affect the Bochner
-integral. -/
+/--
+%%handwave
+name:
+  Fundamental theorem of calculus from an interior derivative identity
+statement:
+  Let \(a\le b\), let \(f:[a,b]\to F\) be \(C^1\), and suppose that
+  \(g(t)=f'(t)\) for \(a<t<b\), with derivatives taken relative to
+  \([a,b]\). Then \(\int_{[a,b]}g(t)\,dt=f(b)-f(a)\).
+proof:
+  Removing the two endpoints does not change either Bochner integral. On the
+  open interval substitute the derivative of \(f\), restore the endpoints,
+  and apply [\(\int_{[a,b]}f'(t)\,dt=f(b)-f(a)\)](lean:integral_Icc_eq_endpoint_sub_of_derivWithin).
+-/
 theorem integral_Icc_eq_endpoint_sub_of_eqOn_Ioo_derivWithin
     [CompleteSpace F] {a b : ℝ} {f g : ℝ → F}
     (hcont : ContDiffOn ℝ 1 f (Icc a b)) (hab : a ≤ b)
@@ -2975,6 +4135,18 @@ def simplexCoordinateSliceBasisWithoutLast (k : ℕ) :
     (fun j : Fin (k + 1) =>
       (Pi.single j (1 : ℝ) : Fin (k + 1) → ℝ))
 
+/--
+%%handwave
+name:
+  Coordinate basis of a simplex slice
+statement:
+  After deleting the final vector from the standard basis of
+  \(\mathbb R^{k+1}\), the vector indexed by \(i<k\) is the standard vector
+  \(e_i\), regarded as having zero final coordinate.
+proof:
+  Evaluate both vectors in every coordinate and use the defining formula for
+  deleting the final entry of a finite family.
+-/
 @[simp]
 theorem simplexCoordinateSliceBasisWithoutLast_apply
     (k : ℕ) (i : Fin k) :
@@ -2983,9 +4155,21 @@ theorem simplexCoordinateSliceBasisWithoutLast_apply
   ext j
   simp [simplexCoordinateSliceBasisWithoutLast, Fin.init]
 
-/-- Each upper inserted-coordinate parametrization of the final face gives the
-same integral as the standard final-face parametrization, before doing the
-alternating tangent-basis algebra. -/
+/--
+%%handwave
+name:
+  Upper coordinate endpoint as the final simplex face
+statement:
+  Fix \(i\in\{0,\ldots,k\}\). The integral obtained by inserting
+  \(1-\sum_jx_j\) in coordinate \(i\) of the affine \(k\)-simplex equals the
+  integral obtained by inserting the same value in the final coordinate,
+  while retaining the tangent basis with its \(i\)-th vector removed.
+proof:
+  Use the cyclic permutation carrying coordinate \(i\) to the final
+  coordinate. The associated vertex-permutation map preserves the affine
+  simplex and has Jacobian of absolute value one, so change of variables and
+  the barycentric insertion identity give the asserted equality.
+-/
 theorem integral_upperEndpoint_insert_eq_finalFace_reparametrized
     {k : ℕ}
     (pulled :
@@ -3018,8 +4202,19 @@ theorem integral_upperEndpoint_insert_eq_finalFace_reparametrized
   rw [← simplexCoordinateOfBarycentric_insert_upper_eq_vertexPermutation i x]
   rw [simplexCoordinateInsertMap_upper_eq_slice_of_barycentric i x]
 
-/-- If an alternating form is curried at `x`, translating all remaining
-arguments by `-x` does not change its value. -/
+/--
+%%handwave
+name:
+  Translating the remaining arguments of an alternating form
+statement:
+  If \(B\) is an alternating \((k+1)\)-linear map, then for every
+  \(x,v_1,\ldots,v_k\),
+  \[B(x,v_1-x,\ldots,v_k-x)=B(x,v_1,\ldots,v_k).\]
+proof:
+  Expand by multilinearity. Every term containing at least one copy of
+  \(-x\) among the last \(k\) arguments vanishes because the first argument is
+  already \(x\); only the term containing all the \(v_j\) remains.
+-/
 theorem continuousAlternatingMap_curryLeft_sub_const
     {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {k : ℕ} (B : V [⋀^Fin (k + 1)]→L[ℝ] F) (x : V)
@@ -3074,8 +4269,21 @@ theorem continuousAlternatingMap_curryLeft_sub_const
   have hmap := G.map_add_univ v (fun _ : Fin k => -x)
   simpa [G, sub_eq_add_neg, Pi.add_apply] using hmap.trans hsum
 
-/-- The alternating sum of the coordinate hyperface tangent bases is the
-standard oriented final-face tangent basis. -/
+/--
+%%handwave
+name:
+  Alternating coordinate-face bases and the final-face basis
+statement:
+  Let \(A\) be an alternating \(k\)-linear map on \(\mathbb R^{k+1}\). Then
+  \[\sum_{i=0}^{k}(-1)^iA(e_0,\ldots,\widehat{e_i},\ldots,e_k)
+    =(-1)^kA(e_0-e_k,\ldots,e_{k-1}-e_k).\]
+proof:
+  Introduce the alternating \((k+1)\)-form obtained by wedging the coordinate
+  sum functional with \(A\). Its expansion on the standard basis is the
+  left-hand side. Move \(e_k\) to the first slot, then use the fact that
+  subtracting that first vector from all remaining arguments leaves an
+  alternating form unchanged.
+-/
 theorem continuousAlternatingMap_boundaryBasis_eq_finalFaceBasis
     {k : ℕ}
     (A : (Fin (k + 1) → ℝ) [⋀^Fin k]→L[ℝ] F) :
@@ -3151,8 +4359,19 @@ theorem continuousAlternatingMap_boundaryBasis_eq_finalFaceBasis
             Pi.single (Fin.last k) (1 : ℝ)) := by
           rfl
 
-/-- The defining alternating-sum expansion of the model-space exterior derivative,
-written directly in terms of the Fréchet derivative of the form-valued map. -/
+/--
+%%handwave
+name:
+  Alternating derivative formula for the exterior derivative
+statement:
+  For a map \(\eta\) from a normed space to alternating \(n\)-forms, its
+  exterior derivative relative to a set \(S\) satisfies
+  \[(d_S\eta)_x(v_0,\ldots,v_n)=\sum_{i=0}^{n}(-1)^i
+    (D_S\eta)_x(v_i)(v_0,\ldots,\widehat{v_i},\ldots,v_n).\]
+proof:
+  Expand the alternatingization of the uncurried Fréchet derivative, which is
+  the definition of the model-space exterior derivative.
+-/
 theorem extDerivWithin_apply_fderivWithin
     {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
@@ -3166,8 +4385,19 @@ theorem extDerivWithin_apply_fderivWithin
     ContinuousAlternatingMap.alternatizeUncurryFin_apply
       (fderivWithin ℝ eta s x) v
 
-/-- Evaluating a differentiable family of alternating maps on a fixed tuple
-commutes with taking the within Fréchet derivative. -/
+/--
+%%handwave
+name:
+  Differentiating evaluation of a family of alternating maps
+statement:
+  Suppose \(S\) has a unique tangent derivative at \(x\), and
+  \(\eta:S\to\operatorname{Alt}^n(V,W)\) is differentiable at \(x\). For a
+  fixed tuple \(u\) and direction \(v\),
+  \[(D_S\eta)_x(v)(u)=D_S\bigl(y\mapsto\eta(y)(u)\bigr)_x(v).\]
+proof:
+  Apply the derivative rule for evaluation at a fixed tuple and reverse its
+  displayed equality.
+-/
 theorem fderivWithin_continuousAlternatingMap_apply_const_apply_symm
     {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
@@ -3181,8 +4411,19 @@ theorem fderivWithin_continuousAlternatingMap_apply_const_apply_symm
     (fderivWithin_continuousAlternatingMap_apply_const_apply
       hxs heta u v).symm
 
-/-- The exterior derivative of a family of `k`-forms in affine coordinates is
-the alternating sum of the coordinate derivatives of its scalar coefficients. -/
+/--
+%%handwave
+name:
+  Exterior derivative as directional derivatives of coefficients
+statement:
+  Let \(\eta:S\to\operatorname{Alt}^k(V,W)\) be differentiable at \(x\),
+  where \(S\) has a unique tangent derivative at \(x\). For vectors
+  \(v_0,\ldots,v_k\),
+  \[(d_S\eta)_x(v_0,\ldots,v_k)=\sum_{i=0}^{k}(-1)^i
+    D_{v_i}\bigl[y\mapsto\eta(y)(v_0,\ldots,\widehat{v_i},\ldots,v_k)\bigr]_x.\]
+proof:
+  Start from [the alternating derivative formula for \(d_S\eta\)](lean:extDerivWithin_apply_fderivWithin) and commute differentiation with evaluation on each fixed deleted tuple.
+-/
 theorem extDerivWithin_apply_basis_eq_sum_directional_coefficients
     {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W]
@@ -3204,8 +4445,17 @@ theorem extDerivWithin_apply_basis_eq_sum_directional_coefficients
     hxs heta (i.removeNth base) (base i)
 
 /--
-The one-dimensional FTC contribution obtained by integrating in an arbitrary
-affine coordinate of a simplex.
+%%handwave
+name:
+  Fundamental theorem along an inserted simplex coordinate
+statement:
+  Fix a coordinate \(i\), a base point \(x\), and \(u\ge0\). If
+  \(t\mapsto c(\iota_i(x,t))\) is \(C^1\) on \([0,u]\) and its derivative is
+  the ambient directional derivative of \(c\) in direction \(e_i\), then
+  \[\int_0^u D_{e_i}c(\iota_i(x,t))\,dt
+    =c(\iota_i(x,u))-c(\iota_i(x,0)).\]
+proof:
+  Apply [the fundamental theorem for a closed-interval set integral](lean:integral_Icc_eq_endpoint_sub_of_derivWithin) to the one-variable function obtained by inserting \(t\) in coordinate \(i\).
 -/
 theorem integral_simplexInsertedCoordinateDerivative_eq_endpoint_sub
     [CompleteSpace F]
@@ -3247,9 +4497,21 @@ theorem integral_simplexInsertedCoordinateDerivative_eq_endpoint_sub
           (Pi.single i (1 : ℝ)))
       hcont hu hderiv
 
-/-- Integrating one coordinate derivative over the affine simplex gives the
-difference of the corresponding coefficient on the two opposite coordinate
-faces. -/
+/--
+%%handwave
+name:
+  Coordinate derivative integral as a pointwise face difference
+statement:
+  Let \(c\) be a coefficient function on the affine \((k+1)\)-simplex. If its
+  derivative in the \(i\)-th coordinate is integrable and its restrictions to
+  inserted \(i\)-coordinate lines satisfy the one-dimensional hypotheses,
+  then
+  \[\int_{\Delta^{k+1}}D_{e_i}c
+    =\int_{\Delta^k}\bigl(c(\iota_i(x,1-\sum_jx_j))-c(\iota_i(x,0))\bigr)\,dx.\]
+proof:
+  Slice \(\Delta^{k+1}\) by the \(i\)-th coordinate using Fubini. On each
+  interval \([0,1-\sum_jx_j]\), apply [the inserted-coordinate fundamental theorem](lean:integral_simplexInsertedCoordinateDerivative_eq_endpoint_sub).
+-/
 theorem integral_simplexCoordinateDomain_directionalDerivative_eq_faceDifference
     [CompleteSpace F]
     {k : ℕ} (i : Fin (k + 1))
@@ -3301,8 +4563,19 @@ theorem integral_simplexCoordinateDomain_directionalDerivative_eq_faceDifference
       (F := F) i coeff x (1 - ∑ j : Fin k, x j) hu
       (hcont x hx) (hderiv x hx)
 
-/-- Integrating one coordinate derivative over the affine simplex gives the
-difference of the two coordinate-face integrals. -/
+/--
+%%handwave
+name:
+  Coordinate derivative integral as a difference of face integrals
+statement:
+  Under the preceding differentiability and integrability hypotheses for a
+  coefficient \(c\),
+  \[\int_{\Delta^{k+1}}D_{e_i}c
+    =\int_{\Delta^k}c(\iota_i(x,1-\sum_jx_j))\,dx
+     -\int_{\Delta^k}c(\iota_i(x,0))\,dx.\]
+proof:
+  Apply [the coordinate derivative formula with the pointwise face difference](lean:integral_simplexCoordinateDomain_directionalDerivative_eq_faceDifference), then distribute the integral over subtraction using the assumed integrability of both endpoint functions.
+-/
 theorem integral_simplexCoordinateDomain_directionalDerivative_eq_integral_faceDifference
     [CompleteSpace F]
     {k : ℕ} (i : Fin (k + 1))
@@ -3355,12 +4628,21 @@ theorem integral_simplexCoordinateDomain_directionalDerivative_eq_integral_faceD
     (F := F) i coeff hInt hcont hderiv]
   rw [integral_sub hUpperInt hLowerInt]
 
-/-- A coordinate-line derivative integrates to the difference of the two
-coordinate-face integrals.  Unlike
-`integral_simplexCoordinateDomain_directionalDerivative_eq_integral_faceDifference`,
-the derivative integrand is supplied separately; the hypotheses only require
-that it agrees with the one-dimensional derivative on every inserted coordinate
-line. -/
+/--
+%%handwave
+name:
+  Line derivative integral as a difference of face integrals
+statement:
+  Let \(c,g:\mathbb R^{k+1}\to F\). Suppose \(g\) is integrable on
+  \(\Delta^{k+1}\), the two endpoint restrictions of \(c\) are integrable on
+  \(\Delta^k\), and on every inserted \(i\)-coordinate line the function
+  \(g\) agrees in the interior with the derivative of \(c\). Then
+  \[\int_{\Delta^{k+1}}g
+    =\int_{\Delta^k}c(\iota_i(x,1-\sum_jx_j))\,dx
+     -\int_{\Delta^k}c(\iota_i(x,0))\,dx.\]
+proof:
+  Slice the simplex in coordinate \(i\). On each slice apply [the closed-interval fundamental theorem when the derivative identity holds in the interior](lean:integral_Icc_eq_endpoint_sub_of_eqOn_Ioo_derivWithin), then separate the two endpoint integrals.
+-/
 theorem integral_simplexCoordinateDomain_lineDerivative_eq_integral_faceDifference
     [CompleteSpace F]
     {k : ℕ} (i : Fin (k + 1))
@@ -3421,10 +4703,17 @@ theorem integral_simplexCoordinateDomain_lineDerivative_eq_integral_faceDifferen
   rw [integral_sub hUpperInt hLowerInt]
 
 /--
-The one-dimensional FTC contribution on a last-coordinate slice of a simplex.
-
-The hypotheses isolate the analytic leaf: the primitive along the slice is `C^1`,
-and the displayed ambient directional derivative is its within-interval derivative.
+%%handwave
+name:
+  Fundamental theorem along the final coordinate of a simplex slice
+statement:
+  Fix \(x\in\mathbb R^k\) and \(u\ge0\). If evaluating an alternating
+  \(k\)-form-valued map on the first \(k\) coordinate vectors gives a \(C^1\)
+  function along the slice \((x,t)\), and its derivative is the ambient final
+  coordinate derivative, then the integral of that derivative on \([0,u]\)
+  equals the value at \((x,u)\) minus the value at \((x,0)\).
+proof:
+  Apply [the fundamental theorem for a closed-interval set integral](lean:integral_Icc_eq_endpoint_sub_of_derivWithin) to the coefficient obtained by evaluating the form on the coordinate basis without its last vector.
 -/
 theorem integral_simplexSlice_lastCoordinateDerivative_eq_endpoint_sub
     [CompleteSpace F]
@@ -3483,11 +4772,19 @@ theorem integral_simplexSlice_lastCoordinateDerivative_eq_endpoint_sub
       hcont hu hderiv
 
 /--
-The endpoint algebra for the simplex Stokes calculation.
-
-If the alternating sum of all upper-coordinate endpoints is the oriented final-face
-term, then the signed endpoint sum obtained from the coordinatewise FTC is exactly
-the boundary formula used below.
+%%handwave
+name:
+  Alternating endpoint sum after collapsing the upper faces
+statement:
+  Let \(U_i,L_i\) and \(F\) lie in an abelian group, and suppose
+  \(\sum_{i=0}^k(-1)^iU_i=(-1)^kF\). Then
+  \[(-1)^{k+1}\sum_{i=0}^k(-1)^i(U_i-L_i)
+    =\sum_{i=0}^k(-1)^{i+k}L_i+(-1)^{2k+1}F,\]
+  with the signs interpreted as integer scalar multiplication.
+proof:
+  Distribute the outer sign through the sum and through each difference,
+  substitute the assumed formula for the upper endpoints, and simplify the
+  powers of \(-1\).
 -/
 theorem simplexEndpointAlternatingSum_with_upperCollapse
     {A : Type*} [AddCommGroup A]
@@ -3535,8 +4832,21 @@ theorem simplexEndpointAlternatingSum_with_upperCollapse
   congr 1
   simp [pow_succ, mul_comm]
 
-/-- Pulling a \(C^1\) degree \(k\) form back along a \(C^2\) simplex gives a
-\(C^1\) family of alternating \(k\)-forms on affine simplex coordinates. -/
+/--
+%%handwave
+name:
+  Regularity of a differential-form pullback on a simplex
+statement:
+  Let \(\omega\) be a \(C^1\) differential \(k\)-form and let \(\sigma\) be an
+  \(m\)-simplex of class at least \(C^2\). The pullback
+  \(x\mapsto(\sigma^*\omega)_x\) is a \(C^1\) map from the affine coordinate
+  simplex \(\Delta^m\) to the space of alternating \(k\)-linear maps.
+proof:
+  Near each \(x\in\Delta^m\), choose a chart around \(\sigma(x)\). In that
+  chart the pullback is the coordinate expression of \(\omega\), composed
+  with the charted simplex and its derivative. The three factors are \(C^1\),
+  and the chart formula agrees locally with the intrinsic pullback.
+-/
 theorem simplexPullbackFormAlongUsingExtension_contDiffOn
     [IsManifold I ∞ M]
     {m k : ℕ} {r : WithTop ℕ∞} (hcell : (2 : WithTop ℕ∞) ≤ r)
@@ -3639,13 +4949,23 @@ theorem simplexPullbackFormAlongUsingExtension_contDiffOn
   simpa [pulled, form0, D] using hpulled_local
 
 /--
-Regularity of the pulled-back coefficient functions along the coordinate
-lines of the affine simplex.
-
-This is the analytic input for the coordinatewise FTC step: the displayed
-coordinate derivatives are integrable over the simplex, each coefficient
-restricted to an inserted coordinate line is \(C^1\), and the displayed
-integrand agrees with the derivative of that one-dimensional restriction.
+%%handwave
+name:
+  Coordinate-line calculus data for a simplex pullback
+statement:
+  Let \(\omega\) be a \(C^1\) differential \(k\)-form and let \(\sigma\) be a
+  singular \((k+1)\)-simplex of class at least \(C^2\). For
+  \(P=\sigma^*\omega\) on \(\Delta^{k+1}\), every coefficient derivative
+  \[
+    x\longmapsto D_{e_i}\bigl[y\mapsto
+      P_y(e_0,\ldots,\widehat{e_i},\ldots,e_k)\bigr]_x
+  \]
+  is integrable. Moreover, on each inserted coordinate interval
+  \(0\le t\le1-\sum_jx_j\), the corresponding coefficient of
+  \(P_{\iota_i(x,t)}\) is \(C^1\), and in the open interval its derivative is
+  the displayed ambient directional derivative.
+proof:
+  By [the pullback is a \(C^1\) alternating-form-valued map on the simplex](lean:simplexPullbackFormAlongUsingExtension_contDiffOn), each fixed coefficient is \(C^1\), and its derivative is continuous and hence integrable on the compact simplex. Compose with each affine coordinate line and apply the chain rule; in the interior, the line derivative is the standard vector \(e_i\).
 -/
 theorem simplexPullbackFormAlongUsingExtension_coordinateLineFTCData
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -3790,13 +5110,27 @@ theorem simplexPullbackFormAlongUsingExtension_coordinateLineFTCData
     simpa [coeff, line, interval, evalCLM, ContinuousLinearMap.comp_apply] using hderiv.symm
 
 /--
-The coordinatewise FTC/Fubini step for the pulled-back `k`-form on the affine
-`(k+1)`-simplex.
-
-Each coordinate derivative integrates to the difference between the corresponding
-upper coordinate endpoint and lower coordinate endpoint.  This is the analytic
-leaf: it packages the `C^1` regularity of the pulled-back coefficient functions,
-their integrability, Fubini for the sliced simplex, and the one-dimensional FTC.
+%%handwave
+name:
+  Coordinatewise fundamental theorem for a simplex pullback
+statement:
+  Let \(P=\sigma^*\omega\) be the pullback of a \(C^1\) differential \(k\)-form
+  to a \(C^2\) singular \((k+1)\)-simplex. The iterated integral over
+  \(x\in\Delta^k\) and \(0\le t\le1-\sum_jx_j\) of
+  \[
+    \sum_{i=0}^{k}(-1)^i
+    D_{e_i}\bigl[y\mapsto
+      P_y(e_0,\ldots,\widehat{e_i},\ldots,e_k)\bigr]_{(x,t)}
+  \]
+  equals
+  \[
+    \sum_{i=0}^{k}(-1)^i\left(
+      \int_{\Delta^k}P_{\iota_i(x,1-\sum_jx_j)}(e_0,\ldots,\widehat{e_i},\ldots,e_k)\,dx
+      -\int_{\Delta^k}P_{\iota_i(x,0)}(e_0,\ldots,\widehat{e_i},\ldots,e_k)\,dx\right).
+  \]
+proof:
+  Obtain integrability, one-variable \(C^1\) regularity, and the line
+  derivative identities from [the coordinate-line calculus data for the pullback](lean:simplexPullbackFormAlongUsingExtension_coordinateLineFTCData). Apply the linewise fundamental theorem in each coordinate, sum with alternating signs, and use the simplex slicing formula to identify the full integral with the displayed iterated integral.
 -/
 theorem integral_simplexPullbackFormAlong_expandedInterior_eq_endpointAlternatingSum
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -4064,12 +5398,23 @@ theorem integral_simplexPullbackFormAlong_expandedInterior_eq_endpointAlternatin
         simpa [form0, pulled, base] using hfull_to_endpoint
 
 /--
-The upper-coordinate endpoints of the coordinatewise FTC collapse to the oriented
-final face.
-
-This is the geometric leaf: it is the affine change-of-variables and orientation
-calculation identifying the `k+1` upper-coordinate parametrizations of the
-residual barycentric face with the standard final-face parametrization.
+%%handwave
+name:
+  Collapse of the upper simplex endpoints to the final face
+statement:
+  Let \(P=\sigma^*\omega\) on \(\Delta^{k+1}\). The alternating sum of the
+  \(k+1\) upper-coordinate endpoint integrals is
+  \[
+    \sum_{i=0}^{k}(-1)^i
+      \int_{\Delta^k}P_{\iota_i(x,1-\sum_jx_j)}
+        (e_0,\ldots,\widehat{e_i},\ldots,e_k)\,dx
+    =(-1)^k\int_{\Delta^k}P_{(x,1-\sum_jx_j)}
+      (e_0-e_k,\ldots,e_{k-1}-e_k)\,dx.
+  \]
+proof:
+  Reparameterize every upper insertion by the cyclic vertex permutation that
+  moves coordinate \(i\) to the last coordinate. After moving the finite sum
+  through the integral, use [the alternating sum of coordinate-face bases is the oriented final-face basis](lean:continuousAlternatingMap_boundaryBasis_eq_finalFaceBasis) pointwise.
 -/
 theorem simplexPullbackFormAlong_upperEndpointAlternatingIntegral_eq_finalFace
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -4268,12 +5613,22 @@ theorem simplexPullbackFormAlong_upperEndpointAlternatingIntegral_eq_finalFace
     (f := fun x : Fin k → ℝ => pulled (finalPoint x) finalBasis)]
 
 /--
-The affine-simplex FTC and endpoint-collapse calculation needed for Stokes.
-
-This is the remaining analytic/geometric leaf: integrate the displayed coordinate
-derivatives over the simplex, use one-dimensional FTC in each coordinate, identify
-the lower endpoints with the non-final coordinate faces, and collapse the upper
-endpoints to the final face using alternation.
+%%handwave
+name:
+  Endpoint formula for the expanded simplex exterior derivative
+statement:
+  Let \(P=\sigma^*\omega\), let
+  \(L_i=\int_{\Delta^k}P_{\iota_i(x,0)}
+  (e_0,\ldots,\widehat{e_i},\ldots,e_k)\,dx\), and let
+  \[
+    F=\int_{\Delta^k}P_{(x,1-\sum_jx_j)}
+      (e_0-e_k,\ldots,e_{k-1}-e_k)\,dx.
+  \]
+  Multiplying the iterated integral of the alternating coordinate derivatives
+  of \(P\) by \((-1)^{k+1}\) gives
+  \(\sum_{i=0}^{k}(-1)^{i+k}L_i+(-1)^{2k+1}F\).
+proof:
+  Use [coordinatewise integration gives the alternating differences of upper and lower endpoints](lean:integral_simplexPullbackFormAlong_expandedInterior_eq_endpointAlternatingSum), replace the alternating upper sum by [the oriented final-face integral](lean:simplexPullbackFormAlong_upperEndpointAlternatingIntegral_eq_finalFace), and simplify the signs with the endpoint-sum identity.
 -/
 theorem integral_simplexPullbackFormAlong_expandedInterior_eq_boundaryEndpointFormula
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -4434,9 +5789,19 @@ theorem integral_simplexPullbackFormAlong_expandedInterior_eq_boundaryEndpointFo
         rfl
 
 /--
-The remaining affine-simplex calculus identity after Fubini and expansion of the exterior
-derivative.  The lateral terms are the integration-by-parts contributions from the first `k`
-coordinates, while the final displayed term is the last-coordinate FTC contribution.
+%%handwave
+name:
+  Boundary integral as the expanded simplex derivative integral
+statement:
+  For a \(C^1\) differential \(k\)-form \(\omega\) and a singular
+  \((k+1)\)-simplex \(\sigma\) of class at least \(C^2\), the alternating sum
+  of the integrals of \(\sigma^*\omega\) over all oriented faces equals
+  \((-1)^{k+1}\) times the iterated integral over \(\Delta^{k+1}\) of the
+  alternating coordinate derivatives of \(\sigma^*\omega\).
+proof:
+  Express the first \(k+1\) faces as the lower inserted-coordinate integrals
+  and the last face as the upper sliced integral, including their orientation
+  factors. The resulting boundary expression is exactly [the endpoint formula for the expanded coordinate derivative integral](lean:integral_simplexPullbackFormAlong_expandedInterior_eq_boundaryEndpointFormula).
 -/
 theorem integral_simplexPullbackFormAlong_expandedBoundary_eq_expandedInterior
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -4546,12 +5911,22 @@ theorem integral_simplexPullbackFormAlong_expandedBoundary_eq_expandedInterior
   simpa [form0, pulled, base] using hinterior.symm
 
 /--
-Model-space Stokes theorem for the pullback of a degree `k` form to the affine
-`(k+1)`-simplex.
-
-The proof is the Fubini/FTC argument on simplex coordinates: slice the simplex by the last
-coordinate, reduce to an iterated integral, and apply the fundamental theorem of calculus in the
-inner integral.  The other faces are obtained by the usual alternating orientation bookkeeping.
+%%handwave
+name:
+  Stokes formula for a pulled-back form on the affine simplex
+statement:
+  Let \(\omega\) be a \(C^1\) differential \(k\)-form and let \(\sigma\) be a
+  singular \((k+1)\)-simplex of class at least \(C^2\). If \(P=\sigma^*\omega\),
+  then
+  \[
+    \sum_{i=0}^{k+1}(-1)^i\int_{\Delta^k}(\sigma\circ\partial_i)^*\omega
+    =(-1)^{k+1}\int_{\Delta^{k+1}}dP(e_0,\ldots,e_k).
+  \]
+proof:
+  The coefficient of \(dP\) is integrable because it agrees with the pullback
+  coefficient of \(d\omega\). Slice its integral by the final coordinate and
+  expand \(dP\) as the alternating sum of coefficient derivatives. The result
+  is [the expanded boundary identity](lean:integral_simplexPullbackFormAlong_expandedBoundary_eq_expandedInterior).
 -/
 theorem integral_extDerivWithin_simplexPullbackFormAlong_eq_boundary
     [IsManifold I ∞ M] [CompleteSpace F]
@@ -4840,6 +6215,8 @@ name:
 statement:
   Permuting the vertices of the parameter simplex changes the integral of a
   differential form by the sign of the permutation.
+proof:
+  This is exactly the vertex-permutation covariance axiom of the chosen simplex integration theory, after unfolding the definition of the simplex integral.
 -/
 theorem integrateSimplex_reparametrizeVertexPermutation
     (theory : SimplexIntegrationTheory (I := I) (M := M) (F := F))
@@ -4877,6 +6254,19 @@ noncomputable def integrateChain
     (c : SingularChain (I := I) (M := M) k r) : F :=
   integrateChainHom (I := I) (F := F) theory hcell form c
 
+/--
+%%handwave
+name:
+  Integral of a chain supported on one simplex
+statement:
+  For a singular simplex \(\sigma\), an integer \(n\), and a continuous form
+  \(\omega\), the integral of the chain \(n\sigma\) is
+  \(n\int_\sigma\omega\).
+proof:
+  Unfold chain integration as the linear combination of simplex integrals and
+  evaluate that linear combination on the finitely supported function with
+  sole value \(n\) at \(\sigma\).
+-/
 @[simp]
 theorem integrateChain_single
     (theory : SimplexIntegrationTheory (I := I) (M := M) (F := F))
@@ -4970,12 +6360,34 @@ def ChainEquivalent
     (c d : SingularChain (I := I) (M := M) k r) : Prop :=
   c - d ∈ reparametrizationSubmodule (I := I) (M := M) (k := k) (r := r)
 
+/--
+%%handwave
+name:
+  Reflexivity of oriented chain equivalence
+statement:
+  Every singular chain is equivalent to itself modulo oriented vertex
+  reparameterizations.
+proof:
+  The difference \(c-c\) is zero, and zero belongs to the submodule generated
+  by the reparameterization relations.
+-/
 theorem chainEquivalent_refl
     {k : ℕ} {r : WithTop ℕ∞}
     (c : SingularChain (I := I) (M := M) k r) :
     ChainEquivalent (I := I) c c := by
   simp [ChainEquivalent]
 
+/--
+%%handwave
+name:
+  Symmetry of oriented chain equivalence
+statement:
+  If a singular chain \(c\) is equivalent to \(d\) modulo oriented vertex
+  reparameterizations, then \(d\) is equivalent to \(c\).
+proof:
+  Since \(d-c=-(c-d)\), closure of the reparameterization submodule under
+  negation gives the result.
+-/
 theorem chainEquivalent_symm
     {k : ℕ} {r : WithTop ℕ∞}
     {c d : SingularChain (I := I) (M := M) k r}
@@ -4984,6 +6396,18 @@ theorem chainEquivalent_symm
   simpa [ChainEquivalent, neg_sub] using
     (reparametrizationSubmodule (I := I) (M := M) (k := k) (r := r)).neg_mem h
 
+/--
+%%handwave
+name:
+  Transitivity of oriented chain equivalence
+statement:
+  If \(c\) is equivalent to \(d\) and \(d\) is equivalent to \(e\) modulo
+  oriented vertex reparameterizations, then \(c\) is equivalent to \(e\).
+proof:
+  Add the two relations and use
+  \((c-d)+(d-e)=c-e\); the reparameterization submodule is closed under
+  addition.
+-/
 theorem chainEquivalent_trans
     {k : ℕ} {r : WithTop ℕ∞}
     {c d e : SingularChain (I := I) (M := M) k r}
@@ -5009,6 +6433,17 @@ abbrev GeometricChain (k : ℕ) (r : WithTop ℕ∞) :=
   SingularChain (I := I) (M := M) k r ⧸
     reparametrizationSubmodule (I := I) (M := M) (k := k) (r := r)
 
+/--
+%%handwave
+name:
+  Reparameterization relations integrate to zero
+statement:
+  If a singular chain lies in the submodule generated by oriented vertex
+  reparameterizations, then its integral against any continuous form is zero.
+proof:
+  It suffices to check the generators of the span. For a generator associated
+  with a vertex permutation \(p\), [reparameterizing a simplex multiplies its integral by \(\operatorname{sgn}(p)\)](lean:integrateSimplex_reparametrizeVertexPermutation), so the two terms cancel. Extend by linearity.
+-/
 theorem integrateChainHom_mem_ker_of_mem_reparametrizationSubmodule
     (theory : SimplexIntegrationTheory (I := I) (M := M) (F := F))
     {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
@@ -5069,6 +6504,17 @@ noncomputable def integrateGeometricChain
         integrateChainHom_mem_ker_of_mem_reparametrizationSubmodule
           (I := I) (F := F) theory hcell form hc
 
+/--
+%%handwave
+name:
+  Integral of a represented geometric chain
+statement:
+  If a geometric chain is represented by a singular chain \(c\), then the
+  integral of its quotient class is the ordinary chain integral of \(c\).
+proof:
+  Evaluate the linear map induced on the quotient at the class of \(c\); the
+  defining property of the quotient lift gives the original chain integral.
+-/
 @[simp]
 theorem integrateGeometricChain_mk
     (theory : SimplexIntegrationTheory (I := I) (M := M) (F := F))

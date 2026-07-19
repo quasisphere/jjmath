@@ -95,6 +95,16 @@ protected def PartialDiffeomorph.restrTargetOpen
     PartialDiffeomorph I J M N n :=
   (JJMath.Manifold.PartialDiffeomorph.restrOpen Phi.symm t ht).symm
 
+/--
+%%handwave
+name:
+  Evaluation of a composite partial diffeomorphism
+statement:
+  For composable partial diffeomorphisms \(\Phi\) and \(\Psi\),
+  \((\Psi\circ\Phi)(x)=\Psi(\Phi(x))\).
+proof:
+  This is the defining pointwise formula for their composition.
+-/
 @[simp]
 theorem PartialDiffeomorph.trans_apply
     (Phi : PartialDiffeomorph I J M N n)
@@ -102,6 +112,17 @@ theorem PartialDiffeomorph.trans_apply
     PartialDiffeomorph.trans Phi Psi x = Psi (Phi x) :=
   rfl
 
+/--
+%%handwave
+name:
+  Restricting a partial diffeomorphism does not change its values
+statement:
+  Restricting the source of a partial diffeomorphism \(\Phi\) to an open set
+  leaves its value at every point equal to \(\Phi(x)\).
+proof:
+  Source restriction changes only the domain of the underlying partial
+  equivalence, not its function.
+-/
 @[simp]
 theorem PartialDiffeomorph.restrOpen_apply
     (Phi : PartialDiffeomorph I J M N n) (s : Set M) (hs : IsOpen s) (x : M) :
@@ -115,6 +136,17 @@ complex plane. -/
 def surfaceQuarterTurnCovector (dr : ℂ →L[ℝ] ℝ) : ℂ →L[ℝ] ℝ :=
   (-dr Complex.I) • Complex.reCLM + dr 1 • Complex.imCLM
 
+/--
+%%handwave
+name:
+  A real covector on the complex line in coordinates
+statement:
+  For a real-linear covector \(\lambda:\mathbb C\to\mathbb R\) and
+  \(z=x+iy\),
+  \(\lambda(z)=\lambda(1)x+\lambda(i)y\).
+proof:
+  Write \(z=x\,1+y\,i\) and use real linearity.
+-/
 theorem realCovector_apply_eq_re_im
     (dr : ℂ →L[ℝ] ℝ) (z : ℂ) :
     dr z = dr 1 * z.re + dr Complex.I * z.im := by
@@ -127,6 +159,19 @@ theorem realCovector_apply_eq_re_im
     _ = dr 1 * z.re + dr Complex.I * z.im := by
       simp [smul_eq_mul, mul_comm]
 
+/--
+%%handwave
+name:
+  Formula for the quarter-turned covector
+statement:
+  If \(\lambda:\mathbb C\to\mathbb R\), its oriented quarter turn satisfies
+  \[
+    \lambda^\perp(x+iy)=-\lambda(i)x+\lambda(1)y.
+  \]
+proof:
+  Expand the defining linear combination of the real- and imaginary-part
+  covectors.
+-/
 theorem surfaceQuarterTurnCovector_apply
     (dr : ℂ →L[ℝ] ℝ) (z : ℂ) :
     surfaceQuarterTurnCovector dr z =
@@ -134,8 +179,18 @@ theorem surfaceQuarterTurnCovector_apply
   simp [surfaceQuarterTurnCovector, smul_eq_mul,
     Complex.reCLM_apply, Complex.imCLM_apply]
 
-/-- Quarter-turning a nonzero real covector on the complex plane again gives
-a nonzero covector. -/
+/--
+%%handwave
+name:
+  A quarter-turned nonzero covector is nonzero
+statement:
+  If a real covector \(\lambda\) on \(\mathbb C\) is nonzero, then its
+  quarter turn \(\lambda^\perp\) is nonzero.
+proof:
+  If \(\lambda^\perp=0\), evaluating it at \(i\) and \(1\) gives
+  \(\lambda(1)=\lambda(i)=0\).  The coordinate formula for \(\lambda\) then
+  forces \(\lambda=0\), a contradiction.
+-/
 theorem surfaceQuarterTurnCovector_ne_zero
     {dr : ℂ →L[ℝ] ℝ} (hdr : dr ≠ 0) :
     surfaceQuarterTurnCovector dr ≠ 0 := by
@@ -238,9 +293,22 @@ noncomputable def surfaceRegularCovectorEquiv
     (LinearMap.ker_eq_bot.mpr hinj)
     (LinearMap.range_eq_top.mpr hsurj)
 
-/-- Smooth product coordinates centered at a regular point of a real-valued
-function on the complex plane.  The first coordinate is the function itself,
-and the coordinate inverse is smooth at the distinguished target point. -/
+/--
+%%handwave
+name:
+  Smooth product coordinates near a regular level point
+statement:
+  Let \(r:\mathbb C\to\mathbb R\) be smooth at \(z_0\), with nonzero
+  derivative \(dr_{z_0}\).  There is a local homeomorphism
+  \(\Phi\) from a neighborhood of \(z_0\) to \(\mathbb R^2\) such that
+  \(\Phi(z_0)=(r(z_0),0)\), the first coordinate of \(\Phi(z)\) is \(r(z)\),
+  and \(\Phi^{-1}\) is smooth at \((r(z_0),0)\).
+proof:
+  Pair \(r\) with the affine function defined by the quarter-turned covector
+  \(dr_{z_0}^{\perp}\).  Its derivative at \(z_0\) is the invertible map
+  \((dr_{z_0},dr_{z_0}^{\perp})\); the smooth inverse function theorem gives
+  the required local product chart.
+-/
 theorem exists_smoothRegularLevelProductChart
     {r : ℂ → ℝ} {z₀ : ℂ}
     (hr : ContDiffAt ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) r z₀)
@@ -275,9 +343,21 @@ theorem exists_smoothRegularLevelProductChart
   · simpa [Φ, ContDiffAt.localInverse, F] using
       hF.to_localInverse hF' (by simp)
 
-/-- A regular real level on the complex plane admits a partial product
-coordinate of any order that can be localized from the order known at the
-base point.  Its first coordinate is the defining function. -/
+/--
+%%handwave
+name:
+  Finite-order partial product coordinates near a regular level
+statement:
+  Suppose \(r:\mathbb C\to\mathbb R\) is \(C^n\) at \(z_0\), with
+  \(dr_{z_0}\ne0\).  For every admissible order \(m\le n\), there is a
+  \(C^m\) partial diffeomorphism \(\Psi\) near \(z_0\) with
+  \(\Psi(z_0)=(r(z_0),0)\) and first coordinate \(r\).
+proof:
+  Apply the inverse function theorem to
+  \(z\mapsto(r(z),dr_{z_0}^{\perp}(z-z_0))\).  Localize the source and target
+  so that both the map and its inverse have the requested differentiability
+  order.
+-/
 theorem exists_regularLevelPartialDiffeomorph
     {n m : WithTop ℕ∞} {r : ℂ → ℝ} {z₀ : ℂ}
     (hr : ContDiffAt ℝ n r z₀)
@@ -387,10 +467,21 @@ theorem exists_regularLevelPartialDiffeomorph
     change (Φ z).1 = r z
     rfl
 
-/-- A regular level function that is smooth on one fixed neighborhood has a
-genuinely smooth partial product coordinate.  The uniform neighborhood
-hypothesis is what permits the inverse chart to be smooth to every finite
-order on one target neighborhood. -/
+/--
+%%handwave
+name:
+  Smooth partial product coordinates near a regular level
+statement:
+  If \(r:\mathbb C\to\mathbb R\) is smooth on a neighborhood of \(z_0\) and
+  \(dr_{z_0}\ne0\), then there is a smooth partial diffeomorphism \(\Psi\)
+  near \(z_0\) satisfying
+  \(\Psi(z_0)=(r(z_0),0)\) and
+  \(\operatorname{pr}_1\Psi(z)=r(z)\) throughout its source.
+proof:
+  On a fixed neighborhood, apply the smooth inverse function theorem to
+  \(z\mapsto(r(z),dr_{z_0}^{\perp}(z-z_0))\).  Shrink source and target once
+  so that the local inverse is smooth to all orders on the same neighborhood.
+-/
 theorem exists_smoothRegularLevelPartialDiffeomorph_of_contDiffOnNhd
     {r : ℂ → ℝ} {z₀ : ℂ}
     (hr : ∃ V : Set ℂ, V ∈ 𝓝 z₀ ∧

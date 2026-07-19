@@ -103,6 +103,16 @@ noncomputable def smoothBoundaryFrontierChart
       continuous_subtype_val.comp e.symm.continuous
     exact he.congr (fun t => by simp [g, t.2])
 
+/--
+%%handwave
+name:
+  Formula for the induced boundary chart
+statement:
+  The one-dimensional boundary chart induced by a product coordinate
+  \(C\) sends a boundary point \(x\) to the second coordinate of \(C(x)\).
+proof:
+  This is the defining formula for the restricted product chart.
+-/
 @[simp]
 theorem smoothBoundaryFrontierChart_apply
     (D : SmoothBoundaryDomain X) (p x : frontier D.carrier) :
@@ -112,6 +122,16 @@ theorem smoothBoundaryFrontierChart_apply
     smoothBoundaryProductBall_frontierNestedHomeomorph,
     smoothBoundaryProductBall_frontierHomeomorph]
 
+/--
+%%handwave
+name:
+  Source of the induced boundary chart
+statement:
+  The source of the boundary chart centered at \(p\) consists exactly of the
+  boundary points lying in the source of the centered product-ball chart.
+proof:
+  This is the source chosen in the construction of the restricted chart.
+-/
 @[simp]
 theorem smoothBoundaryFrontierChart_source
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
@@ -120,6 +140,18 @@ theorem smoothBoundaryFrontierChart_source
         smoothBoundaryProductBallSource D p := by
   rfl
 
+/--
+%%handwave
+name:
+  Target of the induced boundary chart
+statement:
+  The target of the boundary chart centered at \(p\) is the interval
+  \((-r_p,r_p)\), where \(r_p>0\) is the radius of the centered boundary
+  product chart.
+proof:
+  This interval is the target chosen when restricting the product chart to
+  its boundary axis.
+-/
 @[simp]
 theorem smoothBoundaryFrontierChart_target
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
@@ -127,8 +159,19 @@ theorem smoothBoundaryFrontierChart_target
       Metric.ball 0 (smoothBoundaryProductChartRadius D p) := by
   rfl
 
-/-- On its target interval, the inverse frontier chart is the ambient product
-chart inverse along the vertical diameter. -/
+/--
+%%handwave
+name:
+  Inverse boundary chart along the product-chart axis
+statement:
+  If \(t\in(-r_p,r_p)\), then the inverse of the boundary chart at \(p\),
+  viewed in the ambient surface, is \(C_p^{-1}(0,t)\).
+proof:
+  Let \(y\) be the inverse boundary-chart image of \(t\).  Since \(y\) lies on
+  the boundary, its first product coordinate is zero; the right-inverse
+  identity for the boundary chart makes its second coordinate \(t\).  Apply
+  the inverse identity for the ambient product chart.
+-/
 theorem smoothBoundaryFrontierChart_symm_apply_of_mem_target
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) (t : ℝ)
     (ht : t ∈ (smoothBoundaryFrontierChart D p).target) :
@@ -153,7 +196,17 @@ theorem smoothBoundaryFrontierChart_symm_apply_of_mem_target
   rw [← hcoord]
   exact ((smoothBoundaryProductChartAt D p).coordinate.left_inv hyBall.1).symm
 
-/-- The center of a frontier chart belongs to its source. -/
+/--
+%%handwave
+name:
+  The center lies in its boundary chart
+statement:
+  The boundary point \(p\) belongs to the source of the boundary chart
+  centered at \(p\).
+proof:
+  The centered product-ball chart contains its center, hence so does its
+  restriction to the boundary.
+-/
 theorem smoothBoundaryFrontierChart_point_mem
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     p ∈ (smoothBoundaryFrontierChart D p).source := by
@@ -169,8 +222,18 @@ surface product charts. -/
   mem_chart_source := smoothBoundaryFrontierChart_point_mem D
   chart_mem_atlas := fun x => ⟨x, rfl⟩
 
-/-- With the restricted product-chart atlas, a smooth surface frontier is a
-topological one-manifold without boundary. -/
+/--
+%%handwave
+name:
+  A smooth surface boundary is a topological one-manifold
+statement:
+  The atlas obtained by restricting centered boundary product charts makes
+  the boundary of a smooth surface domain a topological one-manifold without
+  boundary.
+proof:
+  Each restricted product chart is a homeomorphism from an open boundary arc
+  to an open interval, and every boundary point lies in its centered chart.
+-/
 theorem smoothBoundaryDomain_frontier_isTopologicalOneManifold
     (D : SmoothBoundaryDomain X) :
     letI := smoothBoundaryFrontierChartedSpace D
@@ -280,8 +343,17 @@ theorem smoothBoundaryDomain_frontier_isSmoothOneManifold
           smoothBoundaryFrontierChart_symm_apply_of_mem_target D p t
           (htargetP t ht)]
 
-/-- A smooth surface frontier is, in particular, a one-dimensional `C²`
-manifold without boundary. -/
+/--
+%%handwave
+name:
+  A smooth surface boundary is a twice differentiable one-manifold
+statement:
+  With the restricted product-chart atlas, the boundary of a smooth surface
+  domain is a one-dimensional \(C^2\) manifold without boundary.
+proof:
+  The boundary is a smooth one-manifold, and smooth transition maps are in
+  particular twice continuously differentiable.
+-/
 theorem smoothBoundaryDomain_frontier_isC2OneManifold
     (D : SmoothBoundaryDomain X) :
     letI := smoothBoundaryFrontierChartedSpace D
@@ -293,8 +365,17 @@ theorem smoothBoundaryDomain_frontier_isC2OneManifold
     (M := frontier D.carrier) (m := 2) (n := ∞)
       (WithTop.coe_le_coe.mpr le_top)
 
-/-- In particular, a smooth surface frontier is a one-dimensional `C¹`
-manifold, the regularity needed for integral-curve existence and uniqueness. -/
+/--
+%%handwave
+name:
+  A smooth surface boundary is a continuously differentiable one-manifold
+statement:
+  With the restricted product-chart atlas, the boundary of a smooth surface
+  domain is a one-dimensional \(C^1\) manifold without boundary.
+proof:
+  The boundary has already been shown to be a \(C^2\) one-manifold, and
+  \(C^2\) regularity implies \(C^1\) regularity.
+-/
 theorem smoothBoundaryDomain_frontier_isC1OneManifold
     (D : SmoothBoundaryDomain X) :
     letI := smoothBoundaryFrontierChartedSpace D

@@ -30,10 +30,20 @@ section SmoothExtension
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 omit [CompleteSpace E] in
-/-- A smooth function on an open neighborhood in a finite-dimensional real
-normed space has a globally smooth representative which agrees with it near
-the chosen point.  A bump function makes the representative vanish outside a
-smaller coordinate neighborhood. -/
+/--
+%%handwave
+name:
+  Smooth extension from a neighborhood of a point
+statement:
+  Let \(f:E\to F\) be smooth on an open set \(U\) containing \(x\), where
+  \(E\) is finite dimensional.  There is a globally smooth
+  \(g:E\to F\) that agrees with \(f\) on a neighborhood of \(x\).
+proof:
+  Choose concentric balls around \(x\) whose closed outer ball lies in \(U\),
+  and a smooth bump function equal to one on the inner ball and zero outside
+  the outer ball.  The product \(g=bf\) is smooth on the outer ball, locally
+  zero outside it, and agrees with \(f\) near \(x\).
+-/
 theorem exists_contDiff_eventuallyEq_of_contDiffOn
     {f : E → F} {U : Set E} {x : E} (hU : IsOpen U) (hx : x ∈ U)
     (hf : ContDiffOn ℝ ∞ f U) :
@@ -83,8 +93,23 @@ theorem exists_contDiff_eventuallyEq_of_contDiffOn
 end SmoothExtension
 
 omit [FiniteDimensional ℝ E] in
-/-- A Picard fixed point satisfies the autonomous differential equation at
-every interior time. -/
+/--
+%%handwave
+name:
+  A Picard fixed point solves the differential equation
+statement:
+  If a local curve \(u\) on \([-\varepsilon,\varepsilon]\) satisfies the
+  Picard equation
+  \[
+    u(t)=y+\int_0^t f(u(s))\,ds,
+  \]
+  then at every \(-\varepsilon<t<\varepsilon\), its extension satisfies
+  \(u'(t)=f(u(t))\).
+proof:
+  On the interior interval, the fixed-point identity identifies the extended
+  curve locally with the displayed integral formula.  The integrand is
+  continuous, so the fundamental theorem of calculus gives its derivative.
+-/
 theorem hasDerivAt_extendLocalCurve_of_picardFixedPoint
     (ε : ℝ) (hε : 0 ≤ ε) (f : E → E) (hf : Continuous f)
     (y : E) (u : LocalCurve E ε)
