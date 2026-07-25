@@ -31,24 +31,6 @@ variable {C : Type uC} [Category.{vC} C] {J : GrothendieckTopology C}
 /--
 %%handwave
 name:
-  Isomorphic sheaves have isomorphic sheaf cohomology
-statement:
-  Isomorphic sheaves of abelian groups have additively isomorphic sheaf
-  cohomology groups in every degree.
-proof:
-  Apply the sheaf-cohomology functor to the sheaf isomorphism and read the
-  resulting isomorphism of abelian-group objects as an additive equivalence.
--/
-theorem cohomology_addEquiv_of_iso
-    [HasSheafify J AddCommGrpCat.{w}]
-    [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
-    {F G : Sheaf J AddCommGrpCat.{w}} (e : F ≅ G) (n : ℕ) :
-    Nonempty (F.H n ≃+ G.H n) := by
-  exact ⟨((functorH J n).mapIso e).addCommGroupIsoToAddEquiv⟩
-
-/--
-%%handwave
-name:
   Morphisms from the lifted integers are evaluation at one
 statement:
   For an abelian group \(G\), homomorphisms from the universe-lifted copy of

@@ -94,33 +94,6 @@ theorem poissonKernel_center_eq_one_of_mem_frontier
 /--
 %%handwave
 name:
-  Poisson kernel has average one
-statement:
-  If the pole lies in the disk, then the circle average of the Poisson kernel
-  over the boundary circle is \(1\).
-proof:
-  Apply the Poisson integral formula from Mathlib to the constant harmonic
-  function \(1\).
--/
-theorem circleAverage_poissonKernel_eq_one
-    (c : ℂ) {r : ℝ} {w : ℂ} (hw : w ∈ Metric.ball c r) :
-    Real.circleAverage (poissonKernel c w) c r = 1 := by
-  have h :
-      Real.circleAverage (poissonKernel c w * fun _ : ℂ ↦ (1 : ℝ)) c r = 1 :=
-    (InnerProductSpace.HarmonicOnNhd.circleAverage_poissonKernel_smul
-      (f := fun _ : ℂ ↦ (1 : ℝ))
-      (c := c) (R := r) (by simp) hw)
-  calc
-    Real.circleAverage (poissonKernel c w) c r
-        = Real.circleAverage (poissonKernel c w * fun _ : ℂ ↦ (1 : ℝ)) c r := by
-          apply Real.circleAverage_congr_sphere
-          intro z _hz
-          simp
-    _ = 1 := h
-
-/--
-%%handwave
-name:
   Poisson kernel is nonnegative
 statement:
   If the boundary variable lies on the boundary circle and the pole lies in
@@ -143,39 +116,6 @@ theorem poissonKernel_nonneg_of_mem_sphere_of_mem_ball
   rw [poissonKernel_eq_re_herglotzRieszKernel, Function.comp_apply,
     herglotzRieszKernel_def]
   exact hleft_nonneg.trans hlower
-
-/--
-%%handwave
-name:
-  Poisson kernel is positive
-statement:
-  If the boundary variable lies on the boundary circle and the pole lies
-  strictly inside the disk, then the Poisson kernel is positive.
-proof:
-  The numerator is \(r^2-|w-c|^2>0\).  The denominator is positive because a
-  point \(z\) with \(|z-c|=r\) cannot equal an interior point \(w\).
--/
-theorem poissonKernel_pos_of_mem_sphere_of_mem_ball
-    (c : ℂ) {r : ℝ} {w z : ℂ}
-    (hz : z ∈ Metric.sphere c r) (hw : w ∈ Metric.ball c r) :
-    0 < poissonKernel c w z := by
-  have hz_norm : ‖z - c‖ = r := by
-    simpa [Metric.mem_sphere, dist_eq_norm] using hz
-  have hw_norm : ‖w - c‖ < r := by
-    simpa [Metric.mem_ball, dist_eq_norm] using hw
-  have hr : 0 < r := (norm_nonneg (w - c)).trans_lt hw_norm
-  have hnum_pos : 0 < ‖z - c‖ ^ 2 - ‖w - c‖ ^ 2 := by
-    rw [hz_norm]
-    nlinarith [norm_nonneg (w - c)]
-  have hden_pos : 0 < ‖(z - c) - (w - c)‖ ^ 2 := by
-    refine sq_pos_of_ne_zero ?_
-    intro hnorm
-    have hsub : (z - c) - (w - c) = 0 := norm_eq_zero.mp hnorm
-    have heq : z - c = w - c := sub_eq_zero.mp hsub
-    have hnorm_eq : ‖z - c‖ = ‖w - c‖ := by rw [heq]
-    nlinarith
-  rw [poissonKernel_def]
-  exact div_pos hnum_pos hden_pos
 
 /--
 %%handwave
@@ -732,42 +672,6 @@ theorem poissonDiskExtension_sub_const_eq_circleAverage
 /--
 %%handwave
 name:
-  Poisson extension preserves uniform closeness to a constant
-statement:
-  If boundary data is uniformly within \(\varepsilon\) of a constant on the
-  boundary circle, then its Poisson extension is also within
-  \(\varepsilon\) of that constant at every interior point.
-proof:
-  Convert the absolute-value bound into upper and lower constant bounds, then
-  use the upper and lower bound preservation theorems for the Poisson
-  extension.
--/
-theorem abs_poissonDiskExtension_sub_const_le_of_boundaryData
-    (c : ℂ) {r : ℝ} (hr : 0 < r) {w : ℂ} (hw : w ∈ Metric.ball c r)
-    (φ : ℂ → ℝ) (hφ : ContinuousOn φ (frontier (Metric.ball c r)))
-    {a ε : ℝ}
-    (hε : ∀ z ∈ frontier (Metric.ball c r), |φ z - a| ≤ ε) :
-    |poissonDiskExtension c r φ w - a| ≤ ε := by
-  have hupper : ∀ z ∈ frontier (Metric.ball c r), φ z ≤ a + ε := by
-    intro z hz
-    have hzε := (abs_sub_le_iff.1 (hε z hz)).1
-    linarith
-  have hlower : ∀ z ∈ frontier (Metric.ball c r), a - ε ≤ φ z := by
-    intro z hz
-    have hzε := (abs_sub_le_iff.1 (hε z hz)).2
-    linarith
-  have hu :
-      poissonDiskExtension c r φ w ≤ a + ε :=
-    poissonDiskExtension_le_of_boundaryData_le c hr hw φ hφ hupper
-  have hl :
-      a - ε ≤ poissonDiskExtension c r φ w :=
-    le_poissonDiskExtension_of_le_boundaryData c hr hw φ hφ hlower
-  rw [abs_sub_le_iff]
-  constructor <;> linarith
-
-/--
-%%handwave
-name:
   Difference of two Poisson extensions
 statement:
   The difference between the Poisson extensions of two boundary functions is
@@ -1117,61 +1021,6 @@ theorem le_poissonDiskDirichletCandidate_of_le_boundaryData
       simpa [frontier, Metric.isOpen_ball.interior_eq] using And.intro hw hw_ball
     rw [poissonDiskDirichletCandidate_eq_data_of_not_mem c r φ hw_ball]
     exact hm w hw_frontier
-
-/--
-%%handwave
-name:
-  Poisson candidate for constant boundary data
-statement:
-  The Poisson Dirichlet candidate for constant boundary data is the same
-  constant function.
-proof:
-  Split into interior and exterior points.  The Poisson extension of the
-  constant \(a\) is \(a\) inside, while the exterior branch is the boundary
-  datum itself.
--/
-theorem poissonDiskDirichletCandidate_const
-    (c : ℂ) (r : ℝ) (a : ℝ) :
-    poissonDiskDirichletCandidate c r (fun _ : ℂ ↦ a) = fun _ : ℂ ↦ a := by
-  funext w
-  by_cases hw : w ∈ Metric.ball c r
-  · rw [poissonDiskDirichletCandidate_eq_extension_of_mem c r (fun _ : ℂ ↦ a) hw,
-      poissonDiskExtension_const_of_mem_ball c hw a]
-  · rw [poissonDiskDirichletCandidate_eq_data_of_not_mem c r (fun _ : ℂ ↦ a) hw]
-
-/--
-%%handwave
-name:
-  Constant functions solve the disk Dirichlet problem
-statement:
-  A constant function solves the Euclidean disk Dirichlet problem with the
-  same constant boundary value.
-proof:
-  A constant is harmonic, continuous on the closed disk, and equals its
-  prescribed constant boundary value pointwise.
--/
-theorem constant_solves_euclidean_disk_dirichlet_problem
-    (c : ℂ) (r : ℝ) (a : ℝ) :
-    SolvesEuclideanDiskDirichletProblem c r (fun _ : ℂ ↦ a) (fun _ : ℂ ↦ a) := by
-  exact ⟨by simp, by fun_prop, by intro z hz; rfl⟩
-
-/--
-%%handwave
-name:
-  Poisson candidate solves constant boundary data
-statement:
-  For constant boundary data, the Poisson Dirichlet candidate solves the
-  Euclidean disk Dirichlet problem.
-proof:
-  [The Poisson candidate is the same constant function](lean:JJMath.Uniformization.poissonDiskDirichletCandidate_const),
-  and [constant functions solve the disk Dirichlet problem](lean:JJMath.Uniformization.constant_solves_euclidean_disk_dirichlet_problem).
--/
-theorem poissonDiskDirichletCandidate_const_solves
-    (c : ℂ) (r : ℝ) (a : ℝ) :
-    SolvesEuclideanDiskDirichletProblem c r (fun _ : ℂ ↦ a)
-      (poissonDiskDirichletCandidate c r (fun _ : ℂ ↦ a)) := by
-  simpa [poissonDiskDirichletCandidate_const] using
-    constant_solves_euclidean_disk_dirichlet_problem c r a
 
 /--
 %%handwave

@@ -22,8 +22,13 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [IsManifold SurfaceRealModel ∞ X]
 
-/-- Two points are joined by a globally smooth path which is constant before
-time zero and after time one. -/
+/--
+%%handwave
+name: Two points are joined by a globally smooth path which is constant before time zero and after time one
+statement:
+  Two points are joined by a globally smooth path which is constant before
+  time zero and after time one.
+-/
 def SmoothSittingJoined (x y : X) : Prop :=
   ∃ gamma : ℝ → X,
     ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma ∧

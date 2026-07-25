@@ -215,68 +215,18 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
     {x : X} {p : Path x₀ x}
 
-omit [RiemannSurface X] in
-/-- Forget the explicit handoff representatives from a weak handoff skeleton.
-
-%%handwave
-name:
-  Forgetting handoff representatives preserves the subdivision length
-statement:
-  Removing the chosen real Möbius transformations from a weak handoff skeleton does not change its number of path segments.
-proof:
-  The underlying weak continuation skeleton retains the same length field.
--/
-@[simp]
-theorem toWeak_length
-    (S :
-      PathLocalTransitionModelWeakHandoffSkeleton x₀ g localModels p) :
-    S.toPathLocalTransitionModelWeakContinuationSkeleton.length = S.length :=
-  rfl
-
-omit [RiemannSurface X] in
-/-- Each selected handoff representative is valid at the corresponding vertex.
-
-%%handwave
-name:
-  A handoff point belongs to its transition neighborhood
-statement:
-  For every handoff index $k$, the point $p(t_{k+1})$ belongs to the neighborhood on which the chosen real Möbius transition between the adjacent charts is valid.
-proof:
-  This membership is part of the selected local transition data at index $k$.
--/
-theorem transitionAt_mem_neighborhood
-    (S :
-      PathLocalTransitionModelWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    p (S.parameterAt k.succ) ∈ (S.transitionAt k).neighborhood :=
-  (S.transitionAt k).mem_neighborhood
-
-omit [RiemannSurface X] in
-/-- Each selected handoff neighborhood lies in the adjacent chart overlap.
-
-%%handwave
-name:
-  A handoff neighborhood lies in the adjacent chart overlap
-statement:
-  The neighborhood chosen at handoff $k$ is contained in the intersection of the chart domains used on segments $k$ and $k+1$.
-proof:
-  This inclusion is part of the local real Möbius transition data at the handoff.
--/
-theorem transitionAt_subset_overlap
-    (S :
-      PathLocalTransitionModelWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    (S.transitionAt k).neighborhood ⊆
-      (localModels.chartAt (S.centerAt k.castSucc)).domain ∩
-        (localModels.chartAt (S.centerAt k.succ)).domain :=
-  (S.transitionAt k).subset_overlap
-
 end PathLocalTransitionModelWeakHandoffSkeleton
 
 omit [RiemannSurface X] in
 /--
 Choose explicit componentwise local-transition handoff data for every shared
 vertex of a weak continuation skeleton.
+
+%%handwave
+name: Choose explicit componentwise local-transition handoff data for every shared vertex of a weak continuation skeleton
+statement:
+  Choose explicit componentwise local-transition handoff data for every shared vertex of a weak
+  continuation skeleton.
 -/
 noncomputable def PathLocalTransitionModelWeakContinuationSkeleton.toWeakHandoffSkeleton
     {x₀ : X} {g : HyperbolicMetric X}
@@ -422,30 +372,6 @@ theorem exists_pathLocalTransitionModelWeakHandoffSkeleton
   (exists_pathLocalTransitionModelWeakContinuationSkeleton localModels p).map
     PathLocalTransitionModelWeakContinuationSkeleton.toWeakHandoffSkeleton
 
-omit [RiemannSurface X] in
-/--
-One local-transition handoff updates the accumulated branch representative by
-right-multiplying with the inverse transition representative.
-
-%%handwave
-name:
-  Updating an accumulated Möbius factor preserves the branch value
-statement:
-  Suppose $V(y)=T\cdot U(y)$ on a transition neighborhood. Then for every accumulated real Möbius transformation $M$ and every point $y$ in that neighborhood, $(MT^{-1})\cdot V(y)=M\cdot U(y)$.
-proof:
-  Substitute $V(y)=T\cdot U(y)$, use associativity of the Möbius action, and cancel $T^{-1}T$.
--/
-theorem localRealMobiusTransitionData_accumulated_handoff
-    {g : HyperbolicMetric X} {U V : HyperbolicLocalChart X g}
-    {x y : X}
-    (T : HyperbolicLocalChart.LocalRealMobiusTransitionData U V x)
-    (hy : y ∈ T.neighborhood) (M : RealMobiusRepresentative) :
-    realMobiusRepresentativeAction (M * T.representative⁻¹)
-        (V.toUpperHalfPlane y) =
-      realMobiusRepresentativeAction M (U.toUpperHalfPlane y) := by
-  rw [T.transition_eq y hy, realMobiusRepresentativeAction_mul]
-  simp [realMobiusRepresentativeAction]
-
 /--
 Equal PSL classes of real Mobius representatives have the same action on the
 upper half-plane.
@@ -467,30 +393,14 @@ theorem realMobiusRepresentativeAction_eq_of_projection_eq
     ← realMobiusAction_realMobiusProjection B z, h]
 
 /--
-Equal PSL classes of real Mobius representatives have inverse lifts with the
-same action on the upper half-plane.
-
-%%handwave
-name:
-  Inverses of equal projective classes have the same action
-statement:
-  If $[A]=[B]$ in $\mathrm{PSL}_2(\mathbb R)$, then $A^{-1}\cdot z=B^{-1}\cdot z$ for every $z\in\mathbb H$.
-proof:
-  Taking inverses gives $[A^{-1}]=[B^{-1}]$; equal projective classes act identically on $\mathbb H$.
--/
-theorem realMobiusRepresentativeAction_inv_eq_of_projection_eq
-    {A B : RealMobiusRepresentative}
-    (h : realMobiusProjection A = realMobiusProjection B) (z : ℍ) :
-    realMobiusRepresentativeAction A⁻¹ z =
-      realMobiusRepresentativeAction B⁻¹ z := by
-  have hInv :
-      realMobiusProjection A⁻¹ = realMobiusProjection B⁻¹ := by
-    simpa using congrArg Inv.inv h
-  exact realMobiusRepresentativeAction_eq_of_projection_eq hInv z
-
-/--
 Retarget local transition data across definitional/equality changes in its
 two charts and marked point, keeping the Mobius representative unchanged.
+
+%%handwave
+name: Retarget local transition data across definitional/equality changes in its two charts and marked point, keeping the Möbius representative unchanged
+statement:
+  Retarget local transition data across definitional/equality changes in its two charts and
+  marked point, keeping the Möbius representative unchanged.
 -/
 def localRealMobiusTransitionData_congr
     {g : HyperbolicMetric X}
@@ -535,6 +445,12 @@ omit [RiemannSurface X] in
 /--
 Move the marked point of local transition data to another point in the same
 transition neighborhood, keeping the same Mobius representative.
+
+%%handwave
+name: Move the marked point of local transition data to another point in the same transition neighborhood, keeping the same Möbius representative
+statement:
+  Move the marked point of local transition data to another point in the same transition
+  neighborhood, keeping the same Möbius representative.
 -/
 def localRealMobiusTransitionData_recenter
     {g : HyperbolicMetric X}
@@ -551,30 +467,17 @@ def localRealMobiusTransitionData_recenter
 
 omit [RiemannSurface X] in
 /--
-%%handwave
-name:
-  Recentering transition data preserves its Möbius representative
-statement:
-  If local transition data based at $x$ are recentered at a point $y$ in the same transition neighborhood, the real Möbius representative remains unchanged.
-proof:
-  The recentered data retain the original neighborhood and transition formula, including the same representative.
--/
-@[simp]
-theorem localRealMobiusTransitionData_recenter_representative
-    {g : HyperbolicMetric X}
-    {U V : HyperbolicLocalChart X g} {x y : X}
-    (T : HyperbolicLocalChart.LocalRealMobiusTransitionData U V x)
-    (hy : y ∈ T.neighborhood) :
-    (localRealMobiusTransitionData_recenter T hy).representative =
-      T.representative :=
-  rfl
-
-omit [RiemannSurface X] in
-/--
 The identity representative gives the local transition from a chart to itself.
 
 This is the terminal-extension handoff used when a continued path is followed
 by a local path that stays inside the same terminal chart.
+
+%%handwave
+name: The identity representative gives the local transition from a chart to itself
+statement:
+  The identity representative gives the local transition from a chart to itself. This is the
+  terminal-extension handoff used when a continued path is followed by a local path that stays
+  inside the same terminal chart.
 -/
 def localRealMobiusTransitionData_self
     {g : HyperbolicMetric X} (U : HyperbolicLocalChart X g)
@@ -593,35 +496,18 @@ def localRealMobiusTransitionData_self
 
 omit [RiemannSurface X] in
 /--
-Invert local real-Mobius transition data.
-
-If `V = A ∘ U` near the marked overlap point, then
-`U = A⁻¹ ∘ V` on the same neighborhood.
--/
-def localRealMobiusTransitionData_symm
-    {g : HyperbolicMetric X}
-    {U V : HyperbolicLocalChart X g} {x : X}
-    (T : HyperbolicLocalChart.LocalRealMobiusTransitionData U V x) :
-    HyperbolicLocalChart.LocalRealMobiusTransitionData V U x where
-  neighborhood := T.neighborhood
-  isOpen_neighborhood := T.isOpen_neighborhood
-  mem_neighborhood := T.mem_neighborhood
-  subset_overlap := by
-    intro y hy
-    exact ⟨(T.subset_overlap hy).2, (T.subset_overlap hy).1⟩
-  representative := T.representative⁻¹
-  transition_eq := by
-    intro y hy
-    rw [T.transition_eq y hy]
-    simp [realMobiusRepresentativeAction]
-
-omit [RiemannSurface X] in
-/--
 Compose local real-Mobius transition data.
 
 If `V = A ∘ U` and `W = B ∘ V` near the same marked point, then
 `W = (B * A) ∘ U` near that point.  The neighborhood is the intersection of
 the two transition neighborhoods, so this is a purely local cocycle statement.
+
+%%handwave
+name: Compose local real-Möbius transition data
+statement:
+  Compose local real-Möbius transition data. If V = A ∘ U and W = B ∘ V near the same marked
+  point, then W = (B * A) ∘ U near that point. The neighborhood is the intersection of the two
+  transition neighborhoods, so this is a purely local cocycle statement.
 -/
 def localRealMobiusTransitionData_trans
     {g : HyperbolicMetric X}
@@ -641,25 +527,6 @@ def localRealMobiusTransitionData_trans
     intro y hy
     rw [TVW.transition_eq y hy.2, TUV.transition_eq y hy.1]
     simp [realMobiusRepresentativeAction_mul]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Representative of the reversed local transition
-statement:
-  Reversing local transition data from $U$ to $V$ gives transition data from $V$ to $U$ whose representative is $T^{-1}$ when the original representative is $T$.
-proof:
-  The reversed transition is defined using the inverse Möbius transformation.
--/
-@[simp]
-theorem localRealMobiusTransitionData_symm_representative
-    {g : HyperbolicMetric X}
-    {U V : HyperbolicLocalChart X g} {x : X}
-    (T : HyperbolicLocalChart.LocalRealMobiusTransitionData U V x) :
-    (localRealMobiusTransitionData_symm T).representative =
-      T.representative⁻¹ :=
-  rfl
 
 omit [RiemannSurface X] in
 /--

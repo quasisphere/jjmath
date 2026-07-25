@@ -14,9 +14,13 @@ noncomputable section
 
 attribute [local instance] finrank_real_complex_fact'
 
-local instance isScalarTowerRealComplexComplex :
-    IsScalarTower ℝ ℂ ℂ := IsScalarTower.right
 
+/--
+%%handwave
+name: Antipodal point of the unit circle
+statement:
+  For $v\in S^1$, define its antipode to be the unit-circle point $-v$.
+-/
 noncomputable def circleAntipode (v : Circle) : Circle :=
   ⟨-(v : ℂ), by
     simp [Submonoid.unitSphere, Circle.norm_coe v]⟩
@@ -117,6 +121,13 @@ theorem mul_circleAntipode_one (q : Circle) :
   apply Subtype.ext
   simp [circleAntipode]
 
+/--
+%%handwave
+name: Rotation placing an annular cut at minus one
+statement:
+  For a cut direction $v\in S^1$, define the rotated direction of $q\in S^1$
+  by $R_v(q)=-v^{-1}q$; thus the chosen cut is sent to $-1$.
+-/
 noncomputable def annularCutRotation (v q : Circle) : Circle :=
   circleAntipode (v⁻¹ * q)
 
@@ -235,11 +246,27 @@ theorem secondCut_mem_slitPlane_iff (v q : Circle) :
       simpa using this
     exact hq ((annularCutRotation_eq_one_iff v q).mp hrot)
 
+/--
+%%handwave
+name: Left logarithmic angle on a slit annulus
+statement:
+  On the annular cylinder with direction $v$ removed, define
+  $\theta_v^{\mathrm L}(q,t)=\operatorname{Im}\log(-v^{-1}q)$ using the
+  principal logarithm.
+-/
 noncomputable def annularLeftAngleLift (v : Circle)
     (q : annularPunctureOpen v) : ℝ :=
   (Complex.log
     (annularCutRotation v ((q : Circle × ℝ).1) : ℂ)).im
 
+/--
+%%handwave
+name: Right logarithmic angle on the opposite slit annulus
+statement:
+  On the annular cylinder with direction $-v$ removed, define
+  $\theta_v^{\mathrm R}(q,t)=\operatorname{Im}\log(v^{-1}q)+\pi$ using the
+  principal logarithm.
+-/
 noncomputable def annularRightAngleLift (v : Circle)
     (q : annularPunctureOpen (annularOpposite v)) : ℝ :=
   (Complex.log
@@ -575,6 +602,14 @@ theorem annularNegativeComponent_isPreconnected (v : Circle) :
         (Set.univ : Set annularNegativeTarget))
   simpa using hpre
 
+/--
+%%handwave
+name: Upper-half indicator for a rotated annular direction
+statement:
+  On the cylinder with the two opposite cut directions removed, define
+  $\mathbf 1_v(q,t)$ to be $1$ when $\operatorname{Im}(-v^{-1}q)>0$ and
+  $0$ otherwise.
+-/
 noncomputable def annularCutUpperIndicator (v : Circle)
     (x : annularDoublePunctureOpen v) : ℝ :=
   if 0 <
@@ -664,6 +699,13 @@ theorem annularCutUpperIndicator_eq_on_negative (v : Circle)
   exact hloc.apply_eq_of_isPreconnected
     (annularNegativeComponent_isPreconnected v) (Set.mem_univ a) (Set.mem_univ b)
 
+/--
+%%handwave
+name: Inverse of the annular cut rotation
+statement:
+  For $v,r\in S^1$, define $R_v^{-1}(r)=-vr$, the inverse image of $r$
+  under the rotation $R_v(q)=-v^{-1}q$.
+-/
 noncomputable def annularCutRotationInverse (v r : Circle) : Circle :=
   v * circleAntipode r
 
@@ -683,6 +725,14 @@ theorem annularCutRotation_inverse (v r : Circle) :
     annularCutRotation v (annularCutRotationInverse v r) = r := by
   simp [annularCutRotation, annularCutRotationInverse]
 
+/--
+%%handwave
+name: Test point with prescribed rotated annular direction
+statement:
+  If $r\in S^1\setminus\{-1,1\}$, define the point
+  $(R_v^{-1}(r),0)$ in the annular cylinder with both cut directions
+  removed.
+-/
 noncomputable def annularRotationPoint (v r : Circle)
     (hneg : r ≠ circleAntipode 1) (hone : r ≠ 1) :
     annularDoublePunctureOpen v := by
@@ -699,6 +749,12 @@ noncomputable def annularRotationPoint (v r : Circle)
     rw [annularCutRotation_inverse] at hrot
     exact hone hrot
 
+/--
+%%handwave
+name: Positive imaginary unit on the circle
+statement:
+  Define the unit-circle point $i=e^{i\pi/2}$.
+-/
 noncomputable def circleI : Circle := Circle.exp (Real.pi / 2)
 
 /--
@@ -747,22 +803,14 @@ theorem circleI_ne_negOne :
   have him := congrArg Complex.im hcoe
   norm_num [circleAntipode] at him
 
-noncomputable def circleNegI : Circle :=
-  circleAntipode circleI
-
 /--
 %%handwave
-name:
-  The antipode of the imaginary unit is minus the imaginary unit
+name: Negative imaginary unit on the circle
 statement:
-  The antipode of \(i\) on the unit circle, viewed in \(\mathbb C\), is
-  \(-i\).
-proof:
-  The circle antipode is complex negation.
+  Define the unit-circle point $-i$ as the antipode of $i$.
 -/
-@[simp]
-theorem circleNegI_coe : (circleNegI : ℂ) = -Complex.I := by
-  simp [circleNegI, circleAntipode]
+noncomputable def circleNegI : Circle :=
+  circleAntipode circleI
 
 /--
 %%handwave
@@ -795,11 +843,25 @@ theorem circleNegI_ne_negOne :
   have him := congrArg Complex.im hcoe
   norm_num [circleNegI, circleAntipode] at him
 
+/--
+%%handwave
+name: Upper annular overlap test point
+statement:
+  For a cut direction $v$, define the overlap point at radial coordinate
+  zero whose rotated circle direction is $i$.
+-/
 noncomputable def annularUpperTestPoint (v : Circle) :
     annularDoublePunctureOpen v :=
   annularRotationPoint v circleI
     circleI_ne_negOne circleI_ne_one
 
+/--
+%%handwave
+name: Lower annular overlap test point
+statement:
+  For a cut direction $v$, define the overlap point at radial coordinate
+  zero whose rotated circle direction is $-i$.
+-/
 noncomputable def annularLowerTestPoint (v : Circle) :
     annularDoublePunctureOpen v :=
   annularRotationPoint v circleNegI
@@ -972,6 +1034,13 @@ theorem annularCutUpperIndicator_positive_ne_negative
         simpa [l] using annularLowerTestPoint_indicator v] at hul
   norm_num at hul
 
+/--
+%%handwave
+name: Transition between the two annular angle lifts
+statement:
+  On the overlap of the annular charts slit at $v$ and $-v$, define
+  $\tau_v=\theta_v^{\mathrm L}-\theta_v^{\mathrm R}$.
+-/
 noncomputable def annularAngleTransition (v : Circle)
     (x : annularDoublePunctureOpen v) : ℝ :=
   annularLeftAngleLift v
@@ -1166,23 +1235,51 @@ theorem annularAngleTransition_decomposition (v : Circle)
       exact hmem
     simpa [xNeg, annularOverlapStepFunction, hxStep] using hxEq
 
+/--
+%%handwave
+name: Smooth left annular angle function
+statement:
+  Bundle the principal-logarithm angle $\theta_v^{\mathrm L}$ as a smooth
+  real-valued function on the cylinder slit at $v$.
+-/
 noncomputable def annularLeftAngleSmoothFunction (v : Circle) :
     C^∞⟮AnnularCylinderModel, annularPunctureOpen v; ℝ⟯ where
   val := annularLeftAngleLift v
   property := contMDiff_annularLeftAngleLift v
 
+/--
+%%handwave
+name: Smooth right annular angle function
+statement:
+  Bundle the opposite-slit angle $\theta_v^{\mathrm R}$ as a smooth
+  real-valued function on the cylinder slit at $-v$.
+-/
 noncomputable def annularRightAngleSmoothFunction (v : Circle) :
     C^∞⟮AnnularCylinderModel,
       annularPunctureOpen (annularOpposite v); ℝ⟯ where
   val := annularRightAngleLift v
   property := contMDiff_annularRightAngleLift v
 
+/--
+%%handwave
+name: Left annular angle as a zero-form
+statement:
+  Regard the smooth function $\theta_v^{\mathrm L}$ as a real smooth
+  zero-form on the cylinder slit at $v$.
+-/
 noncomputable def annularLeftAngleZeroForm (v : Circle) :
     SmoothForms (I := AnnularCylinderModel)
       (M := annularPunctureOpen v) ℝ 0 :=
   smoothRealFunctionToZeroForm (I0 := AnnularCylinderModel)
     (annularLeftAngleSmoothFunction v)
 
+/--
+%%handwave
+name: Right annular angle as a zero-form
+statement:
+  Regard the smooth function $\theta_v^{\mathrm R}$ as a real smooth
+  zero-form on the cylinder slit at $-v$.
+-/
 noncomputable def annularRightAngleZeroForm (v : Circle) :
     SmoothForms (I := AnnularCylinderModel)
       (M := annularPunctureOpen (annularOpposite v)) ℝ 0 :=
@@ -1211,6 +1308,13 @@ theorem annularAngleTransition_isLocallyConstant (v : Circle) :
   rw [heq]
   simpa only [Function.comp_def] using h
 
+/--
+%%handwave
+name: Closed zero-form of the annular angle transition
+statement:
+  Regard the locally constant transition $\tau_v$ on the double-slit
+  overlap as a closed real zero-form.
+-/
 noncomputable def annularAngleTransitionClosedForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := annularDoublePunctureOpen v) (A := ℝ) 0 :=
@@ -1222,6 +1326,13 @@ noncomputable def annularAngleTransitionClosedForm (v : Circle) :
       (annularAngleTransition v)
       (annularAngleTransition_isLocallyConstant v)⟩
 
+/--
+%%handwave
+name: Cohomology class of the annular angle transition
+statement:
+  Define the degree-zero de Rham class represented by the locally constant
+  angle-transition zero-form $\tau_v$ on the double-slit overlap.
+-/
 noncomputable def annularAngleTransitionClass (v : Circle) :
     DeRhamCohomology (I := AnnularCylinderModel)
       (M := annularDoublePunctureOpen v) (A := ℝ) 0 :=
@@ -1229,14 +1340,36 @@ noncomputable def annularAngleTransitionClass (v : Circle) :
     (M := annularDoublePunctureOpen v) (A := ℝ) 0).mkQ
       (annularAngleTransitionClosedForm v)
 
+/--
+%%handwave
+name: Chosen point of the positive annular overlap component
+statement:
+  Choose a basepoint in the component where the rotated circle direction
+  has positive imaginary part.
+-/
 noncomputable def annularPositiveBasepoint (v : Circle) :
     annularPositiveComponent v :=
   Classical.choice (annularPositiveComponent_nonempty v)
 
+/--
+%%handwave
+name: Chosen point of the negative annular overlap component
+statement:
+  Choose a basepoint in the component where the rotated circle direction
+  has negative imaginary part.
+-/
 noncomputable def annularNegativeBasepoint (v : Circle) :
     annularNegativeComponent v :=
   Classical.choice (annularNegativeComponent_nonempty v)
 
+/--
+%%handwave
+name: Jump coefficient of the annular angle transition
+statement:
+  Define the transition coefficient as the value of $\tau_v$ on the chosen
+  positive overlap basepoint minus its value on the chosen negative overlap
+  basepoint.
+-/
 noncomputable def annularAngleTransitionCoefficient (v : Circle) : ℝ :=
   let aO : annularDoublePunctureOpen v :=
     TopologicalSpace.Opens.inclusion

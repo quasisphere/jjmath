@@ -511,6 +511,202 @@ private theorem map_const_smul_restrict_ball_zero_eq_smul
 /--
 %%handwave
 name:
+  Exact $L^p$ norm under dilation on a ball
+statement:
+  Let $H$ be a finite-dimensional real normed space of dimension $d$, let
+  $a>0$, and let $f:H\to E$. Then
+  $$
+    \|f(a\,\cdot)\|_{L^p(B(0,R))}
+      = |a^d|^{-1/p}\|f\|_{L^p(B(0,aR))},
+  $$
+  with the usual extended-valued interpretation of the exponent.
+proof:
+  Push restricted Haar volume forward by the dilation, use [the exact restricted-volume scaling formula](lean:JJMath.Uniformization.map_const_smul_restrict_ball_zero_eq_smul), and apply the formula for an $L^p$ seminorm under scalar multiplication of the measure.
+-/
+theorem eLpNorm_comp_const_smul_restrict_ball_zero
+    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H] [NormedAddCommGroup E]
+    {a R : ℝ} (ha_pos : 0 < a) (f : H → E) (p : ℝ≥0∞) :
+    eLpNorm (fun z : H ↦ f (a • z)) p
+        (MeasureTheory.volume.restrict (Metric.ball (0 : H) R)) =
+      ENNReal.ofReal |(a ^ Module.finrank ℝ H)⁻¹| ^ (1 / p).toReal *
+        eLpNorm f p
+          (MeasureTheory.volume.restrict (Metric.ball (0 : H) (a * R))) := by
+  let T : H → H := fun z ↦ a • z
+  let μR : Measure H :=
+    MeasureTheory.volume.restrict (Metric.ball (0 : H) R)
+  let μaR : Measure H :=
+    MeasureTheory.volume.restrict (Metric.ball (0 : H) (a * R))
+  let J : ℝ≥0∞ := ENNReal.ofReal |(a ^ Module.finrank ℝ H)⁻¹|
+  have hT_emb : MeasurableEmbedding T := by
+    simpa [T] using
+      (Homeomorph.smulOfNeZero a ha_pos.ne' : H ≃ₜ H).measurableEmbedding
+  have hmap : Measure.map T μR = J • μaR := by
+    simpa [T, μR, μaR, J] using
+      map_const_smul_restrict_ball_zero_eq_smul
+        (H := H) (a := a) (R := R) ha_pos
+  have hJ : J ≠ 0 := by
+    simp [J, ha_pos.ne']
+  calc
+    eLpNorm (fun z : H ↦ f (a • z)) p μR =
+        eLpNorm f p (Measure.map T μR) := by
+      simpa [T, Function.comp_def] using
+        (hT_emb.eLpNorm_map_measure (μ := μR) (g := f) (p := p)).symm
+    _ = eLpNorm f p (J • μaR) := by rw [hmap]
+    _ = J ^ (1 / p).toReal * eLpNorm f p μaR := by
+      simpa [smul_eq_mul] using
+        eLpNorm_smul_measure_of_ne_zero hJ f p μaR
+
+/--
+%%handwave
+name:
+  Exact planar $L^2$ norm under positive dilation on a ball
+statement:
+  If $a>0$ and $f:\mathbb C\to E$, then
+  $$
+    \|f(a\,\cdot)\|_{L^2(B(0,R))}
+      =a^{-1}\|f\|_{L^2(B(0,aR))}.
+  $$
+proof:
+  Specialize [the exact $L^p$ dilation formula](lean:JJMath.Uniformization.eLpNorm_comp_const_smul_restrict_ball_zero) to the two-dimensional real vector space $\mathbb C$ and to $p=2$.
+-/
+theorem eLpNorm_comp_pos_smul_complex_L2_restrict_ball_zero
+    {E : Type} [NormedAddCommGroup E]
+    {a R : ℝ} (ha_pos : 0 < a) (f : ℂ → E) :
+    eLpNorm (fun z : ℂ ↦ f (a • z)) 2
+        (MeasureTheory.volume.restrict (Metric.ball (0 : ℂ) R)) =
+      (ENNReal.ofReal a)⁻¹ *
+        eLpNorm f 2
+          (MeasureTheory.volume.restrict (Metric.ball (0 : ℂ) (a * R))) := by
+  have hfactor :
+      ENNReal.ofReal |(a ^ Module.finrank ℝ ℂ)⁻¹| ^
+          (1 / (2 : ℝ≥0∞)).toReal = (ENNReal.ofReal a)⁻¹ := by
+    rw [Complex.finrank_real_complex]
+    norm_num
+    rw [ENNReal.ofReal_inv_of_pos (sq_pos_of_pos ha_pos)]
+    rw [ENNReal.ofReal_pow ha_pos.le]
+    rw [ENNReal.inv_pow]
+    rw [← ENNReal.rpow_two]
+    rw [← ENNReal.rpow_mul]
+    norm_num
+  rw [eLpNorm_comp_const_smul_restrict_ball_zero ha_pos f 2]
+  rw [hfactor]
+
+/--
+%%handwave
+name:
+  Cancellation of planar $L^2$ scaling with the derivative factor
+statement:
+  If $a>0$ and $f:\mathbb C\to E$, where $E$ is a real normed space, then
+  $$
+    \|a\,f(a\,\cdot)\|_{L^2(B(0,R))}
+      =\|f\|_{L^2(B(0,aR))}.
+  $$
+proof:
+  Scalar multiplication by $a$ multiplies an $L^2$ norm by $a$, while [pullback by planar dilation multiplies it by $a^{-1}$](lean:JJMath.Uniformization.eLpNorm_comp_pos_smul_complex_L2_restrict_ball_zero); the two factors cancel.
+-/
+theorem eLpNorm_pos_smul_comp_pos_smul_complex_L2_restrict_ball_zero
+    {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {a R : ℝ} (ha_pos : 0 < a) (f : ℂ → E) :
+    eLpNorm (fun z : ℂ ↦ a • f (a • z)) 2
+        (MeasureTheory.volume.restrict (Metric.ball (0 : ℂ) R)) =
+      eLpNorm f 2
+        (MeasureTheory.volume.restrict (Metric.ball (0 : ℂ) (a * R))) := by
+  have hcomp :=
+    eLpNorm_comp_pos_smul_complex_L2_restrict_ball_zero
+      (R := R) ha_pos f
+  change eLpNorm (a • (fun z : ℂ ↦ f (a • z))) 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : ℂ) R)) = _
+  rw [eLpNorm_const_smul]
+  rw [hcomp]
+  rw [Real.enorm_eq_ofReal ha_pos.le]
+  rw [← mul_assoc, ENNReal.mul_inv_cancel]
+  · simp
+  · exact (ENNReal.ofReal_pos.mpr ha_pos).ne'
+  · exact ENNReal.ofReal_ne_top
+
+/--
+%%handwave
+name:
+  Exact $L^p$ norm under translation between centered balls
+statement:
+  For every $c\in H$, radius $R$, exponent $p$, and function $f:H\to E$,
+  $$
+    \|f(\,\cdot+c)\|_{L^p(B(0,R))}
+      =\|f\|_{L^p(B(c,R))}.
+  $$
+proof:
+  Translation is a measure-preserving measurable equivalence and maps $B(0,R)$ exactly onto $B(c,R)$.
+-/
+theorem eLpNorm_comp_add_right_restrict_ball_zero
+    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [NormedAddCommGroup E]
+    (f : H → E) (c : H) (R : ℝ) (p : ℝ≥0∞) :
+    eLpNorm (fun z : H ↦ f (z + c)) p
+        (MeasureTheory.volume.restrict (Metric.ball (0 : H) R)) =
+      eLpNorm f p
+        (MeasureTheory.volume.restrict (Metric.ball c R)) := by
+  let T : H → H := fun z ↦ z + c
+  let μ0 : Measure H :=
+    MeasureTheory.volume.restrict (Metric.ball (0 : H) R)
+  have hT_emb : MeasurableEmbedding T := by
+    simpa [T] using measurableEmbedding_add_right (H := H) c
+  have himage : T '' Metric.ball (0 : H) R = Metric.ball c R := by
+    simpa [T] using (IsometryEquiv.addRight c).image_ball (0 : H) R
+  have hmp : MeasurePreserving T μ0
+      (MeasureTheory.volume.restrict (Metric.ball c R)) := by
+    have h := (measurePreserving_add_right_volume (H := H) c).restrict_image_emb
+      hT_emb (Metric.ball (0 : H) R)
+    simpa [μ0, himage] using h
+  calc
+    eLpNorm (fun z : H ↦ f (z + c)) p μ0 =
+        eLpNorm f p (Measure.map T μ0) := by
+      simpa [T, Function.comp_def] using
+        (hT_emb.eLpNorm_map_measure (μ := μ0) (g := f) (p := p)).symm
+    _ = eLpNorm f p
+        (MeasureTheory.volume.restrict (Metric.ball c R)) := by
+      rw [hmp.map_eq]
+
+/--
+%%handwave
+name:
+  Local $L^p$ membership under translation between centered balls
+statement:
+  If $f\in L^p(B(c,R))$, then $z\mapsto f(z+c)$ belongs to
+  $L^p(B(0,R))$.
+proof:
+  Restrict translation invariance of Haar volume to the centered ball and pull the $L^p$ function back through the resulting measure-preserving map.
+-/
+theorem memLp_comp_add_right_restrict_ball_zero
+    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [NormedAddCommGroup E]
+    {f : H → E} {c : H} {R : ℝ} {p : ℝ≥0∞}
+    (hf : MemLp f p
+      (MeasureTheory.volume.restrict (Metric.ball c R))) :
+    MemLp (fun z : H ↦ f (z + c)) p
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) R)) := by
+  let T : H → H := fun z ↦ z + c
+  have hT_emb : MeasurableEmbedding T := by
+    simpa [T] using measurableEmbedding_add_right (H := H) c
+  have himage : T '' Metric.ball (0 : H) R = Metric.ball c R := by
+    simpa [T] using (IsometryEquiv.addRight c).image_ball (0 : H) R
+  have hmp : MeasurePreserving T
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) R))
+      (MeasureTheory.volume.restrict (Metric.ball c R)) := by
+    have h := (measurePreserving_add_right_volume (H := H) c).restrict_image_emb
+      hT_emb (Metric.ball (0 : H) R)
+    simpa [himage] using h
+  simpa [T, Function.comp_def] using hf.comp_measurePreserving hmp
+
+/--
+%%handwave
+name:
   Pulling an \(L^2\) function back by dilation on a ball
 statement:
   If \(a>0\) and \(f\in L^2(B(0,aR))\), then
@@ -1161,61 +1357,6 @@ theorem locallyBiLipschitz_value_pullback_memLp_on_compact
 /--
 %%handwave
 name:
-  Vector-valued compact \(L^2\) pullbacks under a locally bi-Lipschitz
-  change of variables
-statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions.  If \(K\subset U\) is compact
-  and \(u\in L^2(\Omega;E)\), for any normed target space \(E\), then
-  \(u\circ T\) belongs to \(L^2(K;E)\).
-proof:
-  The pushforward of Lebesgue measure on \(K\) by \(T\) is dominated by a
-  finite multiple of Lebesgue measure on \(\Omega\).  The \(L^2\) condition is
-  monotone under such measure domination, and composition with \(T\) identifies
-  the resulting norm with the \(L^2\) norm of \(u\circ T\) on \(K\).
--/
-theorem locallyBiLipschitz_pullback_memLp_on_compact
-    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H] [NormedAddCommGroup E]
-    {U Ω K : Set H} {T S : H → H}
-    (hU_open : IsOpen U) (hΩ_open : IsOpen Ω)
-    (hT_maps : Set.MapsTo T U Ω) (hS_maps : Set.MapsTo S Ω U)
-    (hS_left : ∀ x ∈ U, S (T x) = x)
-    (hT_left : ∀ y ∈ Ω, T (S y) = y)
-    (hT_lip : LocallyLipschitzOn U T)
-    (hS_lip : LocallyLipschitzOn Ω S)
-    (hT_qmp : Measure.QuasiMeasurePreserving T
-      (MeasureTheory.volume.restrict U)
-      (MeasureTheory.volume.restrict Ω))
-    (hS_qmp : Measure.QuasiMeasurePreserving S
-      (MeasureTheory.volume.restrict Ω)
-      (MeasureTheory.volume.restrict U))
-    (hK : IsCompact K) (hKU : K ⊆ U)
-    {u : H → E}
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Ω)) :
-    MemLp (fun z : H ↦ u (T z)) 2
-      (MeasureTheory.volume.restrict K) := by
-  rcases
-    locallyBiLipschitz_map_restrict_compact_le_smul_volume
-      hU_open hΩ_open hT_maps hS_maps hS_left hT_left
-      hT_lip hS_lip hT_qmp hS_qmp hK hKU with
-    ⟨C, hC_ne_top, hmap_le⟩
-  have hK_le_U :
-      MeasureTheory.volume.restrict K ≤ MeasureTheory.volume.restrict U :=
-    Measure.restrict_mono hKU le_rfl
-  have hT_aemeas_K :
-      AEMeasurable T (MeasureTheory.volume.restrict K) :=
-    hT_qmp.aemeasurable.mono_measure hK_le_U
-  have hu_map : MemLp u 2
-      (Measure.map T (MeasureTheory.volume.restrict K)) :=
-    hu.of_measure_le_smul hC_ne_top hmap_le
-  simpa [Function.comp_def] using hu_map.comp_of_map hT_aemeas_K
-
-/--
-%%handwave
-name:
   Compact-target \(L^2\) pullbacks under locally bi-Lipschitz changes of
   variables
 statement:
@@ -1528,29 +1669,26 @@ theorem compactDistortion_pullback_memLp_and_eLpNorm_tendsto_zero_on_compact_of_
 /--
 %%handwave
 name:
-  Compact derivative bounds for locally Lipschitz maps
+  Compact differential bounds for locally Lipschitz maps
 statement:
-  Let \(T\) be locally Lipschitz on an open finite-dimensional Euclidean
-  region \(U\).  If \(K\subset U\) is compact, then for each vector \(v\) the
-  directional derivative \(dT_xv\) is uniformly bounded for \(x\in K\).
+  Let $T$ be locally Lipschitz on an open finite-dimensional Euclidean
+  region $U$. If $K\subset U$ is compact, there is $C\geq0$ such that
+  $\|dT_x\|_{\mathrm{op}}\leq C$ for every $x\in K$.
 proof:
-  Enlarge \(K\) to a compact closed metric thickening still contained in
-  \(U\).  Local Lipschitzness gives a single Lipschitz constant on this
-  compact thickening.  Since the thickening is a neighborhood of every point
-  of \(K\), the standard bound of the derivative by a local Lipschitz
-  constant gives a uniform operator-norm bound, and evaluating at \(v\) gives
-  the claimed bound.
+  Enlarge $K$ to a compact closed metric thickening contained in $U$ and
+  choose one Lipschitz constant there. Since the thickening is a neighborhood
+  of every point of $K$, the differential norm is bounded by that constant.
 -/
-theorem locallyLipschitzOn_fderiv_apply_norm_bound_on_compact
+theorem locallyLipschitzOn_fderiv_norm_bound_on_compact
     {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ H]
     {U K : Set H} {T : H → E}
     (hU_open : IsOpen U)
     (hT_lip : LocallyLipschitzOn U T)
-    (hK : IsCompact K) (hKU : K ⊆ U) (v : H) :
+    (hK : IsCompact K) (hKU : K ⊆ U) :
     ∃ C : ℝ, 0 ≤ C ∧
-      ∀ z ∈ K, ‖fderiv ℝ (fun x : H ↦ T x) z v‖ ≤ C := by
+      ∀ z ∈ K, ‖fderiv ℝ (fun x : H ↦ T x) z‖ ≤ C := by
   haveI : ProperSpace H := FiniteDimensional.proper ℝ H
   rcases hK.exists_cthickening_subset_open hU_open hKU with
     ⟨δ, hδ_pos, hδU⟩
@@ -1562,7 +1700,7 @@ theorem locallyLipschitzOn_fderiv_apply_norm_bound_on_compact
     hT_lip.mono hδU
   rcases hT_lip_P.exists_lipschitzOnWith_of_compact hP_compact with
     ⟨L, hL⟩
-  refine ⟨(L : ℝ) * ‖v‖, mul_nonneg L.coe_nonneg (norm_nonneg v), ?_⟩
+  refine ⟨(L : ℝ), L.coe_nonneg, ?_⟩
   intro z hz
   have hz_thick : z ∈ Metric.thickening δ K :=
     Metric.self_subset_thickening hδ_pos K hz
@@ -1573,16 +1711,41 @@ theorem locallyLipschitzOn_fderiv_apply_norm_bound_on_compact
       (by
         intro y hy
         exact Metric.thickening_subset_cthickening δ K hy)
-  have hnorm_fderiv :
-      ‖fderiv ℝ (fun x : H ↦ T x) z‖ ≤ (L : ℝ) := by
-    simpa [P] using
-      norm_fderiv_le_of_lipschitzOn (𝕜 := ℝ) hP_nhds hL
+  simpa [P] using
+    norm_fderiv_le_of_lipschitzOn (𝕜 := ℝ) hP_nhds hL
+
+/--
+%%handwave
+name:
+  Compact directional differential bounds for locally Lipschitz maps
+statement:
+  Let $T$ be locally Lipschitz on an open finite-dimensional Euclidean
+  region $U$. If $K\subset U$ is compact, then for each vector $v$ the
+  directional derivative $dT_xv$ is uniformly bounded for $x\in K$.
+proof:
+  Apply the [uniform operator-norm bound for $dT$ on $K$](lean:JJMath.Uniformization.locallyLipschitzOn_fderiv_norm_bound_on_compact) and the inequality $\|dT_xv\|\leq\|dT_x\|_{\mathrm{op}}\|v\|$.
+-/
+theorem locallyLipschitzOn_fderiv_apply_norm_bound_on_compact
+    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ H]
+    {U K : Set H} {T : H → E}
+    (hU_open : IsOpen U)
+    (hT_lip : LocallyLipschitzOn U T)
+    (hK : IsCompact K) (hKU : K ⊆ U) (v : H) :
+    ∃ C : ℝ, 0 ≤ C ∧
+      ∀ z ∈ K, ‖fderiv ℝ (fun x : H ↦ T x) z v‖ ≤ C := by
+  rcases locallyLipschitzOn_fderiv_norm_bound_on_compact
+      hU_open hT_lip hK hKU with
+    ⟨C, hC, hC_bound⟩
+  refine ⟨C * ‖v‖, mul_nonneg hC (norm_nonneg v), ?_⟩
+  intro z hz
   calc
     ‖fderiv ℝ (fun x : H ↦ T x) z v‖
         ≤ ‖fderiv ℝ (fun x : H ↦ T x) z‖ * ‖v‖ :=
       ContinuousLinearMap.le_opNorm _ _
-    _ ≤ (L : ℝ) * ‖v‖ :=
-      mul_le_mul_of_nonneg_right hnorm_fderiv (norm_nonneg v)
+    _ ≤ C * ‖v‖ :=
+      mul_le_mul_of_nonneg_right (hC_bound z hz) (norm_nonneg v)
 
 /--
 %%handwave
@@ -1672,95 +1835,6 @@ theorem compactDistortion_derivative_eval_pullback_memLp_on_compact_of_image_sub
 /--
 %%handwave
 name:
-  Compact \(L^2\) pullback of the evaluated derivative field
-statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions.  If \(K\subset U\) is compact and
-  \(du\in L^2(\Omega;\operatorname{Hom}(H,\mathbb R))\), then for every
-  \(v\in H\) the scalar field
-  \[
-    x\mapsto du(Tx)(dT_xv)
-  \]
-  belongs to \(L^2(K)\).
-proof:
-  First pull back the linear-map-valued field \(du\) to \(K\).  On compact
-  subsets of \(U\), the derivative of the locally Lipschitz map \(T\) is
-  essentially bounded, with the bound obtained from finitely many local
-  Lipschitz constants.  The pointwise operator estimate
-  \(\lvert du(Tx)(dT_xv)\rvert\le C\|du(Tx)\|\) then gives the \(L^2\) bound.
--/
-theorem locallyBiLipschitz_derivative_eval_pullback_memLp_on_compact
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {U Ω K : Set H} {T S : H → H}
-    (hU_open : IsOpen U) (hΩ_open : IsOpen Ω)
-    (hT_maps : Set.MapsTo T U Ω) (hS_maps : Set.MapsTo S Ω U)
-    (hS_left : ∀ x ∈ U, S (T x) = x)
-    (hT_left : ∀ y ∈ Ω, T (S y) = y)
-    (hT_lip : LocallyLipschitzOn U T)
-    (hS_lip : LocallyLipschitzOn Ω S)
-    (hT_qmp : Measure.QuasiMeasurePreserving T
-      (MeasureTheory.volume.restrict U)
-      (MeasureTheory.volume.restrict Ω))
-    (hS_qmp : Measure.QuasiMeasurePreserving S
-      (MeasureTheory.volume.restrict Ω)
-      (MeasureTheory.volume.restrict U))
-    (hK : IsCompact K) (hKU : K ⊆ U)
-    {du : H → H →L[ℝ] ℝ}
-    (hdu : MemLp du 2 (MeasureTheory.volume.restrict Ω))
-    (v : H) :
-    MemLp
-      (fun z : H ↦
-        ((du (T z)).comp (fderiv ℝ (fun x : H ↦ T x) z)) v)
-      2 (MeasureTheory.volume.restrict K) := by
-  haveI : CompleteSpace H := FiniteDimensional.complete ℝ H
-  have _hdu_pull_K : MemLp (fun z : H ↦ du (T z)) 2
-      (MeasureTheory.volume.restrict K) :=
-    locallyBiLipschitz_pullback_memLp_on_compact
-      hU_open hΩ_open hT_maps hS_maps hS_left hT_left
-      hT_lip hS_lip hT_qmp hS_qmp hK hKU hdu
-  let Dv : H → H :=
-    fun z ↦ fderiv ℝ (fun x : H ↦ T x) z v
-  have hDv_aesm : AEStronglyMeasurable Dv
-      (MeasureTheory.volume.restrict K) := by
-    dsimp [Dv]
-    exact (measurable_fderiv_apply_const ℝ (fun x : H ↦ T x) v).aestronglyMeasurable
-  let evalCLM : (H →L[ℝ] ℝ) →L[ℝ] H →L[ℝ] ℝ :=
-    (isBoundedBilinearMap_apply
-      (𝕜 := ℝ) (E := H) (F := ℝ)).toContinuousLinearMap
-  have hfield_aesm :
-      AEStronglyMeasurable
-        (fun z : H ↦ du (T z) (Dv z))
-        (MeasureTheory.volume.restrict K) := by
-    simpa [evalCLM] using
-      evalCLM.aestronglyMeasurable_comp₂
-        _hdu_pull_K.aestronglyMeasurable hDv_aesm
-  rcases
-    locallyLipschitzOn_fderiv_apply_norm_bound_on_compact
-      hU_open hT_lip hK hKU v with
-    ⟨C, _hC_nonneg, hC_bound⟩
-  have hpointwise :
-      ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-        ‖du (T z) (Dv z)‖ ≤ C * ‖du (T z)‖ :=
-    ae_restrict_of_forall_mem hK.measurableSet fun z hz ↦ by
-      have hDv_bound : ‖Dv z‖ ≤ C := by
-        simpa [Dv] using hC_bound z hz
-      calc
-        ‖du (T z) (Dv z)‖ ≤ ‖du (T z)‖ * ‖Dv z‖ :=
-          ContinuousLinearMap.le_opNorm _ _
-        _ ≤ ‖du (T z)‖ * C :=
-          mul_le_mul_of_nonneg_left hDv_bound (norm_nonneg _)
-        _ = C * ‖du (T z)‖ := by ring
-  have hfield_mem : MemLp (fun z : H ↦ du (T z) (Dv z)) 2
-      (MeasureTheory.volume.restrict K) :=
-    MemLp.of_le_mul _hdu_pull_K hfield_aesm hpointwise
-  simpa [Dv, ContinuousLinearMap.comp_apply] using hfield_mem
-
-/--
-%%handwave
-name:
   Compact-target \(L^2\) pullback of evaluated derivative fields
 statement:
   Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables.  If
@@ -1845,24 +1919,22 @@ theorem locallyBiLipschitz_derivative_eval_pullback_memLp_on_compact_of_image_su
 /--
 %%handwave
 name:
-  Compactly supported value pullbacks are integrable under locally
-  bi-Lipschitz changes of variables
+  Locally square-integrable value pullbacks are integrable against compact tests
 statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions.  If \(u\in L^2(\Omega)\), then
-  for every compactly supported smooth test \(\varphi\) on \(U\) and every
-  direction \(v\), the function
-  \[
+  Let $T:U\to\Omega$ be a locally bi-Lipschitz change of variables between
+  open finite-dimensional Euclidean regions. If $u\in L^2_{\mathrm{loc}}(\Omega)$,
+  then for every compactly supported smooth test $\varphi$ on $U$ and every
+  direction $v$, the function
+  $$
     x\mapsto D\varphi(x)[v]\,u(Tx)
-  \]
-  is integrable on \(U\).
+  $$
+  is integrable on $U$.
 proof:
-  The closed support of \(D\varphi(\cdot)[v]\) is compact and contained in
-  \(U\).  On a compact neighborhood of this support the map \(T\) is
-  bi-Lipschitz with finite distortion, so pullback by \(T\) is bounded from
-  \(L^2\) on the image to \(L^2\) on the support.  Since the multiplier
-  \(D\varphi(\cdot)[v]\) is continuous and compactly supported, the product
-  is \(L^2\), hence integrable on this finite-measure support.
+  The closed support of $D\varphi(\cdot)[v]$ is compact and contained in
+  $U$. On this support the map $T$ has finite distortion, so pullback is
+  bounded from $L^2$ on the compact image to $L^2$ on the support. Since the
+  multiplier $D\varphi(\cdot)[v]$ is continuous and compactly supported, the
+  product is $L^2$, hence integrable on this finite-measure support.
 -/
 theorem locallyBiLipschitz_value_pullback_test_integrable
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1883,7 +1955,8 @@ theorem locallyBiLipschitz_value_pullback_test_integrable
       (MeasureTheory.volume.restrict Ω)
       (MeasureTheory.volume.restrict U))
     {u : H → ℝ}
-    (_hu : MemLp u 2 (MeasureTheory.volume.restrict Ω))
+    (_hu : ∀ Q : Set H, IsCompact Q → Q ⊆ Ω →
+      MemLp u 2 (MeasureTheory.volume.restrict Q))
     (φ : SmoothCompactlySupportedManifoldCoordinateFunction U) (v : H) :
     Integrable
       (fun z : H ↦ (fderiv ℝ (φ : H → ℝ) z v) • u (T z))
@@ -1901,11 +1974,20 @@ theorem locallyBiLipschitz_value_pullback_test_integrable
     φ.compact_support.of_isClosed_subset
       (isClosed_tsupport _) ha_tsupport_subset
   have hK_U : K ⊆ U := ha_tsupport_subset.trans φ.support_subset
+  let Q : Set H := T '' K
+  have hT_cont_K : ContinuousOn T K :=
+    (_hT_lip.mono hK_U).continuousOn
+  have hQ_compact : IsCompact Q := by
+    simpa [Q] using hK_compact.image_of_continuousOn hT_cont_K
+  have hQΩ : Q ⊆ Ω := by
+    rintro y ⟨z, hzK, rfl⟩
+    exact _hT_maps (hK_U hzK)
   have hu_pull_K : MemLp (fun z : H ↦ u (T z)) 2
       (MeasureTheory.volume.restrict K) :=
-    locallyBiLipschitz_value_pullback_memLp_on_compact
+    locallyBiLipschitz_pullback_memLp_on_compact_of_image_subset
       _hU_open _hΩ_open _hT_maps _hS_maps _hS_left _hT_left
-      _hT_lip _hS_lip _hT_qmp _hS_qmp hK_compact hK_U _hu
+      _hT_lip _hS_lip _hT_qmp _hS_qmp hK_compact hK_U
+      (Q := Q) (by simp [Q]) (_hu Q hQ_compact hQΩ)
   have hprod_K : MemLp (fun z : H ↦ a z * u (T z)) 2
       (MeasureTheory.volume.restrict K) :=
     memLp_restrict_mul_left_of_isCompact_of_continuousOn
@@ -1934,24 +2016,23 @@ theorem locallyBiLipschitz_value_pullback_test_integrable
 /--
 %%handwave
 name:
-  Compactly supported derivative pullbacks are integrable under locally
-  bi-Lipschitz changes of variables
+  Locally square-integrable derivative pullbacks are integrable against compact tests
 statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions.  If
-  \(du\in L^2(\Omega;\operatorname{Hom}(H,\mathbb R))\), then for every
-  compactly supported smooth test \(\varphi\) on \(U\) and every direction
-  \(v\), the function
-  \[
+  Let $T:U\to\Omega$ be a locally bi-Lipschitz change of variables between
+  open finite-dimensional Euclidean regions. If
+  $du\in L^2_{\mathrm{loc}}(\Omega;\operatorname{Hom}(H,\mathbb R))$, then
+  for every compactly supported smooth test $\varphi$ on $U$ and every
+  direction $v$, the function
+  $$
     x\mapsto \varphi(x)\,du(Tx)(dT_x v)
-  \]
-  is integrable on \(U\).
+  $$
+  is integrable on $U$.
 proof:
-  On the compact support of \(\varphi\), the locally Lipschitz map \(T\) has
+  On the compact support of $\varphi$, the locally Lipschitz map $T$ has
   an essentially bounded differential and bounded measure distortion.  Thus
-  the pulled-back derivative field, evaluated on \(dT_xv\), is \(L^2\) on the
+  the pulled-back derivative field, evaluated on $dT_xv$, is $L^2$ on the
   support.  Multiplication by the bounded compactly supported test function
-  preserves \(L^2\), and finite measure converts \(L^2\) to \(L^1\).
+  preserves $L^2$, and finite measure converts $L^2$ to $L^1$.
 -/
 theorem locallyBiLipschitz_derivative_pullback_test_integrable
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -1972,7 +2053,8 @@ theorem locallyBiLipschitz_derivative_pullback_test_integrable
       (MeasureTheory.volume.restrict Ω)
       (MeasureTheory.volume.restrict U))
     {du : H → H →L[ℝ] ℝ}
-    (_hdu : MemLp du 2 (MeasureTheory.volume.restrict Ω))
+    (_hdu : ∀ Q : Set H, IsCompact Q → Q ⊆ Ω →
+      MemLp du 2 (MeasureTheory.volume.restrict Q))
     (φ : SmoothCompactlySupportedManifoldCoordinateFunction U) (v : H) :
     Integrable
       (fun z : H ↦
@@ -1983,10 +2065,19 @@ theorem locallyBiLipschitz_derivative_pullback_test_integrable
   let K : Set H := tsupport (φ : H → ℝ)
   have hK_compact : IsCompact K := φ.compact_support
   have hK_U : K ⊆ U := φ.support_subset
+  let Q : Set H := T '' K
+  have hT_cont_K : ContinuousOn T K :=
+    (_hT_lip.mono hK_U).continuousOn
+  have hQ_compact : IsCompact Q := by
+    simpa [Q] using hK_compact.image_of_continuousOn hT_cont_K
+  have hQΩ : Q ⊆ Ω := by
+    rintro y ⟨z, hzK, rfl⟩
+    exact _hT_maps (hK_U hzK)
   have hg_K : MemLp g 2 (MeasureTheory.volume.restrict K) :=
-    locallyBiLipschitz_derivative_eval_pullback_memLp_on_compact
+    locallyBiLipschitz_derivative_eval_pullback_memLp_on_compact_of_image_subset
       _hU_open _hΩ_open _hT_maps _hS_maps _hS_left _hT_left
-      _hT_lip _hS_lip _hT_qmp _hS_qmp hK_compact hK_U _hdu v
+      _hT_lip _hS_lip _hT_qmp _hS_qmp hK_compact hK_U
+      (Q := Q) (by simp [Q]) (_hdu Q hQ_compact hQΩ) v
   have hprod_K : MemLp (fun z : H ↦ φ z * g z) 2
       (MeasureTheory.volume.restrict K) :=
     memLp_restrict_mul_left_of_isCompact_of_continuousOn
@@ -2851,21 +2942,24 @@ structure ScalarWeakSobolevSmoothApproxGraphL2Data
 /--
 %%handwave
 name:
-  Local smooth graph-density in the full Euclidean Sobolev graph norm
+  Local smooth graph-density with uniform convergence for continuous data
 statement:
   Let \(Q\Subset P\subset\Omega\), where \(Q\) and \(P\) are compact and
   \(\Omega\) is an open finite-dimensional Euclidean region.  If
   \(u\in L^2(P)\), \(du\in L^2(P;\operatorname{Hom}(H,\mathbb R))\), and
   \(du\) is the weak derivative of \(u\) on \(\Omega\), then there are smooth
   functions \(w_n\) such that \(w_n\to u\) and \(Dw_n\to du\) in \(L^2(Q)\).
+  The same sequence converges uniformly on \(Q\) whenever \(u\) is continuous.
 proof:
   Localize inside \(P\), mollify on a positive collar around \(Q\), and apply
   the scalar directional density theorem in finitely many basis directions.
   The finite-dimensional comparison between the operator norm and the basis
   directional norms converts the directional convergence into convergence of
-  the full derivative field.
+  the full derivative field. For continuous \(u\), the localized function is
+  uniformly continuous on a compact thickening of \(Q\), and the shrinking
+  supports of the same mollifiers give uniform convergence there.
 -/
-theorem euclideanSobolev_smooth_graph_density_l2_on_compact
+theorem euclideanSobolev_smooth_graph_density_l2_on_compact_with_uniform_if_continuous
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
     [MeasureSpace H] [BorelSpace H]
     [Measure.IsAddHaarMeasure (volume : Measure H)]
@@ -2878,7 +2972,9 @@ theorem euclideanSobolev_smooth_graph_density_l2_on_compact
     (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
     (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
     (hdu : MemLp du 2 (MeasureTheory.volume.restrict P)) :
-    Nonempty (ScalarWeakSobolevSmoothApproxGraphL2Data Q u du) := by
+    ∃ hgraph : ScalarWeakSobolevSmoothApproxGraphL2Data Q u du,
+      Continuous u →
+        TendstoUniformlyOn hgraph.approximants u Filter.atTop Q := by
   classical
   rcases hQP with ⟨δ, hδ_pos, hδP⟩
   let Ω₀ : Set H := Metric.thickening δ Q
@@ -3077,7 +3173,7 @@ theorem euclideanSobolev_smooth_graph_density_l2_on_compact
        value_error_memLp := ?_
        value_tendsto_l2 := ?_
        derivative_error_memLp := ?_
-       derivative_tendsto_l2 := ?_ }⟩
+       derivative_tendsto_l2 := ?_ }, ?_⟩
   · intro n
     have hv_mem : MemLp (vseq n) 2 μQ :=
       memLp_restrict_of_isCompact_of_continuousOn
@@ -3120,6 +3216,100 @@ theorem euclideanSobolev_smooth_graph_density_l2_on_compact
         Filter.atTop (𝓝 (0 : ℝ≥0∞))
     rw [hseq]
     exact hfull.2
+  · intro hu_cont
+    have hW_cont : Continuous W := by
+      exact χ.smooth.continuous.mul hu_cont
+    have hW_uniform :
+        UniformContinuousOn W (Metric.cthickening 1 Q) :=
+      hQ.cthickening.uniformContinuousOn_of_continuous
+        hW_cont.continuousOn
+    rw [Metric.tendstoUniformlyOn_iff]
+    intro ε hε
+    rcases Metric.uniformContinuousOn_iff.mp hW_uniform
+        (ε / 2) (half_pos hε) with
+      ⟨δu, hδu_pos, hWδu⟩
+    have hr_pos : 0 < min 1 δu :=
+      lt_min zero_lt_one hδu_pos
+    have hr_small :
+        ∀ᶠ n : ℕ in Filter.atTop,
+          (scalarWeakSobolevStandardMollifier H n).rOut <
+            min 1 δu :=
+      (scalarWeakSobolevStandardMollifier_rOut_tendsto_zero H).eventually
+        (eventually_lt_nhds hr_pos)
+    filter_upwards [hr_small] with n hn x hxQ
+    let ρ : ContDiffBump (0 : H) :=
+      scalarWeakSobolevStandardMollifier H n
+    have hρ_one : ρ.rOut < 1 :=
+      (by simpa [ρ] using hn.trans_le (min_le_left 1 δu))
+    have hρ_δu : ρ.rOut < δu :=
+      (by simpa [ρ] using hn.trans_le (min_le_right 1 δu))
+    have hdist :
+        dist
+            ((ρ.normed (MeasureTheory.volume : Measure H) ⋆[
+                lsmul ℝ ℝ, (MeasureTheory.volume : Measure H)] W :
+              H → ℝ) x)
+            (W x) ≤ ε / 2 := by
+      apply ρ.dist_normed_convolution_le
+        hW_cont.aestronglyMeasurable
+      intro y hy
+      have hyx : dist y x < ρ.rOut :=
+        Metric.mem_ball.mp hy
+      have hy_thick :
+          y ∈ Metric.cthickening 1 Q :=
+        Metric.mem_cthickening_of_dist_le
+          y x 1 Q hxQ (hyx.le.trans hρ_one.le)
+      have hx_thick :
+          x ∈ Metric.cthickening 1 Q :=
+        Metric.self_subset_cthickening Q hxQ
+      exact
+        (hWδu y hy_thick x hx_thick
+          (hyx.trans hρ_δu)).le
+    have hdist_lt :
+        dist
+            ((ρ.normed (MeasureTheory.volume : Measure H) ⋆[
+                lsmul ℝ ℝ, (MeasureTheory.volume : Measure H)] W :
+              H → ℝ) x)
+            (W x) < ε :=
+      hdist.trans_lt (half_lt_self hε)
+    simpa [vseq, ρ, W, χ.eq_one_on x hxQ, dist_comm] using
+      hdist_lt
+
+/--
+%%handwave
+name:
+  Local smooth graph-density in the full Euclidean Sobolev graph norm
+statement:
+  Let \(Q\Subset P\subset\Omega\), where \(Q\) and \(P\) are compact and
+  \(\Omega\) is an open finite-dimensional Euclidean region. If
+  \(u\in L^2(P)\), \(du\in L^2(P;\operatorname{Hom}(H,\mathbb R))\), and
+  \(du\) is the weak derivative of \(u\) on \(\Omega\), then there are smooth
+  functions \(w_n\) such that
+  $$
+    w_n\longrightarrow u\quad\text{in }L^2(Q),
+    \qquad
+    Dw_n\longrightarrow du\quad\text{in }L^2(Q).
+  $$
+proof:
+  Use [the localized mollifier sequence which also converges uniformly when the function is continuous](lean:JJMath.Uniformization.euclideanSobolev_smooth_graph_density_l2_on_compact_with_uniform_if_continuous) and retain its Sobolev graph-convergence data.
+-/
+theorem euclideanSobolev_smooth_graph_density_l2_on_compact
+    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H]
+    {Q P Ω : Set H}
+    (hQ : IsCompact Q) (hP : IsCompact P)
+    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
+    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
+    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
+    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
+    (hdu : MemLp du 2 (MeasureTheory.volume.restrict P)) :
+    Nonempty (ScalarWeakSobolevSmoothApproxGraphL2Data Q u du) := by
+  obtain ⟨hgraph, _⟩ :=
+    euclideanSobolev_smooth_graph_density_l2_on_compact_with_uniform_if_continuous
+      hQ hP hQP hPΩ hΩ_open hweak hu hdu
+  exact ⟨hgraph⟩
 
 set_option maxHeartbeats 800000 in
 /--
@@ -3678,27 +3868,28 @@ theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_graph_l2_on_compact
 name:
   Smooth graph approximants converge in the pulled-back test pairings
 statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions.  If \(u\in W^{1,2}(\Omega)\)
-  with weak derivative \(du\), then for each compactly supported smooth test
-  \(\varphi\) on \(U\) and direction \(v\) there are smooth functions \(w_n\)
+  Let $T:U\to\Omega$ be a locally bi-Lipschitz change of variables between
+  open finite-dimensional Euclidean regions. If
+  $u\in W^{1,2}_{\mathrm{loc}}(\Omega)$ with weak derivative $du$, then for
+  each compactly supported smooth test $\varphi$ on $U$ and direction $v$
+  there are smooth functions $w_n$
   such that
-  \[
+  $$
     \int_U D\varphi[v]\,w_n(Tx)\to
       \int_U D\varphi[v]\,u(Tx)
-  \]
+  $$
   and
-  \[
+  $$
     \int_U \varphi(x)\,Dw_n(Tx)[dT_xv]\to
       \int_U \varphi(x)\,du(Tx)[dT_xv].
-  \]
+  $$
 proof:
-  Work on a compact neighborhood of \(T(\operatorname{supp}\varphi)\).
-  Smooth Sobolev graph density gives \(w_n\to u\) and \(Dw_n\to du\) in the
-  local \(L^2\) graph norm.  The compact locally bi-Lipschitz distortion
-  estimates pull these convergences back to the support of \(\varphi\), while
-  the compact derivative bound for \(T\) controls the variable direction
-  \(dT_xv\).  Pairing with the bounded compactly supported test factors gives
+  Work on a compact neighborhood of $T(\operatorname{supp}\varphi)$.
+  Smooth Sobolev graph density gives $w_n\to u$ and $Dw_n\to du$ in the
+  local $L^2$ graph norm. The compact locally bi-Lipschitz distortion
+  estimates pull these convergences back to the support of $\varphi$, while
+  the compact derivative bound for $T$ controls the variable direction
+  $dT_xv$. Pairing with the bounded compactly supported test factors gives
   convergence of the two integrals.
 -/
 theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_smooth_graph_density
@@ -3721,8 +3912,10 @@ theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_smooth_graph_density
       (MeasureTheory.volume.restrict U))
     {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
     (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (_hu : MemLp u 2 (MeasureTheory.volume.restrict Ω))
-    (_hdu : MemLp du 2 (MeasureTheory.volume.restrict Ω))
+    (_hu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp u 2 (MeasureTheory.volume.restrict K))
+    (_hdu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp du 2 (MeasureTheory.volume.restrict K))
     (φ : SmoothCompactlySupportedManifoldCoordinateFunction U) (v : H) :
     ∃ w : ℕ → H → ℝ,
       (∀ n : ℕ, ContDiff ℝ ∞ (w n)) ∧
@@ -3785,9 +3978,9 @@ theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_smooth_graph_density
   have hPΩ : P ⊆ Ω := by
     simpa [P] using hδΩ
   have huP : MemLp u 2 (MeasureTheory.volume.restrict P) :=
-    _hu.mono_measure (Measure.restrict_mono hPΩ le_rfl)
+    _hu P hP_compact hPΩ
   have hduP : MemLp du 2 (MeasureTheory.volume.restrict P) :=
-    _hdu.mono_measure (Measure.restrict_mono hPΩ le_rfl)
+    _hdu P hP_compact hPΩ
   rcases
     euclideanSobolev_smooth_graph_density_l2_on_compact
       (Q := Q) (P := P) (Ω := Ω)
@@ -3805,8 +3998,8 @@ theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_smooth_graph_density
       _hT_lip _hS_lip _hT_qmp _hS_qmp
       (Q := Q) φ v hQ_compact hQ_support
       (u := u) (du := du) (w := hgraph.approximants)
-      (_hu.mono_measure (Measure.restrict_mono hQΩ le_rfl))
-      (_hdu.mono_measure (Measure.restrict_mono hQΩ le_rfl))
+      (_hu Q hQ_compact hQΩ)
+      (_hdu Q hQ_compact hQΩ)
       hgraph.value_error_memLp hgraph.value_tendsto_l2
       hgraph.derivative_error_memLp hgraph.derivative_tendsto_l2 with
     ⟨hvalue_tendsto, hderiv_tendsto⟩
@@ -3819,18 +4012,19 @@ theorem locallyBiLipschitz_pullback_test_pairing_tendsto_of_smooth_graph_density
 name:
   The weak identity pulls back under a locally bi-Lipschitz change of variables
 statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions, with inverse \(S\).  If \(u\)
-  has weak derivative \(du\) on \(\Omega\), then for every compactly supported
-  smooth test \(\varphi\) on \(U\) and every direction \(v\),
-  \[
+  Let $T:U\to\Omega$ be a locally bi-Lipschitz change of variables between
+  open finite-dimensional Euclidean regions, with inverse $S$. If $u$
+  has weak derivative $du$ on $\Omega$, and both fields are square-integrable
+  on every compact subset of $\Omega$, then for every compactly supported
+  smooth test $\varphi$ on $U$ and every direction $v$,
+  $$
     \int_U D\varphi(x)[v]\,u(Tx)\,dx
       =
     -\int_U \varphi(x)\,du(Tx)(dT_xv)\,dx .
-  \]
+  $$
 proof:
-  Approximate \(u\) by smooth Sobolev graph approximants on a compact
-  neighborhood of \(T(\operatorname{supp}\varphi)\).  For smooth functions,
+  Approximate $u$ by smooth Sobolev graph approximants on a compact
+  neighborhood of $T(\operatorname{supp}\varphi)$. For smooth functions,
   the identity follows from the classical chain rule and change of variables.
   The compact bi-Lipschitz distortion bounds make the pullback operator
   continuous in the local graph norm, so both integrals pass to the limit.
@@ -3855,8 +4049,10 @@ theorem locallyBiLipschitz_pullback_test_integral_eq
       (MeasureTheory.volume.restrict U))
     {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
     (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (_hu : MemLp u 2 (MeasureTheory.volume.restrict Ω))
-    (_hdu : MemLp du 2 (MeasureTheory.volume.restrict Ω))
+    (_hu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp u 2 (MeasureTheory.volume.restrict K))
+    (_hdu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp du 2 (MeasureTheory.volume.restrict K))
     (φ : SmoothCompactlySupportedManifoldCoordinateFunction U) (v : H) :
     ∫ z in U, (fderiv ℝ (φ : H → ℝ) z v) • u (T z)
         ∂MeasureTheory.volume =
@@ -4647,7 +4843,7 @@ theorem contDiff_smooth_outer_pullback_test_integral_eq
     [FiniteDimensional ℝ H]
     {U : Set D} {T : D → H}
     (_hU_open : IsOpen U)
-    (_hT_smooth : ContDiff ℝ ⊤ T)
+    (_hT_smooth : ContDiff ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) T)
     {w : H → ℝ} (_hw_smooth : ContDiff ℝ ∞ w)
     (φ : SmoothCompactlySupportedManifoldCoordinateFunction U) (v : D) :
     ∫ z in U, (fderiv ℝ (φ : D → ℝ) z v) • w (T z)
@@ -4661,7 +4857,8 @@ theorem contDiff_smooth_outer_pullback_test_integral_eq
   have hw_one : ContDiff ℝ 1 (fun x : H ↦ w x) :=
     _hw_smooth.of_le (by simp : (1 : WithTop ℕ∞) ≤ (∞ : WithTop ℕ∞))
   have hT_one : ContDiff ℝ 1 T :=
-    _hT_smooth.of_le (by simp : (1 : WithTop ℕ∞) ≤ (⊤ : WithTop ℕ∞))
+    _hT_smooth.of_le
+      (by simp : (1 : WithTop ℕ∞) ≤ ((⊤ : ℕ∞) : WithTop ℕ∞))
   have hg_one : ContDiff ℝ 1 g :=
     hw_one.comp hT_one
   have hg_lip : LocallyLipschitzOn U g := by
@@ -4789,7 +4986,7 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_contDiff_qmp
     intro n
     simpa [leftSeq, rightSeq] using
       contDiff_smooth_outer_pullback_test_integral_eq
-        _hU_open _hT_smooth (hw_smooth n) φ v
+        _hU_open (_hT_smooth.of_le (by simp)) (hw_smooth n) φ v
   have hleft_seq_tendsto : Filter.Tendsto leftSeq Filter.atTop (𝓝 L) := by
     simpa [leftSeq, L] using hleft_tendsto
   have hright_seq_tendsto : Filter.Tendsto rightSeq Filter.atTop (𝓝 R) := by
@@ -4813,11 +5010,11 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_contDiff_qmp
 name:
   Weak derivatives pull back under locally bi-Lipschitz changes of variables
 statement:
-  Let \(T:U\to\Omega\) be a locally bi-Lipschitz change of variables between
-  open finite-dimensional Euclidean regions, with inverse \(S\), and assume
-  both maps preserve null sets locally.  If \(u\) has weak derivative \(du\)
-  on \(\Omega\), with \(u\) and \(du\) square integrable there, then
-  \(u\circ T\) has weak derivative \(du(Tx)\circ dT_x\) on \(U\).
+  Let $T:U\to\Omega$ be a locally bi-Lipschitz change of variables between
+  open finite-dimensional Euclidean regions, with inverse $S$, and assume
+  both maps preserve null sets locally. If $u$ has weak derivative $du$
+  on $\Omega$, with $u$ and $du$ square integrable on every compact subset,
+  then $u\circ T$ has weak derivative $du(Tx)\circ dT_x$ on $U$.
 proof:
   Fix a compactly supported smooth test and a direction.  Use
   [integrability of the value pullback against the differentiated test](lean:JJMath.Uniformization.locallyBiLipschitz_value_pullback_test_integrable),
@@ -4825,7 +5022,7 @@ proof:
   and
   [the pulled-back integration-by-parts identity](lean:JJMath.Uniformization.locallyBiLipschitz_pullback_test_integral_eq).
   Since this holds for every test and direction, it is exactly the weak
-  derivative identity on \(U\).
+  derivative identity on $U$.
 -/
 theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz
     {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -4847,8 +5044,10 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz
       (MeasureTheory.volume.restrict U))
     {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
     (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (_hu : MemLp u 2 (MeasureTheory.volume.restrict Ω))
-    (_hdu : MemLp du 2 (MeasureTheory.volume.restrict Ω)) :
+    (_hu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp u 2 (MeasureTheory.volume.restrict K))
+    (_hdu : ∀ K : Set H, IsCompact K → K ⊆ Ω →
+      MemLp du 2 (MeasureTheory.volume.restrict K)) :
     IsWeakDerivativeOnEuclideanRegionWithValues U
       (fun x : H ↦ u (T x))
       (fun x : H ↦ (du (T x)).comp (fderiv ℝ T x)) := by

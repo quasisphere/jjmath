@@ -18,6 +18,12 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 /--
 Choose the normalized initial handoff from the basepoint chart to the chart
 used by the first segment of a weak handoff skeleton.
+
+%%handwave
+name: Choose the normalized initial handoff from the basepoint chart to the chart used by the first segment of a weak handoff skeleton
+statement:
+  Choose the normalized initial handoff from the basepoint chart to the chart used by the first
+  segment of a weak handoff skeleton.
 -/
 noncomputable def PathLocalTransitionModelWeakHandoffSkeleton.toBasedWeakHandoffSkeleton
     {x₀ : X} {g : HyperbolicMetric X}
@@ -64,122 +70,7 @@ theorem exists_pathLocalTransitionModelBasedWeakHandoffSkeleton
   (exists_pathLocalTransitionModelWeakHandoffSkeleton localModels p).map
     PathLocalTransitionModelWeakHandoffSkeleton.toBasedWeakHandoffSkeleton
 
-/--
-A finite chain whose adjacent branch equalities are produced by explicit
-local-transition handoff data.
 
-This is closer to the eventual construction: once a path subdivision and
-overlap neighborhoods are chosen, the accumulated Mobius representatives are
-forced by the handoff rule `Mₖ₊₁ = Mₖ * Tₖ⁻¹`.
--/
-structure PathLocalTransitionModelContinuationHandoffChain
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g)
-    {x : X} (p : Path x₀ x) where
-  /-- Number of continuation steps. -/
-  length : ℕ
-  /-- Ordered path parameters at the vertices of the chain. -/
-  parameterAt : Fin (length + 1) → unitInterval
-  /-- The chain begins at the initial parameter. -/
-  parameterAt_zero : parameterAt 0 = 0
-  /-- The chain ends at the terminal parameter. -/
-  parameterAt_last : parameterAt (Fin.last length) = 1
-  /-- The parameters are weakly increasing. -/
-  parameterAt_mono :
-    ∀ k : Fin length,
-      (parameterAt k.castSucc : ℝ) ≤ (parameterAt k.succ : ℝ)
-  /-- Consecutive subdivision parameters are genuinely distinct. -/
-  parameterAt_strictMono :
-    ∀ k : Fin length,
-      (parameterAt k.castSucc : ℝ) < (parameterAt k.succ : ℝ)
-  /-- The local-transition model center used at each chain vertex. -/
-  centerAt : Fin (length + 1) → X
-  /-- The real Mobius postcomposition for the branch at each chain vertex. -/
-  mobiusAt : Fin (length + 1) → RealMobiusRepresentative
-  /-- The chain starts with the selected local model at the basepoint. -/
-  initial_center_eq : centerAt 0 = x₀
-  /-- The initial branch has identity Mobius normalization. -/
-  initial_mobius_eq : mobiusAt 0 = 1
-  /-- The local transition selected at each handoff. -/
-  transitionAt :
-    ∀ k : Fin length,
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (centerAt k.castSucc))
-        (localModels.chartAt (centerAt k.succ))
-        (p (parameterAt k.succ))
-  /-- The accumulated Mobius representative is updated by the local handoff. -/
-  mobiusAt_succ_eq :
-    ∀ k : Fin length,
-      mobiusAt k.succ =
-        mobiusAt k.castSucc * (transitionAt k).representative⁻¹
-  /-- The sampled path point lies in its selected model domain. -/
-  sample_mem_model_domain :
-    ∀ i,
-      p (parameterAt i) ∈ (localModels.chartAt (centerAt i)).domain
-  /--
-  Each subinterval of the representative path is contained in the model domain
-  attached to the initial vertex of that subinterval.
-  -/
-  path_segment_mem_model_domain :
-    ∀ k : Fin length, ∀ t : unitInterval,
-      (parameterAt k.castSucc : ℝ) ≤ (t : ℝ) →
-      (t : ℝ) ≤ (parameterAt k.succ : ℝ) →
-      p t ∈ (localModels.chartAt (centerAt k.castSucc)).domain
-  /-- The endpoint lies in the terminal model domain. -/
-  terminal_endpoint_mem_domain :
-    x ∈ (localModels.chartAt (centerAt (Fin.last length))).domain
-
-namespace PathLocalTransitionModelContinuationHandoffChain
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-
-/--
-The explicit handoff chain forgets to the finite-chain record by deriving the
-adjacent normalized branch equalities from the local-transition representatives.
--/
-def toPathLocalTransitionModelContinuationChain
-    (C :
-      PathLocalTransitionModelContinuationHandoffChain x₀ g localModels p) :
-    PathLocalTransitionModelContinuationChain x₀ g localModels p where
-  length := C.length
-  parameterAt := C.parameterAt
-  parameterAt_zero := C.parameterAt_zero
-  parameterAt_last := C.parameterAt_last
-  parameterAt_mono := C.parameterAt_mono
-  parameterAt_strictMono := C.parameterAt_strictMono
-  centerAt := C.centerAt
-  mobiusAt := C.mobiusAt
-  initial_center_eq := C.initial_center_eq
-  initial_mobius_eq := C.initial_mobius_eq
-  sample_mem_model_domain := C.sample_mem_model_domain
-  path_segment_mem_model_domain := C.path_segment_mem_model_domain
-  terminal_endpoint_mem_domain := C.terminal_endpoint_mem_domain
-  adjacent_branch_agrees_at_transition := by
-    intro k
-    rw [C.mobiusAt_succ_eq k]
-    exact
-      localRealMobiusTransitionData_accumulated_handoff
-        (C.transitionAt k) (C.transitionAt k).mem_neighborhood
-        (C.mobiusAt k.castSucc)
-
-omit [RiemannSurface X] in
-/-- Forgetting explicit handoff data does not change the number of continuation segments.
-
-%%handwave
-name: Forgetting handoff witnesses preserves chain length
-statement: If a continuation handoff chain $C$ has $N$ segments, then its underlying local-transition continuation chain also has $N$ segments.
-proof: This is immediate from the forgetful construction, which copies the length field unchanged.
--/
-@[simp]
-theorem toPathLocalTransitionModelContinuationChain_length
-    (C :
-      PathLocalTransitionModelContinuationHandoffChain x₀ g localModels p) :
-    C.toPathLocalTransitionModelContinuationChain.length = C.length :=
-  rfl
-
-end PathLocalTransitionModelContinuationHandoffChain
 
 namespace PathLocalTransitionModelContinuationChain
 
@@ -187,392 +78,46 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
     {x : X} {p : Path x₀ x}
 
-/-- The initial local-transition model center selected by a finite chain. -/
-def initialCenter
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) : X :=
-  C.centerAt 0
+/-- The terminal local-transition model center selected by a finite chain.
 
-/-- The initial Mobius representative selected by a finite chain. -/
-def initialMobius
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    RealMobiusRepresentative :=
-  C.mobiusAt 0
-
-/-- The terminal local-transition model center selected by a finite chain. -/
+%%handwave
+name: The terminal local-transition model center selected by a finite chain
+statement:
+  For a finite continuation chain with segment centers
+  $c_0,\ldots,c_n$, define its terminal center to be $c_n$.
+-/
 def terminalCenter
     (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) : X :=
   C.centerAt (Fin.last C.length)
 
-/-- The terminal Mobius representative selected by a finite chain. -/
+/-- The terminal Mobius representative selected by a finite chain.
+
+%%handwave
+name: The terminal Möbius representative selected by a finite chain
+statement:
+  For a finite continuation chain with accumulated representatives
+  $M_0,\ldots,M_n$, define its terminal representative to be $M_n$.
+-/
 def terminalMobius
     (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
     RealMobiusRepresentative :=
   C.mobiusAt (Fin.last C.length)
 
-/-- The normalized branch value at a sampled path point of the chain. -/
-def branchValueAt
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (i : Fin (C.length + 1)) : ℍ :=
-  realMobiusRepresentativeAction (C.mobiusAt i)
-    ((localModels.chartAt (C.centerAt i)).toUpperHalfPlane
-      (p (C.parameterAt i)))
+/-- The terminal value forced by a finite local-transition continuation chain.
 
-/-- The normalized branch value along a subinterval of the chain. -/
-def segmentBranchValue
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) (t : unitInterval) : ℍ :=
-  realMobiusRepresentativeAction (C.mobiusAt k.castSucc)
-    ((localModels.chartAt (C.centerAt k.castSucc)).toUpperHalfPlane (p t))
-
-/-- The terminal value forced by a finite local-transition continuation chain. -/
+%%handwave
+name: The terminal value forced by a finite local-transition continuation chain
+statement:
+  If a continuation chain along $p:x_0\rightsquigarrow x$ ends with chart
+  $U_n$ and accumulated representative $M_n$, define its terminal value by
+  $M_n\cdot U_n(x)\in\mathbb H$.
+-/
 def terminalValue
     (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) : ℍ :=
   realMobiusRepresentativeAction C.terminalMobius
     ((localModels.chartAt C.terminalCenter).toUpperHalfPlane x)
 
-omit [RiemannSurface X] in
-/-- The terminal center of a finite chain is its last selected chart center.
-
-%%handwave
-name: The terminal center is the last chart center
-statement: For a finite continuation chain $C$ of length $N$, its terminal chart center is $c_N$.
-proof: This is the definition of the terminal center.
--/
-@[simp]
-theorem terminalCenter_def
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.terminalCenter = C.centerAt (Fin.last C.length) :=
-  rfl
-
-omit [RiemannSurface X] in
-/-- The terminal Möbius representative of a finite chain is its last accumulated representative.
-
-%%handwave
-name: The terminal transformation is the last accumulated transformation
-statement: For a finite continuation chain $C$ of length $N$, its terminal Möbius representative is $M_N$.
-proof: This is the definition of the terminal transformation.
--/
-@[simp]
-theorem terminalMobius_def
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.terminalMobius = C.mobiusAt (Fin.last C.length) :=
-  rfl
-
-omit [RiemannSurface X] in
-/-- The initial chart center of a normalized continuation chain is the basepoint.
-
-%%handwave
-name: A normalized chain starts in the basepoint chart
-statement: For every normalized finite continuation chain based at $x_0$, its initial center satisfies $c_0=x_0$.
-proof: Unfold the initial center and apply the normalization field of the chain.
--/
-@[simp]
-theorem initialCenter_eq_basepoint
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.initialCenter = x₀ := by
-  simpa [initialCenter] using C.initial_center_eq
-
-omit [RiemannSurface X] in
-/-- The initial accumulated Möbius transformation of a normalized chain is the identity.
-
-%%handwave
-name: A normalized chain starts with the identity transformation
-statement: For every normalized finite continuation chain, its initial accumulated transformation satisfies $M_0=1$.
-proof: Unfold the initial transformation and apply the normalization field of the chain.
--/
-@[simp]
-theorem initialMobius_eq_one
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.initialMobius = 1 := by
-  simpa [initialMobius] using C.initial_mobius_eq
-
-omit [RiemannSurface X] in
-/--
-A finite local-transition continuation chain has at least one subinterval:
-the first and last subdivision parameters are forced to be `0` and `1`.
-
-%%handwave
-name: A continuation chain has positive length
-statement: Every finite continuation chain whose first subdivision parameter is $0$ and last subdivision parameter is $1$ has at least one segment: $0<N$.
-proof: If $N=0$, the first and last subdivision indices coincide, forcing $0=1$ in the unit interval, a contradiction.
--/
-theorem length_pos
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    0 < C.length := by
-  rcases C with
-    ⟨length, parameterAt, parameterAt_zero, parameterAt_last, _parameterAt_mono,
-      _parameterAt_strictMono, _centerAt, _mobiusAt, _initial_center_eq,
-      _initial_mobius_eq, _sample_mem_model_domain,
-      _path_segment_mem_model_domain, _terminal_endpoint_mem_domain,
-      _adjacent_branch_agrees_at_transition⟩
-  dsimp
-  cases length with
-  | zero =>
-      have h01 : (0 : unitInterval) = 1 :=
-        parameterAt_zero.symm.trans (by simpa using parameterAt_last)
-      have hreal : (0 : ℝ) = 1 := by
-        simpa using congrArg (fun t : unitInterval => (t : ℝ)) h01
-      norm_num at hreal
-  | succ n =>
-      simp
-
-omit [RiemannSurface X] in
-/-- The number of subintervals in a finite local-transition chain is nonzero.
-
-%%handwave
-name: A continuation chain has nonzero length
-statement: For every finite continuation chain $C$, its number of segments satisfies $|C|≠0$.
-proof: This follows immediately from positivity of the chain length.
--/
-theorem length_ne_zero
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.length ≠ 0 :=
-  Nat.ne_of_gt C.length_pos
-
-/-- The first subinterval of a finite local-transition continuation chain. -/
-def firstSegmentIndex
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    Fin C.length :=
-  ⟨0, C.length_pos⟩
-
-/-- The last subinterval of a finite local-transition continuation chain. -/
-def lastSegmentIndex
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    Fin C.length :=
-  ⟨C.length - 1, Nat.pred_lt C.length_ne_zero⟩
-
-omit [RiemannSurface X] in
-/-- The first segment begins at subdivision index zero.
-
-%%handwave
-name: The first segment begins at vertex zero
-statement: For a chain of positive length, the left endpoint index of its first segment is the zeroth subdivision vertex.
-proof: Both finite indices have underlying natural number zero, so finite-index extensionality proves equality.
--/
-@[simp]
-theorem firstSegmentIndex_castSucc
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.firstSegmentIndex.castSucc = (0 : Fin (C.length + 1)) := by
-  ext
-  simp [firstSegmentIndex]
-
-omit [RiemannSurface X] in
-/-- The successor endpoint of the last segment is the last subdivision index.
-
-%%handwave
-name: The last segment ends at the last subdivision vertex
-statement: For a chain of length $N>0$, the successor endpoint index of segment $N-1$ is the last vertex index $N$.
-proof: Use $(N-1)+1=N$, which follows from positivity of $N$.
--/
-@[simp]
-theorem lastSegmentIndex_succ_eq_last
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.lastSegmentIndex.succ = Fin.last C.length := by
-  ext
-  change C.length - 1 + 1 = C.length
-  exact Nat.sub_add_cancel (Nat.succ_le_of_lt C.length_pos)
-
-omit [RiemannSurface X] in
-/-- Consecutive subdivision parameters are strictly ordered.
-
-%%handwave
-name: Consecutive subdivision parameters are strictly increasing
-statement: For every segment $k$ of a strict continuation chain, its endpoint parameters satisfy $t_k<t_{k+1}$.
-proof: This is the strict-monotonicity condition carried by the continuation chain.
--/
-theorem parameterAt_castSucc_lt_succ
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    (C.parameterAt k.castSucc : ℝ) < (C.parameterAt k.succ : ℝ) :=
-  C.parameterAt_strictMono k
-
-omit [RiemannSurface X] in
-/-- The initial normalized branch is exactly the basepoint local model.
-
-%%handwave
-name: The initial normalized branch is the base local model
-statement: For a continuation chain based at $x_0$, the initial branch value is $M_0(c_0(x_0))=c_{x_0}(x_0)$ in the upper half-plane.
-proof: Substitute $c_0=x_0$ and $M_0=1$, then use that the identity Möbius transformation acts trivially.
--/
-theorem initialBranchValue_eq_baseModel
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    realMobiusRepresentativeAction (C.mobiusAt 0)
-        ((localModels.chartAt (C.centerAt 0)).toUpperHalfPlane x₀) =
-      (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
-  simp [C.initial_center_eq, C.initial_mobius_eq,
-    realMobiusRepresentativeAction_one]
-
-omit [RiemannSurface X] in
-/-- The first sampled branch value is the basepoint local model value.
-
-%%handwave
-name: The zeroth sampled branch value is the base-model coordinate
-statement: For every continuation chain based at $x_0$, the sampled branch value at its zeroth subdivision vertex equals the upper-half-plane coordinate of $x_0$ in the base chart.
-proof: Unfold the sampled branch value, use $t_0=0$ and the path source equation, and apply the initial-branch normalization.
--/
-theorem branchValueAt_zero_eq_baseModel
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.branchValueAt 0 = (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
-  simpa [branchValueAt, C.parameterAt_zero] using
-    C.initialBranchValue_eq_baseModel
-
-omit [RiemannSurface X] in
-/-- The endpoint lies in the domain of the terminal center of the chain.
-
-%%handwave
-name: The endpoint lies in the terminal chart domain
-statement: For a continuation chain along $p:x_0⇝x$, the endpoint $x$ belongs to the domain of the terminal selected chart.
-proof: The chain places its last sampled path point in the last chart domain; the final parameter is $1$, and $p(1)=x$.
--/
-theorem endpoint_mem_terminalCenter_domain
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    x ∈ (localModels.chartAt C.terminalCenter).domain := by
-  simpa [terminalCenter] using C.terminal_endpoint_mem_domain
-
-omit [RiemannSurface X] in
-/-- At the left endpoint, a segment branch gives the sampled branch value.
-
-%%handwave
-name: A segment branch matches the sampled value at its left endpoint
-statement: For every segment $k$, evaluating its branch at the left subdivision point gives the sampled branch value there: $f_k(t_k)=v_k$.
-proof: Both sides unfold to the same accumulated Möbius action in chart $c_k$ at $p(t_k)$.
--/
-theorem segmentBranchValue_leftEndpoint
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    C.segmentBranchValue k (C.parameterAt k.castSucc) =
-      C.branchValueAt k.castSucc :=
-  rfl
-
-omit [RiemannSurface X] in
-/--
-The transition point between two consecutive subintervals lies in both
-adjacent model domains.
-
-%%handwave
-name: Each transition point lies in both adjacent charts
-statement: For every segment $k$, the path point $p(t_{k+1})$ belongs to the intersection of the domains of charts $c_k$ and $c_{k+1}$.
-proof: The left membership is the segment-domain condition at its right endpoint; the right membership is the sampled-point condition for the next vertex.
--/
-theorem transitionPoint_mem_adjacent_overlap
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    p (C.parameterAt k.succ) ∈
-      (localModels.chartAt (C.centerAt k.castSucc)).domain ∩
-        (localModels.chartAt (C.centerAt k.succ)).domain := by
-  constructor
-  · exact C.path_segment_mem_model_domain k (C.parameterAt k.succ)
-      (C.parameterAt_mono k) le_rfl
-  · exact C.sample_mem_model_domain k.succ
-
-omit [RiemannSurface X] in
-/--
-The sampled value at the next vertex equals the previous branch evaluated at
-the transition point.
-
-%%handwave
-name: The next sampled value equals the preceding branch at the handoff point
-statement: For every segment $k$, $v_{k+1}=M_k(c_k(p(t_{k+1})))$, the value of the preceding accumulated branch at the transition point.
-proof: Apply the chain’s adjacent-branch agreement at the transition point and rewrite the next sampled value by its definition.
--/
-theorem branchValueAt_succ_eq_leftTransitionValue
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    C.branchValueAt k.succ =
-      realMobiusRepresentativeAction (C.mobiusAt k.castSucc)
-        ((localModels.chartAt (C.centerAt k.castSucc)).toUpperHalfPlane
-          (p (C.parameterAt k.succ))) := by
-  simpa [branchValueAt] using C.adjacent_branch_agrees_at_transition k
-
-omit [RiemannSurface X] in
-/-- At the right endpoint, a segment branch gives the next sampled value.
-
-%%handwave
-name: A segment branch matches the next sampled value at its right endpoint
-statement: For every segment $k$, evaluating its branch at the right subdivision point gives $f_k(t_{k+1})=v_{k+1}$.
-proof: Unfold the segment value and apply the equality between the next sampled value and the preceding branch at the transition point.
--/
-theorem segmentBranchValue_rightEndpoint
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p)
-    (k : Fin C.length) :
-    C.segmentBranchValue k (C.parameterAt k.succ) =
-      C.branchValueAt k.succ := by
-  simpa [segmentBranchValue] using
-    (C.branchValueAt_succ_eq_leftTransitionValue k).symm
-
-omit [RiemannSurface X] in
-/-- The terminal value of the chain is the last sampled branch value.
-
-%%handwave
-name: The terminal value is the last sampled branch value
-statement: For a continuation chain of length $N$, its terminal value equals the sampled value at the last vertex: $v_{term}=v_N$.
-proof: Unfold the terminal value and last sampled value, then use the final parameter equation $t_N=1$ and the path endpoint equation.
--/
-theorem terminalValue_eq_branchValueAt_last
-    (C : PathLocalTransitionModelContinuationChain x₀ g localModels p) :
-    C.terminalValue = C.branchValueAt (Fin.last C.length) := by
-  simp [terminalValue, branchValueAt, terminalCenter, terminalMobius,
-    C.parameterAt_last]
-
 end PathLocalTransitionModelContinuationChain
-
-/--
-Value-level terminal continuation data produced by explicit handoff chains.
-
-This is the boundary closest to the eventual path-subdivision construction:
-each representative path is assigned a finite handoff chain whose accumulated
-Mobius representatives are updated by local transition inverses.
--/
-structure PathLocalTransitionHandoffChainTerminalBranchAnalyticContinuationValueData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- An explicit finite local-transition handoff chain along each representative path. -/
-  handoffChainAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelContinuationHandoffChain x₀ g localModels p
-  /-- A sheet neighborhood on which the terminal handoff-chain branch is valid. -/
-  neighborhoodAlong :
-    ∀ {x : X}, Path x₀ x → Set (PathHomotopyUniversalCover X x₀)
-  /-- The terminal value descends through endpoint-fixed path homotopy. -/
-  terminalValue_homotopic :
-    ∀ {x : X} {p q : Path x₀ x}, Path.Homotopic p q →
-      ((handoffChainAlong p).toPathLocalTransitionModelContinuationChain).terminalValue =
-        ((handoffChainAlong q).toPathLocalTransitionModelContinuationChain).terminalValue
-  /-- The terminal sheet is open. -/
-  isOpen_neighborhoodAlong :
-    ∀ {x : X} (p : Path x₀ x), IsOpen (neighborhoodAlong p)
-  /-- The represented path-class point lies in its terminal sheet. -/
-  mem_neighborhoodAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      (⟨x, Path.Homotopic.Quotient.mk p⟩ :
-        PathHomotopyUniversalCover X x₀) ∈ neighborhoodAlong p
-  /-- Points in the terminal sheet project into the terminal handoff-chain model domain. -/
-  endpoint_mem_model_domain :
-    ∀ {x : X} (p : Path x₀ x) y', y' ∈ neighborhoodAlong p →
-      PathHomotopyUniversalCover.endpoint y' ∈
-        (localModels.chartAt
-          (((handoffChainAlong p).toPathLocalTransitionModelContinuationChain).terminalCenter)).domain
-  /--
-  On the terminal sheet, the terminal handoff-chain branch computed from any
-  representative of the upstairs point agrees with the sheet formula
-  determined by `p`.
-  -/
-  terminalValue_eq_on_neighborhood :
-    ∀ {x : X} (p : Path x₀ x) (y' : PathHomotopyUniversalCover X x₀)
-      (p' : Path x₀ (PathHomotopyUniversalCover.endpoint y')),
-      y' ∈ neighborhoodAlong p →
-      Path.Homotopic.Quotient.mk p' =
-        PathHomotopyUniversalCover.pathClass y' →
-      realMobiusRepresentativeAction
-          (((handoffChainAlong p').toPathLocalTransitionModelContinuationChain).terminalMobius)
-          ((localModels.chartAt
-              (((handoffChainAlong p').toPathLocalTransitionModelContinuationChain).terminalCenter)).toUpperHalfPlane
-            (PathHomotopyUniversalCover.endpoint y')) =
-        realMobiusRepresentativeAction
-          (((handoffChainAlong p).toPathLocalTransitionModelContinuationChain).terminalMobius)
-          ((localModels.chartAt
-              (((handoffChainAlong p).toPathLocalTransitionModelContinuationChain).terminalCenter)).toUpperHalfPlane
-            (PathHomotopyUniversalCover.endpoint y'))
 
 /--
 Value-level finite-chain terminal continuation data for a local-transition
@@ -632,31 +177,6 @@ namespace PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- The terminal value forced by a finite-chain terminal branch. -/
-def terminalValue
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) : ℍ :=
-  (C.chainAlong p).terminalValue
-
-omit [RiemannSurface X] in
-/-- The terminal value stored by finite-chain continuation data is the terminal value of its chosen chain.
-
-%%handwave
-name: Finite-chain value data use the chosen chain’s terminal value
-statement: For every representative path $p$, the terminal value assigned by finite-chain continuation data equals the terminal value of the chain chosen along $p$.
-proof: This is the defining equation for the assigned path value.
--/
-@[simp]
-theorem terminalValue_eq_chain_terminalValue
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.chainAlong p).terminalValue :=
-  rfl
-
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /-- The chosen representative of a represented path-homotopy class is homotopic to the original path.
 
@@ -674,143 +194,12 @@ theorem out_homotopic_mk
     (Path.Homotopic.Quotient.eq).mp
       (Quot.out_eq (Path.Homotopic.Quotient.mk p))
 
-/--
-The terminal value at a path-homotopy class, computed from Lean's chosen
-representative and justified by value-level homotopy descent.
--/
-noncomputable def terminalValueAt
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    (x : X) (q : Path.Homotopic.Quotient x₀ x) : ℍ :=
-  C.terminalValue (Quot.out q)
-
-/-- The terminal center attached to Lean's chosen representative of a path class. -/
-noncomputable def terminalCenterAt
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    (x : X) (q : Path.Homotopic.Quotient x₀ x) : X :=
-  (C.chainAlong (Quot.out q)).terminalCenter
-
-/-- The terminal Mobius representative attached to Lean's chosen representative. -/
-noncomputable def terminalMobiusAt
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    (x : X) (q : Path.Homotopic.Quotient x₀ x) :
-    RealMobiusRepresentative :=
-  (C.chainAlong (Quot.out q)).terminalMobius
-
-/-- The terminal sheet attached to Lean's chosen representative of a path class. -/
-noncomputable def terminalNeighborhoodAt
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    (x : X) (q : Path.Homotopic.Quotient x₀ x) :
-    Set (PathHomotopyUniversalCover X x₀) :=
-  C.neighborhoodAlong (Quot.out q)
-
-omit [RiemannSurface X] in
-/-- Evaluating the descended terminal value on the class represented by a path recovers that path’s terminal value.
-
-%%handwave
-name: The descended finite-chain value agrees on represented paths
-statement: For finite-chain continuation data and every path $p:x_0⇝x$, evaluating the descended value at the path class $[p]$ gives the path value: $V(x,[p])=v(p)$.
-proof: The chosen representative of $[p]$ is homotopic to $p$, so the assumed homotopy invariance of terminal values identifies the two values.
--/
-@[simp]
-theorem terminalValueAt_mk
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValueAt x (Path.Homotopic.Quotient.mk p) =
-      C.terminalValue p := by
-  exact C.terminalValue_homotopic (out_homotopic_mk p)
-
-/--
-Value-level finite-chain local-transition continuation data descend to
-path-class local-transition continuation data.
--/
-noncomputable def toPathClassLocalTransitionAnalyticContinuationData
-    (C :
-      PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels) :
-    PathClassLocalTransitionAnalyticContinuationData x₀ g localModels where
-  valueAt := C.terminalValueAt
-  centerAt := C.terminalCenterAt
-  mobiusAt := C.terminalMobiusAt
-  neighborhoodAt := C.terminalNeighborhoodAt
-  isOpen_neighborhoodAt := by
-    intro x q
-    exact C.isOpen_neighborhoodAlong (Quot.out q)
-  mem_neighborhoodAt := by
-    intro x q
-    have hmem := C.mem_neighborhoodAlong (Quot.out q)
-    have hpoint :
-        (⟨x, q⟩ : PathHomotopyUniversalCover X x₀) =
-          ⟨x, Path.Homotopic.Quotient.mk (Quot.out q)⟩ := by
-      exact Sigma.ext rfl (heq_of_eq (Quot.out_eq q).symm)
-    simpa [terminalNeighborhoodAt, hpoint] using hmem
-  endpoint_mem_model_domain := by
-    intro x q y' hy'
-    exact C.endpoint_mem_model_domain (Quot.out q) y' hy'
-  value_eq_on_neighborhood := by
-    intro x q y' hy'
-    let p : Path x₀ x := Quot.out q
-    let p' : Path x₀ (PathHomotopyUniversalCover.endpoint y') :=
-      Quot.out (PathHomotopyUniversalCover.pathClass y')
-    have hclass :
-        Path.Homotopic.Quotient.mk p' =
-          PathHomotopyUniversalCover.pathClass y' := by
-      exact Quot.out_eq (PathHomotopyUniversalCover.pathClass y')
-    simpa [terminalValueAt, terminalValue, terminalCenterAt,
-      terminalMobiusAt, terminalNeighborhoodAt, p, p'] using
-      C.terminalValue_eq_on_neighborhood p y' p' hy' hclass
-
 end PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
 
 namespace PathLocalTransitionHandoffChainTerminalBranchAnalyticContinuationValueData
 
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-
-/--
-Explicit handoff-chain value data forgets to ordinary finite-chain value data.
--/
-def toPathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-    (C :
-      PathLocalTransitionHandoffChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels) :
-    PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData
-      x₀ g localModels where
-  chainAlong := fun {_} p =>
-    (C.handoffChainAlong p).toPathLocalTransitionModelContinuationChain
-  neighborhoodAlong := C.neighborhoodAlong
-  terminalValue_homotopic := C.terminalValue_homotopic
-  isOpen_neighborhoodAlong := C.isOpen_neighborhoodAlong
-  mem_neighborhoodAlong := C.mem_neighborhoodAlong
-  endpoint_mem_model_domain := C.endpoint_mem_model_domain
-  terminalValue_eq_on_neighborhood := C.terminalValue_eq_on_neighborhood
-
-omit [RiemannSurface X] in
-/-- Forgetting explicit handoff data uses the underlying continuation chain along each path.
-
-%%handwave
-name: Forgetting handoff data retains the underlying chain along each path
-statement: For explicit handoff-chain continuation data and every path $p$, the chain selected after forgetting handoff witnesses is precisely the underlying continuation chain of the selected handoff chain.
-proof: This is immediate from the forgetful record construction.
--/
-@[simp]
-theorem toValueData_chainAlong
-    (C :
-      PathLocalTransitionHandoffChainTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    (C.toPathLocalTransitionChainTerminalBranchAnalyticContinuationValueData.chainAlong p) =
-      (C.handoffChainAlong p).toPathLocalTransitionModelContinuationChain :=
-  rfl
 
 end PathLocalTransitionHandoffChainTerminalBranchAnalyticContinuationValueData
 
@@ -875,7 +264,14 @@ namespace PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationV
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- The terminal value forced by a based weak handoff terminal branch. -/
+/-- The terminal value forced by a based weak handoff terminal branch.
+
+%%handwave
+name: The terminal value forced by a based weak handoff terminal branch
+statement:
+  The terminal value of a based weak-handoff continuation is the terminal
+  value of its chosen finite continuation skeleton.
+-/
 def terminalValue
     (C :
       PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
@@ -883,26 +279,16 @@ def terminalValue
     {x : X} (p : Path x₀ x) : ℍ :=
   (C.basedWeakHandoffAlong p).terminalValue
 
-omit [RiemannSurface X] in
-/-- The terminal value supplied by weak-handoff continuation data is the value of its chosen skeleton.
-
-%%handwave
-name: Weak-handoff value data use the chosen skeleton’s terminal value
-statement: For every path $p$, the terminal value assigned by weak-handoff continuation data is the terminal value of its chosen continuation skeleton.
-proof: This is the definition of the pathwise terminal value.
--/
-@[simp]
-theorem terminalValue_eq_basedWeakHandoff_terminalValue
-    (C :
-      PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.basedWeakHandoffAlong p).terminalValue :=
-  rfl
-
 /--
 The terminal value at a path-homotopy class, computed from Lean's chosen
 representative and justified by value-level homotopy descent.
+
+%%handwave
+name: Terminal value of a path-homotopy class
+statement:
+  For a based path class $[p]$, define its terminal value using a chosen
+  representative $p$; homotopy invariance makes this independent of that
+  representative.
 -/
 noncomputable def terminalValueAt
     (C :
@@ -911,7 +297,14 @@ noncomputable def terminalValueAt
     (x : X) (q : Path.Homotopic.Quotient x₀ x) : ℍ :=
   C.terminalValue (Quot.out q)
 
-/-- The terminal center attached to Lean's chosen representative of a path class. -/
+/-- The terminal center attached to Lean's chosen representative of a path class.
+
+%%handwave
+name: Terminal chart center of a path-homotopy class
+statement:
+  For a based path class $[p]$, choose a representative and take the terminal
+  chart center of its weak-handoff continuation skeleton.
+-/
 noncomputable def terminalCenterAt
     (C :
       PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
@@ -919,7 +312,14 @@ noncomputable def terminalCenterAt
     (x : X) (q : Path.Homotopic.Quotient x₀ x) : X :=
   (C.basedWeakHandoffAlong (Quot.out q)).terminalCenter
 
-/-- The terminal Mobius representative attached to Lean's chosen representative. -/
+/-- The terminal Mobius representative attached to Lean's chosen representative.
+
+%%handwave
+name: Terminal Möbius representative of a path-homotopy class
+statement:
+  For a based path class $[p]$, choose a representative and take the terminal
+  accumulated real Möbius representative of its continuation skeleton.
+-/
 noncomputable def terminalMobiusAt
     (C :
       PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
@@ -928,7 +328,14 @@ noncomputable def terminalMobiusAt
     RealMobiusRepresentative :=
   (C.basedWeakHandoffAlong (Quot.out q)).terminalMobius
 
-/-- The terminal sheet attached to Lean's chosen representative of a path class. -/
+/-- The terminal sheet attached to Lean's chosen representative of a path class.
+
+%%handwave
+name: Terminal continuation sheet of a path-homotopy class
+statement:
+  For a based path class $[p]$, define its terminal continuation sheet as the
+  terminal sheet of the skeleton chosen along a representative of $[p]$.
+-/
 noncomputable def terminalNeighborhoodAt
     (C :
       PathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
@@ -959,6 +366,14 @@ theorem terminalValueAt_mk
 /--
 Based weak handoff value-continuation data descend to path-class
 local-transition continuation data.
+
+%%handwave
+name: Based weak handoff value-continuation data descend to path-class local-transition continuation data
+statement:
+  Homotopy-invariant terminal values of based weak-handoff continuations
+  descend to a path-class developing value, with the chosen terminal chart,
+  accumulated Möbius representative, and terminal sheet supplying its local
+  continuation formula.
 -/
 noncomputable def toPathClassLocalTransitionAnalyticContinuationData
     (C :
@@ -1044,7 +459,14 @@ namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationV
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- The terminal value forced by canonical-terminal-sheet based weak handoff data. -/
+/-- The terminal value forced by canonical-terminal-sheet based weak handoff data.
+
+%%handwave
+name: The terminal value forced by canonical-terminal-sheet based weak handoff data
+statement:
+  The terminal value of canonical-sheet agreement data is the terminal value
+  of its based weak-handoff continuation skeleton.
+-/
 def terminalValue
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
@@ -1052,25 +474,16 @@ def terminalValue
     {x : X} (p : Path x₀ x) : ℍ :=
   (C.basedWeakHandoffAlong p).terminalValue
 
-/-- The canonical-sheet terminal value is the value of its chosen weak-handoff skeleton.
-
-%%handwave
-name: Canonical-sheet data use the chosen skeleton’s terminal value
-statement: For every path $p$, the terminal value assigned by canonical-terminal-sheet continuation data equals the terminal value of its chosen weak-handoff skeleton.
-proof: This is the definition of the canonical-sheet path value.
--/
-@[simp]
-theorem terminalValue_eq_basedWeakHandoff_terminalValue
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.basedWeakHandoffAlong p).terminalValue :=
-  rfl
-
 /--
 Canonical-terminal-sheet based weak handoff data fill the full value
 continuation record by using the terminal local sheet as the neighborhood.
+
+%%handwave
+name: Canonical-terminal-sheet based weak handoff data fill the full value continuation data by using the terminal local sheet as the neighborhood
+statement:
+  Canonical terminal-sheet agreement supplies homotopy-invariant terminal
+  values and a local terminal branch formula on the terminal sheet, hence
+  gives pathwise analytic-continuation value data.
 -/
 noncomputable def toPathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData
     (C :
@@ -1095,23 +508,6 @@ noncomputable def toPathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticCon
       (C.basedWeakHandoffAlong p).endpoint_mem_terminal_domain_of_mem_terminalSheet
         hy'
   terminalValue_eq_on_neighborhood := C.terminalValue_eq_on_terminalSheet
-
-/-- The neighborhood supplied by canonical-sheet data is exactly the chosen skeleton’s terminal sheet.
-
-%%handwave
-name: The canonical continuation neighborhood is the terminal sheet
-statement: After canonical-sheet data are viewed as general neighborhood data, the neighborhood assigned to a path $p$ is exactly the terminal sheet of the chosen skeleton along $p$.
-proof: The conversion record defines the neighborhood to be that terminal sheet.
--/
-@[simp]
-theorem toValueData_neighborhoodAlong
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.toPathLocalTransitionBasedWeakHandoffTerminalBranchAnalyticContinuationValueData.neighborhoodAlong p =
-      (C.basedWeakHandoffAlong p).terminalSheet :=
-  rfl
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
 
@@ -1154,12 +550,26 @@ structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
 /--
 A set of upper-half-plane points is large enough to identify PSL
 transformations by their actions.
+
+%%handwave
+name: A set of upper-half-plane points is large enough to identify PSL transformations by their actions
+statement:
+  A subset $S\subseteq\mathbb H$ is faithful for the real projective action
+  when two elements of $\mathrm{PSL}_2(\mathbb R)$ that agree on every point
+  of $S$ are equal.
 -/
 def RealMobiusActionFaithfulOn (s : Set ℍ) : Prop :=
   ∀ g h : RealMobiusGroup,
     (∀ z ∈ s, realMobiusAction g z = realMobiusAction h z) → g = h
 
-/-- A set of upper-half-plane points contains three pairwise distinct points. -/
+/-- A set of upper-half-plane points contains three pairwise distinct points.
+
+%%handwave
+name: A set of upper-half-plane points contains three pairwise distinct points
+statement:
+  A subset $S\subseteq\mathbb H$ contains three distinct points when there
+  exist $z_1,z_2,z_3\in S$ with $z_i\ne z_j$ for $i\ne j$.
+-/
 def ContainsThreeDistinctUpperHalfPlanePoints (s : Set ℍ) : Prop :=
   ∃ z₁ z₂ z₃ : ℍ,
     z₁ ∈ s ∧ z₂ ∈ s ∧ z₃ ∈ s ∧
@@ -1169,6 +579,13 @@ def ContainsThreeDistinctUpperHalfPlanePoints (s : Set ℍ) : Prop :=
 The global three-point faithfulness theorem for the PSL action on `ℍ`.
 Mathematically, this is the statement that three distinct points and their
 images determine a Möbius transformation.
+
+%%handwave
+name: The global three-point faithfulness theorem for the PSL action on ℍ
+statement:
+  If two elements of $\mathrm{PSL}_2(\mathbb R)$ have equal actions on three
+  pairwise distinct points of $\mathbb H$, then the two projective
+  transformations are equal.
 -/
 def RealMobiusActionDeterminedByThreePointsTheoremPSL : Prop :=
   ∀ (g h : RealMobiusGroup) (z₁ z₂ z₃ : ℍ),
@@ -1208,64 +625,6 @@ theorem realMobiusActionFaithfulOn_of_containsThreeDistinctUpperHalfPlanePoints
   exact
     hThree g h z₁ z₂ z₃ h₁₂ h₁₃ h₂₃
       (hAction z₁ hz₁) (hAction z₂ hz₂) (hAction z₃ hz₃)
-
-/-- The whole upper half-plane contains three pairwise distinct points.
-
-%%handwave
-name: The upper half-plane contains three distinct points
-statement: There exist three pairwise distinct points $z_1,z_2,z_3∈ℍ$.
-proof: Choose three explicit points on a horizontal line in the upper half-plane and verify their real parts are distinct.
--/
-theorem containsThreeDistinctUpperHalfPlanePoints_univ :
-    ContainsThreeDistinctUpperHalfPlanePoints (Set.univ : Set ℍ) := by
-  refine
-    ⟨(⟨I, by norm_num⟩ : ℍ),
-      (⟨2 * I, by norm_num⟩ : ℍ),
-      (⟨3 * I, by norm_num⟩ : ℍ),
-      by simp, by simp, by simp, ?_, ?_, ?_⟩
-  · intro h
-    have hc := congrArg (fun z : ℍ => (z : ℂ)) h
-    norm_num at hc
-  · intro h
-    have hc := congrArg (fun z : ℍ => (z : ℂ)) h
-    norm_num at hc
-  · intro h
-    have hc := congrArg (fun z : ℍ => (z : ℂ)) h
-    norm_num at hc
-
-/-- The PSL action on the whole upper half-plane is faithful.
-
-%%handwave
-name: The projective real Möbius action on the upper half-plane is faithful
-statement: If $g,h∈PSL_2(ℝ)$ satisfy $g·z=h·z$ for every $z∈ℍ$, then $g=h$.
-proof: The whole upper half-plane contains three distinct points, so apply faithfulness on any set with three distinct points.
--/
-theorem realMobiusActionFaithfulOn_univ :
-    RealMobiusActionFaithfulOn (Set.univ : Set ℍ) :=
-  realMobiusActionFaithfulOn_of_containsThreeDistinctUpperHalfPlanePoints
-    realMobiusActionDeterminedByThreePointsTheoremPSL
-    containsThreeDistinctUpperHalfPlanePoints_univ
-
-/--
-Two real-Mobius representatives inducing the same action on all of `ℍ` have the
-same PSL class.
-
-%%handwave
-name: Equal representative actions have equal projective classes
-statement: Let $A,B$ be real Möbius representatives. If $A·z=B·z$ for every $z∈ℍ$, then their classes in $PSL_2(ℝ)$ are equal: $[A]=[B]$.
-proof: Rewrite each representative action as the action of its projective class and use faithfulness of the projective action on all of $ℍ$.
--/
-theorem realMobiusProjection_eq_of_representative_action_eq
-    (A B : RealMobiusRepresentative)
-    (hAction :
-      ∀ z : ℍ,
-        realMobiusRepresentativeAction A z =
-          realMobiusRepresentativeAction B z) :
-    realMobiusProjection A = realMobiusProjection B :=
-  realMobiusActionFaithfulOn_univ
-    (realMobiusProjection A) (realMobiusProjection B) (by
-      intro z _hz
-      simpa only [realMobiusAction_realMobiusProjection] using hAction z)
 
 /-- An infinite set contains three pairwise distinct points.
 
@@ -1531,41 +890,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {x : X} {p : Path x₀ x}
 
 /--
-At the initial point, converting the accumulated branch of a skeleton to any
-fixed comparison chart agrees projectively with the direct basepoint
-transition into that chart.
-
-%%handwave
-name: The initial accumulated branch agrees with direct conversion to a fixed chart
-statement: Let $S$ be a based handoff skeleton, let $c$ be a comparison chart at $x_0$, and let $T_0:c_0→c$ and $T_b:c_{x_0}→c$ be local transitions. Then $[M_0T_0^{-1}]=[T_b^{-1}]$.
-proof: Use the cocycle relating the initial basepoint handoff, $T_0$, and $T_b$, together with the definition of the initial accumulated transformation; then simplify inverses in the projective group.
--/
-theorem initialFixedChartAccumulatedProjection_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X)
-    (T0 :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt 0))
-        (localModels.chartAt c)
-        x₀)
-    (Tbase :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt c)
-        x₀) :
-    realMobiusProjection
-        (S.accumulatedMobiusAt 0 * T0.representative⁻¹) =
-      realMobiusProjection Tbase.representative⁻¹ := by
-  have hcocycle :
-      realMobiusProjection Tbase.representative =
-        realMobiusProjection
-          (T0.representative * S.initialTransition.representative) :=
-    localRealMobiusTransitionData_projection_eq_trans
-      S.initialTransition T0 Tbase
-  simp [S.accumulatedMobiusAt_zero, hcocycle]
-
-/--
 On one segment of a handoff skeleton, if a fixed comparison chart contains
 the whole segment image, then the PSL class of the local transition from the
 segment chart to the comparison chart is constant from the left endpoint to
@@ -1622,248 +946,6 @@ theorem segmentTransitionProjection_eq_along_fixedChart
   simpa [a, b] using
     localRealMobiusTransitionData_projection_eq_along_path_Icc
       p hab hExists Tleft Tright
-
-/--
-Crossing one skeleton segment preserves the accumulated PSL branch after
-conversion to any fixed chart whose domain contains the whole segment image.
-
-This is the algebraic handoff step behind same-path value propagation.
-
-%%handwave
-name: Crossing one segment preserves the branch expressed in a fixed chart
-statement: If comparison chart $c$ contains segment $[t_k,t_{k+1}]$, then converting the accumulated branch to $c$ at either endpoint gives the same projective class: $[M_{k+1}T_{k+1}^{-1}]=[M_kT_k^{-1}]$.
-proof: Expand $M_{k+1}$ using the handoff transition, use the transition cocycle at the right endpoint, replace the segment-to-fixed transition there by its class at the left endpoint, and simplify in $PSL_2(ℝ)$.
--/
-theorem segmentFixedChartAccumulatedProjection_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc_segment :
-      ∀ t : unitInterval,
-        (S.parameterAt k.castSucc : ℝ) ≤ (t : ℝ) →
-        (t : ℝ) ≤ (S.parameterAt k.succ : ℝ) →
-          p t ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.castSucc)))
-    (TrightLeft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (TrightNext :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.succ))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ))) :
-    realMobiusProjection
-        (S.accumulatedMobiusAt k.succ * TrightNext.representative⁻¹) =
-      realMobiusProjection
-        (S.accumulatedMobiusAt k.castSucc * Tleft.representative⁻¹) := by
-  have hconst :
-      realMobiusProjection TrightLeft.representative =
-        realMobiusProjection Tleft.representative :=
-    S.segmentTransitionProjection_eq_along_fixedChart
-      k c hc_segment Tleft TrightLeft
-  have hcocycle :
-      realMobiusProjection TrightLeft.representative =
-        realMobiusProjection
-          (TrightNext.representative * (S.transitionAt k).representative) :=
-    localRealMobiusTransitionData_projection_eq_trans
-      (S.transitionAt k) TrightNext TrightLeft
-  rw [S.accumulatedMobiusAt_succ k]
-  calc
-    realMobiusProjection
-        ((S.accumulatedMobiusAt k.castSucc *
-            (S.transitionAt k).representative⁻¹) *
-          TrightNext.representative⁻¹)
-        =
-      realMobiusProjection (S.accumulatedMobiusAt k.castSucc) *
-        (realMobiusProjection
-          (TrightNext.representative * (S.transitionAt k).representative))⁻¹ := by
-          simp [mul_assoc]
-    _ =
-      realMobiusProjection (S.accumulatedMobiusAt k.castSucc) *
-        (realMobiusProjection TrightLeft.representative)⁻¹ := by
-          rw [← hcocycle]
-    _ =
-      realMobiusProjection (S.accumulatedMobiusAt k.castSucc) *
-        (realMobiusProjection Tleft.representative)⁻¹ := by
-          rw [hconst]
-    _ =
-      realMobiusProjection
-        (S.accumulatedMobiusAt k.castSucc * Tleft.representative⁻¹) := by
-          simp
-
-/--
-If one fixed comparison chart contains the whole path image, then the
-accumulated branch of a skeleton, converted to that chart at any sampled
-vertex, has the same PSL class as the direct basepoint transition into the
-fixed chart.
-
-%%handwave
-name: A branch expressed in one chart is constant along the whole chain
-statement: Suppose one comparison chart $c$ contains $p([0,1])$. If $T_b$ is the base-chart transition to $c$ and $T_n$ converts the selected chart at vertex $n$ to $c$, then for every $n≤N$, $[M_nT_n^{-1}]=[T_b^{-1}]$.
-proof: Induct on $n$. The initial case is the basepoint conversion formula; the successor case applies the one-segment fixed-chart equality and the induction hypothesis.
--/
-theorem accumulatedProjection_eq_fixedChart
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X)
-    (hc_path : ∀ t : unitInterval, p t ∈ (localModels.chartAt c).domain)
-    (Tbase :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt c)
-        x₀)
-    (Tvertex :
-      ∀ i : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt i))
-          (localModels.chartAt c)
-          (p (S.parameterAt i))) :
-    ∀ n : ℕ, ∀ hn : n ≤ S.length,
-      realMobiusProjection
-          (S.accumulatedMobiusAt
-              ⟨n, Nat.lt_succ_of_le hn⟩ *
-            (Tvertex ⟨n, Nat.lt_succ_of_le hn⟩).representative⁻¹) =
-        realMobiusProjection Tbase.representative⁻¹ := by
-  intro n hn
-  induction n with
-  | zero =>
-      have h0point :
-          x₀ = p (S.parameterAt (0 : Fin (S.length + 1))) := by
-        simp [S.parameterAt_zero, p.source]
-      let T0 :
-          HyperbolicLocalChart.LocalRealMobiusTransitionData
-            (localModels.chartAt (S.centerAt 0))
-            (localModels.chartAt c)
-            x₀ :=
-        localRealMobiusTransitionData_congr rfl rfl h0point (Tvertex 0)
-      have h :=
-        S.initialFixedChartAccumulatedProjection_eq c T0 Tbase
-      simpa [T0] using h
-  | succ n ih =>
-      have hnlt : n < S.length := Nat.succ_le_iff.mp hn
-      let k : Fin S.length := ⟨n, hnlt⟩
-      let iPrev : Fin (S.length + 1) :=
-        ⟨n, Nat.lt_succ_of_lt hnlt⟩
-      let iCur : Fin (S.length + 1) :=
-        ⟨n + 1, Nat.lt_succ_of_le hn⟩
-      have hprev_eq : iPrev = k.castSucc := by
-        ext
-        rfl
-      have hcur_eq : iCur = k.succ := by
-        ext
-        rfl
-      let TrightLeft :
-          HyperbolicLocalChart.LocalRealMobiusTransitionData
-            (localModels.chartAt (S.centerAt k.castSucc))
-            (localModels.chartAt c)
-            (p (S.parameterAt k.succ)) :=
-        Classical.choice
-          (localModels.transition_localRealMobius
-            (S.centerAt k.castSucc) c
-            (p (S.parameterAt k.succ))
-            ⟨S.path_segment_mem_model_domain k (S.parameterAt k.succ)
-                (S.parameterAt_mono k) le_rfl,
-              hc_path (S.parameterAt k.succ)⟩)
-      have hstep :
-          realMobiusProjection
-              (S.accumulatedMobiusAt k.succ *
-                (Tvertex k.succ).representative⁻¹) =
-            realMobiusProjection
-              (S.accumulatedMobiusAt k.castSucc *
-                (Tvertex k.castSucc).representative⁻¹) :=
-        S.segmentFixedChartAccumulatedProjection_eq
-          k c
-          (fun t _ _ => hc_path t)
-          (Tvertex k.castSucc)
-          TrightLeft
-          (Tvertex k.succ)
-      have hprev :
-          realMobiusProjection
-              (S.accumulatedMobiusAt k.castSucc *
-                (Tvertex k.castSucc).representative⁻¹) =
-            realMobiusProjection Tbase.representative⁻¹ := by
-        change
-          realMobiusProjection
-              (S.accumulatedMobiusAt
-                  ⟨n, Nat.lt_succ_of_le (Nat.le_of_lt hnlt)⟩ *
-                (Tvertex
-                  ⟨n, Nat.lt_succ_of_le (Nat.le_of_lt hnlt)⟩).representative⁻¹) =
-            realMobiusProjection Tbase.representative⁻¹
-        exact ih (Nat.le_of_lt hnlt)
-      change
-        realMobiusProjection
-            (S.accumulatedMobiusAt k.succ *
-              (Tvertex k.succ).representative⁻¹) =
-          realMobiusProjection Tbase.representative⁻¹
-      exact hstep.trans hprev
-
-/--
-If one fixed comparison chart contains the whole path image, then every
-handoff skeleton along the path has the terminal value obtained by continuing
-the base branch directly in that fixed chart.
-
-%%handwave
-name: A path contained in one chart has the direct fixed-chart terminal value
-statement: If a fixed chart $c$ contains the entire path and $T_b$ is a local transition from the base chart to $c$ at $x_0$, then every handoff skeleton $S$ along the path satisfies $v(S)=T_b^{-1}·c(x)$.
-proof: Choose transitions from each selected chart to $c$, apply the accumulated fixed-chart equality at the last vertex, convert equality of projective classes to equality of actions, and evaluate at the endpoint.
--/
-theorem terminalValue_eq_fixedChartBranch
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X)
-    (hc_path : ∀ t : unitInterval, p t ∈ (localModels.chartAt c).domain)
-    (Tbase :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt c)
-        x₀) :
-    S.terminalValue =
-      realMobiusRepresentativeAction Tbase.representative⁻¹
-        ((localModels.chartAt c).toUpperHalfPlane x) := by
-  classical
-  let Tvertex :
-      ∀ i : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt i))
-          (localModels.chartAt c)
-          (p (S.parameterAt i)) :=
-    fun i =>
-      Classical.choice
-        (localModels.transition_localRealMobius
-          (S.centerAt i) c (p (S.parameterAt i))
-          ⟨S.sample_mem_model_domain i, hc_path (S.parameterAt i)⟩)
-  have hproj :
-      realMobiusProjection
-          (S.terminalMobius *
-            (Tvertex (Fin.last S.length)).representative⁻¹) =
-        realMobiusProjection Tbase.representative⁻¹ := by
-    simpa [terminalMobius] using
-      S.accumulatedProjection_eq_fixedChart
-        c hc_path Tbase Tvertex S.length le_rfl
-  have hconvert :
-      realMobiusRepresentativeAction
-          (S.terminalMobius *
-            (Tvertex (Fin.last S.length)).representative⁻¹)
-          ((localModels.chartAt c).toUpperHalfPlane x) =
-        S.terminalValue := by
-    have hxparam : p (S.parameterAt (Fin.last S.length)) = x := by
-      simp [S.parameterAt_last, p.target]
-    have h :=
-      localRealMobiusTransitionData_accumulated_handoff
-        (Tvertex (Fin.last S.length))
-        (Tvertex (Fin.last S.length)).mem_neighborhood
-        S.terminalMobius
-    simpa [terminalValue, terminalCenter, hxparam] using h
-  exact
-    hconvert.symm.trans
-      (realMobiusRepresentativeAction_eq_of_projection_eq hproj
-        ((localModels.chartAt c).toUpperHalfPlane x))
 
 /--
 If two based handoff skeletons over the same path use the same subdivision
@@ -2218,74 +1300,6 @@ theorem terminalValue_eq_of_alignedSubdivision
       T Aterm hproj).symm
 
 /--
-The endpoint chart-insertion terminal Mobius PSL class is preserved for actual
-local-transition witnesses.  The only algebraic input is the PSL cocycle for
-the two inserted handoffs.
-
-%%handwave
-name: Inserting a chart at a segment endpoint preserves the terminal projective transformation
-statement: Insert at $p(t_{k+1})$ a chart $c$ and actual transitions $c_k→c→c_{k+1}$. The accumulated terminal transformation of the refined skeleton has the same class in $PSL_2(ℝ)$ as that of the original skeleton.
-proof: The two inserted transitions compose projectively to the original handoff transition by the local cocycle. All later accumulated products are therefore unchanged in projective class.
--/
-theorem segmentEndpointChartInsertSkeleton_terminalMobius_projection_eq_of_localTransitions
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ))) :
-    realMobiusProjection
-        (S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright).terminalMobius =
-      realMobiusProjection S.terminalMobius :=
-  S.segmentEndpointChartInsertSkeleton_terminalMobius_projection_eq
-    k c hc Tleft Tright
-    (localRealMobiusTransitionData_projection_eq_trans
-      Tleft Tright (S.transitionAt k))
-
-/--
-The endpoint chart-insertion terminal branch formula is preserved for actual
-local-transition witnesses.
-
-%%handwave
-name: Inserting an endpoint chart preserves the terminal branch formula
-statement: Under the endpoint-chart insertion hypotheses, the refined and original skeletons satisfy $F_{ref}(z)=F_S(z)$ for every $z∈X$.
-proof: Their terminal charts coincide and their accumulated terminal transformations have the same projective class, hence induce the same action on the terminal chart coordinate of $z$.
--/
-theorem segmentEndpointChartInsertSkeleton_terminalFormulaAt_eq_of_localTransitions
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (z : X) :
-    (S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright).terminalFormulaAt z =
-      S.terminalFormulaAt z :=
-  S.segmentEndpointChartInsertSkeleton_terminalFormulaAt_eq
-    k c hc Tleft Tright
-    (localRealMobiusTransitionData_projection_eq_trans
-      Tleft Tright (S.transitionAt k))
-    z
-
-/--
 The endpoint chart-insertion terminal value is preserved for actual
 local-transition witnesses.
 
@@ -2324,29 +1338,20 @@ namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- The terminal value forced by canonical-terminal-sheet agreement data. -/
+/-- The terminal value forced by canonical-terminal-sheet agreement data.
+
+%%handwave
+name: The terminal value forced by canonical-terminal-sheet agreement data
+statement:
+  The terminal value attached to a path is the value obtained by evaluating
+  its canonical continuation skeleton at the endpoint.
+-/
 def terminalValue
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels)
     {x : X} (p : Path x₀ x) : ℍ :=
   (C.basedWeakHandoffAlong p).terminalValue
-
-/-- The terminal value associated with canonical sheet-agreement data is the value of its chosen skeleton.
-
-%%handwave
-name: Sheet-agreement data use the chosen skeleton’s terminal value
-statement: For every path $p$, the terminal value assigned by canonical sheet-agreement data equals the terminal value of the chosen weak-handoff skeleton along $p$.
-proof: This is the definition of the assigned path value.
--/
-@[simp]
-theorem terminalValue_eq_basedWeakHandoff_terminalValue
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.terminalValue p = (C.basedWeakHandoffAlong p).terminalValue :=
-  rfl
 
 /--
 %%handwave
@@ -2386,24 +1391,15 @@ theorem terminalValue_homotopic
     S, T] using h.symm
 
 /--
-Canonical-terminal-sheet agreement data fill the value-continuation record;
-homotopy descent is derived from terminal-sheet agreement.
--/
-noncomputable def toCanonicalSheetAnalyticContinuationValueData
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
-      x₀ g localModels where
-  basedWeakHandoffAlong := C.basedWeakHandoffAlong
-  terminalValue_homotopic := by
-    intro x p q hpq
-    exact C.terminalValue_homotopic hpq
-  terminalValue_eq_on_terminalSheet := C.terminalValue_eq_on_terminalSheet
-
-/--
 The single-valued upstairs map defined by choosing Lean's representative of
 the stored path class.
+
+%%handwave
+name: Developing map defined by terminal continuation values
+statement:
+  For a point $(x,[p])$ of the canonical path-homotopy cover, define
+  $\operatorname{dev}(x,[p])$ as the terminal continuation value of a chosen
+  representative of $[p]$; homotopy invariance makes the value single-valued.
 -/
 noncomputable def dev
     (C :
@@ -2413,23 +1409,6 @@ noncomputable def dev
   fun y =>
     (C.basedWeakHandoffAlong
       (Quot.out (PathHomotopyUniversalCover.pathClass y))).terminalValue
-
-/-- At a represented path-class point, the constructed upstairs map has the terminal value.
-
-%%handwave
-name: The developing map at a terminal lift is the skeleton terminal value
-statement: For every path $p:x_0⇝x$, let $ŷ_p$ be the point of the path-homotopy cover represented by $p$. Then $dev(ŷ_p)=v(S_p)$.
-proof: The developing map uses a chosen representative of the path class. That representative is homotopic to $p$, so terminal-value homotopy invariance identifies its value with $v(S_p)$.
--/
-theorem dev_terminalCoverPoint
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    {x : X} (p : Path x₀ x) :
-    C.dev (C.basedWeakHandoffAlong p).terminalCoverPoint =
-      (C.basedWeakHandoffAlong p).terminalValue := by
-  exact C.terminalValue_homotopic
-    (PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData.out_homotopic_mk p)
 
 /--
 At an explicitly represented point of the canonical cover, the constructed
@@ -2544,6 +1523,13 @@ theorem dev_deckAction_eq_of_terminal_path_equivariant
 The local transition between the terminal chart of `p` and the terminal chart
 of `loop.trans p` at their common endpoint.  This data exists automatically
 from the componentwise local-transition atlas.
+
+%%handwave
+name: The local transition between the terminal chart of p and the terminal chart of loop.trans p at their common endpoint
+statement:
+  If a loop representing $\gamma^{-1}$ is prepended to
+  $p:x_0\rightsquigarrow x$, choose local real Möbius transition data at $x$
+  from the terminal chart of $p$ to the terminal chart of the prepended path.
 -/
 noncomputable def terminalTransitionData
     (C :
@@ -2574,6 +1560,12 @@ noncomputable def terminalTransitionData
 
 /--
 The automatically selected terminal chart-transition representative.
+
+%%handwave
+name: The automatically selected terminal chart-transition representative
+statement:
+  For a loop-prepended path, take the real Möbius representative of the
+  selected transition between the original and prepended terminal charts.
 -/
 noncomputable def terminalTransitionRepresentative
     (C :
@@ -2619,6 +1611,13 @@ This is the path-independent terminal-chart comparison primitive used in the
 monodromy cocycle: loop-prepending is one important source of such pairs, but
 the PSL composition law is really a statement about three terminal charts at a
 common surface point.
+
+%%handwave
+name: The local transition between the terminal charts of two based weak handoff skeletons with the same endpoint
+statement:
+  For based paths $p,q:x_0\rightsquigarrow x$, choose local real Möbius
+  transition data at $x$ from the terminal chart of the continuation along
+  $p$ to that along $q$.
 -/
 noncomputable def terminalTransitionDataBetween
     (C :
@@ -2644,7 +1643,15 @@ noncomputable def terminalTransitionDataBetween
     (localModels.transition_localRealMobius S.terminalCenter T.terminalCenter
       x ⟨hS, hT⟩)
 
-/-- The automatically selected representative comparing two terminal charts. -/
+/-- The automatically selected representative comparing two terminal charts.
+
+%%handwave
+name: The automatically selected representative comparing two terminal charts
+statement:
+  For based paths $p,q$ with a common endpoint, take the real Möbius
+  representative of the selected transition from the terminal chart of $p$
+  to that of $q$.
+-/
 noncomputable def terminalTransitionRepresentativeBetween
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
@@ -2749,6 +1756,14 @@ theorem terminalTransitionRepresentativeBetween_adjusted_projection_trans
 /--
 The source-coordinate set on which two homotopic terminal path formulae can be
 compared after changing terminal charts from `p` to `q`.
+
+%%handwave
+name: The source-coordinate set on which two homotopic terminal path formulae can be compared after changing terminal charts from p to q
+statement:
+  For homotopic based paths $p,q$ with common endpoint, define the set of
+  source terminal coordinates arising from cover points that lie in both
+  terminal sheets and in the neighborhood where the selected terminal-chart
+  transition is valid.
 -/
 def terminalTransitionBetweenCoordinateAgreementSet
     (C :
@@ -2941,6 +1956,13 @@ branches at an arbitrary common upstairs point.
 Unlike `terminalTransitionDataBetween`, the two representative paths need not
 have the same endpoint.  The common base point is supplied by a point of the
 intersection of the two terminal sheets.
+
+%%handwave
+name: The local transition between the terminal charts of two terminal-sheet branches at an arbitrary common upstairs point
+statement:
+  If a cover point $\eta$ belongs to the terminal sheets of paths $p$ and
+  $q$, choose local real Möbius transition data at $\pi(\eta)$ from the
+  terminal chart of $p$ to that of $q$.
 -/
 noncomputable def terminalSheetTransitionDataAt
     (C :
@@ -2969,7 +1991,14 @@ noncomputable def terminalSheetTransitionDataAt
     (localModels.transition_localRealMobius S.terminalCenter T.terminalCenter
       (PathHomotopyUniversalCover.endpoint η) ⟨hS, hT⟩)
 
-/-- The representative of the arbitrary terminal-sheet transition. -/
+/-- The representative of the arbitrary terminal-sheet transition.
+
+%%handwave
+name: The representative of the arbitrary terminal-sheet transition
+statement:
+  For two terminal sheets meeting at $\eta$, take the real Möbius
+  representative of their selected local transition at $\pi(\eta)$.
+-/
 noncomputable def terminalSheetTransitionRepresentativeAt
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
@@ -2984,6 +2013,13 @@ noncomputable def terminalSheetTransitionRepresentativeAt
 /--
 The source-coordinate agreement set for two terminal sheets meeting at an
 arbitrary upstairs point.
+
+%%handwave
+name: The source-coordinate agreement set for two terminal sheets meeting at an arbitrary upstairs point
+statement:
+  For terminal sheets of $p$ and $q$ meeting at $\eta$, define the source
+  terminal coordinates of cover points lying in both sheets and in the
+  neighborhood where their selected terminal-chart transition is valid.
 -/
 def terminalSheetTransitionCoordinateAgreementSet
     (C :
@@ -3304,6 +2340,14 @@ theorem terminalTransitionRepresentativeBetween_loopTrans_adjusted_projection_eq
 The transition-adjusted terminal formula equality at a point of the canonical
 cover.  This is the pointwise formula-level statement that PSL faithfulness
 will consume.
+
+%%handwave
+name: The transition-adjusted terminal formula equality at a point of the canonical cover
+statement:
+  At a cover point $y$, transition-adjusted loop covariance is the equality
+  between the terminal formula for the loop-prepended path, after changing
+  from the source terminal chart, and the holonomy translate by $\gamma$ of
+  the source terminal formula.
 -/
 def terminalTransitionAdjustedFormulaAgreementAt
     (C :
@@ -3333,6 +2377,14 @@ compared.  It is the image, in the source terminal coordinate, of points of
 the canonical cover lying in the source terminal sheet, whose deck translates
 lie in the target terminal sheet, and whose endpoints lie in the selected
 terminal transition neighborhood.
+
+%%handwave
+name: The source-coordinate set on which the automatic terminal transition can be compared
+statement:
+  For a loop representing $\gamma^{-1}$ and a path $p$, define the source
+  terminal coordinates of cover points lying in the source terminal sheet,
+  whose $\gamma$-deck translates lie in the target terminal sheet, and whose
+  endpoints lie in the selected transition neighborhood.
 -/
 def terminalTransitionCoordinateAgreementSet
     (C :
@@ -3491,99 +2543,6 @@ theorem terminalTransitionActionAgreement_on_coordinateAgreementSet_of_formulaAg
     realMobiusAction_mul]
     using hFormulaAt
 
-/--
-Deck equivariance and terminal-sheet agreement compare the two explicit
-terminal local formulae on any point where both terminal sheets and the
-automatic endpoint chart transition are valid.
-
-%%handwave
-name: Deck-equivariant developing maps give the adjusted terminal formula
-statement: Assume $dev(γ·y)=H(γ)·dev(y)$. If $y$ lies in the terminal sheet of $p$, $γ·y$ lies in that of $loop⋆p$, and the endpoint lies in the automatic transition neighborhood, then the target terminal formula adjusted to the source chart equals $H(γ)$ acting on the source terminal formula.
-proof: Use terminal-sheet agreement to rewrite the two local formulas as $dev(γ·y)$ and $dev(y)$. Deck equivariance relates them, while the automatic transition identity converts the target chart coordinate to the source coordinate.
--/
-theorem terminalTransitionAdjustedFormula_eq_holonomy_action_of_dev_equivariant
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (holonomy : RealHolonomyRepresentation X x₀)
-    (hdev :
-      ∀ (γ : FundamentalGroup X x₀)
-        (y : (canonicalContinuationCover x₀).total),
-        C.dev ((canonicalContinuationCover x₀).deckAction γ y) =
-          holonomy.upperHalfPlaneAction γ (C.dev y))
-    (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-    {x : X} (p : Path x₀ x)
-    (hloop : Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹)
-    (y : PathHomotopyUniversalCover X x₀)
-    (hySource : y ∈ (C.basedWeakHandoffAlong p).terminalSheet)
-    (hyTarget :
-      (canonicalContinuationCover x₀).deckAction γ y ∈
-        (C.basedWeakHandoffAlong (loop.trans p)).terminalSheet)
-    (hyTransition :
-      PathHomotopyUniversalCover.endpoint y ∈
-        (C.terminalTransitionData γ loop p hloop).neighborhood) :
-    C.terminalTransitionAdjustedFormulaAgreementAt
-      holonomy γ loop p hloop y := by
-  let S := C.basedWeakHandoffAlong p
-  let T := C.basedWeakHandoffAlong (loop.trans p)
-  let A := C.terminalTransitionRepresentative γ loop p hloop
-  have hEndpoint :
-      PathHomotopyUniversalCover.endpoint
-          ((canonicalContinuationCover x₀).deckAction γ y) =
-        PathHomotopyUniversalCover.endpoint y := by
-    simpa [canonicalContinuationCover] using
-      (canonicalContinuationCover x₀).projection_deckAction γ y
-  have hTargetFormula :=
-    C.dev_eq_on_terminalSheet (loop.trans p)
-      ((canonicalContinuationCover x₀).deckAction γ y) hyTarget
-  have hSourceFormula :=
-    C.dev_eq_on_terminalSheet p y hySource
-  have hTransition :
-      (localModels.chartAt T.terminalCenter).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y) =
-        realMobiusRepresentativeAction A
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane
-            (PathHomotopyUniversalCover.endpoint y)) := by
-    simpa [S, T, A, PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalTransitionRepresentative]
-      using
-        (C.terminalTransitionData γ loop p hloop).transition_eq
-          (PathHomotopyUniversalCover.endpoint y) hyTransition
-  calc
-    realMobiusRepresentativeAction
-        (((C.basedWeakHandoffAlong (loop.trans p)).terminalMobius) *
-          C.terminalTransitionRepresentative γ loop p hloop)
-        ((localModels.chartAt
-            ((C.basedWeakHandoffAlong p).terminalCenter)).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y))
-        =
-      realMobiusRepresentativeAction T.terminalMobius
-        (realMobiusRepresentativeAction A
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane
-            (PathHomotopyUniversalCover.endpoint y))) := by
-          simp [S, T, A, realMobiusRepresentativeAction_mul]
-    _ =
-      realMobiusRepresentativeAction T.terminalMobius
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y)) := by
-          rw [← hTransition]
-    _ =
-      realMobiusRepresentativeAction T.terminalMobius
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint
-            ((canonicalContinuationCover x₀).deckAction γ y))) := by
-          rw [hEndpoint]
-    _ = C.dev ((canonicalContinuationCover x₀).deckAction γ y) := by
-          simpa [T] using hTargetFormula.symm
-    _ = holonomy.upperHalfPlaneAction γ (C.dev y) := hdev γ y
-    _ =
-      holonomy.upperHalfPlaneAction γ
-        (realMobiusRepresentativeAction
-          ((C.basedWeakHandoffAlong p).terminalMobius)
-          ((localModels.chartAt
-              ((C.basedWeakHandoffAlong p).terminalCenter)).toUpperHalfPlane
-            (PathHomotopyUniversalCover.endpoint y))) := by
-          rw [hSourceFormula]
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
 
 /--
@@ -3594,6 +2553,14 @@ Mathematically, this is the finite homotopy-grid/monodromy uniqueness step:
 if a representative path is homotopic to a continued path followed by the
 canonical local path in the terminal sheet, then their terminal branch formulae
 agree at the endpoint of that local path.
+
+%%handwave
+name: The local homotopy principle needed to build canonical-terminal-sheet agreement from arbitrary based weak handoff skeleton choices
+statement:
+  Given a continuation skeleton along every based path, if a representative
+  path is endpoint-fixed homotopic to another path followed by the canonical
+  local path in its terminal sheet, then the two accumulated terminal branch
+  formulae have the same value at the endpoint of that local path.
 -/
 def PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyPrinciple
     (x₀ : X) (g : HyperbolicMetric X)

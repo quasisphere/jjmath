@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+import Mathlib.CategoryTheory.Sites.GlobalSections
 import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
 import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 import Mathlib.Topology.Compactness.Paracompact
@@ -28,32 +29,6 @@ open Abelian
 universe uC vC w w'
 
 variable {C : Type uC} [Category.{vC} C] {J : GrothendieckTopology C}
-
-/--
-%%handwave
-name:
-  Injective abelian sheaves have no positive cohomology
-statement:
-  If an abelian sheaf is injective in the abelian category of sheaves, then
-  its positive-degree sheaf cohomology groups vanish.
-proof:
-  Sheaf cohomology is defined as an Ext group from the constant integral
-  sheaf.  Positive Ext groups with injective target are zero.
--/
-theorem cohomology_subsingleton_of_injective
-    [HasSheafify J AddCommGrpCat.{w}]
-    [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
-    (F : Sheaf J AddCommGrpCat.{w}) [Injective F]
-    (q : ℕ) (hq : 0 < q) :
-    Subsingleton (F.H q) := by
-  cases q with
-  | zero =>
-      exact (Nat.not_lt_zero 0 hq).elim
-  | succ q =>
-      change Subsingleton
-        (Ext ((constantSheaf J AddCommGrpCat.{w}).obj
-          (AddCommGrpCat.of (ULift.{w} ℤ))) F (q + 1))
-      exact Ext.subsingleton_of_injective _ F q
 
 end Sheaf
 end CategoryTheory
@@ -112,9 +87,6 @@ class IsFine (F : TopCat.Sheaf.{u, w, w + 1} AddCommGrpCat.{w} X) : Prop where
               (∑ i ∈ s,
                 ((Opens.pointGrothendieckTopology x).sheafFiber
                   (A := AddCommGrpCat.{w})).map (φ i)) = 𝟙 _
-
-
-
 
 end Sheaf
 end TopCat

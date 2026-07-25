@@ -40,17 +40,6 @@ def PlaneCriticalValueOn (g : ℂ → ℝ) (U : Set ℂ) (c : ℝ) : Prop :=
 /--
 %%handwave
 name:
-  Plane critical set
-statement:
-  The critical set of a real-valued function on a subset of the complex plane
-  consists of the points of the subset where the real differential vanishes.
--/
-def PlaneCriticalSet (g : ℂ → ℝ) (U : Set ℂ) : Set ℂ :=
-  {z | z ∈ U ∧ fderiv ℝ g z = 0}
-
-/--
-%%handwave
-name:
   Degenerate second derivative at a plane point
 statement:
   A smooth real-valued function has degenerate second derivative at a point of
@@ -144,48 +133,6 @@ theorem planeCriticalValueOn_mono {g : ℂ → ℝ} {S T : Set ℂ}
   intro c hc
   rcases hc with ⟨z, hzS, hgz, hzcrit⟩
   exact ⟨z, hST hzS, hgz, hzcrit⟩
-
-/--
-%%handwave
-name:
-  Second-derivative regular critical values are monotone under restriction
-statement:
-  If one subset of the plane is contained in another, then every critical
-  value attained on the smaller subset at a critical point with nondegenerate
-  second derivative is also attained on the larger subset with the same
-  property.
-proof:
-  The same critical point, value equation, and nondegeneracy condition provide
-  the required witness after applying the inclusion of subsets.
--/
-theorem planeSecondDerivativeRegularCriticalValueOn_mono {g : ℂ → ℝ} {S T : Set ℂ}
-    (hST : S ⊆ T) :
-    {c : ℝ | PlaneSecondDerivativeRegularCriticalValueOn g S c} ⊆
-      {c : ℝ | PlaneSecondDerivativeRegularCriticalValueOn g T c} := by
-  intro c hc
-  rcases hc with ⟨z, hzS, hgz, hzcrit, hzreg⟩
-  exact ⟨z, hST hzS, hgz, hzcrit, hzreg⟩
-
-/--
-%%handwave
-name:
-  Second-derivative degenerate critical values are monotone under restriction
-statement:
-  If one subset of the plane is contained in another, then every critical
-  value attained on the smaller subset at a critical point with degenerate
-  second derivative is also attained on the larger subset with the same
-  property.
-proof:
-  Retain the witnessing critical point and all of its differential properties;
-  only its membership is transported along the inclusion.
--/
-theorem planeSecondDerivativeDegenerateCriticalValueOn_mono {g : ℂ → ℝ} {S T : Set ℂ}
-    (hST : S ⊆ T) :
-    {c : ℝ | PlaneSecondDerivativeDegenerateCriticalValueOn g S c} ⊆
-      {c : ℝ | PlaneSecondDerivativeDegenerateCriticalValueOn g T c} := by
-  intro c hc
-  rcases hc with ⟨z, hzS, hgz, hzcrit, hzdeg⟩
-  exact ⟨z, hST hzS, hgz, hzcrit, hzdeg⟩
 
 /--
 %%handwave
@@ -455,29 +402,6 @@ theorem real_countable_cover_of_fintype_cover {ι : Type*} [Fintype ι]
 /--
 %%handwave
 name:
-  Uniformly bounded finite real covers as countable covers
-statement:
-  If a finite cover has each member bounded by a prescribed extended
-  nonnegative length and the sum of these prescribed lengths is small, then it
-  gives a countable cover with small total length.
-proof:
-  Sum the individual measure bounds over the finite index set, then apply the
-  conversion of a finite-index cover into a countable cover.
--/
-theorem real_countable_cover_of_fintype_cover_of_uniform_volume_bound
-    {ι : Type*} [Fintype ι] {E : Set ℝ} {A : ι → Set ℝ} {η : ENNReal} {ε : ℝ}
-    (hcover : E ⊆ ⋃ i : ι, A i)
-    (hvol : ∀ i : ι, MeasureTheory.volume (A i) ≤ η)
-    (hsum : (∑ _ : ι, η) ≤ ENNReal.ofReal ε) :
-    ∃ B : ℕ → Set ℝ,
-      E ⊆ ⋃ n : ℕ, B n ∧
-        (∑' n : ℕ, MeasureTheory.volume (B n)) ≤ ENNReal.ofReal ε := by
-  exact real_countable_cover_of_fintype_cover hcover
-    ((Finset.sum_le_sum fun i _hi ↦ hvol i).trans hsum)
-
-/--
-%%handwave
-name:
   Length of a centered interval
 statement:
   The Lebesgue measure of the interval centered at a real number with radius
@@ -603,26 +527,6 @@ theorem complex_closedBall_subset_iUnion_sardComplexGridCell
       (real_Icc_subset_iUnion_sardRealGridInterval R hR hM him) with
     ⟨j, hj⟩
   exact Set.mem_iUnion.mpr ⟨(i, j), hi, hj⟩
-
-/--
-%%handwave
-name:
-  Two points in one real grid interval are close
-statement:
-  Two points in the same interval of a uniform grid differ by at most the mesh
-  size.
-proof:
-  Both points lie between the same two endpoints, whose difference is the mesh
-  size; subtracting the endpoint inequalities gives the two-sided bound on
-  their difference.
--/
-theorem real_abs_sub_le_of_mem_sardRealGridInterval
-    {R : ℝ} {M : ℕ} {i : Fin (M + 1)} {x y : ℝ}
-    (hx : x ∈ sardRealGridInterval R M i)
-    (hy : y ∈ sardRealGridInterval R M i) :
-    |x - y| ≤ 2 * R / (M : ℝ) := by
-  rw [abs_sub_le_iff]
-  constructor <;> linarith [hx.1, hx.2, hy.1, hy.2]
 
 /--
 %%handwave
@@ -1128,25 +1032,6 @@ theorem real_image_volume_zero_of_hasDerivWithinAt_zero_sard
 /--
 %%handwave
 name:
-  Subsets of one-dimensional zero-derivative images have zero length
-statement:
-  If a subset of the real line is contained in the image of a set under a
-  real-valued function whose relative derivative vanishes on that set, then
-  the subset has one-dimensional Lebesgue measure zero.
-proof:
-  By [the whole image of a one-variable function with zero relative derivative is null](lean:JJMath.Uniformization.real_image_volume_zero_of_hasDerivWithinAt_zero_sard).  Measure monotonicity then makes every subset of that image null.
--/
-theorem real_subset_image_volume_zero_of_hasDerivWithinAt_zero_sard
-    {E T : Set ℝ} {φ : ℝ → ℝ}
-    (hE : E ⊆ φ '' T)
-    (hφ : ∀ t ∈ T, HasDerivWithinAt φ 0 T t) :
-    MeasureTheory.volume E = 0 := by
-  exact MeasureTheory.measure_mono_null hE
-    (real_image_volume_zero_of_hasDerivWithinAt_zero_sard (φ := φ) (T := T) hφ)
-
-/--
-%%handwave
-name:
   One-dimensional parameter images with zero differential have zero length
 statement:
   If a real-valued function on a one-dimensional real normed vector space has
@@ -1465,69 +1350,6 @@ theorem smoothPlaneFunction_hasStrictFDerivAt_fderiv_apply
     smoothPlaneFunction_hasStrictFDerivAt_fderiv
       (g := g) (U := U) (z := z) hU_open hzU hg_smooth
   simpa [ev, Function.comp_def] using ev.hasStrictFDerivAt.comp z hF
-
-/--
-%%handwave
-name:
-  Quadratic remainder at a zero-Hessian critical point
-statement:
-  If the first and second differentials of a smooth real-valued plane
-  function vanish at a point, then the change in the function is little-oh of
-  the square of the distance to that point.
-proof:
-  On a small convex disk inside the domain, the first differential is
-  little-oh of the distance from the center.  The mean-value Taylor estimate
-  upgrades this to a quadratic little-oh estimate for the function itself.
--/
-theorem smoothPlaneFunction_zeroSecondDerivativeAt_quadratic_remainder_sard
-    {g : ℂ → ℝ} {U : Set ℂ} {z : ℂ}
-    (hU_open : IsOpen U) (hzU : z ∈ U)
-    (hzcrit : fderiv ℝ g z = 0)
-    (hzzero : PlaneSecondDerivativeZeroAt g z)
-    (hg_smooth : ContDiffOn ℝ ∞ g U) :
-    (fun w : ℂ ↦ g w - g z) =o[𝓝 z] fun w : ℂ ↦ ‖w - z‖ ^ 2 := by
-  let F : ℂ → (ℂ →L[ℝ] ℝ) := fun w ↦ fderiv ℝ g w
-  rcases Metric.isOpen_iff.mp hU_open z hzU with ⟨r, hr_pos, hball_subset_U⟩
-  let S : Set ℂ := Metric.ball z r
-  have hzS : z ∈ S := by
-    simp [S, hr_pos]
-  have hS_nhds : S ∈ 𝓝 z := by
-    exact Metric.ball_mem_nhds z hr_pos
-  have hF_deriv0 : HasFDerivAt F (0 : ℂ →L[ℝ] (ℂ →L[ℝ] ℝ)) z := by
-    have hF_strict :=
-      smoothPlaneFunction_hasStrictFDerivAt_fderiv
-        (g := g) (U := U) (z := z) hU_open hzU hg_smooth
-    have hF_at := hF_strict.hasFDerivAt
-    rw [show fderiv ℝ (fun w : ℂ ↦ fderiv ℝ g w) z = 0 by
-      simpa [PlaneSecondDerivativeZeroAt] using hzzero] at hF_at
-    simpa [F] using hF_at
-  have hF_littleO :
-      F =o[𝓝 z] fun w : ℂ ↦ ‖w - z‖ ^ 1 := by
-    have hF0 : F z = 0 := by
-      simpa [F] using hzcrit
-    have hraw :
-        (fun w : ℂ ↦ F w - F z - (0 : ℂ →L[ℝ] (ℂ →L[ℝ] ℝ)) (w - z))
-          =o[𝓝 z] fun w : ℂ ↦ w - z :=
-      hF_deriv0.isLittleO
-    have hF_vec : F =o[𝓝 z] fun w : ℂ ↦ w - z := by
-      simpa [hF0] using hraw
-    simpa [pow_one] using hF_vec.norm_right
-  have hF_littleO_within :
-      F =o[𝓝[S] z] fun w : ℂ ↦ ‖w - z‖ ^ 1 :=
-    hF_littleO.mono nhdsWithin_le_nhds
-  have hg_deriv_on : ∀ w ∈ S, HasFDerivWithinAt g (F w) S w := by
-    intro w hwS
-    have hwU : w ∈ U := hball_subset_U hwS
-    have hg_at : ContDiffAt ℝ ∞ g w :=
-      hg_smooth.contDiffAt (hU_open.mem_nhds hwU)
-    have hgd : HasFDerivAt g (fderiv ℝ g w) w :=
-      (hg_at.differentiableAt (by simp)).hasFDerivAt
-    simpa [F] using hgd.hasFDerivWithinAt (s := S)
-  have hwithin :
-      (fun w : ℂ ↦ g w - g z) =o[𝓝[S] z] fun w : ℂ ↦ ‖w - z‖ ^ (1 + 1) :=
-    (convex_ball z r).isLittleO_pow_succ hzS hg_deriv_on hF_littleO_within
-  have hfilter : 𝓝[S] z = 𝓝 z := nhdsWithin_eq_nhds.mpr hS_nhds
-  simpa [hfilter, one_add_one_eq_two] using hwithin
 
 /--
 %%handwave

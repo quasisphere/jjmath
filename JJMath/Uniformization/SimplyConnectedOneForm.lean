@@ -26,8 +26,16 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [IsManifold SurfaceRealModel ∞ X]
 
-/-- A smooth singular simplex obtained by evaluating a globally smooth real
-curve at an affine combination of the simplex vertices. -/
+/--
+%%handwave
+name: A smooth singular simplex obtained by evaluating a globally smooth real curve at an affine combination of the simplex vertices
+statement:
+  For a smooth curve $\gamma:\mathbb R\to X$ and real parameters
+  $a_0,\ldots,a_k$, define the smooth singular $k$-simplex
+  \[
+    q\longmapsto\gamma\!\left(\sum_{i=0}^k q_i a_i\right).
+  \]
+-/
 noncomputable def smoothCurveAffineSimplex
     {k : ℕ} (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -49,25 +57,11 @@ noncomputable def smoothCurveAffineSimplex
 
 /--
 %%handwave
-name:
-  Value of an affine simplex along a smooth curve
+name: Oriented simplex traced by a smooth curve segment
 statement:
-  The simplex determined by a smooth curve \(\gamma\) and vertex parameters
-  \(a_i\) sends barycentric coordinates \(q\) to
-  \(\gamma(\sum_i q_i a_i)\).
-proof:
-  This is the defining evaluation formula.
+  The oriented smooth one-simplex that follows $\gamma$ from parameter $a$
+  to parameter $b$.
 -/
-@[simp]
-theorem smoothCurveAffineSimplex_apply
-    {k : ℕ} (γ : ℝ → X)
-    (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
-    (a : Fin (k + 1) → ℝ) (q : StandardSimplex k) :
-    smoothCurveAffineSimplex γ hγ a q = γ (∑ i, q i * a i) :=
-  rfl
-
-/-- The oriented smooth one-simplex which follows `γ` from parameter `a`
-to parameter `b`. -/
 noncomputable def smoothCurveSegmentSimplex
     (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -76,8 +70,15 @@ noncomputable def smoothCurveSegmentSimplex
       (I := SurfaceRealModel) (M := X) 1 ∞ :=
   smoothCurveAffineSimplex γ hγ ![a, b]
 
-/-- The degenerate smooth two-simplex used to subdivide a curve at an
-intermediate parameter. -/
+/--
+%%handwave
+name: The degenerate smooth two-simplex used to subdivide a curve at an intermediate parameter
+statement:
+  For a smooth curve $\gamma$ and parameters $a,b,c$, define the degenerate
+  smooth two-simplex
+  $(q_0,q_1,q_2)\mapsto\gamma(q_0a+q_1b+q_2c)$, whose boundary compares the
+  segments $[a,b]$, $[b,c]$, and $[a,c]$.
+-/
 noncomputable def smoothCurveSubdivisionSimplex
     (γ : ℝ → X)
     (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
@@ -268,8 +269,19 @@ theorem contMDiffCodRestrictOpen
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- Restrict a map to an open codomain where possible, and use a fixed
-fallback point elsewhere. -/
+/--
+%%handwave
+name: Restrict a map to an open codomain where possible, and use a fixed fallback point elsewhere
+statement:
+  Given $f:M\to N$, an open set $V\subseteq N$, and $q\in V$, define
+  \[
+    \widetilde f(x)=
+    \begin{cases}
+      f(x)\in V,&f(x)\in V,\\
+      q,&f(x)\notin V.
+    \end{cases}
+  \]
+-/
 noncomputable def fallbackCodRestrictOpen
     {M N : Type*} [TopologicalSpace N]
     (f : M → N) (V : TopologicalSpace.Opens N) (qV : V) : M → V := by
@@ -328,8 +340,14 @@ theorem contMDiffOn_fallbackCodRestrictOpen
     exact hlift.contMDiffAt
   exact (contMDiffAt_subtype_iff (U := W) (x := xW)).mp hsource |>.contMDiffWithinAt
 
-/-- A smooth curve segment regarded as a smooth singular simplex in an open
-subset containing its image. -/
+/--
+%%handwave
+name: A smooth curve segment regarded as a smooth singular simplex in an open subset containing its image
+statement:
+  If the segment
+  $q\mapsto\gamma(q_0a+q_1b)$ lies in an open set $U\subseteq X$, regard it
+  as a smooth singular one-simplex with codomain $U$.
+-/
 noncomputable def smoothCurveSegmentSimplexInOpen
     (U : TopologicalSpace.Opens X) (xU : U)
     (γ : ℝ → X)
@@ -367,31 +385,6 @@ noncomputable def smoothCurveSegmentSimplexInOpen
               else xU) =
             ⟨γ (∑ i : Fin 2, (q : SimplexAmbient 1) i * ![a, b] i), hsegment q⟩
           rw [dif_pos (hsegment q)]⟩ }
-
-/--
-%%handwave
-name:
-  Value of a curve-segment simplex in an open subset
-statement:
-  If a smooth curve segment lies in an open set \(U\), evaluating the simplex
-  regarded in \(U\) and then including into \(X\) gives the original
-  curve-segment simplex.
-proof:
-  Both evaluate the same affine curve parameter.
--/
-@[simp]
-theorem smoothCurveSegmentSimplexInOpen_apply
-    (U : TopologicalSpace.Opens X) (xU : U)
-    (γ : ℝ → X)
-    (hγ : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ γ)
-    (a b : ℝ)
-    (hsegment : ∀ q : StandardSimplex 1,
-      γ (∑ i : Fin 2, (q : SimplexAmbient 1) i * ![a, b] i) ∈ U)
-    (q : StandardSimplex 1) :
-    (smoothCurveSegmentSimplexInOpen U xU γ hγ a b hsegment q : X) =
-      smoothCurveSegmentSimplex γ hγ a b q := by
-  simp [smoothCurveSegmentSimplexInOpen, smoothCurveSegmentSimplex,
-    smoothCurveAffineSimplex]
 
 /--
 %%handwave
@@ -873,8 +866,19 @@ theorem sum_grid_bottom_eq_sum_grid_top
     _ = ∑ j ∈ Finset.range N, top (N - 1) j :=
       hrow (N - 1) (by omega)
 
-/-- Evaluation of a local primitive on a grid cell, with an irrelevant
-fallback value away from its domain. -/
+/--
+%%handwave
+name: Evaluation of a local primitive on a grid cell, with an irrelevant fallback value away from its domain
+statement:
+  For $F:[0,1]^2\to X$ and a local primitive $\theta:U\to\mathbb R$, define
+  \[
+    v(z)=
+    \begin{cases}
+      \theta(F(z)),&F(z)\in U,\\
+      0,&F(z)\notin U.
+    \end{cases}
+  \]
+-/
 noncomputable def primitiveGridValue
     (F : unitInterval × unitInterval → X)
     (U : TopologicalSpace.Opens X)
@@ -1135,7 +1139,14 @@ structure ClosedOneFormLocalPrimitive
       deRhamDifferential (I := SurfaceRealModel) (M := carrier) (A := ℝ) 0
         (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel) primitive)
 
-/-- Choose one local primitive neighborhood at every point. -/
+/--
+%%handwave
+name: Choose one local primitive neighborhood at every point
+statement:
+  For a closed one-form $\omega$ and $x\in X$, choose a coordinate
+  neighborhood $U\ni x$ and a smooth function $\theta:U\to\mathbb R$ with
+  $\omega|_U=d\theta$.
+-/
 noncomputable def chosenClosedOneFormLocalPrimitive
     [RiemannSurface X]
     (omega : DeRhamClosedForms
@@ -1146,8 +1157,13 @@ noncomputable def chosenClosedOneFormLocalPrimitive
       ⟨U, hxU, theta, hexact, _⟩
     exact ⟨⟨U, hxU, theta, hexact⟩⟩)
 
-/-- A globally smooth real curve, restricted to the unit interval, is a
-continuous path. -/
+/--
+%%handwave
+name: A globally smooth real curve, restricted to the unit interval, is a continuous path
+statement:
+  For a smooth curve $\gamma:\mathbb R\to X$, define the continuous path
+  $s\mapsto\gamma(s)$ for $0\le s\le1$, from $\gamma(0)$ to $\gamma(1)$.
+-/
 def smoothCurveUnitPath
     (gamma : ℝ → X)
     (hgamma : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma) :
@@ -1157,24 +1173,6 @@ def smoothCurveUnitPath
       hgamma.continuous.comp continuous_subtype_val⟩
   source' := rfl
   target' := rfl
-
-/--
-%%handwave
-name:
-  Value of the unit path of a smooth curve
-statement:
-  The path obtained by restricting a smooth real curve \(\gamma\) to
-  \([0,1]\) has value \(\gamma(s)\) at every unit-interval parameter \(s\).
-proof:
-  This is its defining evaluation.
--/
-@[simp]
-theorem smoothCurveUnitPath_apply
-    (gamma : ℝ → X)
-    (hgamma : ContMDiff (modelWithCornersSelf ℝ ℝ) SurfaceRealModel ∞ gamma)
-    (s : unitInterval) :
-    smoothCurveUnitPath gamma hgamma s = gamma s :=
-  rfl
 
 /--
 %%handwave
@@ -1416,8 +1414,6 @@ proof:
   cancel around every rectangle and agree along shared edges; the fixed side
   edges contribute zero.  Subdivision of the two smooth boundary curves is
   justified by Stokes' theorem on degenerate two-simplices.
-tags:
-  milestone
 -/
 theorem integrate_smoothCurveSegmentSimplex_eq_of_pathHomotopy
     [RiemannSurface X]
@@ -1625,8 +1621,21 @@ theorem integrate_smoothCurveSegmentSimplex_eq_zero_of_constant
   rw [hpoints, sub_self] at hintegral
   exact hintegral
 
-/-- The explicit smooth concatenation of two sitting curves used below.  The
-switch is made while both curves are constant. -/
+/--
+%%handwave
+name: The explicit smooth concatenation of two sitting curves used below
+statement:
+  For sitting curves $\gamma,\delta:\mathbb R\to X$ with common endpoint,
+  define their rescaled join by
+  \[
+    (\gamma\star\delta)(t)=
+    \begin{cases}
+      \gamma(4t),&4t\le2,\\
+      \delta(4t-3),&4t>2.
+    \end{cases}
+  \]
+  The switch occurs where both curves are constant.
+-/
 def smoothSittingJoin (gamma delta : ℝ → X) : ℝ → X := fun t ↦
   piecewise (Iic (2 : ℝ)) gamma (fun s ↦ delta (s - 3)) (4 * t)
 
@@ -1847,8 +1856,14 @@ structure SmoothSittingCurve (x y : X) where
   eq_source : ∀ t, t ≤ 0 → curve t = x
   eq_target : ∀ t, 1 ≤ t → curve t = y
 
-/-- Choose a sitting smooth curve between any two points of a connected
-surface. -/
+/--
+%%handwave
+name: Choose a sitting smooth curve between any two points of a connected surface
+statement:
+  On a connected surface, choose for every pair $x,y$ a smooth curve
+  $\gamma_{x,y}:\mathbb R\to X$ from $x$ to $y$ that is constant for
+  $t\le0$ and for $t\ge1$.
+-/
 noncomputable def chosenSmoothSittingCurve
     [ConnectedSpace X] (x y : X) : SmoothSittingCurve x y :=
   Classical.choice (by
@@ -1857,38 +1872,14 @@ noncomputable def chosenSmoothSittingCurve
 
 /--
 %%handwave
-name:
-  Source of the chosen sitting curve
+name: The candidate primitive obtained by integrating from a fixed basepoint along a chosen sitting smooth curve
 statement:
-  The chosen sitting smooth curve from \(x\) to \(y\) has value \(x\) at
-  parameter \(0\).
-proof:
-  It is constant at its source on the nonpositive half-line.
+  For a closed one-form $\omega$, a basepoint $x_0$, and the chosen sitting
+  curve $\gamma_{x_0,x}$, define
+  \[
+    F_{x_0}(x)=\int_{\gamma_{x_0,x}}\omega.
+  \]
 -/
-@[simp]
-theorem chosenSmoothSittingCurve_source
-    [ConnectedSpace X] (x y : X) :
-    (chosenSmoothSittingCurve x y).curve 0 = x :=
-  (chosenSmoothSittingCurve x y).eq_source 0 le_rfl
-
-/--
-%%handwave
-name:
-  Target of the chosen sitting curve
-statement:
-  The chosen sitting smooth curve from \(x\) to \(y\) has value \(y\) at
-  parameter \(1\).
-proof:
-  It is constant at its target from parameter one onward.
--/
-@[simp]
-theorem chosenSmoothSittingCurve_target
-    [ConnectedSpace X] (x y : X) :
-    (chosenSmoothSittingCurve x y).curve 1 = y :=
-  (chosenSmoothSittingCurve x y).eq_target 1 le_rfl
-
-/-- The candidate primitive obtained by integrating from a fixed basepoint
-along a chosen sitting smooth curve. -/
 noncomputable def closedOneFormPathPrimitive
     [RiemannSurface X]
     (omega : DeRhamClosedForms
@@ -2046,7 +2037,14 @@ theorem closedOneFormPathPrimitive_contMDiff
       offset, xU, xV, yV] using hformula
   exact hlocalAt.congr_of_eventuallyEq heq
 
-/-- The smooth function obtained from the path integral. -/
+/--
+%%handwave
+name: The smooth function obtained from the path integral
+statement:
+  On a simply connected Riemann surface, bundle
+  $x\mapsto\int_{\gamma_{x_0,x}}\omega$ as a globally smooth real-valued
+  function.
+-/
 noncomputable def closedOneFormPathPrimitiveSmooth
     [RiemannSurface X] [SimplyConnectedSpace X]
     (omega : DeRhamClosedForms
@@ -2183,8 +2181,6 @@ proof:
   local primitive neighborhood the resulting function differs from the local
   primitive by a constant, so it is smooth and has the prescribed
   differential.
-tags:
-  milestone
 -/
 theorem simplyConnected_surface_closedOneForm_has_primitive
     [RiemannSurface X] [SimplyConnectedSpace X]

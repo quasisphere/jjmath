@@ -237,32 +237,6 @@ theorem exists_primitive_of_compactSupport_transport_along_paths_with_support
     intro hyW
     exact hy (mem_iUnion.mpr ⟨n, hyW⟩)
 
-/-- A locally finite sequence of path corridors transports every compactly
-supported initial two-form to infinity and therefore gives it a global
-primitive.
-
-%%handwave
-name: Primitive from transport through locally finite corridors
-statement:
-  Under the same locally finite path-transport hypotheses, the initial compactly supported two-form is globally exact.
-proof:
-  Apply the supported primitive theorem and discard its support conclusion.
--/
-theorem exists_primitive_of_compactSupport_transport_along_paths
-    (W : ℕ → TopologicalSpace.Opens X) (x : ℕ → X)
-    (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
-    (hgamma : ∀ n : ℕ, ∀ t : unitInterval, gamma n t ∈ W n)
-    (hxnext : ∀ n : ℕ, x (n + 1) ∈ W (n + 1))
-    (hlocW : LocallyFinite (fun n ↦ closure (W n : Set X)))
-    (initial : CompactSupportTransportState W x 0) :
-    ∃ theta : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1,
-      deRhamDifferential (I := SurfaceRealModel) (M := X) (A := ℝ) 1 theta =
-        initial.form := by
-  rcases exists_primitive_of_compactSupport_transport_along_paths_with_support
-      W x gamma hgamma hxnext hlocW initial with
-    ⟨theta, htheta, _hsupport⟩
-  exact ⟨theta, htheta⟩
-
 end
 
 end JJMath.Uniformization

@@ -48,60 +48,6 @@ noncomputable def surfaceMetricWeakGradientCoordinatePairingInChart {X : Type}
 /--
 %%handwave
 name:
-  Additivity of the coordinate weak-gradient pairing
-statement:
-  In a surface chart, the inverse-metric contraction is additive in its
-  cotangent argument:
-  \(\langle\xi_1+\xi_2,d\eta\rangle_g
-    =\langle\xi_1,d\eta\rangle_g+\langle\xi_2,d\eta\rangle_g\).
-proof:
-  Expand the finite inverse-metric contraction, use linearity of the
-  cotangent vectors, and distribute both finite sums.
--/
-private theorem surfaceMetricWeakGradientCoordinatePairingInChart_add_left
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    (g : BackgroundSurfaceMetricOnSurface X)
-    (e : OpenPartialHomeomorph X ℂ) (z : ℂ)
-    (ξ₁ ξ₂ : ℂ →L[ℝ] ℝ) (dη : ℂ →L[ℝ] ℝ) :
-    surfaceMetricWeakGradientCoordinatePairingInChart g e z (ξ₁ + ξ₂) dη =
-      surfaceMetricWeakGradientCoordinatePairingInChart g e z ξ₁ dη +
-        surfaceMetricWeakGradientCoordinatePairingInChart g e z ξ₂ dη := by
-  simp only [surfaceMetricWeakGradientCoordinatePairingInChart,
-    ContinuousLinearMap.add_apply]
-  calc
-    ∑ i : Fin 2, ∑ j : Fin 2,
-        surfaceMetricInverseGramCoeffInChart g.metric e z i j *
-            (ξ₁ (surfaceChartTangentMap e z (complexCoordinateVector i)) +
-              ξ₂ (surfaceChartTangentMap e z (complexCoordinateVector i))) *
-          dη (complexCoordinateVector j)
-        = ∑ i : Fin 2,
-            ((∑ j : Fin 2,
-                surfaceMetricInverseGramCoeffInChart g.metric e z i j *
-                    ξ₁ (surfaceChartTangentMap e z (complexCoordinateVector i)) *
-                  dη (complexCoordinateVector j)) +
-              (∑ j : Fin 2,
-                surfaceMetricInverseGramCoeffInChart g.metric e z i j *
-                    ξ₂ (surfaceChartTangentMap e z (complexCoordinateVector i)) *
-                  dη (complexCoordinateVector j))) := by
-            apply Finset.sum_congr rfl
-            intro i _hi
-            rw [← Finset.sum_add_distrib]
-            apply Finset.sum_congr rfl
-            intro j _hj
-            ring
-    _ = (∑ i : Fin 2, ∑ j : Fin 2,
-            surfaceMetricInverseGramCoeffInChart g.metric e z i j *
-                ξ₁ (surfaceChartTangentMap e z (complexCoordinateVector i)) *
-              dη (complexCoordinateVector j)) +
-          (∑ i : Fin 2, ∑ j : Fin 2,
-            surfaceMetricInverseGramCoeffInChart g.metric e z i j *
-                ξ₂ (surfaceChartTangentMap e z (complexCoordinateVector i)) *
-              dη (complexCoordinateVector j)) := by
-            rw [Finset.sum_add_distrib]
-
-/--
-%%handwave
-name:
   Intrinsic local Sobolev regularity on a surface
 statement:
   A function is locally \(W^{1,2}\) on a surface region if its distributional
@@ -121,313 +67,6 @@ def IsIntrinsicLocalSobolevH1OnSurface {X : Type}
         SurfaceDifferentialFieldMemHilbertSchmidtL2 g.metric
           (g.volume.restrict K)
           (SurfaceCotangentField.ofCoordinateField du)
-
-/--
-%%handwave
-name:
-  Intrinsic local Sobolev regularity restricts to smaller regions
-statement:
-  If a function is locally \(W^{1,2}\) on a surface region, then it is locally
-  \(W^{1,2}\) on every smaller region, with the same weak gradient.
-proof:
-  Weak gradients restrict to smaller regions, and compact subsets of the
-  smaller region are compact subsets of the larger region.
--/
-theorem IsIntrinsicLocalSobolevH1OnSurface.mono_set {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {V U : Set X}
-    {u : X → ℝ} {du : X → ℂ →L[ℝ] ℝ}
-    (hlocal : IsIntrinsicLocalSobolevH1OnSurface g U u du)
-    (hVU : V ⊆ U) :
-    IsIntrinsicLocalSobolevH1OnSurface g V u du := by
-  refine ⟨hlocal.1.mono_set hVU, ?_⟩
-  intro K hK hKV
-  exact hlocal.2 K hK (hKV.trans hVU)
-
-/--
-%%handwave
-name:
-  Addition of square-integrable surface cotangent fields
-statement:
-  If two measurable cotangent fields on a Riemannian surface have
-  square-integrable Hilbert--Schmidt norm with respect to \(\mu\), then their
-  pointwise sum does as well.
-proof:
-  Regard the fields as sections of the Hilbert bundle of differentials. Their
-  coordinate-field sum is fiberwise addition, and \(L^2\) Hilbert-bundle
-  sections are closed under addition.
--/
-private theorem surfaceCotangentFieldMemHilbertSchmidtL2_add
-    {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [MeasurableEq X] [IsManifold SurfaceRealModel 1 X]
-    [SecondCountableTopology (SurfaceDifferentialTotalSpace X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace (SurfaceDifferentialTotalSpace X ℝ)]
-    {g : SmoothRiemannianMetricOnSurface X} {μ : Measure X}
-    {du dv : X → ℂ →L[ℝ] ℝ}
-    (hdu :
-      SurfaceDifferentialFieldMemHilbertSchmidtL2 g μ
-        (SurfaceCotangentField.ofCoordinateField du))
-    (hdv :
-      SurfaceDifferentialFieldMemHilbertSchmidtL2 g μ
-        (SurfaceCotangentField.ofCoordinateField dv)) :
-    SurfaceDifferentialFieldMemHilbertSchmidtL2 g μ
-      (SurfaceCotangentField.ofCoordinateField (du + dv)) := by
-  let G :=
-    manifoldDifferentialHilbertBundleGeometry
-      (I := SurfaceRealModel) (X := X) (E := ℝ) g.toManifoldMetric
-  let metric :=
-    manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (I := SurfaceRealModel) (X := X) (E := ℝ) g.toManifoldMetric
-  letI : Bundle.RiemannianBundle
-      (ManifoldDifferentialBundleFiber
-        (I := SurfaceRealModel) (X := X) (E := ℝ)) :=
-    ⟨metric.toRiemannianMetric⟩
-  letI (x : X) :
-      NormedAddCommGroup
-        (ManifoldDifferentialBundleFiber
-          (I := SurfaceRealModel) (X := X) (E := ℝ) x) :=
-    manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-      (I := SurfaceRealModel) (X := X) (E := ℝ) metric x
-  letI (x : X) :
-      InnerProductSpace ℝ
-        (ManifoldDifferentialBundleFiber
-          (I := SurfaceRealModel) (X := X) (E := ℝ) x) :=
-    manifoldDifferentialHilbertSchmidtInnerProductSpace
-      (I := SurfaceRealModel) (X := X) (E := ℝ) metric x
-  have hG_inner :
-      ∀ (x : X)
-        (A B : ManifoldDifferentialBundleFiber
-          (I := SurfaceRealModel) (X := X) (E := ℝ) x),
-        G.fiberInner x A B = inner ℝ A B := by
-    intro x A B
-    rfl
-  have hadd :
-      HilbertBundleSectionMemL2 G μ
-        (SurfaceCotangentField.ofCoordinateField du +
-          SurfaceCotangentField.ofCoordinateField dv) :=
-    hilbertBundleSectionMemL2_add
-      (I := SurfaceRealModel) (G := G) hG_inner μ hdu hdv
-  simpa [SurfaceDifferentialFieldMemHilbertSchmidtL2,
-    ManifoldDifferentialFieldMemHilbertSchmidtL2,
-    SurfaceCotangentField.ofCoordinateField, Pi.add_apply, G] using hadd
-
-/--
-%%handwave
-name:
-  Weak Laplace-Beltrami equation with source
-statement:
-  A locally \(W^{1,2}\) function satisfies the weak Laplace-Beltrami equation
-  with source \(F\) on an open surface region if its weak gradient satisfies
-  the integration-by-parts identity against every compactly supported smooth
-  test function whose support lies in the region.
--/
-def IsWeakLaplaceBeltramiSourceOnSurface {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    (g : BackgroundSurfaceMetricOnSurface X) (U : Set X)
-    (u F : X → ℝ) : Prop :=
-  IsOpen U ∧
-    ∃ du : X → ℂ →L[ℝ] ℝ,
-      IsIntrinsicLocalSobolevH1OnSurface g U u du ∧
-        ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-          ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction
-              (surfaceChartRegion e U),
-            Integrable
-                (fun z ↦
-                  surfaceMetricWeakGradientCoordinatePairingInChart g e z
-                    (du (e.symm z))
-                    (fderiv ℝ (η : ℂ → ℝ) z) *
-                      surfaceMetricVolumeDensityInChart g.metric e z)
-                (MeasureTheory.volume.restrict (surfaceChartRegion e U)) ∧
-              Integrable
-                (fun z ↦
-                  F (e.symm z) * η z *
-                    surfaceMetricVolumeDensityInChart g.metric e z)
-                (MeasureTheory.volume.restrict (surfaceChartRegion e U)) ∧
-                ∫ z in surfaceChartRegion e U,
-                    surfaceMetricWeakGradientCoordinatePairingInChart g e z
-                      (du (e.symm z))
-                      (fderiv ℝ (η : ℂ → ℝ) z) *
-                        surfaceMetricVolumeDensityInChart g.metric e z
-                    ∂MeasureTheory.volume =
-                  -∫ z in surfaceChartRegion e U,
-                    F (e.symm z) * η z *
-                      surfaceMetricVolumeDensityInChart g.metric e z
-                    ∂MeasureTheory.volume
-
-/--
-%%handwave
-name:
-  Weak Laplace-Beltrami source equations restrict to smaller regions
-statement:
-  A weak Laplace-Beltrami equation on an open surface region remains valid on
-  every smaller open surface region, with the same weak gradient and source.
-proof:
-  A compactly supported coordinate test in the smaller region is also a test
-  in the larger region.  The test and its derivative vanish outside the
-  smaller coordinate region, so the chart integrals over the larger and
-  smaller regions agree.
--/
-theorem IsWeakLaplaceBeltramiSourceOnSurface.mono_set {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {V U : Set X}
-    {u F : X → ℝ}
-    (hweak : IsWeakLaplaceBeltramiSourceOnSurface g U u F)
-    (hV_open : IsOpen V) (hVU : V ⊆ U) :
-    IsWeakLaplaceBeltramiSourceOnSurface g V u F := by
-  rcases hweak with ⟨_hU_open, du, hlocal, htest⟩
-  refine ⟨hV_open, du, hlocal.mono_set hVU, ?_⟩
-  intro e he η
-  let ΩV : Set ℂ := surfaceChartRegion e V
-  let ΩU : Set ℂ := surfaceChartRegion e U
-  have hΩVU : ΩV ⊆ ΩU := by
-    intro z hz
-    exact ⟨hz.1, hVU hz.2⟩
-  let ψ : SmoothCompactlySupportedManifoldCoordinateFunction ΩU :=
-    η.mono hΩVU
-  rcases htest e he ψ with ⟨hgradΩ, hsourceΩ, heqΩ⟩
-  let gradTerm : ℂ → ℝ :=
-    fun z ↦
-      surfaceMetricWeakGradientCoordinatePairingInChart g e z
-        (du (e.symm z))
-        (fderiv ℝ (η : ℂ → ℝ) z) *
-          surfaceMetricVolumeDensityInChart g.metric e z
-  let sourceTerm : ℂ → ℝ :=
-    fun z ↦
-      F (e.symm z) * η z *
-        surfaceMetricVolumeDensityInChart g.metric e z
-  have hgrad_int_V :
-      Integrable gradTerm (MeasureTheory.volume.restrict ΩV) := by
-    have hres := hgradΩ.restrict (s := ΩV)
-    simpa [gradTerm, ψ, ΩV, ΩU,
-      Measure.restrict_restrict_of_subset hΩVU] using hres
-  have hsource_int_V :
-      Integrable sourceTerm (MeasureTheory.volume.restrict ΩV) := by
-    have hres := hsourceΩ.restrict (s := ΩV)
-    simpa [sourceTerm, ψ, ΩV, ΩU,
-      Measure.restrict_restrict_of_subset hΩVU] using hres
-  have hgrad_zero_V : ∀ z : ℂ, z ∉ ΩV → gradTerm z = 0 := by
-    intro z hzV
-    have hdη_zero : fderiv ℝ (η : ℂ → ℝ) z = 0 := by
-      ext v
-      have hz_not :
-          z ∉ tsupport (fun y : ℂ ↦ fderiv ℝ (η : ℂ → ℝ) y v) := by
-        intro hz
-        exact hzV <| η.support_subset <|
-          (tsupport_fderiv_apply_subset (𝕜 := ℝ)
-            (f := (η : ℂ → ℝ)) v) hz
-      exact
-        image_eq_zero_of_notMem_tsupport
-          (f := fun y : ℂ ↦ fderiv ℝ (η : ℂ → ℝ) y v) hz_not
-    simp [gradTerm, hdη_zero, surfaceMetricWeakGradientCoordinatePairingInChart]
-  have hsource_zero_V : ∀ z : ℂ, z ∉ ΩV → sourceTerm z = 0 := by
-    intro z hzV
-    have hz_not : z ∉ tsupport (η : ℂ → ℝ) := by
-      intro hz
-      exact hzV (η.support_subset hz)
-    have hη_zero : η z = 0 := image_eq_zero_of_notMem_tsupport hz_not
-    simp [sourceTerm, hη_zero]
-  have hgrad_zero_U : ∀ z : ℂ, z ∉ ΩU → gradTerm z = 0 := by
-    intro z hzU
-    exact hgrad_zero_V z (fun hzV ↦ hzU (hΩVU hzV))
-  have hsource_zero_U : ∀ z : ℂ, z ∉ ΩU → sourceTerm z = 0 := by
-    intro z hzU
-    exact hsource_zero_V z (fun hzV ↦ hzU (hΩVU hzV))
-  have hgrad_V_eq_U :
-      ∫ z in ΩV, gradTerm z ∂MeasureTheory.volume =
-        ∫ z in ΩU, gradTerm z ∂MeasureTheory.volume := by
-    rw [setIntegral_eq_integral_of_forall_compl_eq_zero hgrad_zero_V,
-      setIntegral_eq_integral_of_forall_compl_eq_zero hgrad_zero_U]
-  have hsource_V_eq_U :
-      ∫ z in ΩV, sourceTerm z ∂MeasureTheory.volume =
-        ∫ z in ΩU, sourceTerm z ∂MeasureTheory.volume := by
-    rw [setIntegral_eq_integral_of_forall_compl_eq_zero hsource_zero_V,
-      setIntegral_eq_integral_of_forall_compl_eq_zero hsource_zero_U]
-  refine ⟨?_, ?_, ?_⟩
-  · simpa [gradTerm, ΩV] using hgrad_int_V
-  · simpa [sourceTerm, ΩV] using hsource_int_V
-  · calc
-      ∫ z in surfaceChartRegion e V,
-          surfaceMetricWeakGradientCoordinatePairingInChart g e z
-            (du (e.symm z))
-            (fderiv ℝ (η : ℂ → ℝ) z) *
-              surfaceMetricVolumeDensityInChart g.metric e z
-          ∂MeasureTheory.volume
-          = ∫ z in ΩV, gradTerm z ∂MeasureTheory.volume := rfl
-      _ = ∫ z in ΩU, gradTerm z ∂MeasureTheory.volume := hgrad_V_eq_U
-      _ = -∫ z in ΩU, sourceTerm z ∂MeasureTheory.volume := by
-            simpa [gradTerm, sourceTerm, ψ, ΩU] using heqΩ
-      _ = -∫ z in ΩV, sourceTerm z ∂MeasureTheory.volume := by
-            rw [hsource_V_eq_U]
-      _ = -∫ z in surfaceChartRegion e V,
-          F (e.symm z) * η z *
-            surfaceMetricVolumeDensityInChart g.metric e z
-          ∂MeasureTheory.volume := rfl
-
-/--
-%%handwave
-name:
-  Weak Laplace-Beltrami sources may be changed on the region
-statement:
-  If two source functions agree on the open region of a weak
-  Laplace-Beltrami equation, either source may be used in the weak equation.
-proof:
-  In each chart region the pulled-back source terms agree pointwise, hence
-  almost everywhere, so their integrability and integrals are identical.
--/
-theorem IsWeakLaplaceBeltramiSourceOnSurface.congr_source {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X}
-    {u F F' : X → ℝ}
-    (hweak : IsWeakLaplaceBeltramiSourceOnSurface g U u F)
-    (hFF' : ∀ x ∈ U, F x = F' x) :
-    IsWeakLaplaceBeltramiSourceOnSurface g U u F' := by
-  rcases hweak with ⟨hU_open, du, hlocal, htest⟩
-  refine ⟨hU_open, du, hlocal, ?_⟩
-  intro e he η
-  rcases htest e he η with ⟨hgrad, hsource, heq⟩
-  let Ω : Set ℂ := surfaceChartRegion e U
-  let sourceTerm : ℂ → ℝ :=
-    fun z ↦
-      F (e.symm z) * η z *
-        surfaceMetricVolumeDensityInChart g.metric e z
-  let sourceTerm' : ℂ → ℝ :=
-    fun z ↦
-      F' (e.symm z) * η z *
-        surfaceMetricVolumeDensityInChart g.metric e z
-  have hΩ_meas : MeasurableSet Ω := by
-    simpa [Ω, surfaceChartRegion] using
-      (e.isOpen_inter_preimage_symm hU_open).measurableSet
-  have hsource_ae :
-      sourceTerm =ᵐ[MeasureTheory.volume.restrict Ω] sourceTerm' := by
-    refine ae_restrict_of_forall_mem hΩ_meas ?_
-    intro z hz
-    have hxU : e.symm z ∈ U := by
-      simpa [Ω, surfaceChartRegion] using hz.2
-    simp [sourceTerm, sourceTerm', hFF' (e.symm z) hxU]
-  refine ⟨hgrad, ?_, ?_⟩
-  · exact hsource.congr hsource_ae
-  · calc
-      ∫ z in surfaceChartRegion e U,
-          surfaceMetricWeakGradientCoordinatePairingInChart g e z
-            (du (e.symm z))
-            (fderiv ℝ (η : ℂ → ℝ) z) *
-              surfaceMetricVolumeDensityInChart g.metric e z
-          ∂MeasureTheory.volume
-          = -∫ z in surfaceChartRegion e U,
-              F (e.symm z) * η z *
-                surfaceMetricVolumeDensityInChart g.metric e z
-              ∂MeasureTheory.volume := heq
-      _ = -∫ z in surfaceChartRegion e U,
-              F' (e.symm z) * η z *
-                surfaceMetricVolumeDensityInChart g.metric e z
-              ∂MeasureTheory.volume := by
-            congr 1
-            exact integral_congr_ae hsource_ae
 
 /--
 %%handwave
@@ -462,94 +101,6 @@ def IsWeaklyHarmonicOnSurface {X : Type}
                     (fderiv ℝ (η : ℂ → ℝ) z) *
                       surfaceMetricVolumeDensityInChart g.metric e z
                   ∂MeasureTheory.volume = 0
-
-/--
-%%handwave
-name:
-  Weakly harmonic regions are open
-statement:
-  The region in the definition of weak harmonicity is open.
-proof:
-  This is the openness component stored in the definition of weak harmonicity.
--/
-theorem IsWeaklyHarmonicOnSurface.isOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hweak : IsWeaklyHarmonicOnSurface g U u) :
-    IsOpen U :=
-  hweak.1
-
-/--
-%%handwave
-name:
-  Weakly harmonic functions have local Sobolev representatives
-statement:
-  A weakly harmonic function carries a chosen locally \(W^{1,2}\) weak
-  gradient satisfying the zero-source test identity.
-proof:
-  This is the locally Sobolev weak-gradient field and zero-source identity supplied by the definition of weak harmonicity.
--/
-theorem IsWeaklyHarmonicOnSurface.exists_localSobolev_gradient
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hweak : IsWeaklyHarmonicOnSurface g U u) :
-    ∃ du : X → ℂ →L[ℝ] ℝ,
-      IsIntrinsicLocalSobolevH1OnSurface g U u du ∧
-        ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-          ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction
-              (surfaceChartRegion e U),
-            Integrable
-                (fun z ↦
-                  surfaceMetricWeakGradientCoordinatePairingInChart g e z
-                    (du (e.symm z))
-                    (fderiv ℝ (η : ℂ → ℝ) z) *
-                      surfaceMetricVolumeDensityInChart g.metric e z)
-                (MeasureTheory.volume.restrict (surfaceChartRegion e U)) ∧
-              ∫ z in surfaceChartRegion e U,
-                  surfaceMetricWeakGradientCoordinatePairingInChart g e z
-                    (du (e.symm z))
-                    (fderiv ℝ (η : ℂ → ℝ) z) *
-                      surfaceMetricVolumeDensityInChart g.metric e z
-                  ∂MeasureTheory.volume = 0 :=
-  hweak.2
-
-/--
-%%handwave
-name:
-  Zero-source weak equations are weakly harmonic
-statement:
-  A weak Laplace-Beltrami equation whose source is identically zero is a
-  weak harmonic equation.
-proof:
-  The source term in the weak integration-by-parts identity is the integral
-  of the zero function, hence vanishes.
--/
-theorem weaklyHarmonicOnSurface_of_weakLaplaceBeltramiSource_zero
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hweak :
-      IsWeakLaplaceBeltramiSourceOnSurface g U u (fun _ : X ↦ 0)) :
-    IsWeaklyHarmonicOnSurface g U u := by
-  rcases hweak with ⟨hU_open, du, hlocal, htest⟩
-  refine ⟨hU_open, du, hlocal, ?_⟩
-  intro e he η
-  rcases htest e he η with ⟨hgrad, _hsource, hzero⟩
-  refine ⟨hgrad, ?_⟩
-  calc
-    ∫ z in surfaceChartRegion e U,
-        surfaceMetricWeakGradientCoordinatePairingInChart g e z
-          (du (e.symm z))
-          (fderiv ℝ (η : ℂ → ℝ) z) *
-            surfaceMetricVolumeDensityInChart g.metric e z
-        ∂MeasureTheory.volume
-        = -∫ z in surfaceChartRegion e U,
-          (fun _ : X ↦ 0) (e.symm z) * η z *
-            surfaceMetricVolumeDensityInChart g.metric e z
-          ∂MeasureTheory.volume := hzero
-    _ = 0 := by simp
 
 /--
 %%handwave
@@ -1037,168 +588,6 @@ private theorem euclidean_derivativeKernel_zero_of_notMem_cthickening
 /--
 %%handwave
 name:
-  Mollified weak gradients have zero Euclidean divergence
-statement:
-  If a reflected mollifier stays inside a Euclidean weakly harmonic region, then
-  the two coordinate convolutions of the weak gradient have zero classical
-  divergence at the center.
-proof:
-  Insert the reflected mollifier into the weak zero-divergence identity.  The
-  derivative of \(y\mapsto\varphi(z-y)\) is \(-D\varphi(z-y)\).  Splitting the
-  two coordinate integrals and identifying them with derivatives of convolution
-  gives the desired zero divergence.
--/
-theorem euclideanWeakHarmonic_mollifiedWeakGradient_divergence_eq_zero
-    {Q Ω : Set ℂ} {φ : ContDiffBump (0 : ℂ)}
-    (hthickening : Metric.cthickening φ.rOut Q ⊆ Ω)
-    {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hdu_one_int : Integrable (fun z : ℂ ↦ du z (1 : ℂ))
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_int : Integrable (fun z : ℂ ↦ du z Complex.I)
-      (MeasureTheory.volume : Measure ℂ)) :
-    ∀ z ∈ Q,
-      fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y (1 : ℂ)) : ℂ → ℝ) z (1 : ℂ) +
-        fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y Complex.I) : ℂ → ℝ) z Complex.I = 0 := by
-  intro z hzQ
-  let k : ℂ → ℝ := φ.normed (MeasureTheory.volume : Measure ℂ)
-  have hweak :=
-    euclideanWeakHarmonic_reflectedMollifier_zeroDivergence
-      hthickening hzero z hzQ
-  have hD_one :
-      fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y (1 : ℂ)) : ℂ → ℝ) z (1 : ℂ) =
-        ∫ y : ℂ,
-          fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ)
-          ∂(MeasureTheory.volume : Measure ℂ) := by
-    calc
-      fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y (1 : ℂ)) : ℂ → ℝ) z (1 : ℂ)
-          =
-          ((((fderiv ℝ (φ.normed (MeasureTheory.volume : Measure ℂ))) ⋆[
-            (lsmul ℝ ℝ).precompL ℂ,
-            (MeasureTheory.volume : Measure ℂ)] (fun y : ℂ ↦ du y (1 : ℂ)) :
-            ℂ → ℂ →L[ℝ] ℝ) z) (1 : ℂ)) :=
-            euclidean_fderiv_normed_convolution_apply_eq_derivativeKernel
-              φ hdu_one_int z (1 : ℂ)
-      _ = ∫ y : ℂ,
-            fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ)
-            ∂(MeasureTheory.volume : Measure ℂ) := by
-          simpa [k] using
-            euclidean_derivativeKernel_convolution_apply_eq_integral
-              φ hdu_one_int z (1 : ℂ)
-  have hD_I :
-      fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y Complex.I) : ℂ → ℝ) z Complex.I =
-        ∫ y : ℂ,
-          fderiv ℝ k (z - y) Complex.I * du y Complex.I
-          ∂(MeasureTheory.volume : Measure ℂ) := by
-    calc
-      fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y Complex.I) : ℂ → ℝ) z Complex.I
-          =
-          ((((fderiv ℝ (φ.normed (MeasureTheory.volume : Measure ℂ))) ⋆[
-            (lsmul ℝ ℝ).precompL ℂ,
-            (MeasureTheory.volume : Measure ℂ)] (fun y : ℂ ↦ du y Complex.I) :
-            ℂ → ℂ →L[ℝ] ℝ) z) Complex.I) :=
-            euclidean_fderiv_normed_convolution_apply_eq_derivativeKernel
-              φ hdu_I_int z Complex.I
-      _ = ∫ y : ℂ,
-            fderiv ℝ k (z - y) Complex.I * du y Complex.I
-            ∂(MeasureTheory.volume : Measure ℂ) := by
-          simpa [k] using
-            euclidean_derivativeKernel_convolution_apply_eq_integral
-              φ hdu_I_int z Complex.I
-  have hint_one :
-      Integrable
-        (fun y : ℂ ↦ fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ))
-        (MeasureTheory.volume : Measure ℂ) := by
-    simpa [k] using
-      euclidean_derivativeKernel_mul_integrable
-        φ hdu_one_int z (1 : ℂ)
-  have hint_I :
-      Integrable
-        (fun y : ℂ ↦ fderiv ℝ k (z - y) Complex.I * du y Complex.I)
-        (MeasureTheory.volume : Measure ℂ) := by
-    simpa [k] using
-      euclidean_derivativeKernel_mul_integrable
-        φ hdu_I_int z Complex.I
-  have hraw_neg_zero :
-      ∫ y : ℂ,
-          (-(du y (1 : ℂ) * fderiv ℝ k (z - y) (1 : ℂ)) +
-            -(du y Complex.I * fderiv ℝ k (z - y) Complex.I))
-          ∂(MeasureTheory.volume : Measure ℂ) = 0 := by
-    simpa [k, euclideanCotangentPairing,
-      euclidean_reflectedKernel_fderiv_apply] using hweak
-  have hsum_neg_zero :
-      ∫ y : ℂ,
-          - (fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ) +
-            fderiv ℝ k (z - y) Complex.I * du y Complex.I)
-          ∂(MeasureTheory.volume : Measure ℂ) = 0 := by
-    convert hraw_neg_zero using 2
-    funext y
-    ring_nf
-  have hsum_zero :
-      ∫ y : ℂ,
-          (fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ) +
-            fderiv ℝ k (z - y) Complex.I * du y Complex.I)
-          ∂(MeasureTheory.volume : Measure ℂ) = 0 := by
-    have hsum_int := hint_one.add hint_I
-    rw [integral_neg (f := fun y : ℂ ↦
-      fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ) +
-        fderiv ℝ k (z - y) Complex.I * du y Complex.I)] at hsum_neg_zero
-    linarith
-  calc
-    fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y (1 : ℂ)) : ℂ → ℝ) z (1 : ℂ) +
-        fderiv ℝ
-          (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-            (MeasureTheory.volume : Measure ℂ)]
-            (fun y : ℂ ↦ du y Complex.I) : ℂ → ℝ) z Complex.I
-        =
-        ∫ y : ℂ,
-          fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ)
-          ∂(MeasureTheory.volume : Measure ℂ) +
-        ∫ y : ℂ,
-          fderiv ℝ k (z - y) Complex.I * du y Complex.I
-          ∂(MeasureTheory.volume : Measure ℂ) := by
-          rw [hD_one, hD_I]
-    _ =
-        ∫ y : ℂ,
-          (fderiv ℝ k (z - y) (1 : ℂ) * du y (1 : ℂ) +
-            fderiv ℝ k (z - y) Complex.I * du y Complex.I)
-          ∂(MeasureTheory.volume : Measure ℂ) := by
-          rw [integral_add hint_one hint_I]
-    _ = 0 := hsum_zero
-
-/--
-%%handwave
-name:
   Localized mollified weak gradients have zero Euclidean divergence
 statement:
   If a cutoff is equal to one on a region containing the reflected mollifier
@@ -1464,110 +853,6 @@ private theorem euclidean_gradientDivergence_eq_laplacian
 /--
 %%handwave
 name:
-  Mollifications of weakly harmonic functions have zero Laplacian
-statement:
-  On a compact neighborhood where the mollifier support remains in the weakly
-  harmonic region, the mollification has vanishing classical Euclidean
-  Laplacian at the center.
-proof:
-  The first derivatives of the mollification agree near the center with the
-  convolutions of the two weak-gradient components.  The weak zero-divergence
-  identity gives zero divergence for those convolutions, and the Euclidean
-  formula for the Laplacian identifies this divergence with the Laplacian of
-  the mollification.
--/
-theorem euclideanMollification_laplacian_eq_zero_of_weaklyHarmonicOn_compact_nhds
-    {Q Ω : Set ℂ} (hQ : IsCompact Q) {z : ℂ} (hQ_nhds : Q ∈ 𝓝 z)
-    {φ : ContDiffBump (0 : ℂ)}
-    (hthickening : Metric.cthickening φ.rOut Q ⊆ Ω)
-    {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hu_int : Integrable u (MeasureTheory.volume : Measure ℂ))
-    (hdu_one_int : Integrable (fun z : ℂ ↦ du z (1 : ℂ))
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_int : Integrable (fun z : ℂ ↦ du z Complex.I)
-      (MeasureTheory.volume : Measure ℂ)) :
-    Laplacian.laplacian (euclideanMollification φ u) z = 0 := by
-  let m : ℂ → ℝ := euclideanMollification φ u
-  let convOne : ℂ → ℝ :=
-    (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-      (MeasureTheory.volume : Measure ℂ)]
-      (fun y : ℂ ↦ du y (1 : ℂ)) : ℂ → ℝ)
-  let convI : ℂ → ℝ :=
-    (φ.normed (MeasureTheory.volume : Measure ℂ) ⋆[lsmul ℝ ℝ,
-      (MeasureTheory.volume : Measure ℂ)]
-      (fun y : ℂ ↦ du y Complex.I) : ℂ → ℝ)
-  have hm_smooth : ContDiff ℝ ∞ m := by
-    simpa [m] using euclideanMollification_contDiff φ hu_int.locallyIntegrable
-  have hm_two : ContDiffAt ℝ 2 m z :=
-    (hm_smooth.contDiffAt).of_le
-      (by
-        change ((2 : ℕ∞) : WithTop ℕ∞) ≤ ((⊤ : ℕ∞) : WithTop ℕ∞)
-        exact WithTop.coe_le_coe.2 le_top)
-  have hdir_one :
-      ∀ w ∈ Q, fderiv ℝ m w (1 : ℂ) = convOne w := by
-    intro w hw
-    simpa [m, convOne] using
-      euclideanMollification_directionalDerivative_eq_convolution_weakDerivative_on_compact
-        (Q := Q) (Ω := Ω) hQ hthickening hweak
-        (v := (1 : ℂ)) hu_int hdu_one_int w hw
-  have hdir_I :
-      ∀ w ∈ Q, fderiv ℝ m w Complex.I = convI w := by
-    intro w hw
-    simpa [m, convI] using
-      euclideanMollification_directionalDerivative_eq_convolution_weakDerivative_on_compact
-        (Q := Q) (Ω := Ω) hQ hthickening hweak
-        (v := Complex.I) hu_int hdu_I_int w hw
-  have hdir_one_event :
-      (fun w : ℂ ↦ fderiv ℝ m w (1 : ℂ)) =ᶠ[𝓝 z] convOne := by
-    filter_upwards [hQ_nhds] with w hw
-    exact hdir_one w hw
-  have hdir_I_event :
-      (fun w : ℂ ↦ fderiv ℝ m w Complex.I) =ᶠ[𝓝 z] convI := by
-    filter_upwards [hQ_nhds] with w hw
-    exact hdir_I w hw
-  have hfderiv_one :
-      fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w (1 : ℂ)) z =
-        fderiv ℝ convOne z :=
-    hdir_one_event.fderiv_eq
-  have hfderiv_I :
-      fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w Complex.I) z =
-        fderiv ℝ convI z :=
-    hdir_I_event.fderiv_eq
-  have hzQ : z ∈ Q := mem_of_mem_nhds hQ_nhds
-  have hconv_div_zero :
-      fderiv ℝ convOne z (1 : ℂ) + fderiv ℝ convI z Complex.I = 0 := by
-    simpa [convOne, convI] using
-      euclideanWeakHarmonic_mollifiedWeakGradient_divergence_eq_zero
-        (Q := Q) (Ω := Ω) (φ := φ) hthickening hzero
-        hdu_one_int hdu_I_int z hzQ
-  have hm_div_zero :
-      fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w (1 : ℂ)) z (1 : ℂ) +
-          fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w Complex.I) z Complex.I = 0 := by
-    rw [hfderiv_one, hfderiv_I]
-    exact hconv_div_zero
-  calc
-    Laplacian.laplacian (euclideanMollification φ u) z
-        = Laplacian.laplacian m z := by rfl
-    _ =
-        fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w (1 : ℂ)) z (1 : ℂ) +
-          fderiv ℝ (fun w : ℂ ↦ fderiv ℝ m w Complex.I) z Complex.I :=
-        (euclidean_gradientDivergence_eq_laplacian m hm_two).symm
-    _ = 0 := hm_div_zero
-
-/--
-%%handwave
-name:
   Cutoff-local mollifications have zero Laplacian
 statement:
   On a compact neighborhood whose reflected mollifier support lies in a set
@@ -1766,54 +1051,6 @@ theorem euclideanMollification_cutoff_harmonicOnNhd_of_weaklyHarmonicOn_compact_
 /--
 %%handwave
 name:
-  Mean value identity for cutoff-local mollifications
-statement:
-  On every circle whose closed disk lies in the protected open set, the
-  cutoff-localized weakly harmonic mollification equals its circle average.
-proof:
-  The previous theorem makes the cutoff-localized mollification harmonic on
-  the protected open set.  Restrict harmonicity to the closed disk and apply
-  the harmonic mean-value theorem.
--/
-theorem euclideanMollification_cutoff_circleAverage_eq_of_weaklyHarmonicOn_compact_open
-    {V Q P Ω : Set ℂ} (hQ : IsCompact Q) (hV_open : IsOpen V) (hVQ : V ⊆ Q)
-    {φ : ContDiffBump (0 : ℂ)}
-    (hthickeningP : Metric.cthickening φ.rOut Q ⊆ P)
-    (hPΩ : P ⊆ Ω)
-    (χ : ScalarWeakSobolevCutoff P Ω)
-    {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hu_loc : LocallyIntegrableOn u Ω (MeasureTheory.volume : Measure ℂ))
-    (hdu_one_loc : LocallyIntegrableOn (fun z : ℂ ↦ du z (1 : ℂ)) Ω
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_loc : LocallyIntegrableOn (fun z : ℂ ↦ du z Complex.I) Ω
-      (MeasureTheory.volume : Measure ℂ))
-    {c : ℂ} {R : ℝ}
-    (hclosedBall : Metric.closedBall c |R| ⊆ V) :
-    Real.circleAverage
-        (euclideanMollification φ (fun y : ℂ ↦ χ y * u y)) c R =
-      euclideanMollification φ (fun y : ℂ ↦ χ y * u y) c := by
-  have hharm :
-      InnerProductSpace.HarmonicOnNhd
-        (euclideanMollification φ (fun y : ℂ ↦ χ y * u y)) V :=
-    euclideanMollification_cutoff_harmonicOnNhd_of_weaklyHarmonicOn_compact_open
-      (V := V) (Q := Q) (P := P) (Ω := Ω) hQ hV_open hVQ
-      hthickeningP hPΩ χ hweak hzero hu_loc hdu_one_loc hdu_I_loc
-  exact HarmonicOnNhd.circleAverage_eq (hharm.mono hclosedBall)
-
-/--
-%%handwave
-name:
   Cutoff-local standard mollifiers converge almost everywhere
 statement:
   For a locally integrable function multiplied by a compactly supported
@@ -1950,152 +1187,6 @@ theorem euclideanMollification_cutoff_standardMollifier_tendsto_l1_on_compact_on
     eLpNorm_congr_ae
       (ae_restrict_of_forall_mem hQ.measurableSet fun z hzQ ↦ by
         simp [W, euclideanMollification, χ.eq_one_on z (hQP_subset hzQ)])
-
-/--
-%%handwave
-name:
-  Cutoff-local standard mollifiers are \(L^1\)-Cauchy on compact sets
-statement:
-  On every compact set \(Q\) with a compact collar contained in the cutoff
-  one set and in the weakly harmonic region, the cutoff-local standard
-  mollifier sequence is Cauchy in \(L^1(Q)\).
-proof:
-  The sequence converges in \(L^1(Q)\) to the original function.  Apply the
-  triangle inequality to
-  \((u_m-u)-(u_n-u)\), after choosing the one-index errors smaller than
-  one third of the requested tolerance.
--/
-theorem euclideanMollification_cutoff_standardMollifier_l1_cauchy_on_compact_one_set
-    {Q P Ω : Set ℂ} (hQ : IsCompact Q) (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω)
-    (χ : ScalarWeakSobolevCutoff P Ω)
-    {u : ℂ → ℝ}
-    (hu_loc : LocallyIntegrableOn u Ω (MeasureTheory.volume : Measure ℂ)) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ N : ℕ, ∀ m n : ℕ, N ≤ m → N ≤ n →
-        eLpNorm
-          (fun z ↦
-            euclideanMollification
-              (scalarWeakSobolevStandardMollifier ℂ m)
-              (fun y : ℂ ↦ χ y * u y) z -
-            euclideanMollification
-              (scalarWeakSobolevStandardMollifier ℂ n)
-              (fun y : ℂ ↦ χ y * u y) z)
-          1 (MeasureTheory.volume.restrict Q) ≤ ENNReal.ofReal ε := by
-  intro ε hε
-  let W : ℂ → ℝ := fun z ↦ χ z * u z
-  let μQ : Measure ℂ := MeasureTheory.volume.restrict Q
-  let η : ℝ := ε / 3
-  have hη_pos : 0 < η := by
-    dsimp [η]
-    linarith
-  have hη_nonneg : 0 ≤ η := hη_pos.le
-  have hQP_subset : Q ⊆ P := subset_of_exists_cthickening_subset hQP
-  have hQΩ : Q ⊆ Ω := hQP_subset.trans hPΩ
-  have hW_int :
-      Integrable W (MeasureTheory.volume : Measure ℂ) := by
-    simpa [W] using scalarWeakSobolevCutoff_value_integrable χ hu_loc
-  have huQ_on : IntegrableOn u Q (MeasureTheory.volume : Measure ℂ) :=
-    hu_loc.integrableOn_compact_subset hQΩ hQ
-  have huQ_int : Integrable u μQ := by
-    simpa [IntegrableOn, μQ] using huQ_on
-  have hF_int : ∀ k : ℕ,
-      Integrable
-        (euclideanMollification
-          (scalarWeakSobolevStandardMollifier ℂ k) W)
-        (MeasureTheory.volume : Measure ℂ) := by
-    intro k
-    have hφ_int :
-        Integrable
-          ((scalarWeakSobolevStandardMollifier ℂ k).normed
-            (MeasureTheory.volume : Measure ℂ))
-          (MeasureTheory.volume : Measure ℂ) :=
-      (scalarWeakSobolevStandardMollifier ℂ k).integrable_normed
-    simpa [euclideanMollification] using
-      hφ_int.integrable_convolution (L := lsmul ℝ ℝ) hW_int
-  have hconv :
-      Filter.Tendsto
-        (fun k : ℕ ↦
-          eLpNorm
-            (fun z ↦
-              euclideanMollification
-                (scalarWeakSobolevStandardMollifier ℂ k) W z - u z)
-            1 μQ)
-        Filter.atTop (𝓝 (0 : ℝ≥0∞)) := by
-    simpa [W, μQ] using
-      euclideanMollification_cutoff_standardMollifier_tendsto_l1_on_compact_one_set
-        hQ hP hQP χ hu_loc
-  have hsmall :
-      ∀ᶠ k : ℕ in Filter.atTop,
-        eLpNorm
-          (fun z ↦
-            euclideanMollification
-              (scalarWeakSobolevStandardMollifier ℂ k) W z - u z)
-          1 μQ ≤ ENNReal.ofReal η :=
-    hconv.eventually (eventually_le_nhds (ENNReal.ofReal_pos.mpr hη_pos))
-  rcases Filter.eventually_atTop.1 hsmall with ⟨N, hN⟩
-  refine ⟨N, fun m n hm hn ↦ ?_⟩
-  let Fm : ℂ → ℝ :=
-    euclideanMollification (scalarWeakSobolevStandardMollifier ℂ m) W
-  let Fn : ℂ → ℝ :=
-    euclideanMollification (scalarWeakSobolevStandardMollifier ℂ n) W
-  have hFm_meas : AEStronglyMeasurable Fm μQ :=
-    (hF_int m).aestronglyMeasurable.mono_measure (by
-      dsimp [μQ]
-      exact Measure.restrict_le_self)
-  have hFn_meas : AEStronglyMeasurable Fn μQ :=
-    (hF_int n).aestronglyMeasurable.mono_measure (by
-      dsimp [μQ]
-      exact Measure.restrict_le_self)
-  have hu_meas : AEStronglyMeasurable u μQ := huQ_int.aestronglyMeasurable
-  have hm_small :
-      eLpNorm (fun z ↦ Fm z - u z) 1 μQ ≤ ENNReal.ofReal η := by
-    simpa [Fm] using hN m hm
-  have hn_small :
-      eLpNorm (fun z ↦ Fn z - u z) 1 μQ ≤ ENNReal.ofReal η := by
-    simpa [Fn] using hN n hn
-  have htri :
-      eLpNorm (fun z ↦ Fm z - Fn z) 1 μQ ≤
-        eLpNorm (fun z ↦ Fm z - u z) 1 μQ +
-          eLpNorm (fun z ↦ Fn z - u z) 1 μQ := by
-    calc
-      eLpNorm (fun z ↦ Fm z - Fn z) 1 μQ
-          =
-          eLpNorm
-            ((fun z ↦ Fm z - u z) - fun z ↦ Fn z - u z) 1 μQ := by
-            congr 1
-            funext z
-            change Fm z - Fn z = (Fm z - u z) - (Fn z - u z)
-            ring
-      _ ≤ eLpNorm (fun z ↦ Fm z - u z) 1 μQ +
-          eLpNorm (fun z ↦ Fn z - u z) 1 μQ := by
-            exact eLpNorm_sub_le
-              (μ := μQ) (p := (1 : ℝ≥0∞))
-              (hFm_meas.sub hu_meas) (hFn_meas.sub hu_meas) (by norm_num)
-  have hsum_le :
-      ENNReal.ofReal η + ENNReal.ofReal η ≤ ENNReal.ofReal ε := by
-    rw [← ENNReal.ofReal_add hη_nonneg hη_nonneg]
-    exact ENNReal.ofReal_le_ofReal (by
-      dsimp [η]
-      linarith)
-  calc
-    eLpNorm
-        (fun z ↦
-          euclideanMollification
-            (scalarWeakSobolevStandardMollifier ℂ m)
-            (fun y : ℂ ↦ χ y * u y) z -
-          euclideanMollification
-            (scalarWeakSobolevStandardMollifier ℂ n)
-            (fun y : ℂ ↦ χ y * u y) z)
-        1 (MeasureTheory.volume.restrict Q)
-        = eLpNorm (fun z ↦ Fm z - Fn z) 1 μQ := by
-          rfl
-    _ ≤ eLpNorm (fun z ↦ Fm z - u z) 1 μQ +
-          eLpNorm (fun z ↦ Fn z - u z) 1 μQ := htri
-    _ ≤ ENNReal.ofReal η + ENNReal.ofReal η :=
-          add_le_add hm_small hn_small
-    _ ≤ ENNReal.ofReal ε := hsum_le
 
 /--
 %%handwave
@@ -2497,57 +1588,6 @@ theorem eventually_euclideanMollification_cutoff_standardMollifier_harmonicOnNhd
 /--
 %%handwave
 name:
-  Small standard mollifiers satisfy the cutoff-local mean value identity
-statement:
-  Under the same compact-collar hypotheses, all sufficiently small standard
-  cutoff-local mollifications satisfy the circle mean-value identity on every
-  circle whose closed disk lies in the protected open set.
-proof:
-  Apply eventual cutoff-local harmonicity of the standard mollifications and
-  then the harmonic mean-value theorem.
--/
-theorem eventually_euclideanMollification_cutoff_standardMollifier_circleAverage_eq
-    {V Q P Ω : Set ℂ} (hQ : IsCompact Q) (hV_open : IsOpen V) (hVQ : V ⊆ Q)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω)
-    (χ : ScalarWeakSobolevCutoff P Ω)
-    {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hu_loc : LocallyIntegrableOn u Ω (MeasureTheory.volume : Measure ℂ))
-    (hdu_one_loc : LocallyIntegrableOn (fun z : ℂ ↦ du z (1 : ℂ)) Ω
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_loc : LocallyIntegrableOn (fun z : ℂ ↦ du z Complex.I) Ω
-      (MeasureTheory.volume : Measure ℂ))
-    {c : ℂ} {R : ℝ}
-    (hclosedBall : Metric.closedBall c |R| ⊆ V) :
-    ∀ᶠ n : ℕ in Filter.atTop,
-      Real.circleAverage
-          (euclideanMollification
-            (scalarWeakSobolevStandardMollifier ℂ n)
-            (fun y : ℂ ↦ χ y * u y)) c R =
-        euclideanMollification
-          (scalarWeakSobolevStandardMollifier ℂ n)
-          (fun y : ℂ ↦ χ y * u y) c := by
-  have hharm_eventually :=
-    eventually_euclideanMollification_cutoff_standardMollifier_harmonicOnNhd
-      (V := V) (Q := Q) (P := P) (Ω := Ω) hQ hV_open hVQ hQP hPΩ χ
-      hweak hzero hu_loc hdu_one_loc hdu_I_loc
-  filter_upwards [hharm_eventually] with n hn
-  exact HarmonicOnNhd.circleAverage_eq (hn.mono hclosedBall)
-
-/--
-%%handwave
-name:
   Local harmonic mollifier sequence for a weakly harmonic function
 statement:
   On a compact collar inside a weakly harmonic Euclidean region, there is a
@@ -2765,103 +1805,6 @@ theorem harmonicOnNhd_eqOn_inter_of_ae_eq_to_common
 /--
 %%handwave
 name:
-  Local mollifications are harmonic
-statement:
-  If an open set lies in a compact set whose mollifier support remains inside
-  the weakly harmonic region, then the mollification is classically harmonic
-  on that open set.
-proof:
-  Smoothness follows from convolution with the smooth compactly supported
-  kernel.  For the Laplacian condition, each nearby point still has the compact
-  set as a neighborhood, so the pointwise zero-Laplacian theorem applies
-  throughout a neighborhood.
--/
-theorem euclideanMollification_harmonicOnNhd_of_weaklyHarmonicOn_compact_open
-    {V Q Ω : Set ℂ} (hQ : IsCompact Q) (hV_open : IsOpen V) (hVQ : V ⊆ Q)
-    {φ : ContDiffBump (0 : ℂ)}
-    (hthickening : Metric.cthickening φ.rOut Q ⊆ Ω)
-    {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hu_int : Integrable u (MeasureTheory.volume : Measure ℂ))
-    (hdu_one_int : Integrable (fun z : ℂ ↦ du z (1 : ℂ))
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_int : Integrable (fun z : ℂ ↦ du z Complex.I)
-      (MeasureTheory.volume : Measure ℂ)) :
-    InnerProductSpace.HarmonicOnNhd (euclideanMollification φ u) V := by
-  have hm_smooth : ContDiff ℝ ∞ (euclideanMollification φ u) :=
-    euclideanMollification_contDiff φ hu_int.locallyIntegrable
-  intro z hzV
-  have hm_two : ContDiffAt ℝ 2 (euclideanMollification φ u) z :=
-    (hm_smooth.contDiffAt).of_le
-      (by
-        change ((2 : ℕ∞) : WithTop ℕ∞) ≤ ((⊤ : ℕ∞) : WithTop ℕ∞)
-        exact WithTop.coe_le_coe.2 le_top)
-  refine ⟨hm_two, ?_⟩
-  filter_upwards [hV_open.mem_nhds hzV] with w hwV
-  have hQ_nhds : Q ∈ 𝓝 w :=
-    Filter.mem_of_superset (hV_open.mem_nhds hwV) hVQ
-  exact
-    euclideanMollification_laplacian_eq_zero_of_weaklyHarmonicOn_compact_nhds
-      (Q := Q) (Ω := Ω) hQ hQ_nhds hthickening hweak hzero
-      hu_int hdu_one_int hdu_I_int
-
-/--
-%%handwave
-name:
-  Mean value identity for local mollifications
-statement:
-  On every circle whose closed disk lies in the protected open set, the
-  weakly harmonic mollification equals its circle average.
-proof:
-  The previous theorem makes the mollification harmonic on the protected open
-  set.  Restrict harmonicity to the closed disk and apply the harmonic
-  mean-value theorem.
--/
-theorem euclideanMollification_circleAverage_eq_of_weaklyHarmonicOn_compact_open
-    {V Q Ω : Set ℂ} (hQ : IsCompact Q) (hV_open : IsOpen V) (hVQ : V ⊆ Q)
-    {φ : ContDiffBump (0 : ℂ)}
-    (hthickening : Metric.cthickening φ.rOut Q ⊆ Ω)
-    {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
-    (hzero :
-      ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction Ω,
-        Integrable
-            (fun z ↦
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z))
-            (MeasureTheory.volume.restrict Ω) ∧
-          ∫ z in Ω,
-              euclideanCotangentPairing (du z)
-                (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0)
-    (hu_int : Integrable u (MeasureTheory.volume : Measure ℂ))
-    (hdu_one_int : Integrable (fun z : ℂ ↦ du z (1 : ℂ))
-      (MeasureTheory.volume : Measure ℂ))
-    (hdu_I_int : Integrable (fun z : ℂ ↦ du z Complex.I)
-      (MeasureTheory.volume : Measure ℂ))
-    {c : ℂ} {R : ℝ}
-    (hclosedBall : Metric.closedBall c |R| ⊆ V) :
-    Real.circleAverage (euclideanMollification φ u) c R =
-      euclideanMollification φ u c := by
-  have hharm :
-      InnerProductSpace.HarmonicOnNhd (euclideanMollification φ u) V :=
-    euclideanMollification_harmonicOnNhd_of_weaklyHarmonicOn_compact_open
-      (V := V) (Q := Q) (Ω := Ω) hQ hV_open hVQ hthickening hweak hzero
-      hu_int hdu_one_int hdu_I_int
-  exact HarmonicOnNhd.circleAverage_eq (hharm.mono hclosedBall)
-
-/--
-%%handwave
-name:
   Euclidean Weyl harmonic representative
 statement:
   A Euclidean weakly harmonic function has a harmonic representative which
@@ -2881,21 +1824,6 @@ namespace EuclideanWeylHarmonicRepresentative
 instance {Ω : Set ℂ} {u : ℂ → ℝ} :
     CoeFun (EuclideanWeylHarmonicRepresentative Ω u) (fun _ ↦ ℂ → ℝ) where
   coe h := h.toFun
-
-/--
-%%handwave
-name:
-  Harmonic functions are their own Weyl representatives
-statement:
-  A harmonic function is a Weyl representative of itself.
--/
-def of_harmonicOn
-    {Ω : Set ℂ} {u : ℂ → ℝ}
-    (hu : InnerProductSpace.HarmonicOnNhd u Ω) :
-    EuclideanWeylHarmonicRepresentative Ω u where
-  toFun := u
-  harmonicOn := hu
-  ae_eq := by rfl
 
 /--
 %%handwave
@@ -2935,163 +1863,7 @@ theorem harmonicOnNhd_of_eventuallyEq
     (InnerProductSpace.harmonicAt_congr_nhds
       (hpointwise z hz)).2 (hrep.harmonicOn z hz)
 
-/--
-%%handwave
-name:
-  Weyl representatives are unique on open regions
-statement:
-  Two harmonic representatives of the same weak solution on an open plane
-  region agree pointwise throughout that region.
-proof:
-  Both representatives agree almost everywhere with the weak solution, hence
-  almost everywhere with each other.  Harmonic representatives are continuous,
-  so almost-everywhere agreement on the open region is pointwise agreement.
--/
-theorem eqOn_of_isOpen
-    {Ω : Set ℂ} {u : ℂ → ℝ} (hΩ_open : IsOpen Ω)
-    (hrep₁ hrep₂ : EuclideanWeylHarmonicRepresentative Ω u) :
-    Ω.EqOn hrep₁.toFun hrep₂.toFun := by
-  have hae : hrep₁.toFun =ᵐ[MeasureTheory.volume.restrict Ω] hrep₂.toFun :=
-    hrep₁.ae_eq.symm.trans hrep₂.ae_eq
-  exact
-    harmonicOnNhd_eqOn_of_ae_eq_on_isOpen hΩ_open
-      hrep₁.harmonicOn hrep₂.harmonicOn hae
-
 end EuclideanWeylHarmonicRepresentative
-
-/--
-%%handwave
-name:
-  Weyl representatives agree across chart overlaps
-statement:
-  Harmonic representatives obtained in two overlapping surface charts agree
-  pointwise after composing one of them with the holomorphic coordinate
-  transition.
-proof:
-  The representative in the second chart, composed with the transition map,
-  is harmonic because coordinate changes are analytic.  Its almost-everywhere
-  agreement with the same weak surface function pulls back across the
-  transition by nonsingularity of chart changes.  Thus the two harmonic
-  functions agree almost everywhere on the overlap, and uniqueness of
-  harmonic representatives upgrades this to pointwise agreement.
--/
-theorem euclideanWeylHarmonicRepresentative_eqOn_surfaceChartOverlap
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [MeasurableSpace X] [BorelSpace X] [ComplexOneManifold X]
-    (g : SmoothRiemannianMetricOnSurface X)
-    {U : Set X} (hU_open : IsOpen U) {u : X → ℝ}
-    (e e' : OpenPartialHomeomorph X ℂ)
-    (he : e ∈ atlas ℂ X) (he' : e' ∈ atlas ℂ X)
-    (hrep :
-      EuclideanWeylHarmonicRepresentative
-        (e.target ∩ e.symm ⁻¹' U)
-        (fun z : ℂ ↦ u (e.symm z)))
-    (hrep' :
-      EuclideanWeylHarmonicRepresentative
-        (e'.target ∩ e'.symm ⁻¹' U)
-        (fun z : ℂ ↦ u (e'.symm z))) :
-    (surfaceChartOverlapDomain e' e ∩
-        (e.target ∩ e.symm ⁻¹' U)).EqOn
-      hrep.toFun
-      (fun z : ℂ ↦ hrep'.toFun (surfaceChartTransition e' e z)) := by
-  let Ω : Set ℂ := e.target ∩ e.symm ⁻¹' U
-  let Ω' : Set ℂ := e'.target ∩ e'.symm ⁻¹' U
-  let D : Set ℂ := surfaceChartOverlapDomain e' e
-  let R : Set ℂ := surfaceChartOverlapRange e' e
-  let W : Set ℂ := D ∩ Ω
-  let T : ℂ → ℂ := surfaceChartTransition e' e
-  have hΩ_open : IsOpen Ω := by
-    simpa [Ω] using e.isOpen_inter_preimage_symm hU_open
-  have hΩ'_open : IsOpen Ω' := by
-    simpa [Ω'] using e'.isOpen_inter_preimage_symm hU_open
-  have hD_open : IsOpen D := by
-    simpa [D] using surfaceChartOverlapDomain_isOpen e' e
-  have hR_open : IsOpen R := by
-    simpa [R] using surfaceChartOverlapRange_isOpen e' e
-  have hW_open : IsOpen W := hD_open.inter hΩ_open
-  have hW_meas : MeasurableSet W := hW_open.measurableSet
-  have hR_meas : MeasurableSet R := hR_open.measurableSet
-  have hrep_harm_W :
-      InnerProductSpace.HarmonicOnNhd hrep.toFun W :=
-    hrep.harmonicOn.mono (by
-      intro z hz
-      exact hz.2)
-  have hrep'_comp_harm_W :
-      InnerProductSpace.HarmonicOnNhd
-        (fun z : ℂ ↦ hrep'.toFun (T z)) W := by
-    intro z hz
-    have hzD : z ∈ D := hz.1
-    have hzΩ : z ∈ Ω := hz.2
-    have hz_target : z ∈ e.target := by
-      simpa [D, surfaceChartOverlapDomain] using hzD.1
-    have hx_source' : e.symm z ∈ e'.source := by
-      simpa [D, surfaceChartOverlapDomain] using hzD.2
-    have hTΩ' : T z ∈ Ω' := by
-      have hT_target : T z ∈ e'.target := by
-        simpa [T, surfaceChartTransition] using e'.mapsTo hx_source'
-      have hsymm : e'.symm (T z) = e.symm z := by
-        simpa [T, surfaceChartTransition] using e'.left_inv hx_source'
-      refine ⟨hT_target, ?_⟩
-      simpa [hsymm, Ω] using hzΩ.2
-    have h_at : InnerProductSpace.HarmonicAt hrep'.toFun (T z) :=
-      hrep'.harmonicOn (T z) hTΩ'
-    have htransition :
-        AnalyticAt ℂ T z := by
-      simpa [T, surfaceChartTransition] using
-        chartTransition_analyticAt e he e' he' hz_target hx_source'
-    simpa [T, Function.comp_def] using
-      harmonicAt_comp_analyticAt h_at htransition
-  have hrep_ae_W :
-      hrep.toFun =ᵐ[MeasureTheory.volume.restrict W]
-        (fun z : ℂ ↦ u (e.symm z)) := by
-    exact
-      ae_restrict_of_ae_restrict_of_subset
-        (by intro z hz; exact hz.2)
-        hrep.ae_eq.symm
-  have hrep'_ae_on_R :
-      ∀ᵐ y ∂MeasureTheory.volume.restrict R,
-        y ∈ Ω' → u (e'.symm y) = hrep'.toFun y := by
-    have hglobal :
-        ∀ᵐ y ∂MeasureTheory.volume,
-          y ∈ Ω' → u (e'.symm y) = hrep'.toFun y := by
-      simpa [Ω'] using ae_imp_of_ae_restrict hrep'.ae_eq
-    rw [ae_restrict_iff' hR_meas]
-    filter_upwards [hglobal] with y hy hyR hyΩ'
-    exact hy hyΩ'
-  have hrep'_pull_D :
-      ∀ᵐ z ∂MeasureTheory.volume.restrict D,
-        T z ∈ Ω' → u (e'.symm (T z)) = hrep'.toFun (T z) := by
-    simpa [D, R, T] using
-      surfaceChartTransition_ae_restrict_overlapDomain_of_ae_restrict_overlapRange
-        X g e' e he' he hrep'_ae_on_R
-  have hrep'_pull_W :
-      (fun z : ℂ ↦ u (e.symm z)) =ᵐ[
-          MeasureTheory.volume.restrict W]
-        (fun z : ℂ ↦ hrep'.toFun (T z)) := by
-    have hpull_W :
-        ∀ᵐ z ∂MeasureTheory.volume.restrict W,
-          T z ∈ Ω' → u (e'.symm (T z)) = hrep'.toFun (T z) :=
-      ae_restrict_of_ae_restrict_of_subset
-        (by intro z hz; exact hz.1) hrep'_pull_D
-    filter_upwards [hpull_W, ae_restrict_mem hW_meas] with z hz_pull hzW
-    have hzD : z ∈ D := hzW.1
-    have hzΩ : z ∈ Ω := hzW.2
-    have hx_source' : e.symm z ∈ e'.source := by
-      simpa [D, surfaceChartOverlapDomain] using hzD.2
-    have hTΩ' : T z ∈ Ω' := by
-      have hT_target : T z ∈ e'.target := by
-        simpa [T, surfaceChartTransition] using e'.mapsTo hx_source'
-      have hsymm : e'.symm (T z) = e.symm z := by
-        simpa [T, surfaceChartTransition] using e'.left_inv hx_source'
-      refine ⟨hT_target, ?_⟩
-      simpa [hsymm, Ω] using hzΩ.2
-    have hsymm : e'.symm (T z) = e.symm z := by
-      simpa [T, surfaceChartTransition] using e'.left_inv hx_source'
-    simpa [hsymm] using hz_pull hTΩ'
-  exact
-    harmonicOnNhd_eqOn_of_ae_eq_on_isOpen hW_open
-      hrep_harm_W hrep'_comp_harm_W
-      (hrep_ae_W.trans hrep'_pull_W)
 
 /--
 %%handwave
@@ -3147,23 +1919,6 @@ def of_harmonicOn_ae_eq
   toFun := f
   harmonicOn := hf
   ae_eq := hae
-
-/--
-%%handwave
-name:
-  Global Weyl representatives localize
-statement:
-  A global Weyl representative on an open region gives a local Weyl
-  representative at every point of that region.
--/
-def of_global
-    {Ω : Set ℂ} {u : ℂ → ℝ} {z : ℂ}
-    (hΩ_open : IsOpen Ω)
-    (hrep : EuclideanWeylHarmonicRepresentative Ω u)
-    (hzΩ : z ∈ Ω) :
-    LocalEuclideanWeylHarmonicRepresentative Ω u z :=
-  of_harmonicOn_ae_eq hzΩ hΩ_open (fun _ hx ↦ hx)
-    hrep.harmonicOn hrep.ae_eq
 
 /--
 %%handwave
@@ -3402,58 +2157,6 @@ theorem harmonicOnNhd_of_pointwiseEuclideanWeylRepresentative
     InnerProductSpace.HarmonicOnNhd u Ω := by
   rcases hrep with ⟨v, hv⟩
   exact v.harmonicOnNhd_of_eventuallyEq hv
-
-/--
-%%handwave
-name:
-  Harmonic functions have pointwise Weyl representatives
-statement:
-  A harmonic function has itself as a pointwise Euclidean Weyl representative.
-proof:
-  At each point take the function itself on a sufficiently small open neighborhood.  Its harmonicity is inherited by restriction, and all compatibility and equality conditions are immediate.
--/
-theorem pointwiseEuclideanWeylRepresentative_of_harmonicOn
-    {Ω : Set ℂ} {u : ℂ → ℝ}
-    (hu : InnerProductSpace.HarmonicOnNhd u Ω) :
-    HasPointwiseEuclideanWeylRepresentative Ω u := by
-  refine ⟨EuclideanWeylHarmonicRepresentative.of_harmonicOn hu, ?_⟩
-  intro z _hz
-  simp [EuclideanWeylHarmonicRepresentative.of_harmonicOn]
-
-/--
-%%handwave
-name:
-  Harmonic common \(L^1\)-limits give Weyl representatives
-statement:
-  If one approximating sequence converges in \(L^1\) both to the weak
-  solution and to a harmonic function, then the harmonic function is a Weyl
-  representative of the weak solution.
-proof:
-  The two \(L^1\)-limits of the same sequence agree almost everywhere.  Use
-  the harmonic limit as the representative.
--/
-theorem euclideanWeylHarmonicRepresentative_of_harmonic_common_l1_approx
-    {Ω : Set ℂ} {F : ℕ → ℂ → ℝ} {u f : ℂ → ℝ}
-    (hf_harm : InnerProductSpace.HarmonicOnNhd f Ω)
-    (hF_meas : ∀ n : ℕ, AEStronglyMeasurable (F n)
-      (MeasureTheory.volume.restrict Ω))
-    (hu_meas : AEStronglyMeasurable u (MeasureTheory.volume.restrict Ω))
-    (hf_meas : AEStronglyMeasurable f (MeasureTheory.volume.restrict Ω))
-    (hFu :
-      Filter.Tendsto
-        (fun n : ℕ ↦ eLpNorm (fun z ↦ F n z - u z) 1
-          (MeasureTheory.volume.restrict Ω))
-        Filter.atTop (𝓝 (0 : ℝ≥0∞)))
-    (hFf :
-      Filter.Tendsto
-        (fun n : ℕ ↦ eLpNorm (fun z ↦ F n z - f z) 1
-          (MeasureTheory.volume.restrict Ω))
-        Filter.atTop (𝓝 (0 : ℝ≥0∞))) :
-    Nonempty (EuclideanWeylHarmonicRepresentative Ω u) := by
-  refine ⟨EuclideanWeylHarmonicRepresentative.of_harmonicOn_ae_eq hf_harm ?_⟩
-  exact
-    ae_eq_of_eLpNorm_one_tendsto_zero_of_common_approx
-      hF_meas hu_meas hf_meas hFu hFf
 
 /--
 %%handwave
@@ -6821,587 +5524,140 @@ theorem euclidean_weyl_harmonicRepresentative_of_weaklyHarmonicOn
 /--
 %%handwave
 name:
-  Weakly harmonic chart regions are open
+  Continuous weakly harmonic functions are harmonic
 statement:
-  If a surface region is weakly harmonic, then its image in any holomorphic
-  coordinate chart is an open subset of the coordinate plane.
+  Let $\Omega\subseteq\mathbb C$ be open. If
+  $u:\mathbb C\to\mathbb R$ is weakly harmonic on $\Omega$ and continuous
+  there, then $u$ is classically harmonic on $\Omega$.
 proof:
-  The surface region is open by definition of weak harmonicity, and an open
-  partial homeomorphism carries this to openness of the corresponding chart
-  region.
+  The Euclidean Weyl lemma gives a harmonic function equal to $u$ almost
+  everywhere. Both functions are continuous, so almost-everywhere equality
+  on the open region is pointwise equality. Harmonicity then transfers
+  locally to $u$.
 -/
-theorem chartRegion_isOpen_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hweak : IsWeaklyHarmonicOnSurface g U u)
-    (e : OpenPartialHomeomorph X ℂ) :
-    IsOpen (e.target ∩ e.symm ⁻¹' U) :=
-  e.isOpen_inter_preimage_symm hweak.isOpen
+theorem IsEuclideanWeaklyHarmonicOn.harmonicOnNhd_of_continuousOn
+    {Ω : Set ℂ} {u : ℂ → ℝ}
+    (hweak : IsEuclideanWeaklyHarmonicOn Ω u)
+    (hcont : ContinuousOn u Ω) :
+    InnerProductSpace.HarmonicOnNhd u Ω := by
+  obtain ⟨hrep⟩ :=
+    euclidean_weyl_harmonicRepresentative_of_weaklyHarmonicOn hweak
+  have heq : Ω.EqOn u hrep.toFun :=
+    MeasureTheory.Measure.eqOn_open_of_ae_eq hrep.ae_eq hweak.isOpen
+      hcont hrep.harmonicOn.continuousOn
+  intro z hz
+  exact
+    (InnerProductSpace.harmonicAt_congr_nhds
+      (heq.eventuallyEq_of_mem (hweak.isOpen.mem_nhds hz))).2
+        (hrep.harmonicOn z hz)
 
 /--
 %%handwave
 name:
-  Weak derivative of a local Sobolev function in surface coordinates
+  Distributionally constant functions on planar balls
 statement:
-  If \(u\) is intrinsically locally \(W^{1,2}\) on \(U\), with weak cotangent
-  field \(du\), then in every holomorphic chart the coordinate pullback
-  \(u\circ e^{-1}\) has weak derivative equal to the chart pullback of \(du\).
+  Let $u\in L^1(\mathbb C)$. If
+  $$
+    \int_{\mathbb C}u(z)\,D\varphi(z)v\,dz=0
+  $$
+  for every smooth function $\varphi$ compactly supported in a ball $B(c,r)$
+  and every vector $v\in\mathbb C$, then there is a constant $a\in\mathbb R$
+  such that $u=a$ almost everywhere on $B(c,r)$.
 proof:
-  Turn a compactly supported Euclidean test function into a compactly
-  supported coordinate test function. The intrinsic weak-gradient identity
-  then expands to the Euclidean weak-derivative identity.
+  The hypothesis says that the zero cotangent field is a weak derivative of
+  $u$ on the ball, hence that $u$ is weakly harmonic there. By the
+  [Euclidean Weyl lemma](lean:JJMath.Uniformization.euclidean_weyl_harmonicRepresentative_of_weaklyHarmonicOn), $u$ agrees almost everywhere with a harmonic function. This gives the local $L^2$ regularity needed to apply the Sobolev zero-gradient theorem on the preconnected ball.
 -/
-theorem surface_localSobolev_chartPullback_isWeakDerivative
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    {du : X → ℂ →L[ℝ] ℝ}
-    (hlocal : IsIntrinsicLocalSobolevH1OnSurface g U u du)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) :
-    IsWeakDerivativeOnEuclideanRegionWithValues
-      (e.target ∩ e.symm ⁻¹' U)
-      (fun z : ℂ ↦ u (e.symm z))
-      (SurfaceCotangentField.chartPullback
-        (SurfaceCotangentField.ofCoordinateField du) e) := by
-  intro φ v
-  let ψ : SmoothCompactlySupportedCoordinateFunction (surfaceChartRegion e U) :=
-    { toFun := φ.toFun
-      smooth := φ.smooth
-      support_subset := by
-        simpa [surfaceChartRegion] using φ.support_subset
-      compact_support := by
-        simpa using φ.compact_support }
-  have h := hlocal.1 e he ψ v
-  simpa [ψ, surfaceChartRegion, SurfaceCotangentField.chartPullback,
-    SurfaceCotangentField.evalChart, SurfaceCotangentField.ofCoordinateField,
-    smul_eq_mul, mul_comm, mul_left_comm, mul_assoc] using h
-
-/--
-%%handwave
-name:
-  Conformal cancellation of cotangent pairing and volume density
-statement:
-  For a conformal surface metric,
-  \[\langle\xi,\eta\rangle_g(z)\rho_g(z)
-    =\langle\xi\circ De^{-1},\eta\circ De^{-1}\rangle_{\mathbb R^2}.\]
-proof:
-  Conformality says that volume density times the inverse Gram matrix is the
-  identity. Substitution leaves only the two diagonal Euclidean terms.
--/
-private theorem surfaceMetricCoordinateCotangentPairingInChart_mul_volumeDensity_eq_euclidean
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (metric : SmoothRiemannianMetricOnSurface X)
-    (hconformal : SurfaceMetricConformalToComplexStructure metric)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (z : ℂ) (hz : z ∈ e.target)
-    (ξ η : ℂ →L[ℝ] ℝ) :
-    surfaceMetricCoordinateCotangentPairingInChart metric e z ξ η *
-        surfaceMetricVolumeDensityInChart metric e z =
-      euclideanCotangentPairing
-        (ξ.comp (surfaceChartTangentMap e z))
-        (η.comp (surfaceChartTangentMap e z)) := by
-  let ρ : ℝ := surfaceMetricVolumeDensityInChart metric e z
-  let A : ℂ →L[ℝ] ℂ := surfaceChartTangentMap e z
-  let G : Fin 2 → Fin 2 → ℝ :=
-    fun i j ↦ surfaceMetricInverseGramCoeffInChart metric e z i j
-  let Xc : Fin 2 → ℝ := fun i ↦ ξ (A (complexCoordinateVector i))
-  let Yc : Fin 2 → ℝ := fun i ↦ η (A (complexCoordinateVector i))
-  have hcoeff : ∀ i j : Fin 2, ρ * G i j = if i = j then 1 else 0 := by
-    intro i j
-    simpa [ρ, G] using hconformal e he z hz i j
-  calc
-        surfaceMetricCoordinateCotangentPairingInChart metric e z ξ η *
-        surfaceMetricVolumeDensityInChart metric e z
-        = ∑ i : Fin 2, ∑ j : Fin 2,
-            (ρ * G i j) * Xc i * Yc j := by
-            simp [surfaceMetricCoordinateCotangentPairingInChart, ρ, G, Xc, Yc]
-            ring
-    _ = ∑ i : Fin 2, ∑ j : Fin 2,
-          (if i = j then 1 else 0 : ℝ) * Xc i * Yc j := by
-          refine Finset.sum_congr rfl ?_
-          intro i _hi
-          refine Finset.sum_congr rfl ?_
-          intro j _hj
-          rw [hcoeff i j]
-    _ = Xc 0 * Yc 0 + Xc 1 * Yc 1 := by
-          simp [Fin.sum_univ_two]
-    _ = euclideanCotangentPairing
-          (ξ.comp (surfaceChartTangentMap e z))
-          (η.comp (surfaceChartTangentMap e z)) := by
-          simp [euclideanCotangentPairing, Xc, Yc, A]
-
-/--
-%%handwave
-name:
-  Conformal cancellation for the weak-gradient coordinate pairing
-statement:
-  For a conformal background metric,
-  \[\langle\xi,d\eta\rangle_g(z)\rho_g(z)
-    =\langle\xi\circ De^{-1},d\eta\rangle_{\mathbb R^2}.\]
-proof:
-  Multiply the inverse-metric coordinate contraction by the volume density.
-  Conformality turns the weighted inverse Gram matrix into the identity.
--/
-theorem surfaceMetricWeakGradientCoordinatePairingInChart_mul_volumeDensity_eq_euclidean
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    (g : BackgroundSurfaceMetricOnSurface X)
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (z : ℂ) (hz : z ∈ e.target)
-    (ξ dη : ℂ →L[ℝ] ℝ) :
-    surfaceMetricWeakGradientCoordinatePairingInChart g e z ξ dη *
-        surfaceMetricVolumeDensityInChart g.metric e z =
-      euclideanCotangentPairing
-        (ξ.comp (surfaceChartTangentMap e z)) dη := by
-  let ρ : ℝ := surfaceMetricVolumeDensityInChart g.metric e z
-  let A : ℂ →L[ℝ] ℂ := surfaceChartTangentMap e z
-  let G : Fin 2 → Fin 2 → ℝ :=
-    fun i j ↦ surfaceMetricInverseGramCoeffInChart g.metric e z i j
-  let Xc : Fin 2 → ℝ := fun i ↦ ξ (A (complexCoordinateVector i))
-  let Yc : Fin 2 → ℝ := fun i ↦ dη (complexCoordinateVector i)
-  have hcoeff : ∀ i j : Fin 2, ρ * G i j = if i = j then 1 else 0 := by
-    intro i j
-    simpa [BackgroundSurfaceMetricConformalToComplexStructure, ρ, G] using
-      hconformal e he z hz i j
-  calc
-    surfaceMetricWeakGradientCoordinatePairingInChart g e z ξ dη *
-        surfaceMetricVolumeDensityInChart g.metric e z
-        = ∑ i : Fin 2, ∑ j : Fin 2,
-            (ρ * G i j) * Xc i * Yc j := by
-            simp [surfaceMetricWeakGradientCoordinatePairingInChart, ρ, G, Xc, Yc]
-            ring
-    _ = ∑ i : Fin 2, ∑ j : Fin 2,
-          (if i = j then 1 else 0 : ℝ) * Xc i * Yc j := by
-          refine Finset.sum_congr rfl ?_
-          intro i _hi
-          refine Finset.sum_congr rfl ?_
-          intro j _hj
-          rw [hcoeff i j]
-    _ = Xc 0 * Yc 0 + Xc 1 * Yc 1 := by
-          simp [Fin.sum_univ_two]
-    _ = euclideanCotangentPairing
-          (ξ.comp (surfaceChartTangentMap e z)) dη := by
-          simp [euclideanCotangentPairing, Xc, Yc, A]
-
-/--
-%%handwave
-name:
-  Conformal charts preserve the weak harmonic identity
-statement:
-  In a conformal holomorphic chart, the coordinate representative of a
-  weakly harmonic surface function has a Euclidean weak derivative satisfying
-  the zero-divergence identity.
-proof:
-  Pull the surface weak gradient through the chart inverse.  The weak
-  derivative identity follows from the surface local Sobolev condition.
-  For the divergence identity, extend compactly supported coordinate tests by
-  zero to surface tests and use conformality to identify the metric
-  density-weighted inverse pairing with the Euclidean cotangent pairing.
--/
-theorem exists_euclideanWeakDerivative_zeroDivergence_chart_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak : IsWeaklyHarmonicOnSurface g U u)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) :
-    ∃ du : ℂ → ℂ →L[ℝ] ℝ,
+theorem integrable_ae_eq_const_on_ball_of_distributionalGradient_zero
+    {u : ℂ → ℝ} {c : ℂ} {r : ℝ}
+    (hu : Integrable u (volume : Measure ℂ))
+    (hzero :
+      ∀ φ : SmoothCompactlySupportedManifoldCoordinateFunction
+          (Set.univ : Set ℂ),
+        tsupport (φ : ℂ → ℝ) ⊆ Metric.ball c r →
+          ∀ v : ℂ,
+            ∫ z : ℂ,
+                u z * fderiv ℝ (φ : ℂ → ℝ) z v
+                ∂volume = 0) :
+    ∃ a : ℝ,
+      ∀ᵐ z ∂volume.restrict (Metric.ball c r), u z = a := by
+  have hweakZero :
       IsWeakDerivativeOnEuclideanRegionWithValues
-          (e.target ∩ e.symm ⁻¹' U)
-          (fun z : ℂ ↦ u (e.symm z)) du ∧
-        ∀ η : SmoothCompactlySupportedManifoldCoordinateFunction
-            (e.target ∩ e.symm ⁻¹' U),
-          Integrable
-              (fun z ↦
-                euclideanCotangentPairing (du z)
-                  (fderiv ℝ (η : ℂ → ℝ) z))
-              (MeasureTheory.volume.restrict (e.target ∩ e.symm ⁻¹' U)) ∧
-            ∫ z in e.target ∩ e.symm ⁻¹' U,
-                euclideanCotangentPairing (du z)
-                  (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume = 0 := by
-  rcases hweak.exists_localSobolev_gradient with ⟨du, hlocal, hzero⟩
-  let D : ℂ → ℂ →L[ℝ] ℝ :=
-    SurfaceCotangentField.chartPullback
-      (SurfaceCotangentField.ofCoordinateField du) e
-  refine ⟨D, ?_, ?_⟩
-  · exact surface_localSobolev_chartPullback_isWeakDerivative hlocal e he
-  · intro η
-    let Ω : Set ℂ := surfaceChartRegion e U
-    let ψ : SmoothCompactlySupportedManifoldCoordinateFunction Ω :=
-      { toFun := η.toFun
-        smooth := η.smooth
-        support_subset := by
-          simpa [Ω, surfaceChartRegion] using η.support_subset
-        compact_support := by
-          simpa using η.compact_support }
-    rcases hzero e he ψ with ⟨hmetric_int, hmetric_zero⟩
-    let metricIntegrand : ℂ → ℝ := fun z ↦
-      surfaceMetricWeakGradientCoordinatePairingInChart g e z
-        (du (e.symm z))
-        (fderiv ℝ (η : ℂ → ℝ) z) *
-          surfaceMetricVolumeDensityInChart g.metric e z
-    let euclideanIntegrand : ℂ → ℝ := fun z ↦
-      euclideanCotangentPairing (D z)
-        (fderiv ℝ (η : ℂ → ℝ) z)
-    have hΩ_open : IsOpen Ω := by
-      simpa [Ω, surfaceChartRegion] using
-        e.isOpen_inter_preimage_symm hweak.isOpen
-    have hfun_ae : euclideanIntegrand =ᵐ[
-        MeasureTheory.volume.restrict Ω] metricIntegrand := by
-      filter_upwards
-        [MeasureTheory.self_mem_ae_restrict
-          (μ := MeasureTheory.volume) hΩ_open.measurableSet] with z hzΩ
-      have hz_target : z ∈ e.target := hzΩ.1
-      have hpoint :=
-        surfaceMetricWeakGradientCoordinatePairingInChart_mul_volumeDensity_eq_euclidean
-          g hconformal e he z hz_target
-          (du (e.symm z)) (fderiv ℝ (η : ℂ → ℝ) z)
-      simpa [euclideanIntegrand, metricIntegrand, D,
-        SurfaceCotangentField.chartPullback,
-        SurfaceCotangentField.ofCoordinateField] using hpoint.symm
-    have hmetric_int' :
-        Integrable metricIntegrand
-          (MeasureTheory.volume.restrict Ω) := by
-      simpa [metricIntegrand, ψ, Ω] using hmetric_int
-    refine ⟨?_, ?_⟩
-    · simpa [euclideanIntegrand, Ω, surfaceChartRegion] using
-        hmetric_int'.congr hfun_ae.symm
-    · calc
-        ∫ z in e.target ∩ e.symm ⁻¹' U,
-            euclideanCotangentPairing (D z)
-              (fderiv ℝ (η : ℂ → ℝ) z) ∂MeasureTheory.volume
-            = ∫ z, euclideanIntegrand z
-                ∂(MeasureTheory.volume.restrict Ω) := by
-                simp [euclideanIntegrand, Ω, surfaceChartRegion]
-        _ = ∫ z, metricIntegrand z
-                ∂(MeasureTheory.volume.restrict Ω) :=
-                integral_congr_ae hfun_ae
-        _ = 0 := by
-                simpa [metricIntegrand, ψ, Ω] using hmetric_zero
+        (Metric.ball c r) u
+        (fun _ : ℂ ↦ (0 : ℂ →L[ℝ] ℝ)) := by
+    intro φ v
+    let φu : SmoothCompactlySupportedManifoldCoordinateFunction
+        (Set.univ : Set ℂ) :=
+      φ.mono (Set.subset_univ _)
+    have huBall : Integrable u (volume.restrict (Metric.ball c r)) :=
+      hu.mono_measure Measure.restrict_le_self
+    obtain ⟨C, hC⟩ := φ.exists_derivative_bound v
+    have hlhs : Integrable
+        (fun z ↦ (fderiv ℝ (φ : ℂ → ℝ) z v) • u z)
+        (volume.restrict (Metric.ball c r)) := by
+      have hmul := huBall.mul_bdd
+        ((φ.smooth.continuous_fderiv (by simp)).clm_apply
+          continuous_const).aestronglyMeasurable
+        (Filter.Eventually.of_forall hC)
+      simpa [smul_eq_mul, mul_comm] using hmul
+    refine ⟨hlhs, by simp, ?_⟩
+    have hglobal :=
+      hzero φu (by simpa [φu] using φ.support_subset) v
+    have houtside : ∀ z, z ∉ Metric.ball c r →
+        (fderiv ℝ (φ : ℂ → ℝ) z v) • u z = 0 := by
+      intro z hz
+      have hzsupport : z ∉ tsupport (φ : ℂ → ℝ) :=
+        fun hzφ ↦ hz (φ.support_subset hzφ)
+      have hd : fderiv ℝ (φ : ℂ → ℝ) z = 0 :=
+        fderiv_of_notMem_tsupport (𝕜 := ℝ) hzsupport
+      simp [hd]
+    rw [setIntegral_eq_integral_of_forall_compl_eq_zero
+      (μ := volume) (s := Metric.ball c r) houtside]
+    simp only [ContinuousLinearMap.zero_apply, smul_zero,
+      integral_zero, neg_zero]
+    simpa [φu, smul_eq_mul, mul_comm] using hglobal
+  have hweakHarmonic :
+      IsEuclideanWeaklyHarmonicOn (Metric.ball c r) u := by
+    refine
+      ⟨Metric.isOpen_ball,
+        (fun _ : ℂ ↦ (0 : ℂ →L[ℝ] ℝ)),
+        hweakZero, ?_⟩
+    intro η
+    simp [euclideanCotangentPairing]
+  obtain ⟨hrep⟩ :=
+    euclidean_weyl_harmonicRepresentative_of_weaklyHarmonicOn
+      hweakHarmonic
+  apply
+    euclideanSobolev_zero_gradient_constant_on_preconnected_finiteDimensional
+      Metric.isOpen_ball Metric.isPreconnected_ball hweakZero
+  · intro Q hQ hQball
+    let μQ : Measure ℂ := volume.restrict Q
+    haveI : IsFiniteMeasure μQ :=
+      isFiniteMeasure_restrict.2 hQ.measure_ne_top
+    have hrepCont : ContinuousOn (hrep : ℂ → ℝ) Q :=
+      hrep.harmonicOn.continuousOn.mono hQball
+    obtain ⟨C, hC⟩ :=
+      hQ.exists_bound_of_continuousOn hrepCont
+    have hrepMeas :
+        AEStronglyMeasurable (hrep : ℂ → ℝ) μQ :=
+      hrepCont.aestronglyMeasurable hQ.measurableSet
+    have hrepMem : MemLp (hrep : ℂ → ℝ) 2 μQ := by
+      apply MemLp.of_bound hrepMeas C
+      exact ae_restrict_of_forall_mem hQ.measurableSet hC
+    have haeQ : u =ᵐ[μQ] (hrep : ℂ → ℝ) :=
+      ae_restrict_of_ae_restrict_of_subset hQball hrep.ae_eq
+    have huMem : MemLp u 2 μQ :=
+      hrepMem.ae_eq haeQ.symm
+    have hzeroMem :
+        MemLp (fun _ : ℂ ↦ (0 : ℂ →L[ℝ] ℝ)) 2 μQ := by
+      refine ⟨aestronglyMeasurable_zero, ?_⟩
+      change eLpNorm (0 : ℂ → ℂ →L[ℝ] ℝ) (2 : ℝ≥0∞) μQ < ⊤
+      rw [eLpNorm_zero (α := ℂ) (ε := ℂ →L[ℝ] ℝ)
+        (p := (2 : ℝ≥0∞)) (μ := μQ)]
+      exact ENNReal.zero_lt_top
+    exact ⟨huMem, hzeroMem⟩
+  · exact Filter.Eventually.of_forall fun _ ↦ rfl
 
-/--
-%%handwave
-name:
-  Surface weak harmonicity becomes Euclidean weak harmonicity in charts
-statement:
-  In a conformal holomorphic chart, a weakly harmonic surface function has a
-  Euclidean weakly harmonic coordinate representative.
-proof:
-  Restrict the surface weak gradient to the coordinate chart and pull it back
-  through the chart inverse.  Coordinate test functions with compact support
-  in the chart region extend by zero to smooth compactly supported surface
-  tests.  Conformality identifies the density-weighted inverse-metric pairing
-  with the Euclidean cotangent pairing, so the surface zero-divergence
-  identity is exactly the Euclidean weak-harmonic identity.
--/
-theorem euclideanWeaklyHarmonicOn_chart_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak : IsWeaklyHarmonicOnSurface g U u)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) :
-    IsEuclideanWeaklyHarmonicOn
-      (e.target ∩ e.symm ⁻¹' U)
-      (fun z : ℂ ↦ u (e.symm z)) := by
-  refine ⟨chartRegion_isOpen_of_weaklyHarmonicOnSurface hweak e, ?_⟩
-  exact
-    exists_euclideanWeakDerivative_zeroDivergence_chart_of_weaklyHarmonicOnSurface
-      hconformal hweak e he
-
-/--
-%%handwave
-name:
-  Weyl representative in a conformal surface chart
-statement:
-  In a conformal holomorphic chart, a weakly harmonic surface function has a
-  harmonic coordinate representative.
-proof:
-  Convert the surface weak-harmonic identity to Euclidean weak harmonicity in
-  the chart and apply the Euclidean Weyl representative theorem.
--/
-theorem weyl_harmonicRepresentative_chart_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak : IsWeaklyHarmonicOnSurface g U u)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) :
-    Nonempty
-      (EuclideanWeylHarmonicRepresentative
-        (e.target ∩ e.symm ⁻¹' U)
-        (fun z : ℂ ↦ u (e.symm z))) :=
-  euclidean_weyl_harmonicRepresentative_of_weaklyHarmonicOn
-    (euclideanWeaklyHarmonicOn_chart_of_weaklyHarmonicOnSurface
-      hconformal hweak e he)
-
-/--
-%%handwave
-name:
-  Compatible chart representatives for a weakly harmonic surface function
-statement:
-  A family of Weyl representatives in all holomorphic charts is compatible
-  when representatives in overlapping charts agree after coordinate change.
--/
-structure SurfaceWeylChartRepresentativeFamily {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    (metric : SmoothRiemannianMetricOnSurface X)
-    (U : Set X) (u : X → ℝ) where
-  /-- The harmonic representative in each chart. -/
-  chartRep :
-    ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-      EuclideanWeylHarmonicRepresentative
-        (e.target ∩ e.symm ⁻¹' U)
-        (fun z : ℂ ↦ u (e.symm z))
-  /-- Representatives in overlapping charts agree through the transition map. -/
-  overlap_eqOn :
-    ∀ (e e' : OpenPartialHomeomorph X ℂ)
-      (he : e ∈ atlas ℂ X) (he' : e' ∈ atlas ℂ X),
-      (surfaceChartOverlapDomain e' e ∩
-          (e.target ∩ e.symm ⁻¹' U)).EqOn
-        (chartRep e he).toFun
-        (fun z : ℂ ↦
-          (chartRep e' he').toFun (surfaceChartTransition e' e z))
-
-/--
-%%handwave
-name:
-  Weakly harmonic functions have compatible chart representatives
-statement:
-  A weakly harmonic function on a conformal surface has harmonic
-  representatives in all charts, and these representatives are compatible on
-  overlaps.
-proof:
-  Apply the chart form of Weyl's lemma in every chart.  Compatibility on
-  overlaps follows from uniqueness of harmonic representatives and
-  nonsingularity of holomorphic coordinate changes for area measure.
--/
-theorem
-    surfaceWeylChartRepresentativeFamily_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak : IsWeaklyHarmonicOnSurface g U u) :
-    Nonempty (SurfaceWeylChartRepresentativeFamily g.metric U u) := by
-  classical
-  let reps :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-        EuclideanWeylHarmonicRepresentative
-          (e.target ∩ e.symm ⁻¹' U)
-          (fun z : ℂ ↦ u (e.symm z)) :=
-    fun e he ↦
-      Classical.choice
-        (weyl_harmonicRepresentative_chart_of_weaklyHarmonicOnSurface
-          hconformal hweak e he)
-  refine
-    ⟨{ chartRep := reps
-       overlap_eqOn := ?_ }⟩
-  intro e e' he he'
-  exact
-    euclideanWeylHarmonicRepresentative_eqOn_surfaceChartOverlap
-      g.metric hweak.isOpen e e' he he' (reps e he) (reps e' he')
-
-/--
-%%handwave
-name:
-  Gluing compatible chart representatives
-statement:
-  A compatible family of harmonic chart representatives determines a global
-  pointwise representative by evaluating the representative in the preferred
-  chart centered at each point.
--/
-noncomputable def surfaceWeylChartRepresentativeGlue {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    {metric : SmoothRiemannianMetricOnSurface X}
-    {U : Set X} {u : X → ℝ}
-    (family : SurfaceWeylChartRepresentativeFamily metric U u) :
-    X → ℝ := by
-  classical
-  exact fun x ↦
-    if hx : x ∈ U then
-      (family.chartRep (chartAt ℂ x) (chart_mem_atlas ℂ x)).toFun
-        ((chartAt ℂ x) x)
-    else 0
-
-/--
-%%handwave
-name:
-  The glued representative equals each chart representative
-statement:
-  On the coordinate region of any chart, the glued representative agrees
-  pointwise with the harmonic representative chosen in that chart.
-proof:
-  At a point \(x\) in the region, the glued value is defined using the
-  preferred chart at \(x\).  Compatibility on the overlap of the given chart
-  with this preferred chart identifies the two representative values.
--/
-theorem surfaceWeylChartRepresentativeGlue_eq_chartRep {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    {metric : SmoothRiemannianMetricOnSurface X}
-    {U : Set X} {u : X → ℝ}
-    (family : SurfaceWeylChartRepresentativeFamily metric U u)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    {z : ℂ} (hz : z ∈ e.target ∩ e.symm ⁻¹' U) :
-    surfaceWeylChartRepresentativeGlue family (e.symm z) =
-      (family.chartRep e he).toFun z := by
-  classical
-  let x : X := e.symm z
-  have hxU : x ∈ U := by
-    simpa [x] using hz.2
-  have hx_chart_source : x ∈ (chartAt ℂ x).source :=
-    mem_chart_source ℂ x
-  have hzD : z ∈ surfaceChartOverlapDomain (chartAt ℂ x) e := by
-    refine ⟨hz.1, ?_⟩
-    simpa [x] using hx_chart_source
-  have hcompat :=
-    family.overlap_eqOn e (chartAt ℂ x) he (chart_mem_atlas ℂ x)
-      ⟨hzD, hz⟩
-  have hT :
-      surfaceChartTransition (chartAt ℂ x) e z = (chartAt ℂ x) x := by
-    simp [surfaceChartTransition, x]
-  simpa [surfaceWeylChartRepresentativeGlue, hxU, x, hT] using hcompat.symm
-
-/--
-%%handwave
-name:
-  The glued representative is harmonic
-statement:
-  The function obtained by gluing a compatible family of harmonic chart
-  representatives is harmonic on the surface region.
-proof:
-  In any chart, the glued function agrees near each point with the harmonic
-  representative chosen in that chart.  Harmonicity is invariant under
-  equality in a neighbourhood.
--/
-theorem surfaceWeylChartRepresentativeGlue_harmonicOnSurface {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    {metric : SmoothRiemannianMetricOnSurface X}
-    {U : Set X} {u : X → ℝ}
-    (hU_open : IsOpen U)
-    (family : SurfaceWeylChartRepresentativeFamily metric U u) :
-    IsHarmonicOnSurface U (surfaceWeylChartRepresentativeGlue family) := by
-  intro e he z hz
-  let Ω : Set ℂ := e.target ∩ e.symm ⁻¹' U
-  have hΩ_open : IsOpen Ω := by
-    simpa [Ω] using e.isOpen_inter_preimage_symm hU_open
-  have heq :
-      (fun w : ℂ ↦ surfaceWeylChartRepresentativeGlue family (e.symm w))
-        =ᶠ[𝓝 z] (family.chartRep e he).toFun := by
-    filter_upwards [hΩ_open.mem_nhds (by simpa [Ω] using hz)] with w hw
-    exact surfaceWeylChartRepresentativeGlue_eq_chartRep family e he
-      (by simpa [Ω] using hw)
-  exact
-    (InnerProductSpace.harmonicAt_congr_nhds heq).2
-      ((family.chartRep e he).harmonicOn z hz)
-
-/--
-%%handwave
-name:
-  The glued representative has the expected chart almost-everywhere value
-statement:
-  In every chart, the glued representative agrees almost everywhere with the
-  original weak function on the coordinate region.
-proof:
-  The chart representative agrees almost everywhere with the weak function by
-  construction, and the glued representative agrees pointwise with the chart
-  representative on the same coordinate region.
--/
-theorem surfaceWeylChartRepresentativeGlue_chart_ae_eq {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    {metric : SmoothRiemannianMetricOnSurface X}
-    {U : Set X} {u : X → ℝ}
-    (hU_open : IsOpen U)
-    (family : SurfaceWeylChartRepresentativeFamily metric U u)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) :
-    (fun z : ℂ ↦ u (e.symm z))
-      =ᵐ[MeasureTheory.volume.restrict (e.target ∩ e.symm ⁻¹' U)]
-      (fun z : ℂ ↦ surfaceWeylChartRepresentativeGlue family (e.symm z)) := by
-  let Ω : Set ℂ := e.target ∩ e.symm ⁻¹' U
-  have hΩ_meas : MeasurableSet Ω := by
-    simpa [Ω] using (e.isOpen_inter_preimage_symm hU_open).measurableSet
-  have hpoint :
-      (family.chartRep e he).toFun
-        =ᵐ[MeasureTheory.volume.restrict Ω]
-        (fun z : ℂ ↦ surfaceWeylChartRepresentativeGlue family (e.symm z)) := by
-    refine ae_restrict_of_forall_mem hΩ_meas ?_
-    intro z hz
-    exact (surfaceWeylChartRepresentativeGlue_eq_chartRep family e he
-      (by simpa [Ω] using hz)).symm
-  have hae :
-      (fun z : ℂ ↦ u (e.symm z))
-        =ᵐ[MeasureTheory.volume.restrict Ω]
-        (family.chartRep e he).toFun := by
-    simpa [Ω] using (family.chartRep e he).ae_eq
-  exact hae.trans hpoint
-
-/--
-%%handwave
-name:
-  A compatible chart family gives a global Weyl representative
-statement:
-  A compatible family of harmonic chart representatives glues to a global
-  harmonic representative which agrees almost everywhere with the original
-  weak function in every chart.
-proof:
-  Define the global value using any chart representative containing the point.  Pairwise compatibility makes this well-defined; local harmonicity gives global harmonicity, while the chartwise almost-everywhere agreements give agreement with the original weak function.
--/
-theorem surfaceWeylHarmonicRepresentative_of_chartRepresentativeFamily
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X]
-    {metric : SmoothRiemannianMetricOnSurface X}
-    {U : Set X} {u : X → ℝ}
-    (hU_open : IsOpen U)
-    (family : SurfaceWeylChartRepresentativeFamily metric U u) :
-    ∃ G : X → ℝ,
-      (∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-        (fun z : ℂ ↦ u (e.symm z))
-          =ᵐ[MeasureTheory.volume.restrict
-            (e.target ∩ e.symm ⁻¹' U)]
-          (fun z : ℂ ↦ G (e.symm z))) ∧
-        IsHarmonicOnSurface U G := by
-  refine ⟨surfaceWeylChartRepresentativeGlue family, ?_, ?_⟩
-  · intro e he
-    exact surfaceWeylChartRepresentativeGlue_chart_ae_eq hU_open family e he
-  · exact surfaceWeylChartRepresentativeGlue_harmonicOnSurface hU_open family
-
-/--
-%%handwave
-name:
-  Weakly harmonic surface functions have global Weyl representatives
-statement:
-  A weakly harmonic function on a conformal surface has a global harmonic
-  representative which agrees with it almost everywhere in every chart.
-proof:
-  First construct the compatible family of chart representatives by Weyl's
-  lemma in charts and overlap uniqueness.  Then glue the compatible family.
--/
-theorem surfaceWeylHarmonicRepresentative_of_weaklyHarmonicOnSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [ComplexOneManifold X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak : IsWeaklyHarmonicOnSurface g U u) :
-    ∃ G : X → ℝ,
-      (∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X),
-        (fun z : ℂ ↦ u (e.symm z))
-          =ᵐ[MeasureTheory.volume.restrict
-            (e.target ∩ e.symm ⁻¹' U)]
-          (fun z : ℂ ↦ G (e.symm z))) ∧
-        IsHarmonicOnSurface U G := by
-  rcases
-      surfaceWeylChartRepresentativeFamily_of_weaklyHarmonicOnSurface
-        hconformal hweak with
-    ⟨family⟩
-  exact
-    surfaceWeylHarmonicRepresentative_of_chartRepresentativeFamily
-      hweak.isOpen family
 
 /--
 %%handwave
@@ -7482,182 +5738,6 @@ theorem weyl_harmonicOnSurface_of_weaklyHarmonicOnSurface
   exact
     weyl_harmonicOnNhd_chart_of_weaklyHarmonicOnSurface
       hconformal hweak e he (hpointwise e he)
-
-/--
-%%handwave
-name:
-  Weak zero-source equations are harmonic
-statement:
-  For a conformal background metric, a weak Laplace-Beltrami equation with
-  zero source is harmonic in holomorphic coordinates.
-proof:
-  A zero-source weak equation is weakly harmonic, and Weyl's lemma upgrades
-  weak harmonicity to coordinate harmonicity.
--/
-theorem weyl_harmonicOnSurface_of_weakLaplaceBeltramiSource_zero
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hweak :
-      IsWeakLaplaceBeltramiSourceOnSurface g U u (fun _ : X ↦ 0))
-    (hpointwise : HasPointwiseWeylRepresentativesInCharts U u) :
-    IsHarmonicOnSurface U u :=
-  weyl_harmonicOnSurface_of_weaklyHarmonicOnSurface hconformal
-    (weaklyHarmonicOnSurface_of_weakLaplaceBeltramiSource_zero hweak)
-    hpointwise
-
-/--
-%%handwave
-name:
-  Source cancellation gives weak harmonicity
-statement:
-  If two locally Sobolev functions have weak Laplace-Beltrami sources which
-  are negatives of one another, their sum is weakly harmonic.
-proof:
-  Add the two weak identities.  The source integrals cancel and the weak
-  gradients add to the weak gradient of the sum.
--/
-theorem weaklyHarmonicOnSurface_of_source_cancellation
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [MeasurableEq X] [IsManifold SurfaceRealModel 1 X]
-    [SecondCountableTopology (SurfaceDifferentialTotalSpace X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace (SurfaceDifferentialTotalSpace X ℝ)]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X}
-    {u v F : X → ℝ}
-    (hu :
-      IsWeakLaplaceBeltramiSourceOnSurface g U u F)
-    (hv :
-      IsWeakLaplaceBeltramiSourceOnSurface g U v (fun x ↦ -F x)) :
-    IsWeaklyHarmonicOnSurface g U (fun x ↦ u x + v x) := by
-  rcases hu with ⟨hU_open, du, hlocal_u, htest_u⟩
-  rcases hv with ⟨_hU_open_v, dv, hlocal_v, htest_v⟩
-  refine ⟨hU_open, du + dv, ?_, ?_⟩
-  · refine ⟨?_, ?_⟩
-    · simpa [Pi.add_apply] using
-        (IsWeakGradientOnRegion.add hlocal_u.1 hlocal_v.1)
-    · intro K hK hKU
-      rcases hlocal_u.2 K hK hKU with ⟨hu_l2, hdu_l2⟩
-      rcases hlocal_v.2 K hK hKU with ⟨hv_l2, hdv_l2⟩
-      have huv_l2 : MemLp (u + v) 2 (g.volume.restrict K) := hu_l2.add hv_l2
-      have hduv_l2 :
-          SurfaceDifferentialFieldMemHilbertSchmidtL2 g.metric
-            (g.volume.restrict K)
-            (SurfaceCotangentField.ofCoordinateField (du + dv)) :=
-        surfaceCotangentFieldMemHilbertSchmidtL2_add hdu_l2 hdv_l2
-      exact ⟨by simpa [Pi.add_apply] using huv_l2, hduv_l2⟩
-  · intro e he η
-    rcases htest_u e he η with ⟨hgrad_u, hsource_u, hEq_u⟩
-    rcases htest_v e he η with ⟨hgrad_v, hsource_v, hEq_v⟩
-    let Ω : Set ℂ := surfaceChartRegion e U
-    let μΩ : Measure ℂ := MeasureTheory.volume.restrict Ω
-    let grad_u : ℂ → ℝ :=
-      fun z ↦
-        surfaceMetricWeakGradientCoordinatePairingInChart g e z
-          (du (e.symm z))
-          (fderiv ℝ (η : ℂ → ℝ) z) *
-            surfaceMetricVolumeDensityInChart g.metric e z
-    let grad_v : ℂ → ℝ :=
-      fun z ↦
-        surfaceMetricWeakGradientCoordinatePairingInChart g e z
-          (dv (e.symm z))
-          (fderiv ℝ (η : ℂ → ℝ) z) *
-            surfaceMetricVolumeDensityInChart g.metric e z
-    let grad_sum : ℂ → ℝ :=
-      fun z ↦
-        surfaceMetricWeakGradientCoordinatePairingInChart g e z
-          ((du + dv) (e.symm z))
-          (fderiv ℝ (η : ℂ → ℝ) z) *
-            surfaceMetricVolumeDensityInChart g.metric e z
-    let source_u : ℂ → ℝ :=
-      fun z ↦ F (e.symm z) * η z *
-        surfaceMetricVolumeDensityInChart g.metric e z
-    let source_v : ℂ → ℝ :=
-      fun z ↦ (-F (e.symm z)) * η z *
-        surfaceMetricVolumeDensityInChart g.metric e z
-    have hgrad_u' : Integrable grad_u μΩ := by
-      simpa [grad_u, μΩ, Ω] using hgrad_u
-    have hgrad_v' : Integrable grad_v μΩ := by
-      simpa [grad_v, μΩ, Ω] using hgrad_v
-    have hsource_u' : Integrable source_u μΩ := by
-      simpa [source_u, μΩ, Ω] using hsource_u
-    have hsource_v' : Integrable source_v μΩ := by
-      simpa [source_v, μΩ, Ω] using hsource_v
-    have hgrad_sum_eq :
-        grad_sum = fun z ↦ grad_u z + grad_v z := by
-      ext z
-      simp [grad_sum, grad_u, grad_v,
-        surfaceMetricWeakGradientCoordinatePairingInChart_add_left]
-      ring
-    have hgrad_sum_int : Integrable grad_sum μΩ := by
-      simpa [hgrad_sum_eq] using hgrad_u'.add hgrad_v'
-    have hEq_u' :
-        ∫ z, grad_u z ∂μΩ = -∫ z, source_u z ∂μΩ := by
-      simpa [grad_u, source_u, μΩ, Ω] using hEq_u
-    have hEq_v' :
-        ∫ z, grad_v z ∂μΩ = -∫ z, source_v z ∂μΩ := by
-      simpa [grad_v, source_v, μΩ, Ω] using hEq_v
-    have hsource_cancel :
-        ∫ z, source_u z ∂μΩ + ∫ z, source_v z ∂μΩ = 0 := by
-      calc
-        ∫ z, source_u z ∂μΩ + ∫ z, source_v z ∂μΩ
-            = ∫ z, source_u z + source_v z ∂μΩ := by
-                rw [integral_add hsource_u' hsource_v']
-        _ = ∫ z, (0 : ℝ) ∂μΩ := by
-              congr 1
-              ext z
-              simp [source_u, source_v]
-        _ = 0 := by simp
-    refine ⟨?_, ?_⟩
-    · simpa [grad_sum, μΩ, Ω] using hgrad_sum_int
-    · calc
-        ∫ z in surfaceChartRegion e U,
-            surfaceMetricWeakGradientCoordinatePairingInChart g e z
-              ((du + dv) (e.symm z))
-              (fderiv ℝ (η : ℂ → ℝ) z) *
-                surfaceMetricVolumeDensityInChart g.metric e z
-            ∂MeasureTheory.volume
-            = ∫ z, grad_sum z ∂μΩ := rfl
-        _ = ∫ z, grad_u z ∂μΩ + ∫ z, grad_v z ∂μΩ := by
-              simpa [hgrad_sum_eq] using
-                integral_add hgrad_u' hgrad_v'
-        _ = -∫ z, source_u z ∂μΩ + -∫ z, source_v z ∂μΩ := by
-              rw [hEq_u', hEq_v']
-        _ = 0 := by
-              calc
-                -∫ z, source_u z ∂μΩ + -∫ z, source_v z ∂μΩ
-                    = -(∫ z, source_u z ∂μΩ + ∫ z, source_v z ∂μΩ) := by ring
-                _ = 0 := by simp [hsource_cancel]
-
-/--
-%%handwave
-name:
-  Source cancellation gives harmonicity
-statement:
-  On a conformal surface, if two locally Sobolev functions have cancelling
-  weak Laplace-Beltrami sources, then their sum is harmonic.
-proof:
-  The cancellation statement first gives weak harmonicity of the sum.  Weyl's
-  lemma then upgrades weak harmonicity to coordinate harmonicity.
--/
-theorem weyl_harmonicOnSurface_of_source_cancellation
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [MeasurableEq X] [IsManifold SurfaceRealModel 1 X]
-    [SecondCountableTopology (SurfaceDifferentialTotalSpace X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace (SurfaceDifferentialTotalSpace X ℝ)]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X}
-    {u v F : X → ℝ}
-    (hconformal : BackgroundSurfaceMetricConformalToComplexStructure g)
-    (hu :
-      IsWeakLaplaceBeltramiSourceOnSurface g U u F)
-    (hv :
-      IsWeakLaplaceBeltramiSourceOnSurface g U v (fun x ↦ -F x))
-    (hpointwise :
-      HasPointwiseWeylRepresentativesInCharts U (fun x ↦ u x + v x)) :
-    IsHarmonicOnSurface U (fun x ↦ u x + v x) :=
-  weyl_harmonicOnSurface_of_weaklyHarmonicOnSurface hconformal
-    (weaklyHarmonicOnSurface_of_source_cancellation hu hv)
-    hpointwise
 
 end Uniformization
 

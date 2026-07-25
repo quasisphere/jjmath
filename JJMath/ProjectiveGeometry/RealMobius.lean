@@ -33,25 +33,43 @@ abbrev RealMobiusRepresentative : Type :=
 abbrev RealMobiusGroup : Type :=
   PSL(2, ℝ)
 
-/-- The quotient map from `SL(2, ℝ)` representatives to `PSL(2, ℝ)`. -/
+/--
+%%handwave
+name:
+  Projection to the real Möbius group
+statement:
+  The canonical quotient homomorphism sends a matrix in $\operatorname{SL}_2(\mathbb R)$ to its class in $\operatorname{PSL}_2(\mathbb R)$ modulo the center.
+-/
 def realMobiusProjection : RealMobiusRepresentative →* RealMobiusGroup :=
   QuotientGroup.mk' _
 
-/-- The upper-half-plane action of an `SL(2, ℝ)` representative. -/
+/--
+%%handwave
+name:
+  Real Möbius representative action
+statement:
+  A matrix $g\in\operatorname{SL}_2(\mathbb R)$ acts on the upper half-plane $\mathbb H$ by its standard fractional-linear transformation.
+-/
 def realMobiusRepresentativeAction (g : RealMobiusRepresentative) (z : ℍ) : ℍ :=
   g • z
 
 /--
-View a real Mobius representative as a complex Mobius representative by
-extension of scalars `ℝ → ℂ`.
+%%handwave
+name:
+  Complexification of real Möbius representatives
+statement:
+  Entrywise extension of scalars $\mathbb R\to\mathbb C$ defines a homomorphism $\operatorname{SL}_2(\mathbb R)\to\operatorname{GL}_2(\mathbb C)$.
 -/
 def realMobiusRepresentativeAsMobiusRepresentative :
     RealMobiusRepresentative →* MobiusRepresentative :=
   Matrix.SpecialLinearGroup.mapGL ℂ
 
 /--
-The induced map from lifted real Mobius representatives to the complex
-projective Mobius group.
+%%handwave
+name:
+  Complex projective class of a real Möbius representative
+statement:
+  Complexification followed by projectivization defines a homomorphism $\operatorname{SL}_2(\mathbb R)\to\operatorname{PGL}_2(\mathbb C)$.
 -/
 def realMobiusRepresentativeToMobiusGroup :
     RealMobiusRepresentative →* MobiusGroup :=
@@ -122,7 +140,13 @@ theorem realMobiusRepresentativeToMobiusGroup_eq_one_of_mem_center
   rw [← MonoidHom.mem_ker, Matrix.ProjGenLinGroup.ker_mk]
   exact realMobiusRepresentativeAsMobiusRepresentative_mem_center hg
 
-/-- The canonical complexification homomorphism `PSL(2, ℝ) → PGL(2, ℂ)`. -/
+/--
+%%handwave
+name:
+  Complexification of the real Möbius group
+statement:
+  Complexification descends through the center to a canonical homomorphism $\operatorname{PSL}_2(\mathbb R)\to\operatorname{PGL}_2(\mathbb C)$.
+-/
 def realMobiusToMobiusGroup : RealMobiusGroup →* MobiusGroup :=
   QuotientGroup.lift (Subgroup.center RealMobiusRepresentative)
     realMobiusRepresentativeToMobiusGroup
@@ -131,27 +155,15 @@ def realMobiusToMobiusGroup : RealMobiusGroup →* MobiusGroup :=
       rw [MonoidHom.mem_ker]
       exact realMobiusRepresentativeToMobiusGroup_eq_one_of_mem_center hg)
 
-/-- The subgroup of `PGL(2, ℂ)` obtained by complexifying `PSL(2, ℝ)`. -/
-def psl2rMobiusSubgroup : Subgroup MobiusGroup :=
-  MonoidHom.range realMobiusToMobiusGroup
-
 /--
 %%handwave
 name:
-  Compatibility of real and complex projectivization
+  Real projective Möbius subgroup
 statement:
-  For \(g\in\operatorname{SL}_2(\mathbb R)\), complexifying its class in
-  \(\operatorname{PSL}_2(\mathbb R)\) gives the same
-  \(\operatorname{PGL}_2(\mathbb C)\)-class as complexifying \(g\) first.
-proof:
-  This is the defining compatibility equation for the quotient lift.
+  The real projective Möbius subgroup of $\operatorname{PGL}_2(\mathbb C)$ is the image of $\operatorname{PSL}_2(\mathbb R)$ under complexification.
 -/
-@[simp]
-theorem realMobiusToMobiusGroup_realMobiusProjection
-    (g : RealMobiusRepresentative) :
-    realMobiusToMobiusGroup (realMobiusProjection g) =
-      realMobiusRepresentativeToMobiusGroup g := by
-  rfl
+def psl2rMobiusSubgroup : Subgroup MobiusGroup :=
+  MonoidHom.range realMobiusToMobiusGroup
 
 /--
 %%handwave
@@ -226,12 +238,24 @@ theorem realMobiusRepresentativeAction_eq_self_of_mem_center
     exact_mod_cast hr_ne
   field_simp [hrc]
 
-/-- The permutation action of `SL(2, ℝ)` representatives on `ℍ`. -/
+/--
+%%handwave
+name:
+  Permutation representation of real Möbius representatives
+statement:
+  The standard action on $\mathbb H$ gives a homomorphism $\operatorname{SL}_2(\mathbb R)\to\operatorname{Perm}(\mathbb H)$.
+-/
 def realMobiusRepresentativePerm :
     RealMobiusRepresentative →* Equiv.Perm ℍ :=
   MulAction.toPermHom RealMobiusRepresentative ℍ
 
-/-- The canonical action homomorphism `PSL(2, ℝ) → Equiv.Perm ℍ`. -/
+/--
+%%handwave
+name:
+  Permutation representation of the real Möbius group
+statement:
+  Since central representatives act trivially, the upper-half-plane action descends to a homomorphism $\operatorname{PSL}_2(\mathbb R)\to\operatorname{Perm}(\mathbb H)$.
+-/
 def realMobiusActionHom : RealMobiusGroup →* Equiv.Perm ℍ :=
   QuotientGroup.lift (Subgroup.center RealMobiusRepresentative)
     realMobiusRepresentativePerm
@@ -241,7 +265,13 @@ def realMobiusActionHom : RealMobiusGroup →* Equiv.Perm ℍ :=
       ext z : 1
       exact realMobiusRepresentativeAction_eq_self_of_mem_center hg z)
 
-/-- The canonical upper-half-plane action of a real projective Mobius transformation. -/
+/--
+%%handwave
+name:
+  Action of the real Möbius group
+statement:
+  For $g\in\operatorname{PSL}_2(\mathbb R)$ and $z\in\mathbb H$, the value $g\cdot z$ is defined by the descended permutation representation.
+-/
 def realMobiusAction (g : RealMobiusGroup) (z : ℍ) : ℍ :=
   realMobiusActionHom g z
 
@@ -314,55 +344,6 @@ theorem realMobiusRepresentativeAction_continuous
     Continuous (realMobiusRepresentativeAction g) := by
   change Continuous fun z : ℍ => ((g : GL (Fin 2) ℝ) • z)
   exact continuous_const_smul (g : GL (Fin 2) ℝ)
-
-/--
-%%handwave
-name:
-  Real Möbius representatives act smoothly
-statement:
-  For every \(g\in\operatorname{SL}_2(\mathbb R)\) and every differentiability
-  order \(n\), the map \(z\mapsto g\cdot z\) is \(C^n\) on \(\mathbb H\).
-proof:
-  Apply the smoothness theorem for the upper-half-plane action of an invertible
-  real matrix; a special-linear matrix has positive determinant.
--/
-theorem realMobiusRepresentativeAction_contMDiff
-    (g : RealMobiusRepresentative) {n : WithTop ℕ∞} :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (realMobiusRepresentativeAction g) := by
-  change ContMDiff 𝓘(ℂ) 𝓘(ℂ) n fun z : ℍ => ((g : GL (Fin 2) ℝ) • z)
-  exact UpperHalfPlane.contMDiff_smul (g := (g : GL (Fin 2) ℝ)) (by simp)
-
-/--
-%%handwave
-name:
-  Real Möbius representatives act holomorphically
-statement:
-  For every \(g\in\operatorname{SL}_2(\mathbb R)\), the map
-  \(z\mapsto g\cdot z\) is holomorphic on \(\mathbb H\).
-proof:
-  Infinite smoothness of the representative action implies manifold
-  differentiability for the complex structure.
--/
-theorem realMobiusRepresentativeAction_mdifferentiable
-    (g : RealMobiusRepresentative) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (realMobiusRepresentativeAction g) :=
-  (realMobiusRepresentativeAction_contMDiff (n := (⊤ : WithTop ℕ∞)) g).mdifferentiable
-    (by simp)
-
-/--
-%%handwave
-name:
-  Pointwise holomorphicity of the real Möbius action
-statement:
-  For \(g\in\operatorname{SL}_2(\mathbb R)\) and \(z\in\mathbb H\), the map
-  \(w\mapsto g\cdot w\) is holomorphic at \(z\).
-proof:
-  Evaluate the global holomorphicity theorem at \(z\).
--/
-theorem realMobiusRepresentativeAction_mdifferentiableAt
-    (g : RealMobiusRepresentative) (z : ℍ) :
-    MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) (realMobiusRepresentativeAction g) z :=
-  (realMobiusRepresentativeAction_mdifferentiable g) z
 
 /--
 %%handwave

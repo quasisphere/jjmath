@@ -68,8 +68,15 @@ private theorem contMDiffCodRestrictOpen''
 
 namespace PuncturedAtlasVortexCirclePrimitiveData
 
-/-- An unpunctured open neighborhood of the pole on which both the atlas
-radial factorization and the stationary-transport identity hold. -/
+/--
+%%handwave
+name: An unpunctured open neighborhood of the pole on which both the atlas radial factorization and the stationary-transport identity hold
+statement:
+  Define the stationary radial neighborhood of the puncture $p$ as the
+  intersection of the initial atlas vortex-germ neighborhood with the
+  interior of the coordinate disk on which the infinite transport is
+  stationary.
+-/
 def localRadialNeighborhood
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -98,142 +105,11 @@ theorem pole_mem_localRadialNeighborhood
 
 /--
 %%handwave
-name:
-  A closed coordinate disk inside the stationary radial neighborhood
+name: The portion of the initial atlas-vortex germ lying in the disk on which the infinite transport is stationary
 statement:
-  There is a closed coordinate disk \(K\), centered at the pole in the
-  original vortex chart, such that
-  \[
-    2r_K\le R_K
-    \quad\text{and}\quad
-    \operatorname{OpenDisk}(K)\subseteq N,
-  \]
-  where \(r_K\) is its closed radius, \(R_K\) its chart radius, and \(N\) the
-  stationary radial neighborhood.
-proof:
-  Pull the open neighborhood \(N\) into the vortex chart and choose a
-  Euclidean ball of radius \(R\) about the pole inside it.  Taking closed
-  radius \(R/3\) leaves the required doubled-radius margin and ensures that
-  the resulting coordinate disk lies in \(N\).
+  Inside the punctured left atlas germ, define the open subgerm consisting
+  of points lying in the interior of the stationary coordinate disk.
 -/
-theorem exists_localRadialClosedCoordinateDisk
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    ∃ K : ClosedCoordinateDisk X,
-      K.openDisk.chart = D.vortex.chart ∧
-        K.openDisk.center = D.vortex.chart p ∧
-          2 * K.closedRadius ≤ K.openDisk.radius ∧
-            K.openDisk.carrier ⊆ D.localRadialNeighborhood := by
-  classical
-  let e : OpenPartialHomeomorph X ℂ := D.vortex.chart
-  let c : ℂ := e p
-  let N : Set X := D.localRadialNeighborhood
-  let S : Set ℂ := e.target ∩ e.symm ⁻¹' N
-  have hNopen : IsOpen N := D.localRadialNeighborhood.isOpen
-  have hSopen : IsOpen S := by
-    simpa [S] using e.isOpen_inter_preimage_symm hNopen
-  have hcS : c ∈ S := by
-    refine ⟨e.map_source D.vortex.left_mem_source, ?_⟩
-    have hleft : e.symm (e p) = p := e.left_inv D.vortex.left_mem_source
-    simpa [c, N, hleft] using D.pole_mem_localRadialNeighborhood
-  rcases Metric.isOpen_iff.mp hSopen c hcS with
-    ⟨R, hRpos, hballS⟩
-  let r : ℝ := R / 3
-  have hrpos : 0 < r := by
-    dsimp [r]
-    linarith
-  have hrR : r < R := by
-    dsimp [r]
-    linarith
-  have hballTarget : Metric.ball c R ⊆ e.target := fun z hz ↦
-    (hballS hz).1
-  let K : ClosedCoordinateDisk X :=
-    closedCoordinateDiskOfChartBall e D.vortex.chart_mem_atlas c
-      hrpos hrR hballTarget
-  have hdouble : 2 * K.closedRadius ≤ K.openDisk.radius := by
-    change 2 * r ≤ R
-    dsimp [r]
-    linarith
-  have hopenSubset : K.openDisk.carrier ⊆ D.localRadialNeighborhood := by
-    intro x hx
-    change x ∈ e.source ∩ e ⁻¹' Metric.ball c R at hx
-    have hsymm : e.symm (e x) = x := e.left_inv hx.1
-    have hxN : e.symm (e x) ∈ N := (hballS hx.2).2
-    simpa [N, hsymm] using hxN
-  exact ⟨K, rfl, rfl, hdouble, hopenSubset⟩
-
-/--
-%%handwave
-name:
-  A stationary radial disk inside a prescribed neighborhood
-statement:
-  If \(O\) is an open neighborhood of the puncture, then the disk \(K\) may
-  be chosen with
-  \[
-    2r_K\le R_K,\qquad
-    \operatorname{OpenDisk}(K)\subseteq N\cap O,
-  \]
-  while using the original vortex chart and center.
-proof:
-  Repeat the coordinate-ball construction inside the open intersection
-  \(N\cap O\), again taking one third of the available chart radius.
--/
-theorem exists_localRadialClosedCoordinateDisk_subset_open
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p)
-    (O : TopologicalSpace.Opens X) (hpO : p ∈ O) :
-    ∃ K : ClosedCoordinateDisk X,
-      K.openDisk.chart = D.vortex.chart ∧
-        K.openDisk.center = D.vortex.chart p ∧
-          2 * K.closedRadius ≤ K.openDisk.radius ∧
-            K.openDisk.carrier ⊆ D.localRadialNeighborhood ∧
-              K.openDisk.carrier ⊆ O := by
-  classical
-  let e : OpenPartialHomeomorph X ℂ := D.vortex.chart
-  let c : ℂ := e p
-  let N : Set X := D.localRadialNeighborhood ∩ O
-  have hNopen : IsOpen N :=
-    D.localRadialNeighborhood.isOpen.inter O.isOpen
-  let S : Set ℂ := e.target ∩ e.symm ⁻¹' N
-  have hSopen : IsOpen S := by
-    simpa [S] using e.isOpen_inter_preimage_symm hNopen
-  have hcS : c ∈ S := by
-    refine ⟨e.map_source D.vortex.left_mem_source, ?_⟩
-    have hleft : e.symm (e p) = p := e.left_inv D.vortex.left_mem_source
-    simpa [c, N, hleft] using
-      ⟨D.pole_mem_localRadialNeighborhood, hpO⟩
-  rcases Metric.isOpen_iff.mp hSopen c hcS with
-    ⟨R, hRpos, hballS⟩
-  let r : ℝ := R / 3
-  have hrpos : 0 < r := by
-    dsimp [r]
-    linarith
-  have hrR : r < R := by
-    dsimp [r]
-    linarith
-  have hballTarget : Metric.ball c R ⊆ e.target := fun z hz ↦
-    (hballS hz).1
-  let K : ClosedCoordinateDisk X :=
-    closedCoordinateDiskOfChartBall e D.vortex.chart_mem_atlas c
-      hrpos hrR hballTarget
-  have hdouble : 2 * K.closedRadius ≤ K.openDisk.radius := by
-    change 2 * r ≤ R
-    dsimp [r]
-    linarith
-  have hopenSubsetN : K.openDisk.carrier ⊆ N := by
-    intro x hx
-    change x ∈ e.source ∩ e ⁻¹' Metric.ball c R at hx
-    have hsymm : e.symm (e x) = x := e.left_inv hx.1
-    have hxN : e.symm (e x) ∈ N := (hballS hx.2).2
-    simpa [hsymm] using hxN
-  exact ⟨K, rfl, rfl, hdouble,
-    fun x hx ↦ (hopenSubsetN hx).1,
-    fun x hx ↦ (hopenSubsetN hx).2⟩
-
-/-- The portion of the initial atlas-vortex germ lying in the disk on which
-the infinite transport is stationary. -/
 def localRadialGerm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -244,7 +120,13 @@ def localRadialGerm
       (continuous_subtype_val.comp
         (continuous_subtype_val.comp continuous_subtype_val))⟩
 
-/-- The local radial germ included into the globally punctured surface. -/
+/--
+%%handwave
+name: The local radial germ included into the globally punctured surface
+statement:
+  Define the canonical inclusion of the stationary local radial germ into
+  the punctured surface $X\setminus\{p\}$.
+-/
 def localRadialGermToPunctured
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -277,7 +159,13 @@ theorem contMDiff_localRadialGermToPunctured
     (atlasVortexInitialOpen p)
     (fun x ↦ (x.1.1.1 : coordinateVortexPairOpen p D.terminal).2.1)
 
-/-- The transported global phase restricted to its stationary radial germ. -/
+/--
+%%handwave
+name: The transported global phase restricted to its stationary radial germ
+statement:
+  Restrict the transported global phase $\Phi:X\setminus\{p\}\to S^1$ to
+  the stationary local radial germ.
+-/
 def localRadialGermPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -308,7 +196,13 @@ theorem norm_localRadialGermPhaseMap
     (x : D.localRadialGerm) : ‖D.localRadialGermPhaseMap x‖ = 1 :=
   D.norm_phase (D.localRadialGermToPunctured x)
 
-/-- The atlas radial phase restricted to the stationary local germ. -/
+/--
+%%handwave
+name: The atlas radial phase restricted to the stationary local germ
+statement:
+  Restrict the rotated atlas radial phase from the initial left vortex germ
+  to the smaller stationary local germ.
+-/
 def localRadialGermRadialPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -321,25 +215,13 @@ def localRadialGermRadialPhaseMap
 
 /--
 %%handwave
-name:
-  Unit norm of the rotated radial phase
+name: The ordinary, unrotated coordinate direction on the stationary local germ
 statement:
-  The atlas radial phase restricted to the stationary germ has modulus one
-  at every point.
-proof:
-  The unrestricted radial germ phase is circle-valued; restriction does not
-  change its values.
+  On the stationary local germ, define the unrotated coordinate direction
+  \[
+    x\longmapsto \frac{e(x)-e(p)}{\lVert e(x)-e(p)\rVert}.
+  \]
 -/
-theorem norm_localRadialGermRadialPhaseMap
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p)
-    (x : D.localRadialGerm) :
-    ‖D.localRadialGermRadialPhaseMap x‖ = 1 :=
-  D.vortex.norm_leftGermRadialPhaseMap x.1
-
-/-- The ordinary, unrotated coordinate direction on the stationary local
-germ. -/
 def localRadialGermUnrotatedPhaseMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -369,8 +251,13 @@ theorem norm_localRadialGermUnrotatedPhaseMap
     ‖D.localRadialGermUnrotatedPhaseMap x‖ = 1 :=
   D.vortex.norm_leftGermUnrotatedRadialPhaseMap x.1
 
-/-- The atlas denominator correction restricted to the stationary local
-germ. -/
+/--
+%%handwave
+name: The atlas denominator correction restricted to the stationary local germ
+statement:
+  Restrict the smooth denominator-argument correction from the initial
+  atlas vortex germ to the stationary local germ.
+-/
 def localRadialGermCorrectionSmooth
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -380,8 +267,20 @@ def localRadialGermCorrectionSmooth
   property := D.vortex.leftGermCorrectionSmooth.contMDiff.comp
     contMDiff_subtype_val
 
-/-- The total smooth correction after absorbing the constant rotation into
-the denominator correction. -/
+/--
+%%handwave
+name: The total smooth correction after absorbing the constant rotation into the denominator correction
+statement:
+  Define
+  \[
+    H(x)=\arg\!\left(
+      \frac{\lVert e(p)-e(q)\rVert}{e(p)-e(q)}
+    \right)+h(x),
+  \]
+  where $q$ is the terminal vortex endpoint and $h$ is the denominator
+  correction; this absorbs the constant rotation relating the rotated and
+  ordinary radial phases.
+-/
 def localRadialGermTotalCorrectionSmooth
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
@@ -497,81 +396,6 @@ theorem localRadialGermPhase_eq_unrotated_mul_exp_totalCorrection
       congr 2
       push_cast
       ring
-
-/--
-%%handwave
-name:
-  The transported phase form differs exactly from the radial phase form
-statement:
-  If \(\omega_\Phi\) and \(\omega_R\) are the logarithmic real one-forms of
-  the transported and rotated radial phases, then on the stationary germ
-  \[
-    \omega_\Phi=\omega_R+dh.
-  \]
-proof:
-  The phase factorization \(\Phi=R e^{ih}\) implies the logarithmic
-  one-form identity by the product rule for circle-valued phases.
--/
-theorem localRadialGermOneForm_eq_radial_addExact
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    smoothUnitPhaseOneForm SurfaceRealModel
-        D.localRadialGermPhaseMap D.norm_localRadialGermPhaseMap =
-      smoothUnitPhaseOneForm SurfaceRealModel
-          D.localRadialGermRadialPhaseMap
-          D.norm_localRadialGermRadialPhaseMap +
-        deRhamDifferential
-          (I := SurfaceRealModel) (M := D.localRadialGerm) (A := ℝ) 0
-          (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel)
-            D.localRadialGermCorrectionSmooth) := by
-  exact SmoothCirclePrimitive.oneForm_eq_addExact_of_phase_eq
-    SurfaceRealModel
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.localRadialGermPhaseMap D.norm_localRadialGermPhaseMap)
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.localRadialGermRadialPhaseMap
-      D.norm_localRadialGermRadialPhaseMap)
-    D.localRadialGermCorrectionSmooth
-    D.localRadialGermPhase_eq_radial_mul_exp_correction
-
-/--
-%%handwave
-name:
-  The transported phase form differs exactly from the coordinate angular form
-statement:
-  If \(\omega_U\) is the logarithmic one-form of the unrotated coordinate
-  phase, then on the stationary germ
-  \[
-    \omega_\Phi=\omega_U+dH,
-  \]
-  where \(H\) is the smooth total correction.
-proof:
-  Apply the logarithmic one-form product identity to
-  \(\Phi=Ue^{iH}\).
--/
-theorem localRadialGermOneForm_eq_unrotated_addExact
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    smoothUnitPhaseOneForm SurfaceRealModel
-        D.localRadialGermPhaseMap D.norm_localRadialGermPhaseMap =
-      smoothUnitPhaseOneForm SurfaceRealModel
-          D.localRadialGermUnrotatedPhaseMap
-          D.norm_localRadialGermUnrotatedPhaseMap +
-        deRhamDifferential
-          (I := SurfaceRealModel) (M := D.localRadialGerm) (A := ℝ) 0
-          (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel)
-            D.localRadialGermTotalCorrectionSmooth) := by
-  exact SmoothCirclePrimitive.oneForm_eq_addExact_of_phase_eq
-    SurfaceRealModel
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.localRadialGermPhaseMap D.norm_localRadialGermPhaseMap)
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.localRadialGermUnrotatedPhaseMap
-      D.norm_localRadialGermUnrotatedPhaseMap)
-    D.localRadialGermTotalCorrectionSmooth
-    D.localRadialGermPhase_eq_unrotated_mul_exp_totalCorrection
 
 end PuncturedAtlasVortexCirclePrimitiveData
 

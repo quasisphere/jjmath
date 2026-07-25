@@ -45,20 +45,6 @@ abbrev ManifoldDifferentialFiber {H : Type}
 /--
 %%handwave
 name:
-  Surface differential fiber with values in a normed space
-statement:
-  On a real surface, the differential fiber with values in a real normed
-  vector space consists of continuous real-linear maps from the tangent plane
-  to that vector space.
--/
-abbrev SurfaceDifferentialFiber (X E : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (x : X) : Type :=
-  ManifoldDifferentialFiber SurfaceRealModel X E x
-
-/--
-%%handwave
-name:
   Differential field with values in a normed space
 statement:
   A vector-valued differential field assigns to each point a continuous
@@ -104,136 +90,6 @@ abbrev ManifoldDifferentialBundleFiber {H : Type}
 /--
 %%handwave
 name:
-  Surface differential bundle fiber
-statement:
-  A vector-valued differential bundle on a real surface may be represented as
-  the bundle of continuous real-linear maps from tangent planes to the trivial
-  target bundle.
--/
-abbrev SurfaceDifferentialBundleFiber (X E : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (x : X) : Type :=
-  ManifoldDifferentialBundleFiber SurfaceRealModel X E x
-
-/--
-%%handwave
-name:
-  Differentiable differential section
-statement:
-  A differentiable vector-valued differential section is a differentiable
-  section of the bundle of continuous real-linear maps from tangent spaces to
-  the trivial target bundle.
--/
-abbrev ContMDiffManifoldDifferentialSection {H : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) (n : WithTop ℕ∞)
-    (X E : Type) [TopologicalSpace X] [ChartedSpace H X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [IsManifold I 1 X] [IsManifold I n X] : Type :=
-  Cₛ^n⟮I; H →L[ℝ] E,
-    ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E)⟯
-
-/--
-%%handwave
-name:
-  Differentiable surface differential section
-statement:
-  A differentiable vector-valued differential section on a real surface is a
-  differentiable section of the bundle of continuous real-linear maps from
-  tangent planes to the trivial target bundle.
--/
-abbrev ContMDiffSurfaceDifferentialSection (n : WithTop ℕ∞)
-    (X E : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [IsManifold SurfaceRealModel 1 X] [IsManifold SurfaceRealModel n X] : Type :=
-  ContMDiffManifoldDifferentialSection SurfaceRealModel n X E
-
-/--
-%%handwave
-name:
-  \(C^1\) surface differential section
-statement:
-  A \(C^1\) vector-valued differential section is a once continuously
-  differentiable section of the vector-valued differential bundle.
--/
-abbrev C1SurfaceDifferentialSection (X E : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [IsManifold SurfaceRealModel 1 X] : Type :=
-  ContMDiffSurfaceDifferentialSection 1 X E
-
-/--
-%%handwave
-name:
-  Smooth surface differential section
-statement:
-  A smooth vector-valued differential section is a smooth section of the
-  vector-valued differential bundle.
--/
-abbrev SmoothSurfaceDifferentialSection (X E : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [IsManifold SurfaceRealModel ∞ X] : Type :=
-  ContMDiffSurfaceDifferentialSection ∞ X E
-
-/--
-%%handwave
-name:
-  Classical differential field of a vector-valued map on a manifold
-statement:
-  The classical differential field of a vector-valued map is obtained by
-  taking the manifold derivative at each point and identifying the tangent
-  space of the target vector space with the target itself.
--/
-noncomputable def manifoldDifferentialFieldOfMFDeriv {H X E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) [TopologicalSpace X] [ChartedSpace H X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E] (u : X → E) :
-    ManifoldDifferentialField I X E :=
-  fun x ↦
-    (NormedSpace.fromTangentSpace (u x)).toContinuousLinearMap.comp
-      (mfderiv I 𝓘(ℝ, E) u x)
-
-/--
-%%handwave
-name:
-  Classical differential field of a vector-valued surface map
-statement:
-  The classical differential field of a vector-valued surface map is obtained
-  by taking the manifold derivative at each point and identifying the tangent
-  space of the target vector space with the target itself.
--/
-noncomputable def surfaceDifferentialFieldOfMFDeriv {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E] (u : X → E) :
-    SurfaceDifferentialField X E :=
-  manifoldDifferentialFieldOfMFDeriv SurfaceRealModel u
-
-/--
-%%handwave
-name:
-  Surface cotangent fiber
-statement:
-  The cotangent fiber at a point of a Riemann surface consists of the
-  continuous real-linear functionals on the tangent plane at that point.
--/
-abbrev SurfaceCotangentFiber {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (x : X) : Type :=
-  SurfaceDifferentialFiber X ℝ x
-
-/--
-%%handwave
-name:
-  Surface cotangent bundle fiber
-statement:
-  The cotangent bundle may be represented as the bundle of continuous
-  real-linear maps from tangent planes to the trivial real line bundle.
--/
-abbrev SurfaceCotangentBundleFiber {X : Type} [TopologicalSpace X]
-    [ChartedSpace ℂ X] (x : X) : Type :=
-  SurfaceDifferentialBundleFiber X ℝ x
-
-/--
-%%handwave
-name:
   Surface cotangent field
 statement:
   A surface cotangent field assigns to each point a continuous real-linear
@@ -242,71 +98,6 @@ statement:
 abbrev SurfaceCotangentField (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] :
     Type :=
   SurfaceDifferentialField X ℝ
-
-/--
-%%handwave
-name:
-  Differentiable surface cotangent section
-statement:
-  A differentiable cotangent section is a differentiable section of the
-  cotangent bundle.
--/
-abbrev ContMDiffSurfaceCotangentSection (n : WithTop ℕ∞)
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold SurfaceRealModel 1 X] [IsManifold SurfaceRealModel n X] : Type :=
-  ContMDiffSurfaceDifferentialSection n X ℝ
-
-/--
-%%handwave
-name:
-  \(C^1\) surface cotangent section
-statement:
-  A \(C^1\) cotangent section is a once continuously differentiable section
-  of the cotangent bundle.
--/
-abbrev C1SurfaceCotangentSection (X : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [IsManifold SurfaceRealModel 1 X] : Type :=
-  ContMDiffSurfaceCotangentSection 1 X
-
-/--
-%%handwave
-name:
-  Smooth surface cotangent section
-statement:
-  A smooth cotangent section is a smooth section of the cotangent bundle.
--/
-abbrev SmoothSurfaceCotangentSection (X : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [IsManifold SurfaceRealModel ∞ X] : Type :=
-  ContMDiffSurfaceCotangentSection ∞ X
-
-/--
-%%handwave
-name:
-  Exterior derivative of a surface function
-statement:
-  The exterior derivative of a real-valued surface function is the cotangent
-  field obtained by taking its manifold derivative at each point.
--/
-noncomputable def surfaceCotangentFieldOfExtDerivFun {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] (u : X → ℝ) :
-    SurfaceCotangentField X :=
-  mvfderiv (I := SurfaceRealModel) u
-
-/--
-%%handwave
-name:
-  Exterior derivative evaluated at a surface point
-statement:
-  For a real-valued function \(u\) on a surface, its exterior-derivative cotangent field satisfies \((du)_x=D u(x)\).
-proof:
-  This is the pointwise form of the definition of the exterior derivative as the manifold derivative.
--/
-@[simp]
-theorem surfaceCotangentFieldOfExtDerivFun_apply {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] (u : X → ℝ) (x : X) :
-    surfaceCotangentFieldOfExtDerivFun u x =
-      mvfderiv (I := SurfaceRealModel) u x :=
-  rfl
 
 namespace ManifoldDifferentialField
 
@@ -326,25 +117,6 @@ statement:
 noncomputable def evalChart (du : ManifoldDifferentialField I X E)
     (e : OpenPartialHomeomorph X H) (z v : H) : E :=
   du (e.symm z) (manifoldChartTangentVector (I := I) e z v)
-
-/--
-%%handwave
-name:
-  Coordinate evaluation of a manifold differential field
-statement:
-  If \(e\) is a chart and \(z,v\) are model coordinates, then the coordinate evaluation of a differential field \(A\) is
-  \[
-    A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
-  \]
-proof:
-  This is the definition of coordinate evaluation through the chart tangent map.
--/
-@[simp]
-theorem evalChart_eq (du : ManifoldDifferentialField I X E)
-    (e : OpenPartialHomeomorph X H) (z v : H) :
-    evalChart du e z v =
-      du (e.symm z) (manifoldChartTangentVector (I := I) e z v) :=
-  rfl
 
 end ManifoldDifferentialField
 
@@ -381,54 +153,6 @@ noncomputable def chartPullback (du : SurfaceDifferentialField X E)
 /--
 %%handwave
 name:
-  Coordinate evaluation of a surface differential field
-statement:
-  For a surface chart \(e\), a differential field \(A\), and \(z,v\in\mathbb C\), its coordinate evaluation is
-  \[
-    A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
-  \]
-proof:
-  Specialize the manifold coordinate-evaluation definition to the real model \(\mathbb C\).
--/
-@[simp]
-theorem evalChart_eq (du : SurfaceDifferentialField X E)
-    (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
-    evalChart du e z v = du (e.symm z) (surfaceChartTangentVector e z v) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Coordinate pullback evaluated on a tangent vector
-statement:
-  The pullback of a surface differential field \(A\) through a chart \(e\) satisfies
-  \[
-    (e^\ast A)_z(v)=A_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
-  \]
-proof:
-  Both sides are the definition of the coordinate evaluation of \(A\).
--/
-@[simp]
-theorem chartPullback_apply (du : SurfaceDifferentialField X E)
-    (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
-    chartPullback du e z v = evalChart du e z v :=
-  rfl
-
-/--
-%%handwave
-name:
-  Coordinate representation of a vector-valued differential field
-statement:
-  A vector-valued differential field can be read in the preferred tangent
-  coordinates at each point.
--/
-noncomputable def toCoordinateField (du : SurfaceDifferentialField X E) :
-    X → ℂ →L[ℝ] E :=
-  fun x ↦ du x
-
-/--
-%%handwave
-name:
   Vector-valued differential field from coordinates
 statement:
   A coordinate vector-valued differential field determines an intrinsic
@@ -439,34 +163,6 @@ noncomputable def ofCoordinateField (du : X → ℂ →L[ℝ] E) :
     SurfaceDifferentialField X E :=
   fun x ↦ du x
 
-/--
-%%handwave
-name:
-  Recovering a coordinate differential field
-statement:
-  Converting a coordinate field \(A_x:\mathbb C\to E\) into an intrinsic surface differential field and then reading it in the preferred tangent coordinates recovers \(A\).
-proof:
-  Both conversions use the same pointwise linear maps, so the equality is definitional.
--/
-@[simp]
-theorem toCoordinateField_ofCoordinateField (du : X → ℂ →L[ℝ] E) :
-    toCoordinateField (ofCoordinateField du) = du :=
-  rfl
-
-/--
-%%handwave
-name:
-  Recovering an intrinsic differential field
-statement:
-  Reading an intrinsic surface differential field in the preferred tangent coordinates and then rebuilding the intrinsic field recovers the original field.
-proof:
-  The two pointwise coordinate conversions are inverse by definition.
--/
-@[simp]
-theorem ofCoordinateField_toCoordinateField (du : SurfaceDifferentialField X E) :
-    ofCoordinateField (toCoordinateField du) = du :=
-  rfl
-
 end SurfaceDifferentialField
 
 namespace ContMDiffSurfaceDifferentialSection
@@ -474,32 +170,6 @@ namespace ContMDiffSurfaceDifferentialSection
 variable {n : WithTop ℕ∞} {X E : Type} [TopologicalSpace X]
     [ChartedSpace ℂ X] [NormedAddCommGroup E] [NormedSpace ℝ E]
     [IsManifold SurfaceRealModel 1 X] [IsManifold SurfaceRealModel n X]
-
-/--
-%%handwave
-name:
-  Differential field underlying a differentiable section
-statement:
-  A differentiable vector-valued differential section determines its
-  underlying vector-valued differential field by evaluation at each point.
--/
-noncomputable def toField (du : ContMDiffSurfaceDifferentialSection n X E) :
-    SurfaceDifferentialField X E :=
-  fun x ↦ du x
-
-/--
-%%handwave
-name:
-  Underlying field of a differentiable differential section
-statement:
-  The differential field underlying a \(C^n\) section \(A\) has value \(A(x)\) at every point \(x\).
-proof:
-  The underlying field is defined by pointwise evaluation of the section.
--/
-@[simp]
-theorem toField_apply (du : ContMDiffSurfaceDifferentialSection n X E) (x : X) :
-    toField du x = du x :=
-  rfl
 
 end ContMDiffSurfaceDifferentialSection
 
@@ -520,20 +190,6 @@ structure HilbertBundleGeometry (X F : Type) [MeasurableSpace X] (V : X → Type
   /-- The square norm is the diagonal value of the inner product. -/
   fiberNormSq_eq_inner : ∀ (x : X) (v : V x),
     fiberNormSq x v = fiberInner x v v
-
-/--
-%%handwave
-name:
-  Hilbert bundle geometry on a surface
-statement:
-  A Hilbert bundle geometry on a measured surface consists of a dependent
-  fiber bundle together with a fiberwise real inner product and the associated
-  pointwise square norm used to define \(L^2\)-sections.
--/
-abbrev HilbertBundleGeometryOnSurface (X F : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    (V : X → Type) : Type :=
-  HilbertBundleGeometry X F V
 
 /--
 %%handwave
@@ -581,21 +237,6 @@ noncomputable def toTotalSpace {X F : Type} {V : X → Type}
     (s : HilbertBundleSectionOnSurface X V) :
     X → Bundle.TotalSpace F V :=
   fun x ↦ Bundle.TotalSpace.mk' F x (s x)
-
-/--
-%%handwave
-name:
-  Base point of a bundle section in the total space
-statement:
-  If a bundle section \(s\) is regarded as a total-space-valued map, the base point of \(s(x)\) is \(x\).
-proof:
-  A section value is inserted into the total space as the pair \((x,s(x))\).
--/
-@[simp]
-theorem toTotalSpace_apply {X F : Type} {V : X → Type}
-    (s : HilbertBundleSectionOnSurface X V) (x : X) :
-    (toTotalSpace (F := F) s x).1 = x :=
-  rfl
 
 end HilbertBundleSectionOnSurface
 
@@ -651,39 +292,6 @@ theorem integrable_normSq (h : HilbertBundleSectionMemL2 G μ s) :
     Integrable (fun x ↦ G.fiberNormSq x (s x)) μ :=
   h.2
 
-/--
-%%handwave
-name:
-  Square-integrability is invariant under almost-everywhere equality
-statement:
-  If \(s\) is a square-integrable Hilbert-bundle section and \(s(x)=t(x)\) for almost every \(x\), then \(t\) is square-integrable.
-proof:
-  Almost-everywhere equality preserves both measurability of the total-space map and integrability of the fiberwise square norm.
--/
-theorem congr_ae (hs : HilbertBundleSectionMemL2 G μ s)
-    (hst : ∀ᵐ x ∂μ, s x = t x) :
-    HilbertBundleSectionMemL2 G μ t := by
-  refine ⟨?_, ?_⟩
-  · refine hs.aemeasurable.congr ?_
-    filter_upwards [hst] with x hx
-    exact Bundle.TotalSpace.mk_inj.2 hx
-  · refine hs.integrable_normSq.congr ?_
-    filter_upwards [hst] with x hx
-    rw [hx]
-
-/--
-%%handwave
-name:
-  Almost-everywhere invariance of square-integrability
-statement:
-  If bundle sections \(s\) and \(t\) agree almost everywhere, then \(s\) is square-integrable if and only if \(t\) is square-integrable.
-proof:
-  Transfer square-integrability in each direction using the given equality and its symmetry.
--/
-theorem congr_ae_iff (hst : ∀ᵐ x ∂μ, s x = t x) :
-    HilbertBundleSectionMemL2 G μ s ↔ HilbertBundleSectionMemL2 G μ t :=
-  ⟨fun hs ↦ hs.congr_ae hst, fun ht ↦ ht.congr_ae (hst.mono fun _ hx ↦ hx.symm)⟩
-
 end HilbertBundleSectionMemL2
 
 /--
@@ -713,149 +321,13 @@ instance : CoeFun (SquareIntegrableHilbertBundleSection G μ)
     (fun _ ↦ HilbertBundleSectionOnSurface X V) where
   coe s := s.toSection
 
-/--
-%%handwave
-name:
-  Equality of square-integrable representatives
-statement:
-  Two square-integrable bundle-section representatives are equal if their
-  underlying sections are pointwise equal.
-proof:
-  Destructure the two representatives.  Pointwise equality gives equality of the underlying sections by function extensionality, after which the stored square-integrability proofs are propositionally irrelevant.
--/
-theorem ext {s t : SquareIntegrableHilbertBundleSection G μ}
-    (h : ∀ x : X, s.toSection x = t.toSection x) : s = t := by
-  cases s with
-  | mk s hs =>
-    cases t with
-    | mk t ht =>
-      have hst : s = t := funext h
-      subst hst
-      rfl
-
-/--
-%%handwave
-name:
-  Almost-everywhere equality of Hilbert-bundle sections
-statement:
-  Two square-integrable bundle-section representatives define the same
-  \(L^2\)-section when they agree almost everywhere in their fibers.
--/
-def AeEq (s t : SquareIntegrableHilbertBundleSection G μ) : Prop :=
-  ∀ᵐ x ∂μ, s.toSection x = t.toSection x
-
-/--
-%%handwave
-name:
-  Reflexivity of almost-everywhere equality for bundle sections
-statement:
-  Every square-integrable bundle-section representative agrees almost everywhere with itself.
-proof:
-  Pointwise equality is reflexive at every base point.
--/
-theorem AeEq.refl (s : SquareIntegrableHilbertBundleSection G μ) :
-    AeEq s s :=
-  Filter.Eventually.of_forall fun _ ↦ rfl
-
-/--
-%%handwave
-name:
-  Symmetry of almost-everywhere equality for bundle sections
-statement:
-  If square-integrable bundle-section representatives \(s\) and \(t\) agree almost everywhere, then \(t\) and \(s\) agree almost everywhere.
-proof:
-  Reverse the pointwise equality on the full-measure set where it holds.
--/
-theorem AeEq.symm {s t : SquareIntegrableHilbertBundleSection G μ}
-    (h : AeEq s t) : AeEq t s :=
-  h.mono fun _ hx ↦ hx.symm
-
-/--
-%%handwave
-name:
-  Transitivity of almost-everywhere equality for bundle sections
-statement:
-  If \(s=t\) almost everywhere and \(t=r\) almost everywhere, then \(s=r\) almost everywhere.
-proof:
-  Intersect the two full-measure sets and use transitivity of pointwise equality.
--/
-theorem AeEq.trans {s t r : SquareIntegrableHilbertBundleSection G μ}
-    (h₁ : AeEq s t) (h₂ : AeEq t r) : AeEq s r := by
-  filter_upwards [h₁, h₂] with x hx₁ hx₂
-  exact hx₁.trans hx₂
-
-instance aeSetoid : Setoid (SquareIntegrableHilbertBundleSection G μ) where
-  r := AeEq
-  iseqv := ⟨fun s ↦ AeEq.refl s, fun {_ _} h ↦ AeEq.symm h,
-    fun {_ _ _} h₁ h₂ ↦ AeEq.trans h₁ h₂⟩
-
 end SquareIntegrableHilbertBundleSection
-
-/--
-%%handwave
-name:
-  \(L^2\)-sections of a Hilbert bundle
-statement:
-  The space \(L^2\) of a surface Hilbert bundle consists of square-integrable
-  section representatives modulo almost-everywhere equality.
--/
-abbrev L2HilbertBundle {X F : Type} [TopologicalSpace X] [MeasurableSpace X]
-    {V : X → Type} [TopologicalSpace (Bundle.TotalSpace F V)]
-    (G : HilbertBundleGeometry X F V) (μ : Measure X) : Type :=
-  Quotient (SquareIntegrableHilbertBundleSection.aeSetoid (G := G) (μ := μ))
 
 namespace L2HilbertBundle
 
 variable {X F : Type} [TopologicalSpace X] [MeasurableSpace X]
     {V : X → Type} [TopologicalSpace (Bundle.TotalSpace F V)]
     {G : HilbertBundleGeometry X F V} {μ : Measure X}
-
-/-- The \(L^2\)-class of a square-integrable representative. -/
-abbrev mk (s : SquareIntegrableHilbertBundleSection G μ) : L2HilbertBundle G μ :=
-  Quotient.mk (SquareIntegrableHilbertBundleSection.aeSetoid (G := G) (μ := μ)) s
-
-/--
-%%handwave
-name:
-  Equality of \(L^2\) bundle classes
-statement:
-  Two square-integrable bundle-section representatives determine the same \(L^2\) class if and only if they agree almost everywhere.
-proof:
-  This is the equality criterion for the quotient by almost-everywhere equality.
--/
-@[simp]
-theorem mk_eq_mk {s t : SquareIntegrableHilbertBundleSection G μ} :
-    mk s = mk t ↔ SquareIntegrableHilbertBundleSection.AeEq s t :=
-  Quotient.eq
-
-/--
-%%handwave
-name:
-  Almost-everywhere equal bundle sections have the same \(L^2\) class
-statement:
-  If two square-integrable bundle sections agree almost everywhere, their classes in the bundle \(L^2\) space are equal.
-proof:
-  Apply the quotient relation defining the \(L^2\) space.
--/
-theorem sound {s t : SquareIntegrableHilbertBundleSection G μ}
-    (h : SquareIntegrableHilbertBundleSection.AeEq s t) :
-    mk s = mk t :=
-  Quotient.sound h
-
-/--
-%%handwave
-name:
-  Representative induction for bundle \(L^2\) sections
-statement:
-  To prove a property of every \(L^2\) bundle section, it suffices to prove it for the class of each square-integrable representative.
-proof:
-  Use induction on the quotient by almost-everywhere equality.
--/
-@[elab_as_elim]
-protected theorem induction_on {C : L2HilbertBundle G μ → Prop}
-    (u : L2HilbertBundle G μ)
-    (h : ∀ s : SquareIntegrableHilbertBundleSection G μ, C (mk s)) : C u :=
-  Quotient.inductionOn u h
 
 end L2HilbertBundle
 
@@ -877,142 +349,18 @@ noncomputable def trivialHilbertBundleGeometry (X E : Type)
     intro _ _
     rfl
 
-/--
-%%handwave
-name:
-  Trivial Hilbert bundle geometry on a surface
-statement:
-  A fixed real Hilbert space determines the trivial Hilbert bundle over a
-  measured surface, with the same inner product on every fiber.
--/
-noncomputable def trivialHilbertBundleGeometryOnSurface (X E : Type)
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] :
-    HilbertBundleGeometryOnSurface X E (Bundle.Trivial X E) :=
-  trivialHilbertBundleGeometry X E
-
-/--
-%%handwave
-name:
-  \(L^2\)-sections of a trivial Hilbert bundle over a measured base
-statement:
-  The \(L^2\)-sections of the trivial bundle with fiber a Hilbert space are
-  Hilbert-valued square-integrable functions, represented as bundle sections.
--/
-abbrev ValueL2Section {X E : Type}
-    [TopologicalSpace X] [MeasurableSpace X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (μ : Measure X) : Type :=
-  L2HilbertBundle (trivialHilbertBundleGeometry X E) μ
-
-/--
-%%handwave
-name:
-  \(L^2\)-sections of a trivial Hilbert bundle over a surface
-statement:
-  The \(L^2\)-sections of the trivial bundle with fiber a Hilbert space are
-  Hilbert-valued square-integrable functions, represented as bundle sections.
--/
-abbrev SurfaceValueL2Section {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (μ : Measure X) : Type :=
-  ValueL2Section (X := X) (E := E) μ
-
-/--
-%%handwave
-name:
-  Square-integrable section of the trivial Hilbert bundle over a measured base
-statement:
-  A representative of an \(L^2\) Hilbert-valued map is a square-integrable
-  section of the trivial Hilbert bundle.
--/
-abbrev SquareIntegrableValueSection {X E : Type}
-    [TopologicalSpace X] [MeasurableSpace X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (μ : Measure X) : Type :=
-  SquareIntegrableHilbertBundleSection (trivialHilbertBundleGeometry X E) μ
-
 namespace SquareIntegrableValueSection
 
 variable {X E : Type} [TopologicalSpace X] [MeasurableSpace X]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] {μ : Measure X}
 
-/--
-%%handwave
-name:
-  Trivial-bundle representative as a function
-statement:
-  A section representative of the trivial Hilbert bundle determines the
-  corresponding Hilbert-valued function.
--/
-abbrev toFunction
-    (u : SquareIntegrableValueSection (X := X) (E := E) μ) : X → E :=
-  u.toSection
-
-/--
-%%handwave
-name:
-  Almost-everywhere equality for trivial-bundle representatives
-statement:
-  Almost-everywhere equality of representatives of trivial-bundle
-  \(L^2\)-sections is equality of the corresponding Hilbert-valued functions
-  almost everywhere.
--/
-abbrev aeSetoid :
-    Setoid (SquareIntegrableValueSection (X := X) (E := E) μ) :=
-  SquareIntegrableHilbertBundleSection.aeSetoid
-    (G := trivialHilbertBundleGeometry X E) (μ := μ)
-
 end SquareIntegrableValueSection
-
-/--
-%%handwave
-name:
-  Square-integrable section of the trivial Hilbert bundle over a surface
-statement:
-  A representative of an \(L^2\) Hilbert-valued map is a square-integrable
-  section of the trivial Hilbert bundle.
--/
-abbrev SquareIntegrableSurfaceValueSection {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (μ : Measure X) : Type :=
-  SquareIntegrableValueSection (X := X) (E := E) μ
 
 namespace SquareIntegrableSurfaceValueSection
 
 variable {X E : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X] [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E] {μ : Measure X}
-
-/--
-%%handwave
-name:
-  Trivial-bundle representative as a function
-statement:
-  A section representative of the trivial Hilbert bundle determines the
-  corresponding Hilbert-valued function.
--/
-abbrev toFunction
-    (u : SquareIntegrableSurfaceValueSection (X := X) (E := E) μ) : X → E :=
-  SquareIntegrableValueSection.toFunction u
-
-/--
-%%handwave
-name:
-  Almost-everywhere equality for trivial-bundle representatives
-statement:
-  Almost-everywhere equality of representatives of trivial-bundle
-  \(L^2\)-sections is equality of the corresponding Hilbert-valued functions
-  almost everywhere.
--/
-abbrev aeSetoid :
-    Setoid (SquareIntegrableSurfaceValueSection (X := X) (E := E) μ) :=
-  SquareIntegrableValueSection.aeSetoid (X := X) (E := E) (μ := μ)
 
 end SquareIntegrableSurfaceValueSection
 
@@ -1050,479 +398,7 @@ namespace SurfaceDifferentialField
 variable {X E : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-/--
-%%handwave
-name:
-  Differential field as a bundle section
-statement:
-  A vector-valued differential field determines a section of the differential
-  bundle by pairing each base point with the linear map assigned to it.
--/
-noncomputable def toTotalSpaceSection (du : SurfaceDifferentialField X E) :
-    X → SurfaceDifferentialTotalSpace X E :=
-  fun x ↦ Bundle.TotalSpace.mk' (ℂ →L[ℝ] E) x (du x)
-
-/--
-%%handwave
-name:
-  Base point of a differential field as a bundle section
-statement:
-  When a surface differential field \(A\) is viewed as a section of the differential-bundle total space, the base point of its value at \(x\) is \(x\).
-proof:
-  The total-space section is the pair \((x,A_x)\) by definition.
--/
-@[simp]
-theorem toTotalSpaceSection_apply (du : SurfaceDifferentialField X E) (x : X) :
-    (toTotalSpaceSection du x).1 = x :=
-  rfl
-
 end SurfaceDifferentialField
-
-/--
-%%handwave
-name:
-  Model tangent basis vector
-statement:
-  The real model plane of a surface has the standard two-element basis
-  \(1,i\), viewed in each tangent model fiber.
--/
-noncomputable def surfaceTangentModelBasisVector {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] (x : X) (i : Fin 2) :
-    TangentSpace SurfaceRealModel x :=
-  if i = 0 then (1 : ℂ) else Complex.I
-
-/--
-%%handwave
-name:
-  Metric Gram determinant in the model tangent basis
-statement:
-  At a point of a Riemannian surface, the Gram determinant of the metric in
-  the model tangent basis is the determinant of the \(2\times 2\) matrix of
-  pairings of \(1\) and \(i\).
--/
-noncomputable def surfaceMetricModelGramDetAt {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X) : ℝ :=
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  let b := g.toContMDiffRiemannianMetric.inner x
-  let e₁ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 0
-  let e₂ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 1
-  b e₁ e₁ * b e₂ e₂ - b e₁ e₂ * b e₂ e₁
-
-/--
-%%handwave
-name:
-  Inverse metric coefficients in the model tangent basis
-statement:
-  The inverse metric coefficients are the entries of the inverse of the
-  \(2\times2\) Gram matrix of the Riemannian metric in the model tangent
-  basis.
--/
-noncomputable def surfaceMetricInverseGramCoeffAt {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X) (i j : Fin 2) : ℝ :=
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  let b := g.toContMDiffRiemannianMetric.inner x
-  let e₁ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 0
-  let e₂ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 1
-  let a : ℝ := b e₁ e₁
-  let c : ℝ := b e₁ e₂
-  let d : ℝ := b e₂ e₁
-  let e : ℝ := b e₂ e₂
-  let det : ℝ := surfaceMetricModelGramDetAt g x
-  match i, j with
-  | 0, 0 => det⁻¹ * e
-  | 0, 1 => -det⁻¹ * c
-  | 1, 0 => -det⁻¹ * d
-  | 1, 1 => det⁻¹ * a
-
-/--
-%%handwave
-name:
-  Metric Gram determinant is positive in the model tangent basis
-statement:
-  The Gram determinant of a Riemannian metric in the two model tangent
-  directions \(1,i\) is strictly positive.
-proof:
-  Complete the square in the positive definite quadratic form.  The first
-  basis vector has positive square length, and the Schur complement is the
-  square length of a nonzero vector, so the determinant is positive.
--/
-theorem surfaceMetricModelGramDetAt_pos {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X) :
-    0 < surfaceMetricModelGramDetAt g x := by
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  let b : ℂ →L[ℝ] ℂ →L[ℝ] ℝ := g.toContMDiffRiemannianMetric.inner x
-  let a : ℝ := b (1 : ℂ) (1 : ℂ)
-  let c : ℝ := b (1 : ℂ) Complex.I
-  let d : ℝ := b Complex.I Complex.I
-  have ha : 0 < a :=
-    g.toContMDiffRiemannianMetric.pos x
-      (show TangentSpace SurfaceRealModel x from (1 : ℂ)) (by
-        change (1 : ℂ) ≠ 0
-        norm_num)
-  let r : ℝ := c / a
-  let v : ℂ := Complex.I - (r : ℝ) • (1 : ℂ)
-  have hv_ne : v ≠ 0 := by
-    intro hv
-    have him := congr_arg Complex.im hv
-    simp [v, r] at him
-  have hv_pos : 0 < b v v := g.toContMDiffRiemannianMetric.pos x
-    (show TangentSpace SurfaceRealModel x from v) hv_ne
-  have hv_expand : b v v = d - r * c - r * c + r * r * a := by
-    change b (Complex.I - (r : ℝ) • (1 : ℂ))
-        (Complex.I - (r : ℝ) • (1 : ℂ)) =
-      d - r * c - r * c + r * r * a
-    have hsymm_b : b Complex.I (1 : ℂ) = b (1 : ℂ) Complex.I := by
-      exact g.toContMDiffRiemannianMetric.symm x
-        (show TangentSpace SurfaceRealModel x from Complex.I)
-        (show TangentSpace SurfaceRealModel x from (1 : ℂ))
-    rw [map_sub]
-    simp only [ContinuousLinearMap.sub_apply, map_sub, map_smul, smul_eq_mul]
-    rw [hsymm_b]
-    simp [a, c, d]
-    ring
-  have hv_eval : b v v = d - c * c / a := by
-    rw [hv_expand]
-    simp [r]
-    field_simp [ha.ne']
-    ring
-  rw [hv_eval] at hv_pos
-  have hmul : 0 < a * (d - c * c / a) := mul_pos ha hv_pos
-  have hdet : a * (d - c * c / a) = a * d - c * c := by
-    field_simp [ha.ne']
-  rw [hdet] at hmul
-  have hsymm :
-      (g.toContMDiffRiemannianMetric.inner x
-        (show TangentSpace SurfaceRealModel x from Complex.I)
-        (show TangentSpace SurfaceRealModel x from (1 : ℂ))) =
-        (g.toContMDiffRiemannianMetric.inner x
-          (show TangentSpace SurfaceRealModel x from (1 : ℂ))
-          (show TangentSpace SurfaceRealModel x from Complex.I)) := by
-    exact g.toContMDiffRiemannianMetric.symm x
-      (show TangentSpace SurfaceRealModel x from Complex.I)
-      (show TangentSpace SurfaceRealModel x from (1 : ℂ))
-  simpa [surfaceMetricModelGramDetAt, surfaceTangentModelBasisVector, a, c, d,
-    hsymm] using hmul
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt pairing of vector-valued differentials
-statement:
-  A Riemannian metric on the surface and an inner product on the target induce
-  a Hilbert-Schmidt pairing on the fiber of \(T^\ast X\otimes E\).
--/
-noncomputable def surfaceDifferentialHilbertSchmidtInnerAt {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A B : SurfaceDifferentialFiber X E x) : ℝ :=
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  ∑ i : Fin 2, ∑ j : Fin 2,
-    surfaceMetricInverseGramCoeffAt g x i j *
-      inner ℝ (A (surfaceTangentModelBasisVector x i))
-        (B (surfaceTangentModelBasisVector x j))
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt norm square of a vector-valued differential
-statement:
-  The pointwise square norm of a vector-valued differential is its
-  Hilbert-Schmidt pairing with itself.
--/
-noncomputable def surfaceDifferentialHilbertSchmidtNormSqAt {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A : SurfaceDifferentialFiber X E x) : ℝ :=
-  surfaceDifferentialHilbertSchmidtInnerAt g x A A
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt pairing as a continuous bilinear form
-statement:
-  The metric Hilbert-Schmidt pairing on the fiber of \(T^\ast X\otimes E\)
-  is represented by a continuous real bilinear form.
-proof:
-  This follows from the finite-dimensionality of the tangent plane and the
-  boundedness of the Hilbert inner product on the target.
--/
-noncomputable def surfaceDifferentialHilbertSchmidtInnerCLMAt {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X) :
-    SurfaceDifferentialBundleFiber (X := X) (E := E) x →L[ℝ]
-      SurfaceDifferentialBundleFiber (X := X) (E := E) x →L[ℝ] ℝ := by
-  let V := SurfaceDifferentialBundleFiber (X := X) (E := E) x
-  let hVAdd : AddCommGroup V :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ)
-      (M := TangentSpace SurfaceRealModel x) (M₂ := E)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup V := hVAdd
-  letI : AddGroup V := AddCommGroup.toAddGroup
-  letI : AddCommMonoid V := AddCommGroup.toAddCommMonoid
-  let hVTop : IsTopologicalAddGroup V :=
-    ContinuousLinearMap.topologicalAddGroup
-      (𝕜₁ := ℝ) (𝕜₂ := ℝ)
-      (σ := RingHom.id ℝ)
-      (E := TangentSpace SurfaceRealModel x) (F := E)
-  letI : IsTopologicalAddGroup V := hVTop
-  let hDualAdd : AddCommGroup (V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ) (M := V) (M₂ := ℝ)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup (V →L[ℝ] ℝ) := hDualAdd
-  letI : AddGroup (V →L[ℝ] ℝ) := AddCommGroup.toAddGroup
-  letI : AddCommMonoid (V →L[ℝ] ℝ) := AddCommGroup.toAddCommMonoid
-  letI : AddMonoid (V →L[ℝ] ℝ) := AddCommMonoid.toAddMonoid
-  let hDualTop : IsTopologicalAddGroup (V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.topologicalAddGroup
-      (𝕜₁ := ℝ) (𝕜₂ := ℝ) (σ := RingHom.id ℝ)
-      (E := V) (F := ℝ)
-  letI : IsTopologicalAddGroup (V →L[ℝ] ℝ) := hDualTop
-  letI : ContinuousAdd (V →L[ℝ] ℝ) :=
-    hDualTop.toContinuousAdd
-  let hOuterAdd : AddCommGroup (V →L[ℝ] V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ) (M := V) (M₂ := V →L[ℝ] ℝ)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup (V →L[ℝ] V →L[ℝ] ℝ) := hOuterAdd
-  letI : AddCommMonoid (V →L[ℝ] V →L[ℝ] ℝ) :=
-    AddCommGroup.toAddCommMonoid
-  letI : AddMonoid (V →L[ℝ] V →L[ℝ] ℝ) :=
-    AddCommMonoid.toAddMonoid
-  let innerReal : E →L[ℝ] E →L[ℝ] ℝ :=
-    LinearMap.mkContinuous₂ (innerₗ E) 1 fun u v ↦ by
-      simpa [innerₗ_apply_apply] using (norm_inner_le_norm (𝕜 := ℝ) u v)
-  let eval (i : Fin 2) :
-      V →L[ℝ] E :=
-    { toLinearMap :=
-        (ContinuousLinearMap.coeLM ℝ
-          (M := TangentSpace SurfaceRealModel x) (N₃ := E)).flip
-            (surfaceTangentModelBasisVector x i)
-      cont := continuous_eval_const (surfaceTangentModelBasisVector x i) }
-  exact
-    ∑ i : Fin 2, ∑ j : Fin 2,
-      surfaceMetricInverseGramCoeffAt g x i j •
-        ((ContinuousLinearMap.precomp (G := ℝ) (eval j)).comp
-          (innerReal.comp (eval i)))
-
-/--
-%%handwave
-name:
-  Continuous Hilbert-Schmidt pairing evaluates to the metric formula
-statement:
-  The continuous bilinear form representing the Hilbert-Schmidt pairing agrees
-  with the coordinate formula obtained by contracting with the inverse
-  Riemannian metric.
-proof:
-  Unfold the continuous bilinear form induced by the surface Hilbert--Schmidt metric; its evaluation is definitionally the stated fiber inner product.
--/
-theorem surfaceDifferentialHilbertSchmidtInnerCLMAt_apply {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A B : SurfaceDifferentialBundleFiber (X := X) (E := E) x) :
-    surfaceDifferentialHilbertSchmidtInnerCLMAt g x A B =
-      surfaceDifferentialHilbertSchmidtInnerAt g x A B := by
-  let V := SurfaceDifferentialBundleFiber (X := X) (E := E) x
-  let hVAdd : AddCommGroup V :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ)
-      (M := TangentSpace SurfaceRealModel x) (M₂ := E)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup V := hVAdd
-  letI : AddGroup V := AddCommGroup.toAddGroup
-  letI : AddCommMonoid V := AddCommGroup.toAddCommMonoid
-  let hVTop : IsTopologicalAddGroup V :=
-    ContinuousLinearMap.topologicalAddGroup
-      (𝕜₁ := ℝ) (𝕜₂ := ℝ)
-      (σ := RingHom.id ℝ)
-      (E := TangentSpace SurfaceRealModel x) (F := E)
-  letI : IsTopologicalAddGroup V := hVTop
-  let hDualAdd : AddCommGroup (V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ) (M := V) (M₂ := ℝ)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup (V →L[ℝ] ℝ) := hDualAdd
-  letI : AddGroup (V →L[ℝ] ℝ) := AddCommGroup.toAddGroup
-  letI : AddCommMonoid (V →L[ℝ] ℝ) := AddCommGroup.toAddCommMonoid
-  letI : AddMonoid (V →L[ℝ] ℝ) := AddCommMonoid.toAddMonoid
-  let hDualTop : IsTopologicalAddGroup (V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.topologicalAddGroup
-      (𝕜₁ := ℝ) (𝕜₂ := ℝ) (σ := RingHom.id ℝ)
-      (E := V) (F := ℝ)
-  letI : IsTopologicalAddGroup (V →L[ℝ] ℝ) := hDualTop
-  letI : ContinuousAdd (V →L[ℝ] ℝ) :=
-    hDualTop.toContinuousAdd
-  let hOuterAdd : AddCommGroup (V →L[ℝ] V →L[ℝ] ℝ) :=
-    ContinuousLinearMap.addCommGroup
-      (R := ℝ) (R₂ := ℝ) (M := V) (M₂ := V →L[ℝ] ℝ)
-      (σ₁₂ := RingHom.id ℝ)
-  letI : AddCommGroup (V →L[ℝ] V →L[ℝ] ℝ) := hOuterAdd
-  letI : AddCommMonoid (V →L[ℝ] V →L[ℝ] ℝ) :=
-    AddCommGroup.toAddCommMonoid
-  letI : AddMonoid (V →L[ℝ] V →L[ℝ] ℝ) :=
-    AddCommMonoid.toAddMonoid
-  simp [surfaceDifferentialHilbertSchmidtInnerCLMAt,
-    surfaceDifferentialHilbertSchmidtInnerAt]
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt pairing is symmetric
-statement:
-  The metric Hilbert-Schmidt pairing on vector-valued differentials is
-  symmetric.
-proof:
-  Expand the Hilbert--Schmidt contraction and use symmetry of the inverse metric coefficients together with symmetry of the target inner product.
--/
-theorem surfaceDifferentialHilbertSchmidtInnerAt_symm {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A B : SurfaceDifferentialBundleFiber (X := X) (E := E) x) :
-    surfaceDifferentialHilbertSchmidtInnerAt g x A B =
-      surfaceDifferentialHilbertSchmidtInnerAt g x B A := by
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  simp [surfaceDifferentialHilbertSchmidtInnerAt,
-    surfaceMetricInverseGramCoeffAt, surfaceMetricModelGramDetAt,
-    real_inner_comm, g.toContMDiffRiemannianMetric.symm]
-  ring_nf
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt square norm is positive
-statement:
-  A nonzero vector-valued differential has strictly positive
-  Hilbert-Schmidt square norm.
-proof:
-  Write the differential by its values on \(1\) and \(i\).  The inverse
-  metric contraction is the sum of a positive multiple of the first square
-  norm and a positive multiple of a completed square.  If the differential is
-  nonzero, at least one of its two coordinate values is nonzero.
--/
-theorem surfaceDifferentialHilbertSchmidtInnerAt_pos {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A : SurfaceDifferentialBundleFiber (X := X) (E := E) x)
-    (hA : A ≠ 0) :
-    0 < surfaceDifferentialHilbertSchmidtInnerAt g x A A := by
-  letI : IsManifold SurfaceRealModel ∞ X := g.isManifold_real
-  let b := g.toContMDiffRiemannianMetric.inner x
-  let e₁ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 0
-  let e₂ : TangentSpace SurfaceRealModel x := surfaceTangentModelBasisVector x 1
-  let a : ℝ := b e₁ e₁
-  let c : ℝ := b e₁ e₂
-  let d : ℝ := b e₂ e₁
-  let e : ℝ := b e₂ e₂
-  let det : ℝ := surfaceMetricModelGramDetAt g x
-  let u : E := A e₁
-  let v : E := A e₂
-  have hdet_pos : 0 < det := by
-    simpa [det] using surfaceMetricModelGramDetAt_pos g x
-  have ha_pos : 0 < a := by
-    simpa [a, e₁, surfaceTangentModelBasisVector] using
-      g.toContMDiffRiemannianMetric.pos x
-        (show TangentSpace SurfaceRealModel x from (1 : ℂ)) (by
-          change (1 : ℂ) ≠ 0
-          norm_num)
-  have hd_eq_c : d = c := by
-    dsimp [d, c, e₁, e₂, surfaceTangentModelBasisVector]
-    exact g.toContMDiffRiemannianMetric.symm x
-      (show TangentSpace SurfaceRealModel x from Complex.I)
-      (show TangentSpace SurfaceRealModel x from (1 : ℂ))
-  have hdet_eq : det = a * e - c * c := by
-    calc
-      det = b e₁ e₁ * b e₂ e₂ - b e₁ e₂ * b e₂ e₁ := by
-        simp [det, surfaceMetricModelGramDetAt, e₁, e₂, b]
-      _ = a * e - c * c := by
-        simp [a, c, d, e, hd_eq_c]
-  have hcoord_ne : u ≠ 0 ∨ v ≠ 0 := by
-    by_contra h
-    push Not at h
-    apply hA
-    ext z
-    let zc : ℂ := z
-    have hz :
-        z = (zc.re : ℝ) • e₁ + (zc.im : ℝ) • e₂ := by
-      change zc = (zc.re : ℝ) • (1 : ℂ) + (zc.im : ℝ) • Complex.I
-      apply Complex.ext <;> simp [zc]
-    calc
-      A z = A ((zc.re : ℝ) • e₁ + (zc.im : ℝ) • e₂) := by rw [hz]
-      _ = (zc.re : ℝ) • u + (zc.im : ℝ) • v := by simp [u, v]
-      _ = 0 := by simp [h.1, h.2]
-  have hexpand :
-      surfaceDifferentialHilbertSchmidtInnerAt g x A A =
-        det⁻¹ *
-          (e * inner ℝ u u -
-            c * inner ℝ u v -
-            d * inner ℝ v u +
-            a * inner ℝ v v) := by
-    simp [surfaceDifferentialHilbertSchmidtInnerAt,
-      surfaceMetricInverseGramCoeffAt, surfaceMetricModelGramDetAt,
-      surfaceTangentModelBasisVector, Fin.sum_univ_two, det, b, e₁, e₂, a, c, d, e,
-      u, v]
-    ring
-  rw [hexpand]
-  apply mul_pos (inv_pos.mpr hdet_pos)
-  by_cases hu : u = 0
-  · have hv : v ≠ 0 := hcoord_ne.resolve_left (by simp [hu])
-    rw [hu]
-    simp [hd_eq_c]
-    exact mul_pos ha_pos (sq_pos_of_pos (norm_pos_iff.mpr hv))
-  · have hnum_eq :
-        e * inner ℝ u u -
-            c * inner ℝ u v -
-            d * inner ℝ v u +
-            a * inner ℝ v v =
-          (det / a) * inner ℝ u u +
-            a * inner ℝ (v - (c / a) • u) (v - (c / a) • u) := by
-      rw [hd_eq_c, real_inner_comm v u, hdet_eq]
-      set α : ℝ := inner ℝ u u
-      set β : ℝ := inner ℝ u v
-      set γ : ℝ := inner ℝ v v
-      have hinner :
-          inner ℝ (v - (c / a) • u) (v - (c / a) • u) =
-            γ - (c / a) * β - (c / a) * β + (c / a) * (c / a) * α := by
-        calc
-          inner ℝ (v - (c / a) • u) (v - (c / a) • u)
-              = inner ℝ v v - inner ℝ v ((c / a) • u) -
-                  inner ℝ ((c / a) • u) v +
-                    inner ℝ ((c / a) • u) ((c / a) • u) := by
-                simpa using (inner_sub_sub_self v ((c / a) • u) :
-                  inner ℝ (v - (c / a) • u) (v - (c / a) • u) =
-                    inner ℝ v v - inner ℝ v ((c / a) • u) -
-                      inner ℝ ((c / a) • u) v +
-                        inner ℝ ((c / a) • u) ((c / a) • u))
-          _ = γ - (c / a) * β - (c / a) * β +
-                (c / a) * (c / a) * α := by
-              simp [real_inner_smul_left, real_inner_smul_right,
-                real_inner_comm v u, α, β, γ, norm_smul, Real.norm_eq_abs,
-                abs_of_pos ha_pos]
-              rw [pow_two]
-              calc
-                |c| / a * ‖u‖ * (|c| / a * ‖u‖)
-                    = (|c| * |c|) * (a⁻¹ * a⁻¹) * (‖u‖ * ‖u‖) := by
-                      ring
-                _ = c / a * (c / a) * ‖u‖ ^ 2 := by
-                      rw [abs_mul_abs_self]
-                      ring
-      rw [hinner]
-      rw [real_inner_comm u v]
-      field_simp [ha_pos.ne']
-      ring
-    rw [hnum_eq]
-    exact add_pos_of_pos_of_nonneg
-      (mul_pos (div_pos hdet_pos ha_pos) (real_inner_self_pos.mpr hu))
-      (mul_nonneg ha_pos.le (real_inner_self_nonneg))
 
 /--
 %%handwave
@@ -1595,23 +471,6 @@ noncomputable def manifoldDifferentialHilbertSchmidtInnerAt {H X E : Type}
     manifoldMetricInverseGramCoeffAt (I := I) (X := X) g x i j *
       inner ℝ (A (manifoldTangentModelBasisVector (I := I) (X := X) x i))
         (B (manifoldTangentModelBasisVector (I := I) (X := X) x j))
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt norm square of a manifold differential
-statement:
-  The pointwise square norm of a vector-valued differential is its
-  Hilbert-Schmidt pairing with itself.
--/
-noncomputable def manifoldDifferentialHilbertSchmidtNormSqAt {H X E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) [TopologicalSpace X] [ChartedSpace H X]
-    [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnManifold I X) (x : X)
-    (A : ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E) x) : ℝ :=
-  manifoldDifferentialHilbertSchmidtInnerAt (I := I) (X := X) g x A A
 
 /--
 %%handwave
@@ -2659,8 +1518,11 @@ theorem manifoldDifferentialHilbertSchmidtCoordinateModelCLM_continuousAt
       (I := I) (X := X) g x₀ i j).smul continuousAt_const
 
 /--
-Turn a continuous bilinear map into the corresponding algebraic bilinear map.
-This is useful for applying matrix lemmas about bilinear forms.
+%%handwave
+name:
+  Underlying algebraic bilinear map
+statement:
+  Forgetting continuity turns a continuous bilinear map $B:V\times W\to G$ into the algebraic bilinear map with the same value $B(v,w)$ at every pair $(v,w)$.
 -/
 def continuousBilinearMap_toLinearMap₂ {V W G : Type}
     [TopologicalSpace V] [AddCommGroup V] [Module ℝ V]
@@ -3101,30 +1963,6 @@ theorem manifoldDifferentialHilbertSchmidtInnerCLMAt_inCoordinates_continuousAt
     manifoldDifferentialHilbertSchmidtInnerCLMAt_inCoordinates_eq_coordinateModel
       (I := I) (X := X) (E := E) g x₀ y hy
 
-/--
-%%handwave
-name:
-  Hilbert geometry on the differential bundle
-statement:
-  A Riemannian metric on the surface and a Hilbert inner product on the target
-  make the vector-valued differential bundle into a fiberwise Hilbert bundle,
-  with the Hilbert-Schmidt inner product on each fiber.
--/
-noncomputable def surfaceDifferentialHilbertBundleGeometry {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) :
-    HilbertBundleGeometryOnSurface X (ℂ →L[ℝ] E)
-      (SurfaceDifferentialBundleFiber (X := X) (E := E)) where
-  fiberInner := fun x A B ↦
-    surfaceDifferentialHilbertSchmidtInnerAt g x A B
-  fiberNormSq := fun x A ↦
-    surfaceDifferentialHilbertSchmidtNormSqAt g x A
-  fiberNormSq_eq_inner := by
-    intro _ _
-    rfl
-
 set_option synthInstance.maxHeartbeats 80000 in
 /--
 %%handwave
@@ -3172,6 +2010,13 @@ noncomputable def manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
       manifoldDifferentialHilbertSchmidtInnerCLMAt_inCoordinates_continuousAt
         (I := I) (X := X) (E := E) g x₀⟩
 
+/--
+%%handwave
+name:
+  Hilbert–Schmidt norm on a differential fiber
+statement:
+  A continuous Riemannian metric on the bundle of linear maps from tangent coordinates to a real inner-product space equips each fiber with the normed additive-group structure induced by its Hilbert–Schmidt inner product.
+-/
 @[reducible]
 noncomputable def manifoldDifferentialHilbertSchmidtNormedAddCommGroup
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -3187,6 +2032,13 @@ noncomputable def manifoldDifferentialHilbertSchmidtNormedAddCommGroup
     (metric.toRiemannianMetric.continuousAt x)
     (metric.toRiemannianMetric.isVonNBounded x)
 
+/--
+%%handwave
+name:
+  Hilbert–Schmidt inner-product structure on a differential fiber
+statement:
+  A continuous Riemannian metric on the differential bundle equips each fiber with the real inner-product-space structure whose norm is the associated Hilbert–Schmidt norm.
+-/
 @[reducible]
 noncomputable def manifoldDifferentialHilbertSchmidtInnerProductSpace
     {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
@@ -3210,144 +2062,6 @@ noncomputable def manifoldDifferentialHilbertSchmidtInnerProductSpace
     (metric.toRiemannianMetric.toCore x)
     (metric.toRiemannianMetric.continuousAt x)
     (metric.toRiemannianMetric.isVonNBounded x)
-
-/--
-%%handwave
-name:
-  Differential fibers over a manifold are complete for the registered norm
-statement:
-  If the Hilbert target is complete, then the fibers of \(T^\ast X\otimes E\),
-  equipped with the metric Hilbert-Schmidt norm, are complete metric vector
-  spaces.
-proof:
-  The registered fiberwise Hilbert norm induces the same uniform structure as
-  the continuous-linear-map topology on each fiber, and continuous linear maps
-  into a complete normed space form a complete space.
--/
-theorem manifoldDifferentialHilbertSchmidt_completeSpace_of_inner
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [IsManifold I 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-    (metric : Bundle.ContinuousRiemannianMetric (H →L[ℝ] E)
-      (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E))) :
-    ∀ x : X,
-      letI : NormedAddCommGroup
-          (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E) x) :=
-        manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-          (I := I) (X := X) (E := E) metric x
-      CompleteSpace
-        (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E) x) := by
-  intro x
-  letI : NormedAddCommGroup
-      (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E) x) :=
-    manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-      (I := I) (X := X) (E := E) metric x
-  change CompleteSpace (H →L[ℝ] E)
-  infer_instance
-
-/--
-%%handwave
-name:
-  Hilbert geometry on the differential bundle is continuous
-statement:
-  The Riemannian metric on a real surface and the Hilbert structure on the
-  target induce a continuous Riemannian metric on the bundle
-  \(T^\ast X\otimes E\).
-proof:
-  This is the specialization of the finite-dimensional manifold
-  Hilbert-Schmidt metric to the real two-dimensional model.
--/
-noncomputable def surfaceDifferentialHilbertSchmidtContinuousRiemannianMetric {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) :
-    Bundle.ContinuousRiemannianMetric (ℂ →L[ℝ] E)
-      (SurfaceDifferentialBundleFiber (X := X) (E := E)) :=
-  manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-    (I := SurfaceRealModel) (X := X) (E := E) g.toManifoldMetric
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt fiber pairing is the induced inner product
-statement:
-  After registering the canonical Hilbert-Schmidt Riemannian metric on
-  \(T^\ast X\otimes E\), the fiberwise inner product is exactly the metric
-  Hilbert-Schmidt pairing.
-proof:
-  In the preferred complex tangent basis, the surface Hilbert--Schmidt contraction is exactly the declared inner product on the two coordinate components.
--/
-theorem surfaceDifferentialHilbertSchmidtInnerAt_eq_inner {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X)
-    (A B : SurfaceDifferentialBundleFiber (X := X) (E := E) x) :
-    letI : Bundle.RiemannianBundle
-        (SurfaceDifferentialBundleFiber (X := X) (E := E)) :=
-      ⟨(surfaceDifferentialHilbertSchmidtContinuousRiemannianMetric
-        (X := X) (E := E) g).toRiemannianMetric⟩
-    manifoldDifferentialHilbertSchmidtInnerAt
-      (I := SurfaceRealModel) (X := X) g.toManifoldMetric x A B =
-        inner ℝ A B := by
-  letI : Bundle.RiemannianBundle
-      (SurfaceDifferentialBundleFiber (X := X) (E := E)) :=
-    ⟨(surfaceDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (X := X) (E := E) g).toRiemannianMetric⟩
-  rw [← manifoldDifferentialHilbertSchmidtInnerCLMAt_apply
-    (I := SurfaceRealModel) (X := X) (E := E) g.toManifoldMetric x A B]
-  rfl
-
-/--
-%%handwave
-name:
-  Hilbert-Schmidt differential fibers are complete for the registered norm
-statement:
-  If the target Hilbert space is complete, then every fiber of
-  \(T^\ast X\otimes E\), equipped with the supplied metric Hilbert-Schmidt
-  norm, is a complete metric vector space.
-proof:
-  The tangent plane is finite-dimensional, so the Hilbert-Schmidt norm is
-  equivalent to any fixed operator norm on the continuous linear maps into the
-  complete target.
--/
-theorem surfaceDifferentialHilbertSchmidt_completeSpace_of_inner {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-    (g : SmoothRiemannianMetricOnSurface X) :
-    letI : Bundle.RiemannianBundle
-        (SurfaceDifferentialBundleFiber (X := X) (E := E)) :=
-      ⟨(surfaceDifferentialHilbertSchmidtContinuousRiemannianMetric
-        (X := X) (E := E) g).toRiemannianMetric⟩
-    ∀ x : X,
-      @CompleteSpace (SurfaceDifferentialBundleFiber (X := X) (E := E) x)
-        PseudoMetricSpace.toUniformSpace := by
-  letI : Bundle.RiemannianBundle
-      (SurfaceDifferentialBundleFiber (X := X) (E := E)) :=
-    ⟨(surfaceDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (X := X) (E := E) g).toRiemannianMetric⟩
-  intro x
-  change @CompleteSpace (SurfaceDifferentialBundleFiber (X := X) (E := E) x)
-    PseudoMetricSpace.toUniformSpace
-  let U0 : UniformSpace (SurfaceDifferentialBundleFiber (X := X) (E := E) x) :=
-    ContinuousLinearMap.uniformSpace
-      (𝕜₁ := ℝ) (𝕜₂ := ℝ) (σ := RingHom.id ℝ)
-      (E := TangentSpace SurfaceRealModel x) (F := E)
-  have hU : PseudoMetricSpace.toUniformSpace = U0 := by
-    apply UniformSpace.ext
-    rw [@uniformity_eq_comap_nhds_zero
-      (SurfaceDifferentialBundleFiber (X := X) (E := E) x)
-      PseudoMetricSpace.toUniformSpace inferInstance inferInstance]
-    letI : UniformSpace (SurfaceDifferentialBundleFiber (X := X) (E := E) x) := U0
-    rw [@uniformity_eq_comap_nhds_zero
-      (SurfaceDifferentialBundleFiber (X := X) (E := E) x)
-      U0 inferInstance inferInstance]
-  rw [hU]
-  change CompleteSpace (ℂ →L[ℝ] E)
-  infer_instance
 
 /--
 %%handwave
@@ -3418,25 +2132,6 @@ def ManifoldDifferentialFieldMemHilbertSchmidtL2 {H X E : Type}
 /--
 %%handwave
 name:
-  \(L^2\)-sections of the differential bundle over a manifold
-statement:
-  The \(L^2\)-sections of \(T^\ast X\otimes E\) over a finite-dimensional
-  Riemannian manifold are square-integrable differential representatives
-  modulo almost-everywhere equality.
--/
-abbrev ManifoldDifferentialL2Section {H X E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [IsManifold I 1 X]
-    [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnManifold I X) (μ : Measure X) : Type :=
-  L2HilbertBundle
-    (manifoldDifferentialHilbertBundleGeometry (I := I) (X := X) (E := E) g) μ
-
-/--
-%%handwave
-name:
   Square-integrable differential representative on a manifold
 statement:
   A square-integrable differential representative is a measurable section of
@@ -3467,82 +2162,10 @@ abbrev toField
     ManifoldDifferentialField I X E :=
   du.toSection
 
-/-- The field is square-integrable for the metric Hilbert-Schmidt norm. -/
-abbrev memHilbertSchmidtL2
-    (du : SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ) :
-    ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g μ du.toField :=
-  du.memL2
-
 instance : CoeFun
     (SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ)
     (fun _ ↦ ManifoldDifferentialField I X E) where
   coe du := du.toField
-
-/--
-%%handwave
-name:
-  Almost-everywhere equality of square-integrable differential representatives
-statement:
-  Two square-integrable differential representatives define the same
-  \(L^2\)-section when their values agree almost everywhere.
--/
-def AeEq
-    (du dv :
-      SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ) :
-    Prop :=
-  SquareIntegrableHilbertBundleSection.AeEq du dv
-
-/--
-%%handwave
-name:
-  Reflexivity of almost-everywhere equality for manifold differential fields
-statement:
-  Every square-integrable manifold differential representative agrees almost everywhere with itself.
-proof:
-  This is reflexivity of almost-everywhere equality for the underlying Hilbert-bundle section.
--/
-theorem AeEq.refl
-    (du :
-      SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ) :
-    AeEq du du :=
-  SquareIntegrableHilbertBundleSection.AeEq.refl du
-
-/--
-%%handwave
-name:
-  Symmetry of almost-everywhere equality for manifold differential fields
-statement:
-  If two square-integrable manifold differential representatives agree almost everywhere, they also agree in the reverse order.
-proof:
-  Apply symmetry of almost-everywhere equality for the underlying bundle sections.
--/
-theorem AeEq.symm
-    {du dv :
-      SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ}
-    (h : AeEq du dv) : AeEq dv du :=
-  SquareIntegrableHilbertBundleSection.AeEq.symm h
-
-/--
-%%handwave
-name:
-  Transitivity of almost-everywhere equality for manifold differential fields
-statement:
-  If \(A=B\) almost everywhere and \(B=C\) almost everywhere, then \(A=C\) almost everywhere as manifold differential fields.
-proof:
-  Apply transitivity of almost-everywhere equality for the underlying bundle sections.
--/
-theorem AeEq.trans
-    {du dv dw :
-      SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ}
-    (h₁ : AeEq du dv) (h₂ : AeEq dv dw) : AeEq du dw := by
-  exact SquareIntegrableHilbertBundleSection.AeEq.trans h₁ h₂
-
-abbrev aeSetoid :
-    Setoid
-      (SquareIntegrableManifoldDifferentialField (I := I) (X := X) (E := E) g μ) :=
-  SquareIntegrableHilbertBundleSection.aeSetoid
-    (G := manifoldDifferentialHilbertBundleGeometry (I := I) (X := X) (E := E) g)
-    (μ := μ)
 
 end SquareIntegrableManifoldDifferentialField
 
@@ -3605,100 +2228,12 @@ variable {X E : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [NormedAddCommGroup E] [InnerProductSpace ℝ E]
     {g : SmoothRiemannianMetricOnSurface X} {μ : Measure X}
 
-/-- The underlying differential field. -/
-abbrev toField
-    (du : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :
-    SurfaceDifferentialField X E :=
-  du.toSection
-
-/-- The field is square-integrable for the metric Hilbert-Schmidt norm. -/
-abbrev memHilbertSchmidtL2
-    (du : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :
-    SurfaceDifferentialFieldMemHilbertSchmidtL2 g μ du.toField :=
-  du.memL2
-
 instance : CoeFun
     (SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ)
     (fun _ ↦ SurfaceDifferentialField X E) where
   coe du := du.toField
 
-/--
-%%handwave
-name:
-  Almost-everywhere equality of square-integrable differential representatives
-statement:
-  Two square-integrable differential representatives define the same
-  \(L^2\)-section when their values agree almost everywhere.
--/
-def AeEq
-    (du dv : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :
-    Prop :=
-  SquareIntegrableHilbertBundleSection.AeEq du dv
-
-/--
-%%handwave
-name:
-  Reflexivity of almost-everywhere equality for surface differential fields
-statement:
-  Every square-integrable surface differential representative agrees almost everywhere with itself.
-proof:
-  This is reflexivity for its underlying Hilbert-bundle section.
--/
-theorem AeEq.refl
-    (du : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :
-    AeEq du du :=
-  SquareIntegrableHilbertBundleSection.AeEq.refl du
-
-/--
-%%handwave
-name:
-  Symmetry of almost-everywhere equality for surface differential fields
-statement:
-  Almost-everywhere equality of square-integrable surface differential representatives is symmetric.
-proof:
-  Reverse the fiberwise equality on the full-measure set where it holds.
--/
-theorem AeEq.symm
-    {du dv : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ}
-    (h : AeEq du dv) : AeEq dv du :=
-  SquareIntegrableHilbertBundleSection.AeEq.symm h
-
-/--
-%%handwave
-name:
-  Transitivity of almost-everywhere equality for surface differential fields
-statement:
-  Almost-everywhere equality of square-integrable surface differential representatives is transitive.
-proof:
-  Combine the two fiberwise equalities on the intersection of their full-measure sets.
--/
-theorem AeEq.trans
-    {du dv dw : SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ}
-    (h₁ : AeEq du dv) (h₂ : AeEq dv dw) : AeEq du dw := by
-  exact SquareIntegrableHilbertBundleSection.AeEq.trans h₁ h₂
-
-abbrev aeSetoid :
-    Setoid (SquareIntegrableSurfaceDifferentialField (X := X) (E := E) g μ) :=
-  SquareIntegrableManifoldDifferentialField.aeSetoid
-    (I := SurfaceRealModel) (X := X) (E := E) (g := g.toManifoldMetric) (μ := μ)
-
 end SquareIntegrableSurfaceDifferentialField
-
-/--
-%%handwave
-name:
-  \(L^2\)-sections of the differential bundle
-statement:
-  The \(L^2\)-sections of \(T^\ast X\otimes E\) are square-integrable
-  differential representatives modulo almost-everywhere equality.
--/
-def SurfaceDifferentialL2Section {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (g : SmoothRiemannianMetricOnSurface X) (μ : Measure X) : Type :=
-  ManifoldDifferentialL2Section
-    (I := SurfaceRealModel) (X := X) (E := E) g.toManifoldMetric μ
 
 /--
 %%handwave
@@ -3732,25 +2267,6 @@ def IsWeakDerivativeOnManifoldRegionBundle {H X E : Type}
             (fderiv ℝ (φ : H → ℝ) z v) • u (e.symm z) ∂MeasureTheory.volume =
           -∫ z in manifoldChartRegion e U,
             φ z • ManifoldDifferentialField.evalChart du e z v ∂MeasureTheory.volume
-
-/--
-%%handwave
-name:
-  Vector-valued weak derivative on a manifold
-statement:
-  A vector-valued differential field is the weak derivative of a
-  vector-valued map on the whole manifold if it is the weak derivative on the
-  full manifold region.
--/
-def IsWeakDerivativeOnManifoldBundle {H X E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
-    [MeasureSpace H]
-    [MeasurableSpace X]
-    [IsManifold I 1 X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (_μ : Measure X) (u : X → E) (du : ManifoldDifferentialField I X E) : Prop :=
-  IsWeakDerivativeOnManifoldRegionBundle (I := I) (Set.univ : Set X) u du
 
 /--
 %%handwave
@@ -3797,45 +2313,6 @@ def IsWeakDerivativeOnSurfaceBundle {X E : Type}
     (_μ : Measure X) (u : X → E) (du : SurfaceDifferentialField X E) : Prop :=
   IsWeakDerivativeOnRegionBundle (Set.univ : Set X) u du
 
-/--
-%%handwave
-name:
-  Vector-valued surface \(W^{1,2}\) map
-statement:
-  A vector-valued representative-level surface \(W^{1,2}\) map is an
-  \(L^2\) map into a real normed vector space together with a chartwise
-  square-integrable vector-valued differential field which is its weak
-  derivative.
--/
-structure SobolevH1OnSurfaceWithValues {X E : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (μ : Measure X) where
-  /-- The Sobolev representative. -/
-  toFun : X → E
-  /-- The weak derivative as a vector-valued differential field. -/
-  weakDerivative : SurfaceDifferentialField X E
-  /-- The map is square-integrable. -/
-  memLp_toFun : MemLp toFun 2 μ
-  /-- The weak derivative is square-integrable in coordinate charts. -/
-  memLp_weakDerivative : SurfaceDifferentialFieldMemLpInCharts μ weakDerivative
-  /-- The stored differential field is the weak derivative of the map. -/
-  weakDerivative_is_derivative :
-    IsWeakDerivativeOnSurfaceBundle μ toFun weakDerivative
-
-namespace SobolevH1OnSurfaceWithValues
-
-variable {X E : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [MeasurableSpace X] [BorelSpace X] [IsManifold SurfaceRealModel 1 X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {μ : Measure X}
-
-instance : CoeFun (SobolevH1OnSurfaceWithValues (X := X) (E := E) μ)
-    (fun _ ↦ X → E) where
-  coe u := u.toFun
-
-end SobolevH1OnSurfaceWithValues
 
 namespace SurfaceCotangentField
 
@@ -3870,54 +2347,6 @@ noncomputable def chartPullback (du : SurfaceCotangentField X)
 /--
 %%handwave
 name:
-  Coordinate evaluation of a surface cotangent field
-statement:
-  For a surface chart \(e\), cotangent field \(\alpha\), and \(z,v\in\mathbb C\),
-  \[
-    \alpha^{e}_z(v)=\alpha_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
-  \]
-proof:
-  This is the definition of coordinate evaluation of the cotangent field.
--/
-@[simp]
-theorem evalChart_eq (du : SurfaceCotangentField X)
-    (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
-    evalChart du e z v = du (e.symm z) (surfaceChartTangentVector e z v) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Coordinate pullback of a cotangent field evaluated on a vector
-statement:
-  The coordinate pullback of a cotangent field \(\alpha\) satisfies
-  \[
-    (e^\ast\alpha)_z(v)=\alpha_{e^{-1}(z)}\big(D(e^{-1})(z)v\big).
-  \]
-proof:
-  Expand the pullback as composition with the tangent map of the inverse chart.
--/
-@[simp]
-theorem chartPullback_apply (du : SurfaceCotangentField X)
-    (e : OpenPartialHomeomorph X ℂ) (z v : ℂ) :
-    chartPullback du e z v = evalChart du e z v :=
-  rfl
-
-/--
-%%handwave
-name:
-  Coordinate representation of an intrinsic cotangent field
-statement:
-  An intrinsic cotangent field can be read in the preferred tangent
-  coordinates at each point.
--/
-noncomputable def toCoordinateField (du : SurfaceCotangentField X) :
-    X → ℂ →L[ℝ] ℝ :=
-  fun x ↦ du x
-
-/--
-%%handwave
-name:
   Intrinsic cotangent field from coordinates
 statement:
   A coordinate cotangent field determines an intrinsic cotangent field through
@@ -3927,66 +2356,12 @@ noncomputable def ofCoordinateField (du : X → ℂ →L[ℝ] ℝ) :
     SurfaceCotangentField X :=
   fun x ↦ du x
 
-/--
-%%handwave
-name:
-  Recovering a coordinate cotangent field
-statement:
-  Converting a coordinate cotangent field into an intrinsic field and then reading its preferred tangent coordinates recovers the original coordinate field.
-proof:
-  The two conversions leave every pointwise linear functional unchanged.
--/
-@[simp]
-theorem toCoordinateField_ofCoordinateField (du : X → ℂ →L[ℝ] ℝ) :
-    toCoordinateField (ofCoordinateField du) = du :=
-  rfl
-
-/--
-%%handwave
-name:
-  Recovering an intrinsic cotangent field
-statement:
-  Reading an intrinsic cotangent field in preferred tangent coordinates and rebuilding the intrinsic field recovers the original field.
-proof:
-  The pointwise coordinate conversions are inverse by definition.
--/
-@[simp]
-theorem ofCoordinateField_toCoordinateField (du : SurfaceCotangentField X) :
-    ofCoordinateField (toCoordinateField du) = du :=
-  rfl
-
 end SurfaceCotangentField
 
 namespace SmoothSurfaceCotangentSection
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
-
-/--
-%%handwave
-name:
-  Cotangent field underlying a smooth section
-statement:
-  A smooth cotangent section determines the underlying cotangent field by
-  evaluating the section at each point.
--/
-noncomputable def toField (du : SmoothSurfaceCotangentSection X) :
-    SurfaceCotangentField X :=
-  fun x ↦ du x
-
-/--
-%%handwave
-name:
-  Underlying field of a smooth cotangent section
-statement:
-  The cotangent field underlying a smooth cotangent section \(\alpha\) has value \(\alpha(x)\) at every point \(x\).
-proof:
-  The underlying field is obtained by pointwise evaluation.
--/
-@[simp]
-theorem toField_apply (du : SmoothSurfaceCotangentSection X) (x : X) :
-    toField du x = du x :=
-  rfl
 
 end SmoothSurfaceCotangentSection
 
@@ -4045,106 +2420,7 @@ def IsWeakGradientOnSurfaceBundle {X : Type}
     (_μ : Measure X) (u : X → ℝ) (du : SurfaceCotangentField X) : Prop :=
   IsWeakGradientOnRegionBundle (Set.univ : Set X) u du
 
-/--
-%%handwave
-name:
-  Coordinate and intrinsic weak gradients on a region agree
-statement:
-  A coordinate cotangent field \(A_x:\mathbb C\to\mathbb R\) is a weak gradient of \(u\) on \(U\) exactly when the corresponding intrinsic cotangent field is.
-proof:
-  The intrinsic definition is the coordinate weak-gradient identity after the pointwise coordinate identification, so the two propositions coincide.
--/
-@[simp]
-theorem isWeakGradientOnRegionBundle_ofCoordinateField_iff {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    (U : Set X) (u : X → ℝ) (du : X → ℂ →L[ℝ] ℝ) :
-    IsWeakGradientOnRegionBundle U u (SurfaceCotangentField.ofCoordinateField du) ↔
-      IsWeakGradientOnRegion U u du :=
-  Iff.rfl
 
-/--
-%%handwave
-name:
-  Intrinsic weak gradients are characterized by their coordinate fields
-statement:
-  An intrinsic cotangent field \(\alpha\) is a weak gradient of \(u\) on \(U\) if and only if its preferred coordinate field is a coordinate weak gradient there.
-proof:
-  Unfold the intrinsic weak-gradient definition and the coordinate representation of \(\alpha\).
--/
-@[simp]
-theorem isWeakGradientOnRegionBundle_toCoordinateField_iff {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X]
-    (U : Set X) (u : X → ℝ) (du : SurfaceCotangentField X) :
-    IsWeakGradientOnRegionBundle U u du ↔
-      IsWeakGradientOnRegion U u (SurfaceCotangentField.toCoordinateField du) :=
-  Iff.rfl
-
-/--
-%%handwave
-name:
-  Coordinate and intrinsic weak gradients on a surface agree
-statement:
-  A coordinate cotangent field is a weak gradient of \(u\) on the whole measured surface exactly when its associated intrinsic cotangent field is.
-proof:
-  Specialize the regional equivalence to the full surface.
--/
-@[simp]
-theorem isWeakGradientOnSurfaceBundle_ofCoordinateField_iff {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    (μ : Measure X) (u : X → ℝ) (du : X → ℂ →L[ℝ] ℝ) :
-    IsWeakGradientOnSurfaceBundle μ u (SurfaceCotangentField.ofCoordinateField du) ↔
-      IsWeakGradientOnSurface μ u du :=
-  Iff.rfl
-
-/--
-%%handwave
-name:
-  Surface weak gradients are characterized by their coordinate fields
-statement:
-  An intrinsic cotangent field is a weak gradient of \(u\) on the measured surface if and only if its preferred coordinate field is a coordinate weak gradient.
-proof:
-  Unfold the whole-surface definition and apply the coordinate identification pointwise.
--/
-@[simp]
-theorem isWeakGradientOnSurfaceBundle_toCoordinateField_iff {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    (μ : Measure X) (u : X → ℝ) (du : SurfaceCotangentField X) :
-    IsWeakGradientOnSurfaceBundle μ u du ↔
-      IsWeakGradientOnSurface μ u (SurfaceCotangentField.toCoordinateField du) :=
-  Iff.rfl
-
-/--
-%%handwave
-name:
-  Intrinsic surface \(W^{1,2}\) function
-statement:
-  An intrinsic representative-level surface \(W^{1,2}\) function is an
-  \(L^2\) real-valued function together with a square-integrable cotangent
-  field which is its weak gradient.
--/
-structure SobolevH1OnSurfaceBundle {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    (μ : Measure X) where
-  /-- The Sobolev representative. -/
-  toFun : X → ℝ
-  /-- The weak gradient as a cotangent field. -/
-  weakGradient : SurfaceCotangentField X
-  /-- The function is square-integrable. -/
-  memLp_toFun : MemLp toFun 2 μ
-  /-- The weak gradient is square-integrable in coordinate charts. -/
-  memLp_weakGradient : SurfaceCotangentFieldMemLpInCharts μ weakGradient
-  /-- The stored cotangent field is the weak gradient of the function. -/
-  weakGradient_is_gradient : IsWeakGradientOnSurfaceBundle μ toFun weakGradient
-
-namespace SobolevH1OnSurfaceBundle
-
-variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X] [BorelSpace X]
-    {μ : Measure X}
-
-instance : CoeFun (SobolevH1OnSurfaceBundle μ) (fun _ ↦ X → ℝ) where
-  coe u := u.toFun
-
-end SobolevH1OnSurfaceBundle
 
 end
 

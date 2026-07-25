@@ -28,35 +28,6 @@ universe u v w
 /--
 %%handwave
 name:
-  Identity theorem on a plane domain
-statement:
-  Let two holomorphic functions on a preconnected open subset of the complex
-  plane take values in a complex Banach space.  If they agree at points
-  accumulating at a point of the domain, then they agree on the whole domain.
-proof:
-  Mathlib proves that complex differentiability on an open subset of the plane
-  implies analyticity there.  The conclusion is then the one-variable identity
-  theorem for analytic functions with an accumulation point.
-tags:
-  milestone
--/
-theorem complex_identity_theorem_of_accumulation
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
-    {f g : ℂ → E} {U : Set ℂ} {z₀ : ℂ}
-    (hU_open : IsOpen U)
-    (hU_preconnected : IsPreconnected U)
-    (hz₀ : z₀ ∈ U)
-    (hf : DifferentiableOn ℂ f U)
-    (hg : DifferentiableOn ℂ g U)
-    (hfg : z₀ ∈ closure ({z : ℂ | f z = g z} \ {z₀})) :
-    Set.EqOn f g U := by
-  exact
-    (hf.analyticOnNhd hU_open).eqOn_of_preconnected_of_mem_closure
-      (hg.analyticOnNhd hU_open) hU_preconnected hz₀ hfg
-
-/--
-%%handwave
-name:
   Homotopy-strip cut path
 statement:
   The cut path through a homotopy strip follows one side of the strip, crosses
@@ -454,140 +425,6 @@ theorem homotopyStripColumnBottomPath_eq_prefix_rectangle_suffix
 /--
 %%handwave
 name:
-  Decomposed upper column path is homotopic to the cut path
-statement:
-  The decomposed upper column path is endpoint-fixed homotopic to the raw cut
-  path at the upper edge of the small rectangle.
-proof:
-  Reassociate the concatenations and merge the two adjacent subpaths along the
-  left side of the homotopy strip.
--/
-theorem homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore
-    {X : Type*} [TopologicalSpace X]
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnTopPathRawCore F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRawCore F a b r₁) := by
-  let γ := F.eval a
-  let δ := (F.evalAt r₁).subpath a b
-  let σ := (F.eval b).subpath r₁ 1
-  have hAssoc :
-      ((γ.subpath 0 r₀).trans ((γ.subpath r₀ r₁).trans δ)).Homotopic
-        (((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).trans δ) :=
-    (Path.Homotopic.trans_assoc
-      (γ.subpath 0 r₀) (γ.subpath r₀ r₁) δ).symm
-  have hSplit :
-      (((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).trans δ).Homotopic
-        ((γ.subpath 0 r₁).trans δ) := by
-    exact
-      Path.Homotopic.hcomp
-        (⟨Path.Homotopy.subpathTransSubpath γ 0 r₀ r₁⟩ :
-          ((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).Homotopic
-            (γ.subpath 0 r₁))
-        (Path.Homotopic.refl δ)
-  have hPrefix :
-      ((γ.subpath 0 r₀).trans ((γ.subpath r₀ r₁).trans δ)).Homotopic
-        ((γ.subpath 0 r₁).trans δ) :=
-    hAssoc.trans hSplit
-  simpa [homotopyStripColumnTopPathRawCore,
-    homotopyStripCutPathRawCore, homotopyRectangleBottomRightPath,
-    γ, δ, σ] using
-    Path.Homotopic.hcomp hPrefix (Path.Homotopic.refl σ)
-
-/--
-%%handwave
-name:
-  Decomposed lower column path is homotopic to the cut path
-statement:
-  The decomposed lower column path is endpoint-fixed homotopic to the raw cut
-  path at the lower edge of the small rectangle.
-proof:
-  Reassociate the concatenations and merge the two adjacent subpaths along the
-  right side of the homotopy strip.
--/
-theorem homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore
-    {X : Type*} [TopologicalSpace X]
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnBottomPathRawCore F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRawCore F a b r₀) := by
-  let γ := F.eval a
-  let υ := F.eval b
-  let δ := (F.evalAt r₀).subpath a b
-  let ρ := υ.subpath r₀ r₁
-  let σ := υ.subpath r₁ 1
-  have hAssocLeft :
-      ((γ.subpath 0 r₀).trans (δ.trans ρ)).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans ρ) :=
-    (Path.Homotopic.trans_assoc (γ.subpath 0 r₀) δ ρ).symm
-  have hWithSuffix :
-      (((γ.subpath 0 r₀).trans (δ.trans ρ)).trans σ).Homotopic
-        ((((γ.subpath 0 r₀).trans δ).trans ρ).trans σ) :=
-    Path.Homotopic.hcomp hAssocLeft (Path.Homotopic.refl σ)
-  have hAssocRight :
-      ((((γ.subpath 0 r₀).trans δ).trans ρ).trans σ).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans (ρ.trans σ)) :=
-    Path.Homotopic.trans_assoc ((γ.subpath 0 r₀).trans δ) ρ σ
-  have hSplit :
-      (((γ.subpath 0 r₀).trans δ).trans (ρ.trans σ)).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans (υ.subpath r₀ 1)) := by
-    exact
-      Path.Homotopic.hcomp
-        (Path.Homotopic.refl ((γ.subpath 0 r₀).trans δ))
-        (⟨Path.Homotopy.subpathTransSubpath υ r₀ r₁ 1⟩ :
-          (ρ.trans σ).Homotopic (υ.subpath r₀ 1))
-  simpa [homotopyStripColumnBottomPathRawCore,
-    homotopyStripCutPathRawCore, homotopyRectangleLeftTopPath,
-    γ, υ, δ, ρ, σ] using
-    (hWithSuffix.trans hAssocRight).trans hSplit
-
-/--
-%%handwave
-name:
-  Decomposed upper column path is homotopic to the raw cut path
-statement:
-  For an endpoint-fixed homotopy \(H:p\simeq q\) and
-  \(a,b,r_0,r_1\in[0,1]\), the path obtained by following the common prefix,
-  the vertical-then-horizontal boundary of the rectangle
-  \([a,b]\times[r_0,r_1]\), and the common suffix is homotopic relative to its
-  endpoints to the cut path through level \(r_1\).
-proof:
-  [Before identifying the endpoints with those of \(p\) and \(q\), reassociation and concatenation of adjacent subpaths give precisely this homotopy.](lean:JJMath.AnalyticContinuation.homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore) Transport that homotopy across the endpoint identifications.
--/
-theorem homotopyStripColumnTopPath_homotopic_cutPathRaw
-    {X : Type*} [TopologicalSpace X]
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnTopPath F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRaw F a b r₁) :=
-  (homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore
-    F a b r₀ r₁).pathCast (by simp) (by simp)
-
-/--
-%%handwave
-name:
-  Decomposed lower column path is homotopic to the raw cut path
-statement:
-  For an endpoint-fixed homotopy \(H:p\simeq q\) and
-  \(a,b,r_0,r_1\in[0,1]\), the path obtained by following the common prefix,
-  the horizontal-then-vertical boundary of the rectangle
-  \([a,b]\times[r_0,r_1]\), and the common suffix is homotopic relative to its
-  endpoints to the cut path through level \(r_0\).
-proof:
-  [Before identifying the endpoints with those of \(p\) and \(q\), reassociation and concatenation of adjacent subpaths give precisely this homotopy.](lean:JJMath.AnalyticContinuation.homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore) Transport that homotopy across the endpoint identifications.
--/
-theorem homotopyStripColumnBottomPath_homotopic_cutPathRaw
-    {X : Type*} [TopologicalSpace X]
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnBottomPath F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRaw F a b r₀) :=
-  (homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore
-    F a b r₀ r₁).pathCast (by simp) (by simp)
-
-/--
-%%handwave
-name:
   Order-preserving path reparameterization data
 statement:
   An order-preserving path reparameterization from one path to another is a
@@ -643,29 +480,6 @@ theorem of_strong
   intro a b t hab hleft hright
   rcases hψ_interval hab hleft hright with ⟨hleft', hright'⟩
   exact ⟨ψ t, hleft', hright', hpath_all t⟩
-
-/--
-%%handwave
-name:
-  Identity path reparameterization
-statement:
-  For every path \(p:[0,1]\to X\), the identity map of \([0,1]\) is an
-  order-preserving reparameterization from \(p\) to itself.
-proof:
-  The identity fixes \(0\) and \(1\) and is monotone. For
-  \(a\le t\le b\), the witness \(u=t\) gives both interval containment and
-  \(p(t)=p(u)\).
--/
-theorem refl
-    {X : Type*} [TopologicalSpace X]
-    {x₀ x : X} (p : Path x₀ x) :
-    PathOrderReparamData p p id := by
-  refine ⟨rfl, rfl, ?_, ?_, ?_⟩
-  · exact monotone_id
-  · intro u
-    rfl
-  · intro a b t _hab hleft hright
-    exact ⟨t, hleft, hright, rfl⟩
 
 /--
 %%handwave
@@ -2529,65 +2343,6 @@ theorem act_inv_self (γ : G) (y : Y) :
 /--
 %%handwave
 name:
-  A transformation undoes its inverse
-statement:
-  For every \(\gamma\) and \(y\),
-  \(\gamma\cdot(\gamma^{-1}\cdot y)=y\).
-proof:
-  Use the action law and \(\gamma\gamma^{-1}=1\).
--/
-@[simp]
-theorem act_self_inv (γ : G) (y : Y) :
-    S.act γ (S.act γ⁻¹ y) = y := by
-  rw [← S.act_mul_apply γ γ⁻¹ y, mul_inv_cancel, S.act_one_apply]
-
-/--
-%%handwave
-name:
-  Every target transformation is injective
-statement:
-  For each group element \(\gamma\), the map \(y\mapsto\gamma\cdot y\) is
-  injective.
-proof:
-  Apply \(\gamma^{-1}\) to an equality of transformed points.
--/
-theorem act_injective (γ : G) :
-    Function.Injective (S.act γ) := by
-  intro y z hyz
-  have h := congrArg (S.act γ⁻¹) hyz
-  simpa using h
-
-/--
-%%handwave
-name:
-  Every target transformation is surjective
-statement:
-  For each group element \(\gamma\), the map \(y\mapsto\gamma\cdot y\) is
-  surjective.
-proof:
-  A preimage of \(y\) is \(\gamma^{-1}\cdot y\).
--/
-theorem act_surjective (γ : G) :
-    Function.Surjective (S.act γ) := by
-  intro y
-  exact ⟨S.act γ⁻¹ y, S.act_self_inv γ y⟩
-
-/--
-%%handwave
-name:
-  Every target transformation is bijective
-statement:
-  The action of any group element on the target space is a bijection.
-proof:
-  It is both injective and surjective by the inverse-action identities.
--/
-theorem act_bijective (γ : G) :
-    Function.Bijective (S.act γ) :=
-  ⟨S.act_injective γ, S.act_surjective γ⟩
-
-/--
-%%handwave
-name:
   Local transition datum
 statement:
   A local transition datum says that near a point of overlap, one local branch
@@ -2637,56 +2392,10 @@ def refl (i : ι) {x : X} (hx : x ∈ S.domain i) :
 /--
 %%handwave
 name:
-  Inverse local transition
+  Relabeling a local transition
 statement:
-  A local transition can be reversed by inverting its transition element.
+  A local transition between branches $i$ and $j$ at $x$ may be transported across equalities $i=i'$, $j=j'$, and $x=x'$ to the same transition datum between $i'$ and $j'$ at $x'$.
 -/
-def symm (T : S.LocalTransition i j x) :
-    S.LocalTransition j i x where
-  neighborhood := T.neighborhood
-  neighborhood_open := T.neighborhood_open
-  mem_neighborhood := T.mem_neighborhood
-  subset_overlap := by
-    intro y hy
-    exact ⟨(T.subset_overlap hy).2, (T.subset_overlap hy).1⟩
-  transition := T.transition⁻¹
-  transition_eq := by
-    intro y hy
-    calc
-      S.branch i y = S.act T.transition⁻¹
-          (S.act T.transition (S.branch i y)) := by
-        rw [S.act_inv_self]
-      _ = S.act T.transition⁻¹ (S.branch j y) := by
-        rw [← T.transition_eq y hy]
-
-/--
-%%handwave
-name:
-  Composite local transition
-statement:
-  Two local transitions with matching middle branch compose after shrinking to
-  the intersection of their neighborhoods.
--/
-def trans (T : S.LocalTransition i j x) (U : S.LocalTransition j k x) :
-    S.LocalTransition i k x where
-  neighborhood := T.neighborhood ∩ U.neighborhood
-  neighborhood_open := T.neighborhood_open.inter U.neighborhood_open
-  mem_neighborhood := ⟨T.mem_neighborhood, U.mem_neighborhood⟩
-  subset_overlap := by
-    intro y hy
-    exact ⟨(T.subset_overlap hy.1).1, (U.subset_overlap hy.2).2⟩
-  transition := U.transition * T.transition
-  transition_eq := by
-    intro y hy
-    calc
-      S.branch k y = S.act U.transition (S.branch j y) :=
-        U.transition_eq y hy.2
-      _ = S.act U.transition (S.act T.transition (S.branch i y)) := by
-        rw [T.transition_eq y hy.1]
-      _ = S.act (U.transition * T.transition) (S.branch i y) := by
-        rw [S.act_mul_apply]
-
-/-- Transport a local transition across equal branch labels and equal basepoint. -/
 def congr {i j i' j' : ι} {x x' : X}
     (T : S.LocalTransition i j x)
     (hi : i = i') (hj : j = j') (hx : x = x') :
@@ -2758,32 +2467,15 @@ namespace PathContinuationGerm
 
 variable {S} {x₀ : X} {i₀ : ι} {x : X} {p : Path x₀ x}
 
-/-- The local map represented by a terminal path-continuation germ. -/
-def localMap (A : S.PathContinuationGerm x₀ i₀ p) : X → Y :=
-  fun y ↦ S.act A.transition (S.branch A.branch y)
-
 /--
 %%handwave
 name:
-  Terminal path-continuation germs are holomorphic
+  Local map of a continuation germ
 statement:
-  The local map represented by a terminal path-continuation germ is
-  holomorphic on its terminal neighborhood.
-proof:
-  It is a holomorphic branch followed by a holomorphic transition
-  transformation.
+  A terminal continuation germ with branch $i$ and accumulated transition $g$ represents the local map $y\mapsto g\cdot f_i(y)$.
 -/
-theorem mdifferentiableOn (A : S.PathContinuationGerm x₀ i₀ p) :
-    MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ) A.localMap A.neighborhood := by
-  have hbranch :
-      MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ)
-        (S.branch A.branch) A.neighborhood :=
-    (S.branch_holomorphicOn A.branch).mono A.subset_domain
-  have hcomp :
-      MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ)
-        ((S.act A.transition) ∘ (S.branch A.branch)) A.neighborhood :=
-    (S.act_holomorphic A.transition).comp_mdifferentiableOn hbranch
-  simpa [localMap, Function.comp_def] using hcomp
+def localMap (A : S.PathContinuationGerm x₀ i₀ p) : X → Y :=
+  fun y ↦ S.act A.transition (S.branch A.branch y)
 
 /--
 %%handwave
@@ -2941,11 +2633,23 @@ namespace PathContinuationChain
 
 variable {S} {x₀ : X} {i₀ : ι} {x : X} {p : Path x₀ x}
 
-/-- The terminal branch of a finite path-continuation chain. -/
+/--
+%%handwave
+name:
+  Terminal branch of a continuation chain
+statement:
+  The terminal branch of a finite continuation chain is the branch assigned to its final subdivision vertex.
+-/
 def terminalBranch (C : S.PathContinuationChain x₀ i₀ p) : ι :=
   C.branchAt (Fin.last C.length)
 
-/-- The terminal accumulated transition of a finite path-continuation chain. -/
+/--
+%%handwave
+name:
+  Terminal transition of a continuation chain
+statement:
+  The terminal transition of a finite continuation chain is its accumulated group transition at the final subdivision vertex.
+-/
 def terminalTransition (C : S.PathContinuationChain x₀ i₀ p) : G :=
   C.transitionProductAt (Fin.last C.length)
 
@@ -2965,7 +2669,13 @@ theorem endpoint_mem_terminalBranch
     x ∈ S.domain C.terminalBranch := by
   simpa [terminalBranch] using C.terminal_endpoint_mem_domain
 
-/-- A finite path-continuation chain determines its terminal germ. -/
+/--
+%%handwave
+name:
+  Terminal germ of a finite continuation chain
+statement:
+  A finite continuation chain determines an endpoint germ whose branch and transition are the terminal branch and accumulated transition, and whose neighborhood is the terminal branch domain.
+-/
 def toTerminalGerm
     (C : S.PathContinuationChain x₀ i₀ p) :
     S.PathContinuationGerm x₀ i₀ p where
@@ -2979,36 +2689,10 @@ def toTerminalGerm
 /--
 %%handwave
 name:
-  Branch of the terminal germ of a chain
+  Transporting a continuation chain along path equality
 statement:
-  The germ determined by a continuation chain uses the chain's terminal
-  branch.
-proof:
-  This is the branch field in the construction of the terminal germ.
+  If paths $p$ and $q$ with the same endpoints are equal, a finite continuation chain along $p$ is canonically regarded as a chain along $q$ with unchanged subdivision, branches, and transitions.
 -/
-@[simp]
-theorem toTerminalGerm_branch
-    (C : S.PathContinuationChain x₀ i₀ p) :
-    C.toTerminalGerm.branch = C.terminalBranch :=
-  rfl
-
-/--
-%%handwave
-name:
-  Transition of the terminal germ of a chain
-statement:
-  The germ determined by a continuation chain uses its terminal accumulated
-  transition.
-proof:
-  This is the transition field in the construction of the terminal germ.
--/
-@[simp]
-theorem toTerminalGerm_transition
-    (C : S.PathContinuationChain x₀ i₀ p) :
-    C.toTerminalGerm.transition = C.terminalTransition :=
-  rfl
-
-/-- Transport a finite continuation chain across an equality of paths. -/
 def castPath
     (C : S.PathContinuationChain x₀ i₀ p)
     {q : Path x₀ x} (hpq : p = q) :
@@ -3016,7 +2700,13 @@ def castPath
   subst q
   exact C
 
-/-- Transport a finite continuation chain across an equality of initial branches. -/
+/--
+%%handwave
+name:
+  Transporting a continuation chain along initial-branch equality
+statement:
+  If initial branch labels $i_0$ and $j_0$ are equal, a continuation chain normalized at $i_0$ is canonically regarded as one normalized at $j_0$, with all chain data unchanged.
+-/
 def castInitialBranch
     {j₀ : ι}
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -3082,168 +2772,6 @@ theorem castPath_terminalGerms_agree
   subst q
   exact
     PathContinuationGerm.locallyAgreesWith_refl C.toTerminalGerm
-
-/--
-%%handwave
-name:
-  Reparameterizing a continuation chain
-statement:
-  An order-preserving reparameterization of a path transports any finite
-  continuation chain without changing its terminal branch expression.
-proof:
-  Push the subdivision parameters through the reparameterization and keep the
-  same branch labels, local transitions, and accumulated transition products.
-  The inverse parameter map sends every new subinterval back into the
-  corresponding old subinterval, so the old domain-containment proofs apply.
--/
-noncomputable def reparametrize
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {q : Path x₀ x}
-    (φ ψ : unitInterval → unitInterval)
-    (hφ_zero : φ 0 = 0)
-    (hφ_one : φ 1 = 1)
-    (hφ_mono : Monotone φ)
-    (hψ_interval :
-      ∀ {a b t : unitInterval},
-        φ a ≤ t → t ≤ φ b → a ≤ ψ t ∧ ψ t ≤ b)
-    (hpath_sample : ∀ u : unitInterval, q (φ u) = p u)
-    (hpath_all : ∀ t : unitInterval, q t = p (ψ t)) :
-    S.PathContinuationChain x₀ i₀ q where
-  length := C.length
-  parameterAt := fun i => φ (C.parameterAt i)
-  parameterAt_zero := by
-    rw [C.parameterAt_zero, hφ_zero]
-  parameterAt_last := by
-    rw [C.parameterAt_last, hφ_one]
-  parameterAt_mono := by
-    intro k
-    exact_mod_cast hφ_mono (by exact_mod_cast C.parameterAt_mono k)
-  branchAt := C.branchAt
-  initialTransition := C.initialTransition
-  transitionProductAt := C.transitionProductAt
-  transitionProductAt_zero := C.transitionProductAt_zero
-  transitionAt := by
-    intro k
-    exact
-      (C.transitionAt k).congr rfl rfl
-        (hpath_sample (C.parameterAt k.succ)).symm
-  transitionProductAt_succ_eq := by
-    intro k
-    simpa using C.transitionProductAt_succ_eq k
-  sample_mem_domain := by
-    intro i
-    simpa [hpath_sample (C.parameterAt i)] using C.sample_mem_domain i
-  path_segment_mem_domain := by
-    intro k t ht_left ht_right
-    let u := ψ t
-    have hu :
-        C.parameterAt k.castSucc ≤ u ∧ u ≤ C.parameterAt k.succ :=
-      hψ_interval (a := C.parameterAt k.castSucc)
-        (b := C.parameterAt k.succ) (t := t)
-        (by exact_mod_cast ht_left)
-        (by exact_mod_cast ht_right)
-    have hmem :
-        p u ∈ S.domain (C.branchAt k.castSucc) :=
-      C.path_segment_mem_domain k u
-        (by exact_mod_cast hu.1)
-        (by exact_mod_cast hu.2)
-    simpa [u, hpath_all t] using hmem
-  terminal_endpoint_mem_domain := C.terminal_endpoint_mem_domain
-
-/--
-%%handwave
-name:
-  Terminal branch under explicit path reparameterization
-statement:
-  Transporting a continuation chain through an endpoint-preserving monotone
-  reparameterization leaves its terminal branch unchanged.
-proof:
-  The construction changes only subdivision parameters and retains every
-  branch label.
--/
-@[simp]
-theorem reparametrize_terminalBranch
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {q : Path x₀ x}
-    (φ ψ : unitInterval → unitInterval)
-    (hφ_zero : φ 0 = 0)
-    (hφ_one : φ 1 = 1)
-    (hφ_mono : Monotone φ)
-    (hψ_interval :
-      ∀ {a b t : unitInterval},
-        φ a ≤ t → t ≤ φ b → a ≤ ψ t ∧ ψ t ≤ b)
-    (hpath_sample : ∀ u : unitInterval, q (φ u) = p u)
-    (hpath_all : ∀ t : unitInterval, q t = p (ψ t)) :
-    (C.reparametrize φ ψ hφ_zero hφ_one hφ_mono hψ_interval
-      hpath_sample hpath_all).terminalBranch = C.terminalBranch := by
-  simp [reparametrize, terminalBranch]
-
-/--
-%%handwave
-name:
-  Terminal transition under explicit path reparameterization
-statement:
-  Transporting a continuation chain through an endpoint-preserving monotone
-  reparameterization leaves its terminal accumulated transition unchanged.
-proof:
-  The construction retains the entire sequence of accumulated transition
-  products.
--/
-@[simp]
-theorem reparametrize_terminalTransition
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {q : Path x₀ x}
-    (φ ψ : unitInterval → unitInterval)
-    (hφ_zero : φ 0 = 0)
-    (hφ_one : φ 1 = 1)
-    (hφ_mono : Monotone φ)
-    (hψ_interval :
-      ∀ {a b t : unitInterval},
-        φ a ≤ t → t ≤ φ b → a ≤ ψ t ∧ ψ t ≤ b)
-    (hpath_sample : ∀ u : unitInterval, q (φ u) = p u)
-    (hpath_all : ∀ t : unitInterval, q t = p (ψ t)) :
-    (C.reparametrize φ ψ hφ_zero hφ_one hφ_mono hψ_interval
-      hpath_sample hpath_all).terminalTransition = C.terminalTransition := by
-  simp [reparametrize, terminalTransition]
-
-/--
-%%handwave
-name:
-  Reparameterization preserves the terminal germ
-statement:
-  Let \(C\) be a continuation chain along \(p\), and let an order-preserving
-  reparameterization identify \(p\) with a path \(q\) while respecting every
-  parameter interval of \(C\). Then the terminal germs of \(C\) and of the
-  transported chain along \(q\) locally agree.
-proof:
-  Reparameterization retains the terminal branch and accumulated transition.
-  On the terminal branch domain the two terminal local maps are therefore
-  identical, which supplies the required common neighborhood.
--/
-theorem reparametrize_terminalGerms_agree
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {q : Path x₀ x}
-    (φ ψ : unitInterval → unitInterval)
-    (hφ_zero : φ 0 = 0)
-    (hφ_one : φ 1 = 1)
-    (hφ_mono : Monotone φ)
-    (hψ_interval :
-      ∀ {a b t : unitInterval},
-        φ a ≤ t → t ≤ φ b → a ≤ ψ t ∧ ψ t ≤ b)
-    (hpath_sample : ∀ u : unitInterval, q (φ u) = p u)
-    (hpath_all : ∀ t : unitInterval, q t = p (ψ t)) :
-    C.toTerminalGerm.LocallyAgreesWith
-      (C.reparametrize φ ψ hφ_zero hφ_one hφ_mono hψ_interval
-        hpath_sample hpath_all).toTerminalGerm := by
-  refine
-    ⟨S.domain C.terminalBranch, S.domain_open C.terminalBranch,
-      C.endpoint_mem_terminalBranch, ?_, ?_⟩
-  · intro z hz
-    constructor
-    · simpa [PathContinuationChain.toTerminalGerm] using hz
-    · simpa [PathContinuationChain.toTerminalGerm] using hz
-  · intro z _hz
-    simp [PathContinuationGerm.localMap, PathContinuationChain.toTerminalGerm]
 
 /--
 %%handwave
@@ -4258,9 +3786,11 @@ theorem terminalGerms_agree_of_alignedSubdivision
       terminalTransition, iC, hiC, iD, hiD] using hU_eq z hz
 
 /--
-Subdivision parameters for appending a path in the terminal branch: the old
-subdivision is compressed into the first half and one final endpoint is added
-at \(1\).
+%%handwave
+name:
+  Subdivision parameters for a terminal extension
+statement:
+  When a path lying in the terminal branch is appended to a continuation chain, each old subdivision parameter $t$ is moved to $t/2$ and one new terminal vertex is placed at $1$.
 -/
 noncomputable def terminalExtensionParameterAt
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -4272,9 +3802,11 @@ noncomputable def terminalExtensionParameterAt
       1
 
 /--
-Branches for appending a path in the terminal branch: the old branch choices
-are reused on the compressed part and the added endpoint uses the old terminal
-branch.
+%%handwave
+name:
+  Branch assignment for a terminal extension
+statement:
+  Extending a continuation chain by a path inside its terminal branch keeps every old branch assignment and assigns the old terminal branch to the new endpoint.
 -/
 noncomputable def terminalExtensionBranchAt
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -4286,8 +3818,11 @@ noncomputable def terminalExtensionBranchAt
       C.terminalBranch
 
 /--
-Accumulated transitions for appending a path in the terminal branch: the old
-accumulated products are reused and the added final product is unchanged.
+%%handwave
+name:
+  Transition products for a terminal extension
+statement:
+  Extending a continuation chain inside its terminal branch keeps every old accumulated transition and assigns the old terminal transition to the new endpoint.
 -/
 noncomputable def terminalExtensionTransitionProductAt
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -4611,17 +4146,24 @@ theorem exists_segment_contains_parameter
     · simpa [hcast] using hleft
     · simpa [hsucc, iCur] using hnτ
 
-/-- The vertex at which an interior segment split is inserted. -/
+/--
+%%handwave
+name:
+  Inserted vertex of a segment subdivision
+statement:
+  When segment $k$ of a continuation chain is split, the new subdivision vertex is inserted immediately after the old left endpoint $k$.
+-/
 def segmentSplitInsertVertex
     (C : S.PathContinuationChain x₀ i₀ p)
     (k : Fin C.length) : Fin (C.length + 2) :=
   (k.succ : Fin (C.length + 1)).castSucc
 
 /--
-Subdivision parameters after inserting a point `τ` into segment `k`.
-
-The old vertices are embedded by `succAbove`, while the inserted vertex is
-assigned parameter `τ`.
+%%handwave
+name:
+  Parameters after splitting a continuation segment
+statement:
+  Splitting segment $k$ at $\tau$ inserts a new vertex with parameter $\tau$ and preserves, in their original order, the parameters of all old vertices.
 -/
 noncomputable def segmentSplitParameterAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4634,8 +4176,11 @@ noncomputable def segmentSplitParameterAt
       C.parameterAt ((k.succ : Fin (C.length + 1)).predAbove i)
 
 /--
-Branches after inserting a point `τ` into segment `k`.  The inserted vertex
-uses the same branch as the left half of the split segment.
+%%handwave
+name:
+  Branches after splitting a continuation segment
+statement:
+  Splitting segment $k$ preserves all old branch assignments and gives the inserted vertex the branch of the segment's left endpoint.
 -/
 noncomputable def segmentSplitBranchAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -4648,8 +4193,11 @@ noncomputable def segmentSplitBranchAt
       C.branchAt ((k.succ : Fin (C.length + 1)).predAbove i)
 
 /--
-Accumulated transitions after a segment split.  The inserted vertex has the
-same accumulated transition as the old left endpoint.
+%%handwave
+name:
+  Transition products after splitting a continuation segment
+statement:
+  Splitting segment $k$ preserves all old accumulated transitions and gives the inserted vertex the accumulated transition at the old left endpoint.
 -/
 noncomputable def segmentSplitTransitionProductAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5369,11 +4917,11 @@ theorem segmentSplit_terminal_endpoint_mem_domain
   simpa [C.segmentSplitBranchAt_last k] using C.terminal_endpoint_mem_domain
 
 /--
-Transition data for every handoff of a segment-split chain.
-
-The split segment contributes two transitions: an identity transition into the
-inserted vertex and the original transition out of it. All other handoffs are
-transported from the old chain.
+%%handwave
+name:
+  Local transitions after splitting a continuation segment
+statement:
+  After segment $k$ is split at $\tau$, the handoff into the inserted vertex is the identity, the handoff out is the old transition at the segment's right endpoint, and every other handoff is transported from the original chain.
 -/
 noncomputable def segmentSplitTransitionAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5488,11 +5036,11 @@ noncomputable def segmentSplitTransitionAt
     exact (C.transitionAt e).congr hU.symm hV.symm hpoint.symm
 
 /--
-Split a single segment of a finite continuation chain.
-
-The inserted vertex uses the branch controlling the left half of the old
-segment.  The new handoffs are the identity at the inserted point followed by
-the original transition at the old right endpoint.
+%%handwave
+name:
+  Splitting one segment of a continuation chain
+statement:
+  If the parameter $\tau$ lies in segment $k$ of a finite continuation chain, subdividing that segment at $\tau$ yields a chain with one additional segment; the inserted vertex uses the left branch, with an identity handoff into it and the old transition out of it.
 -/
 noncomputable def segmentSplitChain
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5705,8 +5253,11 @@ theorem segmentSplitChain_terminalGerms_agree
       C.segmentSplitChain_terminalTransition k τ hτ_left hτ_right]
 
 /--
-Split a chain at an arbitrary parameter, choosing a containing segment by the
-finite-subdivision locator.
+%%handwave
+name:
+  Splitting a continuation chain at a parameter
+statement:
+  For any $\tau\in[0,1]$, choose a subdivision segment containing $\tau$ and split that segment to obtain a refined continuation chain with $\tau$ as a sampled parameter.
 -/
 noncomputable def splitAtParameterChain
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -5760,7 +5311,11 @@ theorem splitAtParameterChain_terminalGerms_agree
       (Classical.choose_spec (C.exists_segment_contains_parameter τ)).2
 
 /--
-Split the first `m` sampled parameters of `D` into `C`.
+%%handwave
+name:
+  Inserting an initial list of sampled parameters
+statement:
+  Given continuation chains $C$ and $D$ along the same path, recursively refine $C$ by inserting the first $m$ sampled parameters of $D$.
 -/
 noncomputable def splitFirstVerticesOfChain
     (C D : S.PathContinuationChain x₀ i₀ p) :
@@ -5773,7 +5328,13 @@ noncomputable def splitFirstVerticesOfChain
       else
         R
 
-/-- Split every sampled parameter of `D` into `C`. -/
+/--
+%%handwave
+name:
+  Inserting all sampled parameters of another chain
+statement:
+  Given continuation chains $C$ and $D$ along the same path, refine $C$ by inserting every sampled parameter of $D$.
+-/
 noncomputable def splitAllVerticesOfChain
     (C D : S.PathContinuationChain x₀ i₀ p) :
     S.PathContinuationChain x₀ i₀ p :=
@@ -5823,7 +5384,13 @@ theorem splitAllVerticesOfChain_length
   simpa [splitAllVerticesOfChain] using
     C.splitFirstVerticesOfChain_length_of_le D (D.length + 1) le_rfl
 
-/-- The parameter list of a finite continuation chain. -/
+/--
+%%handwave
+name:
+  Subdivision-parameter list of a continuation chain
+statement:
+  The parameter list of a finite continuation chain is the ordered finite list $(t_0,\ldots,t_N)$ of its subdivision parameters.
+-/
 def parameterList (C : S.PathContinuationChain x₀ i₀ p) :
     List unitInterval :=
   List.ofFn C.parameterAt
@@ -5934,8 +5501,11 @@ theorem splitAtParameterChain_parameterList_perm
       (Classical.choose_spec (C.exists_segment_contains_parameter τ)).2
 
 /--
-The first `m` sampled parameters of a chain, listed in reverse recursive
-order.
+%%handwave
+name:
+  Reversed prefix of a subdivision-parameter list
+statement:
+  The first $m$ sampled parameters of a continuation chain are listed in reverse recursive order, so the newest valid parameter is prepended at each step.
 -/
 def firstParameterListOfChain
     (D : S.PathContinuationChain x₀ i₀ p) :
@@ -6253,6 +5823,13 @@ theorem terminalExtensionParameterAt_mono
       C.terminalExtensionParameterAt_final_right]
     norm_num
 
+/--
+%%handwave
+name:
+  Local transitions for a terminal path extension
+statement:
+  When a path $\rho$ lying in the terminal branch is appended to a continuation chain, the old handoffs are transported to the compressed first half and the final handoff along $\rho$ is the identity transition of the terminal branch.
+-/
 noncomputable def terminalExtensionTransitionAt
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} (ρ : Path x y)
@@ -6486,37 +6063,6 @@ theorem terminalExtensionAlongChain_terminalTransition
 /--
 %%handwave
 name:
-  Same-branch extensions have the same terminal germ
-statement:
-  If two paths start at the endpoint of a continuation chain, end at the same
-  point, and both stay inside the current terminal branch domain, then appending
-  either path gives locally agreeing terminal germs.
-proof:
-  Exact terminal-branch append preserves both the terminal branch and the
-  accumulated terminal transition, so the two resulting local terminal
-  expressions are identical on the terminal branch domain.
--/
-theorem terminalExtensionsAlong_same_terminalGerms_agree
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {y : X} (ρ σ : Path x y)
-    (hρ : ∀ t : unitInterval, ρ t ∈ S.domain C.terminalBranch)
-    (hσ : ∀ t : unitInterval, σ t ∈ S.domain C.terminalBranch) :
-    (C.terminalExtensionAlongChain ρ hρ).toTerminalGerm.LocallyAgreesWith
-      (C.terminalExtensionAlongChain σ hσ).toTerminalGerm := by
-  refine
-    ⟨S.domain C.terminalBranch, S.domain_open C.terminalBranch,
-      ?_, ?_, ?_⟩
-  · simpa [ρ.target] using hρ 1
-  · intro z hz
-    constructor
-    · simpa [PathContinuationChain.toTerminalGerm] using hz
-    · simpa [PathContinuationChain.toTerminalGerm] using hz
-  · intro z _hz
-    simp [PathContinuationGerm.localMap, PathContinuationChain.toTerminalGerm]
-
-/--
-%%handwave
-name:
   Equal terminal branch data gives local agreement
 statement:
   Let \(C\) and \(D\) be continuation chains ending at the same point \(x\).
@@ -6548,12 +6094,11 @@ theorem terminalGerms_agree_of_terminalBranch_eq_terminalTransition_eq
       hBranch, hTransition]
 
 /--
-Subdivision parameters for appending an already-subdivided suffix chain.
-
-The prefix chain is compressed into the first half of the unit interval, and
-the suffix chain is compressed into the second half.  The point \(1/2\) is
-duplicated: once as the terminal vertex of the prefix and once as the initial
-vertex of the suffix.
+%%handwave
+name:
+  Parameters for appending a subdivided suffix
+statement:
+  When a subdivided suffix chain is appended, prefix parameters $t$ are sent to $t/2$, suffix parameters $u$ to $(1+u)/2$, and the joining value $\tfrac12$ occurs once for each side of the handoff.
 -/
 noncomputable def appendSuffixParameterAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -6567,7 +6112,13 @@ noncomputable def appendSuffixParameterAt
       unitInterval.secondHalf
         (D.parameterAt ⟨(i : ℕ) - (C.length + 1), by omega⟩)
 
-/-- Branches for appending an already-subdivided suffix chain. -/
+/--
+%%handwave
+name:
+  Branches for appending a subdivided suffix
+statement:
+  The branch assignment of a concatenated continuation chain is the original prefix assignment followed in order by the suffix assignment.
+-/
 noncomputable def appendSuffixBranchAt
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -6579,7 +6130,13 @@ noncomputable def appendSuffixBranchAt
     else
       D.branchAt ⟨(i : ℕ) - (C.length + 1), by omega⟩
 
-/-- Accumulated transitions for appending an already-subdivided suffix chain. -/
+/--
+%%handwave
+name:
+  Transition products for appending a subdivided suffix
+statement:
+  A concatenated continuation chain retains each prefix transition product, while at a suffix vertex it uses the product of the prefix terminal transition with the suffix transition product at that vertex.
+-/
 noncomputable def appendSuffixTransitionProductAt
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -7144,7 +6701,13 @@ theorem appendSuffix_path_segment_mem_domain
       exact D.path_segment_mem_domain j
         (unitInterval.doubleSubOneOfHalfLe t ht_half) h_lower h_upper
 
-/-- Transition data for appending an already-subdivided suffix chain. -/
+/--
+%%handwave
+name:
+  Local transitions for appending a subdivided suffix
+statement:
+  The handoffs of a concatenated continuation chain consist of the prefix handoffs, the initial handoff of the suffix chain at the joining point, and then the remaining suffix handoffs.
+-/
 noncomputable def appendSuffixTransitionAt
     (C : S.PathContinuationChain x₀ i₀ p)
     {y : X} {suffix : Path x y}
@@ -7437,8 +7000,11 @@ theorem appendSuffixChain_terminalGerms_agree_of_terminalBranchData
       hPrefixTransition, hSuffixTransition]
 
 /--
-Subdivision parameters for changing only the terminal branch: keep the old
-subdivision and add one final endpoint at \(1\).
+%%handwave
+name:
+  Parameters for a terminal branch handoff
+statement:
+  To change only the terminal branch of a continuation chain, retain every old subdivision parameter and add a new final vertex, also at parameter $1$.
 -/
 noncomputable def terminalHandoffParameterAt
     (C : S.PathContinuationChain x₀ i₀ p) :
@@ -7450,8 +7016,11 @@ noncomputable def terminalHandoffParameterAt
       1
 
 /--
-Branches for changing only the terminal branch: keep the old branch choices
-and use the requested branch at the added final endpoint.
+%%handwave
+name:
+  Branches for a terminal branch handoff
+statement:
+  A terminal handoff retains every old branch assignment and gives the new endpoint the requested branch $j$.
 -/
 noncomputable def terminalHandoffBranchAt
     (C : S.PathContinuationChain x₀ i₀ p) (j : ι) :
@@ -7463,8 +7032,11 @@ noncomputable def terminalHandoffBranchAt
       j
 
 /--
-Accumulated transitions for changing only the terminal branch: keep the old
-products and update the added final product by the terminal handoff.
+%%handwave
+name:
+  Transition products for a terminal branch handoff
+statement:
+  A terminal handoff retains every old accumulated transition and assigns the new endpoint the product $gT^{-1}$, where $g$ is the old terminal transition and $T$ is the local handoff transition.
 -/
 noncomputable def terminalHandoffTransitionProductAt
     (C : S.PathContinuationChain x₀ i₀ p)
@@ -7788,6 +7360,13 @@ theorem terminalHandoffParameterAt_mono
     rw [C.terminalHandoffParameterAt_final_left,
       C.terminalHandoffParameterAt_final_right]
 
+/--
+%%handwave
+name:
+  Local transitions for a terminal branch handoff
+statement:
+  A terminal handoff transports all old local transitions and uses the specified transition $T$ for the new zero-length final segment at the endpoint.
+-/
 noncomputable def terminalHandoffTransitionAt
     (C : S.PathContinuationChain x₀ i₀ p)
     {j : ι} (T : S.LocalTransition C.terminalBranch j x) :
@@ -7965,210 +7544,7 @@ theorem terminalHandoffAlongChain_terminalBranch
     (C.terminalHandoffAlongChain T).terminalBranch = j := by
   simp [terminalHandoffAlongChain, terminalBranch]
 
-/--
-%%handwave
-name:
-  Terminal transition after a handoff
-statement:
-  If the original terminal transition is \(g\) and the local handoff from
-  branch \(i\) to branch \(j\) has transition \(h\), then the handed-off
-  chain has terminal transition \(gh^{-1}\).
-proof:
-  The appended endpoint vertex is defined with transition product
-  \(gh^{-1}\).
--/
-@[simp]
-theorem terminalHandoffAlongChain_terminalTransition
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {j : ι} (T : S.LocalTransition C.terminalBranch j x) :
-    (C.terminalHandoffAlongChain T).terminalTransition =
-      C.terminalTransition * T.transition⁻¹ := by
-  simp [terminalHandoffAlongChain, terminalTransition]
-
-/--
-%%handwave
-name:
-  Terminal branch handoff preserves the terminal germ
-statement:
-  The old terminal expression and the expression after a terminal branch
-  handoff agree locally at the endpoint.
-proof:
-  This is exactly the local transition relation used for the appended
-  zero-length handoff, combined with the transition-product update rule.
--/
-theorem terminalHandoffAlongChain_terminalGerms_agree
-    (C : S.PathContinuationChain x₀ i₀ p)
-    {j : ι} (T : S.LocalTransition C.terminalBranch j x) :
-    C.toTerminalGerm.LocallyAgreesWith
-      (C.terminalHandoffAlongChain T).toTerminalGerm := by
-  let D : S.PathContinuationChain x₀ i₀ p := C.terminalHandoffAlongChain T
-  let k : Fin D.length := Fin.last C.length
-  have hlocal :
-      S.LocalExpressionAgreesAt
-        C.terminalBranch D.terminalBranch
-        C.terminalTransition D.terminalTransition
-        x := by
-    have h :=
-      D.transitionProductAt_succ_localExpressionAgreesAt k
-    simpa [D, k, terminalHandoffAlongChain, terminalBranch,
-      terminalTransition, p.target] using h
-  rcases hlocal with ⟨U, hU_open, hxU, hU_subset, hU_eq⟩
-  refine ⟨U, hU_open, hxU, ?_, ?_⟩
-  · intro z hz
-    simpa [D, PathContinuationChain.toTerminalGerm] using hU_subset hz
-  · intro z hz
-    simpa [D, PathContinuationGerm.localMap,
-      PathContinuationChain.toTerminalGerm] using hU_eq z hz
-
-/--
-%%handwave
-name:
-  Common terminal handoff preserves local agreement
-statement:
-  If two terminal germs locally agree at a common endpoint, then after changing
-  both terminal branches to a common branch by local handoffs, the resulting
-  terminal germs still locally agree.
-proof:
-  Each terminal handoff locally agrees with the germ before the handoff, so the
-  conclusion follows by symmetry and transitivity of local agreement.
--/
-theorem terminalHandoffAlongChain_commonBranch_terminalGerms_agree
-    {x₀ : X} {i₀ : ι} {x : X}
-    {p q : Path x₀ x}
-    (C : S.PathContinuationChain x₀ i₀ p)
-    (D : S.PathContinuationChain x₀ i₀ q)
-    (H : C.toTerminalGerm.LocallyAgreesWith D.toTerminalGerm)
-    {j : ι}
-    (TC : S.LocalTransition C.terminalBranch j x)
-    (TD : S.LocalTransition D.terminalBranch j x) :
-    (C.terminalHandoffAlongChain TC).toTerminalGerm.LocallyAgreesWith
-      (D.terminalHandoffAlongChain TD).toTerminalGerm := by
-  exact
-    PathContinuationGerm.locallyAgreesWith_trans
-      (PathContinuationGerm.locallyAgreesWith_symm
-        (C.terminalHandoffAlongChain_terminalGerms_agree TC))
-      (PathContinuationGerm.locallyAgreesWith_trans H
-        (D.terminalHandoffAlongChain_terminalGerms_agree TD))
-
-/--
-%%handwave
-name:
-  Rectangle-edge extensions agree after terminal branch handoff
-statement:
-  Suppose a homotopy rectangle lies in one branch domain.  If a continuation
-  chain has reached the lower-left corner, then after changing its terminal
-  branch to that rectangle branch, extending along the two boundary routes
-  around the rectangle gives locally agreeing terminal germs.
-proof:
-  The terminal handoff changes the current terminal branch to the rectangle
-  branch.  Both rectangle-edge paths stay in that branch domain, so the two
-  exact terminal-branch appends preserve the same terminal branch and transition.
--/
-theorem exists_terminalGerms_agree_after_homotopyRectangle_edges
-    {xA xB : X} {p q : Path xA xB}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {branch : ι}
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval | F z ∈ S.domain branch})
-    {base : X} {ibase : ι}
-    {pref : Path base (F (a, r₀))}
-    (C : S.PathContinuationChain base ibase pref)
-    (T : S.LocalTransition C.terminalBranch branch (F (a, r₀))) :
-    ∃ (CbottomRight :
-        S.PathContinuationChain base ibase
-          (pref.trans (homotopyRectangleBottomRightPath F a b r₀ r₁)))
-      (CleftTop :
-        S.PathContinuationChain base ibase
-          (pref.trans (homotopyRectangleLeftTopPath F a b r₀ r₁))),
-      CbottomRight.toTerminalGerm.LocallyAgreesWith
-        CleftTop.toTerminalGerm := by
-  let Cbranch : S.PathContinuationChain base ibase pref :=
-    C.terminalHandoffAlongChain T
-  have hBR :
-      ∀ u : unitInterval,
-        homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-          S.domain Cbranch.terminalBranch := by
-    intro u
-    have hmem :
-        homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-          S.domain branch :=
-      homotopyRectangleBottomRightPath_mem_of_rect_subset
-        F a b r₀ r₁ hab hr hRect u
-    simpa [Cbranch] using hmem
-  have hLT :
-      ∀ u : unitInterval,
-        homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-          S.domain Cbranch.terminalBranch := by
-    intro u
-    have hmem :
-        homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-          S.domain branch :=
-      homotopyRectangleLeftTopPath_mem_of_rect_subset
-        F a b r₀ r₁ hab hr hRect u
-    simpa [Cbranch] using hmem
-  exact
-    ⟨Cbranch.terminalExtensionAlongChain
-        (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR,
-      Cbranch.terminalExtensionAlongChain
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT,
-      Cbranch.terminalExtensionsAlong_same_terminalGerms_agree
-        (homotopyRectangleBottomRightPath F a b r₀ r₁)
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hBR hLT⟩
-
 end PathContinuationChain
-
-/--
-%%handwave
-name:
-  Single-domain path-continuation chain
-statement:
-  If a path stays inside one branch domain, it admits a one-piece continuation
-  chain with identity transition.
-proof:
-  Use the subdivision \(0,1\), keep the same branch on both vertices, and use
-  the identity local transition at the terminal vertex.
--/
-theorem pathContinuationChain_of_path_mem_single_domain
-    {x₀ : X} {i₀ : ι} {x : X} (p : Path x₀ x)
-    (hpath : ∀ t : unitInterval, p t ∈ S.domain i₀) :
-    Nonempty (S.PathContinuationChain x₀ i₀ p) := by
-  let parameterAt : Fin (1 + 1) → unitInterval :=
-    fun k ↦ if k = 0 then 0 else 1
-  refine
-    ⟨
-      { length := 1
-        parameterAt := parameterAt
-        parameterAt_zero := by
-          simp [parameterAt]
-        parameterAt_last := by
-          simp [parameterAt]
-        parameterAt_mono := ?_
-        branchAt := fun _ ↦ i₀
-        initialTransition := LocalTransition.refl (S := S) i₀
-          (by simpa [p.source] using hpath 0)
-        transitionProductAt := fun _ ↦ 1
-        transitionProductAt_zero := by
-          simp [LocalTransition.refl]
-        transitionAt := ?_
-        transitionProductAt_succ_eq := ?_
-        sample_mem_domain := ?_
-        path_segment_mem_domain := ?_
-        terminal_endpoint_mem_domain := ?_ }⟩
-  · intro k
-    fin_cases k
-    simp [parameterAt]
-  · intro k
-    exact LocalTransition.refl (S := S) i₀ (hpath (parameterAt k.succ))
-  · intro k
-    fin_cases k
-    simp [LocalTransition.refl]
-  · intro i
-    exact hpath (parameterAt i)
-  · intro k t _ht0 _ht1
-    exact hpath t
-  · simpa using hpath 1
 
 /--
 %%handwave
@@ -8363,35 +7739,30 @@ namespace PathContinuationChainState
 
 variable {S} {x₀ : X} {i₀ : ι} {x : X}
 
-/-- Build a path-continuation state from a chain along a chosen path. -/
+/--
+%%handwave
+name:
+  Continuation state associated with a chain
+statement:
+  A continuation chain along a path $p$ determines the state consisting of $p$ together with that chain.
+-/
 def ofChain {p : Path x₀ x}
     (C : S.PathContinuationChain x₀ i₀ p) :
     S.PathContinuationChainState x₀ i₀ x where
   path := p
   chain := C
 
-/-- The terminal germ of a path-continuation state. -/
+/--
+%%handwave
+name:
+  Terminal germ of a continuation state
+statement:
+  The terminal germ of a path-continuation state is the endpoint germ determined by its stored finite continuation chain.
+-/
 def terminalGerm
     (A : S.PathContinuationChainState x₀ i₀ x) :
     S.PathContinuationGerm x₀ i₀ A.path :=
   A.chain.toTerminalGerm
-
-/--
-%%handwave
-name:
-  Terminal germ of a chain state
-statement:
-  The path-continuation state built from a continuation chain has exactly the
-  terminal germ of that chain.
-proof:
-  This is immediate from the construction of the state.
--/
-@[simp]
-theorem ofChain_terminalGerm {p : Path x₀ x}
-    (C : S.PathContinuationChain x₀ i₀ p) :
-    (PathContinuationChainState.ofChain C).terminalGerm =
-      C.toTerminalGerm :=
-  rfl
 
 end PathContinuationChainState
 
@@ -8414,28 +7785,6 @@ namespace PathContinuationChainGermMove
 
 variable {S} {x₀ : X} {i₀ : ι} {x : X}
     {A B : S.PathContinuationChainState x₀ i₀ x}
-
-/-- The identity terminal-germ move. -/
-def refl (A : S.PathContinuationChainState x₀ i₀ x) :
-    S.PathContinuationChainGermMove A A where
-  terminalGerms_agree :=
-    PathContinuationGerm.locallyAgreesWith_refl A.terminalGerm
-
-/-- Reverse an elementary terminal-germ move. -/
-def symm (M : S.PathContinuationChainGermMove A B) :
-    S.PathContinuationChainGermMove B A where
-  terminalGerms_agree :=
-    PathContinuationGerm.locallyAgreesWith_symm M.terminalGerms_agree
-
-/-- Compose elementary terminal-germ moves. -/
-def trans
-    {C : S.PathContinuationChainState x₀ i₀ x}
-    (M₁ : S.PathContinuationChainGermMove A B)
-    (M₂ : S.PathContinuationChainGermMove B C) :
-    S.PathContinuationChainGermMove A C where
-  terminalGerms_agree :=
-    PathContinuationGerm.locallyAgreesWith_trans
-      M₁.terminalGerms_agree M₂.terminalGerms_agree
 
 end PathContinuationChainGermMove
 
@@ -8468,7 +7817,13 @@ namespace PathContinuationChainGermWalk
 variable {S} {x₀ : X} {i₀ : ι} {x : X}
     {A B C : S.PathContinuationChainState x₀ i₀ x}
 
-/-- The constant terminal-germ walk. -/
+/--
+%%handwave
+name:
+  Constant terminal-germ walk
+statement:
+  Every continuation state has a length-zero terminal-germ walk from itself to itself.
+-/
 def refl (A : S.PathContinuationChainState x₀ i₀ x) :
     S.PathContinuationChainGermWalk A A where
   length := 0
@@ -8479,7 +7834,13 @@ def refl (A : S.PathContinuationChainState x₀ i₀ x) :
     intro n hn
     omega
 
-/-- Append one terminal-germ move to a terminal-germ walk. -/
+/--
+%%handwave
+name:
+  Appending a terminal-germ move
+statement:
+  A terminal-germ walk from $A$ to $B$ followed by one elementary germ-preserving move from $B$ to $C$ gives a walk from $A$ to $C$ with one additional step.
+-/
 def snoc
     (W : S.PathContinuationChainGermWalk A B)
     (M : S.PathContinuationChainGermMove B C) :
@@ -8505,12 +7866,24 @@ def snoc
       have hnot : ¬ W.length + 1 ≤ W.length := by omega
       simpa [hnot, W.stateAt_length] using M
 
-/-- A single terminal-germ move as a walk. -/
+/--
+%%handwave
+name:
+  One-step terminal-germ walk
+statement:
+  An elementary germ-preserving move from $A$ to $B$ determines a terminal-germ walk of length one from $A$ to $B$.
+-/
 def ofMove (M : S.PathContinuationChainGermMove A B) :
     S.PathContinuationChainGermWalk A B :=
   (refl A).snoc M
 
-/-- Change only the named endpoint states of a terminal-germ walk. -/
+/--
+%%handwave
+name:
+  Relabeling endpoints of a terminal-germ walk
+statement:
+  A terminal-germ walk may be transported across equalities of its initial and terminal continuation states without changing its intermediate states or moves.
+-/
 def cast
     (W : S.PathContinuationChainGermWalk A B)
     {A' B' : S.PathContinuationChainState x₀ i₀ x}
@@ -8555,7 +7928,13 @@ theorem terminalGerms_agree
   rw [W.stateAt_zero, W.stateAt_length] at h
   exact h
 
-/-- Concatenate two terminal-germ walks. -/
+/--
+%%handwave
+name:
+  Concatenation of terminal-germ walks
+statement:
+  A terminal-germ walk from $A$ to $B$ and one from $B$ to $C$ determine a walk from $A$ to $C$ whose endpoint germ agreement is the composite of the two agreements.
+-/
 def trans
     (W₁ : S.PathContinuationChainGermWalk A B)
     (W₂ : S.PathContinuationChainGermWalk B C) :
@@ -8565,7 +7944,13 @@ def trans
         PathContinuationGerm.locallyAgreesWith_trans
           W₁.terminalGerms_agree W₂.terminalGerms_agree }
 
-/-- Reverse a terminal-germ walk. -/
+/--
+%%handwave
+name:
+  Reversal of a terminal-germ walk
+statement:
+  Reversing the local endpoint-germ agreement of a walk from $A$ to $B$ gives a terminal-germ walk from $B$ to $A$.
+-/
 def symm
     (W : S.PathContinuationChainGermWalk A B) :
     S.PathContinuationChainGermWalk B A :=
@@ -8575,21 +7960,13 @@ def symm
 
 variable {p : Path x₀ x}
 
-/-- Splitting one segment as a one-step terminal-germ walk. -/
-noncomputable def segmentSplit
-    (C : S.PathContinuationChain x₀ i₀ p)
-    (k : Fin C.length) (τ : unitInterval)
-    (hτ_left : (C.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ C.parameterAt k.succ) :
-    S.PathContinuationChainGermWalk
-      (PathContinuationChainState.ofChain C)
-      (PathContinuationChainState.ofChain
-        (C.segmentSplitChain k τ hτ_left hτ_right)) :=
-  ofMove
-    { terminalGerms_agree :=
-        C.segmentSplitChain_terminalGerms_agree k τ hτ_left hτ_right }
-
-/-- Splitting at an arbitrary parameter as a one-step terminal-germ walk. -/
+/--
+%%handwave
+name:
+  Germ walk induced by splitting at one parameter
+statement:
+  A continuation chain and its refinement obtained by inserting $\tau\in[0,1]$ are joined by a one-step terminal-germ walk.
+-/
 noncomputable def splitAtParameter
     (C : S.PathContinuationChain x₀ i₀ p)
     (τ : unitInterval) :
@@ -8600,8 +7977,11 @@ noncomputable def splitAtParameter
     { terminalGerms_agree := C.splitAtParameterChain_terminalGerms_agree τ }
 
 /--
-Finite terminal-germ walk splitting at the first `m` sampled parameters of
-another chain.
+%%handwave
+name:
+  Germ walk induced by inserting a parameter prefix
+statement:
+  Successively inserting the first $m$ sampled parameters of another continuation chain produces a finite terminal-germ walk from the original chain to the resulting refinement.
 -/
 noncomputable def splitFirstVerticesOf
     (C D : S.PathContinuationChain x₀ i₀ p) :
@@ -8622,7 +8002,13 @@ noncomputable def splitFirstVerticesOf
       · simpa [PathContinuationChain.splitFirstVerticesOfChain, h] using
           splitFirstVerticesOf C D m
 
-/-- Finite terminal-germ walk splitting at every sampled parameter of another chain. -/
+/--
+%%handwave
+name:
+  Germ walk induced by a full common refinement
+statement:
+  Inserting every sampled parameter of a second continuation chain produces a finite terminal-germ walk from the original chain to the fully refined chain.
+-/
 noncomputable def splitAllVerticesOf
     (C D : S.PathContinuationChain x₀ i₀ p) :
     S.PathContinuationChainGermWalk
@@ -9574,7 +8960,13 @@ namespace CoherentLocalContinuationFamily
 
 variable {S}
 
-/-- The global function determined by a coherent local continuation family. -/
+/--
+%%handwave
+name:
+  Global map of a coherent continuation family
+statement:
+  A coherent continuation family defines a global map by evaluating at each point $x$ its assigned transformed local branch, namely $x\mapsto g_x\cdot f_{i_x}(x)$.
+-/
 def global (F : S.CoherentLocalContinuationFamily) : X → Y :=
   fun x ↦ S.act (F.transitionAt x) (S.branch (F.branchAt x) x)
 
@@ -9602,22 +8994,6 @@ def toSingleValuedContinuation
         F.neighborhoodAt_subset_domain x, ?_⟩
     intro y hy
     exact F.coherent x y hy
-
-/--
-%%handwave
-name:
-  Global function of the continuation induced by a coherent family
-statement:
-  The global function underlying the single-valued continuation associated to
-  a coherent local family is the pointwise function determined by that family.
-proof:
-  This is the defining global field of the constructed continuation.
--/
-@[simp]
-theorem toSingleValuedContinuation_global
-    (F : S.CoherentLocalContinuationFamily) :
-    F.toSingleValuedContinuation.global = F.global :=
-  rfl
 
 end CoherentLocalContinuationFamily
 

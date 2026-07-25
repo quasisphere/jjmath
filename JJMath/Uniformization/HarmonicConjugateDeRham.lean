@@ -24,6 +24,14 @@ open JJMath.Manifold
 noncomputable section
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+%%handwave
+name: Imaginary part of a local holomorphic real-part branch
+statement:
+  For a local holomorphic function $f$ with prescribed real part on an open
+  subset $U$ of a Riemann surface, bundle $\operatorname{Im}f:U\to\mathbb R$
+  as a smooth function.
+-/
 def SurfaceHolomorphicRealPartBranch.imaginarySmoothFunction
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -67,6 +75,13 @@ def SurfaceHolomorphicRealPartBranch.imaginarySmoothFunction
   exact ⟨f, by
     simpa [f, Function.comp_def] using him.comp htotalU⟩
 
+/--
+%%handwave
+name: Differential of a local harmonic conjugate
+statement:
+  For a local holomorphic function $f$ with prescribed real part, define the
+  smooth one-form $d(\operatorname{Im}f)$ on its source.
+-/
 noncomputable def SurfaceHolomorphicRealPartBranch.imaginaryDifferential
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -351,6 +366,13 @@ theorem HarmonicConjugateDifferentialData.closed
     hrestrict
   simpa [restrictSmoothFormsToOpen, restrictSmoothFormToOpen, U, xU, L] using hpoint
 
+/--
+%%handwave
+name: Closed form represented by the harmonic-conjugate differential
+statement:
+  Bundle the global one-form obtained by gluing the local differentials
+  $d(\operatorname{Im}f)$ together with the proof that it is closed.
+-/
 noncomputable def HarmonicConjugateDifferentialData.toClosedForm
     {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
     [ComplexOneManifold Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
@@ -362,171 +384,6 @@ noncomputable def HarmonicConjugateDifferentialData.toClosedForm
   ⟨D.omega, D.closed⟩
 
 set_option maxHeartbeats 1500000 in
-/--
-%%handwave
-name:
-  A harmonic function is globally a real part when first de Rham cohomology vanishes
-statement:
-  On a Riemann surface with vanishing first de Rham cohomology, every
-  real-valued harmonic function is the real part of a globally defined
-  holomorphic function.
-proof:
-  The imaginary differentials of local holomorphic real parts agree on
-  overlaps and hence form a global closed one-form.  Its cohomology class
-  vanishes, so a primitive gives a global harmonic conjugate.  Local comparison
-  with the original branches proves that the resulting complex-valued function
-  is holomorphic.
--/
-theorem deRhamH1Zero_harmonicOnSurface_has_holomorphic_real_part
-    {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
-    [RiemannSurface Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
-    [Subsingleton
-      (DeRhamCohomology (I := 𝓘(ℝ, ℂ)) (M := Z) (A := ℝ) 1)]
-    {u : Z → ℝ}
-    (hu : IsHarmonicOnSurface (Set.univ : Set Z) u) :
-    ∃ F : Z → ℂ,
-      MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F ∧
-        ∀ z, (F z).re = u z := by
-  classical
-  let hbranches : ∀ p : Z,
-      ∃ B : SurfaceHolomorphicRealPartBranch Z u, p ∈ B.source :=
-    fun p => harmonicOnSurface_exists_local_holomorphicRealPartBranch hu p
-  rcases exists_harmonicConjugateDifferentialData hbranches with ⟨D⟩
-  rcases deRhamClosedSuccForm_has_primitive_of_cohomology_subsingleton
-      (I := 𝓘(ℝ, ℂ)) (M := Z) (A := ℝ) (n := 0) D.toClosedForm with
-    ⟨theta, htheta⟩
-  have htheta' :
-      deRhamDifferential (I := 𝓘(ℝ, ℂ)) (M := Z) (A := ℝ) 0 theta = D.omega := by
-    simpa [HarmonicConjugateDifferentialData.toClosedForm] using htheta
-  let v : Z → ℝ := fun x => theta.toFun x (fun i : Fin 0 => nomatch i)
-  let F : Z → ℂ := fun x => (u x : ℂ) + (v x : ℂ) * Complex.I
-  have hF_local : ∀ x : Z, ∃ W : Set Z,
-      IsOpen W ∧ x ∈ W ∧
-        MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ) F W := by
-    intro x
-    rcases hbranches x with ⟨B, hxB⟩
-    rcases (LocallyConnectedSpace.open_connected_basis x).mem_iff.mp
-        (B.source_open.mem_nhds hxB) with
-      ⟨Wset, ⟨hWopen, hxW, hWconnected⟩, hWBset⟩
-    let W : TopologicalSpace.Opens Z := ⟨Wset, hWopen⟩
-    let UB : TopologicalSpace.Opens Z := ⟨B.source, B.source_open⟩
-    have hWB : W ≤ UB := hWBset
-    let thetaW : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := W) ℝ 0 :=
-      restrictSmoothFormsToOpen (I := 𝓘(ℝ, ℂ)) (A := ℝ) W 0 theta
-    let thetaB : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := UB) ℝ 0 :=
-      smoothRealFunctionToZeroForm (I0 := 𝓘(ℝ, ℂ))
-        B.imaginarySmoothFunction
-    let thetaBW : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := W) ℝ 0 :=
-      restrictSmoothFormsOfLE (I := 𝓘(ℝ, ℂ)) (A := ℝ) hWB 0 thetaB
-    have hdtheta :
-        deRhamDifferential (I := 𝓘(ℝ, ℂ)) (M := W) (A := ℝ) 0 thetaW =
-          deRhamDifferential (I := 𝓘(ℝ, ℂ)) (M := W) (A := ℝ) 0 thetaBW := by
-      calc
-        _ = restrictSmoothFormsToOpen (I := 𝓘(ℝ, ℂ)) (A := ℝ) W 1
-              (deRhamDifferential (I := 𝓘(ℝ, ℂ)) (M := Z) (A := ℝ) 0 theta) :=
-            deRhamDifferential_restrictSmoothFormsToOpen
-              (I := 𝓘(ℝ, ℂ)) (A := ℝ) W theta
-        _ = restrictSmoothFormsToOpen (I := 𝓘(ℝ, ℂ)) (A := ℝ) W 1 D.omega := by
-            rw [htheta']
-        _ = restrictSmoothFormsOfLE (I := 𝓘(ℝ, ℂ)) (A := ℝ) hWB 1
-              B.imaginaryDifferential := by
-            exact restrictSmoothFormsToOpen_eq_restrictSmoothFormsOfLE_of_restrict_eq
-              W UB hWB D.omega B.imaginaryDifferential (D.restrict_eq B)
-        _ = _ := by
-            change restrictSmoothFormsOfLE (I := 𝓘(ℝ, ℂ)) (A := ℝ) hWB 1
-                (deRhamDifferential (I := 𝓘(ℝ, ℂ)) (M := UB) (A := ℝ) 0 thetaB) = _
-            exact (deRhamDifferential_restrictSmoothFormsOfLE
-              (I := 𝓘(ℝ, ℂ)) (A := ℝ) hWB thetaB).symm
-    let xW : W := ⟨x, hxW⟩
-    let c : ℝ := thetaW.toFun xW (fun i : Fin 0 => nomatch i) -
-      thetaBW.toFun xW (fun i : Fin 0 => nomatch i)
-    let constC : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := W) ℝ 0 :=
-      smoothRealFunctionToZeroForm (I0 := 𝓘(ℝ, ℂ))
-        (smoothRealConstantFunction (I0 := 𝓘(ℝ, ℂ)) c)
-    haveI : ConnectedSpace W := isConnected_iff_connectedSpace.mp hWconnected
-    have htheta_local : thetaW = thetaBW + constC := by
-      apply JJMath.Manifold.SmoothChainConnectivity.smoothZeroForm_eq_of_differential_eq_of_eq_at
-        thetaW (thetaBW + constC) xW
-      · rw [map_add,
-          deRhamDifferential_smoothRealFunctionToZeroForm_const, add_zero]
-        exact hdtheta
-      · change _ = _ + c
-        rw [show c = _ - _ by rfl, add_comm]
-        exact (sub_add_cancel _ _).symm
-    have hF_eq : ∀ y ∈ Wset,
-        F y = B.toSurfaceTotalFunction y + (c : ℂ) * Complex.I := by
-      intro y hy
-      let yW : W := ⟨y, hy⟩
-      have hval := congrArg
-        (fun eta : SmoothForms (I := 𝓘(ℝ, ℂ)) (M := W) ℝ 0 =>
-          eta.toFun yW (fun i : Fin 0 => nomatch i)) htheta_local
-      have hyB : y ∈ B.source := hWBset hy
-      have hre := B.toSurfaceTotalFunction_re_eq hyB
-      have hval' : v y = (B.toSurfaceTotalFunction y).im + c := by
-        change theta.toFun y (fun i : Fin 0 => nomatch i) =
-          (B.toSurfaceTotalFunction y).im + c
-        convert hval using 1
-        all_goals
-          simp [thetaW, restrictSmoothFormsToOpen,
-            restrictSmoothFormToOpen, W, yW]
-        congr 1
-        apply Subsingleton.elim
-      apply Complex.ext
-      · simp [F, hre]
-      · simpa [F] using hval'
-    refine ⟨Wset, hWopen, hxW, ?_⟩
-    have hbranch : MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ)
-        B.toSurfaceTotalFunction Wset :=
-      B.toSurfaceTotalFunction_mdifferentiableOn.mono hWBset
-    have htranslated : MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ)
-        (fun y => B.toSurfaceTotalFunction y + (c : ℂ) * Complex.I) Wset :=
-      hbranch.add (mdifferentiableOn_const (c := (c : ℂ) * Complex.I))
-    exact htranslated.congr hF_eq
-  have hF_hol : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F := by
-    rw [← mdifferentiableOn_univ]
-    apply mdifferentiableOn_of_locally_mdifferentiableOn
-    intro x _hx
-    rcases hF_local x with ⟨W, hWopen, hxW, hFW⟩
-    exact ⟨W, hWopen, hxW, by simpa using hFW⟩
-  refine ⟨F, hF_hol, ?_⟩
-  intro z
-  simp [F]
-
-/--
-%%handwave
-name:
-  Harmonic functions exponentiate when first de Rham cohomology vanishes
-statement:
-  On a Riemann surface with vanishing first de Rham cohomology,
-  every real-valued harmonic function is the logarithmic modulus of a
-  globally defined nonvanishing holomorphic function.
-proof:
-  Choose a global holomorphic function with the prescribed real part and
-  compose it with the complex exponential.  The exponential never vanishes,
-  and its logarithmic modulus is the real part of its argument.
--/
-theorem deRhamH1Zero_harmonicOnSurface_has_holomorphic_exp
-    {Z : Type} [TopologicalSpace Z] [ChartedSpace ℂ Z]
-    [RiemannSurface Z] [IsManifold 𝓘(ℝ, ℂ) ∞ Z]
-    [Subsingleton
-      (DeRhamCohomology (I := 𝓘(ℝ, ℂ)) (M := Z) (A := ℝ) 1)]
-    {u : Z → ℝ}
-    (hu : IsHarmonicOnSurface (Set.univ : Set Z) u) :
-    ∃ f : Z → ℂ,
-      MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f ∧
-        (∀ z, f z ≠ 0) ∧
-          ∀ z, Real.log ‖f z‖ = u z := by
-  rcases deRhamH1Zero_harmonicOnSurface_has_holomorphic_real_part hu with
-    ⟨F, hF, hFre⟩
-  let f : Z → ℂ := fun z ↦ Complex.exp (F z)
-  have hexp : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) Complex.exp :=
-    mdifferentiable_iff_differentiable.mpr Complex.differentiable_exp
-  refine ⟨f, hexp.comp hF, ?_, ?_⟩
-  · intro z
-    exact Complex.exp_ne_zero (F z)
-  · intro z
-    simp [f, Complex.norm_exp, hFre z]
-
 end
 end Uniformization
 end JJMath

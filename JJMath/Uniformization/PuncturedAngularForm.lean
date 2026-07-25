@@ -24,18 +24,39 @@ noncomputable section
 
 attribute [local instance] finrank_real_complex_fact'
 
-/-- The complex plane with its origin removed, as an open real manifold. -/
+/--
+%%handwave
+name: The complex plane with its origin removed, as an open real manifold
+statement:
+  Define the punctured plane $\mathbb C^\times=\mathbb C\setminus\{0\}$,
+  regarded as an open real two-manifold.
+-/
 def complexPuncturedPlaneOpen : TopologicalSpace.Opens ℂ :=
   ⟨{z : ℂ | z ≠ 0}, isOpen_ne⟩
 
-/-- The unit direction of a nonzero complex number. -/
+/--
+%%handwave
+name: The unit direction of a nonzero complex number
+statement:
+  For $z\in\mathbb C^\times$, define its unit direction
+  $\operatorname{dir}(z)=z/\lVert z\rVert\in S^1$.
+-/
 noncomputable def complexPuncturedPlaneDirection
     (z : complexPuncturedPlaneOpen) : Circle :=
   ⟨NormedSpace.normalize (z : ℂ),
     mem_sphere_zero_iff_norm.mpr (NormedSpace.norm_normalize z.2)⟩
 
-/-- Polar coordinates identify the punctured complex plane with the standard
-annular cylinder. -/
+/--
+%%handwave
+name: Polar coordinates identify the punctured complex plane with the standard annular cylinder
+statement:
+  Define the polar diffeomorphism
+  \[
+    \mathbb C^\times\longrightarrow S^1\times\mathbb R,\qquad
+    z\longmapsto\left(\frac z{\lVert z\rVert},\log\lVert z\rVert\right),
+  \]
+  whose inverse is $(q,t)\mapsto e^tq$.
+-/
 noncomputable def complexPuncturedPlaneDiffeomorphAnnularCylinder :
     complexPuncturedPlaneOpen ≃ₘ⟮SurfaceRealModel,
       AnnularCylinderModel⟯ Circle × ℝ := by
@@ -110,13 +131,25 @@ noncomputable def complexPuncturedPlaneDiffeomorphAnnularCylinder :
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- An open Euclidean ball with its center removed. -/
+/--
+%%handwave
+name: An open Euclidean ball with its center removed
+statement:
+  For $c\in\mathbb C$ and $r\in\mathbb R$, define the punctured ball
+  $B(c,r)\setminus\{c\}$.
+-/
 def complexPuncturedBallOpen (c : ℂ) (r : ℝ) :
     TopologicalSpace.Opens ℂ :=
   ⟨Metric.ball c r \ {c}, Metric.isOpen_ball.sdiff isClosed_singleton⟩
 
-/-- Radial compression identifies the punctured plane with a punctured open
-ball, taking the origin to the center before the punctures are removed. -/
+/--
+%%handwave
+name: Radial compression identifies the punctured plane with a punctured open ball, taking the origin to the center before the punctures are removed
+statement:
+  For $r>0$, restrict the standard radial diffeomorphism
+  $\mathbb C\to B(c,r)$, which sends $0$ to $c$, to a diffeomorphism
+  $\mathbb C^\times\to B(c,r)\setminus\{c\}$.
+-/
 noncomputable def complexPuncturedPlaneDiffeomorphPuncturedBall
     (c : ℂ) (r : ℝ) (hr : 0 < r) :
     complexPuncturedPlaneOpen ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯
@@ -183,16 +216,28 @@ noncomputable def complexPuncturedPlaneDiffeomorphPuncturedBall
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- The unit direction from the center of a punctured ball. -/
+/--
+%%handwave
+name: The unit direction from the center of a punctured ball
+statement:
+  For $z\in B(c,r)\setminus\{c\}$, define the radial direction
+  $(z-c)/\lVert z-c\rVert\in S^1$.
+-/
 noncomputable def complexPuncturedBallDirection
     (c : ℂ) (r : ℝ) (z : complexPuncturedBallOpen c r) : Circle :=
   ⟨NormedSpace.normalize ((z : ℂ) - c),
     mem_sphere_zero_iff_norm.mpr
       (NormedSpace.norm_normalize (sub_ne_zero.mpr z.2.2))⟩
 
-/-- A ball of radius twice (R), punctured at its center, is an annular
-cylinder whose normal coordinate is negative inside radius (R) and positive
-outside radius (R). -/
+/--
+%%handwave
+name: A ball of radius twice (R), punctured at its center, is an annular cylinder whose normal coordinate is negative inside radius (R) and positive outside radius (R)
+statement:
+  For $R>0$, identify $B(c,2R)\setminus\{c\}$ with
+  $S^1\times\mathbb R$ by sending $z$ to its radial direction and to a
+  reparametrization of $\lVert z-c\rVert-R\in(-R,R)$.  The second coordinate
+  is negative inside radius $R$, zero at radius $R$, and positive outside.
+-/
 noncomputable def complexPuncturedDoubleBallDiffeomorphAnnularCylinder
     (c : ℂ) (R : ℝ) (hR : 0 < R) :
     complexPuncturedBallOpen c (2 * R) ≃ₘ⟮SurfaceRealModel,
@@ -406,7 +451,14 @@ theorem complexPuncturedDoubleBallDiffeomorphAnnularCylinder_second_pos_iff
   rw [symmetricOpenIntervalDiffeomorphReal_pos_iff]
   simp [dist_eq_norm]
 
-/-- The part of a coordinate disk left after removing a chosen point. -/
+/--
+%%handwave
+name: The part of a coordinate disk left after removing a chosen point
+statement:
+  For a coordinate disk and radius $\rho$, define the punctured expanded
+  disk as
+  $(X\setminus\{p\})\cap\{x:\lVert z(x)-c\rVert<\rho\}$.
+-/
 def ClosedCoordinateDisk.puncturedExpandedOpenDisk
     {X : Type} [TopologicalSpace X] [T1Space X]
     [ChartedSpace ℂ X] (D : ClosedCoordinateDisk X) (p : X) (rho : ℝ) :
@@ -469,7 +521,14 @@ theorem ClosedCoordinateDisk.puncturedExpandedOpenDisk_diffeomorphic_puncturedBa
         (Metric.ball_subset_ball hrho hy.1)
     simpa [deRham_boundarylessExtendedChart, SurfaceRealModel] using hytarget
 
-/-- The defining chart, restricted to a punctured expanded coordinate disk. -/
+/--
+%%handwave
+name: The defining chart, restricted to a punctured expanded coordinate disk
+statement:
+  If the defining chart is centered at $p$, restrict it to the
+  diffeomorphism from the punctured expanded disk of radius $\rho$ onto
+  $B(c,\rho)\setminus\{c\}$.
+-/
 noncomputable def ClosedCoordinateDisk.puncturedExpandedOpenDiskChartDiffeomorph
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -536,7 +595,15 @@ theorem ClosedCoordinateDisk.puncturedExpandedOpenDiskChartDiffeomorph_coe_apply
       D.openDisk.chart (y : X) := by
   rfl
 
-/-- The radial annular coordinate on a doubled coordinate disk. -/
+/--
+%%handwave
+name: The radial annular coordinate on a doubled coordinate disk
+statement:
+  Compose the centered chart on the punctured disk of radius $2R$ with the
+  punctured-ball radial diffeomorphism to obtain annular coordinates
+  $S^1\times\mathbb R$, with the closed-disk boundary at normal coordinate
+  zero.
+-/
 noncomputable def ClosedCoordinateDisk.radialPuncturedCollarDiffeomorph
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -1322,81 +1389,7 @@ theorem puncturedSurfaceOpen_coordinateDisk_restriction_bijective
   · exact puncturedSurfaceOpen_coordinateDisk_restriction_surjective
       E D p hp_source hcenter hdouble v
 
-/-- The collar and closed angular extension attached to a coordinate disk. -/
-structure ClosedCoordinateDiskExteriorAngularExtensionData
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    (E : SmoothRelativelyCompactExhaustion X)
-    (D : ClosedCoordinateDisk X) (v : Circle) where
-  collar : ComplementComponentCollarData D.toSmoothBoundaryDomain D.carrierᶜ
-    D.smoothDomain_complement_isExteriorComponent.isComponentOf
-  eta : DeRhamClosedForms (I := SurfaceRealModel)
-    (M := exteriorComponentCollarUnion collar.W D.carrierᶜ
-      (D.smoothDomain_complement_isExteriorComponent.isComponentOf
-        |>.isOpen_of_isOpen isClosed_closure.isOpen_compl))
-    (A := ℝ) 1
-  restrict_eq :
-    let S := exteriorComponentCollarUnion collar.W D.carrierᶜ
-      (D.smoothDomain_complement_isExteriorComponent.isComponentOf
-        |>.isOpen_of_isOpen isClosed_closure.isOpen_compl)
-    let Q := collar.W ⊓
-      ⟨D.toSmoothBoundaryDomain.carrier,
-        D.toSmoothBoundaryDomain.isOpen⟩
-    restrictSmoothFormsOfLE (I := SurfaceRealModel) (M := X) (A := ℝ)
-        (W := Q) (V := S) (inf_le_left.trans le_sup_left) 1 eta.1 =
-      restrictSmoothFormsOfLE (I := SurfaceRealModel) (M := X) (A := ℝ)
-        (W := Q) (V := collar.W) inf_le_left 1
-          (exteriorCutoffAngularCollarOneForm collar.W collar.phi v)
 
-/--
-%%handwave
-name:
-  The angular class of a coordinate circle extends toward infinity
-statement:
-  Let a closed coordinate disk lie in a connected noncompact Riemann surface
-  with vanishing first de Rham cohomology.  For every normalized angular class
-  on a collar of its boundary, there is a closed smooth one-form on the union
-  of that collar with the disk exterior which agrees with the angular class on
-  the inner half-collar.
-proof:
-  The coordinate disk has path-connected interior and its complement is the
-  unique exterior component.  A side-preserving annular collar therefore
-  exists.  Cut off the angular form only on the exterior side.  Its derivative
-  is a compactly supported two-form in the exterior component; transport this
-  mass to infinity and subtract a primitive of the resulting defect.  The
-  correction is supported away from the inner half-collar, so the resulting
-  one-form is closed and retains the prescribed angular class there.
--/
-theorem closedCoordinateDiskExteriorAngularExtensionData_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    [Subsingleton
-      (DeRhamCohomology
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    (E : SmoothRelativelyCompactExhaustion X)
-    (D : ClosedCoordinateDisk X) (v : Circle) :
-    Nonempty (ClosedCoordinateDiskExteriorAngularExtensionData X E D v) := by
-  let D₀ : SmoothBoundaryDomain X := D.toSmoothBoundaryDomain
-  let V : Set X := D.carrierᶜ
-  let hVext : IsExteriorComponent (closure D₀.carrier) V := by
-    simpa [D₀, V] using D.smoothDomain_complement_isExteriorComponent
-  let hV : IsComponentOf V (closure D₀.carrier)ᶜ := hVext.isComponentOf
-  have hnoncompact : ¬ CompactSpace X :=
-    not_compactSpace_iff.mpr inferInstance
-  have hDpre : IsPreconnected D₀.carrier := by
-    simpa [D₀] using
-      D.toSmoothBoundaryDomain_isPathConnected.isConnected.isPreconnected
-  rcases complementComponentCollarData_nonempty
-      hnoncompact D₀ hDpre V hV with ⟨C⟩
-  rcases hVext.exists_closed_exteriorAngularExtension
-      E D₀ C.W C.phi C.exterior_side V C.p C.p_mem_collar
-        C.p_mem_frontier v with ⟨eta, heta⟩
-  refine ⟨{ collar := ?_, eta := ?_, restrict_eq := ?_ }⟩
-  · simpa [D₀, V, hV] using C
-  · simpa [D₀, V, hV] using eta
-  · simpa [D₀, V, hV] using heta
 
 end
 end JJMath.Uniformization

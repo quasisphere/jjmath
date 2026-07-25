@@ -1827,8 +1827,13 @@ theorem exists_injective_smoothFrontierComponentFlow
   exact ⟨ρ, hρ, Ψ, hinitial, hcurveρ, hsmoothρ, hopenρ, hinjective,
     hcoordinateNeighborhoodρ, hsideρ, hexteriorSideρ, hopenEmbedding⟩
 
-/-- The product of a frontier component and a symmetric time interval,
-packaged as an open submanifold of the frontier product. -/
+/--
+%%handwave
+name: The product of a frontier component and a symmetric time interval, packaged as an open submanifold of the frontier product
+statement:
+  The product of a frontier component and a symmetric time interval,
+  packaged as an open submanifold of the frontier product.
+-/
 noncomputable def smoothFrontierComponentCollarOpen
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) (ρ : ℝ) :
     TopologicalSpace.Opens (frontier D.carrier × ℝ) := by

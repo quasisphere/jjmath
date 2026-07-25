@@ -627,29 +627,6 @@ def HasComponentwiseMaximumPrincipleGeometry
 /--
 %%handwave
 name:
-  Connected maximum-principle geometry
-statement:
-  A relatively compact connected open set with nonempty boundary has
-  componentwise maximum-principle geometry.
-proof:
-  At every point choose the original set itself as the required connected
-  subregion; all openness, compactness, boundary, and inclusion properties are
-  then exactly the hypotheses.
--/
-theorem hasComponentwiseMaximumPrincipleGeometry_of_preconnected
-    {X : Type} [TopologicalSpace X] {U : Set X}
-    (hU_open : IsOpen U)
-    (hU_preconnected : IsPreconnected U)
-    (hU_compact : IsCompact (closure U))
-    (hU_frontier_nonempty : (frontier U).Nonempty) :
-    HasComponentwiseMaximumPrincipleGeometry U := by
-  intro x hx
-  exact ⟨U, hx, hU_open, hU_preconnected, subset_rfl, hU_compact,
-    hU_frontier_nonempty, subset_rfl⟩
-
-/--
-%%handwave
-name:
   Componentwise harmonic maximum principle
 statement:
   If every component relevant to an open set has the connected
@@ -733,70 +710,6 @@ def IsSubharmonicByPlaneComparisonOn (U : Set ℂ) (u : ℂ → ℝ) : Prop :=
                       ContinuousOn h (closure V) →
                         (∀ x ∈ frontier V, u x ≤ h x) →
                           ∀ x ∈ V, u x ≤ h x
-
-/--
-%%handwave
-name:
-  Plane comparison subharmonicity restricts to smaller domains
-statement:
-  A function satisfying harmonic comparison on a plane domain satisfies the same
-  comparison principle on every smaller plane domain.
-proof:
-  Upper semicontinuity restricts to the smaller domain.  Every relatively
-  compact comparison region in the smaller domain is also such a region in the
-  larger domain, so the original comparison principle applies.
--/
-theorem subharmonicByPlaneComparisonOn_mono
-    {U V : Set ℂ} {u : ℂ → ℝ}
-    (hVU : V ⊆ U)
-    (hu : IsSubharmonicByPlaneComparisonOn U u) :
-    IsSubharmonicByPlaneComparisonOn V u := by
-  refine ⟨hu.1.mono hVU, ?_⟩
-  intro W hW_open hW_preconnected hW_frontier_nonempty hWV hW_compact
-    hW_closure h hharmonic hcontinuous hboundary x hxW
-  exact hu.2 W hW_open hW_preconnected hW_frontier_nonempty
-    (hWV.trans hVU) hW_compact (hW_closure.trans hVU)
-    h hharmonic hcontinuous hboundary x hxW
-
-/--
-%%handwave
-name:
-  Plane comparison subharmonicity is unchanged by equality on the domain
-statement:
-  If two functions agree on a plane domain, then comparison-subharmonicity of
-  one on that domain implies comparison-subharmonicity of the other.
-proof:
-  Transfer upper semicontinuity through the pointwise equality.  On each test
-  region, rewrite the boundary inequality and the desired interior inequality
-  using the same equality, then apply harmonic comparison for the first
-  function.
--/
-theorem subharmonicByPlaneComparisonOn_congr_on
-    {U : Set ℂ} {u v : ℂ → ℝ}
-    (hu : IsSubharmonicByPlaneComparisonOn U u)
-    (huv : Set.EqOn u v U) :
-    IsSubharmonicByPlaneComparisonOn U v := by
-  refine ⟨?_, ?_⟩
-  · rw [upperSemicontinuousOn_iff]
-    intro x hxU
-    have hux : UpperSemicontinuousWithinAt u U x :=
-      hu.1.upperSemicontinuousWithinAt hxU
-    rw [upperSemicontinuousWithinAt_iff] at hux ⊢
-    intro a hva
-    have hua : u x < a := by
-      simpa [huv hxU] using hva
-    filter_upwards [hux a hua, self_mem_nhdsWithin] with y hylt hyU
-    simpa [huv hyU] using hylt
-  · intro W hW_open hW_preconnected hW_frontier_nonempty hWU hW_compact
-      hW_closure h hharmonic hcontinuous hboundary x hxW
-    have hboundary_u : ∀ y ∈ frontier W, u y ≤ h y := by
-      intro y hy
-      rw [huv (hW_closure (frontier_subset_closure hy))]
-      exact hboundary y hy
-    have hu_le : u x ≤ h x :=
-      hu.2 W hW_open hW_preconnected hW_frontier_nonempty hWU
-        hW_compact hW_closure h hharmonic hcontinuous hboundary_u x hxW
-    simpa [huv (hWU hxW)] using hu_le
 
 /--
 %%handwave
@@ -1570,27 +1483,6 @@ theorem upperCircleAverageERealWithBound_eq_real_circleAverage
 /--
 %%handwave
 name:
-  Integrable extended circle average is independent of the upper bound
-statement:
-  For an ordinarily integrable circle trace, the extended circle average is
-  independent of the finite upper bound used to present it.
-proof:
-  For each upper bound,
-  [the extended average agrees with the ordinary circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
--/
-theorem upperCircleAverageERealWithBound_eq_of_bounds_of_circleIntegrable
-    {u : ℂ → ℝ} {c : ℂ} {r M N : ℝ}
-    (hM : CircleTraceUpperBound u c r M)
-    (hN : CircleTraceUpperBound u c r N)
-    (hu : CircleIntegrable u c r) :
-    upperCircleAverageERealWithBound u c r M =
-      upperCircleAverageERealWithBound u c r N := by
-  rw [upperCircleAverageERealWithBound_eq_real_circleAverage hM hu,
-    upperCircleAverageERealWithBound_eq_real_circleAverage hN hu]
-
-/--
-%%handwave
-name:
   Harmonic functions satisfy the extended circle-mean identity
 statement:
   If a harmonic function is defined on a neighborhood of a closed Euclidean
@@ -1660,35 +1552,6 @@ theorem subharmonicByExtendedCircleAverageOn_mono
   refine ⟨hu.1.mono hVU, ?_⟩
   intro c hcV r hr hclosed
   exact hu.2 c (hVU hcV) r hr (hclosed.trans hVU)
-
-/--
-%%handwave
-name:
-  Extended circle means recover ordinary circle means
-statement:
-  If an extended circle-mean subharmonic function has an ordinarily integrable
-  trace on a compactly contained circle, then its value at the center is at
-  most the ordinary circle average of that trace.
-proof:
-  Use the finite upper bound supplied by the extended circle-mean condition.
-  For an integrable trace, [the extended average agrees with the ordinary circle average](lean:JJMath.Uniformization.upperCircleAverageERealWithBound_eq_real_circleAverage).
--/
-theorem subharmonicByExtendedCircleAverageOn_le_circleAverage
-    {U : Set ℂ} {u : ℂ → ℝ}
-    (hu : IsSubharmonicByExtendedCircleAverageOn U u)
-    {c : ℂ} {r : ℝ}
-    (hcU : c ∈ U) (hr : 0 < r)
-    (hclosed : Metric.closedBall c r ⊆ U)
-    (hcircle : CircleIntegrable u c r) :
-    u c ≤ Real.circleAverage u c r := by
-  rcases hu.2 c hcU r hr hclosed with ⟨⟨M, hM⟩, hineq⟩
-  have hle : (u c : EReal) ≤ ((Real.circleAverage u c r : ℝ) : EReal) := by
-    calc
-      (u c : EReal) ≤ upperCircleAverageERealWithBound u c r M :=
-        hineq M hM
-      _ = ((Real.circleAverage u c r : ℝ) : EReal) :=
-        upperCircleAverageERealWithBound_eq_real_circleAverage hM hcircle
-  exact EReal.coe_le_coe_iff.mp hle
 
 /--
 %%handwave
@@ -2249,105 +2112,6 @@ theorem upperCircleAverageERealWithBound_le_sInf_continuous_majorants
 /--
 %%handwave
 name:
-  The subtracted circle trace is lower semicontinuous
-statement:
-  If \(u\) is upper semicontinuous on a neighborhood of the closed disc, then
-  the parametrized function \(\theta \mapsto M-u(c+r e^{i\theta})\) is lower
-  semicontinuous on one closed period of the circle.
-proof:
-  The circle parametrization maps the closed period into the closed disc.
-  Composing with \(u\) preserves upper semicontinuity.  The map
-  \(x\mapsto M-x\) is continuous and antitone, so composing with it turns
-  upper semicontinuity into lower semicontinuity.
--/
-theorem circleTraceSub_lowerSemicontinuousOn
-    {U : Set ℂ} {u : ℂ → ℝ} {c : ℂ} {r M : ℝ}
-    (hu : UpperSemicontinuousOn u U)
-    (hr : 0 < r)
-    (hclosed : Metric.closedBall c r ⊆ U) :
-    LowerSemicontinuousOn
-      (fun θ : ℝ ↦ M - u (circleMap c r θ))
-      (Set.uIcc (0 : ℝ) (2 * Real.pi)) := by
-  have hmaps :
-      Set.MapsTo (circleMap c r) (Set.uIcc (0 : ℝ) (2 * Real.pi)) U := by
-    intro θ _hθ
-    exact hclosed (circleMap_mem_closedBall c hr.le θ)
-  have htrace :
-      UpperSemicontinuousOn
-        (fun θ : ℝ ↦ u (circleMap c r θ))
-        (Set.uIcc (0 : ℝ) (2 * Real.pi)) := by
-    simpa [Function.comp_def] using
-      hu.comp ((continuous_circleMap c r).continuousOn) hmaps
-  let g : ℝ → ℝ := fun x ↦ M - x
-  have hg_cont : Continuous g := by
-    fun_prop
-  have hg_anti : Antitone g := by
-    intro x y hxy
-    exact sub_le_sub_left hxy M
-  simpa [g, Function.comp_def] using
-    hg_cont.comp_upperSemicontinuousOn_antitone htrace hg_anti
-
-/--
-%%handwave
-name:
-  The subtracted boundary trace is lower semicontinuous
-statement:
-  If \(u\) is upper semicontinuous on a neighborhood of the closed disc, then
-  the boundary function \(z\mapsto M-u(z)\) is lower semicontinuous on the
-  boundary circle.
-proof:
-  The boundary circle lies in the closed disc, hence in the domain where \(u\)
-  is upper semicontinuous.  Composing \(u\) with the continuous antitone map
-  \(x\mapsto M-x\) turns upper semicontinuity into lower semicontinuity.
--/
-theorem circleTraceSub_lowerSemicontinuousOn_frontier
-    {U : Set ℂ} {u : ℂ → ℝ} {c : ℂ} {r M : ℝ}
-    (hu : UpperSemicontinuousOn u U)
-    (hr : 0 < r)
-    (hclosed : Metric.closedBall c r ⊆ U) :
-    LowerSemicontinuousOn
-      (fun z : ℂ ↦ M - u z)
-      (frontier (Metric.ball c r)) := by
-  have hfrontier_subset_U : frontier (Metric.ball c r) ⊆ U := by
-    intro z hz
-    have hz_closed : z ∈ Metric.closedBall c r := by
-      have hz_closure : z ∈ closure (Metric.ball c r) :=
-        frontier_subset_closure hz
-      rwa [closure_ball c hr.ne'] at hz_closure
-    exact hclosed hz_closed
-  have htrace : UpperSemicontinuousOn u (frontier (Metric.ball c r)) :=
-    hu.mono hfrontier_subset_U
-  let g : ℝ → ℝ := fun x ↦ M - x
-  have hg_cont : Continuous g := by
-    fun_prop
-  have hg_anti : Antitone g := by
-    intro x y hxy
-    exact sub_le_sub_left hxy M
-  simpa [g, Function.comp_def] using
-    hg_cont.comp_upperSemicontinuousOn_antitone htrace hg_anti
-
-/--
-%%handwave
-name:
-  The subtracted boundary trace is nonnegative
-statement:
-  If \(M\) bounds the circle trace of \(u\), then \(M-u\) is nonnegative on
-  the boundary circle.
-proof:
-  The trace bound holds at every point of the boundary circle, so subtracting
-  \(u\) from \(M\) gives a nonnegative value.
--/
-theorem circleTraceSub_nonnegative_on_frontier
-    {u : ℂ → ℝ} {c : ℂ} {r M : ℝ}
-    (hr : 0 < r)
-    (hM : CircleTraceUpperBound u c r M) :
-    ∀ z ∈ frontier (Metric.ball c r), 0 ≤ M - u z := by
-  intro z hz
-  exact sub_nonneg.mpr (CircleTraceUpperBound.le_on_frontier_ball hr hM z hz)
-
-/--
-%%handwave
-name:
   Boundary circles are compact
 statement:
   The boundary of a positive-radius Euclidean disc in the plane is compact.
@@ -2389,198 +2153,6 @@ theorem exists_continuous_majorant_circleAverage_lt_top
   · intro z _hz
     rfl
   · exact EReal.coe_lt_top (Real.circleAverage (fun _ : ℂ ↦ M) c r)
-
-/--
-%%handwave
-name:
-  A large minorant average gives a small subtracted average
-statement:
-  If the ordinary circle average of \(\psi\) is larger than \(M-b\), then the
-  ordinary circle average of \(M-\psi\) is smaller than \(b\).
-proof:
-  Continuous boundary data is circle-integrable.  Linearity of the ordinary
-  circle average gives
-  \[
-    \fint (M-\psi)=M-\fint\psi,
-  \]
-  and the conclusion is real arithmetic.
--/
-theorem circleAverage_const_sub_lt_of_lt_circleAverage
-    {ψ : ℂ → ℝ} {c : ℂ} {r M b : ℝ}
-    (hr : 0 < r)
-    (hψ_cont : ContinuousOn ψ (frontier (Metric.ball c r)))
-    (hψ_avg : M - b < Real.circleAverage ψ c r) :
-    Real.circleAverage (fun z : ℂ ↦ M - ψ z) c r < b := by
-  have hψ_sphere : ContinuousOn ψ (Metric.sphere c r) := by
-    rw [← frontier_ball c hr.ne']
-    exact hψ_cont
-  have hψ_int : CircleIntegrable ψ c r :=
-    ContinuousOn.circleIntegrable hr.le hψ_sphere
-  have hconst_int : CircleIntegrable (fun _ : ℂ ↦ M) c r :=
-    circleIntegrable_const M c r
-  calc
-    Real.circleAverage (fun z : ℂ ↦ M - ψ z) c r
-        = Real.circleAverage (fun _ : ℂ ↦ M) c r -
-            Real.circleAverage ψ c r := by
-          exact Real.circleAverage_fun_sub hconst_int hψ_int
-    _ = M - Real.circleAverage ψ c r := by
-          rw [Real.circleAverage_const]
-    _ < b := by
-          linarith
-
-/--
-%%handwave
-name:
-  Lower averages recover ordinary averages of nonnegative continuous traces
-statement:
-  For continuous nonnegative boundary data \(\psi\), the lower average of
-  \(\psi\) along the circle parametrization agrees with the ordinary circle
-  average of \(\psi\).
-proof:
-  The trace is integrable because the boundary data is continuous on the
-  circle, and it is nonnegative by hypothesis.  The standard relation between
-  the lower integral after the nonnegative-real embedding and the Bochner
-  integral of a nonnegative integrable function identifies the lower average
-  with the ordinary average.
--/
-theorem laverage_ofReal_circleTrace_eq_ofReal_circleAverage
-    {ψ : ℂ → ℝ} {c : ℂ} {r : ℝ}
-    (hr : 0 < r)
-    (hψ_cont : ContinuousOn ψ (frontier (Metric.ball c r)))
-    (hψ_nonneg : ∀ z ∈ frontier (Metric.ball c r), 0 ≤ ψ z) :
-    MeasureTheory.laverage
-      (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-      (fun θ : ℝ ↦ ENNReal.ofReal (ψ (circleMap c r θ))) =
-        ENNReal.ofReal (Real.circleAverage ψ c r) := by
-  let s : Set ℝ := Set.uIoc (0 : ℝ) (2 * Real.pi)
-  let tr : ℝ → ℝ := fun θ ↦ ψ (circleMap c r θ)
-  have hψ_sphere : ContinuousOn ψ (Metric.sphere c r) := by
-    rw [← frontier_ball c hr.ne']
-    exact hψ_cont
-  have hψ_int : CircleIntegrable ψ c r :=
-    ContinuousOn.circleIntegrable hr.le hψ_sphere
-  have htr_int : MeasureTheory.IntegrableOn tr s := by
-    simpa [tr, s, CircleIntegrable] using
-      (intervalIntegrable_iff.mp hψ_int)
-  have htr_nonneg : 0 ≤ᵐ[MeasureTheory.volume.restrict s] tr := by
-    filter_upwards [MeasureTheory.self_mem_ae_restrict (μ := MeasureTheory.volume)
-      measurableSet_uIoc] with θ _hθ
-    exact hψ_nonneg (circleMap c r θ) (by
-      rw [frontier_ball c hr.ne']
-      exact circleMap_mem_sphere c hr.le θ)
-  have havg_tr : (⨍ θ in s, tr θ) = Real.circleAverage ψ c r := by
-    rw [Real.circleAverage_eq_intervalAverage]
-  calc
-    MeasureTheory.laverage
-        (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-        (fun θ : ℝ ↦ ENNReal.ofReal (ψ (circleMap c r θ)))
-        = MeasureTheory.laverage
-            (MeasureTheory.volume.restrict s)
-            (fun θ : ℝ ↦ ENNReal.ofReal (tr θ)) := rfl
-    _ = ENNReal.ofReal (⨍ θ in s, tr θ) := by
-          rw [MeasureTheory.laverage_eq, MeasureTheory.ofReal_setAverage htr_int htr_nonneg,
-            MeasureTheory.Measure.restrict_apply_univ]
-    _ = ENNReal.ofReal (Real.circleAverage ψ c r) := by
-          rw [havg_tr]
-
-/--
-%%handwave
-name:
-  Continuous minorant averages lie below the lower average
-statement:
-  If \(\psi\) is a continuous nonnegative boundary function with
-  \(\psi\leq M-u\) on the circle, then its ordinary circle average is at most
-  the lower average of \(M-u\).
-proof:
-  The lower average of \(\psi\) is its ordinary circle average.  Monotonicity
-  of the lower integral applies to the pointwise inequality
-  \(\psi\leq M-u\) along the circle parametrization.
--/
-theorem circleAverage_le_laverage_of_continuous_minorant
-    {u ψ : ℂ → ℝ} {c : ℂ} {r M : ℝ}
-    (hr : 0 < r)
-    (hψ_cont : ContinuousOn ψ (frontier (Metric.ball c r)))
-    (hψ_nonneg : ∀ z ∈ frontier (Metric.ball c r), 0 ≤ ψ z)
-    (hψ_le : ∀ z ∈ frontier (Metric.ball c r), ψ z ≤ M - u z) :
-    ((Real.circleAverage (E := ℝ) ψ c r : ℝ) : EReal) ≤
-      ((MeasureTheory.laverage
-        (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-        (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ)))) : EReal) := by
-  let μ := MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi))
-  let Fψ : ℝ → ENNReal := fun θ ↦ ENNReal.ofReal (ψ (circleMap c r θ))
-  let Fu : ℝ → ENNReal := fun θ ↦ ENNReal.ofReal (M - u (circleMap c r θ))
-  have hψ_avg_nonneg : 0 ≤ Real.circleAverage ψ c r := by
-    apply Real.circleAverage_nonneg_of_nonneg
-    intro z hz
-    have hz_frontier : z ∈ frontier (Metric.ball c r) := by
-      rw [frontier_ball c hr.ne']
-      simpa [abs_of_pos hr] using hz
-    exact hψ_nonneg z hz_frontier
-  have hlavgψ :
-      MeasureTheory.laverage μ Fψ =
-        ENNReal.ofReal (Real.circleAverage ψ c r) := by
-    simpa [μ, Fψ] using
-      laverage_ofReal_circleTrace_eq_ofReal_circleAverage
-        (ψ := ψ) (c := c) (r := r) hr hψ_cont hψ_nonneg
-  have hle_lavg : MeasureTheory.laverage μ Fψ ≤ MeasureTheory.laverage μ Fu := by
-    rw [MeasureTheory.laverage_eq, MeasureTheory.laverage_eq]
-    apply ENNReal.div_le_div_right
-    apply MeasureTheory.lintegral_mono
-    intro θ
-    apply ENNReal.ofReal_le_ofReal
-    exact hψ_le (circleMap c r θ) (by
-      rw [frontier_ball c hr.ne']
-      exact circleMap_mem_sphere c hr.le θ)
-  calc
-    ((Real.circleAverage (E := ℝ) ψ c r : ℝ) : EReal)
-        = (ENNReal.ofReal (Real.circleAverage ψ c r) : EReal) := by
-          rw [EReal.coe_ennreal_ofReal, max_eq_left hψ_avg_nonneg]
-    _ = (MeasureTheory.laverage μ Fψ : EReal) := by
-          rw [hlavgψ]
-    _ ≤ (MeasureTheory.laverage μ Fu : EReal) := by
-          rw [EReal.coe_ennreal_le_coe_ennreal_iff]
-          exact hle_lavg
-    _ = ((MeasureTheory.laverage
-        (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-        (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ)))) : EReal) := rfl
-
-/--
-%%handwave
-name:
-  Finite thresholds for extended circle averages
-statement:
-  The finite-threshold inequality
-  \[
-    M-\fint(M-u) < b
-  \]
-  is equivalent, in the extended-real sense, to
-  \[
-    M-b < \fint(M-u).
-  \]
-proof:
-  This is the usual rearrangement of a finite subtraction inequality.  The
-  only extended-real point is that the lower average may be \(+\infty\), which
-  is allowed because the other terms are finite.
--/
-theorem upperCircleAverageERealWithBound_lt_coe_iff
-    {u : ℂ → ℝ} {c : ℂ} {r M b : ℝ} :
-    upperCircleAverageERealWithBound u c r M < (b : EReal) ↔
-      ((M - b : ℝ) : EReal) <
-        ((MeasureTheory.laverage
-          (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-          (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ)))) : EReal) := by
-  let L : ENNReal :=
-    MeasureTheory.laverage
-      (MeasureTheory.volume.restrict (Set.uIoc (0 : ℝ) (2 * Real.pi)))
-      (fun θ : ℝ ↦ ENNReal.ofReal (M - u (circleMap c r θ)))
-  change (M : EReal) - (L : EReal) < (b : EReal) ↔
-    ((M - b : ℝ) : EReal) < (L : EReal)
-  rw [EReal.coe_sub]
-  rw [EReal.sub_lt_iff (a := (b : EReal)) (b := (L : EReal)) (c := (M : EReal))
-      (.inl (EReal.coe_ennreal_ne_bot L)) (.inr (EReal.coe_ne_top M))]
-  rw [EReal.sub_lt_iff (a := (L : EReal)) (b := (b : EReal)) (c := (M : EReal))
-      (.inl (EReal.coe_ne_bot b)) (.inl (EReal.coe_ne_top b))]
-  rw [add_comm]
 
 /--
 %%handwave
@@ -3749,24 +3321,6 @@ theorem subharmonicOnSurface_const_add
 /--
 %%handwave
 name:
-  Adding a constant on the right preserves subharmonicity
-statement:
-  If a function is subharmonic on a surface region, then adding a real
-  constant on the right is subharmonic on the same region.
-proof:
-  Commute the two summands and apply preservation of subharmonicity under
-  addition of a constant on the left.
--/
-theorem subharmonicOnSurface_add_const
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {U : Set X} {u : X → ℝ} (c : ℝ)
-    (hu : IsSubharmonicOnSurface U u) :
-    IsSubharmonicOnSurface U (fun x ↦ u x + c) := by
-  simpa [add_comm] using subharmonicOnSurface_const_add c hu
-
-/--
-%%handwave
-name:
   Subharmonic minus harmonic is subharmonic
 statement:
   If \(u\) is subharmonic and \(h\) is harmonic on the same open surface
@@ -4255,64 +3809,6 @@ theorem subharmonicOnSurface_sup
 /--
 %%handwave
 name:
-  Upper semicontinuity is local on open neighborhoods
-statement:
-  If every point of a set has an open neighborhood on which a function is
-  upper semicontinuous relative to the set, then the function is upper
-  semicontinuous on the whole set.
-proof:
-  At each point, intersect a witnessing neighborhood for the local upper
-  semicontinuity with the ambient set.  Because the neighborhood is open, this
-  local relative condition is equivalent to upper semicontinuity relative to
-  the whole set at that point.
--/
-theorem upperSemicontinuousOn_of_locally_open
-    {X : Type} [TopologicalSpace X] {U : Set X} {u : X → ℝ}
-    (hlocal : ∀ x ∈ U, ∃ N : Set X, IsOpen N ∧ x ∈ N ∧
-      UpperSemicontinuousOn u (U ∩ N)) :
-    UpperSemicontinuousOn u U := by
-  exact upperSemicontinuousOn_of_locally_open_aux hlocal
-
-/--
-%%handwave
-name:
-  Local subharmonic comparison globalizes
-statement:
-  On an open surface region, the harmonic comparison principle for a function
-  follows from the same comparison principle on an open neighborhood of every
-  point.
-proof:
-  Suppose a harmonic comparison function bounds the candidate on the boundary
-  of a relatively compact connected test region.  If the bound failed inside,
-  upper semicontinuity would give a positive compact maximum of the difference.
-  Applying the local comparison principle near such a maximum, and then
-  propagating through the connected test region, contradicts the boundary
-  inequality.
--/
-theorem subharmonicComparisonPrinciple_of_locally
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    {U : Set X} {u : X → ℝ}
-    (hU_open : IsOpen U)
-    (hlocal : ∀ x ∈ U, ∃ N : Set X, IsOpen N ∧ x ∈ N ∧
-      IsSubharmonicOnSurface (U ∩ N) u) :
-    ∀ V : Set X,
-      IsOpen V →
-        IsPreconnected V →
-          (frontier V).Nonempty →
-            V ⊆ U →
-              IsCompact (closure V) →
-                closure V ⊆ U →
-                  ∀ h : X → ℝ,
-                    IsHarmonicOnSurface V h →
-                      ContinuousOn h (closure V) →
-                        (∀ x ∈ frontier V, u x ≤ h x) →
-                          ∀ x ∈ V, u x ≤ h x := by
-  exact subharmonicComparisonPrinciple_of_locally_aux hU_open hlocal
-
-/--
-%%handwave
-name:
   Locally subharmonic functions are subharmonic
 statement:
   On an open surface region, a real-valued function that is subharmonic in a
@@ -4332,89 +3828,6 @@ theorem subharmonicOnSurface_of_locally
       IsSubharmonicOnSurface (U ∩ N) u) :
     IsSubharmonicOnSurface U u := by
   exact subharmonicOnSurface_of_locally_aux hU_open hlocal
-
-/--
-%%handwave
-name:
-  Subharmonicity restricts to open subspaces
-statement:
-  If a function is subharmonic on an open surface region, then its restriction
-  to that open region, viewed as a surface in its own right, is subharmonic on
-  the whole subspace.
-proof:
-  Work locally in a subtype chart.  Each subtype chart is the restriction of an
-  ambient chart, so the ambient comparison-subharmonic coordinate expression
-  restricts to the subtype chart target.  Transport that plane comparison
-  statement back to the subtype surface and globalize by local subharmonicity.
--/
-theorem subharmonicOnSurface_openSubtype_univ_of_ambient
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (U : TopologicalSpace.Opens X) {u : X → ℝ}
-    (hu : IsSubharmonicOnSurface (U : Set X) u) :
-    IsSubharmonicOnSurface (Set.univ : Set U) (fun x : U ↦ u x) := by
-  haveI : ComplexOneManifold U := by exact {}
-  refine subharmonicOnSurface_of_locally (X := U)
-    (U := (Set.univ : Set U)) isOpen_univ ?_
-  intro x _hx
-  let hU : Nonempty U := ⟨x⟩
-  let E : OpenPartialHomeomorph X ℂ := chartAt ℂ (x : X)
-  let e : OpenPartialHomeomorph U ℂ := E.subtypeRestr hU
-  have he : e ∈ atlas ℂ U := by
-    change (chartAt ℂ (x : X)).subtypeRestr hU ∈ atlas ℂ U
-    rw [← TopologicalSpace.Opens.chartAt_eq (H := ℂ) (s := U) (x := x)]
-    exact chart_mem_atlas ℂ x
-  let S : Set ℂ := E.target ∩ E.symm ⁻¹' (U : Set X)
-  have hu_plane :
-      IsSubharmonicByPlaneComparisonOn S (fun z : ℂ ↦ u (E.symm z)) := by
-    simpa [S] using subharmonicOnSurface_to_planeComparisonOn hu E
-      (chart_mem_atlas ℂ (x : X))
-  have he_target_subset_S : e.target ⊆ S := by
-    intro z hz
-    have hzE : z ∈ E.target := E.subtypeRestr_target_subset hU hz
-    have hzU : E.symm z ∈ (U : Set X) := by
-      have hval : (e.symm z : X) = E.symm z := by
-        simpa [e, Function.comp_def] using E.subtypeRestr_symm_apply hU hz
-      have hz_subtype : (e.symm z : X) ∈ (U : Set X) := (e.symm z).property
-      simpa [hval] using hz_subtype
-    exact ⟨hzE, hzU⟩
-  have hu_plane_target_ambient :
-      IsSubharmonicByPlaneComparisonOn e.target (fun z : ℂ ↦ u (E.symm z)) :=
-    subharmonicByPlaneComparisonOn_mono he_target_subset_S hu_plane
-  have hu_plane_target :
-      IsSubharmonicByPlaneComparisonOn e.target
-        (fun z : ℂ ↦ u (e.symm z)) := by
-    refine subharmonicByPlaneComparisonOn_congr_on hu_plane_target_ambient ?_
-    intro z hz
-    have hval : (e.symm z : X) = E.symm z := by
-      simpa [e, Function.comp_def] using E.subtypeRestr_symm_apply hU hz
-    simp [hval]
-  let N : Set U := e.source
-  refine ⟨N, e.open_source, ?_, ?_⟩
-  · have hxE : (x : X) ∈ E.source := mem_chart_source ℂ (x : X)
-    simp [N, e, E, OpenPartialHomeomorph.subtypeRestr_source, hxE]
-  · have hchart :
-        IsSubharmonicOnSurface (e.source ∩ e ⁻¹' e.target)
-          (fun y : U ↦ u (e.symm (e y))) := by
-      simpa [Function.comp_def] using
-        planeComparisonOn_to_subharmonicOnSurface e he hu_plane_target
-    have hdomain_eq :
-        (Set.univ : Set U) ∩ N = e.source ∩ e ⁻¹' e.target := by
-      ext y
-      constructor
-      · intro hy
-        have hysource : y ∈ e.source := hy.2
-        exact ⟨hysource, e.map_source hysource⟩
-      · intro hy
-        exact ⟨Set.mem_univ y, hy.1⟩
-    have hchart' :
-        IsSubharmonicOnSurface ((Set.univ : Set U) ∩ N)
-          (fun y : U ↦ u (e.symm (e y))) := by
-      simpa [hdomain_eq] using hchart
-    refine subharmonicOnSurface_congr_on hchart' ?_
-    intro y hy
-    have hysource : y ∈ e.source := hy.2
-    simp [e.left_inv hysource]
 
 /--
 %%handwave
@@ -4526,55 +3939,6 @@ theorem superharmonicOnSurface_add_const
 /--
 %%handwave
 name:
-  Superharmonic plus harmonic is superharmonic
-statement:
-  If \(u\) is superharmonic and \(h\) is harmonic on the same open surface
-  region, then \(u+h\) is superharmonic.
-proof:
-  The negative of \(u+h\) is \((-u)-h\).  Since \(-u\) is subharmonic and \(h\)
-  is harmonic, subtraction of \(h\) preserves subharmonicity.
--/
-theorem superharmonicOnSurface_add_harmonic
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    {U : Set X} {u h : X → ℝ}
-    (hU_open : IsOpen U)
-    (hu : IsSuperharmonicOnSurface U u)
-    (hh : IsHarmonicOnSurface U h) :
-    IsSuperharmonicOnSurface U (fun x ↦ u x + h x) := by
-  have hsub :
-      IsSubharmonicOnSurface U (fun x ↦ (-u x) - h x) :=
-    subharmonicOnSurface_sub_harmonic hU_open hu hh
-  simpa [IsSuperharmonicOnSurface, sub_eq_add_neg, neg_add,
-    add_comm, add_left_comm, add_assoc] using hsub
-
-/--
-%%handwave
-name:
-  Superharmonic minus harmonic is superharmonic
-statement:
-  If \(u\) is superharmonic and \(h\) is harmonic on the same open surface
-  region, then \(u-h\) is superharmonic.
-proof:
-  The negative of \(h\) is harmonic, and \(u-h=u+(-h)\).  Apply preservation of
-  superharmonicity under addition of a harmonic function.
--/
-theorem superharmonicOnSurface_sub_harmonic
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    {U : Set X} {u h : X → ℝ}
-    (hU_open : IsOpen U)
-    (hu : IsSuperharmonicOnSurface U u)
-    (hh : IsHarmonicOnSurface U h) :
-    IsSuperharmonicOnSurface U (fun x ↦ u x - h x) := by
-  have hneg : IsHarmonicOnSurface U (fun x ↦ -h x) :=
-    harmonicOnSurface_neg hh
-  simpa [sub_eq_add_neg] using
-    superharmonicOnSurface_add_harmonic hU_open hu hneg
-
-/--
-%%handwave
-name:
   Nonnegative scalar multiples of superharmonic functions are superharmonic
 statement:
   If \(u\) is superharmonic and \(c\ge0\), then \(cu\) is superharmonic.
@@ -4639,25 +4003,6 @@ theorem superharmonicOnSurface_inf_const
     IsSuperharmonicOnSurface U (fun x ↦ u x ⊓ c) := by
   simpa using
     superharmonicOnSurface_inf hu (superharmonicOnSurface_const U c)
-
-/--
-%%handwave
-name:
-  Minimum with a constant on the left preserves superharmonicity
-statement:
-  The pointwise minimum of a constant and a superharmonic function is
-  superharmonic.
-proof:
-  Commute the two arguments of the pointwise minimum and apply preservation of
-  superharmonicity under taking the minimum with a constant.
--/
-theorem superharmonicOnSurface_const_inf
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    {U : Set X} {u : X → ℝ} (c : ℝ)
-    (hu : IsSuperharmonicOnSurface U u) :
-    IsSuperharmonicOnSurface U (fun x ↦ c ⊓ u x) := by
-  simpa [inf_comm] using superharmonicOnSurface_inf_const c hu
 
 /--
 %%handwave

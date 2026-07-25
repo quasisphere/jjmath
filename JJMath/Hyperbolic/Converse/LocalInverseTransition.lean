@@ -206,46 +206,6 @@ theorem hyperbolicLocalChart_coordinateDerivativeInChart_ne
 
 /--
 %%handwave
-name: Holomorphic inverse germ at a regular point
-statement:
-  Let \(D\subseteq\mathbb C\) be open, let \(a\in D\), and let \(F\) be holomorphic on \(D\) with \(F'(a)\ne0\). There is a map \(G:\mathbb C\to\mathbb C\) such that \(G(F(x))=x\) near \(a\), \(F(G(y))=y\) near \(F(a)\), and \(G\) has strict derivative \(F'(a)^{-1}\) at \(F(a)\).
-proof:
-  Holomorphicity on the open set makes \(F\) continuously differentiable near \(a\), hence strictly differentiable there. Apply the one-dimensional inverse function theorem at the nonzero derivative \(F'(a)\).
--/
-theorem exists_eventually_inverse_of_holomorphicOn_deriv_ne
-    {F : ℂ → ℂ} {D : Set ℂ} {a : ℂ}
-    (hDopen : IsOpen D) (haD : a ∈ D)
-    (hF : ∀ z, z ∈ D → DifferentiableAt ℂ F z)
-    (hF_ne : deriv F a ≠ 0) :
-    ∃ G : ℂ → ℂ,
-      (∀ᶠ x in nhds a, G (F x) = x) ∧
-        (∀ᶠ y in nhds (F a), F (G y) = y) ∧
-          HasStrictDerivAt G (deriv F a)⁻¹ (F a) := by
-  have hFOn : DifferentiableOn ℂ F D := by
-    intro z hz
-    exact (hF z hz).differentiableWithinAt
-  have hFContDiffOn :
-      ContDiffOn ℂ (1 : WithTop ℕ∞) F D :=
-    hFOn.contDiffOn hDopen
-  have hFContDiffAt :
-      ContDiffAt ℂ (1 : WithTop ℕ∞) F a :=
-    hFContDiffOn.contDiffAt (hDopen.mem_nhds haD)
-  have hFAt : HasDerivAt F (deriv F a) a :=
-    (hF a haD).hasDerivAt
-  have hFStrict : HasStrictDerivAt F (deriv F a) a :=
-    hFContDiffAt.hasStrictDerivAt' hFAt one_ne_zero
-  let G : ℂ → ℂ :=
-    hFStrict.localInverse F (deriv F a) a hF_ne
-  refine ⟨G, ?_, ?_, ?_⟩
-  · simpa [G] using
-      hFStrict.eventually_left_inverse hF_ne
-  · simpa [G] using
-      hFStrict.eventually_right_inverse hF_ne
-  · simpa [G] using
-      hFStrict.to_localInverse hF_ne
-
-/--
-%%handwave
 name: Local biholomorphism at a regular point
 statement:
   Let \(D\subseteq\mathbb C\) be open, \(a\in D\), and let \(F\) be holomorphic on \(D\) with \(F'(a)\ne0\). Then \(F\) represents an open partial homeomorphism between neighborhoods containing \(a\) and \(F(a)\), and its inverse has strict derivative \(F'(a)^{-1}\) at \(F(a)\).

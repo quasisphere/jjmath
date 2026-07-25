@@ -11,45 +11,16 @@ open UpperHalfPlane
 noncomputable section
 
 /--
-Local real-transition theorem target for normalized Schwarzian ODE branches.
-
-The analytic content still missing here is the uniqueness theorem for
-orientation-preserving local isometries of the Poincare metric: two
-metric-recovering `ℍ`-valued normalized branches on a connected overlap differ
-by a real Mobius transformation.  This is the local input that makes the
-holonomy of the analytically continued Schwarzian developing map land in
-`PSL(2, ℝ)` after the chosen Mobius normalization.
--/
-def MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem : Prop :=
-  ∀ {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
-    (H₁ : LocalUpperHalfPlaneDevelopingMap S₁)
-    (H₂ : LocalUpperHalfPlaneDevelopingMap S₂),
-      u.SolvesLiouvilleEquation →
-        IsPreconnected (H₁.domain ∩ H₂.domain) →
-        H₁.HasRealMobiusTransition H₂
-
-/--
-Sharper branch-level real-transition uniqueness target.
-
-The genuinely analytic case is the one where the connected overlap is
-nonempty.  If the two branch domains are disjoint, the transition predicate is
-vacuous and the identity real Mobius representative is enough.
--/
-def MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsOnNonemptyOverlapTheorem :
-    Prop :=
-  ∀ {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
-    (H₁ : LocalUpperHalfPlaneDevelopingMap S₁)
-    (H₂ : LocalUpperHalfPlaneDevelopingMap S₂),
-      u.SolvesLiouvilleEquation →
-        IsPreconnected (H₁.domain ∩ H₂.domain) →
-          Set.Nonempty (H₁.domain ∩ H₂.domain) →
-            H₁.HasRealMobiusTransition H₂
-
-/--
 Pointed existence target for the real-transition theorem.
 
 At any point of overlap, there should be a real Mobius transformation whose
 one-jet carries the first metric-recovering branch to the second.
+
+%%handwave
+name:
+  Pointed real Möbius transition between metric-recovering branches
+statement:
+  This proposition asserts that any two upper-half-plane branches recovering the same hyperbolic Liouville metric admit, at every overlap point, an element of $\mathrm{PSL}_2(\mathbb R)$ matching both their value and first derivative there.
 -/
 def MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :
     Prop :=
@@ -69,6 +40,12 @@ metric-recovering branches.
 The only hypothesis on the two pointed branches is equality of the squared
 hyperbolic norm of their complex derivatives at the base point.  For
 metric-recovering branches this equality is formal from the pullback formulas.
+
+%%handwave
+name:
+  One-jet transitivity at equal hyperbolic derivative norm
+statement:
+  This proposition asserts that two upper-half-plane branch germs at $z_0$ whose derivatives have equal squared hyperbolic norm are related at $z_0$, to first order, by a real Möbius transformation.
 -/
 def PointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem : Prop :=
   ∀ {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -83,6 +60,12 @@ def PointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem : Prop :=
 
 /--
 Value transitivity of real Mobius transformations on the upper half-plane.
+
+%%handwave
+name:
+  Transitivity of the real Möbius action on the upper half-plane
+statement:
+  For any $p,q\in\mathbb H$, there exists $A\in\mathrm{PSL}_2(\mathbb R)$ such that $A\cdot p=q$.
 -/
 def RealMobiusValueTransitivityOnUpperHalfPlaneTheorem : Prop :=
   ∀ p q : ℍ, ∃ A : RealMobiusRepresentative,
@@ -91,6 +74,12 @@ def RealMobiusValueTransitivityOnUpperHalfPlaneTheorem : Prop :=
 /--
 An explicit real Mobius representative sending `i` to a prescribed point of
 the upper half-plane.
+
+%%handwave
+name:
+  Explicit real Möbius map sending $i$ to a prescribed point
+statement:
+  For $p=x+iy\in\mathbb H$, use the determinant-one matrix $\begin{pmatrix}\sqrt y&x/\sqrt y\\0&1/\sqrt y\end{pmatrix}$ as a real Möbius representative carrying $i$ to $p$.
 -/
 def realMobiusRepresentativeMapITo (p : ℍ) : RealMobiusRepresentative :=
   ⟨!![Real.sqrt p.im, p.re / Real.sqrt p.im; 0, (Real.sqrt p.im)⁻¹], by
@@ -776,17 +765,35 @@ structure RealMobiusRotationAtIParameters where
 
 namespace RealMobiusRotationAtIParameters
 
-/-- The real Mobius representative `[[c,s],[-s,c]]`. -/
+/-- The real Mobius representative `[[c,s],[-s,c]]`.
+%%handwave
+name:
+  Real Möbius rotation fixing $i$
+statement:
+  Unit-circle parameters $c^2+s^2=1$ determine the real Möbius representative $\begin{pmatrix}c&s\\-s&c\end{pmatrix}$, which fixes $i$.
+-/
 def representative (θ : RealMobiusRotationAtIParameters) : RealMobiusRepresentative :=
   ⟨!![θ.c, θ.s; -θ.s, θ.c], by
     rw [Matrix.det_fin_two_of]
     nlinarith [θ.normSq_eq_one]⟩
 
-/-- The complex denominator of the rotation representative at `i`. -/
+/-- The complex denominator of the rotation representative at `i`.
+%%handwave
+name:
+  Denominator of a real Möbius rotation at $i$
+statement:
+  For the rotation matrix $\begin{pmatrix}c&s\\-s&c\end{pmatrix}$, the fractional-linear denominator evaluated at $i$ is $c-is$.
+-/
 def denominatorAtI (θ : RealMobiusRotationAtIParameters) : ℂ :=
   (θ.c : ℂ) - θ.s * Complex.I
 
-/-- The derivative multiplier of the rotation representative at `i`. -/
+/-- The derivative multiplier of the rotation representative at `i`.
+%%handwave
+name:
+  Tangent multiplier of a real Möbius rotation at $i$
+statement:
+  The complex derivative of the rotation fixing $i$ is the multiplier $(c-is)^{-2}$ at $i$.
+-/
 def derivativeMultiplierAtI (θ : RealMobiusRotationAtIParameters) : ℂ :=
   (θ.denominatorAtI ^ 2)⁻¹
 
@@ -809,20 +816,6 @@ theorem denominatorAtI_normSq (θ : RealMobiusRotationAtIParameters) :
       by simpa using Complex.normSq_add_mul_I θ.c (-θ.s)
     _ = 1 := by
       nlinarith [θ.normSq_eq_one]
-
-/--
-%%handwave
-name: Rotation multipliers at $i$ have unit norm
-statement:
-  If $c^2+s^2=1$, then the multiplier $(c-is)^{-2}$ has squared complex norm $1$.
-proof:
-  The denominator has squared norm $1$; multiplicativity of the norm under squaring and inversion gives the result.
--/
-theorem derivativeMultiplierAtI_normSq (θ : RealMobiusRotationAtIParameters) :
-    Complex.normSq θ.derivativeMultiplierAtI = 1 := by
-  rw [derivativeMultiplierAtI, pow_two, Complex.normSq_inv, Complex.normSq_mul,
-    denominatorAtI_normSq]
-  norm_num
 
 /--
 %%handwave
@@ -879,40 +872,6 @@ theorem representative_fixes_I (θ : RealMobiusRotationAtIParameters) :
         ring
   rw [hnum, mul_assoc, mul_inv_cancel₀ hden', mul_one]
 
-/--
-%%handwave
-name: Derivative multiplier of a rotation at $i$
-statement:
-  For $R=\begin{pmatrix}c&s\\-s&c\end{pmatrix}$ with $c^2+s^2=1$, the complex derivative at $i$ is $(c-is)^{-2}$.
-proof:
-  Apply the derivative formula $R'(i)=\delta_R(i)^{-2}$ and substitute the denominator $\delta_R(i)=c-is$.
--/
-theorem derivative_representative_at_I (θ : RealMobiusRotationAtIParameters) :
-    deriv
-      (fun z : ℂ ↦
-        (realMobiusRepresentativeAction θ.representative (UpperHalfPlane.ofComplex z) : ℂ))
-      UpperHalfPlane.I =
-      θ.derivativeMultiplierAtI := by
-  have hdet : (θ.representative : GL (Fin 2) ℝ).val.det = 1 := by
-    simp
-  have hdet_pos : 0 < (θ.representative : GL (Fin 2) ℝ).val.det := by
-    rw [hdet]
-    norm_num
-  have hderiv :=
-    UpperHalfPlane.deriv_smul (g := (θ.representative : GL (Fin 2) ℝ))
-      hdet_pos UpperHalfPlane.I
-  have hfun :
-      (fun z : ℂ ↦
-          (realMobiusRepresentativeAction θ.representative
-            ((UpperHalfPlane.ofComplex : ℂ → ℍ) z) : ℂ)) =
-        (fun z : ℂ ↦
-          (((θ.representative : GL (Fin 2) ℝ) •
-            ((UpperHalfPlane.ofComplex : ℂ → ℍ) z) : ℍ) : ℂ)) := by
-    rfl
-  rw [hfun]
-  rw [hderiv, hdet, denom_representative_I]
-  simp [derivativeMultiplierAtI]
-
 end RealMobiusRotationAtIParameters
 
 /--
@@ -920,6 +879,12 @@ Conjugate a rotation fixing `i` to a real Mobius representative fixing `p`.
 
 The explicit representative `realMobiusRepresentativeMapITo p` sends `i` to
 `p`, so this is the usual `M θ M⁻¹` stabilizer element at `p`.
+
+%%handwave
+name:
+  Conjugated real Möbius rotation fixing a point
+statement:
+  If $M_p$ sends $i$ to $p\in\mathbb H$ and $R$ fixes $i$, then $M_pRM_p^{-1}$ is the corresponding real Möbius rotation fixing $p$.
 -/
 def realMobiusConjugatedRotationAt
     (p : ℍ) (θ : RealMobiusRotationAtIParameters) : RealMobiusRepresentative :=
@@ -1174,6 +1139,12 @@ Rotation-parameter transitivity for tangent directions at `i`.
 This is the remaining scalar algebra behind stabilizer tangent transitivity:
 given two nonzero tangent vectors of equal Euclidean norm, a rotation fixing
 `i` should carry the first derivative to the second.
+
+%%handwave
+name:
+  Tangent transitivity of rotations fixing $i$
+statement:
+  This proposition asserts that for nonzero $v,w\in\mathbb C$ with $|v|=|w|$, some real Möbius rotation fixing $i$ has derivative multiplier sending $v$ to $w$.
 -/
 def RealMobiusRotationAtITangentTransitivityTheorem : Prop :=
   ∀ v w : ℂ,
@@ -1189,6 +1160,12 @@ fixing `i`.
 This is the remaining elementary unit-circle calculation behind tangent
 transitivity at `i`: write a unit complex number as the inverse square of
 `c - sI`, with `c² + s² = 1`.
+
+%%handwave
+name:
+  Unit complex numbers as rotation derivative multipliers
+statement:
+  This proposition asserts that every $\mu\in\mathbb C$ with $|\mu|=1$ is $(c-is)^{-2}$ for some $c,s\in\mathbb R$ satisfying $c^2+s^2=1$.
 -/
 def UnitComplexRotationMultiplierTheorem : Prop :=
   ∀ mu : ℂ,
@@ -1202,6 +1179,12 @@ Half-angle formula for rotation derivative multipliers at `i`.
 This is the trigonometric core of the unit-scalar statement: for every real
 angle `t`, the complex number `exp (tI)` is the derivative multiplier of a
 rotation fixing `i`.
+
+%%handwave
+name:
+  Half-angle formula for rotation multipliers
+statement:
+  This proposition asserts that for every $t\in\mathbb R$, some rotation fixing $i$ has derivative multiplier $e^{it}$.
 -/
 def RealMobiusRotationHalfAngleMultiplierFormulaTheorem : Prop :=
   ∀ t : ℝ,
@@ -1325,6 +1308,12 @@ Given a real Mobius representative `A` sending the first branch value to the
 second at `z₀`, equal hyperbolic derivative norm squares should allow a
 stabilizer element `R` of the target point to rotate the tangent direction so
 that `R * A` matches the complex derivative one-jet.
+
+%%handwave
+name:
+  Stabilizer adjustment of a pointed branch derivative
+statement:
+  If $A$ matches the values of two branch germs and their derivatives have equal hyperbolic norm, then some real Möbius transformation $R$ fixing the target value makes $RA$ match their derivatives as well.
 -/
 def RealMobiusStabilizerAdjustsPointedDerivativeTheorem : Prop :=
   ∀ {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
@@ -1353,6 +1342,12 @@ an arbitrary point of `ℍ`.
 Conjugating rotations at `i` by the explicit maps `i ↦ p` should give all
 stabilizer rotations at `p`, with the chain rule transporting the derivative
 matching statement.
+
+%%handwave
+name:
+  Stabilizer tangent adjustment from rotations at $i$
+statement:
+  This proposition asserts that tangent transitivity for rotations fixing $i$, after conjugation to an arbitrary $p\in\mathbb H$, implies pointed derivative adjustment by the stabilizer of $p$.
 -/
 def RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem : Prop :=
   RealMobiusRotationAtITangentTransitivityTheorem →
@@ -1364,6 +1359,12 @@ Branch-level chain rule for postcomposition by a real Mobius map.
 This is the remaining analytic differentiability bridge for the stabilizer
 uniqueness proof: once the upper-half-plane branch is known to be differentiable
 in the strong `HasDerivAt` sense, this should follow from mathlib's chain rule.
+
+%%handwave
+name:
+  Chain rule for real Möbius postcomposition of a branch
+statement:
+  This proposition asserts that for a holomorphic branch $F$ and $A\in\mathrm{PSL}_2(\mathbb R)$, $(A\circ F)'(z_0)=A'(F(z_0))F'(z_0)$ at every point of the branch domain.
 -/
 def RealMobiusBranchPostcompositionDerivativeChainRuleTheorem : Prop :=
   ∀ {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1557,32 +1558,6 @@ theorem realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_bran
 
 /--
 %%handwave
-name: Rotation transitivity transports to arbitrary stabilizers
-statement:
-  If real Mobius rotations fixing $i$ act transitively on tangent vectors of equal norm, then stabilizers of arbitrary points of $\mathbb H$ can adjust matched branch values to match their derivatives as well.
-proof:
-  Apply the conjugation-and-chain-rule transport theorem, using the proved chain rule for Mobius postcomposition of a branch.
--/
-theorem realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem :
-    RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem :=
-  realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem_of_branchChainRule
-    realMobiusBranchPostcompositionDerivativeChainRuleTheorem
-
-/--
-%%handwave
-name: Stabilizer matching of equal-hyperbolic-norm tangents
-statement:
-  Suppose $A(F_1(z_0))=F_2(z_0)$ and the two branch derivatives have equal hyperbolic norm. Then some $R\in\operatorname{PSL}(2,\mathbb R)$ fixes $F_2(z_0)$ and makes $(RA\circ F_1)'(z_0)=F_2'(z_0)$.
-proof:
-  Use tangent transitivity of rotations fixing $i$ and transport those rotations by conjugation to the stabilizer of $F_2(z_0)$.
--/
-theorem realMobiusStabilizerAdjustsPointedDerivativeTheorem :
-    RealMobiusStabilizerAdjustsPointedDerivativeTheorem :=
-  realMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem
-    realMobiusRotationAtITangentTransitivityTheorem
-
-/--
-%%handwave
 name: Pointed Mobius matching from value and stabilizer transitivity
 statement:
   If real Mobius transformations act transitively on $\mathbb H$ and point stabilizers act transitively on tangent directions of a fixed hyperbolic norm, then any two local branches with equal hyperbolic derivative norm at $z_0$ have one-jets related by a real Mobius transformation.
@@ -1630,22 +1605,6 @@ theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rot
     PointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem :=
   pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_stabilizer
     (hTransport hRot)
-
-/--
-%%handwave
-name: Pointed one-jet matching from unit rotation multipliers
-statement:
-  Suppose every unit complex scalar occurs as the derivative at $i$ of a real Mobius rotation, and rotations at $i$ transport by conjugation to arbitrary stabilizers. Then any two branch one-jets of equal hyperbolic norm are related by a real Mobius map.
-proof:
-  Unit multipliers give tangent transitivity at $i$; apply the rotation-and-conjugation one-jet matching theorem.
--/
-theorem pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_unitMultiplier
-    (hUnit : UnitComplexRotationMultiplierTheorem)
-    (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
-    PointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem :=
-  pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_rotations
-    (realMobiusRotationAtITangentTransitivityTheorem_of_unitMultiplier hUnit)
-    hTransport
 
 /--
 %%handwave
@@ -1704,96 +1663,6 @@ theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTh
   intro u S₁ S₂ H₁ H₂ z₀ _hu hz₁ hz₂
   exact h H₁ H₂ hz₁ hz₂
     (H₁.hyperbolicDerivativeNormSqAt_eq_of_mem_inter H₂ hz₁ hz₂)
-
-/--
-%%handwave
-name: Pointed transitions from value and stabilizer transitivity
-statement:
-  If real Mobius maps are transitive on $\mathbb H$ and their point stabilizers match tangent directions of equal hyperbolic norm, then two branches recovering the same conformal metric admit a pointed real Mobius transition at every common point.
-proof:
-  Value and stabilizer transitivity give one-jet matching for equal hyperbolic norm, while metric recovery supplies that equality.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_value_stabilizer
-    (hValue : RealMobiusValueTransitivityOnUpperHalfPlaneTheorem)
-    (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_hyperbolicDerivativeNorm
-    (pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_value_stabilizer
-      hValue hStabilizer)
-
-/--
-%%handwave
-name: Pointed transitions from stabilizer tangent matching
-statement:
-  If real Mobius point stabilizers match tangent directions of equal hyperbolic norm, then any two local branches recovering the same conformal metric admit a pointed real Mobius transition at each common point.
-proof:
-  Combine the stabilizer hypothesis with explicit Mobius transitivity on $\mathbb H$, then use equality of the recovered hyperbolic derivative norms.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_stabilizer
-    (hStabilizer : RealMobiusStabilizerAdjustsPointedDerivativeTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_value_stabilizer
-    realMobiusValueTransitivityOnUpperHalfPlaneTheorem hStabilizer
-
-/--
-%%handwave
-name: Pointed transitions from rotations and stabilizer transport
-statement:
-  If rotations fixing $i$ match equal-norm tangents and this matching transports to every point stabilizer, then any two branches recovering the same conformal metric admit a pointed real Mobius transition at each common point.
-proof:
-  The rotation hypotheses yield stabilizer tangent matching; apply the metric-recovering pointed-transition theorem.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotations
-    (hRot : RealMobiusRotationAtITangentTransitivityTheorem)
-    (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_stabilizer
-    (hTransport hRot)
-
-/--
-%%handwave
-name: Pointed transitions from unit rotation multipliers
-statement:
-  Suppose every unit complex scalar is realized by a rotation fixing $i$, and rotations transport to arbitrary stabilizers. Then any two branches recovering the same conformal metric have pointed real Mobius transitions on their common domain.
-proof:
-  Unit multipliers imply tangent transitivity at $i$; use stabilizer transport and equality of the recovered hyperbolic derivative norms.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_unitMultiplier
-    (hUnit : UnitComplexRotationMultiplierTheorem)
-    (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotations
-    (realMobiusRotationAtITangentTransitivityTheorem_of_unitMultiplier hUnit)
-    hTransport
-
-/--
-%%handwave
-name: Pointed transitions from rotation transport
-statement:
-  If tangent matching by rotations at $i$ transports to arbitrary point stabilizers, then metric-recovering upper-half-plane branches admit pointed real Mobius transitions at every common point.
-proof:
-  Apply stabilizer transport to the proved tangent transitivity of rotations fixing $i$, then use the metric-recovering transition theorem.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotationTransport
-    (hTransport : RealMobiusStabilizerAdjustsPointedDerivativeFromRotationsTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_rotations
-    realMobiusRotationAtITangentTransitivityTheorem hTransport
-
-/--
-%%handwave
-name: Pointed transitions from the branch postcomposition chain rule
-statement:
-  If real Mobius postcomposition obeys the complex chain rule on local upper-half-plane branches, then any two branches recovering the same conformal metric admit a pointed real Mobius transition at every point of overlap.
-proof:
-  The chain rule yields one-jet transitivity for equal hyperbolic derivative norms, and the two metric-recovery identities give that norm equality.
--/
-theorem metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_branchChainRule
-    (hChain : RealMobiusBranchPostcompositionDerivativeChainRuleTheorem) :
-    MetricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem :=
-  metricRecoveringUpperHalfPlaneBranchesAdmitPointedRealMobiusTransitionTheorem_of_hyperbolicDerivativeNorm
-    (pointedRealMobiusTransitionOfEqualHyperbolicDerivativeNormTheorem_of_branchChainRule
-      hChain)
 
 /--
 %%handwave

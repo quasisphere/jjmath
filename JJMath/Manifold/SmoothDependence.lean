@@ -135,6 +135,13 @@ theorem ContDiff.eventually_contDiffAt_implicitFunction
 
 abbrev LocalCurve (E : Type*) [TopologicalSpace E] (ε : ℝ) := C(Icc (-ε) ε, E)
 
+/--
+%%handwave
+name:
+  Endpoint extension of a local curve
+statement:
+  A continuous curve $u:[-\varepsilon,\varepsilon]\to E$ is extended to $\mathbb R$ by composing with nearest-point projection onto $[-\varepsilon,\varepsilon]$, hence remains constant beyond each endpoint.
+-/
 def extendLocalCurve (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve E ε) : ℝ → E :=
   fun t ↦ f (projIcc (-ε) ε (neg_le_self hε) t)
 
@@ -156,6 +163,13 @@ theorem extendLocalCurve_continuous (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve 
     Continuous (extendLocalCurve ε hε f) :=
   f.continuous.comp continuous_projIcc
 
+/--
+%%handwave
+name:
+  Volterra integral of a local curve
+statement:
+  For a local curve $u:[-\varepsilon,\varepsilon]\to E$, its Volterra integral is the local curve $t\mapsto\int_0^t u(s)\,ds$, using the endpoint extension outside the interval.
+-/
 def localCurveIntegralFun (ε : ℝ) (hε : 0 ≤ ε) (f : LocalCurve E ε) :
     LocalCurve E ε where
   toFun t := ∫ s : ℝ in 0..(t : ℝ), extendLocalCurve ε hε f s
@@ -214,6 +228,13 @@ theorem localCurveIntegralFun_smul (ε : ℝ) (hε : 0 ≤ ε) (c : ℝ)
   simp only [extendLocalCurve, ContinuousMap.smul_apply]
   exact intervalIntegral.integral_smul c _
 
+/--
+%%handwave
+name:
+  Linear Volterra operator on local curves
+statement:
+  The assignment $u\mapsto(t\mapsto\int_0^t u(s)\,ds)$ is a real-linear endomorphism of the space of continuous local curves.
+-/
 def localCurveIntegralLinearMap (ε : ℝ) (hε : 0 ≤ ε) :
     LocalCurve E ε →ₗ[ℝ] LocalCurve E ε where
   toFun := localCurveIntegralFun ε hε
@@ -252,6 +273,13 @@ theorem localCurveIntegralFun_norm_le (ε : ℝ) (hε : 0 ≤ ε)
       simpa only [sub_zero] using (abs_le.mpr t.2)
     _ = ε * ‖f‖ := mul_comm _ _
 
+/--
+%%handwave
+name:
+  Bounded Volterra operator on local curves
+statement:
+  On continuous curves over $[-\varepsilon,\varepsilon]$, the Volterra operator $Vu(t)=\int_0^t u(s)\,ds$ is continuous linear and satisfies $\|V\|\le\varepsilon$.
+-/
 def localCurveIntegral (ε : ℝ) (hε : 0 ≤ ε) :
     LocalCurve E ε →L[ℝ] LocalCurve E ε :=
   (localCurveIntegralLinearMap ε hε).mkContinuous ε
@@ -300,41 +328,16 @@ section PointwiseApply
 variable {K : Type*} {F : Type u} [TopologicalSpace K] [CompactSpace K]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
 
+/--
+%%handwave
+name:
+  Pointwise application of a continuous operator field
+statement:
+  For continuous maps $A:K\to\mathcal L(E,F)$ and $u:K\to E$, their pointwise application is the continuous map $x\mapsto A(x)u(x)$.
+-/
 def pointwiseApplyFun (A : C(K, E →L[ℝ] F)) (f : C(K, E)) : C(K, F) where
   toFun x := A x (f x)
   continuous_toFun := A.continuous.clm_apply f.continuous
-
-omit [CompleteSpace E] [CompactSpace K] in
-/--
-%%handwave
-name:
-  Additivity of pointwise operator evaluation in the operator field
-statement:
-  For continuous operator fields \(A,B:K\to\mathcal L(E,F)\) and
-  \(u:K\to E\), \((A+B)u=Au+Bu\) pointwise on \(K\).
-proof:
-  Evaluate at each \(x\in K\) and use additivity of operator evaluation.
--/
-theorem pointwiseApplyFun_add_left (A B : C(K, E →L[ℝ] F)) (f : C(K, E)) :
-    pointwiseApplyFun (A + B) f = pointwiseApplyFun A f + pointwiseApplyFun B f := by
-  ext x
-  rfl
-
-omit [CompleteSpace E] [CompactSpace K] in
-/--
-%%handwave
-name:
-  Homogeneity of pointwise operator evaluation in the operator field
-statement:
-  For \(c\in\mathbb R\), \(A:K\to\mathcal L(E,F)\), and \(u:K\to E\),
-  \((cA)u=c(Au)\) pointwise.
-proof:
-  Evaluate at each point and use homogeneity of operator evaluation.
--/
-theorem pointwiseApplyFun_smul_left (c : ℝ) (A : C(K, E →L[ℝ] F)) (f : C(K, E)) :
-    pointwiseApplyFun (c • A) f = c • pointwiseApplyFun A f := by
-  ext x
-  rfl
 
 omit [CompleteSpace E] [CompactSpace K] in
 /--
@@ -368,6 +371,13 @@ theorem pointwiseApplyFun_smul_right (c : ℝ) (A : C(K, E →L[ℝ] F)) (f : C(
   ext x
   exact map_smul (A x) c (f x)
 
+/--
+%%handwave
+name:
+  Bilinear pointwise application
+statement:
+  Pointwise evaluation defines an algebraic bilinear map $(A,u)\mapsto(x\mapsto A(x)u(x))$ from continuous operator fields and continuous vector fields to continuous $F$-valued maps.
+-/
 def pointwiseApplyLinearMap :
     C(K, E →L[ℝ] F) →ₗ[ℝ] C(K, E) →ₗ[ℝ] C(K, F) where
   toFun A :=
@@ -404,6 +414,13 @@ theorem pointwiseApplyFun_norm_le (A : C(K, E →L[ℝ] F)) (f : C(K, E)) :
     (mul_le_mul (ContinuousMap.norm_coe_le_norm A x)
       (ContinuousMap.norm_coe_le_norm f x) (norm_nonneg _) (norm_nonneg _))
 
+/--
+%%handwave
+name:
+  Pointwise action of a fixed operator field
+statement:
+  A fixed continuous operator field $A:K\to\mathcal L(E,F)$ acts continuously linearly on continuous maps by $u\mapsto(x\mapsto A(x)u(x))$.
+-/
 def pointwiseApplyRight (A : C(K, E →L[ℝ] F)) :
     C(K, E) →L[ℝ] C(K, F) :=
   ((pointwiseApplyLinearMap (E := E) (F := F) (K := K)) A).mkContinuous ‖A‖
@@ -425,6 +442,13 @@ theorem pointwiseApplyRight_norm_le (A : C(K, E →L[ℝ] F)) :
   LinearMap.mkContinuous_norm_le _ (norm_nonneg A)
     (pointwiseApplyFun_norm_le (E := E) (F := F) (K := K) A)
 
+/--
+%%handwave
+name:
+  Linear dependence of pointwise action on the operator field
+statement:
+  The continuous linear operator $u\mapsto Au$ depends real-linearly on the continuous operator field $A$.
+-/
 def pointwiseApplyOuterLinearMap :
     C(K, E →L[ℝ] F) →ₗ[ℝ] C(K, E) →L[ℝ] C(K, F) where
   toFun := pointwiseApplyRight
@@ -435,6 +459,13 @@ def pointwiseApplyOuterLinearMap :
     ext f x
     rfl
 
+/--
+%%handwave
+name:
+  Continuous bilinear pointwise application
+statement:
+  Pointwise evaluation is the continuous bilinear operation $(A,u)\mapsto(x\mapsto A(x)u(x))$, with operator norm at most the product of the supremum norms.
+-/
 def pointwiseApply :
     C(K, E →L[ℝ] F) →L[ℝ] C(K, E) →L[ℝ] C(K, F) where
   toFun := pointwiseApplyRight
@@ -478,15 +509,36 @@ variable {K : Type*} {F : Type u} [TopologicalSpace K] [CompactSpace K]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   [FiniteDimensional ℝ E]
 
+/--
+%%handwave
+name:
+  Superposition operator
+statement:
+  A continuous map $f:E\to F$ induces the superposition map on continuous functions, sending $u:K\to E$ to $f\circ u:K\to F$.
+-/
 def superposition (f : E → F) (hf : Continuous f) (u : C(K, E)) : C(K, F) where
   toFun t := f (u t)
   continuous_toFun := hf.comp u.continuous
 
+/--
+%%handwave
+name:
+  Derivative field along a continuous map
+statement:
+  For a $C^1$ map $f:E\to F$ and continuous $u:K\to E$, the derivative field along $u$ is the continuous map $x\mapsto Df(u(x))$ into $\mathcal L(E,F)$.
+-/
 def fderivAlong (f : E → F) (hf : ContDiff ℝ 1 f) (u : C(K, E)) :
     C(K, E →L[ℝ] F) where
   toFun t := fderiv ℝ f (u t)
   continuous_toFun := (hf.continuous_fderiv (by norm_num)).comp u.continuous
 
+/--
+%%handwave
+name:
+  Derivative of a superposition operator
+statement:
+  At $u:K\to E$, the candidate derivative of the superposition operator induced by $f$ is the continuous linear map $h\mapsto(x\mapsto Df(u(x))h(x))$.
+-/
 def superpositionFDeriv (f : E → F) (hf : ContDiff ℝ 1 f) (u : C(K, E)) :
     C(K, E) →L[ℝ] C(K, F) :=
   pointwiseApply (E := E) (F := F) (K := K) (fderivAlong f hf u)
@@ -716,6 +768,13 @@ section PicardResidual
 
 variable [FiniteDimensional ℝ E]
 
+/--
+%%handwave
+name:
+  Picard fixed-point residual
+statement:
+  For an initial value $x$ and local curve $u$, the Picard residual for $u'=f(u)$ is $R(x,u)=u-\underline{x}-V(f\circ u)$, so its zeros are integral-equation solutions.
+-/
 def picardResidual (ε : ℝ) (hε : 0 ≤ ε) (f : E → E) (hf : ContDiff ℝ ∞ f)
     (p : E × LocalCurve E ε) : LocalCurve E ε :=
   p.2 - ContinuousMap.const (Icc (-ε) ε) p.1 -
@@ -749,6 +808,13 @@ theorem picardResidual_contDiff (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
   · simpa [I, Function.comp_def] using I.contDiff.comp
       ((superposition_contDiff_infty (K := Icc (-ε) ε) f hf).comp contDiff_snd)
 
+/--
+%%handwave
+name:
+  Derivative of the Picard residual
+statement:
+  The derivative of $R(x,u)=u-\underline{x}-V(f\circ u)$ sends $(h,v)$ to $v-\underline h-V(Df(u)v)$.
+-/
 def picardResidualFDeriv (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
     (hf : ContDiff ℝ ∞ f) (p : E × LocalCurve E ε) :
     (E × LocalCurve E ε) →L[ℝ] LocalCurve E ε :=
@@ -805,6 +871,13 @@ theorem picardResidual_hasFDerivAt (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
       simpa [I, Function.comp_def] using I.hasFDerivAt.comp p hsuper
   exact hsnd.sub hconst |>.sub hint
 
+/--
+%%handwave
+name:
+  Curve-direction derivative of the Picard residual
+statement:
+  At a local curve $u$, the derivative of the Picard residual in the curve variable is $v\mapsto v-V(Df(u)v)$.
+-/
 def picardCurveDerivative (ε : ℝ) (hε : 0 ≤ ε) (f : E → E)
     (hf : ContDiff ℝ ∞ f) (u : LocalCurve E ε) :
     LocalCurve E ε →L[ℝ] LocalCurve E ε :=
@@ -1009,8 +1082,13 @@ theorem exists_contDiffAt_picardFixedPoint_family
       hM0 hM hsmall with ⟨ψ, hψx, hψ, hψNear, hfixedψ, _⟩
   exact ⟨ψ, hψx, hψ, hψNear, hfixedψ⟩
 
-/-- Reparametrize a local curve by the affine time map `τ ↦ t₀ + aτ`, while
-remembering the scale `a` as a constant second coordinate. -/
+/--
+%%handwave
+name:
+  Affine rescaling of a local curve
+statement:
+  A local curve $u$ together with a scale $a$ is reparametrized by $\tau\mapsto(u(t_0+a\tau),a)$, with $u$ extended constantly outside its original time interval.
+-/
 def rescaleLocalCurve (ε : ℝ) (hε : 0 ≤ ε) (η t₀ : ℝ)
     (p : LocalCurve E ε × ℝ) : LocalCurve (E × ℝ) η where
   toFun τ :=
@@ -1056,8 +1134,13 @@ theorem rescaleLocalCurve_continuous (ε : ℝ) (hε : 0 ≤ ε) (η t₀ : ℝ)
     exact continuous_eval.comp (continuous_fst.fst.prodMk hp)
   · exact continuous_fst.snd
 
-/-- The autonomous vector field which turns time rescaling into an initial-value
-parameter. -/
+/--
+%%handwave
+name:
+  Time-scaled autonomous vector field
+statement:
+  For a vector field $f:E\to E$, the augmented field on $E\times\mathbb R$ is $(z,a)\mapsto(af(z),0)$, so the scale parameter $a$ remains constant while rescaling time.
+-/
 def timeScaleVectorField (f : E → E) (p : E × ℝ) : E × ℝ :=
   (p.2 • f p.1, 0)
 

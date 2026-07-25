@@ -20,42 +20,19 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [IsManifold SurfaceRealModel ∞ X]
 
-/-- A surface vector field written in the fixed tangent trivialization and
-base chart centered at a point. -/
+/--
+%%handwave
+name: A surface vector field written in the fixed tangent trivialization and base chart centered at a point
+statement:
+  A surface vector field written in the fixed tangent trivialization and
+  base chart centered at a point.
+-/
 noncomputable def surfaceCoordinateVectorField
     (V : (x : X) → TangentSpace SurfaceRealModel x)
     (x : X) (z : ℂ) : ℂ :=
   let y := (extChartAt SurfaceRealModel x).symm z
   ((trivializationAt ℂ (TangentSpace SurfaceRealModel) x)
     (⟨y, V y⟩ : TangentBundle SurfaceRealModel X)).2
-
-/--
-%%handwave
-name:
-  A surface vector field in coordinates at the chart center
-statement:
-  Let \(V\) be a surface vector field and let \(v_x\) be its expression in
-  the chart centered at \(x\).  Then
-  \[
-    v_x(\phi_x(x))=V_x,
-  \]
-  under the tangent-space identification supplied by that chart.
-proof:
-  Expanding the tangent trivialization applies the chart derivative to
-  \(V_x\).  At the centered point, the chart and inverse-chart derivatives
-  cancel.
--/
-theorem surfaceCoordinateVectorField_apply_center
-    (V : (x : X) → TangentSpace SurfaceRealModel x) (x : X) :
-    surfaceCoordinateVectorField V x
-        (extChartAt SurfaceRealModel x x) = V x := by
-  simp [surfaceCoordinateVectorField,
-    TangentBundle.trivializationAt_apply]
-  rw [(chartAt ℂ x).left_inv (mem_chart_source ℂ x)]
-  have hround := fderivWithin_extChartAt_comp_extChartAt_symm_range
-    (I := SurfaceRealModel) (x := x)
-  have happ := congrArg (fun L : ℂ →L[ℝ] ℂ => L (V x)) hround
-  simpa [SurfaceRealModel] using happ
 
 /--
 %%handwave

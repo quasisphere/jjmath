@@ -24,15 +24,33 @@ attribute [local instance 2000] InnerProductSpace.toNormedSpace
 attribute [local instance 2000] TopologicalSpace.PseudoMetrizableSpace.regularSpace
 attribute [local instance 2000] T2Space.t1Space
 
-/-- The Riemann sphere, represented as the one-point compactification of `ℂ`. -/
+/--
+%%handwave
+statement:
+  The Riemann sphere is represented as the one-point compactification of $\mathbb C$.
+tags:
+  shadow
+-/
 abbrev RiemannSphere : Type :=
   OnePoint ℂ
 
-/-- A Hausdorff complex one-manifold, with no connectedness assumption. -/
+/--
+%%handwave
+statement:
+  A complex one-manifold is a Hausdorff space locally modelled holomorphically on $\mathbb C$.
+tags:
+  shadow
+-/
 class ComplexOneManifold (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop
     extends T2Space X, IsManifold 𝓘(ℂ) ⊤ X
 
-/-- A Riemann surface is a connected complex one-manifold. -/
+/--
+%%handwave
+statement:
+  A Riemann surface is a connected complex one-manifold.
+tags:
+  shadow
+-/
 class RiemannSurface (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop
     extends ComplexOneManifold X, ConnectedSpace X
 
@@ -40,11 +58,23 @@ section RiemannSphereInversion
 
 local instance instDecidableEqComplex_jJMath : DecidableEq ℂ := Classical.decEq ℂ
 
-/-- Inversion on the finite part of the Riemann sphere, with `0` sent to infinity. -/
+/--
+%%handwave
+statement:
+  On the finite part of the Riemann sphere, inversion sends $0$ to infinity and every nonzero $z$ to $z^{-1}$.
+tags:
+  shadow
+-/
 def riemannSphereInvFinite (z : ℂ) : RiemannSphere :=
   if z = 0 then OnePoint.infty else ((z⁻¹ : ℂ) : RiemannSphere)
 
-/-- Inversion on the Riemann sphere, exchanging `0` and infinity. -/
+/--
+%%handwave
+statement:
+  Inversion on the Riemann sphere exchanges $0$ and infinity and sends every nonzero finite $z$ to $z^{-1}$.
+tags:
+  shadow
+-/
 def riemannSphereInv (z : RiemannSphere) : RiemannSphere :=
   z.elim ((0 : ℂ) : RiemannSphere) riemannSphereInvFinite
 
@@ -204,7 +234,13 @@ theorem riemannSphereInv_inv (z : RiemannSphere) :
     riemannSphereInv (riemannSphereInv z) = z :=
   riemannSphereInv_involutive z
 
-/-- Inversion as a self-homeomorphism of the Riemann sphere. -/
+/--
+%%handwave
+statement:
+  Riemann-sphere inversion is a self-homeomorphism of $\widehat{\mathbb C}$.
+tags:
+  shadow
+-/
 def riemannSphereInvHomeomorph : RiemannSphere ≃ₜ RiemannSphere where
   toFun := riemannSphereInv
   invFun := riemannSphereInv
@@ -228,7 +264,13 @@ theorem riemannSphereInvHomeomorph_apply (z : RiemannSphere) :
     riemannSphereInvHomeomorph z = riemannSphereInv z :=
   rfl
 
-/-- The affine coordinate on the finite part of the Riemann sphere. -/
+/--
+%%handwave
+statement:
+  The finite chart is the affine coordinate on $\widehat{\mathbb C}\setminus\{\infty\}$.
+tags:
+  shadow
+-/
 def riemannSphereFiniteChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   (OnePoint.isOpenEmbedding_coe.toOpenPartialHomeomorph
     ((↑) : ℂ → RiemannSphere)).symm
@@ -294,7 +336,13 @@ theorem riemannSphereFiniteChart_symm_apply (z : ℂ) :
     riemannSphereFiniteChart.symm z = (z : RiemannSphere) :=
   rfl
 
-/-- The reciprocal coordinate near infinity. -/
+/--
+%%handwave
+statement:
+  The chart near infinity is the reciprocal coordinate on the Riemann sphere.
+tags:
+  shadow
+-/
 def riemannSphereInfinityChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   riemannSphereInvHomeomorph.toOpenPartialHomeomorph.trans riemannSphereFiniteChart
 
@@ -424,13 +472,25 @@ noncomputable instance instChartedSpaceComplexUnitDisc :
     (show Topology.IsOpenEmbedding ((↑) : Complex.UnitDisc → ℂ) from
       (Metric.isOpen_ball : IsOpen (Metric.ball (0 : ℂ) 1)).isOpenEmbedding_subtypeVal)
 
-/-- A holomorphic map between complex manifolds. -/
+/--
+%%handwave
+statement:
+  A map between complex manifolds is holomorphic when it is complex-manifold differentiable.
+tags:
+  shadow
+-/
 def HolomorphicMap (X : Type u) (Y : Type v)
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y] (f : X → Y) : Prop :=
   MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f
 
-/-- A biholomorphic equivalence. -/
+/--
+%%handwave
+statement:
+  A biholomorphic equivalence is a homeomorphism whose forward and inverse maps are holomorphic.
+tags:
+  shadow
+-/
 structure Biholomorphic (X : Type u) (Y : Type v)
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y] where
@@ -438,7 +498,13 @@ structure Biholomorphic (X : Type u) (Y : Type v)
   holomorphic_toFun : HolomorphicMap X Y toHomeomorph
   holomorphic_invFun : HolomorphicMap Y X toHomeomorph.symm
 
-/-- The proposition that two complex manifolds are biholomorphic. -/
+/--
+%%handwave
+statement:
+  Two complex manifolds are biholomorphic when there exists a biholomorphic equivalence between them.
+tags:
+  shadow
+-/
 def BiholomorphicSurfaces (X : Type u) (Y : Type v)
     [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y] : Prop :=

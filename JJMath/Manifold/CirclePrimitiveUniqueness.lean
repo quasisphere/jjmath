@@ -215,7 +215,13 @@ theorem isClosed
     (deRhamDifferential (I := I) (M := M) (A := ℝ) 1 omega)
     hrestrict hxU
 
-/-- Package the represented one-form of a circle primitive as a closed form. -/
+/--
+%%handwave
+name:
+  Closed form represented by a circle primitive
+statement:
+  The smooth one-form represented locally by the arguments of a smooth circle primitive is closed, and hence determines a real de Rham closed $1$-form.
+-/
 def toClosedForm
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) :

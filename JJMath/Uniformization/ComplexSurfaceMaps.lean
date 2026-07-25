@@ -54,17 +54,6 @@ noncomputable instance instContractibleSpaceComplexUnitDisc :
   change ContractibleSpace (Metric.ball (0 : ℂ) 1)
   exact Metric.contractibleSpace_ball (show (0 : ℝ) < 1 by norm_num)
 
-/--
-%%handwave
-name:
-  The unit disk is locally path connected
-statement:
-  The open unit disk is locally path connected.
--/
-instance instLocPathConnectedSpaceComplexUnitDisc :
-    LocPathConnectedSpace Complex.UnitDisc := by
-  change LocPathConnectedSpace (Metric.ball (0 : ℂ) 1)
-  exact Metric.isOpen_ball.locPathConnectedSpace
 
 /--
 %%handwave
@@ -256,20 +245,6 @@ theorem holomorphicMap_upperHalfPlane_of_coe
 
 /--
 %%handwave
-name:
-  The upper half-plane inclusion is holomorphic
-statement:
-  The inclusion of the upper half-plane into the complex plane is holomorphic.
-proof:
-  The upper half-plane is an open complex submanifold of the plane, so its
-  defining open embedding is holomorphic.
--/
-theorem holomorphicMap_upperHalfPlane_coe :
-    HolomorphicMap UpperHalfPlane ℂ (fun z : UpperHalfPlane ↦ (z : ℂ)) := by
-  exact UpperHalfPlane.mdifferentiable_coe
-
-/--
-%%handwave
 name: Smoothness of the upper-half-plane inclusion
 statement:
   The inclusion $\mathbb H\hookrightarrow\mathbb C$ is continuously differentiable as a map of complex manifolds.
@@ -399,23 +374,6 @@ theorem BiholomorphicSurfaces.symm
     BiholomorphicSurfaces Y X := by
   rcases hXY with ⟨eXY⟩
   exact ⟨eXY.symm⟩
-
-/--
-%%handwave
-name:
-  Pointed disk maps are complex-continuous
-statement:
-  The underlying complex-valued function of a pointed holomorphic disk map is
-  continuous.
-proof:
-  The disk-valued map is holomorphic, hence continuous, and the inclusion of
-  the unit disk into the complex plane is continuous.
--/
-theorem PointedHolomorphicMap.continuous_coe_unitDisc
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0) :
-    Continuous (fun x : X ↦ (F.toFun x : ℂ)) := by
-  exact Complex.UnitDisc.continuous_coe.comp F.holomorphic.continuous
 
 /--
 %%handwave
@@ -699,46 +657,6 @@ theorem bijective_unbranched_pointedDiskMap_inverse_holomorphic
       simpa [H, hlocal] using hFbranch
     exact (H.symm_apply_eq).2 hHbranch.symm
   exact hbranch_mdiff.congr_of_eventuallyEq hevent
-
-/--
-%%handwave
-name:
-  Bijective unbranched pointed disk maps are biholomorphic
-statement:
-  A bijective pointed holomorphic disk map with nonvanishing coordinate
-  derivative everywhere is a biholomorphic equivalence onto the unit disk.
-proof:
-  By [the inverse function theorem, an unbranched pointed disk map is a local homeomorphism](lean:JJMath.Uniformization.unbranched_pointedDiskMap_isLocalHomeomorph).
-  A bijective local homeomorphism is a homeomorphism.  The forward map is
-  holomorphic by assumption, and [the inverse homeomorphism is holomorphic](lean:JJMath.Uniformization.bijective_unbranched_pointedDiskMap_inverse_holomorphic)
-  because it agrees locally with the holomorphic inverse branches.
--/
-theorem biholomorphicSurfaces_of_bijective_unbranched_pointedDiskMap
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (_χ : PointedSurfaceCoordinate X p)
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hunbranched : ∀ x : X, ∀ χx : PointedSurfaceCoordinate X x,
-      surfaceComplexDerivativeInCoordinate χx
-        (fun y ↦ (F.toFun y : ℂ)) ≠ 0)
-    (hinj : Function.Injective F.toFun)
-    (hsurj : Function.Surjective F.toFun) :
-    BiholomorphicSurfaces X Complex.UnitDisc := by
-  let hloc : IsLocalHomeomorph F.toFun :=
-    unbranched_pointedDiskMap_isLocalHomeomorph X F hunbranched
-  let e : X ≃ₜ Complex.UnitDisc :=
-    hloc.toHomeomorphOfBijective ⟨hinj, hsurj⟩
-  refine ⟨{
-    toHomeomorph := e
-    holomorphic_toFun := ?_
-    holomorphic_invFun := ?_
-  }⟩
-  · simpa [e, hloc] using F.holomorphic
-  · simpa [e, hloc] using
-      bijective_unbranched_pointedDiskMap_inverse_holomorphic
-        X F hunbranched hinj hsurj
-
-
 
 /--
 %%handwave

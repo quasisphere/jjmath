@@ -38,7 +38,13 @@ namespace PerronOpen
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
-/-- The boundary of a Perron open region. -/
+/--
+%%handwave
+name: The boundary of a Perron open region
+statement:
+  For a nonempty open region $\Omega$, define its boundary by
+  $\partial\Omega=\operatorname{fr}(\Omega)$.
+-/
 def boundary (Ω : PerronOpen X) : Set X :=
   frontier Ω.carrier
 
@@ -420,55 +426,6 @@ theorem localPerronOpenBarrier_truncated_patch_from_compact_shrink
 /--
 %%handwave
 name:
-  Local Perron-open barriers have global superharmonic patches
-statement:
-  A local Perron-open barrier at a boundary point can be patched to a global
-  superharmonic barrier on the open region: it is continuous on the closed
-  region, superharmonic in the region, vanishes at the marked point, is
-  positive elsewhere on the closed region, and tends to zero at the marked
-  point along the region.
-proof:
-  Shrink the local barrier neighborhood to a compactly contained open set,
-  apply
-  [the truncated patch construction](lean:JJMath.Uniformization.localPerronOpenBarrier_truncated_patch_from_compact_shrink),
-  and globalize local superharmonicity using the locality theorem for
-  superharmonic functions.
--/
-theorem localPerronOpenBarrierAt_exists_global_superharmonic_patch
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronOpen X) {p : X}
-    (hp : HasLocalPerronOpenBarrierAt Ω p) :
-    ∃ B : X → ℝ,
-      ContinuousOn B (closure Ω.carrier) ∧
-        IsSuperharmonicOnSurface Ω.carrier B ∧
-          B p = 0 ∧
-            (∀ x ∈ closure Ω.carrier, x ≠ p → 0 < B x) ∧
-              Filter.Tendsto B (𝓝[Ω.carrier] p) (𝓝 0) := by
-  rcases hp with
-    ⟨hp_boundary, N, hN_open, hpN, b, hb_cont, hb_super, hb_zero, hb_pos⟩
-  rcases exists_surface_open_nhds_isCompact_closure_subset hN_open hpN with
-    ⟨V, hV_open, hpV, hV_closure_subset, hV_compact⟩
-  rcases localPerronOpenBarrier_truncated_patch_from_compact_shrink Ω
-      hN_open hb_cont hb_super hb_zero hb_pos
-      hV_open hpV hV_closure_subset hV_compact with
-    ⟨B, hB_cont, hB_local_super, hB_zero, hB_pos, _η, _hηpos, _hB_outside⟩
-  have hB_super : IsSuperharmonicOnSurface Ω.carrier B :=
-    superharmonicOnSurface_of_locally Ω.isOpen hB_local_super
-  have hp_closure : p ∈ closure Ω.carrier := by
-    exact frontier_subset_closure hp_boundary
-  have hB_tendsto :
-      Filter.Tendsto B (𝓝[Ω.carrier] p) (𝓝 0) := by
-    have hB_tendsto_closure :
-        Filter.Tendsto B (𝓝[closure Ω.carrier] p) (𝓝 (B p)) :=
-      hB_cont p hp_closure
-    simpa [hB_zero] using
-      (tendsto_nhdsWithin_mono_left subset_closure hB_tendsto_closure)
-  exact ⟨B, hB_cont, hB_super, hB_zero, hB_pos, hB_tendsto⟩
-
-/--
-%%handwave
-name:
   Perron-open admissible subfunction
 statement:
   An admissible subfunction on a Perron open region is continuous up to the
@@ -480,18 +437,6 @@ def IsPerronOpenAdmissible {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
   ContinuousOn v (closure Ω.carrier) ∧
     IsSubharmonicOnSurface Ω.carrier v ∧
       ∀ x ∈ Ω.boundary, v x ≤ φ x
-
-/--
-%%handwave
-name:
-  Perron-open subfunction
-statement:
-  A Perron-open subfunction is a function together with the proof that it is
-  admissible for the given boundary data on the open region.
--/
-def PerronOpenSubfunction {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) : Type :=
-  {v : X → ℝ // IsPerronOpenAdmissible Ω φ v}
 
 /--
 %%handwave
@@ -519,412 +464,6 @@ theorem perronOpenAdmissible_sup
     by
       intro x hx
       exact sup_le (hu.2.2 x hx) (hv.2.2 x hx)⟩
-
-/--
-%%handwave
-name:
-  Perron-open values at a point
-statement:
-  The Perron-open value set at a point is the set of all values taken there by
-  admissible subfunctions.
--/
-def perronOpenValueSet {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) (x : X) : Set ℝ :=
-  {a : ℝ | ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v ∧ a = v x}
-
-/--
-%%handwave
-name:
-  Perron-open values are directed
-statement:
-  At a fixed point, any two Perron-open values are dominated by another
-  Perron-open value.
-proof:
-  Given two admissible subfunctions, take their pointwise maximum.  The
-  maximum is again admissible and its value at the point dominates both
-  original values.
--/
-theorem perronOpenValueSet_directedOn
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) (x : X) :
-    DirectedOn (· ≤ ·) (perronOpenValueSet Ω φ x) := by
-  intro a ha b hb
-  rcases ha with ⟨u, hu, rfl⟩
-  rcases hb with ⟨v, hv, rfl⟩
-  refine ⟨(u x ⊔ v x), ?_, le_sup_left, le_sup_right⟩
-  exact ⟨fun y ↦ u y ⊔ v y, perronOpenAdmissible_sup Ω φ hu hv, rfl⟩
-
-/--
-%%handwave
-name:
-  Perron-open envelope
-statement:
-  The Perron-open envelope is the pointwise supremum of all admissible
-  subfunctions on the open region.
--/
-noncomputable def perronOpenEnvelope {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) : X → ℝ :=
-  fun x ↦ sSup (perronOpenValueSet Ω φ x)
-
-/--
-%%handwave
-name:
-  Perron-open envelope as a pointwise supremum
-statement:
-  The value of the Perron-open envelope at a point is the supremum of the
-  Perron-open value set at that point.
-proof:
-  This is the defining formula for the Perron-open envelope.
--/
-theorem perronOpenEnvelope_eq_sSup_valueSet
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) (x : X) :
-    perronOpenEnvelope Ω φ x = sSup (perronOpenValueSet Ω φ x) := rfl
-
-/--
-%%handwave
-name:
-  Perron-open envelope as supremum over subfunctions
-statement:
-  The Perron-open envelope is the indexed supremum of all admissible
-  subfunctions.
-proof:
-  The Perron-open value set at a point is exactly the range of the evaluation
-  map on the type of admissible subfunctions.
--/
-theorem perronOpenEnvelope_eq_iSup_subfunctions
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) (x : X) :
-    perronOpenEnvelope Ω φ x =
-      ⨆ v : PerronOpenSubfunction Ω φ, v.val x := by
-  rw [perronOpenEnvelope_eq_sSup_valueSet]
-  have hset :
-      perronOpenValueSet Ω φ x =
-        Set.range (fun v : PerronOpenSubfunction Ω φ ↦ v.val x) := by
-    ext a
-    constructor
-    · intro ha
-      rcases ha with ⟨v, hv, rfl⟩
-      exact ⟨⟨v, hv⟩, rfl⟩
-    · intro ha
-      rcases ha with ⟨v, rfl⟩
-      exact ⟨v.val, v.property, rfl⟩
-  rw [hset]
-  rfl
-
-/--
-%%handwave
-name:
-  Locally bounded Perron-open family
-statement:
-  A Perron-open family is locally bounded above if every compact subset of the
-  region has a common upper bound for all admissible subfunctions.
--/
-def PerronOpenFamilyLocallyBoundedAbove
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) : Prop :=
-  ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-    ∃ M : ℝ,
-      ∀ v : X → ℝ, IsPerronOpenAdmissible Ω φ v → ∀ x ∈ K, v x ≤ M
-
-/--
-%%handwave
-name:
-  Constants below Perron-open boundary data are admissible
-statement:
-  Any constant lying below the prescribed boundary data is a Perron-open
-  admissible subfunction.
-proof:
-  Constants are continuous and subharmonic.  The boundary inequality is exactly
-  the assumed lower bound.
--/
-theorem constant_below_boundary_is_perronOpen_admissible
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    {c : ℝ} (hc : ∀ x ∈ Ω.boundary, c ≤ φ x) :
-    IsPerronOpenAdmissible Ω φ (fun _ : X ↦ c) := by
-  exact ⟨
-    continuousOn_const,
-    subharmonicOnSurface_const Ω.carrier c,
-    hc⟩
-
-/--
-%%handwave
-name:
-  Explicit lower bounds make Perron-open families nonempty
-statement:
-  If the boundary data has a global lower bound, then the Perron-open family
-  is nonempty.
-proof:
-  The constant function at that lower bound is admissible.
--/
-theorem perronOpen_family_nonempty_of_boundary_lower_bound
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    {m : ℝ} (hm : ∀ x ∈ Ω.boundary, m ≤ φ x) :
-    ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v := by
-  exact ⟨fun _ : X ↦ m, constant_below_boundary_is_perronOpen_admissible Ω φ hm⟩
-
-/--
-%%handwave
-name:
-  Perron-open value sets are nonempty from a nonempty family
-statement:
-  If the Perron-open family is nonempty, then every Perron-open value set is
-  nonempty.
-proof:
-  Any admissible subfunction supplies one value at the chosen point.
--/
-theorem perronOpenValueSet_nonempty_of_family_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v)
-    (x : X) :
-    (perronOpenValueSet Ω φ x).Nonempty := by
-  rcases hfamily_nonempty with ⟨v, hv⟩
-  exact ⟨v x, v, hv, rfl⟩
-
-/--
-%%handwave
-name:
-  A pointwise family bound bounds Perron-open values
-statement:
-  If all Perron-open admissible subfunctions are bounded above by a common
-  constant at a point, then the value set at that point is bounded above by
-  the same constant.
-proof:
-  Every element of the value set is the value of an admissible subfunction,
-  so the assumed common bound applies to it.
--/
-theorem perronOpenValueSet_bddAbove_of_family_bound
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) {x : X} {M : ℝ}
-    (hbound : ∀ v : X → ℝ, IsPerronOpenAdmissible Ω φ v → v x ≤ M) :
-    BddAbove (perronOpenValueSet Ω φ x) := by
-  refine ⟨M, ?_⟩
-  intro a ha
-  rcases ha with ⟨v, hv, rfl⟩
-  exact hbound v hv
-
-/--
-%%handwave
-name:
-  A pointwise family bound bounds the Perron-open envelope
-statement:
-  If all Perron-open admissible subfunctions are bounded above by a common
-  constant at a point and the value set is nonempty there, then the envelope
-  is bounded above by that constant.
-proof:
-  This is the order-theoretic property of the supremum of a nonempty bounded
-  set of real numbers.
--/
-theorem perronOpenEnvelope_le_of_family_bound
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) {x : X} {M : ℝ}
-    (hne : (perronOpenValueSet Ω φ x).Nonempty)
-    (hbound : ∀ v : X → ℝ, IsPerronOpenAdmissible Ω φ v → v x ≤ M) :
-    perronOpenEnvelope Ω φ x ≤ M := by
-  rw [perronOpenEnvelope_eq_sSup_valueSet]
-  exact csSup_le hne (by
-    intro a ha
-    rcases ha with ⟨v, hv, rfl⟩
-    exact hbound v hv)
-
-/--
-%%handwave
-name:
-  Perron-open admissible subfunctions lie below the envelope from boundedness
-statement:
-  If the Perron-open value set is bounded above at a point, then every
-  admissible subfunction is bounded above by the envelope at that point.
-proof:
-  The value of the subfunction belongs to the value set, so it lies below the
-  supremum of that set.
--/
-theorem perronOpenAdmissible_le_envelope_of_bddAbove
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) {v : X → ℝ}
-    (hv : IsPerronOpenAdmissible Ω φ v) {x : X}
-    (hbdd : BddAbove (perronOpenValueSet Ω φ x)) :
-    v x ≤ perronOpenEnvelope Ω φ x := by
-  rw [perronOpenEnvelope_eq_sSup_valueSet]
-  exact le_csSup hbdd ⟨v, hv, rfl⟩
-
-/--
-%%handwave
-name:
-  Locally bounded Perron-open families lie below the envelope
-statement:
-  If the Perron-open family is locally bounded above in the region, then every
-  admissible subfunction is bounded above by the envelope at each point of the
-  region.
-proof:
-  Apply the local bound to the compact singleton containing the point.  This
-  gives a pointwise upper bound for the value set, and then the supremum
-  property gives the desired inequality.
--/
-theorem perronOpenAdmissible_le_envelope_of_locally_bounded
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_locally_bounded : PerronOpenFamilyLocallyBoundedAbove Ω φ)
-    {v : X → ℝ} (hv : IsPerronOpenAdmissible Ω φ v) :
-    ∀ x ∈ Ω.carrier, v x ≤ perronOpenEnvelope Ω φ x := by
-  intro x hxΩ
-  have hsingleton_subset : ({x} : Set X) ⊆ Ω.carrier := by
-    intro y hy
-    rw [Set.mem_singleton_iff] at hy
-    simpa [hy] using hxΩ
-  rcases hfamily_locally_bounded ({x} : Set X) isCompact_singleton
-      hsingleton_subset with
-    ⟨M, hM⟩
-  have hbdd : BddAbove (perronOpenValueSet Ω φ x) :=
-    perronOpenValueSet_bddAbove_of_family_bound Ω φ (x := x) (M := M)
-      (by
-        intro w hw
-        exact hM w hw x (by simp))
-  exact perronOpenAdmissible_le_envelope_of_bddAbove Ω φ hv hbdd
-
-/--
-%%handwave
-name:
-  Perron-open subfunctions approximate the envelope at a point
-statement:
-  If \(a\) is strictly below the Perron-open envelope at a point of the region,
-  then some admissible subfunction has value greater than \(a\) there.
-proof:
-  Local boundedness at the singleton gives boundedness of the value set.  Since
-  the family is nonempty, the defining property of the supremum supplies an
-  admissible value above \(a\).
--/
-theorem exists_perronOpenAdmissible_gt_of_lt_envelope
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v)
-    (hfamily_locally_bounded : PerronOpenFamilyLocallyBoundedAbove Ω φ)
-    {x : X} (hxΩ : x ∈ Ω.carrier) {a : ℝ}
-    (ha : a < perronOpenEnvelope Ω φ x) :
-    ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v ∧ a < v x := by
-  have hsingleton_subset : ({x} : Set X) ⊆ Ω.carrier := by
-    intro y hy
-    rw [Set.mem_singleton_iff] at hy
-    simpa [hy] using hxΩ
-  rcases hfamily_locally_bounded ({x} : Set X) isCompact_singleton
-      hsingleton_subset with
-    ⟨M, hM⟩
-  have hbdd : BddAbove (perronOpenValueSet Ω φ x) :=
-    perronOpenValueSet_bddAbove_of_family_bound Ω φ (x := x) (M := M)
-      (by
-        intro v hv
-        exact hM v hv x (by simp))
-  rw [perronOpenEnvelope_eq_sSup_valueSet] at ha
-  rcases (lt_csSup_iff hbdd
-      (perronOpenValueSet_nonempty_of_family_nonempty Ω φ hfamily_nonempty x)).1 ha with
-    ⟨b, hb, hab⟩
-  rcases hb with ⟨v, hv, rfl⟩
-  exact ⟨v, hv, hab⟩
-
-/--
-%%handwave
-name:
-  Perron-open subfunctions approximate the envelope within epsilon
-statement:
-  At each point of the region and for every positive epsilon, some admissible
-  subfunction has value within epsilon of the Perron-open envelope from below.
-proof:
-  [Every number strictly below the Perron envelope at an interior point is exceeded there by an admissible subfunction](lean:JJMath.Uniformization.exists_perronOpenAdmissible_gt_of_lt_envelope). Apply this with $a=P_\Omega\varphi(x)-\varepsilon$.
--/
-theorem exists_perronOpenAdmissible_envelope_sub_lt
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v)
-    (hfamily_locally_bounded : PerronOpenFamilyLocallyBoundedAbove Ω φ)
-    {x : X} (hxΩ : x ∈ Ω.carrier) {ε : ℝ} (hε : 0 < ε) :
-    ∃ v : X → ℝ,
-      IsPerronOpenAdmissible Ω φ v ∧ perronOpenEnvelope Ω φ x - ε < v x := by
-  exact exists_perronOpenAdmissible_gt_of_lt_envelope Ω φ hfamily_nonempty
-    hfamily_locally_bounded hxΩ (by linarith)
-
-/--
-%%handwave
-name:
-  Perron-open envelope is lower semicontinuous
-statement:
-  If the Perron-open family is locally bounded above in the region, then the
-  Perron-open envelope is lower semicontinuous in the region.
-proof:
-  The envelope is the supremum of the admissible subfunctions.  Each
-  admissible subfunction is continuous on the closed region, hence lower
-  semicontinuous in the region.  Mathlib's theorem that locally bounded
-  suprema of lower semicontinuous functions are lower semicontinuous then
-  applies.
--/
-theorem perronOpenEnvelope_lowerSemicontinuousOn
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_locally_bounded : PerronOpenFamilyLocallyBoundedAbove Ω φ) :
-    LowerSemicontinuousOn (perronOpenEnvelope Ω φ) Ω.carrier := by
-  have hbdd :
-      ∀ x ∈ Ω.carrier,
-        BddAbove (Set.range fun v : PerronOpenSubfunction Ω φ ↦ v.val x) := by
-    intro x hxΩ
-    have hsingleton_subset : ({x} : Set X) ⊆ Ω.carrier := by
-      intro y hy
-      rw [Set.mem_singleton_iff] at hy
-      simpa [hy] using hxΩ
-    rcases hfamily_locally_bounded ({x} : Set X) isCompact_singleton
-        hsingleton_subset with
-      ⟨M, hM⟩
-    refine ⟨M, ?_⟩
-    intro a ha
-    rcases ha with ⟨v, rfl⟩
-    exact hM v.val v.property x (by simp)
-  have hsub_lsc :
-      ∀ v : PerronOpenSubfunction Ω φ,
-        LowerSemicontinuousOn v.val Ω.carrier := by
-    intro v
-    exact (v.property.1.mono subset_closure).lowerSemicontinuousOn
-  have hlsup :
-      LowerSemicontinuousOn
-        (fun x ↦ ⨆ v : PerronOpenSubfunction Ω φ, v.val x) Ω.carrier :=
-    lowerSemicontinuousOn_ciSup hbdd hsub_lsc
-  have henv_eq :
-      perronOpenEnvelope Ω φ =
-        fun x ↦ ⨆ v : PerronOpenSubfunction Ω φ, v.val x := by
-    funext x
-    exact perronOpenEnvelope_eq_iSup_subfunctions Ω φ x
-  rw [henv_eq]
-  exact hlsup
-
-/--
-%%handwave
-name:
-  Locally bounded Perron-open families give locally bounded envelopes
-statement:
-  If the Perron-open family is nonempty and locally bounded above in the
-  region, then the Perron-open envelope is locally bounded above in the region.
-proof:
-  The common bound for all admissible subfunctions on a compact set is a
-  pointwise bound for each value set, hence also for its supremum.
--/
-theorem perronOpenEnvelope_locally_bounded_above_of_family_locally_bounded
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronOpenAdmissible Ω φ v)
-    (hfamily_locally_bounded : PerronOpenFamilyLocallyBoundedAbove Ω φ) :
-    ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-      ∃ M : ℝ, ∀ x ∈ K, perronOpenEnvelope Ω φ x ≤ M := by
-  intro K hK hKΩ
-  rcases hfamily_locally_bounded K hK hKΩ with ⟨M, hM⟩
-  refine ⟨M, ?_⟩
-  intro x hxK
-  exact perronOpenEnvelope_le_of_family_bound Ω φ
-    (perronOpenValueSet_nonempty_of_family_nonempty Ω φ hfamily_nonempty x)
-    (by
-      intro v hv
-      exact hM v hv x hxK)
 
 /--
 %%handwave
@@ -1037,29 +576,6 @@ theorem boundedPerronOpenEnvelope_eq_iSup_subfunctions
       exact ⟨v.val, v.property, rfl⟩
   rw [boundedPerronOpenEnvelope, hset]
   rfl
-
-/--
-%%handwave
-name:
-  Constants give nonempty bounded Perron-open families
-statement:
-  A constant below the boundary data and below the fixed upper bound gives a
-  bounded Perron-open admissible subfunction.
-proof:
-  Constants are Perron-open admissible when they lie below the boundary data,
-  and the interior upper bound is exactly the second hypothesis.
--/
-theorem constant_below_boundary_is_boundedPerronOpen_admissible
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronOpen X) (φ : PerronOpenBoundaryData Ω) (M : ℝ)
-    {c : ℝ} (hc_boundary : ∀ x ∈ Ω.boundary, c ≤ φ x) (hcM : c ≤ M) :
-    IsBoundedPerronOpenAdmissible Ω φ M (fun _ : X ↦ c) := by
-  exact ⟨
-    constant_below_boundary_is_perronOpen_admissible Ω φ hc_boundary,
-    by
-      intro x _hx
-      exact hcM⟩
 
 /--
 %%handwave
@@ -1529,50 +1045,15 @@ namespace PerronDomain
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
-/-- The boundary of a Perron domain. -/
+/--
+%%handwave
+name: The boundary of a Perron domain
+statement:
+  For a relatively compact open Perron domain $\Omega$, define
+  $\partial\Omega=\operatorname{fr}(\Omega)$.
+-/
 def boundary (Ω : PerronDomain X) : Set X :=
   frontier Ω.carrier
-
-/--
-%%handwave
-name:
-  A Perron domain as a Perron open region
-statement:
-  Every relatively compact Perron domain has an underlying Perron open region.
--/
-def toPerronOpen (Ω : PerronDomain X) : PerronOpen X where
-  carrier := Ω.carrier
-  isOpen := Ω.isOpen
-  nonempty := Ω.nonempty
-
-/--
-%%handwave
-name:
-  Forgetting relative compactness preserves the carrier
-statement:
-  The open region underlying a Perron domain has exactly the same carrier as
-  the original domain.
-proof:
-  This is immediate from the construction, which changes only the stored
-  geometric data and leaves the underlying set unchanged.
--/
-@[simp]
-theorem toPerronOpen_carrier (Ω : PerronDomain X) :
-    Ω.toPerronOpen.carrier = Ω.carrier := rfl
-
-/--
-%%handwave
-name:
-  Forgetting relative compactness preserves the boundary
-statement:
-  The boundary of the open region underlying a Perron domain equals the
-  boundary of the original domain.
-proof:
-  Both boundaries are the frontier of the common carrier.
--/
-@[simp]
-theorem toPerronOpen_boundary (Ω : PerronDomain X) :
-    Ω.toPerronOpen.boundary = Ω.boundary := rfl
 
 /--
 %%handwave
@@ -1593,59 +1074,6 @@ theorem compact_boundary (Ω : PerronDomain X) :
 /--
 %%handwave
 name:
-  Open relatively compact sets are Perron domains
-statement:
-  Every nonempty open set with compact closure determines a Perron domain by
-  taking that set as the carrier.
-proof:
-  This is just the data required in the definition of a Perron domain.
--/
-def ofOpenCompactClosure (U : Set X)
-    (hU_open : IsOpen U) (hU_nonempty : U.Nonempty)
-    (hU_compact_closure : IsCompact (closure U)) : PerronDomain X where
-  carrier := U
-  isOpen := hU_open
-  nonempty := hU_nonempty
-  compact_closure := hU_compact_closure
-
-/--
-%%handwave
-name:
-  Carrier of the Perron domain constructed from an open set
-statement:
-  The Perron domain constructed from a nonempty open set \(U\) with compact
-  closure has carrier \(U\).
-proof:
-  The construction stores \(U\) itself as the carrier.
--/
-@[simp]
-theorem ofOpenCompactClosure_carrier
-    (U : Set X) (hU_open : IsOpen U) (hU_nonempty : U.Nonempty)
-    (hU_compact_closure : IsCompact (closure U)) :
-    (ofOpenCompactClosure U hU_open hU_nonempty hU_compact_closure).carrier =
-      U := rfl
-
-/--
-%%handwave
-name:
-  Boundary of the Perron domain constructed from an open set
-statement:
-  The boundary of the Perron domain constructed from a nonempty open set \(U\)
-  with compact closure is \(\partial U\).
-proof:
-  Its carrier is \(U\), and the boundary of a Perron domain is defined as the
-  frontier of its carrier.
--/
-@[simp]
-theorem ofOpenCompactClosure_boundary
-    (U : Set X) (hU_open : IsOpen U) (hU_nonempty : U.Nonempty)
-    (hU_compact_closure : IsCompact (closure U)) :
-    (ofOpenCompactClosure U hU_open hU_nonempty hU_compact_closure).boundary =
-      frontier U := rfl
-
-/--
-%%handwave
-name:
   Smooth domains are Perron domains
 statement:
   Every smooth boundary domain is a Perron domain after forgetting smoothness
@@ -1656,35 +1084,6 @@ def ofSmoothBoundaryDomain (Ω : SmoothBoundaryDomain X) : PerronDomain X where
   isOpen := Ω.isOpen
   nonempty := Ω.nonempty
   compact_closure := Ω.compact_closure
-
-/--
-%%handwave
-name:
-  Forgetting boundary smoothness preserves the carrier
-statement:
-  The Perron domain obtained from a smooth boundary domain has the same carrier
-  as the original domain.
-proof:
-  The construction forgets the smooth-boundary data without changing the
-  underlying set.
--/
-@[simp]
-theorem ofSmoothBoundaryDomain_carrier (Ω : SmoothBoundaryDomain X) :
-    (ofSmoothBoundaryDomain Ω).carrier = Ω.carrier := rfl
-
-/--
-%%handwave
-name:
-  Forgetting boundary smoothness preserves the boundary
-statement:
-  The Perron domain obtained from a smooth boundary domain has the same
-  boundary as the original domain.
-proof:
-  Both boundaries are the frontier of their common carrier.
--/
-@[simp]
-theorem ofSmoothBoundaryDomain_boundary (Ω : SmoothBoundaryDomain X) :
-    (ofSmoothBoundaryDomain Ω).boundary = Ω.boundary := rfl
 
 end PerronDomain
 
@@ -1711,20 +1110,6 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
 instance : CoeFun (PerronBoundaryData Ω) (fun _ ↦ X → ℝ) where
   coe φ := φ.toFun
-
-/--
-%%handwave
-name:
-  Boundary data on the underlying Perron open region
-statement:
-  Boundary data on a Perron domain restricts to boundary data on its underlying
-  Perron open region.
--/
-def toPerronOpenBoundaryData (φ : PerronBoundaryData Ω) :
-    PerronOpenBoundaryData Ω.toPerronOpen where
-  toFun := φ.toFun
-  continuous_boundary := by
-    simpa [PerronDomain.toPerronOpen_boundary] using φ.continuous_boundary
 
 /--
 %%handwave
@@ -1835,29 +1220,6 @@ statement:
 def perronValueSet {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronDomain X) (φ : PerronBoundaryData Ω) (x : X) : Set ℝ :=
   {a : ℝ | ∃ v : X → ℝ, IsPerronAdmissible Ω φ v ∧ a = v x}
-
-/--
-%%handwave
-name:
-  Perron values are directed
-statement:
-  At a fixed point, any two Perron values are dominated by another Perron
-  value.
-proof:
-  Given two admissible subfunctions, take their pointwise maximum.  The
-  maximum is again admissible and its value at the point dominates both
-  original values.
--/
-theorem perronValueSet_directedOn
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) (φ : PerronBoundaryData Ω) (x : X) :
-    DirectedOn (· ≤ ·) (perronValueSet Ω φ x) := by
-  intro a ha b hb
-  rcases ha with ⟨u, hu, rfl⟩
-  rcases hb with ⟨v, hv, rfl⟩
-  refine ⟨(u x ⊔ v x), ?_, le_sup_left, le_sup_right⟩
-  exact ⟨fun y ↦ u y ⊔ v y, perronAdmissible_sup Ω φ hu hv, rfl⟩
 
 /--
 %%handwave
@@ -2085,139 +1447,6 @@ theorem le_solvesHarmonicDirichletProblem_of_boundary_le
   intro x hx
   linarith [hdiff_nonpositive x hx]
 
-/--
-%%handwave
-name:
-  Dirichlet solutions compare below harmonic barriers
-statement:
-  If a harmonic Dirichlet solution has boundary values at most those of a
-  harmonic comparison function, then the solution is at most that comparison
-  function throughout the domain.
-proof:
-  Apply the componentwise harmonic maximum principle to the difference between
-  the solution and the harmonic comparison function.  On the boundary, the
-  solution assumes the prescribed boundary data, so the assumed boundary
-  inequality makes this difference nonpositive.
--/
-theorem solvesHarmonicDirichletProblem_le_harmonic_of_boundary_le
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] {Ω : PerronDomain X} {φ : PerronBoundaryData Ω}
-    {u h : X → ℝ} (hu : SolvesHarmonicDirichletProblem Ω φ u)
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    (hharm : IsHarmonicOnSurface Ω.carrier h)
-    (hcont : ContinuousOn h (closure Ω.carrier))
-    (hboundary : ∀ x ∈ Ω.boundary, φ x ≤ h x) :
-    ∀ x ∈ Ω.carrier, u x ≤ h x := by
-  have hdiff_harmonic :
-      IsHarmonicOnSurface Ω.carrier (fun x ↦ u x - h x) :=
-    harmonicOnSurface_sub hu.1 hharm
-  have hdiff_continuous :
-      ContinuousOn (fun x ↦ u x - h x) (closure Ω.carrier) :=
-    hu.2.1.sub hcont
-  have hdiff_boundary : ∀ x ∈ frontier Ω.carrier, u x - h x ≤ 0 := by
-    intro x hx
-    have hx_boundary : x ∈ Ω.boundary := by
-      simpa [PerronDomain.boundary] using hx
-    have hux : u x = φ x := hu.2.2 x hx_boundary
-    linarith [hboundary x hx_boundary]
-  have hdiff_nonpositive :
-      ∀ x ∈ Ω.carrier, u x - h x ≤ 0 :=
-    harmonic_nonpositive_of_boundary_nonpositive_componentwise
-      hΩ_geometry hdiff_harmonic hdiff_continuous hdiff_boundary
-  intro x hx
-  linarith [hdiff_nonpositive x hx]
-
-/--
-%%handwave
-name:
-  Harmonic barriers compare below Dirichlet solutions
-statement:
-  If a harmonic comparison function is at most the boundary values of a
-  harmonic Dirichlet solution, then it is at most that solution throughout the
-  domain.
-proof:
-  Apply the componentwise harmonic maximum principle to the difference between
-  the comparison function and the solution.  The boundary inequality and the
-  boundary trace of the Dirichlet solution make this difference nonpositive
-  on the frontier.
--/
-theorem harmonic_le_solvesHarmonicDirichletProblem_of_boundary_le
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] {Ω : PerronDomain X} {φ : PerronBoundaryData Ω}
-    {u h : X → ℝ} (hu : SolvesHarmonicDirichletProblem Ω φ u)
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    (hharm : IsHarmonicOnSurface Ω.carrier h)
-    (hcont : ContinuousOn h (closure Ω.carrier))
-    (hboundary : ∀ x ∈ Ω.boundary, h x ≤ φ x) :
-    ∀ x ∈ Ω.carrier, h x ≤ u x := by
-  have hdiff_harmonic :
-      IsHarmonicOnSurface Ω.carrier (fun x ↦ h x - u x) :=
-    harmonicOnSurface_sub hharm hu.1
-  have hdiff_continuous :
-      ContinuousOn (fun x ↦ h x - u x) (closure Ω.carrier) :=
-    hcont.sub hu.2.1
-  have hdiff_boundary : ∀ x ∈ frontier Ω.carrier, h x - u x ≤ 0 := by
-    intro x hx
-    have hx_boundary : x ∈ Ω.boundary := by
-      simpa [PerronDomain.boundary] using hx
-    have hux : u x = φ x := hu.2.2 x hx_boundary
-    linarith [hboundary x hx_boundary]
-  have hdiff_nonpositive :
-      ∀ x ∈ Ω.carrier, h x - u x ≤ 0 :=
-    harmonic_nonpositive_of_boundary_nonpositive_componentwise
-      hΩ_geometry hdiff_harmonic hdiff_continuous hdiff_boundary
-  intro x hx
-  linarith [hdiff_nonpositive x hx]
-
-/--
-%%handwave
-name:
-  Harmonic Dirichlet solutions are unique on the domain
-statement:
-  Two harmonic Dirichlet solutions with the same boundary data agree on the
-  Perron domain.
-proof:
-  Compare the first solution below the second using the harmonic comparison
-  principle, and then compare the second below the first.  The two boundary
-  traces are the same prescribed boundary function.
--/
-theorem solvesHarmonicDirichletProblem_eqOn_of_same_boundary
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] {Ω : PerronDomain X} {φ : PerronBoundaryData Ω}
-    {u v : X → ℝ}
-    (hu : SolvesHarmonicDirichletProblem Ω φ u)
-    (hv : SolvesHarmonicDirichletProblem Ω φ v)
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier) :
-    Set.EqOn u v Ω.carrier := by
-  have huv : ∀ x ∈ Ω.carrier, u x ≤ v x :=
-    solvesHarmonicDirichletProblem_le_harmonic_of_boundary_le
-      hu hΩ_geometry hv.1 hv.2.1 (by
-        intro x hx
-        have hvx : v x = φ x := hv.2.2 x hx
-        linarith)
-  have hvu : ∀ x ∈ Ω.carrier, v x ≤ u x :=
-    solvesHarmonicDirichletProblem_le_harmonic_of_boundary_le
-      hv hΩ_geometry hu.1 hu.2.1 (by
-        intro x hx
-        have hux : u x = φ x := hu.2.2 x hx
-        linarith)
-  intro x hx
-  exact le_antisymm (huv x hx) (hvu x hx)
-
-/--
-%%handwave
-name:
-  Harmonic Dirichlet solution
-statement:
-  A harmonic Dirichlet solution is a function satisfying the harmonic
-  Dirichlet problem on the Perron domain.
--/
-structure HarmonicDirichletSolution {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronDomain X) (φ : PerronBoundaryData Ω) where
-  /-- The solution function. -/
-  potential : X → ℝ
-  /-- The solution satisfies the harmonic Dirichlet problem. -/
-  solves : SolvesHarmonicDirichletProblem Ω φ potential
 
 /--
 %%handwave
@@ -2256,30 +1485,6 @@ def HasLocalPerronBarrierAt {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
           IsSuperharmonicOnSurface (Ω.carrier ∩ N) b ∧
             b p = 0 ∧
               ∀ x ∈ closure Ω.carrier ∩ N, x ≠ p → 0 < b x
-
-/--
-%%handwave
-name:
-  Global barriers are local barriers
-statement:
-  Every Perron barrier at a boundary point is also a local Perron barrier at
-  that point.
-proof:
-  Take the local neighborhood to be the whole surface and restrict the
-  continuity, superharmonicity, zero, and positivity properties of the
-  global barrier.
--/
-theorem hasLocalPerronBarrierAt_of_hasPerronBarrierAt
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronDomain X) {p : X}
-    (hp : HasPerronBarrierAt Ω p) :
-    HasLocalPerronBarrierAt Ω p := by
-  rcases hp with ⟨hp_boundary, b, hb_cont, hb_super, hb_zero, hb_pos⟩
-  refine ⟨hp_boundary, Set.univ, isOpen_univ, trivial, b, ?_, ?_, hb_zero, ?_⟩
-  · simpa using hb_cont
-  · simpa using hb_super
-  · intro x hx hxp
-    exact hb_pos x (by simpa using hx) hxp
 
 /--
 %%handwave
@@ -2581,24 +1786,6 @@ def PerronRegularBoundary {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : PerronDomain X) : Prop :=
   HasComponentwiseMaximumPrincipleGeometry Ω.carrier ∧
     ∀ p ∈ Ω.boundary, HasPerronBarrierAt Ω p
-
-/--
-%%handwave
-name:
-  Regular boundaries have local barriers
-statement:
-  Every boundary point of a Perron-regular domain admits a local Perron
-  barrier.
-proof:
-  Regularity supplies a global Perron barrier at each boundary point, and
-  every global barrier is a local one.
--/
-theorem perronRegularBoundary_hasLocalBarriers
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronDomain X) (hΩreg : PerronRegularBoundary Ω) :
-    ∀ p ∈ Ω.boundary, HasLocalPerronBarrierAt Ω p := by
-  intro p hp
-  exact hasLocalPerronBarrierAt_of_hasPerronBarrierAt Ω (hΩreg.2 p hp)
 
 /--
 %%handwave
@@ -3219,43 +2406,6 @@ theorem harmonic_replacement_dominates_original
 /--
 %%handwave
 name:
-  Harmonic replacement dominates on the whole surface
-statement:
-  If a subharmonic function is harmonically replaced on a compact coordinate
-  domain, then the original function is bounded above by its harmonic
-  replacement inside that domain.
-proof:
-  Apply the harmonic comparison principle for the subharmonic function on the
-  replacement domain itself.  The boundary inequality is equality because the
-  replacement has the original function as its boundary value.
--/
-theorem harmonic_replacement_dominates_original_on_univ
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (V : PerronDomain X)
-    (hV_preconnected : IsPreconnected V.carrier)
-    (hV_frontier_nonempty : (frontier V.carrier).Nonempty)
-    {v h : X → ℝ}
-    (hv : IsSubharmonicOnSurface (Set.univ : Set X) v)
-    (hh : IsHarmonicReplacement V v h) :
-    ∀ x ∈ V.carrier, v x ≤ h x := by
-  rcases hv with ⟨_, hcomparison⟩
-  rcases hh with ⟨hharm, hcont, hboundary⟩
-  exact hcomparison V.carrier V.isOpen hV_preconnected hV_frontier_nonempty
-    (by
-      intro x _hx
-      trivial)
-    V.compact_closure
-    (by
-      intro x _hx
-      trivial)
-    h hharm hcont
-    (by
-      intro x hx
-      rw [hboundary x (by simpa [PerronDomain.boundary] using hx)])
-
-/--
-%%handwave
-name:
   Harmonic replacements are monotone in their boundary data
 statement:
   If two harmonic replacements on the same connected replacement domain have
@@ -3558,44 +2708,6 @@ theorem harmonicReplacement_overlap_frontier_le
         rw [hW_open.frontier_eq]
         exact ⟨hxW_closure, hxW⟩
       exact horig_frontier x hxW_frontier
-
-/--
-%%handwave
-name:
-  The overlap is open
-statement:
-  The overlap of an open test domain with a replacement domain is open.
-proof:
-  It is the intersection of two open sets.
--/
-theorem harmonicReplacement_overlap_isOpen
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (V : PerronDomain X) {W : Set X}
-    (hW_open : IsOpen W) :
-    IsOpen (W ∩ V.carrier) := by
-  exact hW_open.inter V.isOpen
-
-/--
-%%handwave
-name:
-  The overlap has compact closure
-statement:
-  If the test domain has compact closure, then its overlap with the
-  replacement domain has compact closure.
-proof:
-  The closure of the overlap is contained in the intersection of the two
-  closures.  This intersection is a closed subset of the compact closure of the
-  test domain.
--/
-theorem harmonicReplacement_overlap_compact_closure
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (V : PerronDomain X) {W : Set X}
-    (hW_compact : IsCompact (closure W)) :
-    IsCompact (closure (W ∩ V.carrier)) := by
-  have hparent : IsCompact (closure W ∩ closure V.carrier) :=
-    hW_compact.inter_right isClosed_closure
-  exact hparent.of_isClosed_subset isClosed_closure
-    (closure_inter_subset_inter_closure W V.carrier)
 
 /--
 %%handwave
@@ -4736,110 +3848,6 @@ theorem subharmonic_le_constant_of_boundary_le
 /--
 %%handwave
 name:
-  Harmonic functions obey upper boundary bounds
-statement:
-  On a Perron domain with the componentwise maximum-principle geometry, a
-  harmonic function continuous on the closed domain and bounded above by
-  \(M\) on the boundary is bounded above by \(M\) throughout the domain.
-proof:
-  A harmonic function is subharmonic, so this is the subharmonic maximum
-  principle applied to the same boundary bound.
--/
-theorem harmonic_le_constant_of_boundary_le
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) {u : X → ℝ} {M : ℝ}
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    (hu_continuous : ContinuousOn u (closure Ω.carrier))
-    (hu_harmonic : IsHarmonicOnSurface Ω.carrier u)
-    (hbd : ∀ x ∈ Ω.boundary, u x ≤ M) :
-    ∀ x ∈ Ω.carrier, u x ≤ M := by
-  exact subharmonic_le_constant_of_boundary_le Ω hΩ_geometry
-    hu_continuous
-    (harmonicOnSurface_subharmonic Ω.isOpen hu_harmonic)
-    hbd
-
-/--
-%%handwave
-name:
-  Harmonic functions obey lower boundary bounds
-statement:
-  On a Perron domain with the componentwise maximum-principle geometry, a
-  harmonic function continuous on the closed domain and bounded below by
-  \(m\) on the boundary is bounded below by \(m\) throughout the domain.
-proof:
-  Apply the upper-bound maximum principle to the harmonic function \(m-u\),
-  whose boundary values are nonpositive.
--/
-theorem constant_le_harmonic_of_boundary_le
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) {u : X → ℝ} {m : ℝ}
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    (hu_continuous : ContinuousOn u (closure Ω.carrier))
-    (hu_harmonic : IsHarmonicOnSurface Ω.carrier u)
-    (hbd : ∀ x ∈ Ω.boundary, m ≤ u x) :
-    ∀ x ∈ Ω.carrier, m ≤ u x := by
-  have hdiff_continuous :
-      ContinuousOn (fun x ↦ m - u x) (closure Ω.carrier) :=
-    continuousOn_const.sub hu_continuous
-  have hdiff_harmonic :
-      IsHarmonicOnSurface Ω.carrier (fun x ↦ m - u x) :=
-    harmonicOnSurface_sub (harmonicOnSurface_const Ω.carrier m) hu_harmonic
-  have hdiff_boundary :
-      ∀ x ∈ Ω.boundary, m - u x ≤ 0 := by
-    intro x hx
-    linarith [hbd x hx]
-  have hdiff_nonpositive :
-      ∀ x ∈ Ω.carrier, m - u x ≤ 0 :=
-    harmonic_le_constant_of_boundary_le Ω hΩ_geometry
-      hdiff_continuous hdiff_harmonic hdiff_boundary
-  intro x hx
-  linarith [hdiff_nonpositive x hx]
-
-/--
-%%handwave
-name:
-  Harmonic functions compare from boundary inequalities
-statement:
-  On a Perron domain with the componentwise maximum-principle geometry, two
-  harmonic functions continuous on the closed domain compare throughout the
-  domain if they compare on the boundary.
-proof:
-  Apply the upper-bound maximum principle to the harmonic difference
-  \(u-v\), whose boundary values are nonpositive.
--/
-theorem harmonic_le_harmonic_of_boundary_le
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) {u v : X → ℝ}
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    (hu_continuous : ContinuousOn u (closure Ω.carrier))
-    (hu_harmonic : IsHarmonicOnSurface Ω.carrier u)
-    (hv_continuous : ContinuousOn v (closure Ω.carrier))
-    (hv_harmonic : IsHarmonicOnSurface Ω.carrier v)
-    (hbd : ∀ x ∈ Ω.boundary, u x ≤ v x) :
-    ∀ x ∈ Ω.carrier, u x ≤ v x := by
-  have hdiff_continuous :
-      ContinuousOn (fun x ↦ u x - v x) (closure Ω.carrier) :=
-    hu_continuous.sub hv_continuous
-  have hdiff_harmonic :
-      IsHarmonicOnSurface Ω.carrier (fun x ↦ u x - v x) :=
-    harmonicOnSurface_sub hu_harmonic hv_harmonic
-  have hdiff_boundary :
-      ∀ x ∈ Ω.boundary, u x - v x ≤ 0 := by
-    intro x hx
-    linarith [hbd x hx]
-  have hdiff_nonpositive :
-      ∀ x ∈ Ω.carrier, u x - v x ≤ 0 :=
-    harmonic_le_constant_of_boundary_le Ω hΩ_geometry
-      hdiff_continuous hdiff_harmonic hdiff_boundary
-  intro x hx
-  linarith [hdiff_nonpositive x hx]
-
-/--
-%%handwave
-name:
   Perron-admissible functions obey the boundary maximum principle
 statement:
   If a constant bounds the prescribed boundary data from above, then every
@@ -4912,32 +3920,6 @@ theorem perron_family_locally_bounded_above
   rcases PerronBoundaryData.exists_upper_bound φ with ⟨M, hM⟩
   exact perron_family_locally_bounded_above_of_boundary_upper_bound Ω φ
     hΩreg.1 hM
-
-/--
-%%handwave
-name:
-  Explicit boundary bounds make Perron families nonempty and locally bounded
-statement:
-  If the boundary data has explicit lower and upper bounds, then on a regular
-  Perron domain the Perron family is nonempty and locally bounded above.
-proof:
-  The lower bound gives an admissible constant subfunction, while the upper
-  bound gives a constant harmonic majorant by the boundary maximum principle.
--/
-theorem perron_family_nonempty_and_locally_bounded_of_boundary_bounds
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) (hΩreg : PerronRegularBoundary Ω)
-    (φ : PerronBoundaryData Ω)
-    {m M : ℝ}
-    (hm : ∀ x ∈ Ω.boundary, m ≤ φ x)
-    (hM : ∀ x ∈ Ω.boundary, φ x ≤ M) :
-    (∃ v : X → ℝ, IsPerronAdmissible Ω φ v) ∧
-      ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-        ∃ M : ℝ, ∀ v : X → ℝ, IsPerronAdmissible Ω φ v → ∀ x ∈ K, v x ≤ M := by
-  exact ⟨
-    perron_family_nonempty_of_boundary_lower_bound Ω φ hm,
-    perron_family_locally_bounded_above_of_boundary_upper_bound Ω φ hΩreg.1 hM⟩
 
 /--
 %%handwave
@@ -5073,61 +4055,6 @@ theorem perronAdmissible_le_perronEnvelope_of_bddAbove
 /--
 %%handwave
 name:
-  Boundary upper bounds bound the Perron envelope
-statement:
-  If a constant bounds the boundary data from above, then it bounds the Perron
-  envelope throughout the Perron domain.
-proof:
-  Every Perron-admissible subfunction is bounded by the constant by
-  [the boundary maximum principle](lean:JJMath.Uniformization.perron_admissible_le_boundary_upper_bound),
-  and then the supremum is bounded by the same constant.
--/
-theorem perronEnvelope_le_boundary_upper_bound
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) (φ : PerronBoundaryData Ω)
-    (hΩ_geometry : HasComponentwiseMaximumPrincipleGeometry Ω.carrier)
-    {M : ℝ} (hM : ∀ x ∈ Ω.boundary, φ x ≤ M) :
-    ∀ x ∈ Ω.carrier, perronEnvelope Ω φ x ≤ M := by
-  intro x hx
-  exact perronEnvelope_le_of_family_bound Ω φ
-    (perronValueSet_nonempty Ω φ x)
-    (by
-      intro v hv
-      exact perron_admissible_le_boundary_upper_bound Ω φ hΩ_geometry hM hv x hx)
-
-/--
-%%handwave
-name:
-  Perron-admissible functions lie below the envelope
-statement:
-  On a regular Perron domain, every Perron-admissible subfunction is bounded
-  above by the Perron envelope at each interior point.
-proof:
-  Choose a constant upper bound for the boundary data.  The boundary maximum
-  principle bounds all admissible subfunctions by that constant, so the
-  Perron value set is bounded above.  Then each admissible value lies below
-  the supremum.
--/
-theorem perronAdmissible_le_perronEnvelope
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) (hΩreg : PerronRegularBoundary Ω)
-    (φ : PerronBoundaryData Ω) {v : X → ℝ}
-    (hv : IsPerronAdmissible Ω φ v) :
-    ∀ x ∈ Ω.carrier, v x ≤ perronEnvelope Ω φ x := by
-  rcases PerronBoundaryData.exists_upper_bound φ with ⟨M, hM⟩
-  intro x hx
-  have hbdd : BddAbove (perronValueSet Ω φ x) :=
-    perronValueSet_bddAbove_of_family_bound Ω φ (x := x) (M := M)
-      (by
-        intro w hw
-        exact perron_admissible_le_boundary_upper_bound Ω φ hΩreg.1 hM hw x hx)
-  exact perronAdmissible_le_perronEnvelope_of_bddAbove Ω φ hv hbdd
-
-/--
-%%handwave
-name:
   Locally bounded Perron families lie below the envelope
 statement:
   If the Perron family is locally bounded above in the domain, then every
@@ -5258,30 +4185,6 @@ theorem exists_perronAdmissible_envelope_sub_lt
 /--
 %%handwave
 name:
-  Admissible subfunctions approximate the envelope within epsilon from an explicit family
-statement:
-  If the Perron family is explicitly nonempty and locally bounded above, then
-  at each interior point and for every positive epsilon, some admissible
-  subfunction has value within epsilon of the envelope from below.
-proof:
-  [For a nonempty locally bounded Perron family, every number strictly below the envelope is exceeded by some admissible subfunction](lean:JJMath.Uniformization.exists_perronAdmissible_gt_of_lt_perronEnvelope_of_family_nonempty). Take that number to be $P_\Omega\varphi(x)-\varepsilon$.
--/
-theorem exists_perronAdmissible_envelope_sub_lt_of_family_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronDomain X) (φ : PerronBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronAdmissible Ω φ v)
-    (hfamily_locally_bounded :
-      ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-        ∃ M : ℝ, ∀ v : X → ℝ, IsPerronAdmissible Ω φ v → ∀ x ∈ K, v x ≤ M)
-    {x : X} (hxΩ : x ∈ Ω.carrier) {ε : ℝ} (hε : 0 < ε) :
-    ∃ v : X → ℝ,
-      IsPerronAdmissible Ω φ v ∧ perronEnvelope Ω φ x - ε < v x := by
-  exact exists_perronAdmissible_gt_of_lt_perronEnvelope_of_family_nonempty
-    Ω φ hfamily_nonempty hfamily_locally_bounded hxΩ (by linarith)
-
-/--
-%%handwave
-name:
   Perron envelope is lower semicontinuous
 statement:
   If the Perron family is locally bounded above in the domain, then the
@@ -5354,66 +4257,6 @@ theorem perronEnvelope_locally_bounded_above_of_family_locally_bounded
       ∃ M : ℝ, ∀ x ∈ K, perronEnvelope Ω φ x ≤ M := by
   intro K hK hKΩ
   rcases hfamily_locally_bounded K hK hKΩ with ⟨M, hM⟩
-  refine ⟨M, ?_⟩
-  intro x hxK
-  exact perronEnvelope_le_of_family_bound Ω φ
-    (perronValueSet_nonempty Ω φ x)
-    (by
-      intro v hv
-      exact hM v hv x hxK)
-
-/--
-%%handwave
-name:
-  Nonempty locally bounded Perron families give locally bounded envelopes
-statement:
-  If the Perron family is explicitly nonempty and locally bounded above in the
-  domain, then the Perron envelope is locally bounded above in the domain.
-proof:
-  The common bound for all admissible subfunctions on a compact set is a
-  pointwise bound for each Perron value set, hence also for its supremum.
--/
-theorem perronEnvelope_locally_bounded_above_of_family_nonempty_of_family_locally_bounded
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (Ω : PerronDomain X) (φ : PerronBoundaryData Ω)
-    (hfamily_nonempty : ∃ v : X → ℝ, IsPerronAdmissible Ω φ v)
-    (hfamily_locally_bounded :
-      ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-        ∃ M : ℝ, ∀ v : X → ℝ, IsPerronAdmissible Ω φ v → ∀ x ∈ K, v x ≤ M) :
-    ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-      ∃ M : ℝ, ∀ x ∈ K, perronEnvelope Ω φ x ≤ M := by
-  intro K hK hKΩ
-  rcases hfamily_locally_bounded K hK hKΩ with ⟨M, hM⟩
-  refine ⟨M, ?_⟩
-  intro x hxK
-  exact perronEnvelope_le_of_family_bound Ω φ
-    (perronValueSet_nonempty_of_family_nonempty Ω φ hfamily_nonempty x)
-    (by
-      intro v hv
-      exact hM v hv x hxK)
-
-/--
-%%handwave
-name:
-  The Perron envelope is locally bounded above
-statement:
-  On a regular Perron domain, the Perron envelope is bounded above on every
-  compact subset of the domain.
-proof:
-  Local boundedness of the Perron family gives a common bound for all
-  admissible values on the compact set.  Taking the supremum preserves that
-  bound pointwise.
--/
-theorem perron_envelope_locally_bounded_above
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (Ω : PerronDomain X) (hΩreg : PerronRegularBoundary Ω)
-    (φ : PerronBoundaryData Ω) :
-    ∀ K : Set X, IsCompact K → K ⊆ Ω.carrier →
-      ∃ M : ℝ, ∀ x ∈ K, perronEnvelope Ω φ x ≤ M := by
-  intro K hK hKΩ
-  rcases perron_family_locally_bounded_above Ω hΩreg φ K hK hKΩ with
-    ⟨M, hM⟩
   refine ⟨M, ?_⟩
   intro x hxK
   exact perronEnvelope_le_of_family_bound Ω φ
@@ -5543,37 +4386,6 @@ theorem exists_coordinate_perron_disk_compactly_contained
     refine ⟨e.symm z, ?_⟩
     exact (himage.frontier.symm_apply_mem_iff hz_target).2 hz_frontier
   exact ⟨V, hV_mem, hV_coord, hVΩ, hV_preconnected, hV_frontier_nonempty⟩
-
-/--
-%%handwave
-name:
-  Surface points lie in compact coordinate Perron disks
-statement:
-  Every point of a Riemann surface lies in a compact coordinate Perron disk.
-proof:
-  First choose a relatively compact open neighborhood of the point.  Then use
-  the compactly contained coordinate-disk construction inside that
-  neighborhood.
--/
-theorem exists_coordinate_perron_disk_mem
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] (x : X) :
-    ∃ V : PerronDomain X,
-      x ∈ V.carrier ∧
-        IsCoordinatePerronDisk V ∧
-          IsPreconnected V.carrier ∧
-            (frontier V.carrier).Nonempty := by
-  rcases exists_surface_open_nhds_isCompact_closure_subset
-      (X := X) isOpen_univ (show x ∈ (Set.univ : Set X) from trivial) with
-    ⟨Ωcarrier, hΩopen, hxΩ, _hΩclosure_subset, hΩcompact⟩
-  let Ω : PerronDomain X :=
-    { carrier := Ωcarrier
-      isOpen := hΩopen
-      nonempty := ⟨x, hxΩ⟩
-      compact_closure := hΩcompact }
-  rcases exists_coordinate_perron_disk_compactly_contained Ω hxΩ with
-    ⟨V, hxV, hV_coord, _hVΩ, hV_preconnected, hV_frontier_nonempty⟩
-  exact ⟨V, hxV, hV_coord, hV_preconnected, hV_frontier_nonempty⟩
 
 /--
 %%handwave
@@ -5996,95 +4808,6 @@ theorem directed_harmonic_minorants_pointwise_sSup
 /--
 %%handwave
 name:
-  Finite directed domination in a harmonic minorant family
-statement:
-  Every finite subfamily of a nonempty directed family of harmonic minorants is
-  dominated on the region by a single member of the family.
-proof:
-  Induct on the finite subfamily.  The empty family is dominated by any
-  member.  For the induction step, use directedness to find a family member
-  dominating both the new function and the previously constructed upper
-  bound.
--/
-theorem directed_harmonic_minorants_finset_upper_bound
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (V : PerronDomain X) (H : Set (X → ℝ))
-    (hH_nonempty : H.Nonempty)
-    (hH_directed :
-      ∀ h₁ ∈ H, ∀ h₂ ∈ H,
-        ∃ h₃ ∈ H, ∀ x ∈ V.carrier, h₁ x ≤ h₃ x ∧ h₂ x ≤ h₃ x)
-    (F : Finset (X → ℝ)) (hF : ∀ h, h ∈ F → h ∈ H) :
-    ∃ h ∈ H, ∀ g ∈ F, ∀ x ∈ V.carrier, g x ≤ h x := by
-  classical
-  induction F using Finset.induction_on with
-  | empty =>
-      rcases hH_nonempty with ⟨h, hh⟩
-      exact ⟨h, hh, by simp⟩
-  | insert f F hf_not_mem ih =>
-      have hfH : f ∈ H := hF f (Finset.mem_insert_self f F)
-      have hFH : ∀ h, h ∈ F → h ∈ H := by
-        intro h hh
-        exact hF h (Finset.mem_insert_of_mem hh)
-      rcases ih hFH with ⟨hOld, hhOld, hOld_dom⟩
-      rcases hH_directed f hfH hOld hhOld with ⟨hTop, hhTop, hTop_dom⟩
-      refine ⟨hTop, hhTop, ?_⟩
-      intro g hg x hxV
-      rw [Finset.mem_insert] at hg
-      rcases hg with rfl | hgF
-      · exact (hTop_dom x hxV).1
-      · exact (hOld_dom g hgF x hxV).trans ((hTop_dom x hxV).2)
-
-/--
-%%handwave
-name:
-  Directed harmonic minorants approximate on finite sets
-statement:
-  If a directed harmonic minorant family approximates \(P\) from below at each
-  point, then for every finite set of points and every positive epsilon there
-  is one family member that is within epsilon of \(P\) at all those points.
-proof:
-  Choose a separate approximating minorant at each point of the finite set.
-  Then use
-  [finite directed domination](lean:JJMath.Uniformization.directed_harmonic_minorants_finset_upper_bound)
-  to dominate all of these choices by one member of the family.
--/
-theorem directed_harmonic_minorants_approximate_on_finset
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (V : PerronDomain X) (P : X → ℝ) (H : Set (X → ℝ))
-    (hH_nonempty : H.Nonempty)
-    (hH_directed :
-      ∀ h₁ ∈ H, ∀ h₂ ∈ H,
-        ∃ h₃ ∈ H, ∀ x ∈ V.carrier, h₁ x ≤ h₃ x ∧ h₂ x ≤ h₃ x)
-    (hH_cofinal :
-      ∀ x ∈ V.carrier, ∀ ε : ℝ, 0 < ε →
-        ∃ h ∈ H, P x - ε < h x)
-    (F : Finset X) (hF : ∀ x, x ∈ F → x ∈ V.carrier)
-    {ε : ℝ} (hε : 0 < ε) :
-    ∃ h ∈ H, ∀ x ∈ F, P x - ε < h x := by
-  classical
-  have hchoose :
-      ∀ y : {x // x ∈ F}, ∃ h ∈ H, P y.1 - ε < h y.1 := by
-    intro y
-    exact hH_cofinal y.1 (hF y.1 y.2) ε hε
-  choose h hhH hhApprox using hchoose
-  let G : Finset (X → ℝ) := F.attach.image (fun y : {x // x ∈ F} ↦ h y)
-  have hG : ∀ g, g ∈ G → g ∈ H := by
-    intro g hg
-    rcases Finset.mem_image.mp hg with ⟨y, _hy, rfl⟩
-    exact hhH y
-  rcases directed_harmonic_minorants_finset_upper_bound V H hH_nonempty
-      hH_directed G hG with
-    ⟨hTop, hhTop, hTop_dom⟩
-  refine ⟨hTop, hhTop, ?_⟩
-  intro x hxF
-  let y : {x // x ∈ F} := ⟨x, hxF⟩
-  have hyG : h y ∈ G := by
-    exact Finset.mem_image.mpr ⟨y, by simp, rfl⟩
-  exact (hhApprox y).trans_le (hTop_dom (h y) hyG x (hF x hxF))
-
-/--
-%%handwave
-name:
   Harmonic minorant family as a directed index type
 statement:
   The members of a harmonic minorant family can be used as an index type,
@@ -6234,35 +4957,6 @@ theorem harmonicMinorantIndex_tendsto_atTop_pointwise_sSup
     rw [hrange]
     exact hvalue_lub
   exact tendsto_atTop_isLUB hmono hrange_lub
-
-/--
-%%handwave
-name:
-  Real parts of holomorphic functions are harmonic
-statement:
-  If a real-valued function on an open subset of the complex plane is the real
-  part of a holomorphic function there, then it is harmonic there.
-proof:
-  At each point, the holomorphic function is analytic.  The real part of an
-  analytic function is harmonic, and equality on the open set gives equality
-  in a neighborhood of the point.
--/
-theorem harmonicOnNhd_of_exists_analyticOnNhd_re_eq
-    {U : Set ℂ} {f : ℂ → ℝ}
-    (hU_open : IsOpen U)
-    (h : ∃ G : ℂ → ℂ,
-      AnalyticOnNhd ℂ G U ∧ U.EqOn (fun z : ℂ ↦ (G z).re) f) :
-    InnerProductSpace.HarmonicOnNhd f U := by
-  rcases h with ⟨G, hG, hGre⟩
-  intro z hz
-  have hGz : AnalyticAt ℂ G z := hG z hz
-  have hre_harmonic :
-      InnerProductSpace.HarmonicAt (fun w : ℂ ↦ (G w).re) z :=
-    hGz.harmonicAt_re
-  have heq : (fun w : ℂ ↦ (G w).re) =ᶠ[𝓝 z] f := by
-    filter_upwards [hU_open.mem_nhds hz] with w hw
-    exact hGre hw
-  exact (InnerProductSpace.harmonicAt_congr_nhds heq).1 hre_harmonic
 
 /--
 %%handwave
@@ -6445,31 +5139,6 @@ theorem harmonicOnNhd_of_tendstoLocallyUniformlyOn_ball_by_poisson
 /--
 %%handwave
 name:
-  Harmonic limits have holomorphic representatives
-statement:
-  On a disk, if harmonic functions converge locally uniformly, then the limit
-  is the real part of a holomorphic function on that disk.
-proof:
-  First prove harmonicity of the limit using the Poisson representation and
-  dominated convergence.  Then apply Mathlib's theorem that every harmonic
-  function on a disk is locally the real part of a holomorphic function.
--/
-theorem harmonic_conjugates_normalized_tendstoLocallyUniformlyOn
-    {ι : Type} {l : Filter ι} [l.NeBot]
-    {c : ℂ} {R : ℝ} (hR : 0 < R)
-    {F : ι → ℂ → ℝ} {f : ℂ → ℝ}
-    (hF : ∀ᶠ i in l,
-      InnerProductSpace.HarmonicOnNhd (F i) (Metric.ball c R))
-    (hconv : TendstoLocallyUniformlyOn F f l (Metric.ball c R)) :
-    ∃ G : ℂ → ℂ,
-      AnalyticOnNhd ℂ G (Metric.ball c R) ∧
-        (Metric.ball c R).EqOn (fun z : ℂ ↦ (G z).re) f := by
-  exact (harmonicOnNhd_of_tendstoLocallyUniformlyOn_ball_by_poisson
-    hR hF hconv).exists_analyticOnNhd_ball_re_eq
-
-/--
-%%handwave
-name:
   Disk harmonic functions are closed under locally uniform limits
 statement:
   On a disk, a locally uniform limit of harmonic functions is harmonic.
@@ -6567,33 +5236,6 @@ theorem harmonicOnSurface_of_tendstoLocallyUniformlyOn
   have hopen : IsOpen (e.target ∩ e.symm ⁻¹' U) := by
     exact e.isOpen_inter_preimage_symm _hU_open
   exact harmonicOnNhd_of_tendstoLocallyUniformlyOn hopen hcoord_event hcoord_conv
-
-/--
-%%handwave
-name:
-  Surface harmonic functions are closed under compact-local uniform limits
-statement:
-  On an open surface region, if harmonic functions converge uniformly on
-  every compact subset of the region, then their limit is harmonic.
-proof:
-  Uniform convergence on every compact subset is equivalent, on open subsets
-  of locally compact spaces, to locally uniform convergence.  Apply the
-  theorem that locally uniform limits of surface-harmonic functions are
-  surface-harmonic.
--/
-theorem harmonicOnSurface_of_forall_compact_tendstoUniformlyOn
-    {X : Type} [TopologicalSpace X] [LocallyCompactSpace X] [ChartedSpace ℂ X]
-    {ι : Type} {l : Filter ι} [l.NeBot]
-    {U : Set X} {F : ι → X → ℝ} {f : X → ℝ}
-    (hU_open : IsOpen U)
-    (hF : ∀ᶠ i in l, IsHarmonicOnSurface U (F i))
-    (hconv :
-      ∀ K : Set X, K ⊆ U → IsCompact K →
-        TendstoUniformlyOn F f l K) :
-    IsHarmonicOnSurface U f := by
-  have hconv_local : TendstoLocallyUniformlyOn F f l U :=
-    (tendstoLocallyUniformlyOn_iff_forall_isCompact hU_open).mpr hconv
-  exact harmonicOnSurface_of_tendstoLocallyUniformlyOn hU_open hF hconv_local
 
 /--
 %%handwave
@@ -7207,289 +5849,6 @@ theorem local_harnack_control_for_nonnegative_harmonic_function
 /--
 %%handwave
 name:
-  Pairwise local Harnack control for nonnegative harmonic functions
-statement:
-  Near every point of a surface region, the values of any nonnegative
-  harmonic function at any two nearby points are comparable by a fixed
-  constant.
-proof:
-  Choose a coordinate disk around the point.  A smaller quarter-radius disk
-  has the property that each of its points is itself the center of a
-  half-radius disk still contained in the original one.  Applying the
-  Euclidean Harnack estimate once from a nearby point to the original center
-  and once from the original center to another nearby point gives the
-  pairwise comparison.
--/
-theorem local_harnack_pair_control_for_nonnegative_harmonic_function
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    {U : Set X} (hU_open : IsOpen U)
-    {x : X} (hxU : x ∈ U) :
-    ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-      ∃ C : ℝ, 0 < C ∧
-        ∀ {u : X → ℝ},
-          IsHarmonicOnSurface U u →
-            (∀ y ∈ U, 0 ≤ u y) →
-              ∀ a ∈ N, ∀ b ∈ N, u a ≤ C * u b := by
-  let e : OpenPartialHomeomorph X ℂ := chartAt ℂ x
-  let z : ℂ := e x
-  have hxsource : x ∈ e.source := mem_chart_source ℂ x
-  have he : e ∈ atlas ℂ X := chart_mem_atlas ℂ x
-  let S : Set ℂ := e.target ∩ e.symm ⁻¹' U
-  have hS_open : IsOpen S := by
-    simpa [S] using e.isOpen_inter_preimage_symm hU_open
-  have hzS : z ∈ S := by
-    refine ⟨e.map_source hxsource, ?_⟩
-    simpa [z, e.left_inv hxsource] using hxU
-  rcases Metric.mem_nhds_iff.mp (hS_open.mem_nhds hzS) with
-    ⟨R, hR_pos, hR_subset⟩
-  let r : ℝ := R / 2
-  have hr : 0 < r := by
-    positivity
-  have hr_lt_R : r < R := by
-    dsimp [r]
-    linarith
-  have hclosedS : Metric.closedBall z r ⊆ S :=
-    (Metric.closedBall_subset_ball (x := z) hr_lt_R).trans hR_subset
-  let N : Set X := e.source ∩ e ⁻¹' Metric.ball z (r / 4)
-  have hN_nhds : N ∈ 𝓝 x := by
-    have hsource : e.source ∈ 𝓝 x := e.open_source.mem_nhds hxsource
-    have hball : Metric.ball z (r / 4) ∈ 𝓝 (e x) := by
-      simpa [z] using Metric.ball_mem_nhds (x := z) (by positivity : 0 < r / 4)
-    have hpre : e ⁻¹' Metric.ball z (r / 4) ∈ 𝓝 x :=
-      e.continuousAt hxsource hball
-    exact Filter.inter_mem hsource hpre
-  have hsmall_closed : Metric.ball z (r / 4) ⊆ Metric.closedBall z r := by
-    exact Metric.ball_subset_closedBall.trans
-      (Metric.closedBall_subset_closedBall (x := z) (by
-        dsimp [r]
-        linarith : r / 4 ≤ r))
-  have hN_subset : N ⊆ U := by
-    intro y hy
-    have hysource : y ∈ e.source := hy.1
-    have hyS : e y ∈ S := hclosedS (hsmall_closed hy.2)
-    simpa [e.left_inv hysource] using hyS.2
-  refine ⟨N, hN_nhds, hN_subset, 9, by norm_num, ?_⟩
-  intro u hu_harm hu_nonneg a haN b hbN
-  have hasource : a ∈ e.source := haN.1
-  have hbsource : b ∈ e.source := hbN.1
-  have hcoord :
-      InnerProductSpace.HarmonicOnNhd
-        (fun w : ℂ ↦ u (e.symm w)) S := by
-    simpa [S] using hu_harm e he
-  have hcoord_small :
-      InnerProductSpace.HarmonicOnNhd
-        (fun w : ℂ ↦ u (e.symm w)) (Metric.closedBall z r) :=
-    hcoord.mono hclosedS
-  have hcoord_nonneg :
-      ∀ w ∈ Metric.closedBall z r, 0 ≤ u (e.symm w) := by
-    intro w hw
-    have hwS : w ∈ S := hclosedS hw
-    exact hu_nonneg (e.symm w) hwS.2
-  have ha_half : e a ∈ Metric.ball z (r / 2) := by
-    exact Metric.ball_subset_ball (by linarith : r / 4 ≤ r / 2) haN.2
-  have ha_to_center :
-      u a ≤ 3 * u x := by
-    have hchart :=
-      harmonicOnNhd_nonnegative_le_three_mul_center_of_mem_ball_half
-        (c := z) (r := r) hr
-        (u := fun w : ℂ ↦ u (e.symm w))
-        hcoord_small hcoord_nonneg ha_half
-    simpa [z, e.left_inv hasource, e.left_inv hxsource] using hchart
-  let rb : ℝ := r / 2
-  have hrb : 0 < rb := by
-    dsimp [rb]
-    positivity
-  have hclosed_b_subset :
-      Metric.closedBall (e b) rb ⊆ Metric.closedBall z r := by
-    intro w hw
-    rw [Metric.mem_closedBall] at hw ⊢
-    have hb_dist : dist (e b) z < r / 4 := by
-      simpa [Metric.mem_ball] using hbN.2
-    calc
-      dist w z ≤ dist w (e b) + dist (e b) z := dist_triangle w (e b) z
-      _ ≤ rb + dist (e b) z := add_le_add hw le_rfl
-      _ ≤ r := by
-        dsimp [rb]
-        linarith
-  have hcoord_b :
-      InnerProductSpace.HarmonicOnNhd
-        (fun w : ℂ ↦ u (e.symm w)) (Metric.closedBall (e b) rb) :=
-    hcoord_small.mono hclosed_b_subset
-  have hcoord_b_nonneg :
-      ∀ w ∈ Metric.closedBall (e b) rb, 0 ≤ u (e.symm w) := by
-    intro w hw
-    exact hcoord_nonneg w (hclosed_b_subset hw)
-  have hz_mem_b_half : z ∈ Metric.ball (e b) (rb / 2) := by
-    rw [Metric.mem_ball]
-    have hrb_half : rb / 2 = r / 4 := by
-      dsimp [rb]
-      ring
-    have hb_dist : dist (e b) z < r / 4 := by
-      simpa [Metric.mem_ball] using hbN.2
-    rw [hrb_half]
-    simpa [dist_comm] using hb_dist
-  have hcenter_to_b :
-      u x ≤ 3 * u b := by
-    have hchart :=
-      harmonicOnNhd_nonnegative_le_three_mul_center_of_mem_ball_half
-        (c := e b) (r := rb) hrb
-        (u := fun w : ℂ ↦ u (e.symm w))
-        hcoord_b hcoord_b_nonneg hz_mem_b_half
-    simpa [z, e.left_inv hxsource, e.left_inv hbsource] using hchart
-  calc
-    u a ≤ 3 * u x := ha_to_center
-    _ ≤ 3 * (3 * u b) :=
-        mul_le_mul_of_nonneg_left hcenter_to_b (by norm_num : (0 : ℝ) ≤ 3)
-    _ = 9 * u b := by ring
-
-/--
-%%handwave
-name:
-  Local Harnack bounds propagate on preconnected regions
-statement:
-  On a preconnected region, if a family of functions has pairwise local
-  Harnack control and is eventually bounded above at one point, then it is
-  eventually bounded above at every point of the region.
-proof:
-  In the region, consider the points where the family is eventually bounded.
-  The base point makes this set nonempty.  Pairwise local Harnack control
-  makes it open, and it also makes its complement open because a nearby
-  bounded point would bound the original point.  Preconnectedness forces the
-  set to be the whole region.
--/
-theorem eventual_upper_bound_propagates_of_local_pair_harnack_control
-    {X : Type} [TopologicalSpace X]
-    {U : Set X} (hU_preconnected : IsPreconnected U)
-    {F : ℕ → X → ℝ}
-    (hlocal :
-      ∀ x ∈ U,
-        ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-          ∃ C : ℝ, 0 ≤ C ∧
-            ∀ᶠ n : ℕ in Filter.atTop,
-              ∀ a ∈ N, ∀ b ∈ N, F n a ≤ C * F n b)
-    {x₀ : X} (hx₀ : x₀ ∈ U)
-    (hbase : ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x₀ ≤ A) :
-    ∀ x ∈ U, ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x ≤ A := by
-  classical
-  let S : Set U := {x | ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x ≤ A}
-  have hS_nonempty : S.Nonempty := ⟨⟨x₀, hx₀⟩, hbase⟩
-  have hS_open : IsOpen S := by
-    rw [isOpen_iff_mem_nhds]
-    intro x hxS
-    rcases hxS with ⟨A, hA⟩
-    rcases hlocal x x.property with ⟨N, hN_nhds, _hN_subset, C, hC_nonneg, hcontrol⟩
-    have hxN : (x : X) ∈ N := mem_of_mem_nhds hN_nhds
-    let V : Set U := {y | (y : X) ∈ N}
-    have hV_mem : V ∈ 𝓝 x :=
-      continuous_subtype_val.continuousAt.preimage_mem_nhds hN_nhds
-    refine Filter.mem_of_superset hV_mem ?_
-    intro y hyV
-    refine ⟨C * A, ?_⟩
-    filter_upwards [hcontrol, hA] with n hn hAn
-    exact (hn y hyV x hxN).trans
-      (mul_le_mul_of_nonneg_left hAn hC_nonneg)
-  have hS_compl_open : IsOpen Sᶜ := by
-    rw [isOpen_iff_mem_nhds]
-    intro x hxS
-    rcases hlocal x x.property with ⟨N, hN_nhds, _hN_subset, C, hC_nonneg, hcontrol⟩
-    have hxN : (x : X) ∈ N := mem_of_mem_nhds hN_nhds
-    let V : Set U := {y | (y : X) ∈ N}
-    have hV_mem : V ∈ 𝓝 x :=
-      continuous_subtype_val.continuousAt.preimage_mem_nhds hN_nhds
-    refine Filter.mem_of_superset hV_mem ?_
-    intro y hyV hyS
-    apply hxS
-    rcases hyS with ⟨A, hA⟩
-    refine ⟨C * A, ?_⟩
-    filter_upwards [hcontrol, hA] with n hn hAn
-    exact (hn x hxN y hyV).trans
-      (mul_le_mul_of_nonneg_left hAn hC_nonneg)
-  have hS_closed : IsClosed S := isOpen_compl_iff.mp hS_compl_open
-  haveI : PreconnectedSpace U := Subtype.preconnectedSpace hU_preconnected
-  have hS_univ : S = Set.univ :=
-    IsClopen.eq_univ ⟨hS_closed, hS_open⟩ hS_nonempty
-  intro x hxU
-  have hxS : (⟨x, hxU⟩ : U) ∈ S := by
-    simp [hS_univ]
-  exact hxS
-
-/--
-%%handwave
-name:
-  Pairwise local Harnack control gives local uniform bounds
-statement:
-  If a family of functions has pairwise local Harnack control and is
-  eventually bounded above at each point of a region, then near each point it
-  is eventually bounded above uniformly on a neighborhood.
-proof:
-  At a point, choose a Harnack neighborhood and an eventual bound at the
-  center.  Pairwise control with the center as the second point gives a
-  uniform bound throughout the neighborhood.
--/
-theorem eventual_locally_uniform_upper_bound_of_local_pair_harnack_control
-    {X : Type} [TopologicalSpace X]
-    {U : Set X} {F : ℕ → X → ℝ}
-    (hlocal :
-      ∀ x ∈ U,
-        ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-          ∃ C : ℝ, 0 ≤ C ∧
-            ∀ᶠ n : ℕ in Filter.atTop,
-              ∀ a ∈ N, ∀ b ∈ N, F n a ≤ C * F n b)
-    (hpoint :
-      ∀ x ∈ U, ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x ≤ A) :
-    ∀ x ∈ U,
-      ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-        ∃ M : ℝ,
-          ∀ᶠ n : ℕ in Filter.atTop, ∀ y ∈ N, F n y ≤ M := by
-  intro x hxU
-  rcases hlocal x hxU with ⟨N, hN_nhds, hN_subset, C, hC_nonneg, hcontrol⟩
-  rcases hpoint x hxU with ⟨A, hA⟩
-  have hxN : x ∈ N := mem_of_mem_nhds hN_nhds
-  refine ⟨N, hN_nhds, hN_subset, C * A, ?_⟩
-  filter_upwards [hcontrol, hA] with n hn hAn y hyN
-  exact (hn y hyN x hxN).trans
-    (mul_le_mul_of_nonneg_left hAn hC_nonneg)
-
-/--
-%%handwave
-name:
-  Base-point Harnack bounds give local uniform bounds on preconnected regions
-statement:
-  On a preconnected region, if a family of functions has pairwise local
-  Harnack control and is eventually bounded above at one point, then near
-  every point it is eventually bounded above uniformly on a neighborhood.
-proof:
-  First propagate the base-point bound to pointwise bounds throughout the
-  region.  Then apply the local pairwise Harnack control once more to turn
-  the pointwise bound at each center into a uniform bound on a neighborhood.
--/
-theorem eventual_locally_uniform_upper_bound_propagates_of_local_pair_harnack_control
-    {X : Type} [TopologicalSpace X]
-    {U : Set X} (hU_preconnected : IsPreconnected U)
-    {F : ℕ → X → ℝ}
-    (hlocal :
-      ∀ x ∈ U,
-        ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-          ∃ C : ℝ, 0 ≤ C ∧
-            ∀ᶠ n : ℕ in Filter.atTop,
-              ∀ a ∈ N, ∀ b ∈ N, F n a ≤ C * F n b)
-    {x₀ : X} (hx₀ : x₀ ∈ U)
-    (hbase : ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x₀ ≤ A) :
-    ∀ x ∈ U,
-      ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-        ∃ M : ℝ,
-          ∀ᶠ n : ℕ in Filter.atTop, ∀ y ∈ N, F n y ≤ M := by
-  have hpoint :
-      ∀ x ∈ U, ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x ≤ A :=
-    eventual_upper_bound_propagates_of_local_pair_harnack_control
-      hU_preconnected hlocal hx₀ hbase
-  exact eventual_locally_uniform_upper_bound_of_local_pair_harnack_control
-    hlocal hpoint
-
-/--
-%%handwave
-name:
   Local eventual bounds give compact eventual bounds
 statement:
   If every point of a region has an open neighborhood on which a sequence is
@@ -7545,58 +5904,6 @@ theorem eventual_uniform_upper_bound_on_compact_of_open_local_uniform_upper_boun
     exact (le_abs_self (M x)).trans
       (Finset.single_le_sum (fun z _hz ↦ abs_nonneg (M z)) hx_t)
   exact hFy.trans hMxA
-
-/--
-%%handwave
-name:
-  Pairwise Harnack bounds give compact eventual bounds
-statement:
-  On a preconnected region, if a sequence has pairwise local Harnack control
-  and is eventually bounded above at one point, then it has a single eventual
-  upper bound on every compact subset of the region.
-proof:
-  The base-point bound propagates to local uniform bounds throughout the
-  region.  A finite subcover of the compact set then gives one eventual
-  bound on the whole compact set.
--/
-theorem eventual_uniform_upper_bound_on_compact_propagates_of_local_pair_harnack_control
-    {X : Type} [TopologicalSpace X]
-    {K U : Set X} (hU_preconnected : IsPreconnected U)
-    (hK_compact : IsCompact K) (hKU : K ⊆ U)
-    {F : ℕ → X → ℝ}
-    (hlocal :
-      ∀ x ∈ U,
-        ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-          ∃ C : ℝ, 0 ≤ C ∧
-            ∀ᶠ n : ℕ in Filter.atTop,
-              ∀ a ∈ N, ∀ b ∈ N, F n a ≤ C * F n b)
-    {x₀ : X} (hx₀ : x₀ ∈ U)
-    (hbase : ∃ A : ℝ, ∀ᶠ n : ℕ in Filter.atTop, F n x₀ ≤ A) :
-    ∃ A : ℝ,
-      ∀ᶠ n : ℕ in Filter.atTop, ∀ y ∈ K, F n y ≤ A := by
-  classical
-  have hloc :
-      ∀ x ∈ U,
-        ∃ N : Set X, N ∈ 𝓝 x ∧ N ⊆ U ∧
-          ∃ M : ℝ,
-            ∀ᶠ n : ℕ in Filter.atTop, ∀ y ∈ N, F n y ≤ M :=
-    eventual_locally_uniform_upper_bound_propagates_of_local_pair_harnack_control
-      hU_preconnected hlocal hx₀ hbase
-  choose N hN_nhds hN_subset M hM using hloc
-  choose O hO_subset hO_open hxO using fun x hxU ↦ mem_nhds_iff.mp (hN_nhds x hxU)
-  let O' : X → Set X := fun x ↦ if hxU : x ∈ U then O x hxU else ∅
-  let M' : X → ℝ := fun x ↦ if hxU : x ∈ U then M x hxU else 0
-  exact eventual_uniform_upper_bound_on_compact_of_open_local_uniform_upper_bound
-    (K := K) (U := U) (F := F) (O := O') (M := M')
-    hK_compact hKU
-    (fun x hxU ↦ by simpa [O', hxU] using hO_open x hxU)
-    (fun x hxU ↦ by simpa [O', hxU] using hxO x hxU)
-    (fun x hxU ↦ by
-      filter_upwards [hM x hxU] with n hn y hyO
-      have hyO' : y ∈ O x hxU := by
-        simpa [O', hxU] using hyO
-      have hny : F n y ≤ M x hxU := hn y (hO_subset x hxU hyO')
-      simpa [M', hxU] using hny)
 
 /--
 %%handwave
@@ -7966,93 +6273,6 @@ theorem directed_harmonic_minorants_sup_harmonicOn_coordinate_disk
   exact pointwise_sSup_directed_harmonic_family_harmonicOn_coordinate_disk
     V hV_coord P H hH_nonempty hH_harmonic hH_directed
     hH_locally_bounded hpointwise_sSup hP_lsc
-
-/--
-%%handwave
-name:
-  Directed harmonic majorants have harmonic infimum on a coordinate disk
-statement:
-  Let \(P\) be an upper semicontinuous function on a coordinate disk.  Suppose
-  \(P\) is the pointwise infimum, up to arbitrary epsilon, of a downward
-  directed family of harmonic functions above \(P\), and suppose that family
-  is locally bounded below.  Then \(P\) is harmonic on the disk.
-proof:
-  Negate the family.  Downward directed harmonic majorants of \(P\) become
-  upward directed harmonic minorants of \(-P\), locally bounded above and
-  cofinal below \(-P\).  The already-proved directed-minorant theorem makes
-  \(-P\) harmonic, hence \(P\) is harmonic as well.
--/
-theorem directed_harmonic_majorants_inf_harmonicOn_coordinate_disk
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (V : PerronDomain X) (hV_coord : IsCoordinatePerronDisk V)
-    (P : X → ℝ) (H : Set (X → ℝ))
-    (hH_nonempty : H.Nonempty)
-    (hH_harmonic : ∀ h ∈ H, IsHarmonicOnSurface V.carrier h)
-    (hH_directed :
-      ∀ h₁ ∈ H, ∀ h₂ ∈ H,
-        ∃ h₃ ∈ H, ∀ x ∈ V.carrier, h₃ x ≤ h₁ x ∧ h₃ x ≤ h₂ x)
-    (hH_locally_bounded_below :
-      ∀ K : Set X, IsCompact K → K ⊆ V.carrier →
-        ∃ M : ℝ, ∀ h ∈ H, ∀ x ∈ K, M ≤ h x)
-    (hP_le_H : ∀ h ∈ H, ∀ x ∈ V.carrier, P x ≤ h x)
-    (hH_cofinal :
-      ∀ x ∈ V.carrier, ∀ ε : ℝ, 0 < ε →
-        ∃ h ∈ H, h x < P x + ε)
-    (hP_usc : UpperSemicontinuousOn P V.carrier) :
-    IsHarmonicOnSurface V.carrier P := by
-  let Hneg : Set (X → ℝ) := {g | ∃ h ∈ H, g = fun x ↦ -h x}
-  have hHneg_nonempty : Hneg.Nonempty := by
-    rcases hH_nonempty with ⟨h, hh⟩
-    exact ⟨fun x ↦ -h x, h, hh, rfl⟩
-  have hHneg_harmonic : ∀ g ∈ Hneg, IsHarmonicOnSurface V.carrier g := by
-    intro g hg
-    rcases hg with ⟨h, hh, rfl⟩
-    exact harmonicOnSurface_neg (hH_harmonic h hh)
-  have hHneg_directed :
-      ∀ g₁ ∈ Hneg, ∀ g₂ ∈ Hneg,
-        ∃ g₃ ∈ Hneg, ∀ x ∈ V.carrier, g₁ x ≤ g₃ x ∧ g₂ x ≤ g₃ x := by
-    intro g₁ hg₁ g₂ hg₂
-    rcases hg₁ with ⟨h₁, hh₁, rfl⟩
-    rcases hg₂ with ⟨h₂, hh₂, rfl⟩
-    rcases hH_directed h₁ hh₁ h₂ hh₂ with ⟨h₃, hh₃, hle⟩
-    refine ⟨fun x ↦ -h₃ x, ?_, ?_⟩
-    · exact ⟨h₃, hh₃, rfl⟩
-    · intro x hxV
-      rcases hle x hxV with ⟨h31, h32⟩
-      exact ⟨neg_le_neg h31, neg_le_neg h32⟩
-  have hHneg_locally_bounded :
-      ∀ K : Set X, IsCompact K → K ⊆ V.carrier →
-        ∃ M : ℝ, ∀ g ∈ Hneg, ∀ x ∈ K, g x ≤ M := by
-    intro K hK hKV
-    rcases hH_locally_bounded_below K hK hKV with ⟨M, hM⟩
-    refine ⟨-M, ?_⟩
-    intro g hg x hxK
-    rcases hg with ⟨h, hh, rfl⟩
-    exact neg_le_neg (hM h hh x hxK)
-  have hHneg_le_negP :
-      ∀ g ∈ Hneg, ∀ x ∈ V.carrier, g x ≤ (fun x ↦ -P x) x := by
-    intro g hg x hxV
-    rcases hg with ⟨h, hh, rfl⟩
-    exact neg_le_neg (hP_le_H h hh x hxV)
-  have hHneg_cofinal :
-      ∀ x ∈ V.carrier, ∀ ε : ℝ, 0 < ε →
-        ∃ g ∈ Hneg, (fun x ↦ -P x) x - ε < g x := by
-    intro x hxV ε hε
-    rcases hH_cofinal x hxV ε hε with ⟨h, hh, hlt⟩
-    refine ⟨fun y ↦ -h y, ?_, ?_⟩
-    · exact ⟨h, hh, rfl⟩
-    · dsimp
-      linarith
-  have hnegP_lsc : LowerSemicontinuousOn (fun x ↦ -P x) V.carrier := by
-    exact hP_usc.neg
-  have hneg_harm : IsHarmonicOnSurface V.carrier (fun x ↦ -P x) :=
-    directed_harmonic_minorants_sup_harmonicOn_coordinate_disk V hV_coord
-      (fun x ↦ -P x) Hneg hHneg_nonempty hHneg_harmonic hHneg_directed
-      hHneg_locally_bounded hHneg_le_negP hHneg_cofinal hnegP_lsc
-  have hdouble : IsHarmonicOnSurface V.carrier (fun x ↦ -(-P x)) :=
-    harmonicOnSurface_neg hneg_harm
-  simpa using hdouble
 
 /--
 %%handwave
@@ -8633,7 +6853,13 @@ theorem subharmonic_le_superharmonic_of_boundary_le
   intro x hx
   linarith [hdiff_nonpos x hx]
 
-/-- The contact paste used by `subharmonicOnSurface_sup_paste_of_boundary_le`. -/
+/--
+%%handwave
+name: Contact paste for subharmonic functions
+statement:
+  Given functions $u,v$ and a set $V$, use $\max(u,v)$ on $V$ and $u$
+  outside $V$.
+-/
 noncomputable def subharmonicSupPaste
     {X : Type} [TopologicalSpace X] (V : Set X) (u v : X → ℝ) : X → ℝ := by
   classical
@@ -8764,7 +6990,13 @@ theorem subharmonicOnSurface_sup_paste_of_boundary_le
     simpa [w, subharmonicSupPaste, hxV] using sup_le hux hvx
   · simpa [w, subharmonicSupPaste, hxV] using hu_le x hxW
 
-/-- The contact paste used by `superharmonicOnSurface_inf_paste_of_boundary_le`. -/
+/--
+%%handwave
+name: Contact paste for superharmonic functions
+statement:
+  Given functions $u,v$ and a set $V$, use $\min(u,v)$ on $V$ and $u$
+  outside $V$.
+-/
 noncomputable def superharmonicInfPaste
     {X : Type} [TopologicalSpace X] (V : Set X) (u v : X → ℝ) : X → ℝ := by
   classical
@@ -9695,49 +7927,6 @@ theorem exteriorCircle_quadraticSupport_of_graphBound
       have hneg_y : 0 ≤ -y := neg_nonneg.mpr hy_nonpos
       nlinarith [mul_nonneg hR_nonneg hneg_y]
     nlinarith [sq_nonneg x, sq_nonneg y, hminus]
-
-/--
-%%handwave
-name:
-  Quadratically bounded graph sublevels have quadratic exterior support
-statement:
-  If a graph \(y=\varphi(x)\) is locally bounded above by \(Ax^2\), then
-  the sublevel side \(y\le\varphi(x)\) has quadratic exterior support from a
-  sufficiently small circle centered on the positive \(y\)-axis.
-proof:
-  Work in the vertical strip where the graph bound holds and take the circle
-  centered at \(iR\).  The sublevel inequality gives \(y\le Ax^2\), and then
-  [the elementary exterior-circle estimate](lean:JJMath.Uniformization.exteriorCircle_quadraticSupport_of_graphBound)
-  gives the required squared-distance bound.
--/
-theorem quadraticGraphSublevel_has_quadraticExteriorSupport
-    {φ : ℝ → ℝ} {A ρ R : ℝ}
-    (hρpos : 0 < ρ) (hRpos : 0 < R)
-    (hRA : 2 * R * A ≤ 1 / 2)
-    (hφ_bound : ∀ x : ℝ, |x| < ρ → φ x ≤ A * x ^ 2) :
-    ∃ W : Set ℂ, ∃ c : ℂ, ∃ R : ℝ, ∃ κ : ℝ,
-      IsOpen W ∧ (0 : ℂ) ∈ W ∧ 0 < R ∧ 0 < κ ∧
-        ‖(0 : ℂ) - c‖ = R ∧
-          ∀ z ∈ W, z.im - φ z.re ≤ 0 →
-            R ^ 2 + κ * ‖z - (0 : ℂ)‖ ^ 2 ≤ ‖z - c‖ ^ 2 := by
-  let W : Set ℂ := {z : ℂ | |z.re| < ρ}
-  let c : ℂ := (R : ℂ) * Complex.I
-  refine ⟨W, c, R, (1 / 4 : ℝ), ?_, ?_, hRpos, by norm_num, ?_, ?_⟩
-  · exact isOpen_lt (Complex.continuous_re.abs) continuous_const
-  · simp [W, hρpos]
-  · have hR_nonneg : 0 ≤ R := le_of_lt hRpos
-    simp [c, Real.norm_of_nonneg hR_nonneg]
-  · intro z hzW hz_sublevel
-    have hy_graph : z.im ≤ A * z.re ^ 2 := by
-      have hφz : φ z.re ≤ A * z.re ^ 2 := hφ_bound z.re hzW
-      linarith
-    have halg :
-        R ^ 2 + (1 / 4 : ℝ) * (z.re ^ 2 + z.im ^ 2) ≤
-          z.re ^ 2 + (z.im - R) ^ 2 :=
-      exteriorCircle_quadraticSupport_of_graphBound
-        (le_of_lt hRpos) hRA hy_graph
-    rw [Complex.sq_norm (z - (0 : ℂ)), Complex.sq_norm (z - c)]
-    simpa [c, Complex.normSq_apply, pow_two] using halg
 
 /--
 %%handwave
@@ -10836,8 +9025,6 @@ proof:
   transporting the barrier through the coordinate chart.  Then
   [a local Perron barrier extends to a global Perron barrier](lean:JJMath.Uniformization.localPerronBarrierAt_globalizes)
   by compactness of the closed domain.
-tags:
-  milestone
 -/
 theorem smoothBoundaryDomain_boundary_points_have_barriers
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]

@@ -364,23 +364,10 @@ variable [Fintype ι]
 /--
 %%handwave
 name:
-  Differentiability of alternating pullback
+  Continuous alternatization operator
 statement:
-  If a family of alternating forms and a family of continuous linear maps are
-  differentiable on a set, then the family obtained by precomposition is
-  differentiable on that set.
-proof:
-  Apply the differentiability rule for precomposition of continuous alternating
-  maps with continuous linear maps.
+  Averaging a continuous multilinear map over signed permutations defines a continuous linear projection from multilinear maps to alternating multilinear maps.
 -/
-theorem differentiableOn_continuousAlternatingMap_compContinuousLinearMap
-    {s : Set X}
-    {f : X → B [⋀^ι]→L[𝕜] C} {g : X → D →L[𝕜] B}
-    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s) :
-    DifferentiableOn 𝕜 (fun x ↦ (f x).compContinuousLinearMap (g x)) s := by
-  intro x hx
-  exact (hf x hx).continuousAlternatingMapCompContinuousLinearMap (hg x hx)
-
 noncomputable def continuousMultilinearMapAlternatizationCLM
     [DecidableEq ι] :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => D) C →L[𝕜] D [⋀^ι]→L[𝕜] C where
@@ -645,24 +632,6 @@ theorem fderivWithin_product_base_slice_apply
     (hf.hasFDerivWithinAt.comp x hslice hmaps).fderivWithin
       (hsUnique.uniqueDiffWithinAt hx)
   exact congrFun (congrArg DFunLike.coe hcomp) w
-
-/--
-%%handwave
-name:
-  Removing the first coordinate from a vector with an adjoined head
-statement:
-  For \(a\in\alpha\) and \(b:\operatorname{Fin}(n)\to\alpha\), deleting
-  coordinate \(0\) from the vector \((a,b_0,\ldots,b_{n-1})\) gives \(b\).
-proof:
-  Evaluate both sides at each coordinate; the index shift defining deletion
-  cancels the shift used to adjoin the head.
--/
-@[simp]
-theorem Fin.removeNth_zero_vecCons {α : Type*} {n : ℕ}
-    (a : α) (b : Fin n → α) :
-    (0 : Fin (n + 1)).removeNth (Matrix.vecCons a b) = b := by
-  funext i
-  simp [Fin.removeNth]
 
 /--
 %%handwave
@@ -953,9 +922,11 @@ abbrev FormAt (x : M) : Type _ :=
 variable {I F n}
 
 /--
-The coordinate representative of a possibly dependent pointwise form in a
-chart.  It is obtained by pulling the form back along the inverse extended
-chart.
+%%handwave
+name:
+  Coordinate expression of a pointwise differential form
+statement:
+  In a chart $e$, the coordinate expression of a pointwise $n$-form $\omega$ at $y$ is the pullback of $\omega_{e^{-1}(y)}$ along the derivative of the inverse extended chart.
 -/
 def coordinateExpression
     (form : (x : M) → FormAt (I := I) F n x)
@@ -1485,7 +1456,13 @@ theorem ext {omegaForm eta : DifferentialForm (I := I) (M := M) F n r}
   funext x
   exact h x
 
-/-- Lower the recorded regularity of a differential form. -/
+/--
+%%handwave
+name:
+  Forgetting differential-form regularity
+statement:
+  If $r\le r'$, every $C^{r'}$ differential form canonically determines the same pointwise form regarded as only $C^r$.
+-/
 def of_le {r r' : WithTop ℕ∞} (hrr' : r ≤ r')
     (form : DifferentialForm (I := I) (M := M) F n r') :
     DifferentialForm (I := I) (M := M) F n r where
@@ -1494,27 +1471,16 @@ def of_le {r r' : WithTop ℕ∞} (hrr' : r ≤ r')
     intro e he
     exact (form.isContMDiff e he).of_le hrr'
 
-/-- Regard a differential form of any regularity as a continuous form. -/
-def toContinuous (form : DifferentialForm (I := I) (M := M) F n r) :
-    DifferentialForm (I := I) (M := M) F n (0 : WithTop ℕ∞) :=
-  of_le (I := I) (M := M) (F := F) (n := n) zero_le form
-
 /--
 %%handwave
 name:
-  Underlying form after lowering regularity
+  Underlying continuous differential form
 statement:
-  Regarding a \(C^{r'}\) differential form as \(C^r\), for \(r\le r'\), does
-  not change its pointwise alternating covectors.
-proof:
-  Lowering the asserted regularity leaves the underlying pointwise form
-  unchanged by definition.
+  Every differential form of arbitrary regularity canonically determines the same pointwise form regarded as continuous.
 -/
-@[simp]
-theorem of_le_toFun {r r' : WithTop ℕ∞} (hrr' : r ≤ r')
-    (form : DifferentialForm (I := I) (M := M) F n r') :
-    (of_le (I := I) (M := M) (F := F) (n := n) hrr' form).toFun = form.toFun :=
-  rfl
+def toContinuous (form : DifferentialForm (I := I) (M := M) F n r) :
+    DifferentialForm (I := I) (M := M) F n (0 : WithTop ℕ∞) :=
+  of_le (I := I) (M := M) (F := F) (n := n) zero_le form
 
 /--
 %%handwave
@@ -1806,15 +1772,10 @@ abbrev SmoothDifferentialForm
 /--
 %%handwave
 name:
-  Analytic differential form
+  Pointwise exterior derivative
 statement:
-  An analytic differential form is a pointwise alternating covector field whose
-  coordinate representatives are analytic.
+  For a $C^{r+1}$ differential $n$-form $\omega$, its exterior derivative at $x$ is computed by taking the Euclidean exterior derivative of its coordinate expression at the chart image of $x$ and pulling it back along the chart derivative.
 -/
-abbrev AnalyticDifferentialForm
-    (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) :=
-  DifferentialForm (I := I) (M := M) (F := F) (n := n) (r := ω)
-
 def exteriorDerivativePoint
     [IsManifold I ∞ M]
     {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -2109,8 +2070,6 @@ statement:
   to a smooth differential form gives the zero form, \(d(d\omega)=0\).
 proof:
   In every coordinate chart, this is the [identity that the second exterior derivative of a sufficiently smooth model-space form is zero](lean:extDeriv_extDeriv).  The pullback compatibility of the model-space exterior derivative transports the identity between charts.
-tags:
-  milestone
 -/
 theorem exteriorDerivative_exteriorDerivative_eq_zero
     [IsRCLikeNormedField 𝕜] [IsManifold I ∞ M]
@@ -2891,55 +2850,6 @@ theorem exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_apply
     simpa [e₁, y] using hleft_self.symm.trans (hcoord.trans hright_self)
   simpa [α, β] using congrArg (fun eta ↦ eta v) hpoint_eq
 
-/--
-%%handwave
-name:
-  Exterior derivative is natural for smooth-form pullback
-statement:
-  As pointwise forms, \(d(\varphi^\*\omega)=\varphi^\*(d\omega)\) for
-  smooth real differential forms and smooth diffeomorphisms.
-proof:
-  Extensionality reduces this to [naturality on tangent tuples](lean:JJMath.Manifold.exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_apply).
--/
-theorem exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_toFun
-    (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
-    [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
-    (φ : M₁ ≃ₘ⟮I₁, I₂⟯ M₂) {n : ℕ}
-    (omega : SmoothDifferentialForm (I := I₂) (M := M₂) ℝ n)
-    (x : M₁) :
-    ((exteriorDerivative (I := I₁) (r := ∞)
-        (smoothDifferentialFormPullbackDiffeomorph I₁ I₂ φ omega)).toFun x :
-      TangentSpace I₁ x [⋀^Fin (n + 1)]→L[ℝ] ℝ) =
-    ((smoothDifferentialFormPullbackDiffeomorph I₁ I₂ φ
-        (exteriorDerivative (I := I₂) (r := ∞) omega)).toFun x :
-      TangentSpace I₁ x [⋀^Fin (n + 1)]→L[ℝ] ℝ) := by
-  ext v
-  exact exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_apply
-    I₁ I₂ φ omega x v
-
-/--
-%%handwave
-name:
-  Exterior derivative commutes with smooth-form pullback
-statement:
-  The exterior derivative of the pullback of a smooth real differential form
-  along a smooth diffeomorphism is the pullback of its exterior derivative.
-proof:
-  Extensionality reduces this to [the pointwise naturality statement](lean:JJMath.Manifold.exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_toFun).
--/
-theorem exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph
-    (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
-    [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
-    (φ : M₁ ≃ₘ⟮I₁, I₂⟯ M₂) {n : ℕ}
-    (omega : SmoothDifferentialForm (I := I₂) (M := M₂) ℝ n) :
-    exteriorDerivative (I := I₁) (r := ∞)
-        (smoothDifferentialFormPullbackDiffeomorph I₁ I₂ φ omega) =
-      smoothDifferentialFormPullbackDiffeomorph I₁ I₂ φ
-        (exteriorDerivative (I := I₂) (r := ∞) omega) := by
-  ext x v
-  exact exteriorDerivative_smoothDifferentialFormPullbackDiffeomorph_apply
-    I₁ I₂ φ omega x v
-
 end DiffeomorphismPullback
 
 end Coefficients
@@ -2950,30 +2860,6 @@ variable {Eℝ : Type*} [NormedAddCommGroup Eℝ] [NormedSpace ℝ Eℝ]
 variable {Hℝ : Type*} [TopologicalSpace Hℝ]
 variable {Mℝ : Type*} [TopologicalSpace Mℝ] [ChartedSpace Hℝ Mℝ]
 variable (Iℝ : ModelWithCorners ℝ Eℝ Hℝ)
-
-/-- Real-valued `C^r` differential forms on a real manifold. -/
-abbrev RealDifferentialForm (n : ℕ) (r : WithTop ℕ∞) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℝ) (n := n) (r := r)
-
-/-- Complex-valued `C^r` differential forms on a real manifold. -/
-abbrev ComplexDifferentialForm (n : ℕ) (r : WithTop ℕ∞) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℂ) (n := n) (r := r)
-
-/-- Real-valued smooth differential forms on a real manifold. -/
-abbrev SmoothRealDifferentialForm (n : ℕ) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℝ) (n := n) (r := ∞)
-
-/-- Complex-valued smooth differential forms on a real manifold. -/
-abbrev SmoothComplexDifferentialForm (n : ℕ) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℂ) (n := n) (r := ∞)
-
-/-- Real-valued analytic differential forms on a real manifold. -/
-abbrev AnalyticRealDifferentialForm (n : ℕ) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℝ) (n := n) (r := ω)
-
-/-- Complex-valued analytic differential forms on a real manifold. -/
-abbrev AnalyticComplexDifferentialForm (n : ℕ) :=
-  DifferentialForm (I := Iℝ) (M := Mℝ) (F := ℂ) (n := n) (r := ω)
 
 end RealManifoldAliases
 

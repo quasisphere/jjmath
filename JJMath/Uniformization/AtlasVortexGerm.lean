@@ -64,8 +64,19 @@ private theorem contMDiffCodRestrictOpen'
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- The unpunctured planar coordinate neighborhood whose punctured part is
-the left radial germ. -/
+/--
+%%handwave
+name: The unpunctured planar coordinate neighborhood whose punctured part is the left radial germ
+statement:
+  For endpoint coordinates $\alpha=e(a)$ and $\beta=e(b)$, define the
+  planar neighborhood
+  \[
+    \{z:\lVert A_{\alpha,\beta}(z)\rVert<2,\quad
+    D_{\alpha,\beta}(z)\in\mathbb C_{\mathrm{slit}}\},
+  \]
+  where $A_{\alpha,\beta}$ is the affine vortex coordinate and
+  $D_{\alpha,\beta}$ its normalized denominator.
+-/
 def AtlasVortexPairData.leftGermCoordinateOpen {a b : X}
     (D : AtlasVortexPairData X a b) : TopologicalSpace.Opens ℂ := by
   let f : ℂ → ℂ := fun z ↦
@@ -83,8 +94,14 @@ def AtlasVortexPairData.leftGermCoordinateOpen {a b : X}
       (isOpen_lt (continuous_norm.comp hf) continuous_const).inter
         (Complex.isOpen_slitPlane.preimage hg)⟩
 
-/-- An ambient open neighborhood of the zero endpoint whose deletion of the
-zero endpoint maps to the left radial germ. -/
+/--
+%%handwave
+name: An ambient open neighborhood of the zero endpoint whose deletion of the zero endpoint maps to the left radial germ
+statement:
+  Define the ambient left-germ neighborhood as the points $x$ in the chart
+  source with $e(x)$ in the planar left-germ coordinate neighborhood and
+  $x\ne b$.
+-/
 def AtlasVortexPairData.leftGermNeighborhood {a b : X}
     (D : AtlasVortexPairData X a b) : TopologicalSpace.Opens X :=
   ⟨D.chart.source ∩ D.chart ⁻¹' D.leftGermCoordinateOpen,
@@ -116,8 +133,14 @@ theorem AtlasVortexPairData.left_mem_leftGermNeighborhood {a b : X}
     rw [planarVortexNormalizedDenominator_left D.chart_values_ne]
     exact Complex.one_mem_slitPlane
 
-/-- The part of the atlas chart on which the planar vortex is in its left
-radial logarithmic germ. -/
+/--
+%%handwave
+name: The part of the atlas chart on which the planar vortex is in its left radial logarithmic germ
+statement:
+  Define the punctured surface left germ as the inverse image of the planar
+  left radial germ under
+  $x\mapsto e(x)\in\mathbb C\setminus\{e(a),e(b)\}$.
+-/
 def AtlasVortexPairData.leftGerm {a b : X}
     (D : AtlasVortexPairData X a b) :
     TopologicalSpace.Opens D.chartPatch :=
@@ -126,14 +149,25 @@ def AtlasVortexPairData.leftGerm {a b : X}
     (planarVortexLeftGermOpen D.chart_values_ne).isOpen.preimage
       D.contMDiff_toPlanarPair.continuous⟩
 
-/-- A nonzero point of the ambient left-germ neighborhood determines a point
-of the punctured atlas left germ. -/
+/--
+%%handwave
+name: A nonzero point of the ambient left-germ neighborhood determines a point of the punctured atlas left germ
+statement:
+  If $x$ lies in the ambient left-germ neighborhood and $x\ne a$, regard
+  $x$ canonically as a point of the punctured left radial germ.
+-/
 def AtlasVortexPairData.toLeftGermOfMemNeighborhood {a b : X}
     (D : AtlasVortexPairData X a b) (x : X)
     (hx : x ∈ D.leftGermNeighborhood) (hxa : x ≠ a) : D.leftGerm :=
   ⟨⟨⟨x, hxa, hx.2⟩, hx.1.1⟩, hx.1.2⟩
 
-/-- The surface left germ mapped into the corresponding planar left germ. -/
+/--
+%%handwave
+name: The surface left germ mapped into the corresponding planar left germ
+statement:
+  Map a point $x$ of the surface left germ to the planar germ point $e(x)$
+  with punctures at $e(a)$ and $e(b)$.
+-/
 def AtlasVortexPairData.leftGermToPlanar {a b : X}
     (D : AtlasVortexPairData X a b)
     (x : D.leftGerm) : planarVortexLeftGermOpen D.chart_values_ne :=
@@ -159,7 +193,13 @@ theorem AtlasVortexPairData.contMDiff_leftGermToPlanar {a b : X}
     (D.contMDiff_toPlanarPair.comp contMDiff_subtype_val)
     (planarVortexLeftGermOpen D.chart_values_ne) (fun x ↦ x.2)
 
-/-- The surface left germ as a bundled map to the planar left germ. -/
+/--
+%%handwave
+name: The surface left germ as a bundled map to the planar left germ
+statement:
+  Bundle the coordinate map $x\mapsto e(x)$ from the surface left germ to
+  the corresponding planar radial germ as a smooth map.
+-/
 def AtlasVortexPairData.leftGermToPlanarMap {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -167,7 +207,13 @@ def AtlasVortexPairData.leftGermToPlanarMap {a b : X}
   val := D.leftGermToPlanar
   property := D.contMDiff_leftGermToPlanar
 
-/-- The global compact atlas-vortex phase restricted to the left germ. -/
+/--
+%%handwave
+name: The global compact atlas-vortex phase restricted to the left germ
+statement:
+  Restrict the globally extended atlas vortex phase
+  $X\setminus\{a,b\}\to S^1$ to the punctured left radial germ.
+-/
 def AtlasVortexPairData.leftGermGlobalPhaseMap {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -176,7 +222,14 @@ def AtlasVortexPairData.leftGermGlobalPhaseMap {a b : X}
   property := D.globalPhase.contMDiff.comp
     (contMDiff_subtype_val.comp contMDiff_subtype_val)
 
-/-- The planar compact phase pulled back to the surface left germ. -/
+/--
+%%handwave
+name: The planar compact phase pulled back to the surface left germ
+statement:
+  On the surface left germ, define the phase
+  $x\mapsto P_{\mathrm{comp}}(e(x))$ by pulling back the compact planar
+  vortex phase through the chart.
+-/
 def AtlasVortexPairData.leftGermCompactPhaseMap {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -207,22 +260,11 @@ theorem AtlasVortexPairData.leftGermGlobalPhase_eq_compact
 
 /--
 %%handwave
-name:
-  Unit norm of the global atlas-vortex phase on the left germ
+name: The rotated radial angular phase pulled back through the atlas chart
 statement:
-  The global atlas-vortex phase has complex modulus one at every point of its
-  left radial germ.
-proof:
-  Replace it by the pulled-back compact planar phase, whose modulus is one.
+  Pull the planar rotated radial phase near $e(a)$ back through
+  $x\mapsto e(x)$ to the surface left germ.
 -/
-theorem AtlasVortexPairData.norm_leftGermGlobalPhaseMap
-    {a b : X} (D : AtlasVortexPairData X a b) (x : D.leftGerm) :
-    ‖D.leftGermGlobalPhaseMap x‖ = 1 := by
-  rw [D.leftGermGlobalPhase_eq_compact]
-  exact norm_planarVortexLeftGermCompactPhaseMap
-    D.chart_values_ne (D.leftGermToPlanar x)
-
-/-- The rotated radial angular phase pulled back through the atlas chart. -/
 def AtlasVortexPairData.leftGermRadialPhaseMap {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -232,23 +274,13 @@ def AtlasVortexPairData.leftGermRadialPhaseMap {a b : X}
 
 /--
 %%handwave
-name:
-  Unit norm of the rotated radial phase on an atlas germ
+name: The unrotated coordinate radial phase pulled back through the atlas chart
 statement:
-  The rotated radial angular phase pulled back to the left germ of an atlas
-  vortex has complex modulus one.
-proof:
-  Apply the unit-norm identity for the planar rotated radial phase at the
-  atlas-to-planar image of the point.
+  On the surface left germ, define the ordinary coordinate direction
+  \[
+    x\longmapsto \frac{e(x)-e(a)}{\lVert e(x)-e(a)\rVert}.
+  \]
 -/
-theorem AtlasVortexPairData.norm_leftGermRadialPhaseMap
-    {a b : X} (D : AtlasVortexPairData X a b) (x : D.leftGerm) :
-    ‖D.leftGermRadialPhaseMap x‖ = 1 :=
-  norm_planarVortexLeftRotatedRadialPhase
-    D.chart_values_ne (D.leftGermToPlanar x)
-
-/-- The unrotated coordinate radial phase pulled back through the atlas
-chart. -/
 def AtlasVortexPairData.leftGermUnrotatedRadialPhaseMap {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -272,7 +304,13 @@ theorem AtlasVortexPairData.norm_leftGermUnrotatedRadialPhaseMap
   norm_planarVortexLeftRadialPhase
     D.chart_values_ne (D.leftGermToPlanar x)
 
-/-- The smooth exact correction on the surface left germ. -/
+/--
+%%handwave
+name: The smooth exact correction on the surface left germ
+statement:
+  Pull back the smooth planar denominator argument to obtain the real
+  correction $h(x)=h_{\mathrm{planar}}(e(x))$ on the surface left germ.
+-/
 def AtlasVortexPairData.leftGermCorrectionSmooth {a b : X}
     (D : AtlasVortexPairData X a b) :
     C^∞⟮SurfaceRealModel, D.leftGerm; ℝ⟯ where
@@ -304,38 +342,6 @@ theorem AtlasVortexPairData.leftGermGlobalPhase_eq_radial_mul_exp_correction
   rw [D.leftGermGlobalPhase_eq_compact]
   exact planarVortexCompactPhaseAt_eq_rotatedRadial_mul_exp_correction
     D.chart_values_ne (D.leftGermToPlanar x)
-
-/--
-%%handwave
-name:
-  The atlas-vortex one-form is radial up to an exact correction
-statement:
-  On the left germ of an atlas vortex, the logarithmic one-form of the global
-  vortex phase equals the logarithmic one-form of the rotated radial phase
-  plus \(dh\), where \(h\) is the smooth real denominator correction.
-proof:
-  Apply the circle-primitive identity saying that a phase factorization
-  \(P=Qe^{ih}\) changes the logarithmic one-form by the exact form \(dh\),
-  using the radial factorization of the atlas-vortex phase.
--/
-theorem AtlasVortexPairData.leftGermGlobalOneForm_eq_radial_addExact
-    {a b : X} (D : AtlasVortexPairData X a b) :
-    smoothUnitPhaseOneForm SurfaceRealModel
-        D.leftGermGlobalPhaseMap D.norm_leftGermGlobalPhaseMap =
-      smoothUnitPhaseOneForm SurfaceRealModel
-          D.leftGermRadialPhaseMap D.norm_leftGermRadialPhaseMap +
-        deRhamDifferential
-          (I := SurfaceRealModel) (M := D.leftGerm) (A := ℝ) 0
-          (smoothRealFunctionToZeroForm (I0 := SurfaceRealModel)
-            D.leftGermCorrectionSmooth) := by
-  exact SmoothCirclePrimitive.oneForm_eq_addExact_of_phase_eq
-    SurfaceRealModel
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.leftGermGlobalPhaseMap D.norm_leftGermGlobalPhaseMap)
-    (smoothUnitPhaseCirclePrimitive SurfaceRealModel
-      D.leftGermRadialPhaseMap D.norm_leftGermRadialPhaseMap)
-    D.leftGermCorrectionSmooth
-    D.leftGermGlobalPhase_eq_radial_mul_exp_correction
 
 end
 

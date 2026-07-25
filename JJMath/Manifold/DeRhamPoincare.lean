@@ -189,25 +189,6 @@ def convexOpenStraightLineHomotopy
 /--
 %%handwave
 name:
-  Straight-line contraction begins at the base point
-statement:
-  At time \(0\), the straight-line contraction of a convex open set is the
-  constant map with value \(x_0\).
-proof:
-  Evaluate the affine segment formula at \(t=0\).
--/
-@[simp]
-theorem convexOpenStraightLineHomotopy_zero
-    (U : TopologicalSpace.Opens E)
-    (hconvex : Convex ℝ (U : Set E)) (x₀ x : U) :
-    convexOpenStraightLineHomotopy (E := E) U hconvex x₀
-        ⟨0, by simp⟩ x = x₀ := by
-  apply Subtype.ext
-  simp [convexOpenStraightLineHomotopy]
-
-/--
-%%handwave
-name:
   Straight-line contraction ends at the identity
 statement:
   At time \(1\), the straight-line contraction of a convex open set is the
@@ -224,43 +205,15 @@ theorem convexOpenStraightLineHomotopy_one
   apply Subtype.ext
   simp [convexOpenStraightLineHomotopy]
 
+variable [FiniteDimensional ℝ E]
+
 /--
 %%handwave
 name:
-  Smoothness of the straight-line contraction
+  Normed tangent space of an open vector-space subset
 statement:
-  The straight-line contraction of a convex open subset of a real normed vector
-  space is a smooth ambient-valued map of \([0,1]\times U\).
-proof:
-  The coordinate \(t\mapsto t\) on the interval is smooth, the inclusion
-  \(U\hookrightarrow E\) is smooth, and the formula
-  \((1-t)x_0+tx\) is built from smooth addition and scalar multiplication.
+  The tangent space at a point of an open subset $U$ of a normed vector space $E$ carries the canonical normed additive-group structure identified with that of $E$.
 -/
-theorem contMDiff_coe_convexOpenStraightLineHomotopy
-    (U : TopologicalSpace.Opens E)
-    (hconvex : Convex ℝ (U : Set E)) (x₀ : U) :
-    ContMDiff ((𝓡∂ 1).prod 𝓘(ℝ, E)) 𝓘(ℝ, E) ∞
-      (fun p : Set.Icc (0 : ℝ) 1 × U =>
-        (convexOpenStraightLineHomotopy (E := E) U hconvex x₀ p.1 p.2 : E)) := by
-  have ht :
-      ContMDiff ((𝓡∂ 1).prod 𝓘(ℝ, E)) 𝓘(ℝ) ∞
-        (fun p : Set.Icc (0 : ℝ) 1 × U => (p.1 : ℝ)) :=
-    (contMDiff_subtype_coe_Icc (x := (0 : ℝ)) (y := 1) (n := ∞)).comp
-      (contMDiff_fst (I := 𝓡∂ 1) (J := 𝓘(ℝ, E)) (n := ∞))
-  have hx :
-      ContMDiff ((𝓡∂ 1).prod 𝓘(ℝ, E)) 𝓘(ℝ, E) ∞
-        (fun p : Set.Icc (0 : ℝ) 1 × U => (p.2 : E)) :=
-    (contMDiff_subtype_val (I := 𝓘(ℝ, E)) (U := U) (n := ∞)).comp
-      (contMDiff_snd (I := 𝓡∂ 1) (J := 𝓘(ℝ, E)) (n := ∞))
-  have hline :
-      ContMDiff ((𝓡∂ 1).prod 𝓘(ℝ, E)) 𝓘(ℝ, E) ∞
-        (fun p : Set.Icc (0 : ℝ) 1 × U =>
-          (1 - (p.1 : ℝ)) • (x₀ : E) + (p.1 : ℝ) • (p.2 : E)) :=
-    (contMDiff_const.sub ht).smul contMDiff_const |>.add (ht.smul hx)
-  simpa [convexOpenStraightLineHomotopy, AffineMap.lineMap_apply_module] using hline
-
-variable [FiniteDimensional ℝ E]
-
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceOpenSubtype
     (U : TopologicalSpace.Opens E) (x : U) :
@@ -269,6 +222,13 @@ def normedAddCommGroupTangentSpaceOpenSubtype
 
 attribute [local instance] normedAddCommGroupTangentSpaceOpenSubtype
 
+/--
+%%handwave
+name:
+  Scalar structure on the tangent space of an open subset
+statement:
+  The tangent space at a point of an open subset $U\subseteq E$ carries the canonical real normed-space structure identified with $E$.
+-/
 @[instance_reducible]
 def normedSpaceTangentSpaceOpenSubtype
     (U : TopologicalSpace.Opens E) (x : U) :
@@ -277,7 +237,13 @@ def normedSpaceTangentSpaceOpenSubtype
 
 attribute [local instance] normedSpaceTangentSpaceOpenSubtype
 
-/-- The model-space coefficient field of a smooth form on an open subset of a vector space. -/
+/--
+%%handwave
+name:
+  Model coefficient of a smooth form
+statement:
+  A smooth $n$-form on an open subset $U$ of a vector space is viewed pointwise as an alternating continuous $n$-covector on the ambient model space.
+-/
 def smoothFormModelCoeff
     (U : TopologicalSpace.Opens E) (n : ℕ)
     (omega : SmoothForms (I := 𝓘(ℝ, E)) (M := U) ℝ n)
@@ -285,7 +251,13 @@ def smoothFormModelCoeff
     E [⋀^Fin n]→L[ℝ] ℝ :=
   omega.toFun x
 
-/-- Extend a coefficient field on an open subset by zero outside the subset. -/
+/--
+%%handwave
+name:
+  Zero extension of a form coefficient field
+statement:
+  An alternating-covector field $f$ on an open subset $U\subseteq E$ is extended to $E$ by retaining $f(y)$ for $y\in U$ and assigning the zero covector outside $U$.
+-/
 def modelOpenFormCoeffExtension
     (U : TopologicalSpace.Opens E) (n : ℕ)
     (f : U → E [⋀^Fin n]→L[ℝ] ℝ)
@@ -570,7 +542,13 @@ def convexOpenPoincareHomotopyPoint
   ∫ t in (0 : ℝ)..1,
     convexOpenPoincareHomotopyIntegrand (E := E) U hconvex x₀ n omega x t
 
-/-- Extend the Poincare homotopy integrand by zero outside the open set in the base variable. -/
+/--
+%%handwave
+name:
+  Zero extension of the Poincaré homotopy integrand
+statement:
+  The straight-line Poincaré integrand on a convex open set $U$ is extended in its base variable to $E\times\mathbb R$ by zero outside $U$.
+-/
 def convexOpenPoincareHomotopyIntegrandExtension
     (U : TopologicalSpace.Opens E)
     (hconvex : Convex ℝ (U : Set E)) (x₀ : U)
@@ -1743,32 +1721,6 @@ theorem contDiffOn_intervalIntegral_of_contDiffOn_prod_Icc
 /--
 %%handwave
 name:
-  Local smoothness of compact-interval parameter integrals
-statement:
-  If a Banach-valued function is smooth in the parameter and time variables on
-  \(s\times[a,b]\), with \(s\) open, then near each point of \(s\) its integral
-  over \(a\le t\le b\) is smooth in the parameter.
-proof:
-  Use the global smoothness statement and restrict it to the open neighborhood
-  \(s\) itself.
--/
-theorem contDiffOn_intervalIntegral_of_contDiffOn_prod_Icc_local
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-    {s : Set E} (hs : IsOpen s) {a b : ℝ} (hab : a ≤ b)
-    {f : E × ℝ → F}
-    (hf : ContDiffOn ℝ ∞ f (s ×ˢ Set.Icc a b))
-    {x₀ : E} (hx₀ : x₀ ∈ s) :
-    ∃ u : Set E,
-      IsOpen u ∧ x₀ ∈ u ∧
-        ContDiffOn ℝ ∞ (fun x : E ↦ ∫ t in a..b, f (x, t)) (s ∩ u) := by
-  refine ⟨s, hs, hx₀, ?_⟩
-  exact
-    (contDiffOn_intervalIntegral_of_contDiffOn_prod_Icc
-      (E := E) (F := F) hs hab hf).mono inter_subset_left
-
-/--
-%%handwave
-name:
   Smooth coefficient field of the Poincare homotopy integral
 statement:
   The pointwise interval integral defining the straight-line homotopy operator
@@ -2417,7 +2369,13 @@ def convexOpenCartanHomotopyDensity
       (deRhamDifferential (I := 𝓘(ℝ, E)) (M := U) (A := ℝ) (n + 1) omega)
       x t v)
 
-/-- The total straight-line homotopy \((x,t)\mapsto (1-t)x_0+tx\). -/
+/--
+%%handwave
+name:
+  Total straight-line homotopy
+statement:
+  For a basepoint $x_0\in E$, the total straight-line homotopy is $F(x,t)=x_0+t(x-x_0)=(1-t)x_0+tx$.
+-/
 def convexOpenStraightLineTotalHomotopy
     (x₀ : E) (p : E × ℝ) : E :=
   x₀ + p.2 • (p.1 - x₀)
@@ -2444,7 +2402,13 @@ theorem convexOpenStraightLineTotalHomotopy_mapsTo
   simpa [convexOpenStraightLineTotalHomotopy, AffineMap.lineMap_apply_module', add_comm] using
     convexOpen_lineMap_mem (E := E) U hconvex x₀ ⟨p.1, hp.1⟩ ⟨p.2, hp.2⟩
 
-/-- The derivative of the total straight-line homotopy \((x,t)\mapsto (1-t)x_0+tx\). -/
+/--
+%%handwave
+name:
+  Derivative of the total straight-line homotopy
+statement:
+  At $(x,t)$, the derivative of $F(x,t)=x_0+t(x-x_0)$ is the linear map $(v,s)\mapsto tv+s(x-x_0)$.
+-/
 def convexOpenStraightLineTotalFDeriv
     (x₀ : E) (p : E × ℝ) :
     E × ℝ →L[ℝ] E :=
@@ -2578,8 +2542,11 @@ theorem contDiff_convexOpenStraightLineTotalFDeriv
   simpa [convexOpenStraightLineTotalFDeriv] using hfirst.add hsecond
 
 /--
-The pullback of a form by the total straight-line homotopy
-\((x,t)\mapsto (1-t)x_0+tx\), written on the ambient product space.
+%%handwave
+name:
+  Pullback form under the total straight-line homotopy
+statement:
+  For a smooth $(n+1)$-form $\omega$ on $U$, its ambient pullback along $F(x,t)=(1-t)x_0+tx$ is obtained by evaluating the zero-extended coefficient of $\omega$ at $F(x,t)$ and composing with $DF_{(x,t)}$.
 -/
 def convexOpenStraightLineTotalPullbackForm
     (U : TopologicalSpace.Opens E)
@@ -2594,7 +2561,13 @@ def convexOpenStraightLineTotalPullbackForm
   (coeff (convexOpenStraightLineTotalHomotopy (E := E) (x₀ : E) p)).compContinuousLinearMap
     (convexOpenStraightLineTotalFDeriv (E := E) (x₀ : E) p)
 
-/-- The tangent tuple \(\partial_t,v_0,\ldots,v_n\) on the product \(U\times[0,1]\). -/
+/--
+%%handwave
+name:
+  Time-first tangent tuple
+statement:
+  Given tangent vectors $v_0,\ldots,v_{k-1}\in E$, the associated tangent tuple on $E\times\mathbb R$ is $(\partial_t,(v_0,0),\ldots,(v_{k-1},0))$ with $\partial_t=(0,1)$.
+-/
 def convexOpenStraightLineTimeBaseTangent
     {k : ℕ} (v : Fin k → E) :
     Fin (k + 1) → E × ℝ :=
@@ -2792,8 +2765,11 @@ theorem convexOpenStraightLineTotalPullbackForm_timeContraction_eq_integrandExte
           simp [convexOpenPoincareHomotopyIntegrandExtension, hy]
 
 /--
-The exterior derivative of the total pulled-back form, evaluated on
-\(\partial_t,v_0,\ldots,v_n\).
+%%handwave
+name:
+  Time-base component of the exterior derivative of a homotopy pullback
+statement:
+  The total exterior-derivative term evaluates the exterior derivative of the pulled-back $(n+1)$-form along the straight-line homotopy on the tuple $(\partial_t,v_0,\ldots,v_n)$ at $(x,t)$.
 -/
 def convexOpenStraightLineTotalExteriorDerivativeTerm
     (U : TopologicalSpace.Opens E)
@@ -4167,60 +4143,6 @@ variable {E₂ : Type v'} [NormedAddCommGroup E₂] [NormedSpace ℝ E₂]
 variable {H₂ : Type w'} [TopologicalSpace H₂]
 variable {M₂ : Type m'} [TopologicalSpace M₂] [ChartedSpace H₂ M₂]
 
-/--
-%%handwave
-name:
-  Coordinate smoothness of pullback along a diffeomorphism
-statement:
-  In every source chart, the coordinate representative of the pullback of a
-  smooth form along a diffeomorphism is smooth on the chart image.
-proof:
-  Near a point of the source chart, choose a target chart around its image.
-  The coordinate representative is the target coordinate representative of the
-  form, composed with the chart expression of the diffeomorphism and pulled
-  back by the derivative of that chart expression.
--/
-theorem contDiffOn_coordinateExpression_pullbackDiffeomorph
-    (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
-    [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
-    (φ : M₁ ≃ₘ⟮I₁, I₂⟯ M₂) {n : ℕ}
-    (omega : SmoothForms (I := I₂) (M := M₂) ℝ n)
-    (e : OpenPartialHomeomorph M₁ H₁) (he : e ∈ atlas H₁ M₁) :
-    ContDiffOn ℝ ∞
-      (coordinateExpression (I := I₁) (F := ℝ) (n := n)
-        (fun x ↦
-          (omega.toFun (φ x)).compContinuousLinearMap
-            (mfderiv I₁ I₂ φ x)) e)
-      (e.extend I₁).target := by
-  exact
-    contDiffOn_coordinateExpression_smoothDifferentialFormPullbackDiffeomorph
-      I₁ I₂ φ omega e he
-
-/--
-%%handwave
-name:
-  Pullback of a smooth form along a diffeomorphism
-statement:
-  Pulling a smooth differential form back along a smooth diffeomorphism gives
-  a smooth differential form.
-proof:
-  In local charts this is the usual smoothness of the coordinate expression of
-  \(\varphi^\*\omega\), obtained by composing the coordinate expression of
-  \(\omega\) with the chart expression of \(\varphi\) and the derivative of
-  that chart expression.
--/
-theorem isContMDiffForm_pullbackDiffeomorph
-    (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
-    [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
-    (φ : M₁ ≃ₘ⟮I₁, I₂⟯ M₂) {n : ℕ}
-    (omega : SmoothForms (I := I₂) (M := M₂) ℝ n) :
-    IsContMDiffForm (I := I₁) (M := M₁) (F := ℝ) (n := n) ∞
-      (fun x ↦
-        (omega.toFun (φ x)).compContinuousLinearMap
-          (mfderiv I₁ I₂ φ x)) := by
-  intro e he
-  exact contDiffOn_coordinateExpression_pullbackDiffeomorph I₁ I₂ φ omega e he
-
 /-- Pull back a smooth form along a diffeomorphism. -/
 abbrev smoothFormPullbackDiffeomorph
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
@@ -4230,7 +4152,13 @@ abbrev smoothFormPullbackDiffeomorph
     SmoothForms (I := I₁) (M := M₁) ℝ n :=
   smoothDifferentialFormPullbackDiffeomorph I₁ I₂ φ omega
 
-/-- Pullback of smooth forms along a diffeomorphism as a linear map. -/
+/--
+%%handwave
+name:
+  Linear pullback of smooth forms by a diffeomorphism
+statement:
+  A diffeomorphism $\varphi:M_1\to M_2$ induces a real-linear pullback map $\varphi^*:\Omega^n(M_2)\to\Omega^n(M_1)$.
+-/
 def smoothFormsPullbackDiffeomorph
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
     [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
@@ -4470,7 +4398,13 @@ theorem smoothFormsPullbackDiffeomorph_comp_symm
   funext i
   exact hcomp_apply (v i)
 
-/-- Pullback along a diffeomorphism sends closed forms to closed forms. -/
+/--
+%%handwave
+name:
+  Pullback of closed forms by a diffeomorphism
+statement:
+  Since pullback by a diffeomorphism commutes with the exterior derivative, it restricts to a real-linear map from closed $n$-forms on $M_2$ to closed $n$-forms on $M_1$.
+-/
 def deRhamClosedFormsPullbackDiffeomorph
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
     [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
@@ -4533,7 +4467,13 @@ theorem deRhamClosedFormsPullbackDiffeomorph_exact
       rw [deRhamDifferential_smoothFormsPullbackDiffeomorph]
       rw [heta]
 
-/-- The induced pullback map on de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Pullback on de Rham cohomology by a diffeomorphism
+statement:
+  Pullback by a diffeomorphism preserves exact forms and therefore induces the real-linear map $\varphi^*:H^n_{\mathrm{dR}}(M_2)\to H^n_{\mathrm{dR}}(M_1)$.
+-/
 def deRhamCohomologyPullbackDiffeomorph
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
     [IsManifold I₁ ∞ M₁] [IsManifold I₂ ∞ M₂]
@@ -4648,8 +4588,6 @@ proof:
   Pull back forms along the diffeomorphism.  Pullback commutes with exterior
   derivative, so it descends to closed forms modulo exact forms.  The inverse
   diffeomorphism gives the inverse map on cohomology.
-tags:
-  milestone
 -/
 theorem deRhamCohomology_linearEquiv_of_diffeomorphic
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)
@@ -4679,8 +4617,6 @@ proof:
   Pullback along the diffeomorphism gives an isomorphism of de Rham complexes,
   with inverse given by pullback along the inverse diffeomorphism.  The induced
   linear equivalence on cohomology transports the singleton property.
-tags:
-  milestone
 -/
 theorem deRhamCohomology_subsingleton_of_diffeomorphic
     (I₁ : ModelWithCorners ℝ E₁ H₁) (I₂ : ModelWithCorners ℝ E₂ H₂)

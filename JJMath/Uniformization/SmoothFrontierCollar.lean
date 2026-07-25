@@ -143,8 +143,14 @@ theorem exists_smoothBoundaryProductBall_partitionOfUnity
     exact mem_iUnion.mpr
       ⟨p, smoothBoundaryProductBallSource_point_mem D p⟩
 
-/-- A fixed smooth partition of unity used to glue the signed boundary
-coordinates. -/
+/--
+%%handwave
+name: A fixed smooth partition of unity used to glue the signed boundary coordinates
+statement:
+  Choose a smooth partition of unity $(\psi_p)_{p\in\partial\Omega}$
+  subordinate to the centered product-ball neighborhoods of the smooth
+  frontier.
+-/
 noncomputable def smoothBoundaryProductBallPartitionOfUnity
     (D : SmoothBoundaryDomain X) :
     SmoothPartitionOfUnity (frontier D.carrier)
@@ -168,9 +174,15 @@ theorem smoothBoundaryProductBallPartitionOfUnity_isSubordinate
       (fun p => smoothBoundaryProductBallSource D p) :=
   Classical.choose_spec (exists_smoothBoundaryProductBall_partitionOfUnity D)
 
-/-- The first coordinate of the centered product chart at a frontier point.
-Outside the chart source the underlying partial equivalence has an arbitrary
-value; the subordinate partition of unity makes that value irrelevant. -/
+/--
+%%handwave
+name: The first coordinate of the centered product chart at a frontier point
+statement:
+  For a frontier point $p$ with centered product chart $\Phi_p$, define the
+  local signed coordinate $s_p(x)=\Phi_p(x)_1$.  Values outside the chart
+  source are irrelevant after multiplication by the subordinate
+  partition function.
+-/
 noncomputable def smoothBoundaryLocalSignedCoordinate
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) (x : X) : ℝ :=
   ((smoothBoundaryProductChartAt D p).coordinate x).1
@@ -202,7 +214,13 @@ theorem smoothBoundaryLocalSignedCoordinate_contMDiffOn
   simpa only [smoothBoundaryLocalSignedCoordinate, Function.comp_apply] using
     (contDiffAt_fst.comp_contMDiffWithinAt (hcoordinate x hx))
 
-/-- The partition-of-unity sum of the local signed first coordinates. -/
+/--
+%%handwave
+name: The partition-of-unity sum of the local signed first coordinates
+statement:
+  Define the global signed boundary coordinate
+  $s(x)=\sum_{p\in\partial\Omega}\psi_p(x)s_p(x)$.
+-/
 noncomputable def smoothBoundaryGlobalSignedCoordinate
     (D : SmoothBoundaryDomain X) (x : X) : ℝ :=
   ∑ᶠ p : frontier D.carrier,
@@ -239,8 +257,13 @@ theorem smoothBoundaryGlobalSignedCoordinate_contMDiff
       (fun p => smoothBoundaryProductBallSource_isOpen D p)
       (fun p => smoothBoundaryLocalSignedCoordinate_contMDiffOn D p)
 
-/-- The sum of the partition functions.  It equals one on the frontier and is
-positive throughout a neighborhood of it. -/
+/--
+%%handwave
+name: The sum of the partition functions
+statement:
+  Define $\sigma(x)=\sum_{p\in\partial\Omega}\psi_p(x)$; it equals one on
+  the frontier and remains positive on a neighborhood of it.
+-/
 noncomputable def smoothBoundaryPartitionSum
     (D : SmoothBoundaryDomain X) (x : X) : ℝ :=
   ∑ᶠ p : frontier D.carrier,
@@ -279,8 +302,14 @@ theorem smoothBoundaryPartitionSum_eq_one_of_mem_frontier
     smoothBoundaryPartitionSum D x = 1 := by
   exact (smoothBoundaryProductBallPartitionOfUnity D).sum_eq_one hx
 
-/-- The open neighborhood on which the subordinate partition is definitely
-nonzero. -/
+/--
+%%handwave
+name: The open neighborhood on which the subordinate partition is definitely nonzero
+statement:
+  Define the frontier neighborhood
+  $N=\{x\in X:\sigma(x)>1/2\}$, where the boundary partition has positive
+  total weight.
+-/
 def smoothBoundaryGlobalCoordinateNeighborhood
     (D : SmoothBoundaryDomain X) : Set X :=
   {x | (1 / 2 : ℝ) < smoothBoundaryPartitionSum D x}

@@ -43,10 +43,6 @@ class IsIdentityManifoldModel (H : Type) [NormedAddCommGroup H] [NormedSpace ℝ
     (I : ModelWithCorners ℝ H H) : Prop where
   eq_identity : I = 𝓘(ℝ, H)
 
-instance instIsIdentityManifoldModel_self
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] :
-    IsIdentityManifoldModel H (𝓘(ℝ, H)) where
-  eq_identity := rfl
 
 /--
 %%handwave
@@ -111,7 +107,13 @@ structure SmoothRiemannianMetricOnSurface (X : Type)
     letI : IsManifold SurfaceRealModel ∞ X := isManifold_real
     ContMDiffRiemannianMetricOnSurface X
 
-/-- A surface Riemannian metric, regarded as a metric on its underlying real manifold. -/
+/--
+%%handwave
+name:
+  Underlying real-manifold metric of a surface metric
+statement:
+  A smooth Riemannian metric on a complex surface determines the same smooth Riemannian metric on the underlying two-dimensional real manifold.
+-/
 noncomputable def SmoothRiemannianMetricOnSurface.toManifoldMetric {X : Type}
     [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X) :
@@ -187,23 +189,6 @@ def IsPositiveDefiniteSymmetricTangentForm {X : Type}
     (x : X) (b : TangentBilinearFormAt X x) : Prop :=
   (∀ v w : TangentSpace SurfaceRealModel x, b v w = b w v) ∧
     ∀ v : TangentSpace SurfaceRealModel x, v ≠ 0 → 0 < b v v
-
-/--
-%%handwave
-name:
-  Conformal tangent form
-statement:
-  A tangent-bilinear form on a Riemann surface is conformal when it is a
-  positive scalar multiple of the Euclidean real inner product on the complex
-  tangent line.
--/
-def IsConformalTangentForm {X : Type}
-    [TopologicalSpace X] [ChartedSpace ℂ X] [IsManifold SurfaceRealModel ∞ X]
-    (x : X) (b : TangentBilinearFormAt X x) : Prop :=
-  ∃ c : ℝ, 0 < c ∧
-    ∀ v w : TangentSpace SurfaceRealModel x,
-      b v w = c * inner ℝ (show ℂ from v) (show ℂ from w)
-
 
 end Uniformization
 

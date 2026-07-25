@@ -21,7 +21,13 @@ namespace JJMath.Uniformization
 
 noncomputable section
 
-/-- The plane with the two standard vortex points `-1` and `1` removed. -/
+/--
+%%handwave
+name: Standard twice-punctured plane
+statement:
+  The complex plane with the two standard vortex points $-1$ and $1$
+  removed.
+-/
 def planarVortexPairOpen : TopologicalSpace.Opens ℂ :=
   ⟨{z : ℂ | z ≠ -1 ∧ z ≠ 1}, isOpen_ne.inter isOpen_ne⟩
 
@@ -40,7 +46,13 @@ theorem mem_planarVortexPairOpen_iff (z : ℂ) :
     z ∈ planarVortexPairOpen ↔ z ≠ -1 ∧ z ≠ 1 := by
   rfl
 
-/-- The standard rational function with a zero at `-1` and a pole at `1`. -/
+/--
+%%handwave
+name: Standard planar vortex ratio
+statement:
+  Define the rational function $(z+1)/(z-1)$, with a zero at $-1$ and a
+  pole at $1$.
+-/
 def planarVortexRatio (z : ℂ) : ℂ := (z + 1) / (z - 1)
 
 /--
@@ -63,7 +75,13 @@ theorem planarVortexRatio_ne_zero (z : planarVortexPairOpen) :
   · intro h
     exact hz.2 (sub_eq_zero.mp h)
 
-/-- The unit phase of the standard zero--pole pair. -/
+/--
+%%handwave
+name: Unit phase of the standard planar vortex pair
+statement:
+  On $\mathbb C\setminus\{-1,1\}$, define
+  $P(z)=R(z)/|R(z)|$ for $R(z)=(z+1)/(z-1)$.
+-/
 def planarVortexPairPhase (z : planarVortexPairOpen) : ℂ :=
   planarVortexRatio z / ‖planarVortexRatio z‖
 
@@ -103,25 +121,6 @@ theorem contDiffAt_planarVortexRatio_of_ne_one
   have hden : ContDiffAt ℝ ∞ (fun w : ℂ ↦ w - 1) z :=
     contDiffAt_id.sub contDiffAt_const
   exact hnum.mul (hden.inv (sub_ne_zero.mpr hz))
-
-/--
-%%handwave
-name:
-  Smoothness of the standard vortex ratio
-statement:
-  The function \((z+1)/(z-1)\) is smooth on the plane with \(\pm1\)
-  removed.
-proof:
-  Every point of the domain differs from the pole \(1\), so the local
-  rational smoothness result applies.
--/
-theorem contMDiff_planarVortexRatio :
-    ContMDiff (modelWithCornersSelf ℝ ℂ) (modelWithCornersSelf ℝ ℂ) ∞
-      (fun z : planarVortexPairOpen ↦ planarVortexRatio z) := by
-  intro z
-  rw [contMDiffAt_subtype_iff]
-  exact (contDiffAt_planarVortexRatio_of_ne_one
-    ((mem_planarVortexPairOpen_iff z).mp z.2).2).contMDiffAt
 
 /--
 %%handwave
@@ -192,13 +191,23 @@ theorem planarVortexRatio_mem_slitPlane_of_one_lt_norm
     nlinarith
   · exact hden
 
-/-- The principal argument of the standard vortex ratio on the exterior of
-the unit disk. -/
+/--
+%%handwave
+name: Exterior domain of the standard vortex ratio
+statement:
+  Define the open exterior domain $\{z\in\mathbb C:|z|>1\}$.
+-/
 def planarVortexOuterOpen : TopologicalSpace.Opens ℂ :=
   ⟨{z : ℂ | 1 < ‖z‖}, isOpen_lt continuous_const continuous_norm⟩
 
-/-- The principal argument of the standard vortex ratio on the exterior of
-the unit disk. -/
+/--
+%%handwave
+name: Principal exterior argument of the standard vortex ratio
+statement:
+  On $|z|>1$, define
+  $\theta(z)=\operatorname{Im}\log((z+1)/(z-1))$ using the principal
+  logarithm.
+-/
 def planarVortexOuterArgument (z : planarVortexOuterOpen) : ℝ :=
   (Complex.log (planarVortexRatio z)).im
 
@@ -274,8 +283,13 @@ theorem complex_exp_im_log_mul_I_eq_div_norm
   rw [harg, Complex.exp_sub, Complex.exp_log hw, ← Complex.ofReal_exp,
     Complex.log_re, Real.exp_log (norm_pos_iff.mpr hw)]
 
-/-- Regard a point of the exterior of the unit disk as a point of the
-twice-punctured plane. -/
+/--
+%%handwave
+name: Inclusion of the exterior into the twice-punctured plane
+statement:
+  Since $|z|>1$ implies $z\ne\pm1$, define the inclusion
+  $\{z:|z|>1\}\hookrightarrow\mathbb C\setminus\{-1,1\}$.
+-/
 def planarVortexOuterToPair (z : planarVortexOuterOpen) :
     planarVortexPairOpen := by
   refine ⟨z, ?_⟩
@@ -303,9 +317,14 @@ theorem planarVortexOuterArgument_is_argument
   exact complex_exp_im_log_mul_I_eq_div_norm
     (planarVortexRatio_ne_zero (planarVortexOuterToPair z))
 
-/-- A radial cutoff which is zero up to radius two and one from radius
-three onwards.  It is only used on the exterior of the unit disk, where the
-norm is smooth. -/
+/--
+%%handwave
+name: Radial cutoff for the exterior vortex phase
+statement:
+  On $|z|>1$, define $\kappa(z)=S(|z|-2)$ from the standard smooth
+  transition $S$; thus $\kappa=0$ for $|z|\le2$ and $\kappa=1$ for
+  $|z|\ge3$.
+-/
 def planarVortexOuterCutoff (z : planarVortexOuterOpen) : ℝ :=
   Real.smoothTransition (‖(z : ℂ)‖ - 2)
 
@@ -378,8 +397,12 @@ theorem planarVortexOuterCutoff_eq_one_of_three_le_norm
   apply Real.smoothTransition.one_of_one_le
   linarith
 
-/-- The exterior logarithmic argument, switched off between radii two and
-three. -/
+/--
+%%handwave
+name: Flattened exterior vortex argument
+statement:
+  Define $\widetilde\theta(z)=(1-\kappa(z))\theta(z)$ on $|z|>1$.
+-/
 def planarVortexFlattenedOuterArgument
     (z : planarVortexOuterOpen) : ℝ :=
   (1 - planarVortexOuterCutoff z) * planarVortexOuterArgument z
@@ -402,8 +425,13 @@ theorem contMDiff_planarVortexFlattenedOuterArgument :
   exact (contMDiff_const.sub contMDiff_planarVortexOuterCutoff).mul
     contMDiff_planarVortexOuterArgument
 
-/-- The vortex-pair phase on the exterior, flattened to one outside radius
-three. -/
+/--
+%%handwave
+name: Flattened exterior vortex phase
+statement:
+  Define $\widetilde P(z)=e^{i\widetilde\theta(z)}$ on $|z|>1$; it agrees
+  with the vortex phase for $|z|\le2$ and equals $1$ for $|z|\ge3$.
+-/
 def planarVortexFlattenedOuterPhase
     (z : planarVortexOuterOpen) : ℂ :=
   Complex.exp
@@ -519,19 +547,37 @@ private theorem contMDiffCodRestrictOpen
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- The inner patch on which the unflattened rational phase is used. -/
+/--
+%%handwave
+name: Inner patch of the standard vortex pair
+statement:
+  Inside the twice-punctured plane, define the open patch
+  $\{z:|z|<2\}$.
+-/
 def planarVortexInnerPatch :
     TopologicalSpace.Opens planarVortexPairOpen :=
   ⟨{z | ‖((z : planarVortexPairOpen) : ℂ)‖ < 2}, by
     exact isOpen_lt (by fun_prop) continuous_const⟩
 
-/-- The exterior patch on which the principal logarithm is available. -/
+/--
+%%handwave
+name: Exterior patch of the standard vortex pair
+statement:
+  Inside the twice-punctured plane, define the open patch
+  $\{z:|z|>1\}$.
+-/
 def planarVortexOuterPatch :
     TopologicalSpace.Opens planarVortexPairOpen :=
   ⟨{z | 1 < ‖((z : planarVortexPairOpen) : ℂ)‖}, by
     exact isOpen_lt continuous_const (by fun_prop)⟩
 
-/-- Forget the redundant puncture proof on the exterior patch. -/
+/--
+%%handwave
+name: Exterior-patch inclusion
+statement:
+  Map the exterior patch of the twice-punctured plane to
+  $\{z:|z|>1\}$ by retaining its underlying complex point.
+-/
 def planarVortexOuterPatchToOuter
     (z : planarVortexOuterPatch) : planarVortexOuterOpen :=
   ⟨((z : planarVortexPairOpen) : ℂ), z.2⟩
@@ -557,7 +603,14 @@ theorem contMDiff_planarVortexOuterPatchToOuter :
     contMDiff_subtype_val.comp contMDiff_subtype_val
   exact contMDiffCodRestrictOpen hambient planarVortexOuterOpen (fun z ↦ z.2)
 
-/-- The compactly supported standard vortex-pair phase. -/
+/--
+%%handwave
+name: Compact standard vortex-pair phase
+statement:
+  On $\mathbb C\setminus\{-1,1\}$, use the normalized rational phase where
+  $|z|\le1$ and the flattened exterior phase where $|z|>1$; the two formulas
+  agree on their overlap and the result equals $1$ outside radius three.
+-/
 def planarVortexCompactPhase (z : planarVortexPairOpen) : ℂ := by
   classical
   exact if hz : 1 < ‖(z : ℂ)‖ then
@@ -698,11 +751,22 @@ theorem norm_planarVortexCompactPhase (z : planarVortexPairOpen) :
 
 /-! ## Moving the standard pair to arbitrary planar points -/
 
-/-- The twice-punctured plane with arbitrary distinct marked points. -/
+/--
+%%handwave
+name: The twice-punctured plane with arbitrary distinct marked points
+statement:
+  The twice-punctured plane with arbitrary distinct marked points.
+-/
 def planarVortexPairOpenAt (a b : ℂ) : TopologicalSpace.Opens ℂ :=
   ⟨{z : ℂ | z ≠ a ∧ z ≠ b}, isOpen_ne.inter isOpen_ne⟩
 
-/-- The affine coordinate sending `a` to `-1` and `b` to `1`. -/
+/--
+%%handwave
+name: Affine coordinate for two marked planar points
+statement:
+  For distinct $a,b\in\mathbb C$, define the affine coordinate sending $a$
+  to $-1$ and $b$ to $1$.
+-/
 def planarVortexAffine (a b z : ℂ) : ℂ :=
   2 * (z - (a + b) / 2) / (b - a)
 
@@ -791,7 +855,13 @@ theorem planarVortexAffine_injective {a b : ℂ} (hab : a ≠ b) :
   field_simp [hba] at hzw
   linear_combination hzw / 2
 
-/-- The inverse affine coordinate. -/
+/--
+%%handwave
+name: Inverse affine coordinate for two marked points
+statement:
+  For marked points $a,b\in\mathbb C$, define
+  $A_{a,b}^{-1}(w)=(a+b)/2+(b-a)w/2$.
+-/
 def planarVortexAffineInv (a b w : ℂ) : ℂ :=
   (a + b) / 2 + (b - a) * w / 2
 
@@ -837,7 +907,14 @@ theorem planarVortexAffine_apply_inv {a b : ℂ} (hab : a ≠ b)
   field_simp [hba]
   ring
 
-/-- The affine vortex coordinate as a homeomorphism of the plane. -/
+/--
+%%handwave
+name: Affine vortex homeomorphism
+statement:
+  If $a\ne b$, bundle
+  $A_{a,b}(z)=2(z-(a+b)/2)/(b-a)$ and its inverse as a homeomorphism of
+  $\mathbb C$.
+-/
 def planarVortexAffineHomeomorph {a b : ℂ} (hab : a ≠ b) : ℂ ≃ₜ ℂ where
   toEquiv :=
     { toFun := planarVortexAffine a b
@@ -851,8 +928,13 @@ def planarVortexAffineHomeomorph {a b : ℂ} (hab : a ≠ b) : ℂ ≃ₜ ℂ wh
     unfold planarVortexAffineInv
     fun_prop
 
-/-- The compact coordinate core outside which the affine vortex-pair phase
-is identically one. -/
+/--
+%%handwave
+name: Compact core of an affine vortex pair
+statement:
+  For $a\ne b$, define the compact core
+  $A_{a,b}^{-1}(\overline B(0,3))$.
+-/
 def planarVortexAffineCore {a b : ℂ} (hab : a ≠ b) : Set ℂ :=
   planarVortexAffineHomeomorph hab ⁻¹' Metric.closedBall 0 3
 
@@ -957,8 +1039,13 @@ theorem three_lt_norm_planarVortexAffine_of_not_mem_core
     Metric.mem_closedBall, dist_zero_right] at hz
   exact lt_of_not_ge hz
 
-/-- The affine coordinate sends the arbitrary twice-punctured plane into
-the standard twice-punctured plane. -/
+/--
+%%handwave
+name: Affine identification of twice-punctured planes
+statement:
+  For $a\ne b$, restrict $A_{a,b}$ to a map
+  $\mathbb C\setminus\{a,b\}\to\mathbb C\setminus\{-1,1\}$.
+-/
 def planarVortexAffineToStandard {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexPairOpenAt a b) : planarVortexPairOpen := by
   refine ⟨planarVortexAffine a b z, ?_⟩
@@ -1003,8 +1090,14 @@ theorem contMDiff_planarVortexAffineToStandard {a b : ℂ} (hab : a ≠ b) :
   exact contMDiffCodRestrictOpen hraw planarVortexPairOpen
     (fun z ↦ (planarVortexAffineToStandard hab z).2)
 
-/-- A compactly supported unit phase with degree `+1` at `a` and degree
-`-1` at `b`. -/
+/--
+%%handwave
+name: Compact vortex phase at two marked planar points
+statement:
+  Pull the standard compact vortex phase back by the affine coordinate
+  sending $a$ to $-1$ and $b$ to $1$; its degrees at $a$ and $b$ are $+1$
+  and $-1$, respectively.
+-/
 def planarVortexCompactPhaseAt {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexPairOpenAt a b) : ℂ :=
   planarVortexCompactPhase (planarVortexAffineToStandard hab z)

@@ -117,35 +117,10 @@ set_option synthInstance.maxHeartbeats 100000 in
 /--
 %%handwave
 name:
-  Difference of constant degree-zero classes
+  Point opposite a stereographic pole
 statement:
-  For \(c,d\in\mathbb R\), \([c]-[d]=[c-d]\) in
-  \(H_{\mathrm{dR}}^0(M;\mathbb R)\).
-proof:
-  The quotient map is linear and subtraction of the two constant zero-forms
-  is the constant zero-form \(c-d\).
+  For $v\in S^1$, the distinguished opposite point $v^\ast$ is the circle point whose stereographic coordinate with pole $v$ is $0$.
 -/
-theorem deRhamConstantH0Class_sub
-    {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    (c d : ℝ) :
-    deRhamConstantH0Class (I0 := I) (M0 := M) c -
-        deRhamConstantH0Class (I0 := I) (M0 := M) d =
-      deRhamConstantH0Class (I0 := I) (M0 := M) (c - d) := by
-  simp only [deRhamConstantH0Class, ← map_sub]
-  apply congrArg
-    (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 0).mkQ
-  apply Subtype.ext
-  apply DifferentialForm.ext
-  intro x
-  ext q
-  rw [show q = (fun i : Fin 0 => nomatch i) from Subsingleton.elim _ _]
-  simp [deRhamConstantZeroClosedForm, smoothRealFunctionToZeroForm,
-    smoothRealConstantFunction]
-  change c - d = c - d
-  rfl
-
 def annularOpposite (v : Circle) : Circle :=
   (stereographic' 1 v).symm 0
 
@@ -241,12 +216,26 @@ theorem stereographic_eq_zero_iff (v x : Circle)
   · intro h
     rw [h, annularPunctureChart_opposite]
 
+/--
+%%handwave
+name:
+  Positive annular chart half-space
+statement:
+  The positive annular target is the open half-space of $\mathbb R\times\mathbb R$ in which the first coordinate is positive.
+-/
 def annularPositiveTarget :
     TopologicalSpace.Opens (EuclideanSpace ℝ (Fin 1) × ℝ) where
   carrier := {p | 0 < p.1 0}
   is_open' := isOpen_lt continuous_const
     ((PiLp.continuous_apply 2 (fun _ : Fin 1 => ℝ) 0).comp continuous_fst)
 
+/--
+%%handwave
+name:
+  Negative annular chart half-space
+statement:
+  The negative annular target is the open half-space of $\mathbb R\times\mathbb R$ in which the first coordinate is negative.
+-/
 def annularNegativeTarget :
     TopologicalSpace.Opens (EuclideanSpace ℝ (Fin 1) × ℝ) where
   carrier := {p | p.1 0 < 0}
@@ -314,6 +303,13 @@ theorem annularNegativeTarget_nonempty :
   refine ⟨(WithLp.toLp 2 (fun _ : Fin 1 => (-1 : ℝ)), 0), ?_⟩
   simp [annularNegativeTarget]
 
+/--
+%%handwave
+name:
+  Positive component of a doubly punctured cylinder
+statement:
+  Relative to stereographic projection with pole $v$, the positive component consists of cylinder points whose stereographic circle coordinate is positive.
+-/
 def annularPositiveComponent (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) where
   carrier :=
@@ -325,6 +321,13 @@ def annularPositiveComponent (v : Circle) :
     (deRham_boundarylessExtendedChart AnnularCylinderModel
       (annularPunctureChart v)).isOpen_inter_preimage annularPositiveTarget.2
 
+/--
+%%handwave
+name:
+  Negative component of a doubly punctured cylinder
+statement:
+  Relative to stereographic projection with pole $v$, the negative component consists of cylinder points whose stereographic circle coordinate is negative.
+-/
 def annularNegativeComponent (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) where
   carrier :=
@@ -413,6 +416,13 @@ theorem mem_annularPunctureOpen_iff (v : Circle) (p : Circle × ℝ) :
   change (p.1 ∈ ({v}ᶜ : Set Circle) ∧ p.2 ∈ (Set.univ : Set ℝ)) ↔ p.1 ≠ v
   simp
 
+/--
+%%handwave
+name:
+  Doubly punctured annular cylinder
+statement:
+  The doubly punctured cylinder is $(S^1\setminus\{v,v^\ast\})\times\mathbb R$, expressed as the intersection of the two complementary stereographic chart domains.
+-/
 def annularDoublePunctureOpen (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) :=
   annularPunctureOpen v ⊓ annularPunctureOpen (annularOpposite v)
@@ -540,6 +550,13 @@ theorem annularNegativeComponent_le_doublePuncture (v : Circle) :
   rw [← annularComponents_cover_doublePuncture v]
   exact le_sup_right
 
+/--
+%%handwave
+name:
+  Positive component inside the annular overlap
+statement:
+  Inside the doubly punctured cylinder, the positive overlap set is the component on which the stereographic circle coordinate relative to $v$ is positive.
+-/
 def annularOverlapPositiveSet (v : Circle) :
     Set (annularDoublePunctureOpen v) :=
   {x | (x.1 : Circle × ℝ) ∈ (annularPositiveComponent v : Set (Circle × ℝ))}
@@ -600,6 +617,13 @@ theorem annularOverlapPositiveSet_isClopen (v : Circle) :
   rw [heq]
   exact (annularNegativeComponent v).2.preimage continuous_subtype_val
 
+/--
+%%handwave
+name:
+  Step function on the annular overlap
+statement:
+  On the doubly punctured cylinder, the overlap step function is $1$ on the positive component and $0$ on the negative component.
+-/
 noncomputable def annularOverlapStepFunction (v : Circle)
     (x : annularDoublePunctureOpen v) : ℝ :=
   by
@@ -631,6 +655,13 @@ theorem annularOverlapStepFunction_isLocallyConstant (v : Circle) :
     have hynot : y ∉ annularOverlapPositiveSet v := hy
     simp [annularOverlapStepFunction, hx, hynot]
 
+/--
+%%handwave
+name:
+  Closed zero-form of the annular overlap step
+statement:
+  The locally constant annular overlap step function determines a closed real $0$-form on the doubly punctured cylinder.
+-/
 noncomputable def annularOverlapStepClosedForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := annularDoublePunctureOpen v) (A := ℝ) 0 :=
@@ -642,150 +673,19 @@ noncomputable def annularOverlapStepClosedForm (v : Circle) :
       (I0 := AnnularCylinderModel) (annularOverlapStepFunction v)
       (annularOverlapStepFunction_isLocallyConstant v)⟩
 
+/--
+%%handwave
+name:
+  Cohomology class of the annular overlap step
+statement:
+  The annular overlap step defines its degree-zero de Rham cohomology class on the doubly punctured cylinder.
+-/
 noncomputable def annularOverlapStepClass (v : Circle) :
     DeRhamCohomology (I := AnnularCylinderModel)
       (M := annularDoublePunctureOpen v) (A := ℝ) 0 :=
   (DeRhamExactClosedForms (I := AnnularCylinderModel)
     (M := annularDoublePunctureOpen v) (A := ℝ) 0).mkQ
       (annularOverlapStepClosedForm v)
-
-/--
-%%handwave
-name:
-  Restriction of the annular overlap step to the positive component
-statement:
-  The locally constant closed zero-form defined by the annular overlap step
-  restricts to the constant zero-form \(1\) on the positive component.
-proof:
-  Every point of that component satisfies the positive branch of the step
-  function.
--/
-theorem annularOverlapStepClosedForm_restrict_positive (v : Circle) :
-    deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (annularPositiveComponent_le_doublePuncture v) 0
-        (annularOverlapStepClosedForm v) =
-      deRhamConstantZeroClosedForm (I0 := AnnularCylinderModel)
-        (M0 := annularPositiveComponent v) 1 := by
-  classical
-  apply Subtype.ext
-  apply DifferentialForm.ext
-  intro x
-  ext q
-  rw [show q = (fun i : Fin 0 => nomatch i) from Subsingleton.elim _ _]
-  simp only [deRhamClosedFormsRestrictionOfLE, restrictSmoothFormsOfLE,
-    annularOverlapStepClosedForm,
-    smoothRealFunctionToZeroForm, smoothRealFunctionOfIsLocallyConstant,
-    deRhamConstantZeroClosedForm, smoothRealConstantFunction,
-    ContinuousAlternatingMap.constOfIsEmpty_apply]
-  have hx : TopologicalSpace.Opens.inclusion
-      (annularPositiveComponent_le_doublePuncture v) x ∈
-        annularOverlapPositiveSet v := x.property
-  change
-    (if TopologicalSpace.Opens.inclusion
-        (annularPositiveComponent_le_doublePuncture v) x ∈
-          annularOverlapPositiveSet v then 1 else 0) = 1
-  simp [hx]
-
-/--
-%%handwave
-name:
-  Restriction of the annular overlap step to the negative component
-statement:
-  The annular overlap step zero-form restricts to the constant zero-form
-  \(0\) on the negative component.
-proof:
-  The positive and negative components are disjoint, so every point of the
-  negative component satisfies the zero branch.
--/
-theorem annularOverlapStepClosedForm_restrict_negative (v : Circle) :
-    deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (annularNegativeComponent_le_doublePuncture v) 0
-        (annularOverlapStepClosedForm v) =
-      deRhamConstantZeroClosedForm (I0 := AnnularCylinderModel)
-        (M0 := annularNegativeComponent v) 0 := by
-  classical
-  apply Subtype.ext
-  apply DifferentialForm.ext
-  intro x
-  ext q
-  rw [show q = (fun i : Fin 0 => nomatch i) from Subsingleton.elim _ _]
-  simp only [deRhamClosedFormsRestrictionOfLE, restrictSmoothFormsOfLE,
-    annularOverlapStepClosedForm,
-    smoothRealFunctionToZeroForm, smoothRealFunctionOfIsLocallyConstant,
-    deRhamConstantZeroClosedForm, smoothRealConstantFunction,
-    ContinuousAlternatingMap.constOfIsEmpty_apply]
-  have hx : TopologicalSpace.Opens.inclusion
-      (annularNegativeComponent_le_doublePuncture v) x ∉
-        annularOverlapPositiveSet v := by
-    intro hxpos
-    have hxPosAmbient : (x.1 : Circle × ℝ) ∈
-        (annularPositiveComponent v : Set (Circle × ℝ)) := hxpos
-    have hxNegAmbient : (x.1 : Circle × ℝ) ∈
-        (annularNegativeComponent v : Set (Circle × ℝ)) := x.property
-    have hmem : (x.1 : Circle × ℝ) ∈
-        (annularPositiveComponent v ⊓ annularNegativeComponent v :
-          TopologicalSpace.Opens (Circle × ℝ)) := ⟨hxPosAmbient, hxNegAmbient⟩
-    rw [annularComponents_disjoint v] at hmem
-    exact hmem
-  change
-    (if TopologicalSpace.Opens.inclusion
-        (annularNegativeComponent_le_doublePuncture v) x ∈
-          annularOverlapPositiveSet v then 1 else 0) = 0
-  simp [hx]
-
-/--
-%%handwave
-name:
-  Positive restriction of the annular overlap step class
-statement:
-  The degree-zero cohomology class of the annular overlap step restricts to
-  the constant class \([1]\) on the positive component.
-proof:
-  Restriction commutes with passage to cohomology, and the representing
-  zero-form restricts to the constant form \(1\).
--/
-theorem annularOverlapStepClass_restrict_positive (v : Circle) :
-    deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (annularPositiveComponent_le_doublePuncture v) 0
-        (annularOverlapStepClass v) =
-      deRhamConstantH0Class (I0 := AnnularCylinderModel)
-        (M0 := annularPositiveComponent v) 1 := by
-  simp only [annularOverlapStepClass, deRhamCohomologyRestrictionOfLE,
-    deRhamConstantH0Class]
-  change
-    (DeRhamExactClosedForms (I := AnnularCylinderModel)
-      (M := annularPositiveComponent v) (A := ℝ) 0).mkQ
-        (deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-          (annularPositiveComponent_le_doublePuncture v) 0
-          (annularOverlapStepClosedForm v)) = _
-  rw [annularOverlapStepClosedForm_restrict_positive]
-
-/--
-%%handwave
-name:
-  Negative restriction of the annular overlap step class
-statement:
-  The degree-zero cohomology class of the annular overlap step restricts to
-  the constant class \([0]\) on the negative component.
-proof:
-  Restriction commutes with passage to cohomology, and the representing
-  zero-form restricts to zero.
--/
-theorem annularOverlapStepClass_restrict_negative (v : Circle) :
-    deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (annularNegativeComponent_le_doublePuncture v) 0
-        (annularOverlapStepClass v) =
-      deRhamConstantH0Class (I0 := AnnularCylinderModel)
-        (M0 := annularNegativeComponent v) 0 := by
-  simp only [annularOverlapStepClass, deRhamCohomologyRestrictionOfLE,
-    deRhamConstantH0Class]
-  change
-    (DeRhamExactClosedForms (I := AnnularCylinderModel)
-      (M := annularNegativeComponent v) (A := ℝ) 0).mkQ
-        (deRhamClosedFormsRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-          (annularNegativeComponent_le_doublePuncture v) 0
-          (annularOverlapStepClosedForm v)) = _
-  rw [annularOverlapStepClosedForm_restrict_negative]
 
 /--
 %%handwave
@@ -872,27 +772,6 @@ theorem annularNegativeComponent_nonempty (v : Circle) :
   rcases annularNegativeComponent_diffeomorph v with ⟨phi⟩
   exact ⟨phi.symm ⟨annularNegativeTarget_nonempty.choose,
     annularNegativeTarget_nonempty.choose_spec⟩⟩
-
-/--
-%%handwave
-name:
-  Degree-zero cohomology of a singly punctured annular cylinder
-statement:
-  Every class in the degree-zero de Rham cohomology of
-  \((S^1\setminus\{v\})\times\mathbb R\) is a constant class \([c]\).
-proof:
-  The punctured cylinder is diffeomorphic to a nonempty convex open subset of
-  a Euclidean space, whose degree-zero cohomology consists of constants.
--/
-theorem annularPuncture_H0_eq_constant (v : Circle)
-    (alpha : DeRhamCohomology (I := AnnularCylinderModel)
-      (M := annularPunctureOpen v) (A := ℝ) 0) :
-    ∃ c : ℝ, alpha = deRhamConstantH0Class
-      (I0 := AnnularCylinderModel) (M0 := annularPunctureOpen v) c := by
-  rcases annularPuncture_diffeomorphic_convex v with
-    ⟨V, hconvex, hne, ⟨phi⟩⟩
-  exact deRhamH0_eq_constant_of_diffeomorphic_convex
-    AnnularCylinderModel V hconvex ⟨hne.choose, hne.choose_spec⟩ phi alpha
 
 /--
 %%handwave
@@ -1117,6 +996,13 @@ theorem annularPunctures_cover (v : Circle) :
     · left
       exact (mem_annularPunctureOpen_iff v p).mpr hp
 
+/--
+%%handwave
+name:
+  Mayer–Vietoris connecting class of the annular step
+statement:
+  Applying the degree-zero-to-degree-one Mayer–Vietoris connecting morphism for the two punctured-cylinder cover to the overlap step class gives a class in $H^1_{\mathrm{dR}}(S^1\times\mathbb R;\mathbb R)$.
+-/
 noncomputable def annularStepConnectingClass (v : Circle) :
     DeRhamCohomology (I := AnnularCylinderModel)
       (M := Circle × ℝ) (A := ℝ) 1 :=
@@ -1225,73 +1111,6 @@ theorem annularCylinder_deRhamH1_eq_smul_stepConnecting
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/--
-%%handwave
-name:
-  Nonvanishing of the annular connecting class
-statement:
-  The Mayer--Vietoris connecting class of the overlap step function is
-  nonzero in \(H_{\mathrm{dR}}^1(S^1\times\mathbb R;\mathbb R)\).
-proof:
-  If it vanished, exactness would express the overlap step as the difference
-  of two constant degree-zero classes on the singly punctured cylinders.
-  Restriction to the positive component would force their difference to be
-  \(1\), while restriction to the negative component would force it to be
-  \(0\), a contradiction.
--/
-theorem annularStepConnectingClass_ne_zero (v : Circle) :
-    annularStepConnectingClass v ≠ 0 := by
-  intro hzero
-  let U := annularPunctureOpen v
-  let V := annularPunctureOpen (annularOpposite v)
-  let hcover : U ⊔ V = ⊤ := annularPunctures_cover v
-  let connecting :=
-    deRhamMayerVietorisConnectingOfPartitionOfUnity (A := ℝ)
-      AnnularCylinderModel U V hcover 0
-  have hzero' : connecting (annularOverlapStepClass v) = 0 := by
-    simpa [annularStepConnectingClass, U, V, connecting] using hzero
-  have hexact :=
-    deRham_mayerVietoris_exact_difference_connecting_of_partitionOfUnity
-      (A := ℝ) AnnularCylinderModel U V hcover 0
-  have hrange : annularOverlapStepClass v ∈
-      Set.range
-        (deRhamMayerVietorisDifference (I := AnnularCylinderModel) (A := ℝ)
-          U V 0) := (hexact _).mp hzero'
-  rcases hrange with ⟨⟨alpha, beta⟩, hab⟩
-  rcases annularPuncture_H0_eq_constant v alpha with ⟨c, hc⟩
-  rcases annularPuncture_H0_eq_constant (annularOpposite v) beta with ⟨d, hd⟩
-  rw [hc, hd] at hab
-  change
-    deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (W := annularDoublePunctureOpen v) (V := U) inf_le_left 0
-        (deRhamConstantH0Class (I0 := AnnularCylinderModel) (M0 := U) c) -
-      deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-        (W := annularDoublePunctureOpen v) (V := V) inf_le_right 0
-        (deRhamConstantH0Class (I0 := AnnularCylinderModel) (M0 := V) d) =
-      annularOverlapStepClass v at hab
-  rw [deRhamCohomologyRestrictionOfLE_constant,
-    deRhamCohomologyRestrictionOfLE_constant,
-    deRhamConstantH0Class_sub] at hab
-  have hpositive := congrArg
-    (deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-      (annularPositiveComponent_le_doublePuncture v) 0) hab
-  have hnegative := congrArg
-    (deRhamCohomologyRestrictionOfLE (I := AnnularCylinderModel) (A := ℝ)
-      (annularNegativeComponent_le_doublePuncture v) 0) hab
-  rw [deRhamCohomologyRestrictionOfLE_constant,
-    annularOverlapStepClass_restrict_positive] at hpositive
-  rw [deRhamCohomologyRestrictionOfLE_constant,
-    annularOverlapStepClass_restrict_negative] at hnegative
-  letI : Nonempty (annularPositiveComponent v) :=
-    annularPositiveComponent_nonempty v
-  letI : Nonempty (annularNegativeComponent v) :=
-    annularNegativeComponent_nonempty v
-  have hcd_one : c - d = 1 :=
-    deRhamConstantH0Class_injective hpositive
-  have hcd_zero : c - d = 0 :=
-    deRhamConstantH0Class_injective hnegative
-  linarith
-
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
 /--
@@ -1385,182 +1204,8 @@ theorem deRhamH1_eq_smul_of_diffeomorphic_annularCylinder
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/--
-%%handwave
-name:
-  Equality of annular de Rham classes from one nonzero period
-statement:
-  Let \(\alpha,\tau\) be closed one-forms on a smooth annulus and \(c\) a
-  one-cycle.  If
-  \[
-    \int_c\alpha=\int_c\tau\ne0,
-  \]
-  then \([\alpha]=[\tau]\) in first de Rham cohomology.
-proof:
-  Since \([\tau]\ne0\), it generates annular first cohomology, so
-  \([\alpha]=a[\tau]\).  The form \(\alpha-a\tau\) is exact and has zero
-  period on \(c\); the displayed equality and nonzero period force \(a=1\).
--/
-theorem deRhamH1_class_eq_of_annular_eq_period
-    {E H M : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    (phi : M ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
-    (v : Circle)
-    (alpha tau : DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1)
-    (c : SingularChain (I := I) (M := M) 1 ∞)
-    (hcycle : boundary (I := I) c = 0)
-    (hperiod :
-      integrateSmoothChain (I := I)
-          (alpha : SmoothForms (I := I) (M := M) ℝ 1) c =
-        integrateSmoothChain (I := I)
-          (tau : SmoothForms (I := I) (M := M) ℝ 1) c)
-    (htauPeriod :
-      integrateSmoothChain (I := I)
-        (tau : SmoothForms (I := I) (M := M) ℝ 1) c ≠ 0) :
-    (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ alpha =
-      (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ tau := by
-  let alphaClass :=
-    (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ alpha
-  let tauClass :=
-    (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ tau
-  have htauClass : tauClass ≠ 0 :=
-    deRhamCohomologyClass_ne_zero_of_nonzero_period
-      (I := I) tau c hcycle htauPeriod
-  rcases deRhamH1_eq_smul_of_diffeomorphic_annularCylinder
-      I phi v tauClass htauClass alphaClass with ⟨a, ha⟩
-  have hdiffClass :
-      (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ
-          (alpha - a • tau) = 0 := by
-    rw [map_sub, map_smul]
-    change alphaClass - a • tauClass = 0
-    rw [ha, sub_self]
-  have hmem :
-      (alpha - a • tau : DeRhamClosedForms
-        (I := I) (M := M) (A := ℝ) 1) ∈
-        DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1 := by
-    rw [← Submodule.Quotient.mk_eq_zero]
-    simpa [Submodule.mkQ_apply] using hdiffClass
-  have hexact :
-      ((alpha - a • tau : DeRhamClosedForms
-          (I := I) (M := M) (A := ℝ) 1) :
-        SmoothForms (I := I) (M := M) ℝ 1) ∈
-        DeRhamExactForms (I := I) (M := M) (A := ℝ) 1 := by
-    simpa [DeRhamExactClosedForms] using hmem
-  have hzero := integrateSmoothChain_eq_zero_of_mem_deRhamExactForms_one
-    (I := I)
-    (omega := ((alpha - a • tau : DeRhamClosedForms
-      (I := I) (M := M) (A := ℝ) 1) :
-        SmoothForms (I := I) (M := M) ℝ 1)) hexact c hcycle
-  change integrateSmoothChain (I := I)
-    ((alpha : SmoothForms (I := I) (M := M) ℝ 1) -
-      a • (tau : SmoothForms (I := I) (M := M) ℝ 1)) c = 0 at hzero
-  rw [show
-      (alpha : SmoothForms (I := I) (M := M) ℝ 1) -
-          a • (tau : SmoothForms (I := I) (M := M) ℝ 1) =
-        (alpha : SmoothForms (I := I) (M := M) ℝ 1) +
-          (-a) • (tau : SmoothForms (I := I) (M := M) ℝ 1) by module,
-    integrateSmoothChain_add_form, integrateSmoothChain_smul_form] at hzero
-  have ha_one : a = 1 := by
-    rw [hperiod] at hzero
-    have hfactor :
-        (1 - a) * integrateSmoothChain (I := I)
-          (tau : SmoothForms (I := I) (M := M) ℝ 1) c = 0 := by
-      calc
-        _ = integrateSmoothChain (I := I)
-              (tau : SmoothForms (I := I) (M := M) ℝ 1) c +
-            -a * integrateSmoothChain (I := I)
-              (tau : SmoothForms (I := I) (M := M) ℝ 1) c := by ring
-        _ = 0 := hzero
-    have hone : 1 - a = 0 :=
-      (mul_eq_zero.mp hfactor).resolve_right htauPeriod
-    linarith
-  change alphaClass = tauClass
-  rw [ha, ha_one, one_smul]
-
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/--
-%%handwave
-name:
-  Annular de Rham classes from periods equal up to sign
-statement:
-  Let \(\alpha,\tau\) be closed one-forms on a smooth annulus and let \(c\)
-  be a one-cycle with \(\int_c\tau\ne0\).  If
-  \(\int_c\alpha=\int_c\tau\) or
-  \(\int_c\alpha=-\int_c\tau\), then respectively
-  \([\alpha]=[\tau]\) or \([\alpha]=-[\tau]\).
-proof:
-  Apply the equality-from-period theorem either to \(\tau\) or to
-  \(-\tau\).
--/
-theorem deRhamH1_class_eq_or_neg_of_annular_period_eq_or_neg
-    {E H M : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    (phi : M ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
-    (v : Circle)
-    (alpha tau : DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1)
-    (c : SingularChain (I := I) (M := M) 1 ∞)
-    (hcycle : boundary (I := I) c = 0)
-    (hperiod :
-      integrateSmoothChain (I := I)
-          (alpha : SmoothForms (I := I) (M := M) ℝ 1) c =
-          integrateSmoothChain (I := I)
-            (tau : SmoothForms (I := I) (M := M) ℝ 1) c ∨
-      integrateSmoothChain (I := I)
-          (alpha : SmoothForms (I := I) (M := M) ℝ 1) c =
-          -integrateSmoothChain (I := I)
-            (tau : SmoothForms (I := I) (M := M) ℝ 1) c)
-    (htauPeriod :
-      integrateSmoothChain (I := I)
-        (tau : SmoothForms (I := I) (M := M) ℝ 1) c ≠ 0) :
-    (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ alpha =
-        (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ tau ∨
-      (DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ alpha =
-        -(DeRhamExactClosedForms (I := I) (M := M) (A := ℝ) 1).mkQ tau := by
-  rcases hperiod with hperiod | hperiod
-  · exact Or.inl (deRhamH1_class_eq_of_annular_eq_period
-      I phi v alpha tau c hcycle hperiod htauPeriod)
-  · right
-    have hnegPeriod :
-        integrateSmoothChain (I := I)
-            (alpha : SmoothForms (I := I) (M := M) ℝ 1) c =
-          integrateSmoothChain (I := I)
-            ((-tau : DeRhamClosedForms
-              (I := I) (M := M) (A := ℝ) 1) :
-                SmoothForms (I := I) (M := M) ℝ 1) c := by
-      rw [show
-          ((-tau : DeRhamClosedForms
-              (I := I) (M := M) (A := ℝ) 1) :
-                SmoothForms (I := I) (M := M) ℝ 1) =
-            (-1 : ℝ) •
-              (tau : SmoothForms (I := I) (M := M) ℝ 1) by
-                change -tau.1 = (-1 : ℝ) • tau.1
-                module,
-        integrateSmoothChain_smul_form]
-      simpa using hperiod
-    have hnegPeriod_ne :
-        integrateSmoothChain (I := I)
-          ((-tau : DeRhamClosedForms
-            (I := I) (M := M) (A := ℝ) 1) :
-              SmoothForms (I := I) (M := M) ℝ 1) c ≠ 0 := by
-      rw [show
-          ((-tau : DeRhamClosedForms
-              (I := I) (M := M) (A := ℝ) 1) :
-                SmoothForms (I := I) (M := M) ℝ 1) =
-            (-1 : ℝ) •
-              (tau : SmoothForms (I := I) (M := M) ℝ 1) by
-                change -tau.1 = (-1 : ℝ) • tau.1
-                module,
-        integrateSmoothChain_smul_form]
-      simpa using htauPeriod
-    have hclass := deRhamH1_class_eq_of_annular_eq_period
-      I phi v alpha (-tau) c hcycle hnegPeriod hnegPeriod_ne
-    simpa using hclass
-
 /--
 %%handwave
 name:
@@ -1595,54 +1240,6 @@ theorem deRhamH1_map_surjective_of_annular_nonzero_mem_range
   rcases htau_range with ⟨beta, hbeta⟩
   refine ⟨c • beta, ?_⟩
   rw [map_smul, hbeta, ← hc]
-
-/--
-%%handwave
-name:
-  Surjectivity of restriction to an annulus from a nonzero period
-statement:
-  Let \(W\subseteq V\) be open with \(W\) a smooth annulus.  If a closed
-  one-form on \(V\) restricts to a form having nonzero period on a cycle in
-  \(W\), then
-  \[
-    H_{\mathrm{dR}}^1(V;\mathbb R)\longrightarrow
-    H_{\mathrm{dR}}^1(W;\mathbb R)
-  \]
-  is surjective.
-proof:
-  The period criterion shows that the restricted class is nonzero.  It lies
-  in the range of restriction and, as a nonzero annular class, generates the
-  entire target.
--/
-theorem deRhamCohomologyRestrictionOfLE_surjective_of_annular_nonzero_period
-    {E H M : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-    (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
-    {W V : TopologicalSpace.Opens M} (hWV : W ≤ V)
-    (phi : W ≃ₘ⟮I, AnnularCylinderModel⟯ Circle × ℝ)
-    (v : Circle)
-    (omega : DeRhamClosedForms (I := I) (M := V) (A := ℝ) 1)
-    (c : SingularChain (I := I) (M := W) 1 ∞)
-    (hcycle : boundary (I := I) c = 0)
-    (hperiod :
-      integrateSmoothChain (I := I)
-        (restrictSmoothFormsOfLE (I := I) (A := ℝ) hWV 1
-          (omega : SmoothForms (I := I) (M := V) ℝ 1)) c ≠ 0) :
-    Function.Surjective
-      (deRhamCohomologyRestrictionOfLE (I := I) (A := ℝ) hWV 1) := by
-  let beta :=
-    (DeRhamExactClosedForms (I := I) (M := V) (A := ℝ) 1).mkQ omega
-  let tau := deRhamCohomologyRestrictionOfLE
-    (I := I) (A := ℝ) hWV 1 beta
-  have htau : tau ≠ 0 := by
-    exact deRhamCohomologyRestrictionOfLE_ne_zero_of_nonzero_period
-      (I := I) hWV omega c hcycle hperiod
-  apply deRhamH1_map_surjective_of_annular_nonzero_mem_range
-    I I phi v
-    (deRhamCohomologyRestrictionOfLE (I := I) (A := ℝ) hWV 1)
-    tau htau
-  exact ⟨beta, rfl⟩
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in

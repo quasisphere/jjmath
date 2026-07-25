@@ -27,29 +27,17 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H)
 
-/-- The constant smooth singular zero-simplex at a point. -/
+/--
+%%handwave
+name: The constant smooth singular zero-simplex at a point
+statement:
+  The constant smooth singular zero-simplex at a point.
+-/
 noncomputable def ContMDiffSingularSimplex.point
     (x : M) {r : WithTop ℕ∞} :
     ContMDiffSingularSimplex (I := I) (M := M) 0 r where
   toContinuousMap := ⟨fun _ => x, continuous_const⟩
   contMDiff := ⟨fun _ => x, contMDiff_const.contMDiffOn, fun _ => rfl⟩
-
-/--
-%%handwave
-name:
-  Evaluation of a constant smooth zero-simplex
-statement:
-  For a point \(x\in M\), the constant smooth singular zero-simplex at
-  \(x\) takes its unique simplex point to \(x\).
-proof:
-  The underlying map of the zero-simplex is, by construction, the constant
-  map with value \(x\).
--/
-@[simp]
-theorem ContMDiffSingularSimplex.point_apply
-    (x : M) {r : WithTop ℕ∞} (q : StandardSimplex 0) :
-    ContMDiffSingularSimplex.point (I := I) (r := r) x q = x :=
-  rfl
 
 /--
 %%handwave
@@ -129,8 +117,13 @@ open JJMath.Uniformization
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [IsManifold SurfaceRealModel ∞ X]
 
-/-- A smooth one-simplex obtained by mapping an affine coordinate segment
-back through a surface chart. -/
+/--
+%%handwave
+name: A smooth one-simplex obtained by mapping an affine coordinate segment back through a surface chart
+statement:
+  A smooth one-simplex obtained by mapping an affine coordinate segment
+  back through a surface chart.
+-/
 noncomputable def chartAffineSimplex
     (x : X) (a b : ℂ)
     (hsegment : ∀ q ∈ stdSimplex ℝ (Fin 2),
@@ -156,30 +149,6 @@ noncomputable def chartAffineSimplex
         simpa [e, SurfaceRealModel, Function.comp_def] using
           (contMDiffOn_extChartAt_symm (I := SurfaceRealModel) x).comp
             hL.contMDiff.contMDiffOn hmaps_ext }
-
-/--
-%%handwave
-name:
-  Evaluation of an affine simplex in a surface chart
-statement:
-  Suppose the affine segment from \(a\) to \(b\) lies in a surface-chart
-  target.  The corresponding smooth singular one-simplex satisfies
-  \[
-    \sigma(q)=\phi^{-1}\bigl(q_0a+q_1b\bigr)
-    \qquad(q\in\Delta^1).
-  \]
-proof:
-  This is the defining formula for the affine coordinate simplex.
--/
-@[simp]
-theorem chartAffineSimplex_apply
-    (x : X) (a b : ℂ)
-    (hsegment : ∀ q ∈ stdSimplex ℝ (Fin 2),
-      q 0 • a + q 1 • b ∈ (chartAt ℂ x).target)
-    (q : StandardSimplex 1) :
-    chartAffineSimplex x a b hsegment q =
-      (chartAt ℂ x).symm (q 0 • a + q 1 • b) :=
-  rfl
 
 /--
 %%handwave
@@ -245,8 +214,13 @@ theorem chartAffineSimplex_face_one
       exact simplexAmbientMap_succAbove_apply_succAbove 1 q 0]
   simp [hq]
 
-/-- Two surface points are smoothly chain joined when their formal difference
-is the boundary of a smooth singular one-chain. -/
+/--
+%%handwave
+name: Two surface points are smoothly chain joined when their formal difference is the boundary of a smooth singular one-chain
+statement:
+  Two surface points are smoothly chain joined when their formal difference
+  is the boundary of a smooth singular one-chain.
+-/
 def SmoothChainJoined (x y : X) : Prop :=
   ∃ c : SingularChain (I := SurfaceRealModel) (M := X) 1 ∞,
     boundary (I := SurfaceRealModel) c =

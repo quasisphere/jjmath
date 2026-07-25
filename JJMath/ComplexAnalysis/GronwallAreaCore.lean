@@ -260,7 +260,13 @@ theorem complement_exterior_image_subset_closedConvexHull
       hcover (by simpa [inter_comm] using hnonempty)
   exact hx (hHE hLx)
 
-/-- The normalized Laurent form used in the first-coefficient area theorem. -/
+/--
+%%handwave
+name:
+  Normalized exterior Laurent map
+statement:
+  Given $b\in\mathbb C$ and $h:\mathbb C\to\mathbb C$, the associated normalized exterior Laurent map is $G(z)=z+bz^{-1}+h(z^{-1})$.
+-/
 def exteriorLaurentMap (b : ℂ) (h : ℂ → ℂ) (z : ℂ) : ℂ :=
   z + b * z⁻¹ + h z⁻¹
 
@@ -384,7 +390,13 @@ theorem analytic_quadratic_bound
     (hbound z (by simpa [mem_ball] using hz)).le (sq_nonneg ‖z‖)
   simpa [mul_comm] using hb
 
-/-- The real-linear ellipse map `z ↦ z + c * conj z`. -/
+/--
+%%handwave
+name:
+  Ellipse linear map
+statement:
+  For $c\in\mathbb C$, the associated real-linear ellipse map is $z\mapsto z+c\overline z$ on $\mathbb C$.
+-/
 def ellipseLinearMap (c : ℂ) : ℂ →L[ℝ] ℂ :=
   ContinuousLinearMap.id ℝ ℂ + c • (Complex.conjCLE : ℂ →L[ℝ] ℂ)
 
@@ -562,7 +574,13 @@ theorem exterior_omitted_measure_le_ellipse
       rw [abs_of_pos (by nlinarith)]
     _ = _ := by rfl
 
-/-- Multiplication by a complex number, regarded as a real continuous linear map. -/
+/--
+%%handwave
+name:
+  Complex multiplication as a real-linear map
+statement:
+  For $a\in\mathbb C$, multiplication by $a$ is regarded as the real continuous linear map $z\mapsto za$ on $\mathbb C$.
+-/
 def complexMulReal (a : ℂ) : ℂ →L[ℝ] ℂ :=
   (ContinuousLinearMap.toSpanSingleton ℂ a).restrictScalars ℝ
 

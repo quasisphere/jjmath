@@ -154,15 +154,25 @@ theorem exists_pairwise_atlasVortexNeighborhood
   rw [← hyx]
   exact hyS.1
 
-/-- A controlled vortex edge lies in an ambient open set together with its
-compact core. -/
+/--
+%%handwave
+name: A controlled vortex edge lies in an ambient open set together with its compact core
+statement:
+  A controlled vortex edge lies in an ambient open set together with its
+  compact core.
+-/
 def ControlledAtlasVortexEdge
     (W : TopologicalSpace.Opens X) (a b : X) : Prop :=
   a ∈ W ∧ b ∈ W ∧
     ∃ D : AtlasVortexPairData X a b, D.ambientCore ⊆ W
 
-/-- Two points are joined in an open set by a finite chain of controlled
-atlas vortex pairs. -/
+/--
+%%handwave
+name: Two points are joined in an open set by a finite chain of controlled atlas vortex pairs
+statement:
+  Two points are joined in an open set by a finite chain of controlled
+  atlas vortex pairs.
+-/
 def AtlasVortexChainJoinedIn
     (W : TopologicalSpace.Opens X) (a b : X) : Prop :=
   Relation.ReflTransGen (ControlledAtlasVortexEdge W) a b
@@ -302,14 +312,24 @@ inductive ControlledAtlasVortexPath
 
 namespace ControlledAtlasVortexPath
 
-/-- The initial vertex of a controlled path lies in its control set. -/
+/--
+%%handwave
+name: The initial vertex of a controlled path lies in its control set
+statement:
+  The initial vertex of a controlled path lies in its control set.
+-/
 def start_mem {W : TopologicalSpace.Opens X} {a b : X}
     (path : ControlledAtlasVortexPath W a b) : a ∈ W := by
   induction path with
   | nil ha => exact ha
   | tail path _ _ _ ih => exact ih
 
-/-- The terminal vertex of a controlled path lies in its control set. -/
+/--
+%%handwave
+name: The terminal vertex of a controlled path lies in its control set
+statement:
+  The terminal vertex of a controlled path lies in its control set.
+-/
 def end_mem {W : TopologicalSpace.Opens X} {a b : X}
     (path : ControlledAtlasVortexPath W a b) : b ∈ W := by
   cases path with
@@ -392,31 +412,6 @@ theorem exists_append_transport {W : TopologicalSpace.Opens X}
         data.globalPhaseFun_eq_one_of_mem_exterior hxcore
       rw [hphaseOne, mul_one]
       exact hTq ⟨(x : X), ⟨x.2.1, hxq⟩⟩ hxW
-
-/--
-%%handwave
-name:
-  A nontrivial controlled vortex path yields a finite transport
-statement:
-  If a controlled atlas-vortex path runs from \(a\) to \(b\) with \(a\ne b\),
-  then there exists a finite atlas-vortex transport from \(a\) to \(b\).
-proof:
-  Induct over the path.  An empty path contradicts \(a\ne b\).  For a final
-  edge, either its initial point is \(a\), in which case that single vortex is
-  the transport, or append the edge to the transport supplied by induction.
--/
-theorem nonempty_transport {W : TopologicalSpace.Opens X} {a b : X}
-    (path : ControlledAtlasVortexPath W a b) (hab : a ≠ b) :
-    Nonempty (AtlasVortexTransportData X a b) := by
-  induction path with
-  | nil _ => exact (hab rfl).elim
-  | @tail q b path _hb data _hcore ih =>
-      by_cases haq : a = q
-      · subst q
-        exact ⟨AtlasVortexTransportData.single data⟩
-      · rcases ih haq with ⟨Tq⟩
-        rcases Tq.exists_append data hab with ⟨Tb, _⟩
-        exact ⟨Tb⟩
 
 end ControlledAtlasVortexPath
 

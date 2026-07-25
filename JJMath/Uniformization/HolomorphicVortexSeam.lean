@@ -19,11 +19,6 @@ namespace JJMath.Uniformization
 
 noncomputable section
 
-/-- The unit phase of the divided difference of `F` at `z₀`. -/
-def holomorphicDividedDifferenceUnitPhase
-    (F : ℂ → ℂ) (z₀ z : ℂ) : ℂ :=
-  dslope F z₀ z / ‖dslope F z₀ z‖
-
 /--
 %%handwave
 name:
@@ -45,145 +40,25 @@ private theorem contDiffAt_complex_to_real
     (IsScalarTower.right : IsScalarTower ℝ ℂ ℂ) inferInstance
     (IsScalarTower.right : IsScalarTower ℝ ℂ ℂ) h
 
-/--
-%%handwave
-name:
-  Smooth unit phase of a holomorphic divided difference
-statement:
-  Let \(F\) be holomorphic near \(z_0\), with \(F'(z_0)\ne0\), and let
-  \(q(z)\) be the holomorphic divided difference, with \(q(z_0)=F'(z_0)\).
-  There is a radius \(\delta>0\) such that \(q\) has no zeros on
-  \(B(z_0,\delta)\), the map \(q/|q|\) is smooth there and has modulus one,
-  and, for \(z\ne z_0\), it equals the normalized phase of
-  \((F(z)-F(z_0))/(z-z_0)\).
-proof:
-  The divided difference is holomorphic at \(z_0\) and takes the nonzero
-  value \(F'(z_0)\) there.  Shrink to a ball on which it is holomorphic and
-  nonvanishing.  Division by its positive smooth norm then gives the claimed
-  smooth unit phase, and the off-diagonal formula follows from the defining
-  identity for divided differences.
--/
-theorem holomorphicDividedDifferenceUnitPhase_local
-    {F : ℂ → ℂ} {z₀ : ℂ} (hF : AnalyticAt ℂ F z₀)
-    (hderiv : deriv F z₀ ≠ 0) :
-    ∃ δ : ℝ, 0 < δ ∧
-      (∀ z ∈ Metric.ball z₀ δ, dslope F z₀ z ≠ 0) ∧
-      ContDiffOn ℝ ∞ (holomorphicDividedDifferenceUnitPhase F z₀)
-        (Metric.ball z₀ δ) ∧
-      (∀ z ∈ Metric.ball z₀ δ,
-        ‖holomorphicDividedDifferenceUnitPhase F z₀ z‖ = 1) ∧
-      ∀ z ∈ Metric.ball z₀ δ, z ≠ z₀ →
-        holomorphicDividedDifferenceUnitPhase F z₀ z =
-          ((F z - F z₀) / (z - z₀)) /
-            ‖(F z - F z₀) / (z - z₀)‖ := by
-  let q : ℂ → ℂ := dslope F z₀
-  have hq_an : AnalyticAt ℂ q z₀ := by
-    rcases hF with ⟨pF, hpF⟩
-    exact (HasFPowerSeriesAt.has_fpower_series_dslope_fslope hpF).analyticAt
-  have hq_z₀_ne : q z₀ ≠ 0 := by
-    simpa [q, dslope_same] using hderiv
-  rcases hq_an.exists_ball_analyticOnNhd with
-    ⟨r_an, hr_an_pos, hq_an_ball⟩
-  have hq_ne_nhds : {z : ℂ | q z ≠ 0} ∈ 𝓝 z₀ :=
-    hq_an.differentiableAt.continuousAt.preimage_mem_nhds
-      (isOpen_ne.mem_nhds hq_z₀_ne)
-  rcases Metric.mem_nhds_iff.mp hq_ne_nhds with
-    ⟨r_ne, hr_ne_pos, hq_ne_ball⟩
-  let δ : ℝ := min r_an r_ne
-  have hδ_pos : 0 < δ := by
-    exact lt_min hr_an_pos hr_ne_pos
-  have hq_an_on :
-      ∀ z ∈ Metric.ball z₀ δ, AnalyticAt ℂ q z := by
-    intro z hz
-    exact hq_an_ball z (Metric.ball_subset_ball (min_le_left _ _) hz)
-  have hq_ne_on :
-      ∀ z ∈ Metric.ball z₀ δ, q z ≠ 0 := by
-    intro z hz
-    exact hq_ne_ball (Metric.ball_subset_ball (min_le_right _ _) hz)
-  have hsmooth : ContDiffOn ℝ ∞
-      (holomorphicDividedDifferenceUnitPhase F z₀)
-      (Metric.ball z₀ δ) := by
-    intro z hz
-    have hqR : ContDiffAt ℝ ∞ q z :=
-      contDiffAt_complex_to_real (hq_an_on z hz).contDiffAt
-    have hnorm : ContDiffAt ℝ ∞ (fun w : ℂ ↦ ‖q w‖) z :=
-      hqR.norm ℝ (hq_ne_on z hz)
-    have hnormC : ContDiffAt ℝ ∞
-        (fun w : ℂ ↦ ((‖q w‖ : ℝ) : ℂ)) z :=
-      Complex.ofRealCLM.contDiff.contDiffAt.comp z hnorm
-    exact (hqR.mul (hnormC.inv (by
-      exact_mod_cast norm_ne_zero_iff.mpr (hq_ne_on z hz)))).contDiffWithinAt
-  have hnorm : ∀ z ∈ Metric.ball z₀ δ,
-      ‖holomorphicDividedDifferenceUnitPhase F z₀ z‖ = 1 := by
-    intro z hz
-    unfold holomorphicDividedDifferenceUnitPhase
-    rw [norm_div, Complex.norm_real, Real.norm_eq_abs, abs_norm, div_self]
-    exact norm_ne_zero_iff.mpr (hq_ne_on z hz)
-  refine ⟨δ, hδ_pos, ?_, hsmooth, hnorm, ?_⟩
-  · simpa [q] using hq_ne_on
-  · intro z hz hz_ne
-    have hq_eq : dslope F z₀ z = (F z - F z₀) / (z - z₀) := by
-      rw [dslope_of_ne F hz_ne]
-      simp [slope, div_eq_inv_mul, smul_eq_mul, mul_comm]
-    simp only [holomorphicDividedDifferenceUnitPhase, hq_eq]
-
-/--
-%%handwave
-name:
-  Smooth divided-difference phase of a coordinate transition
-statement:
-  Let \(\chi\) and \(\psi\) be complex coordinates centered at the same point
-  \(p\), put \(F=\chi\circ\psi^{-1}\), and set \(z_0=\psi(p)\).  On some ball
-  \(B(z_0,\delta)\), the normalized phase of the divided difference of \(F\)
-  is smooth and has modulus one; away from \(z_0\) it is
-  \[
-    \frac{(F(z)-F(z_0))/(z-z_0)}{|(F(z)-F(z_0))/(z-z_0)|}.
-  \]
-proof:
-  A transition between complex surface coordinates is holomorphic and has
-  nonzero derivative at the marked point.  Apply the local divided-difference
-  phase construction to this transition map.
--/
-theorem pointedCoordinate_transition_unitPhase_local
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] {p : X}
-    (χ ψ : PointedSurfaceCoordinate X p) :
-    let F : ℂ → ℂ := fun z ↦ χ.chart (ψ.chart.symm z)
-    let z₀ : ℂ := ψ.chart p
-    ∃ δ : ℝ, 0 < δ ∧
-      ContDiffOn ℝ ∞ (holomorphicDividedDifferenceUnitPhase F z₀)
-        (Metric.ball z₀ δ) ∧
-      (∀ z ∈ Metric.ball z₀ δ,
-        ‖holomorphicDividedDifferenceUnitPhase F z₀ z‖ = 1) ∧
-      ∀ z ∈ Metric.ball z₀ δ, z ≠ z₀ →
-        holomorphicDividedDifferenceUnitPhase F z₀ z =
-          ((F z - F z₀) / (z - z₀)) /
-            ‖(F z - F z₀) / (z - z₀)‖ := by
-  dsimp only
-  let F : ℂ → ℂ := fun z ↦ χ.chart (ψ.chart.symm z)
-  let z₀ : ℂ := ψ.chart p
-  have hz₀_target : z₀ ∈ ψ.chart.target := by
-    exact ψ.chart.map_source ψ.base_mem_source
-  have hz₀_sourceχ : ψ.chart.symm z₀ ∈ χ.chart.source := by
-    simpa [z₀, ψ.chart.left_inv ψ.base_mem_source] using χ.base_mem_source
-  have hF_an : AnalyticAt ℂ F z₀ := by
-    exact chartTransition_analyticAt ψ.chart ψ.chart_mem_atlas
-      χ.chart χ.chart_mem_atlas hz₀_target hz₀_sourceχ
-  have hderiv : deriv F z₀ ≠ 0 := by
-    simpa [F, z₀] using pointedCoordinate_transition_deriv_ne_zero X χ ψ
-  rcases holomorphicDividedDifferenceUnitPhase_local hF_an hderiv with
-    ⟨δ, hδ, _hne, hsmooth, hnorm, hratio⟩
-  exact ⟨δ, hδ, hsmooth, hnorm, hratio⟩
-
 /-! ## The full consecutive-pair seam -/
 
-/-- The analytic factor left after a pole in the `F`-coordinate cancels a
-zero in the source coordinate. -/
+/--
+%%handwave
+name: Analytic factor across a holomorphic vortex seam
+statement:
+  The analytic factor left after a pole in the $F$-coordinate cancels a
+  zero in the source coordinate.
+-/
 def holomorphicVortexSeamFactor
     (F : ℂ → ℂ) (z₀ α β z : ℂ) : ℂ :=
   ((F z - α) / (z - β)) / dslope F z₀ z
 
-/-- The unit phase of the analytic seam factor. -/
+/--
+%%handwave
+name: The unit phase of the analytic seam factor
+statement:
+  The unit phase of the analytic seam factor.
+-/
 def holomorphicVortexSeamPhase
     (F : ℂ → ℂ) (z₀ α β z : ℂ) : ℂ :=
   holomorphicVortexSeamFactor F z₀ α β z /

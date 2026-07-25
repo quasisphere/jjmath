@@ -167,41 +167,6 @@ theorem HilbertBundleSectionMemL2.memLp_trivial
 /--
 %%handwave
 name:
-  Real-valued \(L^2\) maps are square-integrable trivial sections
-statement:
-  A real-valued \(L^2\) map is square-integrable as a section of the trivial
-  real Hilbert bundle.
-proof:
-  The trivial bundle total space is \(X\times\mathbb R\).  Almost-everywhere
-  measurability of the map gives almost-everywhere measurability of the
-  section graph, and the fiber square norm is exactly \(|u|^2\).
--/
-theorem trivial_real_hilbertBundleSectionMemL2_of_memLp
-    {X : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
-    {μ : Measure X} {u : X → ℝ}
-    (hu : MemLp u 2 μ) :
-    HilbertBundleSectionMemL2 (trivialHilbertBundleGeometry X ℝ) μ u := by
-  refine ⟨?_, ?_⟩
-  · let graph : X → X × ℝ := fun x ↦ (x, u x)
-    have hgraph : AEMeasurable graph μ := by
-      exact aemeasurable_id'.prodMk hu.aestronglyMeasurable.aemeasurable
-    have hcomp :
-        AEMeasurable
-          ((Bundle.Trivial.homeomorphProd X ℝ).symm ∘ graph) μ :=
-      (Bundle.Trivial.homeomorphProd X ℝ).symm.continuous.measurable.comp_aemeasurable hgraph
-    refine hcomp.congr ?_
-    filter_upwards [] with x
-    rfl
-  · have hintegrable :
-        Integrable (fun x : X ↦ ‖u x‖ ^ 2) μ :=
-      (memLp_two_iff_integrable_sq_norm hu.aestronglyMeasurable).1 hu
-    refine hintegrable.congr ?_
-    filter_upwards [] with x
-    simp [trivialHilbertBundleGeometry]
-
-/--
-%%handwave
-name:
   Bounded local Sobolev family on a manifold
 statement:
   A sequence of Hilbert-valued local Sobolev maps is bounded in \(W^{1,2}\)
@@ -234,41 +199,6 @@ def TendstoInLocalL2OnManifoldWithValues {X E : Type} [MeasurableSpace X]
   Filter.Tendsto
     (fun n : ℕ ↦ eLpNorm (fun x ↦ uSeq n x - u x) 2 (μ.restrict K))
     Filter.atTop (𝓝 0)
-
-/--
-%%handwave
-name:
-  Local \(L^2\) convergence restricts to smaller sets
-statement:
-  If a sequence converges in \(L^2\) on a set \(P\), then it also converges
-  in \(L^2\) on every subset \(K\subset P\).
-proof:
-  The restricted measure on \(K\) is bounded above by the restricted measure
-  on \(P\), so the \(L^2(K)\)-seminorm of the difference is bounded by its
-  \(L^2(P)\)-seminorm.  Squeeze between this upper bound and zero.
--/
-theorem TendstoInLocalL2OnManifoldWithValues.mono_set {X E : Type}
-    [MeasurableSpace X] [NormedAddCommGroup E]
-    {μ : Measure X} {K P : Set X} {uSeq : ℕ → X → E} {u : X → E}
-    (hKP : K ⊆ P)
-    (hlim : TendstoInLocalL2OnManifoldWithValues μ P uSeq u) :
-    TendstoInLocalL2OnManifoldWithValues μ K uSeq u := by
-  dsimp [TendstoInLocalL2OnManifoldWithValues] at hlim ⊢
-  have hle :
-      (fun n : ℕ ↦ eLpNorm (fun x ↦ uSeq n x - u x) 2 (μ.restrict K))
-        ≤ᶠ[Filter.atTop]
-      (fun n : ℕ ↦ eLpNorm (fun x ↦ uSeq n x - u x) 2 (μ.restrict P)) :=
-    Filter.Eventually.of_forall fun n ↦
-      eLpNorm_mono_measure (fun x ↦ uSeq n x - u x)
-        (Measure.restrict_mono hKP le_rfl)
-  have hnonneg :
-      (fun _n : ℕ ↦ (0 : ℝ≥0∞)) ≤ᶠ[Filter.atTop]
-        (fun n : ℕ ↦
-          eLpNorm (fun x ↦ uSeq n x - u x) 2 (μ.restrict K)) :=
-    Filter.Eventually.of_forall fun _n ↦ zero_le
-  exact
-    tendsto_of_tendsto_of_tendsto_of_le_of_le'
-      tendsto_const_nhds hlim hnonneg hle
 
 /--
 %%handwave
@@ -317,421 +247,7 @@ theorem manifoldLocalDifferentialSeminormSq_nonneg {H X E : Type}
     · simp [hdu]
     · exact (metric.pos x (du x) hdu).le)
 
-/--
-%%handwave
-name:
-  Zero extension of a differential field
-statement:
-  The zero extension of a differential field from a set \(Q\) is the field
-  which agrees with the original field on \(Q\) and is zero outside \(Q\).
--/
-noncomputable def manifoldDifferentialFieldZeroExtend {H X E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    (I : ModelWithCorners ℝ H H) [TopologicalSpace X] [ChartedSpace H X]
-    [NormedAddCommGroup E] [NormedSpace ℝ E]
-    (Q : Set X) (du : ManifoldDifferentialField I X E) :
-    ManifoldDifferentialField I X E := by
-  classical
-  exact fun x ↦ if x ∈ Q then du x else 0
-
-/--
-%%handwave
-name:
-  Zero extension of an \(L^2\) differential field
-statement:
-  If a differential field is square-integrable on a measurable set \(Q\), then
-  the field extended by zero outside \(Q\) is square-integrable on the whole
-  manifold.
-proof:
-  The total-space section of the zero extension is the measurable piecewise
-  section obtained by using the original field on \(Q\) and the zero section
-  on \(Q^c\).  Its squared fiber norm is the corresponding piecewise
-  function, whose integrability follows from the assumed \(L^2\)-integrability
-  on \(Q\) and the trivial integrability of the zero section on \(Q^c\).
--/
-theorem manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [IsManifold I 1 X]
-    [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    {Q : Set X} (hQ_meas : MeasurableSet Q)
-    {du : ManifoldDifferentialField I X E}
-    (hduQ : ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g
-      (μ.restrict Q) du) :
-    ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g μ
-      (manifoldDifferentialFieldZeroExtend I Q du) := by
-  classical
-  let G :=
-    manifoldDifferentialHilbertBundleGeometry
-      (I := I) (X := X) (E := E) g
-  let metric :=
-    manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (I := I) (X := X) (E := E) g
-  letI : Bundle.RiemannianBundle
-      (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E)) :=
-    ⟨metric.toRiemannianMetric⟩
-  letI (x : X) :
-      NormedAddCommGroup (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := E) x) :=
-    manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-      (I := I) (X := X) (E := E) metric x
-  letI (x : X) :
-      InnerProductSpace ℝ (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := E) x) :=
-    manifoldDifferentialHilbertSchmidtInnerProductSpace
-      (I := I) (X := X) (E := E) metric x
-  let duExt : ManifoldDifferentialField I X E :=
-    manifoldDifferentialFieldZeroExtend I Q du
-  have htotal_ext_eq :
-      HilbertBundleSectionOnSurface.toTotalSpace
-          (F := H →L[ℝ] E) duExt =
-        Q.piecewise
-          (HilbertBundleSectionOnSurface.toTotalSpace
-            (F := H →L[ℝ] E) du)
-          (HilbertBundleSectionOnSurface.toTotalSpace
-            (F := H →L[ℝ] E) (0 : ManifoldDifferentialField I X E)) := by
-    funext x
-    by_cases hx : x ∈ Q
-    · simp [HilbertBundleSectionOnSurface.toTotalSpace, duExt, hx,
-        manifoldDifferentialFieldZeroExtend]
-    · simp [HilbertBundleSectionOnSurface.toTotalSpace, duExt, hx,
-        manifoldDifferentialFieldZeroExtend]
-  have hzero_mem :
-      HilbertBundleSectionMemL2 G (μ.restrict Qᶜ)
-        (0 : ManifoldDifferentialField I X E) :=
-    hilbertBundleSectionMemL2_zero
-      (I := I) (G := G) (by intro x A B; rfl) (μ.restrict Qᶜ)
-  refine ⟨?_, ?_⟩
-  · have hdu_aestr :
-        AEStronglyMeasurable
-          (HilbertBundleSectionOnSurface.toTotalSpace
-            (F := H →L[ℝ] E) du) (μ.restrict Q) :=
-      hduQ.aemeasurable.aestronglyMeasurable
-    have hzero_aestr :
-        AEStronglyMeasurable
-          (HilbertBundleSectionOnSurface.toTotalSpace
-            (F := H →L[ℝ] E) (0 : ManifoldDifferentialField I X E))
-          (μ.restrict Qᶜ) :=
-      hzero_mem.aemeasurable.aestronglyMeasurable
-    exact
-      (AEStronglyMeasurable.piecewise hQ_meas hdu_aestr hzero_aestr).aemeasurable.congr
-        (Filter.EventuallyEq.of_eq htotal_ext_eq.symm)
-  · have hnorm_ext_eq :
-        (fun x : X ↦ G.fiberNormSq x (duExt x)) =
-          Q.piecewise
-            (fun x : X ↦ G.fiberNormSq x (du x))
-            (fun x : X ↦
-              G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x)) := by
-      funext x
-      by_cases hx : x ∈ Q
-      · simp [duExt, hx, manifoldDifferentialFieldZeroExtend]
-      · simp [duExt, hx, manifoldDifferentialFieldZeroExtend]
-    have hint :
-        Integrable
-          (Q.piecewise
-            (fun x : X ↦ G.fiberNormSq x (du x))
-            (fun x : X ↦
-              G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x))) μ :=
-      Integrable.piecewise hQ_meas hduQ.integrable_normSq
-        hzero_mem.integrable_normSq
-    change Integrable (fun x : X ↦ G.fiberNormSq x (duExt x)) μ
-    rw [hnorm_ext_eq]
-    exact hint
-
-/--
-%%handwave
-name:
-  Squared \(L^2\)-norm of a zero-extended differential
-statement:
-  The global squared \(L^2\)-norm of a differential field extended by zero
-  outside a measurable set \(Q\) is the local differential seminorm squared on
-  \(Q\).
-proof:
-  The squared fiber norm of the zero extension is the piecewise function equal
-  to the original squared norm on \(Q\) and zero on \(Q^c\).  Integrating the
-  piecewise function splits the integral into the local integral on \(Q\) plus
-  the zero integral on the complement.
--/
-theorem squareIntegrableManifoldDifferentialField_zero_extend_l2NormSq_eq
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [IsManifold I 1 X]
-    [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    {Q : Set X} (hQ_meas : MeasurableSet Q)
-    {du : ManifoldDifferentialField I X E}
-    (hduQ : ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g
-      (μ.restrict Q) du) :
-    squareIntegrableHilbertBundleSectionL2NormSq
-        (manifoldDifferentialHilbertBundleGeometry
-          (I := I) (X := X) (E := E) g) μ
-        ({ toSection := manifoldDifferentialFieldZeroExtend I Q du
-           memL2 :=
-            manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-              (I := I) (g := g) (μ := μ) hQ_meas hduQ } :
-          SquareIntegrableManifoldDifferentialField
-            (I := I) (X := X) (E := E) g μ) =
-      manifoldLocalDifferentialSeminormSq I g μ Q du := by
-  classical
-  let G :=
-    manifoldDifferentialHilbertBundleGeometry
-      (I := I) (X := X) (E := E) g
-  let metric :=
-    manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (I := I) (X := X) (E := E) g
-  letI : Bundle.RiemannianBundle
-      (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E)) :=
-    ⟨metric.toRiemannianMetric⟩
-  letI (x : X) :
-      NormedAddCommGroup (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := E) x) :=
-    manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-      (I := I) (X := X) (E := E) metric x
-  letI (x : X) :
-      InnerProductSpace ℝ (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := E) x) :=
-    manifoldDifferentialHilbertSchmidtInnerProductSpace
-      (I := I) (X := X) (E := E) metric x
-  have hG_inner :
-      ∀ (x : X)
-        (A B : ManifoldDifferentialBundleFiber (I := I) (X := X) (E := E) x),
-        G.fiberInner x A B = inner ℝ A B := by
-    intro x A B
-    rfl
-  have hG_zero :
-      ∀ x : X,
-        G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x) = 0 := by
-    intro x
-    rw [G.fiberNormSq_eq_inner, hG_inner]
-    simp
-  have hzero_mem :
-      HilbertBundleSectionMemL2 G (μ.restrict Qᶜ)
-        (0 : ManifoldDifferentialField I X E) :=
-    hilbertBundleSectionMemL2_zero
-      (I := I) (G := G) (by intro x A B; rfl) (μ.restrict Qᶜ)
-  unfold squareIntegrableHilbertBundleSectionL2NormSq
-  have hnorm_ext_eq :
-      (fun x : X ↦ G.fiberNormSq x
-          ((manifoldDifferentialFieldZeroExtend I Q du) x)) =
-        Q.piecewise
-          (fun x : X ↦ G.fiberNormSq x (du x))
-          (fun x : X ↦
-            G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x)) := by
-    funext x
-    by_cases hx : x ∈ Q
-    · simp [hx, manifoldDifferentialFieldZeroExtend]
-    · simp [hx, manifoldDifferentialFieldZeroExtend]
-  have hzero_int :
-      ∫ x in Qᶜ,
-        G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x) ∂μ = 0 := by
-    have hzero_ae :
-        (fun x : X ↦
-          G.fiberNormSq x ((0 : ManifoldDifferentialField I X E) x)) =ᵐ[
-            μ.restrict Qᶜ] fun _x : X ↦ (0 : ℝ) := by
-      filter_upwards [] with x
-      exact hG_zero x
-    simpa using integral_congr_ae hzero_ae
-  rw [hnorm_ext_eq]
-  rw [integral_piecewise hQ_meas hduQ.integrable_normSq
-    hzero_mem.integrable_normSq]
-  rw [hzero_int]
-  simp [manifoldLocalDifferentialSeminormSq]
-
-/--
-%%handwave
-name:
-  Vanishing local energy gives zero-extended differential \(L^2\)-convergence
-statement:
-  If differential fields are square-integrable on a measurable set \(Q\) and
-  their local Hilbert-Schmidt energies on \(Q\) tend to zero, then their
-  zero extensions converge to zero in the global intrinsic differential
-  \(L^2\)-space.
-proof:
-  The squared \(L^2\)-norm of each zero extension is exactly the local
-  differential seminorm on \(Q\).  The Hilbert-space quotient topology
-  identifies convergence to zero with convergence of these norms to zero.
--/
-theorem manifoldDifferentialL2Section_zeroExtend_tendsto_zero_of_localSeminormSq_tendsto_zero
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [CompleteSpace E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    {Q : Set X} (hQ_meas : MeasurableSet Q)
-    (du : ℕ → ManifoldDifferentialField I X E)
-    (hduQ : ∀ n : ℕ,
-      ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g
-        (μ.restrict Q) (du n))
-    (henergy :
-      Filter.Tendsto
-        (fun n : ℕ ↦ manifoldLocalDifferentialSeminormSq I g μ Q (du n))
-        Filter.atTop (𝓝 0)) :
-    letI : NormedAddCommGroup
-        (ManifoldDifferentialL2Section (I := I) (X := X) (E := E) g μ) :=
-      manifoldDifferentialL2SectionNormedAddCommGroup
-        (I := I) (X := X) (E := E) g μ
-    Filter.Tendsto
-      (fun n : ℕ ↦
-        (Quotient.mk
-          (SquareIntegrableManifoldDifferentialField.aeSetoid
-            (I := I) (X := X) (E := E) (g := g) (μ := μ))
-          ({ toSection := manifoldDifferentialFieldZeroExtend I Q (du n)
-             memL2 :=
-              manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-                (I := I) (g := g) (μ := μ) hQ_meas (hduQ n) } :
-            SquareIntegrableManifoldDifferentialField
-              (I := I) (X := X) (E := E) g μ) :
-          ManifoldDifferentialL2Section (I := I) (X := X) (E := E) g μ))
-      Filter.atTop
-      (𝓝 (0 :
-        ManifoldDifferentialL2Section (I := I) (X := X) (E := E) g μ)) := by
-  letI : NormedAddCommGroup
-      (ManifoldDifferentialL2Section (I := I) (X := X) (E := E) g μ) :=
-    manifoldDifferentialL2SectionNormedAddCommGroup
-      (I := I) (X := X) (E := E) g μ
-  let w : ℕ → SquareIntegrableManifoldDifferentialField
-      (I := I) (X := X) (E := E) g μ := fun n ↦
-    { toSection := manifoldDifferentialFieldZeroExtend I Q (du n)
-      memL2 :=
-        manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-          (I := I) (g := g) (μ := μ) hQ_meas (hduQ n) }
-  have hsq :
-      Filter.Tendsto
-        (fun n : ℕ ↦
-          squareIntegrableHilbertBundleSectionL2NormSq
-            (manifoldDifferentialHilbertBundleGeometry
-              (I := I) (X := X) (E := E) g) μ (w n))
-        Filter.atTop (𝓝 0) := by
-    refine henergy.congr' ?_
-    filter_upwards [] with n
-    exact
-      squareIntegrableManifoldDifferentialField_zero_extend_l2NormSq_eq
-        (I := I) (g := g) (μ := μ) hQ_meas (hduQ n) |>.symm
-  simpa [w] using
-    manifoldDifferentialL2Section_tendsto_zero_of_l2NormSq_tendsto_zero
-      (I := I) (X := X) (E := E) g μ (du := w) hsq
-
-/--
-%%handwave
-name:
-  Indicator representative as a square-integrable value section
-statement:
-  If a real-valued function is \(L^2\) on a measurable set \(P\), then its
-  zero extension outside \(P\) is a square-integrable trivial-bundle section
-  on the ambient measure space.
--/
-noncomputable def squareIntegrableValueSectionIndicator
-    {X : Type} [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X]
-    {μ : Measure X} {P : Set X} (hP_meas : MeasurableSet P)
-    (u : X → ℝ) (hu : MemLp u 2 (μ.restrict P)) :
-    SquareIntegrableValueSection (X := X) (E := ℝ) μ :=
-  { toSection := P.indicator u
-    memL2 :=
-      trivial_real_hilbertBundleSectionMemL2_of_memLp
-        ((memLp_indicator_iff_restrict (μ := μ) (p := (2 : ℝ≥0∞))
-          (f := u) hP_meas).2 hu) }
-
 set_option maxHeartbeats 800000
-
-/--
-%%handwave
-name:
-  Local \(L^2\)-convergence gives convergence of zero-extended values
-statement:
-  If real-valued functions converge in \(L^2\) on a measurable set \(P\), then
-  their zero extensions outside \(P\) converge in the global intrinsic
-  value \(L^2\)-section space.
-proof:
-  The zero extension is the indicator of \(P\).  Its global \(L^2\)-norm is
-  the restricted \(L^2\)-norm on \(P\), and the quotient topology on
-  value \(L^2\)-sections is induced by this norm.
--/
-theorem valueL2Section_indicator_tendsto_of_restrict_eLpNorm_tendsto_zero
-    {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [ChartedSpace H X]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    {μ : Measure X} {P : Set X} (hP_meas : MeasurableSet P)
-    {u : ℕ → X → ℝ} {uLim : X → ℝ}
-    (hmem : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict P))
-    (hmemLim : MemLp uLim 2 (μ.restrict P))
-    (hlim :
-      Filter.Tendsto
-        (fun n : ℕ ↦ eLpNorm (fun x : X ↦ u n x - uLim x) 2 (μ.restrict P))
-        Filter.atTop (𝓝 0)) :
-    letI : NormedAddCommGroup (ValueL2Section (X := X) (E := ℝ) μ) :=
-      valueL2SectionNormedAddCommGroup (I := I) (X := X) (E := ℝ) μ
-    Filter.Tendsto
-      (fun n : ℕ ↦
-        (Quotient.mk
-          (SquareIntegrableValueSection.aeSetoid
-            (X := X) (E := ℝ) (μ := μ))
-          (squareIntegrableValueSectionIndicator hP_meas (u n) (hmem n)) :
-          ValueL2Section (X := X) (E := ℝ) μ))
-      Filter.atTop
-      (𝓝
-        (Quotient.mk
-          (SquareIntegrableValueSection.aeSetoid
-            (X := X) (E := ℝ) (μ := μ))
-          (squareIntegrableValueSectionIndicator hP_meas uLim hmemLim) :
-          ValueL2Section (X := X) (E := ℝ) μ)) := by
-  letI : NormedAddCommGroup (ValueL2Section (X := X) (E := ℝ) μ) :=
-    valueL2SectionNormedAddCommGroup (I := I) (X := X) (E := ℝ) μ
-  let w : ℕ → SquareIntegrableValueSection (X := X) (E := ℝ) μ := fun n ↦
-    squareIntegrableValueSectionIndicator hP_meas (u n) (hmem n)
-  let wLim : SquareIntegrableValueSection (X := X) (E := ℝ) μ :=
-    squareIntegrableValueSectionIndicator hP_meas uLim hmemLim
-  have hglobal :
-      Filter.Tendsto
-        (fun n : ℕ ↦
-          eLpNorm (fun x : X ↦ (w n).toFunction x - wLim.toFunction x) 2 μ)
-        Filter.atTop (𝓝 0) := by
-    refine hlim.congr' ?_
-    filter_upwards [] with n
-    have hindicator :
-        (fun x : X ↦ (w n).toFunction x - wLim.toFunction x) =
-          P.indicator (fun x : X ↦ u n x - uLim x) := by
-      funext x
-      by_cases hx : x ∈ P
-      · simp [w, wLim, squareIntegrableValueSectionIndicator,
-          SquareIntegrableValueSection.toFunction, hx]
-      · simp [w, wLim, squareIntegrableValueSectionIndicator,
-          SquareIntegrableValueSection.toFunction, hx]
-    rw [hindicator]
-    exact
-      eLpNorm_indicator_eq_eLpNorm_restrict
-        (μ := μ) (p := (2 : ℝ≥0∞)) (f := fun x : X ↦ u n x - uLim x)
-        hP_meas |>.symm
-  change
-    Filter.Tendsto
-      (fun n : ℕ ↦
-        (Quotient.mk
-          (SquareIntegrableValueSection.aeSetoid
-            (X := X) (E := ℝ) (μ := μ)) (w n) :
-          ValueL2Section (X := X) (E := ℝ) μ))
-      Filter.atTop
-      (𝓝
-        (Quotient.mk
-          (SquareIntegrableValueSection.aeSetoid
-            (X := X) (E := ℝ) (μ := μ)) wLim :
-          ValueL2Section (X := X) (E := ℝ) μ))
-  exact
-    valueL2Section_tendsto_of_eLpNorm_sub_tendsto_zero
-      (I := I) (X := X) (E := ℝ) μ hglobal
 
 set_option maxHeartbeats 200000
 
@@ -1046,24 +562,6 @@ theorem BoundedInEuclideanLocalSobolevH1WithValues.mono_set {H E : Type}
 /--
 %%handwave
 name:
-  Euclidean local \(L^2\) convergence for Hilbert-valued maps
-statement:
-  A sequence of Hilbert-valued maps on a finite-dimensional real vector space
-  converges locally in \(L^2\) on a set if the Euclidean \(L^2\) norm of the
-  difference tends to zero on that set.
--/
-def TendstoInEuclideanLocalL2WithValues {H E : Type} [MeasureSpace H]
-    [NormedAddCommGroup E]
-    (K : Set H) (uSeq : ℕ → H → E) (u : H → E) : Prop :=
-  Filter.Tendsto
-    (fun n : ℕ ↦
-      eLpNorm (fun z ↦ uSeq n z - u z) 2
-        (MeasureTheory.volume.restrict K))
-    Filter.atTop (𝓝 0)
-
-/--
-%%handwave
-name:
   Euclidean weak derivative for scalar maps
 statement:
   A real-valued map on a Euclidean region has a weak derivative field if it
@@ -1172,34 +670,6 @@ abbrev BoundedInEuclideanLocalSobolevH1Scalar {H : Type}
     [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
     (K : Set H) (u : ℕ → H → ℝ) (du : ℕ → H → H →L[ℝ] ℝ) : Prop :=
   BoundedInEuclideanLocalSobolevH1WithValues K u du
-
-/--
-%%handwave
-name:
-  Euclidean local \(L^2\) convergence for scalar maps
-statement:
-  A sequence of real-valued maps on a finite-dimensional real vector space
-  converges locally in \(L^2\) on a set if the Euclidean \(L^2\) norm of the
-  difference tends to zero on that set.
--/
-abbrev TendstoInEuclideanLocalL2Scalar {H : Type} [MeasureSpace H]
-    (K : Set H) (uSeq : ℕ → H → ℝ) (u : H → ℝ) : Prop :=
-  TendstoInEuclideanLocalL2WithValues K uSeq u
-
-/--
-%%handwave
-name:
-  Uniform \(L^2\)-boundedness for a family on a compact Euclidean set
-statement:
-  A family of scalar functions is uniformly bounded in \(L^2\) on a compact
-  Euclidean set if all its \(L^2\) seminorms on that set are bounded by one
-  finite constant.
--/
-def EuclideanL2BoundedFamilyOnCompact {ι H : Type}
-    [MeasureSpace H]
-    (K : Set H) (u : ι → H → ℝ) : Prop :=
-  ∃ C : ℝ≥0∞, C < ⊤ ∧ ∀ i : ι,
-    eLpNorm (u i) 2 (MeasureTheory.volume.restrict K) ≤ C
 
 /--
 %%handwave
@@ -1314,41 +784,6 @@ private theorem euclideanL2TranslationTightFamilyOnCompactForMeasure_of_linear_m
             exact hreal_lt
       _ = ε := ENNReal.ofReal_toReal hε_top
   exact (hmod h hhρ i).trans (le_of_lt hprod_lt)
-
-/--
-%%handwave
-name:
-  Compact containment gives a uniform segment radius
-statement:
-  If a compact set lies in the interior of another set in a finite-dimensional
-  Euclidean space, then all sufficiently short line segments starting in the
-  compact set remain in the larger set.
-proof:
-  A compact subset of an open set has a positive closed metric thickening
-  contained in that open set.  If \(\|h\|\) is below this radius and
-  \(0\le t\le 1\), then \(x+t h\) is within this thickening of \(x\).
--/
-theorem euclideanCompact_exists_translation_segment_radius
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {K Q : Set H} (hK : IsCompact K) (hKQ : K ⊆ interior Q) :
-    ∃ ρ : ℝ, 0 < ρ ∧
-      ∀ x ∈ K, ∀ h : H, ‖h‖ < ρ → ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • h ∈ Q := by
-  rcases hK.exists_cthickening_subset_open isOpen_interior hKQ with
-    ⟨ρ, hρ_pos, hρ_sub⟩
-  refine ⟨ρ, hρ_pos, fun x hx h hh t ht ↦ ?_⟩
-  have ht_abs : |t| ≤ 1 := abs_le.mpr ⟨by linarith [ht.1], ht.2⟩
-  have hdist : dist (x + t • h) x ≤ ρ := by
-    calc
-      dist (x + t • h) x = ‖t • h‖ := by
-        simp [dist_eq_norm]
-      _ = |t| * ‖h‖ := norm_smul t h
-      _ ≤ 1 * ‖h‖ := mul_le_mul_of_nonneg_right ht_abs (norm_nonneg h)
-      _ = ‖h‖ := one_mul ‖h‖
-      _ ≤ ρ := le_of_lt hh
-  exact interior_subset (hρ_sub
-    (Metric.mem_cthickening_of_dist_le (x + t • h) x ρ K hx hdist))
 
 /--
 %%handwave
@@ -1564,34 +999,6 @@ theorem scalarWeakSobolev_function_locallyIntegrableOn_of_nonzero_direction
 /--
 %%handwave
 name:
-  Finite \(L^2\) seminorm gives \(L^2\) membership for weak Sobolev functions
-statement:
-  On a compact subset of an open Euclidean region, if a scalar weak Sobolev
-  function has finite \(L^2\) seminorm, then it belongs to \(L^2\) there.
-proof:
-  Local integrability gives almost-everywhere strong measurability on the
-  compact set, and the finite seminorm assumption gives the \(L^2\) bound.
--/
-theorem scalarWeakSobolev_function_memLp_of_eLpNorm_ne_top
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {Q Ω : Set H} (hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    {h : H} (hh : h ≠ 0)
-    (hfinite : eLpNorm u 2
-      (MeasureTheory.volume.restrict Q) ≠ (∞ : ℝ≥0∞)) :
-    MemLp u 2 (MeasureTheory.volume.restrict Q) := by
-  have hu_int : Integrable u (MeasureTheory.volume.restrict Q) :=
-    scalarWeakSobolev_function_integrableOn_compact_of_nonzero_direction
-      hQ hQΩ hΩ_open hweak hh
-  exact ⟨hu_int.aestronglyMeasurable, lt_top_iff_ne_top.mpr hfinite⟩
-
-/--
-%%handwave
-name:
   Directional weak derivatives are locally measurable when their \(L^2\)
   seminorm is finite
 statement:
@@ -1662,51 +1069,6 @@ def smoothCompactlySupportedManifoldCoordinateFunction_translate
   compact_support := by
     rw [tsupport_comp_eq_preimage]
     exact (Homeomorph.addRight (-v)).isCompact_preimage.2 ψ.compact_support
-
-/--
-%%handwave
-name:
-  Value of a translated compactly supported test function
-statement:
-  If translating the support of a smooth test \(\psi\) by \(v\) stays in the
-  target region, then its translated test satisfies
-  \(\psi_v(z)=\psi(z-v)\).
-proof:
-  Unfold translation as composition with addition by \(-v\).
--/
-@[simp]
-theorem smoothCompactlySupportedManifoldCoordinateFunction_translate_apply
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {U Ω : Set H} (ψ : SmoothCompactlySupportedManifoldCoordinateFunction U)
-    (v : H) (hsupport : ∀ z ∈ tsupport (ψ : H → ℝ), z + v ∈ Ω)
-    (z : H) :
-    (smoothCompactlySupportedManifoldCoordinateFunction_translate ψ v hsupport :
-        SmoothCompactlySupportedManifoldCoordinateFunction Ω) z =
-      ψ (z - v) := by
-  simp [smoothCompactlySupportedManifoldCoordinateFunction_translate, sub_eq_add_neg]
-
-/--
-%%handwave
-name:
-  Derivative of a translated compactly supported test function
-statement:
-  For the translated test \(\psi_v(z)=\psi(z-v)\),
-  \[D\psi_v(z)(h)=D\psi(z-v)(h).\]
-proof:
-  Differentiate composition with the translation \(z\mapsto z-v\), whose
-  derivative is the identity.
--/
-@[simp]
-theorem smoothCompactlySupportedManifoldCoordinateFunction_translate_fderiv_apply
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {U Ω : Set H} (ψ : SmoothCompactlySupportedManifoldCoordinateFunction U)
-    (v h z : H) (hsupport : ∀ z ∈ tsupport (ψ : H → ℝ), z + v ∈ Ω) :
-    fderiv ℝ
-        ((smoothCompactlySupportedManifoldCoordinateFunction_translate ψ v hsupport :
-          SmoothCompactlySupportedManifoldCoordinateFunction Ω) : H → ℝ) z h =
-      fderiv ℝ (ψ : H → ℝ) (z - v) h := by
-  simp [smoothCompactlySupportedManifoldCoordinateFunction_translate,
-    Function.comp_def, sub_eq_add_neg, fderiv_comp_add_right]
 
 /--
 %%handwave
@@ -2011,632 +1373,6 @@ theorem euclideanSegmentIntegral_lintegral_sq_le_of_segments
 /--
 %%handwave
 name:
-  Almost everywhere equality transfers to segment endpoint differences
-statement:
-  Let \(K\) and \(Q\) be subsets of a finite-dimensional Euclidean space, and
-  let every segment \(x+t h\), \(x\in K\), \(0\le t\le1\), lie in \(Q\).
-  If two scalar functions agree almost everywhere on \(Q\), then their
-  endpoint differences along the displacement \(h\) agree almost everywhere
-  on \(K\):
-  \[
-    u(x+h)-u(x)=v(x+h)-v(x)
-  \]
-  for almost every \(x\in K\).
-proof:
-  Agreement at the initial endpoint follows by restricting the null set from
-  \(Q\) to \(K\).  Agreement at the translated endpoint follows from
-  translation invariance of Euclidean volume, because \(x\mapsto x+h\) sends
-  \(K\) into \(Q\).  Subtract the two endpoint equalities.
--/
-theorem ae_eq_endpoint_difference_of_ae_eq_on_segments
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K Q : Set H} {u v : H → ℝ} {h : H}
-    (huv : v =ᵐ[MeasureTheory.volume.restrict Q] u)
-    (hsegments : ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • h ∈ Q) :
-    (fun z ↦ u (z + h) - u z) =ᵐ[MeasureTheory.volume.restrict K]
-      fun z ↦ v (z + h) - v z := by
-  have hKQ : K ⊆ Q := by
-    intro x hx
-    simpa using hsegments x hx 0 (by simp)
-  have hKhQ : Set.MapsTo (fun z : H ↦ z + h) K Q := by
-    intro x hx
-    simpa using hsegments x hx 1 (by simp)
-  have hbase :
-      u =ᵐ[MeasureTheory.volume.restrict K] v :=
-    Filter.EventuallyEq.symm (ae_restrict_of_ae_restrict_of_subset hKQ huv)
-  have htranslate_qmp :
-      Measure.QuasiMeasurePreserving (fun z : H ↦ z + h)
-        (MeasureTheory.volume.restrict K) (MeasureTheory.volume.restrict Q) :=
-    (MeasureTheory.measurePreserving_add_right (MeasureTheory.volume : Measure H) h).quasiMeasurePreserving.restrict
-      hKhQ
-  have htranslate :
-      (fun z : H ↦ u (z + h)) =ᵐ[MeasureTheory.volume.restrict K]
-        fun z ↦ v (z + h) := by
-    simpa [Function.comp_def] using
-      Filter.EventuallyEq.symm (htranslate_qmp.ae_eq_comp huv)
-  exact htranslate.comp₂ (fun a b : ℝ ↦ a - b) hbase
-
-/--
-%%handwave
-name:
-  A nonzero direction can be made the first coordinate direction
-statement:
-  Let \(H\) be a finite-dimensional real normed vector space and let
-  \(h\ne0\).  Then there is an integer \(d\) and a continuous linear
-  coordinate equivalence
-  \[
-    H \simeq \mathbb R\times\mathbb R^d
-  \]
-  which sends \(h\) to \((1,0)\).
-proof:
-  Choose a linear functional \(\ell\) with \(\ell(h)=1\), extend \(h\) to a
-  basis of \(H\), and use the remaining basis vectors as coordinates on a
-  complementary subspace.  In finite dimension all linear maps between
-  normed spaces are continuous.
--/
-theorem exists_continuousLinearEquiv_apply_nonzero_eq_firstCoordinate
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [FiniteDimensional ℝ H] {h : H} (hh_ne : h ≠ 0) :
-    ∃ d : ℕ, ∃ e : H ≃L[ℝ] (ℝ × (Fin d → ℝ)),
-      e h = ((1 : ℝ), (0 : Fin d → ℝ)) := by
-  classical
-  let s : Set H := {h}
-  have hs : LinearIndepOn ℝ id s := by
-    simpa [s] using (LinearIndepOn.singleton (R := ℝ) (v := id) hh_ne)
-  let J := hs.extend (Set.subset_univ s)
-  let b : Module.Basis J ℝ H := Module.Basis.extend hs
-  have hi0 : h ∈ J :=
-    hs.subset_extend (Set.subset_univ s) (by simp [s])
-  let i0 : J := ⟨h, hi0⟩
-  let Tail : Type := ({j : J | j ≠ i0} : Type)
-  haveI : Fintype J := FiniteDimensional.fintypeBasisIndex b
-  haveI : Fintype Tail := inferInstance
-  let d := Fintype.card Tail
-  let r : Tail ≃ Fin d := Fintype.equivFin Tail
-  let split : Unit ⊕ Tail ≃ J :=
-    (Equiv.sumCongr (Equiv.Set.singleton i0).symm (Equiv.refl Tail)).trans
-      (Equiv.Set.sumCompl ({i0} : Set J))
-  let eLin : H ≃ₗ[ℝ] ℝ × (Fin d → ℝ) :=
-    b.equivFun.trans <|
-      (LinearEquiv.piCongrLeft' ℝ (fun _ : J ↦ ℝ) split.symm).trans <|
-        (LinearEquiv.sumArrowLequivProdArrow Unit Tail ℝ ℝ).trans <|
-          (LinearEquiv.funUnique Unit ℝ ℝ).prodCongr
-          (LinearEquiv.piCongrLeft' ℝ (fun _ : Tail ↦ ℝ) r)
-  refine ⟨d, eLin.toContinuousLinearEquiv, ?_⟩
-  have hb_first : b i0 = h := by
-    change b i0 = (i0 : H)
-    exact Module.Basis.extend_apply_self hs i0
-  have hb_coord (j : J) :
-      b.equivFun h j = if i0 = j then 1 else 0 := by
-    rw [← hb_first]
-    exact b.equivFun_self i0 j
-  ext i
-  · have hcoord : b.repr h (split (Sum.inl ())) = 1 := by
-      have hsplit : split (Sum.inl ()) = i0 := by
-        change (Equiv.Set.sumCompl ({i0} : Set J))
-            (Sum.inl ((Equiv.Set.singleton i0).symm ())) = i0
-        rw [Equiv.Set.sumCompl_apply_inl]
-        rfl
-      simpa [Module.Basis.equivFun_apply, hsplit] using
-        hb_coord (split (Sum.inl ()))
-    simpa [eLin, Module.Basis.equivFun_apply] using hcoord
-  · have htail_ne : i0 ≠ ((r.symm i : Tail) : J) :=
-      Ne.symm (r.symm i).property
-    have hcoord : b.repr h (split (Sum.inr (r.symm i))) = 0 := by
-      have hsplit_tail :
-          split (Sum.inr (r.symm i)) = ((r.symm i : Tail) : J) := by
-        change (Equiv.Set.sumCompl ({i0} : Set J)) (Sum.inr (r.symm i)) =
-          ((r.symm i : Tail) : J)
-        rw [Equiv.Set.sumCompl_apply_inr]
-      have hsplit_ne : i0 ≠ split (Sum.inr (r.symm i)) := by
-        rwa [hsplit_tail]
-      have h := hb_coord (split (Sum.inr (r.symm i)))
-      rw [if_neg hsplit_ne] at h
-      simpa [Module.Basis.equivFun_apply] using h
-    simpa [eLin, Module.Basis.equivFun_apply] using hcoord
-
-/--
-%%handwave
-name:
-  Vertical fibers of subsets of product Euclidean space
-statement:
-  For a set \(K\subset \mathbb R\times\mathbb R^d\) and a transverse
-  coordinate \(y\in\mathbb R^d\), its vertical fiber is the set of real
-  numbers \(a\) such that \((a,y)\in K\).
--/
-def firstCoordinateVerticalFiber {d : ℕ}
-    (K : Set (ℝ × (Fin d → ℝ))) (y : Fin d → ℝ) : Set ℝ :=
-  {a | (a, y) ∈ K}
-
-/--
-%%handwave
-name:
-  Vertical fibers are monotone under set inclusion
-statement:
-  If \(K\subset Q\), then every vertical fiber of \(K\) is contained in the
-  corresponding vertical fiber of \(Q\).
-proof:
-  If a scalar lies in the fiber of (K), the corresponding product point lies in (K); inclusion puts it in (Q), hence in the fiber of (Q).
--/
-theorem firstCoordinateVerticalFiber_mono {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hKQ : K ⊆ Q) (y : Fin d → ℝ) :
-    firstCoordinateVerticalFiber K y ⊆ firstCoordinateVerticalFiber Q y := by
-  intro a ha
-  exact hKQ ha
-
-/--
-%%handwave
-name:
-  Closed product sets have closed vertical fibers
-statement:
-  A vertical section of a closed subset of
-  \(\mathbb R\times\mathbb R^d\) is closed in \(\mathbb R\).
-proof:
-  The fiber is the preimage of the closed set under the continuous map \(t\mapsto(t,y)\).
--/
-theorem firstCoordinateVerticalFiber_isClosed {d : ℕ}
-    {K : Set (ℝ × (Fin d → ℝ))} (hK : IsClosed K)
-    (y : Fin d → ℝ) :
-    IsClosed (firstCoordinateVerticalFiber K y) := by
-  have hcont : Continuous (fun a : ℝ ↦ ((a, y) : ℝ × (Fin d → ℝ))) := by
-    fun_prop
-  exact hK.preimage hcont
-
-/--
-%%handwave
-name:
-  Open product sets have open vertical fibers
-statement:
-  A vertical section of an open subset of
-  \(\mathbb R\times\mathbb R^d\) is open in \(\mathbb R\).
-proof:
-  The fiber is the preimage of the open set under the continuous embedding \(t\mapsto(t,y)\).
--/
-theorem firstCoordinateVerticalFiber_isOpen {d : ℕ}
-    {Ω : Set (ℝ × (Fin d → ℝ))} (hΩ : IsOpen Ω)
-    (y : Fin d → ℝ) :
-    IsOpen (firstCoordinateVerticalFiber Ω y) := by
-  have hcont : Continuous (fun a : ℝ ↦ ((a, y) : ℝ × (Fin d → ℝ))) := by
-    fun_prop
-  exact hΩ.preimage hcont
-
-/--
-%%handwave
-name:
-  Fiber tests have product neighborhoods inside the region
-statement:
-  Let \(\Omega\subset \mathbb R\times\mathbb R^d\) be open.  If
-  \(\varphi\) is a smooth compactly supported test on the vertical fiber
-  \(\Omega_y\), then there are open sets \(U\subset\mathbb R\) and
-  \(V\subset\mathbb R^d\), with \(y\in V\), such that the closed support of
-  \(\varphi\) is contained in \(U\) and \(U\times V\subset\Omega\).
-proof:
-  The compact set \(\operatorname{supp}\varphi\times\{y\}\) lies in
-  \(\Omega\).  Apply the tube lemma for compact subsets of a product.
--/
-theorem firstCoordinateVerticalFiber_test_exists_product_tube {d : ℕ}
-    {Ω : Set (ℝ × (Fin d → ℝ))} (hΩ : IsOpen Ω)
-    (y : Fin d → ℝ)
-    (φ : SmoothCompactlySupportedManifoldCoordinateFunction
-      (firstCoordinateVerticalFiber Ω y)) :
-    ∃ U : Set ℝ, ∃ V : Set (Fin d → ℝ),
-      IsOpen U ∧ IsOpen V ∧ y ∈ V ∧
-        tsupport (φ : ℝ → ℝ) ⊆ U ∧ U ×ˢ V ⊆ Ω := by
-  have hprod_subset :
-      tsupport (φ : ℝ → ℝ) ×ˢ ({y} : Set (Fin d → ℝ)) ⊆ Ω := by
-    rintro ⟨a, y'⟩ ⟨ha, hy'⟩
-    have hy_eq : y' = y := by simpa using hy'
-    subst y'
-    exact φ.support_subset ha
-  rcases generalized_tube_lemma φ.compact_support isCompact_singleton
-      hΩ hprod_subset with
-    ⟨U, V, hU_open, hV_open, hφU, hyV, hUV⟩
-  exact ⟨U, V, hU_open, hV_open, hyV (by simp), hφU, hUV⟩
-
-/--
-%%handwave
-name:
-  Fiber tests extend to tests on a one-dimensional neighborhood
-statement:
-  Under the same hypotheses, the test function on the fiber may be viewed as
-  a smooth compactly supported test on an open one-dimensional set \(U\),
-  with an open transverse neighborhood \(V\) of the fiber parameter such that
-  \(U\times V\subset\Omega\).
-proof:
-  Use [a product neighborhood of the fiber support inside the region](lean:JJMath.Uniformization.firstCoordinateVerticalFiber_test_exists_product_tube),
-  and keep the same underlying smooth function.
--/
-theorem firstCoordinateVerticalFiber_test_exists_product_tube_test {d : ℕ}
-    {Ω : Set (ℝ × (Fin d → ℝ))} (hΩ : IsOpen Ω)
-    (y : Fin d → ℝ)
-    (φ : SmoothCompactlySupportedManifoldCoordinateFunction
-      (firstCoordinateVerticalFiber Ω y)) :
-    ∃ U : Set ℝ, ∃ V : Set (Fin d → ℝ),
-      ∃ φU : SmoothCompactlySupportedManifoldCoordinateFunction U,
-        IsOpen U ∧ IsOpen V ∧ y ∈ V ∧ U ×ˢ V ⊆ Ω ∧
-          (φU : ℝ → ℝ) = φ := by
-  rcases firstCoordinateVerticalFiber_test_exists_product_tube hΩ y φ with
-    ⟨U, V, hU_open, hV_open, hyV, hφU, hUV⟩
-  let φU : SmoothCompactlySupportedManifoldCoordinateFunction U :=
-    { toFun := φ
-      smooth := φ.smooth
-      support_subset := hφU
-      compact_support := φ.compact_support }
-  exact ⟨U, V, φU, hU_open, hV_open, hyV, hUV, rfl⟩
-
-/--
-%%handwave
-name:
-  Compact product sets have compact vertical fibers
-statement:
-  A vertical section of a compact subset of
-  \(\mathbb R\times\mathbb R^d\) is compact in \(\mathbb R\).
-proof:
-  The fiber is closed, and it is contained in the first-coordinate projection
-  of the compact set.
--/
-theorem firstCoordinateVerticalFiber_isCompact {d : ℕ}
-    {K : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K)
-    (y : Fin d → ℝ) :
-    IsCompact (firstCoordinateVerticalFiber K y) := by
-  have hproj : IsCompact (Prod.fst '' K) :=
-    hK.image continuous_fst
-  have hclosed : IsClosed (firstCoordinateVerticalFiber K y) :=
-    firstCoordinateVerticalFiber_isClosed hK.isClosed y
-  have hsub : firstCoordinateVerticalFiber K y ⊆ Prod.fst '' K := by
-    intro a ha
-    exact ⟨(a, y), ha, rfl⟩
-  exact IsCompact.of_isClosed_subset hproj hclosed hsub
-
-/--
-%%handwave
-name:
-  Product vertical segments restrict to fiber segments
-statement:
-  If every product segment \((a,y)+t e_1\), starting from \(K\), remains in
-  \(Q\), then every one-dimensional segment \(a+t\), starting from the
-  vertical fiber \(K_y\), remains in the corresponding fiber \(Q_y\).
-proof:
-  Translate membership in a vertical fiber into membership of the corresponding product point, apply the product-segment hypothesis, and translate back.
--/
-theorem firstCoordinateVerticalFiber_segments {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q)
-    (y : Fin d → ℝ) :
-    ∀ a ∈ firstCoordinateVerticalFiber K y, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-      a + t ∈ firstCoordinateVerticalFiber Q y := by
-  intro a ha t ht
-  have hq := hsegments ((a, y) : ℝ × (Fin d → ℝ)) ha t ht
-  simpa [firstCoordinateVerticalFiber, Prod.ext_iff, smul_eq_mul, add_comm, add_left_comm,
-    add_assoc] using hq
-
-/--
-%%handwave
-name:
-  The first-coordinate unit-segment image of a compact set is compact
-statement:
-  The set of all points \(x+t e_1\), with \(x\) in a compact set and
-  \(0\le t\le1\), is compact.
-proof:
-  It is the continuous image of the compact product \(K\times[0,1]\) under \((x,t)\mapsto x+t e_1\).
--/
-theorem firstCoordinate_unitSegmentImage_isCompact {d : ℕ}
-    {K : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) :
-    IsCompact
-      ((fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-          p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ))) ''
-        (K ×ˢ Set.Icc (0 : ℝ) 1)) := by
-  have hcont :
-      Continuous (fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-        p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ))) := by
-    fun_prop
-  exact (hK.prod isCompact_Icc).image hcont
-
-/--
-%%handwave
-name:
-  Segment containment controls the first-coordinate unit-segment image
-statement:
-  If all vertical unit segments starting from \(K\) remain in \(Q\), then the
-  compact image of those segments is contained in \(Q\).
-proof:
-  Every point of the segment image has the form (x+t e_1) with (xin K) and (tin[0,1]); apply the assumed segment containment.
--/
-theorem firstCoordinate_unitSegmentImage_subset_of_segments {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ((fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-        p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ))) ''
-      (K ×ˢ Set.Icc (0 : ℝ) 1)) ⊆ Q := by
-  intro z hz
-  rcases hz with ⟨p, hp, rfl⟩
-  exact hsegments p.1 hp.1 p.2 hp.2
-
-/--
-%%handwave
-name:
-  Compact vertical segments have an open tube inside the weak-derivative region
-statement:
-  If every vertical unit segment starting from a compact set \(K\) lies in a
-  set \(Q\subset\Omega\), with \(\Omega\) open, then a small open thickening
-  of \(K\) has all of its vertical unit segments contained in \(\Omega\).
-proof:
-  The union of the original compact family of segments is compact and lies in
-  \(\Omega\).  Choose a positive closed metric thickening of this compact
-  segment image inside \(\Omega\).  If \(z\) is sufficiently close to \(K\),
-  then \(z+t e_1\) stays within that thickening of the original segment image.
--/
-theorem firstCoordinate_exists_segment_tube {d : ℕ}
-    {K Q Ω : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ∃ ρ : ℝ, 0 < ρ ∧
-      ∀ z ∈ Metric.thickening ρ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        z + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Ω := by
-  let e : ℝ × (Fin d → ℝ) := ((1 : ℝ), (0 : Fin d → ℝ))
-  let S : Set (ℝ × (Fin d → ℝ)) :=
-    ((fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦ p.1 + p.2 • e) ''
-      (K ×ˢ Set.Icc (0 : ℝ) 1))
-  have hS_compact : IsCompact S := by
-    simpa [S, e] using firstCoordinate_unitSegmentImage_isCompact (d := d) hK
-  have hSΩ : S ⊆ Ω := by
-    intro z hz
-    exact hQΩ (firstCoordinate_unitSegmentImage_subset_of_segments
-      (d := d) (K := K) (Q := Q) hsegments (by simpa [S, e] using hz))
-  obtain ⟨δ, hδ_pos, hδΩ⟩ :=
-    hS_compact.exists_cthickening_subset_open hΩ_open hSΩ
-  refine ⟨δ / 2, by positivity, fun z hzK t ht ↦ ?_⟩
-  rcases Metric.mem_thickening_iff.mp hzK with ⟨x, hxK, hzx⟩
-  have hx_segment : x + t • e ∈ S := by
-    exact ⟨(x, t), ⟨hxK, ht⟩, rfl⟩
-  have hdist_lt :
-      dist (z + t • e) (x + t • e) < δ := by
-    calc
-      dist (z + t • e) (x + t • e) = dist z x := by
-        simp [dist_eq_norm]
-      _ < δ / 2 := hzx
-      _ < δ := by linarith
-  exact hδΩ (Metric.mem_cthickening_of_dist_le
-    (z + t • e) (x + t • e) δ S hx_segment (le_of_lt hdist_lt))
-
-/--
-%%handwave
-name:
-  Fiberwise almost-everywhere statements recombine over vertical fibers
-statement:
-  Let \(K\subset\mathbb R\times\mathbb R^d\) be measurable.  Suppose the
-  exceptional subset of \(K\) on which a property fails is measurable up to
-  null sets.  If the property holds for almost every point of almost every
-  vertical fiber of \(K\), then it holds for almost every point of \(K\).
-proof:
-  Euclidean measure on the product is the product measure.  The
-  null-measurable exceptional set can be replaced by a measurable set equal
-  to it up to a null set.  Fubini applied to this measurable exceptional set
-  shows that it has zero product measure, because almost every vertical
-  section has zero one-dimensional measure.  Restricting the product measure
-  to \(K\) gives the claimed almost-everywhere statement.
--/
-theorem ae_restrict_prod_of_ae_vertical_fibers
-    {d : ℕ} {K : Set (ℝ × (Fin d → ℝ))}
-    {P : (ℝ × (Fin d → ℝ)) → Prop}
-    (hK : MeasurableSet K)
-    (hbad :
-      NullMeasurableSet {z : ℝ × (Fin d → ℝ) | z ∈ K ∧ ¬ P z}
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))))
-    (hfiber :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-          P (a, y)) :
-    ∀ᵐ z ∂MeasureTheory.volume.restrict K, P z := by
-  classical
-  let bad : Set (ℝ × (Fin d → ℝ)) := {z | z ∈ K ∧ ¬ P z}
-  let B : Set (ℝ × (Fin d → ℝ)) :=
-    MeasureTheory.toMeasurable (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) bad
-  have hBmeas : MeasurableSet B := by
-    simp [B, measurableSet_toMeasurable
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) bad]
-  have hBbad :
-      B =ᵐ[(MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))] bad := by
-    simpa [B, bad] using
-      (NullMeasurableSet.toMeasurable_ae_eq hbad)
-  have hBbad_prod :
-      B =ᵐ[((MeasureTheory.volume : Measure ℝ).prod
-        (MeasureTheory.volume : Measure (Fin d → ℝ)))] bad := by
-    simpa [Measure.volume_eq_prod] using hBbad
-  have hBbad_swap :
-      ∀ᵐ p ∂((MeasureTheory.volume : Measure (Fin d → ℝ)).prod
-          (MeasureTheory.volume : Measure ℝ)),
-        ((p.2, p.1) : ℝ × (Fin d → ℝ)) ∈ B ↔
-          ((p.2, p.1) : ℝ × (Fin d → ℝ)) ∈ bad := by
-    have h :=
-      (Measure.measurePreserving_swap
-        (μ := (MeasureTheory.volume : Measure (Fin d → ℝ)))
-        (ν := (MeasureTheory.volume : Measure ℝ))).quasiMeasurePreserving.tendsto_ae
-        hBbad_prod
-    simpa [Filter.EventuallyEq, Prod.swap] using h
-  have hBbad_slices :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume : Measure ℝ),
-          ((a, y) : ℝ × (Fin d → ℝ)) ∈ B ↔
-            ((a, y) : ℝ × (Fin d → ℝ)) ∈ bad := by
-    simpa using Measure.ae_ae_of_ae_prod hBbad_swap
-  have hnotbad_slices :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume : Measure ℝ),
-          ((a, y) : ℝ × (Fin d → ℝ)) ∉ bad := by
-    filter_upwards [hfiber] with y hy
-    have hy_unrestricted :
-        ∀ᵐ a ∂(MeasureTheory.volume : Measure ℝ),
-          a ∈ firstCoordinateVerticalFiber K y → P (a, y) :=
-      ae_imp_of_ae_restrict hy
-    filter_upwards [hy_unrestricted] with a ha
-    intro hb
-    exact hb.2 (ha (by simpa [bad, firstCoordinateVerticalFiber] using hb.1))
-  have hnotB_slices :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume : Measure ℝ),
-          ((a, y) : ℝ × (Fin d → ℝ)) ∉ B := by
-    filter_upwards [hnotbad_slices, hBbad_slices] with y hnotbad_y hBbad_y
-    filter_upwards [hnotbad_y, hBbad_y] with a hnotbad_a hBbad_a
-    intro hBmem
-    exact hnotbad_a (hBbad_a.mp hBmem)
-  have hnotB_swap_prod :
-      ∀ᵐ p ∂((MeasureTheory.volume : Measure (Fin d → ℝ)).prod
-          (MeasureTheory.volume : Measure ℝ)),
-        ((p.2, p.1) : ℝ × (Fin d → ℝ)) ∉ B := by
-    have hmeas :
-        MeasurableSet
-          {p : (Fin d → ℝ) × ℝ |
-            ((p.2, p.1) : ℝ × (Fin d → ℝ)) ∉ B} := by
-      change MeasurableSet (Prod.swap ⁻¹' Bᶜ)
-      exact measurable_swap hBmeas.compl
-    exact (Measure.ae_prod_iff_ae_ae hmeas).2 hnotB_slices
-  have hnotB_prod :
-      ∀ᵐ z ∂((MeasureTheory.volume : Measure ℝ).prod
-          (MeasureTheory.volume : Measure (Fin d → ℝ))),
-        z ∉ B := by
-    have h :=
-      (Measure.measurePreserving_swap
-        (μ := (MeasureTheory.volume : Measure ℝ))
-        (ν := (MeasureTheory.volume : Measure (Fin d → ℝ)))).quasiMeasurePreserving.tendsto_ae
-        hnotB_swap_prod
-    simpa [Prod.swap] using h
-  have hB_zero :
-      ((MeasureTheory.volume : Measure ℝ).prod
-          (MeasureTheory.volume : Measure (Fin d → ℝ))) B = 0 := by
-    simpa [ae_iff] using hnotB_prod
-  have hbad_zero :
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) bad = 0 := by
-    have hB_zero_volume :
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) B = 0 := by
-      simpa [Measure.volume_eq_prod] using hB_zero
-    change
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))
-          (MeasureTheory.toMeasurable
-            (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) bad) = 0 at hB_zero_volume
-    rw [measure_toMeasurable] at hB_zero_volume
-    simpa using hB_zero_volume
-  rw [ae_iff, Measure.restrict_apply' hK]
-  have hset : {z : ℝ × (Fin d → ℝ) | ¬ P z} ∩ K = bad := by
-    ext z
-    simp [bad, and_comm]
-  rw [hset]
-  exact hbad_zero
-
-/--
-%%handwave
-name:
-  Product almost-everywhere statements restrict to almost every vertical fiber
-statement:
-  If a statement holds for almost every point of a closed subset
-  \(K\subset\mathbb R\times\mathbb R^d\), then for almost every transverse
-  coordinate \(y\) it holds for almost every point of the vertical section
-  \(K_y\).
-proof:
-  Rewrite Euclidean measure on the product as the product of one-dimensional
-  and transverse Euclidean measure.  After swapping the product factors,
-  Fubini gives the assertion on almost every vertical slice.  The restricted
-  fiber measure is handled by restricting the resulting unrestricted
-  almost-everywhere implication to the closed fiber.
--/
-theorem ae_vertical_fibers_of_ae_restrict_prod
-    {d : ℕ} {K : Set (ℝ × (Fin d → ℝ))}
-    {P : (ℝ × (Fin d → ℝ)) → Prop}
-    (hK : IsClosed K)
-    (hprod : ∀ᵐ z ∂MeasureTheory.volume.restrict K, P z) :
-    ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-      ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-        P (a, y) := by
-  have hprod_unrestricted :
-      ∀ᵐ z ∂(MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))),
-        z ∈ K → P z :=
-    ae_imp_of_ae_restrict hprod
-  have hprod_prod :
-      ∀ᵐ z ∂((MeasureTheory.volume : Measure ℝ).prod
-          (MeasureTheory.volume : Measure (Fin d → ℝ))),
-        z ∈ K → P z := by
-    simpa [Measure.volume_eq_prod] using hprod_unrestricted
-  have hswap :
-      ∀ᵐ p ∂((MeasureTheory.volume : Measure (Fin d → ℝ)).prod
-          (MeasureTheory.volume : Measure ℝ)),
-        ((p.2, p.1) : ℝ × (Fin d → ℝ)) ∈ K → P (p.2, p.1) := by
-    have h :=
-      (Measure.measurePreserving_swap
-        (μ := (MeasureTheory.volume : Measure (Fin d → ℝ)))
-        (ν := (MeasureTheory.volume : Measure ℝ))).quasiMeasurePreserving.tendsto_ae
-        hprod_prod
-    simpa [Prod.swap] using h
-  have hslices :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume : Measure ℝ),
-          ((a, y) : ℝ × (Fin d → ℝ)) ∈ K → P (a, y) := by
-    simpa using Measure.ae_ae_of_ae_prod hswap
-  filter_upwards [hslices] with y hy
-  have hfiber_meas : MeasurableSet (firstCoordinateVerticalFiber K y) := by
-    have hcont : Continuous (fun a : ℝ ↦ ((a, y) : ℝ × (Fin d → ℝ))) := by
-      fun_prop
-    exact (hK.preimage hcont).measurableSet
-  have hy_restrict :
-      ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-        ((a, y) : ℝ × (Fin d → ℝ)) ∈ K → P (a, y) :=
-    ae_restrict_of_ae hy
-  filter_upwards [hy_restrict, ae_restrict_mem hfiber_meas] with a ha hmem
-  exact ha (by simpa [firstCoordinateVerticalFiber] using hmem)
-
-/--
-%%handwave
-name:
-  Product vertical fundamental theorem gives the fiberwise statement
-statement:
-  If the vertical fundamental theorem holds for almost every point of
-  \(K\subset\mathbb R\times\mathbb R^d\), then it holds for almost every
-  point in almost every vertical fiber of \(K\).
-proof:
-  Apply Fubini to the product almost-everywhere statement and then restrict
-  the one-dimensional almost-everywhere implication to each closed vertical
-  fiber of the compact set.
--/
-theorem scalarWeakSobolev_firstCoordinate_fiberwise_line_integral_eq_ae_of_product
-    {d : ℕ}
-    {K : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hprod :
-      ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-        u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume) :
-    ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-      ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-        u (((a, y) : ℝ × (Fin d → ℝ)) + ((1 : ℝ), (0 : Fin d → ℝ))) -
-            u (a, y) =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (((a, y) : ℝ × (Fin d → ℝ)) +
-                t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  exact
-    ae_vertical_fibers_of_ae_restrict_prod
-      (K := K)
-      (P := fun z ↦
-        u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume)
-      hK.isClosed hprod
-
-/--
-%%handwave
-name:
   One-dimensional weak derivative
 statement:
   A real-valued function on an open subset of \(\mathbb R\) has weak derivative
@@ -2764,23 +1500,6 @@ theorem IsWeakDerivativeOnRealRegionScalar.contDiff_test_integral_eq
     _ = -∫ x in Ω, θ x • g x ∂(MeasureTheory.volume : Measure ℝ) := hEq
     _ = -∫ x, θ x • g x ∂(MeasureTheory.volume : Measure ℝ) := by
       rw [hright]
-
-/--
-%%handwave
-name:
-  The real-line weak derivative is the one-dimensional Euclidean weak derivative
-statement:
-  A Euclidean weak derivative field on a real interval gives the real-line weak
-  derivative in the unit direction.
-proof:
-  Specialize the Euclidean integration-by-parts identity to the one-dimensional model and the unit tangent direction.  The continuous linear derivative field evaluated at (1) is the scalar real weak derivative.
--/
-theorem IsWeakDerivativeOnEuclideanRegionScalar.toRealRegion
-    {Ω : Set ℝ} {u : ℝ → ℝ} {du : ℝ → ℝ →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du) :
-    IsWeakDerivativeOnRealRegionScalar Ω u (fun a ↦ du a (1 : ℝ)) := by
-  intro φ
-  exact hweak φ (1 : ℝ)
 
 private abbrev SmoothTestIoo :=
   SmoothCompactlySupportedManifoldCoordinateFunction (Set.Ioo (0 : ℝ) 1)
@@ -3567,42 +2286,6 @@ theorem realWeakDerivativeOn_Ioo_of_countable_c1_dense_test_data
       realWeakDerivativeOn_Ioo_test_identity_of_countable_c1_dense_test_data
         (E := E) (T := T) (U := U) (DU := DU) (y := y)
         _hT_dense _hdata φ
-
-/--
-%%handwave
-name:
-  Integrability on a product cylinder gives integrability on almost every
-  vertical section
-statement:
-  If a scalar function is integrable on \(K\times C\subset\mathbb R\times E\),
-  then for almost every \(y\in C\), the vertical slice \(r\mapsto f(r,y)\) is
-  integrable on \(K\).
-proof:
-  Rewrite Lebesgue measure on the product as the product of the one-dimensional
-  and transverse Lebesgue measures.  The restricted product measure on
-  \(K\times C\) is the product of the restricted measures, and Fubini gives
-  integrability of almost every vertical section.
--/
-theorem integrableOn_prod_vertical_slice_ae
-    {E : Type} [MeasureSpace E] [SFinite (MeasureTheory.volume : Measure E)]
-    {K : Set ℝ} {C : Set E} {f : ℝ × E → ℝ}
-    (hf : IntegrableOn f (K ×ˢ C)
-      (MeasureTheory.volume : Measure (ℝ × E))) :
-    ∀ᵐ y ∂(MeasureTheory.volume.restrict C : Measure E),
-      Integrable (fun r : ℝ ↦ f (r, y))
-        (MeasureTheory.volume.restrict K) := by
-  let μK : Measure ℝ := MeasureTheory.volume.restrict K
-  let μC : Measure E := MeasureTheory.volume.restrict C
-  have hmeasure :
-      (MeasureTheory.volume : Measure (ℝ × E)).restrict (K ×ˢ C) =
-        μK.prod μC := by
-    rw [Measure.volume_eq_prod]
-    exact (Measure.prod_restrict
-      (μ := (MeasureTheory.volume : Measure ℝ))
-      (ν := (MeasureTheory.volume : Measure E)) K C).symm
-  have hf_prod : Integrable f (μK.prod μC) := by
-    simpa [IntegrableOn, hmeasure] using hf
-  simpa [μK, μC] using hf_prod.prod_left_ae
 
 /--
 %%handwave
@@ -4801,46 +3484,6 @@ theorem realWeakSobolev_function_integrableOn_compact
 /--
 %%handwave
 name:
-  One-dimensional weak derivatives are locally integrable on the region
-statement:
-  In a one-dimensional weak-derivative identity on an open real region, the
-  weak derivative is locally integrable on that region.
-proof:
-  Local integrability on an open set is equivalent to integrability on every
-  compact subset of the set.  Apply the compact integrability statement.
--/
-theorem realWeakSobolev_derivative_locallyIntegrableOn
-    {Ω : Set ℝ} (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g) :
-    LocallyIntegrableOn g Ω (MeasureTheory.volume : Measure ℝ) := by
-  rw [locallyIntegrableOn_iff hΩ_open.isLocallyClosed]
-  intro K hKΩ hK
-  exact realWeakSobolev_derivative_integrableOn_compact hK hKΩ hΩ_open hweak
-
-/--
-%%handwave
-name:
-  One-dimensional weak Sobolev functions are locally integrable on the region
-statement:
-  In a one-dimensional weak-derivative identity on an open real region, the
-  function itself is locally integrable on that region.
-proof:
-  Local integrability on an open set is equivalent to integrability on every
-  compact subset of the set.  Apply the compact integrability statement.
--/
-theorem realWeakSobolev_function_locallyIntegrableOn
-    {Ω : Set ℝ} (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g) :
-    LocallyIntegrableOn u Ω (MeasureTheory.volume : Measure ℝ) := by
-  rw [locallyIntegrableOn_iff hΩ_open.isLocallyClosed]
-  intro K hKΩ hK
-  exact realWeakSobolev_function_integrableOn_compact hK hKΩ hΩ_open hweak
-
-/--
-%%handwave
-name:
   Smooth compactly supported pairings determine locally integrable functions
   on open real regions
 statement:
@@ -4891,31 +3534,6 @@ theorem realWeakSobolev_derivative_intervalIntegrable_on_uIcc
       isCompact_uIcc habΩ hΩ_open hweak
   rw [intervalIntegrable_iff]
   exact hg_integrable.mono_measure
-    (Measure.restrict_mono Set.uIoc_subset_uIcc le_rfl)
-
-/--
-%%handwave
-name:
-  Weak Sobolev functions are interval-integrable on compact intervals
-statement:
-  If \(u\) has a weak derivative on an open real region, then \(u\) is
-  integrable on every compact interval contained in the region.
-proof:
-  The compact interval is a compact subset of the open region, so local
-  integrability of the function gives integrability there.
--/
-theorem realWeakSobolev_function_intervalIntegrable_on_uIcc
-    {Ω : Set ℝ} (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    {a b : ℝ} (habΩ : Set.uIcc a b ⊆ Ω) :
-    IntervalIntegrable u MeasureTheory.volume a b := by
-  have hu_integrable :
-      Integrable u (MeasureTheory.volume.restrict (Set.uIcc a b)) :=
-    realWeakSobolev_function_integrableOn_compact
-      isCompact_uIcc habΩ hΩ_open hweak
-  rw [intervalIntegrable_iff]
-  exact hu_integrable.mono_measure
     (Measure.restrict_mono Set.uIoc_subset_uIcc le_rfl)
 
 /--
@@ -6872,48 +5490,6 @@ theorem realOpenRightAnchor_uIcc_subset
 /--
 %%handwave
 name:
-  Component base points have right-hand anchors
-statement:
-  If \(x\) lies in an open real set, then the chosen base point of its
-  order-connected component has a chosen right-hand anchor in the same open
-  set.
-proof:
-  The base point lies in the open set, so the right-hand anchor construction
-  applies to it.
--/
-theorem realOpenOrdComponentBase_rightAnchor_uIcc_subset
-    {Ω : Set ℝ} {hΩ_open : IsOpen Ω} {x : ℝ} (hx : x ∈ Ω) :
-    Set.uIcc (realOpenOrdComponentBase Ω x)
-        (realOpenRightAnchor Ω hΩ_open (realOpenOrdComponentBase Ω x)) ⊆ Ω := by
-  exact realOpenRightAnchor_uIcc_subset
-    (realOpenOrdComponentBase_mem (Ω := Ω) hx)
-
-/--
-%%handwave
-name:
-  The right-hand anchor has the same component base point
-statement:
-  The right-hand anchor of a point in the open set lies in the same
-  order-connected component as that point.
-proof:
-  The compact interval from the point to its anchor is contained in the open
-  set, so both endpoints have the same chosen component base point.
--/
-theorem realOpenRightAnchor_base_eq
-    {Ω : Set ℝ} {hΩ_open : IsOpen Ω} {p : ℝ} (hp : p ∈ Ω) :
-    realOpenOrdComponentBase Ω (realOpenRightAnchor Ω hΩ_open p) =
-      realOpenOrdComponentBase Ω p := by
-  have hqΩ : realOpenRightAnchor Ω hΩ_open p ∈ Ω :=
-    (realOpenRightAnchor_uIcc_subset (Ω := Ω) (hΩ_open := hΩ_open) hp)
-      Set.right_mem_uIcc
-  exact realOpenOrdComponentBase_eq_of_uIcc_subset hqΩ hp
-    (by
-      simpa [Set.uIcc_comm] using
-        realOpenRightAnchor_uIcc_subset (Ω := Ω) (hΩ_open := hΩ_open) hp)
-
-/--
-%%handwave
-name:
   The interval and the component anchor lie in one compact subinterval of the
   open set
 statement:
@@ -7114,65 +5690,6 @@ theorem realWeakSobolevGluedPrimitiveRepresentative_apply_of_mem
       realOpenComponentPrimitiveConstant Ω hΩ_open u g hprimitive p +
         ∫ t in p..x, g t := by
   simp [realWeakSobolevGluedPrimitiveRepresentative, hx]
-
-/--
-%%handwave
-name:
-  The glued representative has the chosen primitive formula on anchor intervals
-statement:
-  Let \(p\) be the chosen base point of the order component of \(x\).  On the
-  fixed anchor interval from \(p\) to its right-hand anchor, the candidate
-  glued representative is pointwise equal to the primitive formula with the
-  componentwise constant based at \(p\).
-proof:
-  Every point of the anchor interval lies in the same order-connected
-  component as \(p\), so its chosen base point is again \(p\).  Substitute
-  this into the definition of the candidate representative.
--/
-theorem realWeakSobolevGluedPrimitiveRepresentative_eq_on_base_anchor
-    {Ω : Set ℝ} {hΩ_open : IsOpen Ω} {u g : ℝ → ℝ}
-    {hprimitive :
-      ∀ a b : ℝ, Set.uIcc a b ⊆ Ω →
-        ∃ C : ℝ,
-          u =ᵐ[MeasureTheory.volume.restrict (Set.uIcc a b)]
-            fun x : ℝ ↦ C + ∫ t in a..x, g t}
-    {x y : ℝ} (hx : x ∈ Ω)
-    (hy : y ∈ Set.uIcc (realOpenOrdComponentBase Ω x)
-        (realOpenRightAnchor Ω hΩ_open (realOpenOrdComponentBase Ω x))) :
-    realWeakSobolevGluedPrimitiveRepresentative Ω hΩ_open u g hprimitive y =
-      realOpenComponentPrimitiveConstant Ω hΩ_open u g hprimitive
-          (realOpenOrdComponentBase Ω x) +
-        ∫ t in realOpenOrdComponentBase Ω x..y, g t := by
-  classical
-  let p := realOpenOrdComponentBase Ω x
-  have hpΩ : p ∈ Ω := by
-    dsimp [p]
-    exact realOpenOrdComponentBase_mem (Ω := Ω) hx
-  have hanchor_subset :
-      Set.uIcc p (realOpenRightAnchor Ω hΩ_open p) ⊆ Ω := by
-    dsimp [p]
-    exact realOpenOrdComponentBase_rightAnchor_uIcc_subset
-      (Ω := Ω) (hΩ_open := hΩ_open) hx
-  have hyΩ : y ∈ Ω := hanchor_subset (by simpa [p] using hy)
-  have hyp_subset : Set.uIcc y p ⊆ Ω := by
-    have hsub :
-        Set.uIcc y p ⊆
-          Set.uIcc p (realOpenRightAnchor Ω hΩ_open p) :=
-      Set.uIcc_subset_uIcc (by simpa [p] using hy) Set.left_mem_uIcc
-    exact hsub.trans hanchor_subset
-  have hbase_y : realOpenOrdComponentBase Ω y = p := by
-    have hbase :
-        realOpenOrdComponentBase Ω y =
-          realOpenOrdComponentBase Ω p :=
-      realOpenOrdComponentBase_eq_of_uIcc_subset hyΩ hpΩ hyp_subset
-    have hbase_p : realOpenOrdComponentBase Ω p = p := by
-      dsimp [p]
-      exact realOpenOrdComponentBase_idem (Ω := Ω) hx
-    exact hbase.trans hbase_p
-  rw [realWeakSobolevGluedPrimitiveRepresentative_apply_of_mem
-    (Ω := Ω) (hΩ_open := hΩ_open) (u := u) (g := g)
-    (hprimitive := hprimitive) hyΩ]
-  simp [p, hbase_y]
 
 /--
 %%handwave
@@ -7820,1108 +6337,332 @@ theorem realWeakSobolev_exists_acl_representative_on_open_region
 /--
 %%handwave
 name:
-  One-dimensional weak Sobolev functions have compact absolutely continuous
-  representatives
+  Continuous scalar Sobolev functions are ACL on almost every vertical line
 statement:
-  Let \(u\) have weak derivative \(g\) on an open subset of \(\mathbb R\).
-  On every compact subset \(Q\) of the region on which \(u\) and \(g\) are
-  square-integrable, there is a representative \(\tilde u\), equal to \(u\)
-  almost everywhere on \(Q\), such that \(\tilde u\) is absolutely continuous
-  on every interval contained in \(Q\) and has classical derivative \(g\)
-  almost everywhere on \(Q\).
+  Let $U:(0,1)\times E\to\mathbb R$ be continuous and have weak differential
+  $DU$. For almost every $y\in E$ and every $0<a<b<1$, the function
+  $r\mapsto U(r,y)$ is absolutely continuous on $[a,b]$ and has derivative
+  $DU(r,y)(1,0)$ for almost every $r\in(a,b)$.
 proof:
-  On compact intervals, the distributional derivative identity implies that
-  \(u\) differs from the primitive of \(g\) by a constant.  Since \(g\) is
-  locally integrable, this primitive is absolutely continuous.  The local
-  primitives agree up to constants on overlaps, giving a representative whose
-  classical derivative is \(g\) almost everywhere.
+  For almost every $y$, [the slice $r\mapsto U(r,y)$ has weak derivative $r\mapsto DU(r,y)(1,0)$ on $(0,1)$](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_fiberwise_realWeakDerivative_on_unit_strip). Apply [the one-dimensional weak Sobolev representative theorem](lean:JJMath.Uniformization.realWeakSobolev_exists_acl_representative_on_open_region). On each compact subinterval the representative and the continuous slice agree almost everywhere and are both continuous, so positivity of Lebesgue measure on nonempty open intervals makes them agree everywhere. This transfers absolute continuity and, away from the two endpoints, the almost-everywhere derivative identity to the original slice.
 -/
-theorem realWeakSobolev_exists_acl_representative_on_compact
-    {Q Ω : Set ℝ} (_hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    (_hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (_hg : MemLp g 2 (MeasureTheory.volume.restrict Q)) :
-    ∃ uacl : ℝ → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        (∀ a b : ℝ, Set.uIcc a b ⊆ Q →
-          AbsolutelyContinuousOnInterval uacl a b) ∧
-        ∀ᵐ x ∂MeasureTheory.volume.restrict Q,
-          HasDerivAt uacl (g x) x := by
+theorem scalarWeakSobolev_firstCoordinate_fiberwise_acl_of_continuousOn_unit_strip
+    {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [MeasureSpace E] [BorelSpace E]
+    [Measure.IsAddHaarMeasure (volume : Measure E)]
+    [FiniteDimensional ℝ E]
+    {U : ℝ × E → ℝ}
+    {DU : ℝ × E → (ℝ × E) →L[ℝ] ℝ}
+    (hU_cont : ContinuousOn U {p : ℝ × E | 0 < p.1 ∧ p.1 < 1})
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
+      {p : ℝ × E | 0 < p.1 ∧ p.1 < 1} U DU) :
+    ∀ᵐ y ∂(volume : Measure E),
+      ∀ a b : ℝ, 0 < a → a < b → b < 1 →
+        AbsolutelyContinuousOnInterval (fun r : ℝ => U (r, y)) a b ∧
+          ∀ᵐ t ∂(volume : Measure ℝ).restrict (Set.Ioo a b),
+            HasDerivAt (fun r : ℝ => U (r, y))
+              (DU (t, y) ((1 : ℝ), (0 : E))) t := by
+  have hslices :=
+    scalarWeakSobolev_firstCoordinate_fiberwise_realWeakDerivative_on_unit_strip
+      (E := E) (U := U) (DU := DU) hweak
+  filter_upwards [hslices] with y hy
   rcases realWeakSobolev_exists_acl_representative_on_open_region
-      hΩ_open hweak with
-    ⟨uacl, huacl_eq_region, huacl_ac_region, huacl_deriv_region⟩
-  refine ⟨uacl, ?_, ?_, ?_⟩
-  · exact ae_restrict_of_ae_restrict_of_subset hQΩ huacl_eq_region
-  · intro a b hab
-    exact huacl_ac_region a b (hab.trans hQΩ)
-  · exact ae_restrict_of_ae_restrict_of_subset hQΩ huacl_deriv_region
-
-/--
-%%handwave
-name:
-  One-dimensional weak Sobolev functions have ACL representatives on almost
-  every unit segment
-statement:
-  Let \(u\) have weak derivative \(g\) on an open subset of \(\mathbb R\).
-  If \(u\) and \(g\) are square-integrable on a compact set \(Q\), and every
-  unit segment starting from a compact set \(K\) remains in \(Q\), then there
-  is a representative \(\tilde u\), equal to \(u\) almost everywhere on \(Q\),
-  such that for almost every \(a\in K\), \(\tilde u\) is absolutely continuous
-  on \([a,a+1]\) and has classical derivative \(g\) almost everywhere on that
-  interval.
-proof:
-  The distributional derivative identity is localized to compact intervals.
-  On each interval it implies that \(u\) differs from the primitive of \(g\)
-  by a constant.  Since \(g\) is locally integrable, that primitive is
-  absolutely continuous, and the derivative identity holds almost everywhere
-  by the Lebesgue differentiation theorem.
--/
-theorem realWeakSobolev_exists_acl_representative_with_derivative_on_segments
-    {K Q Ω : Set ℝ} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hg : MemLp g 2 (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ a ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → a + t ∈ Q) :
-    ∃ uacl : ℝ → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ a ∂MeasureTheory.volume.restrict K,
-          AbsolutelyContinuousOnInterval uacl a (a + 1) ∧
-            ∀ᵐ x ∂MeasureTheory.volume,
-              x ∈ Set.uIcc a (a + 1) → HasDerivAt uacl (g x) x := by
-  rcases realWeakSobolev_exists_acl_representative_on_compact
-      hQ hQΩ hΩ_open hweak hu hg with
-    ⟨uacl, huacl_eq, huacl_ac, huacl_deriv⟩
-  refine ⟨uacl, huacl_eq, ?_⟩
-  have hderiv_unrestricted :
-      ∀ᵐ x ∂(MeasureTheory.volume : Measure ℝ),
-        x ∈ Q → HasDerivAt uacl (g x) x :=
-    ae_imp_of_ae_restrict huacl_deriv
-  filter_upwards [ae_restrict_mem hK.measurableSet] with a haK
-  have hsegment_subset : Set.uIcc a (a + 1) ⊆ Q := by
-    intro x hx
-    have hle : a ≤ a + 1 := by linarith
-    have hxIcc : x ∈ Set.Icc a (a + 1) := by
-      rwa [Set.uIcc_of_le hle] at hx
-    let t : ℝ := x - a
-    have ht : t ∈ Set.Icc (0 : ℝ) 1 := by
-      constructor
-      · dsimp [t]
-        linarith [hxIcc.1]
-      · dsimp [t]
-        linarith [hxIcc.2]
-    have hx_eq : a + t = x := by
-      dsimp [t]
-      ring
-    simpa [hx_eq] using hsegments a haK t ht
+      isOpen_Ioo hy with ⟨uacl, huacl_eq, huacl_ac, huacl_deriv⟩
+  intro a b ha hab hb
+  have hab_sub : Set.uIcc a b ⊆ Set.Ioo (0 : ℝ) 1 := by
+    rw [Set.uIcc_of_le hab.le]
+    intro r hr
+    exact ⟨ha.trans_le hr.1, hr.2.trans_lt hb⟩
+  have huacl_eq_Icc :
+      uacl =ᵐ[(volume : Measure ℝ).restrict (Set.Icc a b)]
+        (fun r : ℝ => U (r, y)) := by
+    rw [← Set.uIcc_of_le hab.le]
+    exact ae_restrict_of_ae_restrict_of_subset hab_sub huacl_eq
+  have hU_line_cont :
+      ContinuousOn (fun r : ℝ => U (r, y)) (Set.Icc a b) := by
+    have hpair : Continuous (fun r : ℝ => (r, y)) :=
+      continuous_id.prodMk continuous_const
+    exact hU_cont.comp hpair.continuousOn (by
+      intro r hr
+      exact ⟨ha.trans_le hr.1, hr.2.trans_lt hb⟩)
+  have huacl_eqOn :
+      Set.EqOn uacl (fun r : ℝ => U (r, y)) (Set.Icc a b) :=
+    Measure.eqOn_Icc_of_ae_eq volume hab.ne huacl_eq_Icc
+      (by simpa [Set.uIcc_of_le hab.le] using
+        (huacl_ac a b hab_sub).continuousOn)
+      hU_line_cont
   constructor
-  · exact huacl_ac a (a + 1) hsegment_subset
-  · filter_upwards [hderiv_unrestricted] with x hxQ hxseg
-    exact hxQ (hsegment_subset hxseg)
+  · exact absolutelyContinuousOnInterval_congr_on_uIcc
+      (huacl_ac a b hab_sub) (by
+        simpa [Set.uIcc_of_le hab.le] using huacl_eqOn)
+  · have huacl_deriv_ab :
+        ∀ᵐ t ∂(volume : Measure ℝ).restrict (Set.Ioo a b),
+          HasDerivAt uacl (DU (t, y) ((1 : ℝ), (0 : E))) t :=
+      ae_restrict_of_ae_restrict_of_subset
+        (Set.Ioo_subset_Icc_self.trans (by
+          rw [← Set.uIcc_of_le hab.le]
+          exact hab_sub)) huacl_deriv
+    filter_upwards [huacl_deriv_ab,
+      ae_restrict_mem measurableSet_Ioo] with t ht htmem
+    have hevent : uacl =ᶠ[𝓝 t] (fun r : ℝ => U (r, y)) := by
+      filter_upwards [isOpen_Ioo.mem_nhds htmem] with r hr
+      exact huacl_eqOn (Set.Ioo_subset_Icc_self hr)
+    exact ht.congr_of_eventuallyEq hevent.symm
 
 /--
 %%handwave
 name:
-  One-dimensional weak Sobolev functions satisfy the endpoint fundamental theorem
+  Continuity of compactly supported Sobolev localizations
 statement:
-  Let \(u\) have weak derivative \(g\) on an open subset of \(\mathbb R\).
-  If \(u\) and \(g\) are square-integrable on a compact set \(Q\), and every
-  unit segment starting from a compact set \(K\) remains in \(Q\), then
-  \[
-    u(a+1)-u(a)=\int_0^1 g(a+t)\,dt
-  \]
-  for almost every \(a\in K\).
+  Let $\Omega$ be open, let $u:\Omega\to\mathbb R$ be continuous, and let
+  $\chi$ be a smooth function with compact support contained in $\Omega$.
+  Then $x\mapsto\chi(x)u(x)$, interpreted as zero off $\Omega$, is continuous
+  on the whole ambient Euclidean space.
 proof:
-  On compact intervals, the distributional identity implies that \(u\) agrees
-  almost everywhere with an absolutely continuous function whose classical
-  derivative is \(g\).  The fundamental theorem of calculus for absolutely
-  continuous functions gives the identity for that representative; translation
-  invariance transfers the two endpoint values back to the original
-  representative for almost every starting point.
+  At points of $\Omega$, this is the product of two continuous functions. At
+  points outside $\Omega$, the closed support of $\chi$ is absent from a
+  neighborhood, so the product is locally zero.
 -/
-theorem realWeakSobolev_endpointFTC_ae
-    {K Q Ω : Set ℝ} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hg : MemLp g 2 (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ a ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → a + t ∈ Q) :
-    ∀ᵐ a ∂MeasureTheory.volume.restrict K,
-      u (a + 1) - u a =
-        ∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume := by
-  rcases realWeakSobolev_exists_acl_representative_with_derivative_on_segments
-      hK hQ hQΩ hΩ_open hweak hu hg hsegments with
-    ⟨uacl, huacl_eq, huacl_segments⟩
-  have hsegments_one :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • (1 : ℝ) ∈ Q := by
-    intro x hx t ht
-    simpa [smul_eq_mul] using hsegments x hx t ht
-  have hendpoints :
-      (fun z : ℝ ↦ u (z + (1 : ℝ)) - u z)
-        =ᵐ[MeasureTheory.volume.restrict K]
-      fun z : ℝ ↦ uacl (z + (1 : ℝ)) - uacl z := by
-    exact ae_eq_endpoint_difference_of_ae_eq_on_segments
-      (H := ℝ) (K := K) (Q := Q) (u := u) (v := uacl)
-      (h := (1 : ℝ)) huacl_eq hsegments_one
-  filter_upwards [hendpoints, huacl_segments] with a ha_endpoint ha_acl
-  rcases ha_acl with ⟨hacl, hderiv⟩
-  have hderiv_integral :
-      (∫ x in a..a + 1, deriv uacl x) =
-        ∫ x in a..a + 1, g x := by
-    refine intervalIntegral.integral_congr_ae ?_
-    filter_upwards [hderiv] with x hxderiv hxmem
-    exact (hxderiv (Set.uIoc_subset_uIcc hxmem)).deriv
-  have hshift :
-      (∫ t in (0 : ℝ)..1, g (a + t)) =
-        ∫ x in a..a + 1, g x := by
-    calc
-      (∫ t in (0 : ℝ)..1, g (a + t))
-          = ∫ t in (0 : ℝ)..1, g (t + a) := by
-              refine intervalIntegral.integral_congr_ae ?_
-              filter_upwards with t ht
-              rw [add_comm]
-      _ = ∫ x in (0 : ℝ) + a..1 + a, g x := by
-              exact intervalIntegral.integral_comp_add_right (fun x ↦ g x) a
-      _ = ∫ x in a..a + 1, g x := by
-              simp [add_comm]
-  have hIcc :
-      (∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume) =
-        ∫ t in (0 : ℝ)..1, g (a + t) := by
-    rw [intervalIntegral.integral_of_le zero_le_one, integral_Icc_eq_integral_Ioc]
-  have hline :
-      uacl (a + 1) - uacl a =
-        ∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume := by
-    calc
-      uacl (a + 1) - uacl a
-          = ∫ x in a..a + 1, deriv uacl x := by
-              exact hacl.integral_deriv_eq_sub.symm
-      _ = ∫ x in a..a + 1, g x := hderiv_integral
-      _ = ∫ t in (0 : ℝ)..1, g (a + t) := hshift.symm
-      _ = ∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume := hIcc.symm
-  exact ha_endpoint.trans hline
+theorem ScalarWeakSobolevCutoff.continuous_mul_of_continuousOn
+    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    {Q Ω : Set H} (hΩ_open : IsOpen Ω)
+    (χ : ScalarWeakSobolevCutoff Q Ω)
+    {u : H → ℝ} (hu : ContinuousOn u Ω) :
+    Continuous (fun z : H => χ z * u z) := by
+  rw [continuous_iff_continuousAt]
+  intro z
+  by_cases hz : z ∈ Ω
+  · exact χ.smooth.continuous.continuousAt.mul
+      (hu.continuousAt (hΩ_open.mem_nhds hz))
+  · have hzχ : z ∉ tsupport (χ : H → ℝ) :=
+      fun hzχ => hz (χ.support_subset hzχ)
+    have hevent : (χ : H → ℝ) =ᶠ[𝓝 z] fun _ => 0 :=
+      notMem_tsupport_iff_eventuallyEq.mp hzχ
+    have hprod_event :
+        (fun y : H => χ y * u y) =ᶠ[𝓝 z] fun _ : H => (0 : ℝ) := by
+      filter_upwards [hevent] with y hy
+      simp [hy]
+    have hzero : ContinuousAt (fun _ : H => (0 : ℝ)) z :=
+      continuousAt_const
+    exact hzero.congr_of_eventuallyEq hprod_event
 
 /--
 %%handwave
 name:
-  One-dimensional weak Sobolev functions have absolutely continuous representatives
+  Cutoff-localized weak derivatives extend to the whole space
 statement:
-  Let \(u\) have weak derivative \(g\) on an open subset of \(\mathbb R\).
-  If \(u\) and \(g\) are square-integrable on a compact set \(Q\), and every
-  unit segment starting from a compact set \(K\) remains in \(Q\), then there is
-  a representative \(\tilde u\), equal to \(u\) almost everywhere on \(Q\), such
-  that
-  \[
-    \tilde u(a+1)-\tilde u(a)=\int_0^1 g(a+t)\,dt
-  \]
-  for almost every \(a\in K\).
+  Let $u$ have weak differential $Du$ on an open Euclidean region $\Omega$,
+  and let $\chi$ be smooth with compact support in $\Omega$. If $u$ is locally
+  integrable, then the zero extension of $\chi u$ has global weak differential
+  $\chi Du+uD\chi$.
 proof:
-  On compact intervals, the distributional identity implies that \(u\) differs
-  from the primitive of \(g\) by a constant.  Since \(g\in L^2\), this primitive
-  is absolutely continuous.  Applying the fundamental theorem of calculus to
-  that representative gives the identity on almost every unit segment.
+  First apply [the weak product rule gives the differential $\chi Du+uD\chi$ on $\Omega$](lean:JJMath.Uniformization.scalarWeakSobolevCutoffDerivative_weakDerivative). Choose a second smooth cutoff equal to one on the closed support of $\chi$. Multiplying an arbitrary ambient test by this second cutoff produces an admissible test on $\Omega$ without changing either integrand on the support of $\chi Du+uD\chi$. Both integrands vanish off that compact support, so their regional integrals are their global integrals.
 -/
-theorem realWeakSobolev_exists_acl_representative_on_segments
-    {K Q Ω : Set ℝ} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hg : MemLp g 2 (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ a ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → a + t ∈ Q) :
-    ∃ uacl : ℝ → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ a ∂MeasureTheory.volume.restrict K,
-          uacl (a + 1) - uacl a =
-            ∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume := by
-  have hu_loc : LocallyIntegrableOn u Ω (MeasureTheory.volume : Measure ℝ) :=
-    realWeakSobolev_function_locallyIntegrableOn hΩ_open hweak
-  have hg_loc : LocallyIntegrableOn g Ω (MeasureTheory.volume : Measure ℝ) :=
-    realWeakSobolev_derivative_locallyIntegrableOn hΩ_open hweak
-  have hu_int_Q : Integrable u (MeasureTheory.volume.restrict Q) :=
-    realWeakSobolev_function_integrableOn_compact hQ hQΩ hΩ_open hweak
-  have hg_int_Q : Integrable g (MeasureTheory.volume.restrict Q) :=
-    realWeakSobolev_derivative_integrableOn_compact hQ hQΩ hΩ_open hweak
-  refine ⟨u, Filter.EventuallyEq.rfl, ?_⟩
-  exact realWeakSobolev_endpointFTC_ae
-    hK hQ hQΩ hΩ_open hweak hu hg hsegments
-
-/--
-%%handwave
-name:
-  One-dimensional weak Sobolev fundamental theorem
-statement:
-  Let \(u\) have weak derivative \(g\) on an open subset of \(\mathbb R\).
-  If \(u\) and \(g\) are square-integrable on a compact set \(Q\), and every
-  unit segment starting from a compact set \(K\) remains in \(Q\), then
-  \[
-    u(a+1)-u(a)=\int_0^1 g(a+t)\,dt
-  \]
-  for almost every \(a\in K\).
-proof:
-  The one-dimensional weak derivative theorem gives an absolutely continuous
-  representative on compact intervals, with classical derivative \(g\) almost
-  everywhere.  The fundamental theorem of calculus gives the displayed identity,
-  and the representative agrees with the original function at almost every
-  endpoint.
--/
-theorem realWeakSobolev_unitSegmentFTC_ae
-    {K Q Ω : Set ℝ} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hQΩ : Q ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u g : ℝ → ℝ}
-    (hweak : IsWeakDerivativeOnRealRegionScalar Ω u g)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hg : MemLp g 2 (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ a ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → a + t ∈ Q) :
-    ∀ᵐ a ∂MeasureTheory.volume.restrict K,
-      u (a + 1) - u a =
-        ∫ t in Set.Icc (0 : ℝ) 1, g (a + t) ∂MeasureTheory.volume := by
-  rcases realWeakSobolev_exists_acl_representative_on_segments
-      hK hQ hQΩ hΩ_open hweak hu hg hsegments with
-    ⟨uacl, huacl_eq, huacl_line⟩
-  have hsegments_one :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • (1 : ℝ) ∈ Q := by
-    intro x hx t ht
-    simpa [smul_eq_mul] using hsegments x hx t ht
-  have hendpoints :
-      (fun z : ℝ ↦ u (z + (1 : ℝ)) - u z)
-        =ᵐ[MeasureTheory.volume.restrict K]
-      fun z : ℝ ↦ uacl (z + (1 : ℝ)) - uacl z := by
-    exact ae_eq_endpoint_difference_of_ae_eq_on_segments
-      (H := ℝ) (K := K) (Q := Q) (u := u) (v := uacl)
-      (h := (1 : ℝ)) huacl_eq hsegments_one
-  filter_upwards [hendpoints, huacl_line] with a ha_endpoint ha_line
-  exact ha_endpoint.trans ha_line
-
-/--
-%%handwave
-name:
-  Square-integrable product functions have square-integrable vertical slices
-statement:
-  If a scalar function is square-integrable on a compact subset
-  \(Q\subset\mathbb R\times\mathbb R^d\), then for almost every transverse
-  coordinate \(y\), the sliced function \(a\mapsto f(a,y)\) is
-  square-integrable on the vertical fiber \(Q_y\).
-proof:
-  This is Fubini's theorem applied to the square of the function, together with
-  the product decomposition of Euclidean measure.
--/
-theorem firstCoordinateVerticalFiber_memLp_ae_of_memLp_restrict
-    {d : ℕ} {Q : Set (ℝ × (Fin d → ℝ))} (hQ : IsCompact Q)
-    {f : (ℝ × (Fin d → ℝ)) → ℝ}
-    (hf : MemLp f 2 (MeasureTheory.volume.restrict Q)) :
-    ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-      MemLp (fun a : ℝ ↦ f (a, y)) 2
-        (MeasureTheory.volume.restrict (firstCoordinateVerticalFiber Q y)) := by
-  classical
-  let μa : Measure ℝ := MeasureTheory.volume
-  let μy : Measure (Fin d → ℝ) := MeasureTheory.volume
-  let F : (Fin d → ℝ) × ℝ → ℝ :=
-    fun p ↦ Q.indicator f (p.2, p.1)
-  have hQ_meas : MeasurableSet Q := hQ.measurableSet
-  have hf_ind_volume :
-      MemLp (Q.indicator f) 2
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-    rw [memLp_indicator_iff_restrict hQ_meas]
-    exact hf
-  have hf_ind_prod :
-      MemLp (Q.indicator f) 2 (μa.prod μy) := by
-    simpa [μa, μy, Measure.volume_eq_prod] using hf_ind_volume
-  have hF_mem :
-      MemLp F 2 (μy.prod μa) := by
-    have hswap :
-        MeasurePreserving Prod.swap (μy.prod μa) (μa.prod μy) :=
-      Measure.measurePreserving_swap (μ := μy) (ν := μa)
-    simpa [F, Function.comp_def] using
-      hf_ind_prod.comp_measurePreserving hswap
-  have hF_sq_int :
-      Integrable (fun p : (Fin d → ℝ) × ℝ ↦ F p ^ 2) (μy.prod μa) :=
-    hF_mem.integrable_sq
-  have hF_sq_slices :
-      ∀ᵐ y ∂μy, Integrable (fun a : ℝ ↦ F (y, a) ^ 2) μa :=
-    ((MeasureTheory.integrable_prod_iff hF_sq_int.aestronglyMeasurable).mp
-      hF_sq_int).1
-  have hF_meas_slices :
-      ∀ᵐ y ∂μy, AEStronglyMeasurable (fun a : ℝ ↦ F (y, a)) μa :=
-    hF_mem.aestronglyMeasurable.prodMk_left
-  filter_upwards [hF_sq_slices, hF_meas_slices] with y hsq_y hmeas_y
-  have hmem_indicator :
-      MemLp (fun a : ℝ ↦ F (y, a)) 2 μa :=
-    (memLp_two_iff_integrable_sq hmeas_y).2 hsq_y
-  have hfiber_meas : MeasurableSet (firstCoordinateVerticalFiber Q y) := by
-    have hcont : Continuous (fun a : ℝ ↦ ((a, y) : ℝ × (Fin d → ℝ))) := by
-      fun_prop
-    exact hQ_meas.preimage hcont.measurable
-  rw [← memLp_indicator_iff_restrict hfiber_meas]
-  refine hmem_indicator.ae_eq ?_
-  exact ae_of_all μa fun a ↦ by
-    by_cases ha : ((a, y) : ℝ × (Fin d → ℝ)) ∈ Q
-    · simp [F, firstCoordinateVerticalFiber, ha]
-    · simp [F, firstCoordinateVerticalFiber, ha]
-
-/--
-%%handwave
-name:
-  First-coordinate translation preserves null sets
-statement:
-  Translation by \((s,0)\) on
-  \(\mathbb R\times\mathbb R^d\) is quasi-measure-preserving for Lebesgue
-  measure.
-proof:
-  It is the product of translation by \(s\) on \(\mathbb R\) and translation
-  by zero on \(\mathbb R^d\), both measure-preserving.
--/
-private theorem firstCoordinate_translation_quasiMeasurePreserving_core
-    {d : ℕ} (s : ℝ) :
-    Measure.QuasiMeasurePreserving
-      (fun z : ℝ × (Fin d → ℝ) ↦ z + ((s : ℝ), (0 : Fin d → ℝ)))
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-  have hqmp_prod :
-      Measure.QuasiMeasurePreserving
-        (Prod.map (fun a : ℝ ↦ a + s)
-          (fun y : Fin d → ℝ ↦ y + (0 : Fin d → ℝ)))
-        ((MeasureTheory.volume : Measure ℝ).prod
-          (MeasureTheory.volume : Measure (Fin d → ℝ)))
-        ((MeasureTheory.volume : Measure ℝ).prod
-          (MeasureTheory.volume : Measure (Fin d → ℝ))) :=
-    MeasureTheory.QuasiMeasurePreserving.prodMap
-      (MeasureTheory.quasiMeasurePreserving_add_right
-        (MeasureTheory.volume : Measure ℝ) s)
-      (MeasureTheory.quasiMeasurePreserving_add_right
-        (MeasureTheory.volume : Measure (Fin d → ℝ)) (0 : Fin d → ℝ))
-  have hqmp_volume :
-      Measure.QuasiMeasurePreserving
-        (Prod.map (fun a : ℝ ↦ a + s)
-          (fun y : Fin d → ℝ ↦ y + (0 : Fin d → ℝ)))
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-    simpa [Measure.volume_eq_prod] using hqmp_prod
-  have hfun :
-      (Prod.map (fun a : ℝ ↦ a + s)
-          (fun y : Fin d → ℝ ↦ y + (0 : Fin d → ℝ))) =
-        (fun z : ℝ × (Fin d → ℝ) ↦ z + ((s : ℝ), (0 : Fin d → ℝ))) := by
+theorem scalarWeakSobolevCutoffDerivative_global_weakDerivative
+    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H]
+    {Q Ω : Set H} (hΩ_open : IsOpen Ω)
+    (χ : ScalarWeakSobolevCutoff Q Ω)
+    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
+    (hu_loc : LocallyIntegrableOn u Ω (volume : Measure H)) :
+    IsWeakDerivativeOnEuclideanRegionWithValues Set.univ
+      (fun z : H => χ z * u z)
+      (scalarWeakSobolevCutoffDerivative (χ : H → ℝ) u du) := by
+  let K : Set H := tsupport (χ : H → ℝ)
+  rcases exists_scalarWeakSobolevCutoff χ.compact_support χ.support_subset
+      hΩ_open with ⟨η⟩
+  have hlocal :=
+    scalarWeakSobolevCutoffDerivative_weakDerivative χ hweak hu_loc
+  intro φ v
+  let ψ : SmoothCompactlySupportedManifoldCoordinateFunction Ω :=
+    { toFun := fun z : H => η z * φ z
+      smooth := η.smooth.mul φ.smooth
+      support_subset := (tsupport_mul_subset_left).trans η.support_subset
+      compact_support := η.compact_support.of_isClosed_subset
+        (isClosed_tsupport _) tsupport_mul_subset_left }
+  have hψ := hlocal ψ v
+  let w : H → ℝ := fun z => χ z * u z
+  let dw : H → H →L[ℝ] ℝ :=
+    scalarWeakSobolevCutoffDerivative (χ : H → ℝ) u du
+  let left : H → ℝ :=
+    fun z => (fderiv ℝ (φ : H → ℝ) z v) • w z
+  let leftψ : H → ℝ :=
+    fun z => (fderiv ℝ (ψ : H → ℝ) z v) • w z
+  let right : H → ℝ := fun z => φ z • dw z v
+  let rightψ : H → ℝ := fun z => ψ z • dw z v
+  have hw_zero : ∀ z ∉ K, w z = 0 := by
+    intro z hz
+    have hχ : χ z = 0 := image_eq_zero_of_notMem_tsupport hz
+    simp [w, hχ]
+  have hdw_zero : ∀ z ∉ K, dw z = 0 := by
+    intro z hz
+    have hχ : χ z = 0 := image_eq_zero_of_notMem_tsupport hz
+    have hdχ : fderiv ℝ (χ : H → ℝ) z = 0 :=
+      fderiv_of_notMem_tsupport (𝕜 := ℝ) (f := (χ : H → ℝ)) hz
+    simp [dw, scalarWeakSobolevCutoffDerivative, hχ, hdχ]
+  have hψ_value : ∀ z ∈ K, ψ z = φ z := by
+    intro z hz
+    simp [ψ, η.eq_one_on z hz]
+  have hψ_fderiv : ∀ z ∈ K,
+      fderiv ℝ (ψ : H → ℝ) z = fderiv ℝ (φ : H → ℝ) z := by
+    intro z hz
+    change fderiv ℝ (fun y : H => η y * φ y) z = _
+    rw [fderiv_fun_mul
+      ((η.smooth.differentiable (by simp)) z)
+      ((φ.smooth.differentiable (by simp)) z)]
+    simp [η.eq_one_on z hz, η.fderiv_eq_zero_on z hz]
+  have hleft_eq : leftψ = left := by
     funext z
-    ext i <;> simp
-  rwa [hfun] at hqmp_volume
+    by_cases hz : z ∈ K
+    · simp [leftψ, left, hψ_fderiv z hz]
+    · simp [leftψ, left, hw_zero z hz]
+  have hright_eq : rightψ = right := by
+    funext z
+    by_cases hz : z ∈ K
+    · simp [rightψ, right, hψ_value z hz]
+    · simp [rightψ, right, hdw_zero z hz]
+  have hw_tsupport : tsupport w ⊆ K := by
+    exact tsupport_mul_subset_left
+  have hdw_tsupport : ∀ v : H, tsupport (fun z => dw z v) ⊆ K := by
+    intro v
+    have hfirst :
+        tsupport (fun z : H => χ z * du z v) ⊆ K := by
+      exact tsupport_mul_subset_left
+    have hsecond :
+        tsupport (fun z : H => u z * fderiv ℝ (χ : H → ℝ) z v) ⊆ K := by
+      exact tsupport_mul_subset_right.trans
+        (tsupport_fderiv_apply_subset (𝕜 := ℝ)
+          (f := (χ : H → ℝ)) v)
+    have hadd := tsupport_add
+      (fun z : H => χ z * du z v)
+      (fun z : H => u z * fderiv ℝ (χ : H → ℝ) z v)
+    simpa [dw, scalarWeakSobolevCutoffDerivative] using
+      hadd.trans (Set.union_subset hfirst hsecond)
+  have hleft_tsupport : tsupport left ⊆ K := by
+    exact tsupport_smul_subset_right _ w |>.trans hw_tsupport
+  have hright_tsupport : tsupport right ⊆ K := by
+    exact
+      tsupport_smul_subset_right (fun z : H => φ z) (fun z => dw z v)
+        |>.trans (hdw_tsupport v)
+  have hleft_on : Integrable left (volume.restrict Ω) := by
+    have hleftψ_on : Integrable leftψ (volume.restrict Ω) := by
+      simpa [leftψ, w] using hψ.1
+    exact hleftψ_on.congr (ae_of_all _ fun z => congrFun hleft_eq z)
+  have hright_on : Integrable right (volume.restrict Ω) := by
+    have hrightψ_on : Integrable rightψ (volume.restrict Ω) := by
+      simpa [rightψ, dw] using hψ.2.1
+    exact hrightψ_on.congr (ae_of_all _ fun z => congrFun hright_eq z)
+  have hleft_global : Integrable left (volume : Measure H) :=
+    (integrableOn_iff_integrable_of_support_subset
+      ((subset_tsupport left).trans
+        (hleft_tsupport.trans χ.support_subset))).mp hleft_on
+  have hright_global : Integrable right (volume : Measure H) :=
+    (integrableOn_iff_integrable_of_support_subset
+      ((subset_tsupport right).trans
+        (hright_tsupport.trans χ.support_subset))).mp hright_on
+  refine ⟨?_, ?_, ?_⟩
+  · simpa [left, w] using hleft_global
+  · simpa [right, dw] using hright_global
+  · have hleft_integral :
+        ∫ z, left z ∂volume = ∫ z in Ω, leftψ z ∂volume := by
+      rw [integral_eq_setIntegral_of_tsupport_subset
+        (hleft_tsupport.trans χ.support_subset)]
+      exact integral_congr_ae (ae_of_all _ fun z => by rw [hleft_eq])
+    have hright_integral :
+        ∫ z, right z ∂volume = ∫ z in Ω, rightψ z ∂volume := by
+      rw [integral_eq_setIntegral_of_tsupport_subset
+        (hright_tsupport.trans χ.support_subset)]
+      exact integral_congr_ae (ae_of_all _ fun z => by rw [hright_eq])
+    simpa [left, right, w, dw, leftψ, rightψ, Set.univ_inter,
+      Measure.restrict_univ] using
+      hleft_integral.trans
+        (hψ.2.2.trans
+          (congrArg (fun x : ℝ => -x) hright_integral.symm))
 
 /--
 %%handwave
 name:
-  Restricted first-coordinate translation preserves null sets
+  Continuous scalar Sobolev functions are locally ACL on protected vertical segments
 statement:
-  If every unit first-coordinate translate of points of \(K\) lies in \(Q\),
-  then \(x\mapsto x+(1,0)\) is quasi-measure-preserving from Lebesgue measure
-  restricted to \(K\) to Lebesgue measure restricted to \(Q\).
+  Let $Q$ be a compact subset of an open region $\Omega\subset\mathbb R\times E$.
+  Suppose $U:\Omega\to\mathbb R$ is continuous, locally integrable, and has
+  weak differential $DU$. For almost every $y\in E$, every segment
+  $[a,b]\times\{y\}\subset Q$ with $0<a<b<1$ has the following properties:
+  $r\mapsto U(r,y)$ is absolutely continuous on $[a,b]$, and its derivative
+  is $DU(r,y)(1,0)$ for almost every $r\in(a,b)$.
 proof:
-  The unrestricted translation is measure-preserving and maps \(K\) into
-  \(Q\); restrict its source and target measures.
+  Choose a smooth cutoff equal to one on $Q$ and supported in $\Omega$.
+  [The cutoff product has global weak differential $\chi DU+U D\chi$](lean:JJMath.Uniformization.scalarWeakSobolevCutoffDerivative_global_weakDerivative), and its zero extension is continuous. Apply [vertical ACL for continuous weak Sobolev functions on the unit strip](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_fiberwise_acl_of_continuousOn_unit_strip). Along a segment in $Q$, the cutoff is one and its differential is zero, so both the function and directional derivative agree with $U$ and $DU(1,0)$.
 -/
-private theorem firstCoordinate_translation_quasiMeasurePreserving_restrict_core
-    {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    Measure.QuasiMeasurePreserving
-      (fun z : ℝ × (Fin d → ℝ) ↦ z + ((1 : ℝ), (0 : Fin d → ℝ)))
-      (MeasureTheory.volume.restrict K) (MeasureTheory.volume.restrict Q) := by
-  have htranslateKQ :
-      Set.MapsTo
-        (fun z : ℝ × (Fin d → ℝ) ↦ z + ((1 : ℝ), (0 : Fin d → ℝ))) K Q := by
-    intro x hx
-    simpa using hsegments x hx 1 (by simp)
-  exact (firstCoordinate_translation_quasiMeasurePreserving_core (d := d) 1).restrict htranslateKQ
-
-/--
-%%handwave
-name:
-  Restricted first-coordinate segment map preserves null sets
-statement:
-  If \(x+t(1,0)\in Q\) for \(x\in K\) and \(t\in[0,1]\), then
-  \((x,t)\mapsto x+t(1,0)\) is quasi-measure-preserving from
-  \((\mathrm{vol}|_K)\times(\mathrm{vol}|_{[0,1]})\) to
-  \(\mathrm{vol}|_Q\).
-proof:
-  For almost every \(t\), translation by \(t(1,0)\) preserves Lebesgue null
-  sets and maps \(K\) into \(Q\). Apply the product criterion.
--/
-private theorem firstCoordinate_segmentMap_quasiMeasurePreserving_restrict_prod_core
-    {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    Measure.QuasiMeasurePreserving
-      (fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-        p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ)))
-      ((MeasureTheory.volume.restrict K).prod
-        (MeasureTheory.volume.restrict (Set.Icc (0 : ℝ) 1)))
-      (MeasureTheory.volume.restrict Q) := by
-  refine MeasureTheory.QuasiMeasurePreserving.prod_of_left (τ := MeasureTheory.volume.restrict Q)
-    ?_ ?_
-  · fun_prop
-  · filter_upwards [ae_restrict_mem (measurableSet_Icc : MeasurableSet (Set.Icc (0 : ℝ) 1))]
-      with t ht
-    have hmap :
-        Set.MapsTo
-          (fun z : ℝ × (Fin d → ℝ) ↦
-            z + t • ((1 : ℝ), (0 : Fin d → ℝ))) K Q := by
-      intro z hz
-      exact hsegments z hz t ht
-    have hqmp :
-        Measure.QuasiMeasurePreserving
-          (fun z : ℝ × (Fin d → ℝ) ↦
-            z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-          (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))
-          (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-      simpa [smul_eq_mul] using
-        firstCoordinate_translation_quasiMeasurePreserving_core (d := d) t
-    exact hqmp.restrict hmap
-
-/--
-%%handwave
-name:
-  Weak Sobolev functions satisfy the vertical finite-difference identity
-statement:
-  In \(\mathbb R\times\mathbb R^d\), let \(e_1=(1,0)\).  For a scalar weak
-  \(W^{1,2}\) function on an open region, assume the function and its weak
-  derivative in the direction \(e_1\) are square-integrable on a compact set
-  \(P\), assume a positive thickening of a compact set \(Q\) lies in \(P\),
-  and assume every vertical unit segment starting from a compact set \(K\)
-  remains in \(Q\).  Then, for almost every \(x\in K\),
-  \[
-    u(x+e_1)-u(x)=\int_0^1 D u(x+t e_1)e_1\,dt .
-  \]
-proof:
-  Apply [the directional weak fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen)
-  in the product space with \(h=e_1\).
--/
-theorem scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae
-    {d : ℕ}
-    {K Q P Ω : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict P))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-      u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-        ∫ t in Set.Icc (0 : ℝ) 1,
-          du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-            ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  haveI : Measure.IsAddHaarMeasure
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
+theorem scalarWeakSobolev_firstCoordinate_fiberwise_acl_on_compact_of_continuousOn
+    {E : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [MeasureSpace E] [BorelSpace E]
+    [Measure.IsAddHaarMeasure (volume : Measure E)]
+    [FiniteDimensional ℝ E]
+    {Q Ω : Set (ℝ × E)} (hQ : IsCompact Q) (hQΩ : Q ⊆ Ω)
+    (hΩ_open : IsOpen Ω)
+    {U : ℝ × E → ℝ} {DU : ℝ × E → (ℝ × E) →L[ℝ] ℝ}
+    (hU_cont : ContinuousOn U Ω)
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω U DU)
+    (hU_loc : LocallyIntegrableOn U Ω
+      (volume : Measure (ℝ × E))) :
+    ∀ᵐ y ∂(volume : Measure E),
+      ∀ a b : ℝ, 0 < a → a < b → b < 1 →
+        (∀ r ∈ Set.Icc a b, (r, y) ∈ Q) →
+          AbsolutelyContinuousOnInterval (fun r : ℝ => U (r, y)) a b ∧
+            ∀ᵐ t ∂(volume : Measure ℝ).restrict (Set.Ioo a b),
+              HasDerivAt (fun r : ℝ => U (r, y))
+                (DU (t, y) ((1 : ℝ), (0 : E))) t := by
+  letI : Measure.IsAddHaarMeasure
+      (volume : Measure (ℝ × E)) := by
     rw [Measure.volume_eq_prod]
     infer_instance
-  exact
-    scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen
-      (H := ℝ × (Fin d → ℝ)) hK hQ hP hQP hPΩ hΩ_open hweak hu hdu hsegments
-
-/--
-%%handwave
-name:
-  Weak Sobolev functions satisfy the vertical fundamental theorem on almost every fiber
-statement:
-  In \(\mathbb R\times\mathbb R^d\), let \(e_1=(1,0)\).  For a scalar weak
-  \(W^{1,2}\) function on an open region, assume the function and its weak
-  derivative in the direction \(e_1\) are square-integrable on a compact set
-  \(P\), assume a positive thickening of a compact set \(Q\) lies in \(P\),
-  and assume every vertical unit segment starting from a compact set \(K\)
-  remains in \(Q\).  Then for almost every transverse coordinate
-  \(y\), and for almost every \(a\) in the vertical fiber of \(K\) over
-  \(y\),
-  \[
-    u((a,y)+e_1)-u(a,y)
-      =\int_0^1 D u((a,y)+t e_1)e_1\,dt .
-  \]
-proof:
-  First prove [the product almost-everywhere segment identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae).
-  Then disintegrate the restricted product measure over vertical fibers to
-  obtain the fiberwise almost-everywhere statement.
--/
-theorem scalarWeakSobolev_firstCoordinate_fiberwise_line_integral_eq_ae
-    {d : ℕ}
-    {K Q P Ω : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict P))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-      ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-        u (((a, y) : ℝ × (Fin d → ℝ)) + ((1 : ℝ), (0 : Fin d → ℝ))) -
-            u (a, y) =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (((a, y) : ℝ × (Fin d → ℝ)) +
-                t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  have hprod :
-      ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-        u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-    exact
-      scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae
-        hK hQ hP hQP hPΩ hΩ_open hweak hu hdu hsegments
-  exact
-    scalarWeakSobolev_firstCoordinate_fiberwise_line_integral_eq_ae_of_product
-      hK hprod
-
-/--
-%%handwave
-name:
-  First-coordinate translations preserve null sets
-statement:
-  In \(\mathbb R\times\mathbb R^d\), translation by \(s e_1\) is
-  quasi-measure-preserving for Euclidean measure.
-proof:
-  Euclidean measure on the product is the product of the one-dimensional and
-  transverse Euclidean measures.  The map is the product of translation by
-  \(s\) on \(\mathbb R\) and the identity translation on \(\mathbb R^d\), and
-  each factor preserves null sets.
--/
-theorem firstCoordinate_translation_quasiMeasurePreserving
-    {d : ℕ} (s : ℝ) :
-    Measure.QuasiMeasurePreserving
-      (fun z : ℝ × (Fin d → ℝ) ↦ z + ((s : ℝ), (0 : Fin d → ℝ)))
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ)))
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-  exact firstCoordinate_translation_quasiMeasurePreserving_core (d := d) s
-
-/--
-%%handwave
-name:
-  Translation by the first coordinate preserves null sets on restricted compact sets
-statement:
-  If every translated point \(z+e_1\), \(z\in K\), lies in \(Q\), then
-  translation by \(e_1\) sends null sets in \(Q\) to null sets when pulled
-  back to \(K\).  Equivalently, the translation map is quasi-measure-preserving
-  from Euclidean measure restricted to \(K\) to Euclidean measure restricted
-  to \(Q\).
-proof:
-  Euclidean measure on \(\mathbb R\times\mathbb R^d\) is translation
-  invariant, and the containment hypothesis ensures that the restricted
-  source measure lands in the restricted target measure.
--/
-theorem firstCoordinate_translation_quasiMeasurePreserving_restrict
-    {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    Measure.QuasiMeasurePreserving
-      (fun z : ℝ × (Fin d → ℝ) ↦ z + ((1 : ℝ), (0 : Fin d → ℝ)))
-      (MeasureTheory.volume.restrict K) (MeasureTheory.volume.restrict Q) := by
-  exact firstCoordinate_translation_quasiMeasurePreserving_restrict_core
-    (K := K) (Q := Q) hsegments
-
-/--
-%%handwave
-name:
-  The vertical segment map preserves null sets
-statement:
-  If every segment \(z+t e_1\), \(z\in K\), \(0\le t\le1\), lies in \(Q\),
-  then the map \((z,t)\mapsto z+t e_1\) is quasi-measure-preserving from
-  Euclidean measure restricted to \(K\times[0,1]\) to Euclidean measure
-  restricted to \(Q\).
-proof:
-  For each fixed \(t\in[0,1]\), the map \(z\mapsto z+t e_1\) is a
-  first-coordinate translation and hence preserves null sets.  The containment
-  hypothesis gives a restricted quasi-measure-preserving map from \(K\) to
-  \(Q\).  Fubini, formulated as the product quasi-measure-preservation
-  criterion, then gives the result for the segment map.
--/
-theorem firstCoordinate_segmentMap_quasiMeasurePreserving_restrict_prod
-    {d : ℕ} {K Q : Set (ℝ × (Fin d → ℝ))}
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    Measure.QuasiMeasurePreserving
-      (fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-        p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ)))
-      ((MeasureTheory.volume.restrict K).prod
-        (MeasureTheory.volume.restrict (Set.Icc (0 : ℝ) 1)))
-      (MeasureTheory.volume.restrict Q) := by
-  exact firstCoordinate_segmentMap_quasiMeasurePreserving_restrict_prod_core
-    (K := K) (Q := Q) hsegments
-
-/--
-%%handwave
-name:
-  The vertical endpoint difference is measurable on the compact set
-statement:
-  Under the vertical segment containment hypothesis, the function
-  \(z\mapsto u(z+e_1)-u(z)\) is measurable up to null sets on \(K\).
-proof:
-  The \(L^2\) assumption makes \(u\) measurable up to null sets on \(Q\).
-  Since \(K\subset Q\) and \(K+e_1\subset Q\), both \(u\) and the translated
-  function \(u(\,\cdot+e_1)\) are measurable up to null sets on \(K\).  Their
-  difference has the same property.
--/
-theorem scalarWeakSobolev_firstCoordinate_endpointDifference_aestronglyMeasurable_restrict
-    {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))}
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    AEStronglyMeasurable
-      (fun z : ℝ × (Fin d → ℝ) ↦
-        u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z)
-      (MeasureTheory.volume.restrict K) := by
-  have hKQ : K ⊆ Q := by
-    intro x hx
-    simpa using hsegments x hx 0 (by simp)
-  have hbase :
-      AEStronglyMeasurable u (MeasureTheory.volume.restrict K) :=
-    (hu.mono_measure (Measure.restrict_mono hKQ le_rfl)).aestronglyMeasurable
-  have htranslate_qmp :
-      Measure.QuasiMeasurePreserving
-        (fun z : ℝ × (Fin d → ℝ) ↦ z + ((1 : ℝ), (0 : Fin d → ℝ)))
-        (MeasureTheory.volume.restrict K) (MeasureTheory.volume.restrict Q) :=
-    firstCoordinate_translation_quasiMeasurePreserving_restrict
-      (K := K) (Q := Q) hsegments
-  have htranslate :
-      AEStronglyMeasurable
-        (fun z : ℝ × (Fin d → ℝ) ↦
-          u (z + ((1 : ℝ), (0 : Fin d → ℝ))))
-        (MeasureTheory.volume.restrict K) := by
-    simpa [Function.comp_def] using
-      hu.aestronglyMeasurable.comp_quasiMeasurePreserving htranslate_qmp
-  exact htranslate.sub hbase
-
-/--
-%%handwave
-name:
-  The vertical segment integral is measurable on the compact set
-statement:
-  Under the vertical segment containment hypothesis and the \(L^2\)
-  assumption on the sliced weak derivative, the map
-  \[
-    z\mapsto \int_0^1 D u(z+t e_1)e_1\,dt
-  \]
-  is measurable up to null sets on \(K\).
-proof:
-  The integrand \((z,t)\mapsto D u(z+t e_1)e_1\) is measurable up to null
-  sets on \(K\times[0,1]\), because the segment map lands in \(Q\) and the
-  sliced derivative is \(L^2\) on \(Q\).  Fubini then gives measurability of
-  the parameter integral.
--/
-theorem scalarWeakSobolev_firstCoordinate_segmentIntegral_aestronglyMeasurable_restrict
-    {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    AEStronglyMeasurable
-      (fun z : ℝ × (Fin d → ℝ) ↦
-        ∫ t in Set.Icc (0 : ℝ) 1,
-          du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-            ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume)
-      (MeasureTheory.volume.restrict K) := by
-  let F : (ℝ × (Fin d → ℝ)) × ℝ → ℝ :=
-    fun p ↦ du (p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ)))
-      ((1 : ℝ), (0 : Fin d → ℝ))
-  have hsegment_qmp :
-      Measure.QuasiMeasurePreserving
-        (fun p : (ℝ × (Fin d → ℝ)) × ℝ ↦
-          p.1 + p.2 • ((1 : ℝ), (0 : Fin d → ℝ)))
-        ((MeasureTheory.volume.restrict K).prod
-          (MeasureTheory.volume.restrict (Set.Icc (0 : ℝ) 1)))
-        (MeasureTheory.volume.restrict Q) :=
-    firstCoordinate_segmentMap_quasiMeasurePreserving_restrict_prod
-      (K := K) (Q := Q) hsegments
-  have hF :
-      AEStronglyMeasurable F
-        ((MeasureTheory.volume.restrict K).prod
-          (MeasureTheory.volume.restrict (Set.Icc (0 : ℝ) 1))) := by
-    simpa [F, Function.comp_def] using
-      hdu.aestronglyMeasurable.comp_quasiMeasurePreserving hsegment_qmp
-  have hInt :
-      AEStronglyMeasurable
-        (fun z : ℝ × (Fin d → ℝ) ↦
-          ∫ t, F (z, t)
-            ∂(MeasureTheory.volume.restrict (Set.Icc (0 : ℝ) 1)))
-        (MeasureTheory.volume.restrict K) :=
-    hF.integral_prod_right'
-  simpa [F] using hInt
-
-/--
-%%handwave
-name:
-  The vertical fundamental theorem has a null-measurable exceptional set
-statement:
-  Under the hypotheses of the vertical weak Sobolev fundamental theorem, the
-  subset of \(K\) on which the endpoint identity fails is measurable up to a
-  null set.
-proof:
-  The function and the sliced weak derivative are measurable after modifying
-  representatives on null sets, because they are \(L^2\).  The segment
-  integral is obtained from a measurable function on the product
-  \(K\times[0,1]\), so it is measurable up to null sets by Fubini.  Hence the
-  equality-failure set is null-measurable.
--/
-theorem scalarWeakSobolev_firstCoordinate_line_integral_failure_nullMeasurableSet
-    {d : ℕ}
-    {K Q : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict Q))
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict Q))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    NullMeasurableSet
-      {z : ℝ × (Fin d → ℝ) |
-        z ∈ K ∧
-          ¬ u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-              ∫ t in Set.Icc (0 : ℝ) 1,
-                du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-                  ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume}
-      (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) := by
-  let lhs : (ℝ × (Fin d → ℝ)) → ℝ :=
-    fun z ↦ u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z
-  let rhs : (ℝ × (Fin d → ℝ)) → ℝ :=
-    fun z ↦
-      ∫ t in Set.Icc (0 : ℝ) 1,
-        du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-          ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume
-  have hlhs :
-      AEStronglyMeasurable lhs (MeasureTheory.volume.restrict K) := by
-    simpa [lhs] using
-      scalarWeakSobolev_firstCoordinate_endpointDifference_aestronglyMeasurable_restrict
-        (K := K) (Q := Q) hu hsegments
-  have hrhs :
-      AEStronglyMeasurable rhs (MeasureTheory.volume.restrict K) := by
-    simpa [rhs] using
-      scalarWeakSobolev_firstCoordinate_segmentIntegral_aestronglyMeasurable_restrict
-        (K := K) (Q := Q) hdu hsegments
-  have heq :
-      NullMeasurableSet {z : ℝ × (Fin d → ℝ) | lhs z = rhs z}
-        (MeasureTheory.volume.restrict K) :=
-    nullMeasurableSet_eq_fun hlhs.aemeasurable hrhs.aemeasurable
-  have hfailure_restrict :
-      NullMeasurableSet {z : ℝ × (Fin d → ℝ) | ¬ lhs z = rhs z}
-        (MeasureTheory.volume.restrict K) :=
-    heq.compl
-  have hK_meas :
-      NullMeasurableSet K
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) :=
-    hK.isClosed.measurableSet.nullMeasurableSet
-  have hfailure_volume :
-      NullMeasurableSet ({z : ℝ × (Fin d → ℝ) | ¬ lhs z = rhs z} ∩ K)
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))) :=
-    (nullMeasurableSet_restrict hK_meas).1 hfailure_restrict
-  convert hfailure_volume using 1
-  ext z
-  simp [lhs, rhs, and_comm]
-
-/--
-%%handwave
-name:
-  Fiberwise vertical fundamental theorem gives the product almost-everywhere statement
-statement:
-  If the vertical fundamental theorem holds for almost every vertical fiber
-  of a compact set \(K\subset\mathbb R\times\mathbb R^d\), then it holds for
-  almost every point of \(K\) with respect to Euclidean measure restricted to
-  \(K\).
-proof:
-  Euclidean measure on \(\mathbb R\times\mathbb R^d\) is the product of the
-  one-dimensional and transverse Euclidean measures.  Applying Fubini to the
-  measurable subset of \(K\) where the endpoint identity fails shows that its
-  measure is zero, because almost every vertical section has zero
-  one-dimensional measure.  This is exactly the desired almost-everywhere
-  statement for the restricted measure on \(K\).
--/
-theorem scalarWeakSobolev_firstCoordinate_line_integral_eq_ae_of_fiberwise
-    {d : ℕ}
-    {K : Set (ℝ × (Fin d → ℝ))}
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hK : MeasurableSet K)
-    (hbad :
-      NullMeasurableSet
-        {z : ℝ × (Fin d → ℝ) |
-          z ∈ K ∧
-            ¬ u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-                ∫ t in Set.Icc (0 : ℝ) 1,
-                  du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-                    ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume}
-        (MeasureTheory.volume : Measure (ℝ × (Fin d → ℝ))))
-    (hfiber :
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (Fin d → ℝ)),
-        ∀ᵐ a ∂(MeasureTheory.volume.restrict (firstCoordinateVerticalFiber K y)),
-          u (((a, y) : ℝ × (Fin d → ℝ)) + ((1 : ℝ), (0 : Fin d → ℝ))) -
-              u (a, y) =
-            ∫ t in Set.Icc (0 : ℝ) 1,
-              du (((a, y) : ℝ × (Fin d → ℝ)) +
-                  t • ((1 : ℝ), (0 : Fin d → ℝ)))
-                ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume) :
-    ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-      u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-        ∫ t in Set.Icc (0 : ℝ) 1,
-          du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-            ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  exact
-    ae_restrict_prod_of_ae_vertical_fibers
-      (K := K)
-      (P := fun z ↦
-        u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-          ∫ t in Set.Icc (0 : ℝ) 1,
-            du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-              ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume)
-      hK hbad hfiber
-
-/--
-%%handwave
-name:
-  Weak Sobolev functions satisfy the vertical fundamental theorem almost everywhere
-statement:
-  In \(\mathbb R\times\mathbb R^d\), let \(e_1=(1,0)\).  For a scalar weak
-  \(W^{1,2}\) function on an open region, assume the function and its weak
-  derivative in the direction \(e_1\) are square-integrable on a compact set
-  \(P\), assume a positive thickening of a compact set \(Q\) lies in \(P\),
-  and assume every vertical unit segment starting from a compact set \(K\)
-  remains in \(Q\).  Then for almost every \(x\in K\),
-  \[
-    u(x+e_1)-u(x)
-      =\int_0^1 D u(x+t e_1)e_1\,dt .
-  \]
-proof:
-  This is exactly [the product first-coordinate segment identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae).
--/
-theorem scalarWeakSobolev_firstCoordinate_line_integral_eq_ae
-    {d : ℕ}
-    {K Q P Ω : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict P))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-      u (z + ((1 : ℝ), (0 : Fin d → ℝ))) - u z =
-        ∫ t in Set.Icc (0 : ℝ) 1,
-          du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-            ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  exact
-    scalarWeakSobolev_firstCoordinate_product_line_integral_eq_ae
-      hK hQ hP hQP hPΩ hΩ_open hweak hu hdu hsegments
-
-/--
-%%handwave
-name:
-  Sobolev functions have absolutely continuous representatives on vertical lines
-statement:
-  In \(\mathbb R\times\mathbb R^d\), let \(e_1=(1,0)\).  For a scalar weak
-  \(W^{1,2}\) function on an open region, assume the function and its weak
-  derivative in the direction \(e_1\) are square-integrable on a compact set
-  \(P\), assume a positive thickening of a compact set \(Q\) lies in \(P\),
-  and assume every vertical unit segment starting from a compact set \(K\)
-  remains in \(Q\).  Then there is a representative agreeing with the
-  original function almost everywhere on \(Q\) such that, for almost every
-  \(x\in K\),
-  \[
-    \tilde u(x+e_1)-\tilde u(x)
-      =\int_0^1 D u(x+t e_1)e_1\,dt .
-  \]
-proof:
-  Take the original representative and use [the first-coordinate segment identity](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_line_integral_eq_ae).
--/
-theorem scalarWeakSobolev_exists_firstCoordinate_acl_representative_on_segments
-    {d : ℕ}
-    {K Q P Ω : Set (ℝ × (Fin d → ℝ))} (hK : IsCompact K) (hQ : IsCompact Q)
-    (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : (ℝ × (Fin d → ℝ)) → ℝ}
-    {du : (ℝ × (Fin d → ℝ)) → (ℝ × (Fin d → ℝ)) →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z ((1 : ℝ), (0 : Fin d → ℝ))) 2
-      (MeasureTheory.volume.restrict P))
-    (hsegments :
-      ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 →
-        x + t • ((1 : ℝ), (0 : Fin d → ℝ)) ∈ Q) :
-    ∃ uacl : (ℝ × (Fin d → ℝ)) → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-          uacl (z + ((1 : ℝ), (0 : Fin d → ℝ))) - uacl z =
-            ∫ t in Set.Icc (0 : ℝ) 1,
-              du (z + t • ((1 : ℝ), (0 : Fin d → ℝ)))
-                ((1 : ℝ), (0 : Fin d → ℝ)) ∂MeasureTheory.volume := by
-  refine ⟨u, Filter.EventuallyEq.rfl, ?_⟩
-  exact
-    scalarWeakSobolev_firstCoordinate_line_integral_eq_ae
-      hK hQ hP hQP hPΩ hΩ_open hweak hu hdu hsegments
-
-/--
-%%handwave
-name:
-  Directional ACL representatives are transported through rectifying coordinates
-statement:
-  Suppose a continuous linear coordinate equivalence sends a nonzero
-  direction \(h\) to the first coordinate direction.  The directional ACL
-  representative in \(H\) agrees with the original function almost everywhere
-  on \(Q\) and satisfies
-  \[
-    \tilde u(x+h)-\tilde u(x)
-      =\int_0^1 D u(x+t h)h\,dt
-  \]
-  for almost every \(x\in K\).
-proof:
-  The rectifying coordinate data is now unused compatibility data.  Take the
-  original representative and apply [the directional weak fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
--/
-theorem scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K Q P Ω : Set H} (hK : IsCompact K) (hQ : IsCompact Q) (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    {h : H} {d : ℕ} (_e : H ≃L[ℝ] (ℝ × (Fin d → ℝ)))
-    (_he : _e h = ((1 : ℝ), (0 : Fin d → ℝ)))
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z h) 2 (MeasureTheory.volume.restrict P))
-    (hsegments : ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • h ∈ Q) :
-    ∃ uacl : H → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-          uacl (z + h) - uacl z =
-            ∫ t in Set.Icc (0 : ℝ) 1,
-              du (z + t • h) h ∂MeasureTheory.volume := by
-  refine ⟨u, Filter.EventuallyEq.rfl, ?_⟩
-  exact
-    scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen
-      hK hQ hP hQP hPΩ hΩ_open
-      (by
-        simpa [KinnunenWeakDerivativeOnEuclideanRegionScalar,
-          IsWeakDerivativeOnEuclideanRegionScalar,
-          IsWeakDerivativeOnEuclideanRegionWithValues] using hweak)
-      hu hdu hsegments
-
-/--
-%%handwave
-name:
-  Sobolev functions have nonzero directional absolutely continuous representatives
-statement:
-  For a scalar weak \(W^{1,2}\) function on a Euclidean region, assume the
-  function and its directional weak derivative in a nonzero direction \(h\)
-  are square-integrable on a compact set \(P\), assume a positive thickening
-  of a compact set \(Q\) lies in \(P\), and assume every segment from a compact
-  set \(K\) in the direction \(h\) remains in \(Q\).  Then there is a
-  representative agreeing with the original function almost everywhere on
-  \(Q\) such that, for almost every \(x\in K\),
-  \[
-    \tilde u(x+h)-\tilde u(x)
-      =\int_0^1 D u(x+t h)h\,dt .
-  \]
-proof:
-  Choose coordinates sending \(h\) to the first coordinate and use [the directional representative statement transported through those coordinates](lean:JJMath.Uniformization.scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates).
--/
-theorem scalarWeakSobolev_exists_directional_acl_representative_on_nonzero_segments
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K Q P Ω : Set H} (hK : IsCompact K) (hQ : IsCompact Q) (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    {h : H}
-    (hh_ne : h ≠ 0)
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z h) 2 (MeasureTheory.volume.restrict P))
-    (hsegments : ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • h ∈ Q) :
-    ∃ uacl : H → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-          uacl (z + h) - uacl z =
-            ∫ t in Set.Icc (0 : ℝ) 1,
-              du (z + t • h) h ∂MeasureTheory.volume := by
-  rcases exists_continuousLinearEquiv_apply_nonzero_eq_firstCoordinate
-      (H := H) hh_ne with
-    ⟨d, e, he⟩
-  exact
-    scalarWeakSobolev_exists_directional_acl_representative_of_rectifying_coordinates
-      hK hQ hP hQP hPΩ hΩ_open hweak e he hu hdu hsegments
-
-/--
-%%handwave
-name:
-  Sobolev functions have directional absolutely continuous representatives
-statement:
-  For a scalar weak \(W^{1,2}\) function on a Euclidean region, assume the
-  function and its directional weak derivative in a direction \(h\) are
-  square-integrable on a compact set \(P\), assume a positive thickening of a
-  compact set \(Q\) lies in \(P\), and assume every segment from a compact set
-  \(K\) in the direction \(h\) remains in \(Q\).  Then there is a
-  representative agreeing with the original function almost everywhere on
-  \(Q\) such that, for almost every \(x\in K\),
-  \[
-    \tilde u(x+h)-\tilde u(x)
-      =\int_0^1 D u(x+t h)h\,dt .
-  \]
-proof:
-  Take the original representative and apply [the directional weak fundamental theorem on segments](lean:JJMath.Uniformization.scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen).
--/
-theorem scalarWeakSobolev_exists_directional_acl_representative_on_segments
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K Q P Ω : Set H} (hK : IsCompact K) (hQ : IsCompact Q) (hP : IsCompact P)
-    (hQP : ∃ δ : ℝ, 0 < δ ∧ Metric.cthickening δ Q ⊆ P)
-    (hPΩ : P ⊆ Ω) (hΩ_open : IsOpen Ω)
-    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionScalar Ω u du)
-    {h : H}
-    (hu : MemLp u 2 (MeasureTheory.volume.restrict P))
-    (hdu : MemLp (fun z ↦ du z h) 2 (MeasureTheory.volume.restrict P))
-    (hsegments : ∀ x ∈ K, ∀ t : ℝ, t ∈ Set.Icc 0 1 → x + t • h ∈ Q) :
-    ∃ uacl : H → ℝ,
-      uacl =ᵐ[MeasureTheory.volume.restrict Q] u ∧
-        ∀ᵐ z ∂MeasureTheory.volume.restrict K,
-          uacl (z + h) - uacl z =
-            ∫ t in Set.Icc (0 : ℝ) 1,
-              du (z + t • h) h ∂MeasureTheory.volume := by
-  refine ⟨u, Filter.EventuallyEq.rfl, ?_⟩
-  exact
-    scalarWeakSobolev_directional_acl_line_integral_eq_ae_kinnunen
-      hK hQ hP hQP hPΩ hΩ_open hweak hu hdu hsegments
+  rcases exists_scalarWeakSobolevCutoff hQ hQΩ hΩ_open with ⟨χ⟩
+  let W : ℝ × E → ℝ := fun p => χ p * U p
+  let DW : ℝ × E → (ℝ × E) →L[ℝ] ℝ :=
+    scalarWeakSobolevCutoffDerivative (χ : ℝ × E → ℝ) U DU
+  have hW_global :
+      IsWeakDerivativeOnEuclideanRegionWithValues Set.univ W DW := by
+    exact scalarWeakSobolevCutoffDerivative_global_weakDerivative
+      hΩ_open χ hweak hU_loc
+  have hW_strip :
+      IsWeakDerivativeOnEuclideanRegionWithValues
+        {p : ℝ × E | 0 < p.1 ∧ p.1 < 1} W DW :=
+    hW_global.mono_set (Set.subset_univ _)
+  have hW_cont : Continuous W := by
+    exact χ.continuous_mul_of_continuousOn hΩ_open hU_cont
+  have hslices :=
+    scalarWeakSobolev_firstCoordinate_fiberwise_acl_of_continuousOn_unit_strip
+      (E := E) (U := W) (DU := DW) hW_cont.continuousOn hW_strip
+  filter_upwards [hslices] with y hy
+  intro a b ha hab hb hsegment
+  rcases hy a b ha hab hb with ⟨hW_ac, hW_deriv⟩
+  have hWU_eqOn :
+      Set.EqOn (fun r : ℝ => W (r, y)) (fun r : ℝ => U (r, y))
+        (Set.uIcc a b) := by
+    intro r hr
+    have hrIcc : r ∈ Set.Icc a b := by
+      simpa [Set.uIcc_of_le hab.le] using hr
+    simp [W, χ.eq_one_on (r, y) (hsegment r hrIcc)]
+  constructor
+  · exact absolutelyContinuousOnInterval_congr_on_uIcc hW_ac hWU_eqOn
+  · filter_upwards [hW_deriv,
+      ae_restrict_mem measurableSet_Ioo] with t ht htIoo
+    have htIcc : t ∈ Set.Icc a b := Set.Ioo_subset_Icc_self htIoo
+    have htQ : (t, y) ∈ Q := hsegment t htIcc
+    have hDW : DW (t, y) ((1 : ℝ), (0 : E)) =
+        DU (t, y) ((1 : ℝ), (0 : E)) := by
+      exact χ.cutoffDerivative_eq_on (t, y) htQ
+    rw [hDW] at ht
+    have hevent :
+        (fun r : ℝ => U (r, y)) =ᶠ[𝓝 t] fun r : ℝ => W (r, y) := by
+      filter_upwards [isOpen_Ioo.mem_nhds htIoo] with r hr
+      exact (hWU_eqOn
+        (Set.Icc_subset_uIcc (Set.Ioo_subset_Icc_self hr))).symm
+    exact ht.congr_of_eventuallyEq hevent
 
 /--
 %%handwave
@@ -9302,137 +7043,6 @@ theorem scalarWeakSobolevBound_translation_tight_on_compact
 /--
 %%handwave
 name:
-  Compact containment in \(L^2\) gives a convergent subsequence
-statement:
-  If the \(L^2\)-classes of a sequence of scalar functions all lie in one
-  compact subset of \(L^2\) on a set, then the original sequence has a
-  subsequence converging strongly in \(L^2\) on that set.
-proof:
-  Apply sequential compactness of compact subsets of the \(L^2\) metric space
-  and translate convergence in \(L^2\) back to convergence of the
-  \(L^2\)-seminorm of representatives.
--/
-theorem euclideanL2CompactSet_subsequence_on_compact
-    {H : Type} [MeasureSpace H]
-    {K : Set H} (u : ℕ → H → ℝ)
-    (hmem : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict K))
-    (S : Set (Lp ℝ 2 (MeasureTheory.volume.restrict K)))
-    (hS : IsCompact S)
-    (hS_mem : ∀ n : ℕ, (hmem n).toLp (u n) ∈ S) :
-    ∃ (uLim : H → ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2Scalar K (fun n z ↦ u (φ n) z) uLim := by
-  let μ : Measure H := MeasureTheory.volume.restrict K
-  let x : ℕ → Lp ℝ 2 μ := fun n ↦ (hmem n).toLp (u n)
-  have hx : ∀ n : ℕ, x n ∈ S := by
-    intro n
-    simpa [x, μ] using hS_mem n
-  rcases hS.tendsto_subseq hx with ⟨a, _haS, φ, hφ, hlim⟩
-  refine ⟨(a : H → ℝ), φ, hφ, ?_⟩
-  dsimp [TendstoInEuclideanLocalL2Scalar, TendstoInEuclideanLocalL2WithValues]
-  have hlim' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n))) Filter.atTop (𝓝 a) := by
-    simpa [x, μ, Function.comp_def] using hlim
-  have hlim'' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n)))
-        Filter.atTop (𝓝 ((Lp.memLp a).toLp (a : H → ℝ))) := by
-    simpa [Lp.toLp_coeFn] using hlim'
-  exact (Lp.tendsto_Lp_iff_tendsto_eLpNorm''
-    (μ := μ) (p := 2)
-    (fun n : ℕ ↦ u (φ n)) (fun n : ℕ ↦ hmem (φ n))
-    (a : H → ℝ) (Lp.memLp a)).mp hlim''
-
-/--
-%%handwave
-name:
-  Compact containment in vector-valued \(L^2\) gives a convergent subsequence
-statement:
-  If the \(L^2(K;E)\)-classes of a sequence of \(E\)-valued functions all lie
-  in one compact subset of \(L^2(K;E)\), then the original sequence has a
-  subsequence converging strongly in \(L^2(K;E)\).
-proof:
-  Apply sequential compactness of compact subsets of \(L^2(K;E)\) and
-  translate convergence in \(L^2\) back to convergence of the \(L^2\)-seminorm
-  of representatives.
--/
-theorem euclideanL2CompactSet_subsequence_on_compact_with_values
-    {H E : Type} [MeasureSpace H] [NormedAddCommGroup E]
-    {K : Set H} (u : ℕ → H → E)
-    (hmem : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict K))
-    (S : Set (Lp E 2 (MeasureTheory.volume.restrict K)))
-    (hS : IsCompact S)
-    (hS_mem : ∀ n : ℕ, (hmem n).toLp (u n) ∈ S) :
-    ∃ (uLim : H → E) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2WithValues K (fun n z ↦ u (φ n) z) uLim := by
-  let μ : Measure H := MeasureTheory.volume.restrict K
-  let x : ℕ → Lp E 2 μ := fun n ↦ (hmem n).toLp (u n)
-  have hx : ∀ n : ℕ, x n ∈ S := by
-    intro n
-    simpa [x, μ] using hS_mem n
-  rcases hS.tendsto_subseq hx with ⟨a, _haS, φ, hφ, hlim⟩
-  refine ⟨(a : H → E), φ, hφ, ?_⟩
-  dsimp [TendstoInEuclideanLocalL2WithValues]
-  have hlim' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n))) Filter.atTop (𝓝 a) := by
-    simpa [x, μ, Function.comp_def] using hlim
-  have hlim'' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n)))
-        Filter.atTop (𝓝 ((Lp.memLp a).toLp (a : H → E))) := by
-    simpa [Lp.toLp_coeFn] using hlim'
-  exact (Lp.tendsto_Lp_iff_tendsto_eLpNorm''
-    (μ := μ) (p := 2)
-    (fun n : ℕ ↦ u (φ n)) (fun n : ℕ ↦ hmem (φ n))
-    (a : H → E) (Lp.memLp a)).mp hlim''
-
-/--
-%%handwave
-name:
-  Compact containment in \(L^2(K;E)\) gives a manifold-local subsequence
-statement:
-  Let \(K\) be a measurable subset of a measured space.  If the
-  \(L^2(K;E)\)-classes of a sequence of \(E\)-valued maps all lie in one
-  compact subset of \(L^2(K;E)\), then a subsequence converges strongly in
-  \(L^2(K;E)\).
-proof:
-  Apply sequential compactness of the compact subset of \(L^2(K;E)\).  The
-  limit is represented by its \(L^2\) function representative, and convergence
-  in the \(L^2\) metric is exactly convergence of the \(L^2\)-seminorm of the
-  difference of representatives.
--/
-theorem l2CompactSet_subsequence_on_set_with_values
-    {X E : Type} [MeasurableSpace X] [NormedAddCommGroup E]
-    {μ : Measure X} {K : Set X} (u : ℕ → X → E)
-    (hmem : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K))
-    (S : Set (Lp E 2 (μ.restrict K)))
-    (hS : IsCompact S)
-    (hS_mem : ∀ n : ℕ, (hmem n).toLp (u n) ∈ S) :
-    ∃ (uLim : X → E) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInLocalL2OnManifoldWithValues μ K (fun n x ↦ u (φ n) x) uLim := by
-  let μK : Measure X := μ.restrict K
-  let x : ℕ → Lp E 2 μK := fun n ↦ (hmem n).toLp (u n)
-  have hx : ∀ n : ℕ, x n ∈ S := by
-    intro n
-    simpa [x, μK] using hS_mem n
-  rcases hS.tendsto_subseq hx with ⟨a, _haS, φ, hφ, hlim⟩
-  refine ⟨(a : X → E), φ, hφ, ?_⟩
-  dsimp [TendstoInLocalL2OnManifoldWithValues]
-  have hlim' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n))) Filter.atTop (𝓝 a) := by
-    simpa [x, μK, Function.comp_def] using hlim
-  have hlim'' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmem (φ n)).toLp (u (φ n)))
-        Filter.atTop (𝓝 ((Lp.memLp a).toLp (a : X → E))) := by
-    simpa [Lp.toLp_coeFn] using hlim'
-  exact (Lp.tendsto_Lp_iff_tendsto_eLpNorm''
-    (μ := μK) (p := 2)
-    (fun n : ℕ ↦ u (φ n)) (fun n : ℕ ↦ hmem (φ n))
-    (a : X → E) (Lp.memLp a)).mp hlim''
-
-/--
-%%handwave
-name:
   Finite-dimensional approximation gives finite nets
 statement:
   Let a family in a normed real vector space be uniformly approximable, at
@@ -9486,102 +7096,6 @@ theorem finite_L2_net_of_uniform_finiteDimensional_approx
 /--
 %%handwave
 name:
-  Uniform finite-dimensional approximation gives total boundedness
-statement:
-  Let a family in a normed real vector space be uniformly approximable, at
-  every positive scale, by elements lying in a bounded subset of some
-  finite-dimensional subspace.  Then the family is totally bounded.
-proof:
-  The previous finite-net construction gives finite nets at every positive
-  scale.  Apply the metric characterization of total boundedness.
--/
-theorem totallyBounded_of_uniform_finiteDimensional_approx
-    {ι Y : Type} [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (x : ι → Y)
-    (happrox : ∀ ε : ℝ, 0 < ε →
-      ∃ V : Submodule ℝ Y, FiniteDimensional ℝ V ∧
-        ∃ R : ℝ, 0 ≤ R ∧
-          ∀ i : ι, ∃ v : V, ‖(v : Y)‖ ≤ R ∧ dist (x i) (v : Y) < ε) :
-    TotallyBounded (Set.range x) := by
-  exact Metric.totallyBounded_iff.2
-    (finite_L2_net_of_uniform_finiteDimensional_approx x happrox)
-
-/--
-%%handwave
-name:
-  Finite-rank approximation gives finite-dimensional approximation
-statement:
-  Let a sequence in a normed real vector space be uniformly approximable, at
-  every positive scale, by finite-rank continuous linear images of itself.
-  Then the sequence is uniformly approximable, at every positive scale, by
-  finite-dimensional subspaces.
-proof:
-  For a fixed scale, take the range of the finite-rank operator as the
-  finite-dimensional subspace.  Each approximant is the image of the
-  corresponding element under that operator.
--/
-theorem finiteRank_approx_gives_uniform_finiteDimensional_approx
-    {Y : Type} [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (x : ℕ → Y)
-    (happrox : ∀ ε : ℝ, 0 < ε →
-      ∃ A : Y →L[ℝ] Y, FiniteDimensional ℝ A.range ∧
-        ∀ n : ℕ, dist (x n) (A (x n)) < ε) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ V : Submodule ℝ Y, FiniteDimensional ℝ V ∧
-        ∀ n : ℕ, ∃ v : V, dist (x n) (v : Y) < ε := by
-  intro ε hε
-  rcases happrox ε hε with ⟨A, hAfin, hAapprox⟩
-  refine ⟨A.range, hAfin, ?_⟩
-  intro n
-  refine ⟨⟨A (x n), ?_⟩, ?_⟩
-  · exact LinearMap.mem_range_self (A : Y →ₗ[ℝ] Y) (x n)
-  · simpa using hAapprox n
-
-/--
-%%handwave
-name:
-  Bounded finite-rank approximation gives finite nets
-statement:
-  Let a bounded family in a normed real vector space be uniformly
-  approximable, at every positive scale, by finite-rank continuous linear
-  images of itself.  Then the family admits finite nets at every positive
-  scale.
-proof:
-  For each scale, take the range of the finite-rank operator.  The
-  approximants lie in this finite-dimensional range, and the triangle
-  inequality bounds their norms by the uniform bound for the original family
-  plus the approximation error.  Finite-dimensional bounded balls are totally
-  bounded, so the preceding finite-dimensional net construction applies.
--/
-theorem finite_L2_net_of_bounded_uniform_finiteRank_approx
-    {ι Y : Type} [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (x : ι → Y)
-    (hbounded : ∃ R : ℝ, 0 ≤ R ∧ ∀ i : ι, ‖x i‖ ≤ R)
-    (happrox : ∀ ε : ℝ, 0 < ε →
-      ∃ A : Y →L[ℝ] Y, FiniteDimensional ℝ A.range ∧
-        ∀ i : ι, dist (x i) (A (x i)) < ε) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ t : Set Y, t.Finite ∧
-        Set.range x ⊆ ⋃ y ∈ t, Metric.ball y ε := by
-  rcases hbounded with ⟨R, hR_nonneg, hR_bound⟩
-  refine finite_L2_net_of_uniform_finiteDimensional_approx x ?_
-  intro ε hε
-  rcases happrox ε hε with ⟨A, hAfin, hAapprox⟩
-  refine ⟨A.range, hAfin, R + ε, add_nonneg hR_nonneg hε.le, ?_⟩
-  intro i
-  refine ⟨⟨A (x i), LinearMap.mem_range_self (A : Y →ₗ[ℝ] Y) (x i)⟩, ?_, hAapprox i⟩
-  have hAx_norm_le : ‖A (x i)‖ ≤ dist (x i) (A (x i)) + ‖x i‖ := by
-    have htri : dist (A (x i)) 0 ≤ dist (A (x i)) (x i) + dist (x i) 0 :=
-      dist_triangle _ _ _
-    simpa [dist_comm, dist_eq_norm] using htri
-  calc
-    ‖A (x i)‖ ≤ dist (x i) (A (x i)) + ‖x i‖ := hAx_norm_le
-    _ ≤ ε + R := add_le_add (le_of_lt (hAapprox i)) (hR_bound i)
-    _ = R + ε := by ring
-
-/--
-%%handwave
-name:
   Cross-space finite-rank approximation gives finite nets
 statement:
   Let a sequence in one normed vector space be approximated by the image,
@@ -9621,69 +7135,6 @@ theorem finite_L2_net_of_bounded_uniform_crossFiniteRank_approx
       ‖A (z i)‖ ≤ ‖A‖ * ‖z i‖ := A.le_opNorm (z i)
       _ ≤ ‖A‖ * R := mul_le_mul_of_nonneg_left (hR_bound i) (norm_nonneg A)
       _ ≤ ‖A‖ * R + ε := le_add_of_nonneg_right hε.le
-
-/--
-%%handwave
-name:
-  Finite-rank operator represented by finitely many coefficients
-statement:
-  A finite family of continuous linear coefficient functionals and a finite
-  family of vectors define a finite-rank continuous linear operator by taking
-  the corresponding finite linear combination.
--/
-noncomputable def finiteRankRepresentationOperator {ι Y : Type} [Fintype ι]
-    [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (coeff : ι → Y →L[ℝ] ℝ) (vec : ι → Y) : Y →L[ℝ] Y :=
-  ∑ i, (coeff i).smulRight (vec i)
-
-/--
-%%handwave
-name:
-  Formula for a finitely represented operator
-statement:
-  An operator represented by coefficient functionals
-  \(\lambda_i:Y\to\mathbb R\) and vectors \(v_i\in Y\) satisfies
-  \(A(y)=\sum_i\lambda_i(y)v_i\).
-proof:
-  Evaluate the finite sum of rank-one continuous linear maps at \(y\).
--/
-@[simp]
-theorem finiteRankRepresentationOperator_apply {ι Y : Type} [Fintype ι]
-    [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (coeff : ι → Y →L[ℝ] ℝ) (vec : ι → Y) (y : Y) :
-    finiteRankRepresentationOperator coeff vec y =
-      ∑ i, coeff i y • vec i := by
-  simp [finiteRankRepresentationOperator, ContinuousLinearMap.sum_apply]
-
-/--
-%%handwave
-name:
-  The represented finite-rank operator has finite-dimensional range
-statement:
-  The range of an operator represented by finitely many coefficient
-  functionals and finitely many vectors is contained in the span of those
-  vectors, and hence is finite-dimensional.
-proof:
-  Every value of the operator is a finite linear combination of the chosen
-  vectors.
--/
-theorem finiteRankRepresentationOperator_finiteDimensional_range {ι Y : Type}
-    [Fintype ι] [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (coeff : ι → Y →L[ℝ] ℝ) (vec : ι → Y) :
-    FiniteDimensional ℝ (finiteRankRepresentationOperator coeff vec).range := by
-  have hle :
-      (finiteRankRepresentationOperator coeff vec).range ≤
-        Submodule.span ℝ (Set.range vec) := by
-    intro y hy
-    rcases hy with ⟨x, rfl⟩
-    change finiteRankRepresentationOperator coeff vec x ∈
-      Submodule.span ℝ (Set.range vec)
-    rw [finiteRankRepresentationOperator_apply]
-    exact Submodule.sum_mem _ fun i _ ↦
-      Submodule.smul_mem _ _ (Submodule.subset_span (Set.mem_range_self i))
-  letI : FiniteDimensional ℝ (Submodule.span ℝ (Set.range vec)) :=
-    FiniteDimensional.span_of_finite ℝ (Set.finite_range vec)
-  exact Submodule.finiteDimensional_of_le hle
 
 /--
 %%handwave
@@ -9749,168 +7200,6 @@ theorem finiteRankRepresentationOperatorBetween_finiteDimensional_range {ι Y Z 
   letI : FiniteDimensional ℝ (Submodule.span ℝ (Set.range vec)) :=
     FiniteDimensional.span_of_finite ℝ (Set.finite_range vec)
   exact Submodule.finiteDimensional_of_le hle
-
-/--
-%%handwave
-name:
-  Finite nets give finite-dimensional approximation
-statement:
-  Let a family in a normed real vector space admit finite nets at every
-  positive scale.  Then, at every positive scale, the family is uniformly
-  approximable by a finite-dimensional linear subspace.
-proof:
-  At the chosen scale, take the finite net and let \(V\) be its linear span.
-  This span is finite-dimensional.  Each element of the family lies within
-  the chosen scale of one net point, and that net point belongs to \(V\).
--/
-theorem finite_L2_net_gives_uniform_finiteDimensional_approx
-    {ι Y : Type} [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    (x : ι → Y)
-    (hnet : ∀ ε : ℝ, 0 < ε →
-      ∃ t : Set Y, t.Finite ∧
-        Set.range x ⊆ ⋃ y ∈ t, Metric.ball y ε) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ V : Submodule ℝ Y, FiniteDimensional ℝ V ∧
-        ∀ i : ι, ∃ v : V, dist (x i) (v : Y) < ε := by
-  intro ε hε
-  rcases hnet ε hε with ⟨t, ht_finite, hcover⟩
-  refine ⟨Submodule.span ℝ t, FiniteDimensional.span_of_finite ℝ ht_finite, ?_⟩
-  intro i
-  have hx_cover : x i ∈ ⋃ y ∈ t, Metric.ball y ε :=
-    hcover ⟨i, rfl⟩
-  simp only [Set.mem_iUnion] at hx_cover
-  rcases hx_cover with ⟨y, hy_t, hy_ball⟩
-  refine ⟨⟨y, Submodule.subset_span hy_t⟩, ?_⟩
-  simpa [Metric.mem_ball] using hy_ball
-
-/--
-%%handwave
-name:
-  Finite-dimensional approximation gives finite projection approximation
-statement:
-  Let a sequence in a real Hilbert space be uniformly approximable, at every
-  positive scale, by vectors in a finite-dimensional subspace.  Then it is
-  uniformly approximable at the same scale by orthogonal projections onto a
-  finite-dimensional subspace.
-proof:
-  Choose the finite-dimensional approximating subspace.  It is complete, so it
-  admits an orthogonal projection.  The projection is the closest point in the
-  subspace, hence it is at least as good as any chosen approximant.  Finally
-  choose an orthonormal basis of the finite-dimensional subspace.
--/
-theorem finiteDimensional_approx_gives_uniform_finiteSubspaceProjection_approx
-    {Y : Type} [NormedAddCommGroup Y] [InnerProductSpace ℝ Y]
-    (x : ℕ → Y)
-    (happrox : ∀ ε : ℝ, 0 < ε →
-      ∃ V : Submodule ℝ Y, FiniteDimensional ℝ V ∧
-        ∀ n : ℕ, ∃ v : V, dist (x n) (v : Y) < ε) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ m : ℕ,
-        ∃ S : Submodule ℝ Y,
-          ∃ hSproj : S.HasOrthogonalProjection,
-            letI : S.HasOrthogonalProjection := hSproj
-            ∃ _b : OrthonormalBasis (Fin m) ℝ S,
-              ∀ n : ℕ, dist (x n) (S.starProjection (x n)) < ε := by
-  intro ε hε
-  rcases happrox ε hε with ⟨V, hVfin, hVapprox⟩
-  letI : FiniteDimensional ℝ V := hVfin
-  haveI : IsUniformAddGroup V := V.toAddSubgroup.isUniformAddGroup
-  haveI : CompleteSpace V := FiniteDimensional.complete ℝ V
-  let hVproj : V.HasOrthogonalProjection := inferInstance
-  refine ⟨Module.finrank ℝ V, V, hVproj, ?_⟩
-  letI : V.HasOrthogonalProjection := hVproj
-  refine ⟨stdOrthonormalBasis ℝ V, ?_⟩
-  intro n
-  rcases hVapprox n with ⟨v, hv⟩
-  have hproj_le :
-      dist (x n) (V.starProjection (x n)) ≤ dist (x n) (v : Y) := by
-    rw [dist_eq_norm, dist_eq_norm, V.starProjection_minimal]
-    exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ ↦ norm_nonneg _⟩ v
-  exact lt_of_le_of_lt hproj_le hv
-
-/--
-%%handwave
-name:
-  Sequential Cauchy compactness gives total boundedness
-statement:
-  In a uniform space, if every sequence in a set has a Cauchy subsequence,
-  then the set is totally bounded.
-proof:
-  If a uniform entourage admitted no finite cover of the set, one could choose
-  inductively a sequence whose next term avoids all previous entourage-balls.
-  No subsequence of this sequence can be Cauchy, a contradiction.
--/
-theorem totallyBounded_of_forall_seq_exists_cauchySeq_subseq {Y : Type}
-    [UniformSpace Y] {s : Set Y}
-    (hseq : ∀ y : ℕ → Y, (∀ n : ℕ, y n ∈ s) →
-      ∃ φ : ℕ → ℕ, StrictMono φ ∧ CauchySeq (y ∘ φ)) :
-    TotallyBounded s := by
-  intro V hV
-  by_contra hcover
-  have hfinite :
-      ∀ t : Set Y, t.Finite →
-        ∃ y : Y, y ∈ s ∧ y ∉ ⋃ z ∈ t, {x | (x, z) ∈ V} := by
-    intro t ht
-    by_contra hbad
-    apply hcover
-    refine ⟨t, ht, ?_⟩
-    intro y hy
-    by_contra hy_cover
-    exact hbad ⟨y, hy, hy_cover⟩
-  rcases Set.seq_of_forall_finite_exists hfinite with ⟨y, hy⟩
-  rcases hseq y (fun n ↦ (hy n).1) with ⟨φ, hφ_mono, hφ_cauchy⟩
-  rcases hφ_cauchy.mem_entourage hV with ⟨N, hN⟩
-  have hprev : y (φ N) ∈ y '' Set.Iio (φ (N + 1)) := by
-    refine ⟨φ N, hφ_mono (Nat.lt_succ_self N), rfl⟩
-  have hnot_ball : y (φ (N + 1)) ∉ {x | (x, y (φ N)) ∈ V} := by
-    intro hball
-    exact (hy (φ (N + 1))).2
-      (by
-        simp only [Set.mem_iUnion]
-        exact ⟨y (φ N), ⟨hprev, hball⟩⟩)
-  exact hnot_ball (hN (N + 1) N (Nat.le_succ N) le_rfl)
-
-/--
-%%handwave
-name:
-  Sequential finite nets give finite nets for a family
-statement:
-  Let a family take values in a complete pseudometric space.  If every
-  sequence selected from the family admits finite nets at every positive
-  scale, then the whole family admits finite nets at every positive scale.
-proof:
-  The finite-net hypothesis makes every selected sequence totally bounded.
-  Since the ambient space is complete, the closure of such a sequence is
-  compact, hence every selected sequence has a Cauchy subsequence.  The
-  preceding criterion then gives total boundedness of the whole family.
--/
-theorem finite_net_family_of_sequence_finite_net {ι Y : Type}
-    [PseudoMetricSpace Y] [CompleteSpace Y] (x : ι → Y)
-    (hseq : ∀ f : ℕ → ι, ∀ ε : ℝ, 0 < ε →
-      ∃ t : Set Y, t.Finite ∧
-        Set.range (fun n : ℕ ↦ x (f n)) ⊆ ⋃ y ∈ t, Metric.ball y ε) :
-    ∀ ε : ℝ, 0 < ε →
-      ∃ t : Set Y, t.Finite ∧
-        Set.range x ⊆ ⋃ y ∈ t, Metric.ball y ε := by
-  have htot : TotallyBounded (Set.range x) := by
-    refine totallyBounded_of_forall_seq_exists_cauchySeq_subseq ?_
-    intro y hy
-    choose f hf using hy
-    let z : ℕ → Y := fun n ↦ x (f n)
-    have hz_totallyBounded : TotallyBounded (Set.range z) :=
-      Metric.totallyBounded_iff.2 (hseq f)
-    have hz_compact : IsCompact (closure (Set.range z)) :=
-      hz_totallyBounded.closure.isCompact_of_isClosed isClosed_closure
-    have hz_seqCompact : IsSeqCompact (closure (Set.range z)) :=
-      hz_compact.isSeqCompact
-    have hz_mem : ∀ n : ℕ, z n ∈ closure (Set.range z) :=
-      fun n ↦ subset_closure ⟨n, rfl⟩
-    rcases hz_seqCompact hz_mem with ⟨a, _ha, φ, hφ_mono, hφ_tendsto⟩
-    refine ⟨φ, hφ_mono, ?_⟩
-    have hy_tendsto : Filter.Tendsto (y ∘ φ) Filter.atTop (𝓝 a) := by
-      simpa [z, Function.comp_def, hf] using hφ_tendsto
-    exact hy_tendsto.cauchySeq
-  exact Metric.totallyBounded_iff.mp htot
 
 /--
 %%handwave
@@ -10159,27 +7448,6 @@ private theorem finiteCell_piecewise_sum_apply_of_mem
           · intro hk
             simp at hk
     _ = a k := by simp [Set.indicator_of_mem hx]
-
-/--
-%%handwave
-name:
-  Value of a piecewise sum outside all cells
-statement:
-  If \(x\notin\bigcup_i C_i\), then
-  \(\sum_i a_i\mathbf1_{C_i}(x)=0\).
-proof:
-  Every cell indicator vanishes at \(x\), so every summand is zero.
--/
-private theorem finiteCell_piecewise_sum_apply_of_not_mem_iUnion
-    {α : Type} {m : ℕ} (C : Fin m → Set α) (a : Fin m → ℝ)
-    {x : α} (hx : x ∉ ⋃ i : Fin m, C i) :
-    (∑ i : Fin m, a i * (C i).indicator (fun _ ↦ (1 : ℝ)) x) = 0 := by
-  classical
-  refine Finset.sum_eq_zero fun i _hi ↦ ?_
-  have hnot : x ∉ C i := by
-    intro hxi
-    exact hx (Set.mem_iUnion.mpr ⟨i, hxi⟩)
-  simp [Set.indicator_of_notMem hnot]
 
 /--
 %%handwave
@@ -10441,19 +7709,6 @@ theorem regularCubeOuterAveragingConstant_pos (d : ℕ) :
 /--
 %%handwave
 name:
-  Nonnegativity of the regular-cube averaging constant
-statement:
-  The regular-cube averaging constant is nonnegative in every dimension.
-proof:
-  This follows immediately from [its strict positivity](lean:regularCubeOuterAveragingConstant_pos).
--/
-theorem regularCubeOuterAveragingConstant_nonneg (d : ℕ) :
-    0 ≤ regularCubeOuterAveragingConstant d :=
-  (regularCubeOuterAveragingConstant_pos d).le
-
-/--
-%%handwave
-name:
   Regular-cube averaging constant as an extended nonnegative real
 statement:
   The dimension-dependent regular-cube averaging constant may be used as an
@@ -10675,30 +7930,6 @@ theorem regularCubeOuterPiecewiseAverage_apply_of_mem
       (fun i : Fin m ↦ (D i : Set (Fin d → ℝ)))
       (fun i : Fin m ↦ regularCubeOuterAverageCoeff P u hmemP D n i)
       hD_disjoint hx
-
-/--
-%%handwave
-name:
-  The outer box piecewise average vanishes off the box union
-statement:
-  Outside the union of the finite box family, the piecewise average is zero.
-proof:
-  All box indicators vanish at such a point.
--/
-theorem regularCubeOuterPiecewiseAverage_apply_of_not_mem_iUnion
-    {d : ℕ} {P : Set (Fin d → ℝ)}
-    (u : ℕ → (Fin d → ℝ) → ℝ)
-    (hmemP : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict P))
-    {m : ℕ} (D : Fin m → BoxIntegral.Box (Fin d))
-    (n : ℕ) {x : Fin d → ℝ}
-    (hx : x ∉ ⋃ i : Fin m, (D i : Set (Fin d → ℝ))) :
-    regularCubeOuterPiecewiseAverage P u hmemP D n x = 0 := by
-  classical
-  simpa [regularCubeOuterPiecewiseAverage] using
-    finiteCell_piecewise_sum_apply_of_not_mem_iUnion
-      (fun i : Fin m ↦ (D i : Set (Fin d → ℝ)))
-      (fun i : Fin m ↦ regularCubeOuterAverageCoeff P u hmemP D n i)
-      hx
 
 /--
 %%handwave
@@ -10944,22 +8175,6 @@ theorem regularCubeBoxDisplacementSlice_subset_box
 /--
 %%handwave
 name:
-  A nonempty displacement slice determines a difference-body displacement
-statement:
-  If \(x\) belongs to the displacement slice of a box for displacement \(h\),
-  then \(h\) belongs to the difference body of the box.
-proof:
-  A point (x) in the slice satisfies both (xin B) and (x+hin B).  Thus (h=(x+h)-x) is a difference of two points of (B).
--/
-theorem regularCubeBoxDisplacementSlice_mem_differenceBody
-    {d : ℕ} (D : BoxIntegral.Box (Fin d)) {h x : Fin d → ℝ}
-    (hx : x ∈ regularCubeBoxDisplacementSlice D h) :
-    h ∈ regularCubeBoxDifferenceBody D := by
-  exact ⟨x, hx.1, hx.2⟩
-
-/--
-%%handwave
-name:
   Displacement slices inherit disjointness
 statement:
   If two boxes are disjoint, then their displacement slices for the same
@@ -11097,76 +8312,6 @@ theorem regularCubeBoxDifferenceBody_subset_Icc
 /--
 %%handwave
 name:
-  Difference bodies of regular grid boxes lie in one centered box
-statement:
-  In a regular grid family with mesh \(\ell\), every box difference body is
-  contained in the centered coordinate box with side bounds \([-\ell,\ell]\).
-proof:
-  If \(x\) and \(x+h\) are in the same grid box, then each coordinate of
-  \(h\) lies between minus the common side length and plus the common side
-  length.
--/
-theorem RegularGridBoxFamily.differenceBody_subset_common_box
-    {d m : ℕ} {D : Fin m → BoxIntegral.Box (Fin d)}
-    (hD : RegularGridBoxFamily D) :
-    ∃ ℓ : ℝ, 0 < ℓ ∧ ∀ i : Fin m,
-      regularCubeBoxDifferenceBody (D i) ⊆
-        Set.Icc (fun _ : Fin d ↦ -ℓ) (fun _ : Fin d ↦ ℓ) := by
-  rcases hD with ⟨ℓ, hℓ, hside, _a, _hgrid⟩
-  refine ⟨ℓ, hℓ, ?_⟩
-  intro i h hh
-  have hI := regularCubeBoxDifferenceBody_subset_Icc (D i) hh
-  constructor
-  · intro j
-    have hsideij : (D i).upper j - (D i).lower j = ℓ := hside i j
-    have hleft : (D i).lower j - (D i).upper j = -ℓ := by linarith
-    simpa [hleft] using hI.1 j
-  · intro j
-    have hsideij : (D i).upper j - (D i).lower j = ℓ := hside i j
-    simpa [hsideij] using hI.2 j
-
-/--
-%%handwave
-name:
-  The common displacement box has controlled volume
-statement:
-  In a regular grid family with mesh \(\ell\), the centered coordinate box
-  \([-\ell,\ell]^d\) has Lebesgue measure \(2^d\) times the measure of any
-  grid box.
-proof:
-  The centered box has side length \(2\ell\) in every coordinate, while each
-  grid box has side length \(\ell\) in every coordinate.  The product formula
-  for rectangular boxes gives the result.
--/
-theorem RegularGridBoxFamily.commonBox_volume_eq_two_pow_mul
-    {d m : ℕ} {D : Fin m → BoxIntegral.Box (Fin d)}
-    (hD : RegularGridBoxFamily D) (i : Fin m) :
-    ∃ ℓ : ℝ, 0 < ℓ ∧
-      MeasureTheory.volume (Set.Icc (fun _ : Fin d ↦ -ℓ) (fun _ : Fin d ↦ ℓ)) =
-        ((2 : ℝ≥0∞) ^ d) *
-          MeasureTheory.volume (D i : Set (Fin d → ℝ)) := by
-  rcases hD with ⟨ℓ, hℓ, hside, _a, _hgrid⟩
-  refine ⟨ℓ, hℓ, ?_⟩
-  rw [Real.volume_Icc_pi, BoxIntegral.Box.coe_eq_pi, Real.volume_pi_Ioc]
-  rw [show ℓ - -ℓ = 2 * ℓ by ring]
-  simp_rw [show ∀ j : Fin d, (D i).upper j - (D i).lower j = ℓ by
-    intro j
-    exact hside i j]
-  rw [show
-      (∏ j : Fin d, ENNReal.ofReal (2 * ℓ)) =
-        (∏ _j : Fin d, (2 : ℝ≥0∞)) *
-          ∏ j : Fin d, ENNReal.ofReal ℓ by
-    simp_rw [ENNReal.ofReal_mul (by norm_num : 0 ≤ (2 : ℝ))]
-    rw [Finset.prod_mul_distrib]
-    congr 1
-    refine Finset.prod_congr rfl ?_
-    intro j _hj
-    norm_num]
-  simp [Finset.prod_const, Fintype.card_fin]
-
-/--
-%%handwave
-name:
   A regular grid has a common controlled displacement box
 statement:
   For any box in a regular grid family, there is one measurable centered
@@ -11224,50 +8369,6 @@ theorem RegularGridBoxFamily.exists_common_differenceBody_volume_le
   · intro j
     have hsidekj : (D k).upper j - (D k).lower j = ℓ := hside k j
     simpa [B, hsidekj] using hI.2 j
-
-/--
-%%handwave
-name:
-  The difference body of a box has controlled volume
-statement:
-  The Lebesgue measure of the difference body of a box in \(\mathbb R^d\) is
-  at most \(2^d\) times the measure of the box.
-proof:
-  The difference body lies in the centered closed box with doubled side
-  lengths.  The volume of a rectangular product is the product of its side
-  lengths, so doubling each side multiplies the volume by \(2^d\).
--/
-theorem regularCubeBoxDifferenceBody_volume_le
-    {d : ℕ} (D : BoxIntegral.Box (Fin d)) :
-    MeasureTheory.volume (regularCubeBoxDifferenceBody D) ≤
-      ((2 : ℝ≥0∞) ^ d) *
-        MeasureTheory.volume (D : Set (Fin d → ℝ)) := by
-  calc
-    MeasureTheory.volume (regularCubeBoxDifferenceBody D) ≤
-        MeasureTheory.volume (Set.Icc
-          (fun j : Fin d ↦ D.lower j - D.upper j)
-          (fun j : Fin d ↦ D.upper j - D.lower j)) := by
-          exact measure_mono (regularCubeBoxDifferenceBody_subset_Icc D)
-    _ = ((2 : ℝ≥0∞) ^ d) *
-          MeasureTheory.volume (D : Set (Fin d → ℝ)) := by
-          rw [Real.volume_Icc_pi, BoxIntegral.Box.coe_eq_pi, Real.volume_pi_Ioc]
-          simp_rw [show ∀ j : Fin d,
-              D.upper j - D.lower j - (D.lower j - D.upper j) =
-                2 * (D.upper j - D.lower j) by
-            intro j
-            ring]
-          rw [show
-              (∏ i : Fin d,
-                  ENNReal.ofReal (2 * (D.upper i - D.lower i))) =
-                (∏ _i : Fin d, (2 : ℝ≥0∞)) *
-                  ∏ i : Fin d, ENNReal.ofReal (D.upper i - D.lower i) by
-            simp_rw [ENNReal.ofReal_mul (by norm_num : 0 ≤ (2 : ℝ))]
-            rw [Finset.prod_mul_distrib]
-            congr 1
-            refine Finset.prod_congr rfl ?_
-            intro i _hi
-            norm_num]
-          simp [Finset.prod_const, Fintype.card_fin]
 
 /--
 %%handwave
@@ -11810,108 +8911,6 @@ theorem regularCubeBoxPairwiseOscillation_le_displacementSlice_lintegral_transla
               (fun x ↦ ‖u n (x + h) - u n x‖ₑ ^ (2 : ℝ)) x
             ∂MeasureTheory.volume ∂MeasureTheory.volume := by
           rfl
-
-/--
-%%handwave
-name:
-  One-box pairwise oscillation is bounded by the translation modulus
-statement:
-  If every displacement allowed by the diameter of a box has squared
-  \(L^2(P)\)-translation integral at most \(\eta^2\), then the normalized
-  pairwise squared oscillation on that box is at most \(2^d\eta^2\).
-proof:
-  Apply the displacement form of the pairwise oscillation.  On the difference
-  body of the box all displacements are shorter than the prescribed scale,
-  so the inner spatial integral is bounded by the translation modulus.  The
-  difference body has volume at most \(2^d\) times the box volume, and the
-  normalization by the box volume cancels.
--/
-theorem regularCubeBoxPairwiseOscillation_le_two_pow_mul_sq_lintegral_translation_bound
-    {d : ℕ} {P : Set (Fin d → ℝ)}
-    (u : ℕ → (Fin d → ℝ) → ℝ)
-    (hmemP : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict P))
-    {η : ℝ≥0∞} {δ : ℝ}
-    {m : ℕ} (D : Fin m → BoxIntegral.Box (Fin d))
-    (hD_subsetP : ∀ i : Fin m, (D i : Set (Fin d → ℝ)) ⊆ P)
-    (hD_posP : ∀ i : Fin m, 0 < (MeasureTheory.volume.restrict P)
-      (D i : Set (Fin d → ℝ)))
-    (hD_finiteP : ∀ i : Fin m, (MeasureTheory.volume.restrict P)
-      (D i : Set (Fin d → ℝ)) ≠ (⊤ : ℝ≥0∞))
-    (hD_diam : ∀ i : Fin m, ∀ x ∈ (D i : Set (Fin d → ℝ)),
-      ∀ y ∈ (D i : Set (Fin d → ℝ)), dist x y < δ)
-    (htranslationSq :
-      ∀ h : Fin d → ℝ, ‖h‖ < δ →
-        ∀ n : ℕ,
-          ∫⁻ z in P, ‖u n (z + h) - u n z‖ₑ ^ (2 : ℝ)
-            ∂MeasureTheory.volume ≤ η ^ (2 : ℝ)) :
-    ∀ n : ℕ, ∀ i : Fin m,
-      regularCubeBoxPairwiseOscillation u D n i ≤
-        ((2 : ℝ≥0∞) ^ d) * η ^ (2 : ℝ) := by
-  intro n i
-  let s : Set (Fin d → ℝ) := (D i : Set (Fin d → ℝ))
-  let B : Set (Fin d → ℝ) := regularCubeBoxDifferenceBody (D i)
-  have hs_meas : MeasurableSet s := (D i).measurableSet_coe
-  have hmeasure :
-      (MeasureTheory.volume.restrict P) s = MeasureTheory.volume s := by
-    rw [Measure.restrict_apply hs_meas]
-    have h_inter : s ∩ P = s := Set.inter_eq_left.mpr (hD_subsetP i)
-    rw [h_inter]
-  have hs_pos : MeasureTheory.volume s ≠ 0 := by
-    have hs_pos' : 0 < MeasureTheory.volume s := by
-      rw [← hmeasure]
-      simpa [s] using hD_posP i
-    exact ne_of_gt hs_pos'
-  have hs_finite : MeasureTheory.volume s ≠ (⊤ : ℝ≥0∞) := by
-    rw [← hmeasure]
-    simpa [s] using hD_finiteP i
-  have hB_translate :
-      ∫⁻ h in B,
-          ∫⁻ x in P, ‖u n (x + h) - u n x‖ₑ ^ (2 : ℝ)
-            ∂MeasureTheory.volume ∂MeasureTheory.volume ≤
-        ∫⁻ _h in B, η ^ (2 : ℝ) ∂MeasureTheory.volume := by
-    refine setLIntegral_mono measurable_const ?_
-    intro h hhB
-    have hh_small : ‖h‖ < δ := by
-      have hball :=
-        regularCubeBoxDifferenceBody_subset_ball_of_diameter
-          (D i) (hD_diam i) hhB
-      simpa [Metric.mem_ball, dist_eq_norm] using hball
-    exact htranslationSq h hh_small n
-  have hB_volume :
-      MeasureTheory.volume B ≤
-        ((2 : ℝ≥0∞) ^ d) * MeasureTheory.volume s := by
-    simpa [B, s] using regularCubeBoxDifferenceBody_volume_le (D i)
-  calc
-    regularCubeBoxPairwiseOscillation u D n i
-        ≤ (MeasureTheory.volume s)⁻¹ *
-            ∫⁻ h in B,
-              ∫⁻ x in P, ‖u n (x + h) - u n x‖ₑ ^ (2 : ℝ)
-                ∂MeasureTheory.volume ∂MeasureTheory.volume := by
-          simpa [s, B] using
-            regularCubeBoxPairwiseOscillation_le_differenceBody_lintegral_translation
-              u hmemP D hD_subsetP n i
-    _ ≤ (MeasureTheory.volume s)⁻¹ *
-          ∫⁻ _h in B, η ^ (2 : ℝ) ∂MeasureTheory.volume := by
-          exact mul_le_mul_right hB_translate _
-    _ = (MeasureTheory.volume s)⁻¹ *
-          (η ^ (2 : ℝ) * MeasureTheory.volume B) := by
-          rw [setLIntegral_const]
-    _ ≤ (MeasureTheory.volume s)⁻¹ *
-          (η ^ (2 : ℝ) *
-            (((2 : ℝ≥0∞) ^ d) * MeasureTheory.volume s)) := by
-          exact mul_le_mul_right (mul_le_mul_right hB_volume _) _
-    _ = ((2 : ℝ≥0∞) ^ d) * η ^ (2 : ℝ) := by
-          calc
-            (MeasureTheory.volume s)⁻¹ *
-                (η ^ (2 : ℝ) *
-                  (((2 : ℝ≥0∞) ^ d) * MeasureTheory.volume s))
-                = (η ^ (2 : ℝ) * ((2 : ℝ≥0∞) ^ d)) *
-                    (MeasureTheory.volume s)⁻¹ * MeasureTheory.volume s := by
-                  ac_rfl
-            _ = η ^ (2 : ℝ) * ((2 : ℝ≥0∞) ^ d) := by
-                  exact ENNReal.inv_mul_cancel_right hs_pos hs_finite
-            _ = ((2 : ℝ≥0∞) ^ d) * η ^ (2 : ℝ) := by
-                  rw [mul_comm]
 
 /--
 %%handwave
@@ -14118,37 +11117,6 @@ theorem euclideanKolmogorovRiesz_localRegularCube_compact_containment
 /--
 %%handwave
 name:
-  Local regular-cube Kolmogorov-Riesz subsequence compactness
-statement:
-  Under the local regular-cube Frechet-Kolmogorov hypotheses on nested
-  compact sets \(K\subset\operatorname{int} P\), the sequence has a
-  subsequence converging strongly in \(L^2(K)\).
-proof:
-  First place all \(L^2(K)\)-classes in one compact subset by the local
-  regular-cube compact-containment theorem.  Then apply sequential
-  compactness of compact subsets of \(L^2(K)\).
--/
-theorem euclideanKolmogorovRiesz_localRegularCube_subsequence_on_compact
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K P : Set H} (hK : IsCompact K) (hP : IsCompact P) (hKP : K ⊆ interior P)
-    (u : ℕ → H → ℝ)
-    (hmemP : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict P))
-    (hmemK : ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict K))
-    (hboundedP : ∃ C : ℝ≥0∞, C < ⊤ ∧ ∀ n : ℕ,
-      eLpNorm (u n) 2 (MeasureTheory.volume.restrict P) ≤ C)
-    (htranslationP : EuclideanL2TranslationTightOnCompact P u) :
-    ∃ (uLim : H → ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2Scalar K (fun n z ↦ u (φ n) z) uLim := by
-  rcases euclideanKolmogorovRiesz_localRegularCube_compact_containment
-      hK hP hKP u hmemP hmemK hboundedP htranslationP with ⟨S, hS, hS_mem⟩
-  exact euclideanL2CompactSet_subsequence_on_compact u hmemK S hS hS_mem
-
-/--
-%%handwave
-name:
   Coordinate functional from a finite-dimensional Hilbert target
 statement:
   A finite-dimensional Hilbert target has orthonormal coordinate functionals
@@ -14331,26 +11299,6 @@ noncomputable def euclideanTargetCoordinateDerivative {H E : Type}
 /--
 %%handwave
 name:
-  Coordinate derivative of a vector-valued differential
-statement:
-  The \(i\)-th scalar coordinate derivative at \(z\) in direction \(v\) is
-  the \(i\)-th orthonormal coordinate of \(du(z)v\).
-proof:
-  This is the definition of the coordinate derivative.
--/
-@[simp]
-theorem euclideanTargetCoordinateDerivative_apply {H E : Type}
-    [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    (i : Fin (Module.finrank ℝ E)) (du : H → H →L[ℝ] E)
-    (z v : H) :
-    euclideanTargetCoordinateDerivative i du z v =
-      euclideanTargetCoordinateMap E i (du z v) := by
-  rfl
-
-/--
-%%handwave
-name:
   Norm bound for a scalar coordinate derivative
 statement:
   If \(A:H\to E\) and \(\lambda_i\) is an orthonormal coordinate functional,
@@ -14509,101 +11457,6 @@ theorem euclideanCompact_exists_compact_between_interior
 /--
 %%handwave
 name:
-  Scalar Euclidean Rellich compactness
-statement:
-  Let \(K\subset\operatorname{int} Q\subset Q\subset\Omega\), with \(K,Q\)
-  compact and \(\Omega\) open in a finite-dimensional real normed space.  If
-  \(u_n\) have weak derivatives \(du_n\) on \(\Omega\) and are uniformly
-  bounded in \(W^{1,2}(Q)\), then a subsequence of \(u_n\) converges strongly
-  in \(L^2(K)\).
-proof:
-  Choose an intermediate compact \(P\) with
-  \(K\subset\operatorname{int}P\subset P\subset\operatorname{int}Q\).  The
-  Sobolev bound on \(Q\) gives [translation tightness on \(P\)](lean:JJMath.Uniformization.scalarWeakSobolevBound_translation_tight_on_compact).
-  Then apply [local regular-cube Kolmogorov--Riesz compactness](lean:JJMath.Uniformization.euclideanKolmogorovRiesz_localRegularCube_subsequence_on_compact)
-  to the restrictions from \(P\) to \(K\).
--/
-theorem scalarEuclideanRellichKondrachov_subsequence_on_compact
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {K Q Ω : Set H} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQΩ : Q ⊆ Ω) (hQ : IsCompact Q) (hΩ_open : IsOpen Ω)
-    (u : ℕ → H → ℝ) (du : ℕ → H → H →L[ℝ] ℝ)
-    (hweak : ∀ n : ℕ, IsWeakDerivativeOnEuclideanRegionScalar Ω (u n) (du n))
-    (hbounded : BoundedInEuclideanLocalSobolevH1Scalar Q u du) :
-    ∃ (uLim : H → ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2Scalar K (fun n z ↦ u (φ n) z) uLim := by
-  rcases euclideanCompact_exists_compact_between_interior hK hKQ with
-    ⟨P, hP, hKP, hPQ⟩
-  have hPQ_set : P ⊆ Q := hPQ.trans interior_subset
-  have hboundedP : BoundedInEuclideanLocalSobolevH1Scalar P u du :=
-    BoundedInEuclideanLocalSobolevH1WithValues.mono_set hPQ_set hbounded
-  have hvalue_memP :
-      ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict P) := by
-    intro n
-    exact BoundedInEuclideanLocalSobolevH1WithValues.value_memLp hboundedP n
-  have hvalue_boundP :
-      ∃ C : ℝ≥0∞, C < ⊤ ∧ ∀ n : ℕ,
-        eLpNorm (u n) 2 (MeasureTheory.volume.restrict P) ≤ C := by
-    exact BoundedInEuclideanLocalSobolevH1WithValues.value_eLpNorm_bound hboundedP
-  have hKP_set : K ⊆ P := hKP.trans interior_subset
-  have hμKP :
-      MeasureTheory.volume.restrict K ≤ MeasureTheory.volume.restrict P :=
-    Measure.restrict_mono hKP_set le_rfl
-  have hvalue_mem :
-      ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict K) := by
-    intro n
-    exact (hvalue_memP n).mono_measure hμKP
-  have htranslation :
-      EuclideanL2TranslationTightOnCompact P u :=
-    scalarWeakSobolevBound_translation_tight_on_compact
-      hP hPQ hQΩ hQ hΩ_open u du hweak hbounded
-  exact euclideanKolmogorovRiesz_localRegularCube_subsequence_on_compact
-    hK hP hKP u hvalue_memP hvalue_mem hvalue_boundP htranslation
-
-/--
-%%handwave
-name:
-  Euclidean Rellich compactness for one target coordinate
-statement:
-  Under the scalar Rellich hypotheses \(K\subset\operatorname{int}Q\subset
-  Q\subset\Omega\), let \(u_n:\Omega\to E\) be uniformly bounded in
-  \(W^{1,2}(Q;E)\), with \(E\) finite-dimensional Hilbert.  For each
-  orthonormal coordinate functional \(\ell_i:E\to\mathbb R\), the scalar
-  sequence \(\ell_i\circ u_n\) has a subsequence converging strongly in
-  \(L^2(K)\).
-proof:
-  Use [weak derivatives pass to target coordinates](lean:JJMath.Uniformization.euclideanWeakDerivative_coordinate)
-  and [Sobolev bounds pass to target coordinates](lean:JJMath.Uniformization.euclideanLocalSobolevBound_coordinate),
-  then apply [scalar Euclidean Rellich compactness](lean:JJMath.Uniformization.scalarEuclideanRellichKondrachov_subsequence_on_compact).
--/
-theorem euclideanRellichKondrachov_coordinate_subsequence_on_compact
-    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    [FiniteDimensional ℝ H] [FiniteDimensional ℝ E]
-    {K Q Ω : Set H} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQΩ : Q ⊆ Ω) (hQ : IsCompact Q) (hΩ_open : IsOpen Ω)
-    (u : ℕ → H → E) (du : ℕ → H → H →L[ℝ] E)
-    (hweak : ∀ n : ℕ, IsWeakDerivativeOnEuclideanRegionWithValues Ω (u n) (du n))
-    (hbounded : BoundedInEuclideanLocalSobolevH1WithValues Q u du)
-    (i : Fin (Module.finrank ℝ E)) :
-    ∃ (uLim : H → ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2Scalar K
-          (fun n z ↦ euclideanTargetCoordinateFunction i (u (φ n)) z) uLim := by
-  exact scalarEuclideanRellichKondrachov_subsequence_on_compact
-    hK hKQ hQΩ hQ hΩ_open
-    (fun n ↦ euclideanTargetCoordinateFunction i (u n))
-    (fun n ↦ euclideanTargetCoordinateDerivative i (du n))
-    (fun n ↦ euclideanWeakDerivative_coordinate i (hweak n))
-    (euclideanLocalSobolevBound_coordinate i hbounded)
-
-/--
-%%handwave
-name:
   Euclidean Rellich compact containment for finite-dimensional Hilbert targets
 statement:
   Let \(K\subset\operatorname{int}Q\subset Q\subset\Omega\), with \(K,Q\)
@@ -14708,105 +11561,6 @@ theorem euclideanRellichKondrachov_compact_containment_on_compact
         euclideanTargetCoordinateReconstructionLp_toLp
           (H := H) (E := E) μK (hmemK n)
     exact ⟨ctuple, hctuple_mem, hR_eq⟩
-
-/--
-%%handwave
-name:
-  Euclidean Rellich compactness for finite-dimensional Hilbert targets
-statement:
-  Let \(K\subset\operatorname{int}Q\subset Q\subset\Omega\), with \(K,Q\)
-  compact and \(\Omega\) open in a finite-dimensional real normed space.  If
-  \(E\) is a finite-dimensional Hilbert space and \(u_n:\Omega\to E\) are
-  uniformly bounded in \(W^{1,2}(Q;E)\), then a subsequence converges strongly
-  in \(L^2(K;E)\).
-proof:
-  First put the \(L^2(K;E)\)-classes in one compact subset by [Euclidean Rellich compact containment for finite-dimensional Hilbert targets](lean:JJMath.Uniformization.euclideanRellichKondrachov_compact_containment_on_compact).
-  Sequential compactness of that compact subset gives a strongly
-  \(L^2(K;E)\)-convergent subsequence.
--/
-theorem euclideanRellichKondrachov_subsequence_on_compact
-    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
-    [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    [FiniteDimensional ℝ H] [FiniteDimensional ℝ E]
-    {K Q Ω : Set H} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQΩ : Q ⊆ Ω) (hQ : IsCompact Q) (hΩ_open : IsOpen Ω)
-    (u : ℕ → H → E) (du : ℕ → H → H →L[ℝ] E)
-    (hweak : ∀ n : ℕ, IsWeakDerivativeOnEuclideanRegionWithValues Ω (u n) (du n))
-    (hbounded : BoundedInEuclideanLocalSobolevH1WithValues Q u du) :
-    ∃ (uLim : H → E) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInEuclideanLocalL2WithValues K (fun n z ↦ u (φ n) z) uLim := by
-  have hKQ_set : K ⊆ Q := hKQ.trans interior_subset
-  have hμKQ :
-      MeasureTheory.volume.restrict K ≤ MeasureTheory.volume.restrict Q :=
-    Measure.restrict_mono hKQ_set le_rfl
-  have hmemK :
-      ∀ n : ℕ, MemLp (u n) 2 (MeasureTheory.volume.restrict K) := by
-    intro n
-    exact (BoundedInEuclideanLocalSobolevH1WithValues.value_memLp hbounded n).mono_measure hμKQ
-  rcases euclideanRellichKondrachov_compact_containment_on_compact
-      hK hKQ hQΩ hQ hΩ_open u du hweak hbounded hmemK with
-    ⟨S, hS, hS_mem⟩
-  exact euclideanL2CompactSet_subsequence_on_compact_with_values u hmemK S hS hS_mem
-
-/--
-%%handwave
-name:
-  Compact containment from total boundedness in \(L^2\)
-statement:
-  If the \(L^2(K;E)\)-classes of a sequence form a totally bounded subset,
-  then they all lie in one compact subset of \(L^2(K;E)\).
-proof:
-  Take the closure of the range.  The closure of a totally bounded subset of
-  the complete \(L^2\) space is compact, and it contains the original range.
--/
-theorem l2TotallyBoundedRange_compact_containment_on_set_with_values
-    {X E : Type} [MeasurableSpace X] [NormedAddCommGroup E] [CompleteSpace E]
-    {μ : Measure X} {K : Set X}
-    (u : ℕ → X → E) (hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K))
-    (htb : TotallyBounded (Set.range fun n : ℕ => (hmemK n).toLp (u n))) :
-    ∃ S : Set (Lp E 2 (μ.restrict K)),
-      IsCompact S ∧ ∀ n : ℕ, (hmemK n).toLp (u n) ∈ S := by
-  let x : ℕ → Lp E 2 (μ.restrict K) := fun n ↦ (hmemK n).toLp (u n)
-  let S : Set (Lp E 2 (μ.restrict K)) := closure (Set.range x)
-  have hx_totallyBounded : TotallyBounded (Set.range x) := by
-    simpa [x] using htb
-  have hS_totallyBounded : TotallyBounded S := by
-    simpa [S] using hx_totallyBounded.closure
-  have hS_compact : IsCompact S :=
-    hS_totallyBounded.isCompact_of_isClosed (by simp [S])
-  refine ⟨S, hS_compact, ?_⟩
-  intro n
-  exact subset_closure ⟨n, rfl⟩
-
-/--
-%%handwave
-name:
-  Sequential Cauchy compactness gives total boundedness of a range
-statement:
-  If every subsequence of a family in a uniform space has a Cauchy
-  subsubsequence, then the range of the family is totally bounded.
-proof:
-  Apply the sequential criterion for total boundedness.  A sequence taking
-  values in the range is represented by a sequence of indices; the assumed
-  Cauchy subsubsequence of those indices gives a Cauchy subsequence of the
-  original sequence.
--/
-theorem totallyBounded_range_of_forall_subsequence_cauchy
-    {ι Y : Type} [UniformSpace Y] (x : ι → Y)
-    (hseq : ∀ f : ℕ → ι,
-      ∃ φ : ℕ → ℕ, StrictMono φ ∧ CauchySeq (fun n : ℕ ↦ x (f (φ n)))) :
-    TotallyBounded (Set.range x) := by
-  refine totallyBounded_of_forall_seq_exists_cauchySeq_subseq ?_
-  intro y hy
-  choose f hf using hy
-  rcases hseq f with ⟨φ, hφ, hφ_cauchy⟩
-  refine ⟨φ, hφ, ?_⟩
-  have hEq : y ∘ φ = fun n : ℕ ↦ x (f (φ n)) := by
-    funext n
-    exact (hf (φ n)).symm
-  simpa [hEq] using hφ_cauchy
 
 /--
 %%handwave
@@ -17607,147 +14361,6 @@ theorem localRellich_chartwise_cauchy_subsequence_of_memLp
 /--
 %%handwave
 name:
-  Chartwise Euclidean total boundedness for manifold \(L^2\)-classes
-statement:
-  Let \(M\) be a finite-dimensional Riemannian manifold modeled by the
-  ordinary real identity model, equipped with a smooth
-  positive measure, let \(E\) be a finite-dimensional Hilbert space, and let
-  \(K\subset\operatorname{int}Q\subset Q\subset U\), with \(K,Q\) compact and
-  \(U\) open.  Suppose the \(E\)-valued maps \(u_n\) are locally Sobolev on
-  \(U\), uniformly \(W^{1,2}\)-bounded on \(Q\), and define classes in
-  \(L^2(K;E)\).  Then these \(L^2(K;E)\)-classes form a totally bounded
-  subset of \(L^2(K;E)\).
-proof:
-  Use the sequential criterion for total boundedness.  Every selected
-  subsequence has [a Cauchy subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp),
-  so the range of the \(L^2(K;E)\)-classes is totally bounded.
--/
-theorem localRellich_chartwise_totallyBounded_range_of_memLp
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K Q U : Set X} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → E) (du : ℕ → ManifoldDifferentialField I X E)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K)) :
-    TotallyBounded (Set.range fun n : ℕ => (hmemK n).toLp (u n)) := by
-  exact
-    totallyBounded_range_of_forall_subsequence_cauchy
-      (fun n : ℕ ↦ (hmemK n).toLp (u n))
-      (fun f ↦
-        localRellich_chartwise_cauchy_subsequence_of_memLp
-          hμ hK hKQ hQU hQ hU_open u du hlocal hbounded hmemK f)
-
-/--
-%%handwave
-name:
-  Chartwise Euclidean compact containment for manifold \(L^2\)-classes
-statement:
-  Let \(M\) be a finite-dimensional Riemannian manifold modeled by the
-  ordinary real identity model, equipped with a smooth
-  positive measure, let \(E\) be a finite-dimensional Hilbert space, and let
-  \(K\subset\operatorname{int}Q\subset Q\subset U\), with \(K,Q\) compact and
-  \(U\) open.  Suppose the \(E\)-valued maps \(u_n\) are locally Sobolev on
-  \(U\), uniformly \(W^{1,2}\)-bounded on \(Q\), and define classes in
-  \(L^2(K;E)\).  Then these \(L^2(K;E)\)-classes lie in one compact subset of
-  \(L^2(K;E)\).
-proof:
-  First prove that [the \(L^2(K;E)\)-classes form a totally bounded set](lean:JJMath.Uniformization.localRellich_chartwise_totallyBounded_range_of_memLp)
-  by the chartwise Euclidean Rellich argument.  Then take the closure of this
-  range in \(L^2(K;E)\); total boundedness and completeness make that closure
-  compact.
--/
-theorem localRellich_chartwise_compact_containment_of_memLp
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K Q U : Set X} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → E) (du : ℕ → ManifoldDifferentialField I X E)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K)) :
-    ∃ S : Set (Lp E 2 (μ.restrict K)),
-      IsCompact S ∧ ∀ n : ℕ, (hmemK n).toLp (u n) ∈ S := by
-  exact l2TotallyBoundedRange_compact_containment_on_set_with_values
-    u hmemK
-    (localRellich_chartwise_totallyBounded_range_of_memLp
-      hμ hK hKQ hQU hQ hU_open u du hlocal hbounded hmemK)
-
-/--
-%%handwave
-name:
-  Chartwise Euclidean compact containment globalizes on manifolds
-statement:
-  Let \(M\) be a finite-dimensional Riemannian manifold modeled by the
-  ordinary real identity model, equipped with a smooth
-  positive measure, let \(E\) be a finite-dimensional Hilbert space, and let
-  \(K\subset\operatorname{int}Q\subset Q\subset U\), with \(K,Q\) compact and
-  \(U\) open.  If \(u_n:U\to E\) are uniformly bounded in \(W^{1,2}(Q;E)\),
-  then their \(L^2(K;E)\)-classes are defined and all lie in one compact
-  subset of \(L^2(K;E)\).
-proof:
-  First prove that every selected subsequence has [a Cauchy subsubsequence](lean:JJMath.Uniformization.localRellich_chartwise_cauchy_subsequence_of_memLp)
-  in \(L^2(K;E)\).  The sequential criterion gives total boundedness of the
-  range of the \(L^2(K;E)\)-classes, and its closure is compact because
-  \(L^2(K;E)\) is complete.
--/
-theorem localRellich_compact_containment_from_chartwise_euclidean
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K Q U : Set X} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → E) (du : ℕ → ManifoldDifferentialField I X E)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du) :
-    ∃ (hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K))
-      (S : Set (Lp E 2 (μ.restrict K))),
-        IsCompact S ∧ ∀ n : ℕ, (hmemK n).toLp (u n) ∈ S := by
-  have hKU : K ⊆ U := hKQ.trans (interior_subset.trans hQU)
-  have hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K) := by
-    intro n
-    exact ((hlocal n).2 K hK hKU).1.memLp_trivial
-  rcases localRellich_chartwise_compact_containment_of_memLp
-      hμ hK hKQ hQU hQ hU_open u du hlocal hbounded hmemK with
-    ⟨S, hS, hS_mem⟩
-  exact ⟨hmemK, S, hS, hS_mem⟩
-
-/--
-%%handwave
-name:
   Chartwise Euclidean Rellich globalizes on manifolds
 statement:
   Let \(M\) be a finite-dimensional Riemannian manifold modeled by the
@@ -17843,60 +14456,6 @@ theorem localRellich_subsequence_on_compact
   exact
     localRellich_subsequence_on_compact_from_chartwise_euclidean
       hμ hK hKQ hQU hQ hU_open u du hlocal hbounded
-
-/--
-%%handwave
-name:
-  Local Rellich compactness with an \(L^2\)-representative
-statement:
-  Under the local Rellich hypotheses, one can choose the subsequential limit
-  as an honest \(L^2\) representative on the compact set where convergence is
-  asserted.
-proof:
-  Repeat the final Rellich extraction.  The Cauchy subsequence converges in
-  the complete \(L^2(K)\) space to an \(L^2\)-class, and the chosen
-  representative of that class comes with square-integrability on \(K\).
--/
-theorem localRellich_subsequence_on_compact_with_memLp
-    {H X E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [IsManifold I 1 X]
-    [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X E)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X E)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K Q U : Set X} (hK : IsCompact K) (hKQ : K ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → E) (du : ℕ → ManifoldDifferentialField I X E)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du) :
-    ∃ (uLim : X → E) (φ : ℕ → ℕ),
-      MemLp uLim 2 (μ.restrict K) ∧ StrictMono φ ∧
-        TendstoInLocalL2OnManifoldWithValues μ K (fun n x ↦ u (φ n) x) uLim := by
-  have hKU : K ⊆ U := hKQ.trans (interior_subset.trans hQU)
-  have hmemK : ∀ n : ℕ, MemLp (u n) 2 (μ.restrict K) := by
-    intro n
-    exact ((hlocal n).2 K hK hKU).1.memLp_trivial
-  rcases localRellich_chartwise_cauchy_subsequence_of_memLp
-      hμ hK hKQ hQU hQ hU_open u du hlocal hbounded hmemK (fun n : ℕ ↦ n) with
-    ⟨φ, hφ, hφ_cauchy⟩
-  rcases cauchySeq_tendsto_of_complete hφ_cauchy with ⟨a, ha⟩
-  refine ⟨(a : X → E), φ, Lp.memLp a, hφ, ?_⟩
-  dsimp [TendstoInLocalL2OnManifoldWithValues]
-  have ha' :
-      Filter.Tendsto (fun n : ℕ ↦ (hmemK (φ n)).toLp (u (φ n)))
-        Filter.atTop (𝓝 ((Lp.memLp a).toLp (a : X → E))) := by
-    simpa [Lp.toLp_coeFn] using ha
-  exact (Lp.tendsto_Lp_iff_tendsto_eLpNorm''
-    (μ := μ.restrict K) (p := 2)
-    (fun n : ℕ ↦ u (φ n)) (fun n : ℕ ↦ hmemK (φ n))
-    (a : X → E) (Lp.memLp a)).mp ha'
 
 /--
 %%handwave
@@ -18842,46 +15401,6 @@ theorem euclideanSobolev_zero_gradient_constant_on_preconnected_finiteDimensiona
 /--
 %%handwave
 name:
-  Euclidean zero weak gradient rigidity principle in the coordinate plane
-statement:
-  On a preconnected open subset of the coordinate plane, a locally
-  \(W^{1,2}\) real-valued weak Sobolev function whose weak derivative field
-  vanishes almost everywhere is equal almost everywhere to one real constant.
--/
-def EuclideanZeroGradientRigidityOnPlane : Prop :=
-  ∀ {Ω : Set ℂ} {u : ℂ → ℝ} {du : ℂ → ℂ →L[ℝ] ℝ},
-    IsOpen Ω →
-      IsPreconnected Ω →
-        IsWeakDerivativeOnEuclideanRegionScalar Ω u du →
-          (∀ K : Set ℂ, IsCompact K → K ⊆ Ω →
-            MemLp u 2 (MeasureTheory.volume.restrict K) ∧
-              MemLp du 2 (MeasureTheory.volume.restrict K)) →
-            (∀ᵐ z ∂MeasureTheory.volume.restrict Ω, du z = 0) →
-              ∃ a : ℝ, ∀ᵐ z ∂MeasureTheory.volume.restrict Ω, u z = a
-
-/--
-%%handwave
-name:
-  Euclidean zero weak gradient rigidity
-statement:
-  On a preconnected open subset of the coordinate plane, a locally
-  \(W^{1,2}\) real-valued weak Sobolev function whose weak derivative field
-  vanishes almost everywhere is equal almost everywhere to one real constant.
-proof:
-  This is the Euclidean analytic input: distributional first derivatives
-  vanish, so the Sobolev representative is constant on each connected
-  component, and preconnectedness leaves only one component.
--/
-theorem euclideanSobolev_zero_gradient_constant_on_preconnected :
-    EuclideanZeroGradientRigidityOnPlane := by
-  intro Ω u du hΩ_open hΩ_preconnected hweak hmem hdu_zero
-  exact
-    euclideanSobolev_zero_gradient_constant_on_preconnected_finiteDimensional
-      hΩ_open hΩ_preconnected hweak hmem hdu_zero
-
-/--
-%%handwave
-name:
   Equality of local constants on a positive-measure intersection
 statement:
   If \(u=a\) almost everywhere on \(s\), \(u=b\) almost everywhere on \(t\),
@@ -19124,37 +15643,6 @@ theorem ae_local_constants_glue_on_preconnected_of_smooth_positive_measure
   · refine ⟨0, ?_⟩
     have hU_empty : U = ∅ := Set.not_nonempty_iff_eq_empty.mp hU_nonempty
     simp [hU_empty]
-
-/--
-%%handwave
-name:
-  Local almost-everywhere constants glue on preconnected surface regions
-statement:
-  On a preconnected open surface region equipped with a smooth positive area
-  measure, if a function is almost everywhere constant in a neighborhood of
-  every point, then it is equal almost everywhere on the whole region to one
-  constant.
-proof:
-  Regard the smooth positive area measure as a smooth positive measure for
-  the real surface model, then apply
-  [local almost-everywhere constants glue on preconnected manifolds](lean:JJMath.Uniformization.ae_local_constants_glue_on_preconnected_of_smooth_positive_measure).
--/
-theorem ae_local_constants_glue_on_preconnected_of_smooth_positive_area
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [SecondCountableTopology X] [IsManifold SurfaceRealModel 1 X]
-    {μ : Measure X} (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
-    {U : Set X} {u : X → ℝ}
-    (hU_open : IsOpen U) (hU_preconnected : IsPreconnected U)
-    (hlocal_const :
-      ∀ x ∈ U, ∃ V : Set X, IsOpen V ∧ x ∈ V ∧ V ⊆ U ∧
-        ∃ a : ℝ, ∀ᵐ y ∂μ.restrict V, u y = a) :
-    ∃ a : ℝ, ∀ᵐ x ∂μ.restrict U, u x = a := by
-  let hμ' : SmoothPositiveMeasureOnManifold (I := SurfaceRealModel) μ :=
-    { finite_on_compact := hμ.finite_on_compact
-      chart_density := hμ.chart_density }
-  exact
-    ae_local_constants_glue_on_preconnected_of_smooth_positive_measure
-      (I := SurfaceRealModel) hμ' hU_open hU_preconnected hlocal_const
 
 set_option maxHeartbeats 800000
 
@@ -19715,209 +16203,6 @@ theorem localSobolev_zero_gradient_constant_on_preconnected
 /--
 %%handwave
 name:
-  Euclidean rigidity gives local coordinate constants
-statement:
-  On a surface with a smooth positive area measure, a locally \(W^{1,2}\)
-  function whose weak gradient vanishes almost everywhere is locally almost
-  everywhere constant in coordinate neighborhoods, provided the Euclidean
-  zero-gradient rigidity principle is available in the coordinate plane.
-proof:
-  Around a point, choose a coordinate disk contained in the given open region.
-  Pull the function and its weak gradient to that disk.  The coordinate
-  distributional identity is exactly the Euclidean weak-derivative identity,
-  and smooth positivity transfers the \(L^2\) and null-set hypotheses between
-  the surface measure and Lebesgue measure.  Applying
-  [the Euclidean zero-gradient conclusion](lean:JJMath.Uniformization.euclideanSobolev_zero_gradient_constant_on_preconnected)
-  gives one constant on the coordinate disk, which is then pushed back to the
-  surface neighborhood.
--/
-theorem localSobolev_zero_gradient_locally_constant_of_euclidean
-    (heuclid : EuclideanZeroGradientRigidityOnPlane)
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [SecondCountableTopology X] [IsManifold SurfaceRealModel 1 X]
-    {μ : Measure X} (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
-    {U : Set X} {u : X → ℝ} {du : X → ℂ →L[ℝ] ℝ}
-    (hU_open : IsOpen U)
-    (hu : IsLocalSobolevH1OnSurface μ U u du)
-    (hdu_zero : ∀ᵐ x ∂μ.restrict U, du x = 0) :
-    ∀ x ∈ U, ∃ V : Set X, IsOpen V ∧ x ∈ V ∧ V ⊆ U ∧
-      ∃ a : ℝ, ∀ᵐ y ∂μ.restrict V, u y = a := by
-  classical
-  intro x hxU
-  let e : OpenPartialHomeomorph X ℂ := chartAt ℂ x
-  let Ω : Set ℂ := surfaceChartRegion e U
-  let D : ℂ → ℂ →L[ℝ] ℝ :=
-    ManifoldDifferentialField.chartPullback (I := SurfaceRealModel) du e
-  let hμ' : SmoothPositiveMeasureOnManifold (I := SurfaceRealModel) μ :=
-    { finite_on_compact := hμ.finite_on_compact
-      chart_density := hμ.chart_density }
-  have he : e ∈ atlas ℂ X := chart_mem_atlas ℂ x
-  have hx_source : x ∈ e.source := by
-    simpa [e] using mem_chart_source ℂ x
-  have hzΩ : e x ∈ Ω := by
-    refine ⟨e.map_source hx_source, ?_⟩
-    simpa [e.left_inv hx_source] using hxU
-  have hΩ_open : IsOpen Ω := by
-    simpa [Ω, surfaceChartRegion] using e.isOpen_inter_preimage_symm hU_open
-  have hweak_Ω :
-      IsWeakDerivativeOnEuclideanRegionScalar Ω
-        (fun z : ℂ ↦ u (e.symm z)) D := by
-    intro φ v
-    let ψ : SmoothCompactlySupportedCoordinateFunction Ω :=
-      { toFun := φ
-        smooth := φ.smooth
-        support_subset := φ.support_subset
-        compact_support := φ.compact_support }
-    have h := hu.1 e he ψ v
-    simpa [D, Ω, ψ, IsWeakDerivativeOnEuclideanRegionScalar,
-      IsWeakDerivativeOnEuclideanRegionWithValues,
-      ManifoldDifferentialField.chartPullback, surfaceChartRegion,
-      surfaceChartTangentMap, smul_eq_mul, mul_comm, mul_left_comm, mul_assoc] using h
-  have hdu_Ω_zero :
-      ∀ᵐ z ∂MeasureTheory.volume.restrict Ω, D z = 0 := by
-    simpa [D, Ω, surfaceChartRegion, manifoldChartRegion] using
-      smoothPositiveMeasureOnManifold_chartPullback_ae_zero
-        (I := SurfaceRealModel) (μ := μ) hμ' e he hU_open hdu_zero
-  rcases Metric.isOpen_iff.1 hΩ_open (e x) hzΩ with ⟨r, hr_pos, hballΩ⟩
-  let B : Set ℂ := Metric.ball (e x) r
-  have hweak_B :
-      IsWeakDerivativeOnEuclideanRegionScalar B
-        (fun z : ℂ ↦ u (e.symm z)) D :=
-    IsWeakDerivativeOnEuclideanRegionWithValues.mono_set hweak_Ω hballΩ
-  have hdu_B_zero : ∀ᵐ z ∂MeasureTheory.volume.restrict B, D z = 0 :=
-    ae_restrict_of_ae_restrict_of_subset hballΩ hdu_Ω_zero
-  have hmem_B :
-      ∀ K : Set ℂ, IsCompact K → K ⊆ B →
-        MemLp (fun z : ℂ ↦ u (e.symm z)) 2
-            (MeasureTheory.volume.restrict K) ∧
-          MemLp D 2 (MeasureTheory.volume.restrict K) := by
-    intro K hK_compact hKB
-    have hKΩ : K ⊆ Ω := hKB.trans hballΩ
-    let K₀ : Set X := e.symm '' K
-    have hK_target : K ⊆ e.target := fun z hz ↦ (hKΩ hz).1
-    have hK₀_compact : IsCompact K₀ :=
-      hK_compact.image_of_continuousOn (e.continuousOn_symm.mono hK_target)
-    have hK₀_source : K₀ ⊆ e.source := by
-      rintro y ⟨z, hzK, rfl⟩
-      exact e.map_target (hK_target hzK)
-    have hK₀U : K₀ ⊆ U := by
-      rintro y ⟨z, hzK, rfl⟩
-      exact (hKΩ hzK).2
-    have hK_def : K = e '' K₀ := by
-      ext z
-      constructor
-      · intro hzK
-        refine ⟨e.symm z, ⟨z, hzK, rfl⟩, ?_⟩
-        exact e.right_inv (hK_target hzK)
-      · rintro ⟨y, ⟨w, hwK, rfl⟩, rfl⟩
-        simpa [e.right_inv (hK_target hwK)] using hwK
-    have hu_K₀ : MemLp u 2 (μ.restrict K₀) :=
-      (hu.2 K₀ hK₀_compact hK₀U).1
-    have hvalue :
-        MemLp (fun z : ℂ ↦ u (e.symm z)) 2
-          (MeasureTheory.volume.restrict K) :=
-      smoothPositiveMeasureOnManifold_chartPullback_memLp_on_compact_of_memLp
-        (I := SurfaceRealModel) (μ := μ) hμ' e he
-        hK₀_compact hK₀_source hK_def hu_K₀
-    have hduK_zero : D =ᵐ[MeasureTheory.volume.restrict K] 0 :=
-      ae_restrict_of_ae_restrict_of_subset hKB hdu_B_zero
-    have hzero_mem :
-        MemLp (0 : ℂ → ℂ →L[ℝ] ℝ) 2
-          (MeasureTheory.volume.restrict K) := by
-      refine ⟨aestronglyMeasurable_zero, ?_⟩
-      change
-        eLpNorm (0 : ℂ → ℂ →L[ℝ] ℝ) (2 : ℝ≥0∞)
-          (MeasureTheory.volume.restrict K) < ⊤
-      rw [eLpNorm_zero (α := ℂ) (ε := ℂ →L[ℝ] ℝ)
-        (p := (2 : ℝ≥0∞)) (μ := MeasureTheory.volume.restrict K)]
-      exact ENNReal.zero_lt_top
-    have hderiv : MemLp D 2 (MeasureTheory.volume.restrict K) :=
-      (memLp_congr_ae hduK_zero).2 hzero_mem
-    exact ⟨hvalue, hderiv⟩
-  rcases
-      heuclid Metric.isOpen_ball Metric.isPreconnected_ball
-        hweak_B hmem_B hdu_B_zero with
-    ⟨a, haB⟩
-  let V : Set X := e.source ∩ e ⁻¹' B
-  have hV_open : IsOpen V := by
-    simpa [V, B] using e.isOpen_inter_preimage Metric.isOpen_ball
-  have hxV : x ∈ V := by
-    exact ⟨hx_source, by simpa [B, Metric.mem_ball] using hr_pos⟩
-  have hVU : V ⊆ U := by
-    intro y hy
-    have hyΩ : e y ∈ Ω := hballΩ hy.2
-    simpa [Ω, surfaceChartRegion, e.left_inv hy.1] using hyΩ.2
-  have hB_target : B ⊆ e.target := by
-    intro z hz
-    exact (hballΩ hz).1
-  refine ⟨V, hV_open, hxV, hVU, a, ?_⟩
-  simpa [V] using
-    smoothPositiveMeasureOnManifold_ae_const_of_chart_ae_const
-      (I := SurfaceRealModel) (μ := μ) hμ' e he
-      (by simpa [B] using Metric.isOpen_ball) hB_target haB
-
-/--
-%%handwave
-name:
-  Zero weak gradient rigidity for smooth positive area measures
-statement:
-  On a preconnected open surface region equipped with a smooth positive area
-  measure, a locally \(W^{1,2}\) function whose weak gradient vanishes almost
-  everywhere is equal almost everywhere to one real constant.
-proof:
-  First obtain local constants from
-  [the Euclidean zero-gradient theorem in coordinate disks](lean:JJMath.Uniformization.localSobolev_zero_gradient_locally_constant_of_euclidean).
-  Then apply
-  [the preconnected gluing theorem for local almost-everywhere constants](lean:JJMath.Uniformization.ae_local_constants_glue_on_preconnected_of_smooth_positive_area).
--/
-theorem localSobolev_zero_gradient_constant_on_preconnected_of_smooth_positive_area
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [SecondCountableTopology X] [IsManifold SurfaceRealModel 1 X]
-    {μ : Measure X} (hμ : SmoothPositiveAreaMeasureOnSurface X μ)
-    {U : Set X} {u : X → ℝ} {du : X → ℂ →L[ℝ] ℝ}
-    (hU_open : IsOpen U) (hU_preconnected : IsPreconnected U)
-    (hu : IsLocalSobolevH1OnSurface μ U u du)
-    (hdu_zero : ∀ᵐ x ∂μ.restrict U, du x = 0) :
-    ∃ a : ℝ, ∀ᵐ x ∂μ.restrict U, u x = a := by
-  exact
-    ae_local_constants_glue_on_preconnected_of_smooth_positive_area
-      hμ hU_open hU_preconnected
-      (localSobolev_zero_gradient_locally_constant_of_euclidean
-        euclideanSobolev_zero_gradient_constant_on_preconnected
-        hμ hU_open hu hdu_zero)
-
-/--
-%%handwave
-name:
-  Zero weak gradient forces a constant on surfaces
-statement:
-  On a preconnected open surface region \(U\), if \(u\in W^{1,2}_{loc}(U)\)
-  and its weak gradient \(D u\) satisfies \(D u=0\) almost everywhere on
-  \(U\), then there is \(a\in\mathbb R\) such that \(u=a\) almost everywhere
-  on \(U\).
-proof:
-  Apply [the smooth-positive-area statement that zero weak gradient forces one almost-everywhere constant](lean:JJMath.Uniformization.localSobolev_zero_gradient_constant_on_preconnected_of_smooth_positive_area)
-  to the Riemannian area measure, which is smooth and positive in coordinates.
--/
-theorem localSobolev_zero_gradient_constant_on_preconnected_on_surface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [MeasurableSpace X]
-    [BorelSpace X] [SecondCountableTopology X]
-    {g : BackgroundSurfaceMetricOnSurface X} {U : Set X} {u : X → ℝ}
-    {du : X → ℂ →L[ℝ] ℝ}
-    (hU_open : IsOpen U) (hU_preconnected : IsPreconnected U)
-    (hu : IsLocalSobolevH1OnSurface g.volume U u du)
-    (hdu_zero : ∀ᵐ x ∂g.volume.restrict U, du x = 0) :
-    ∃ a : ℝ, ∀ᵐ x ∂g.volume.restrict U, u x = a := by
-  letI : IsManifold SurfaceRealModel ∞ X := g.metric.isManifold_real
-  letI : IsManifold SurfaceRealModel 1 X := inferInstance
-  exact
-    localSobolev_zero_gradient_constant_on_preconnected_of_smooth_positive_area
-      (μ := g.volume) (BackgroundSurfaceMetricOnSurface.volume_smooth_positive g)
-      hU_open hU_preconnected hu hdu_zero
-
-/--
-%%handwave
-name:
   A zero-gradient \(L^2\)-limit is a constant limit on compact subsets
 statement:
   Let \(K\subset U\), with \(U\) open and preconnected.  If a sequence
@@ -19959,665 +16244,6 @@ theorem localRellich_zeroGradient_constant_limit_on_compact
     exact eLpNorm_congr_ae <|
       haK.mono fun x hx ↦ by
         simp [hx]
-
-/--
-%%handwave
-name:
-  Vanishing-gradient Rellich limits satisfy the weak identity
-statement:
-  In the two-collar Rellich setting, if a subsequence converges in \(L^2(P)\)
-  and the differential energy tends to zero on \(Q\), then the limiting
-  function satisfies the weak-derivative identities on \(\operatorname{int}P\)
-  with zero differential.
-proof:
-  Fix a compactly supported coordinate test in \(\operatorname{int}P\).  Its
-  support is contained in \(P\), so the value pairing passes to the
-  \(L^2(P)\)-limit.  The differential pairing tends to zero by the
-  \(L^2(Q)\)-decay of the differentials and the compact support estimate for
-  differential coordinate tests.  Passing to the limit in the weak identities
-  for the approximating sequence gives the zero-differential identity.
--/
-theorem localRellich_limit_zeroGradient_weakDerivative_on_interior_of_compact
-    {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
-    [SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [IsManifold I 1 X] [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {P Q U : Set X} (hP : IsCompact P) (hPQ : P ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → ℝ) (du : ℕ → ManifoldDifferentialField I X ℝ)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hgrad_tendsto :
-      Filter.Tendsto (fun n : ℕ ↦ manifoldLocalDifferentialSeminormSq I g μ Q (du n))
-        Filter.atTop (𝓝 0))
-    {uLim : X → ℝ} {φ : ℕ → ℕ} (hφ : StrictMono φ)
-    (hmemLimP : MemLp uLim 2 (μ.restrict P))
-    (hlimP : TendstoInLocalL2OnManifoldWithValues μ P
-      (fun n x ↦ u (φ n) x) uLim) :
-    IsWeakDerivativeOnManifoldRegionBundle (I := I) (interior P) uLim
-      (0 : ManifoldDifferentialField I X ℝ) := by
-  classical
-  letI : NormedAddCommGroup (ValueL2Section (X := X) (E := ℝ) μ) :=
-    valueL2SectionNormedAddCommGroup (I := I) (X := X) (E := ℝ) μ
-  letI : NormedAddCommGroup
-      (ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ) :=
-    manifoldDifferentialL2SectionNormedAddCommGroup
-      (I := I) (X := X) (E := ℝ) g μ
-  have hP_meas : MeasurableSet P := hP.measurableSet
-  have hQ_meas : MeasurableSet Q := hQ.measurableSet
-  have hPU : P ⊆ U := hPQ.trans (interior_subset.trans hQU)
-  have hIntP_U : interior P ⊆ U := interior_subset.trans hPU
-  have hmemSeqP :
-      ∀ n : ℕ, MemLp (u (φ n)) 2 (μ.restrict P) := by
-    intro n
-    exact ((hlocal (φ n)).2 P hP hPU).1.memLp_trivial
-  have hvalue_tendsto :
-      Filter.Tendsto
-        (fun n : ℕ ↦
-          (Quotient.mk
-            (SquareIntegrableValueSection.aeSetoid
-              (X := X) (E := ℝ) (μ := μ))
-            (squareIntegrableValueSectionIndicator hP_meas (u (φ n)) (hmemSeqP n)) :
-            ValueL2Section (X := X) (E := ℝ) μ))
-        Filter.atTop
-        (𝓝
-          (Quotient.mk
-            (SquareIntegrableValueSection.aeSetoid
-              (X := X) (E := ℝ) (μ := μ))
-            (squareIntegrableValueSectionIndicator hP_meas uLim hmemLimP) :
-            ValueL2Section (X := X) (E := ℝ) μ)) :=
-    valueL2Section_indicator_tendsto_of_restrict_eLpNorm_tendsto_zero
-      (I := I) (μ := μ) hP_meas hmemSeqP hmemLimP hlimP
-  have hduSeqQ :
-      ∀ n : ℕ,
-        ManifoldDifferentialFieldMemHilbertSchmidtL2 (I := I) g
-          (μ.restrict Q) (du (φ n)) := by
-    intro n
-    exact ((hlocal (φ n)).2 Q hQ hQU).2
-  have hgrad_subseq :
-      Filter.Tendsto
-        (fun n : ℕ ↦
-          manifoldLocalDifferentialSeminormSq I g μ Q (du (φ n)))
-        Filter.atTop (𝓝 0) :=
-    hgrad_tendsto.comp hφ.tendsto_atTop
-  have hdifferential_tendsto :
-      Filter.Tendsto
-        (fun n : ℕ ↦
-          (Quotient.mk
-            (SquareIntegrableManifoldDifferentialField.aeSetoid
-              (I := I) (X := X) (E := ℝ) (g := g) (μ := μ))
-            ({ toSection := manifoldDifferentialFieldZeroExtend I Q (du (φ n))
-               memL2 :=
-                manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-                  (I := I) (g := g) (μ := μ) hQ_meas (hduSeqQ n) } :
-              SquareIntegrableManifoldDifferentialField
-                (I := I) (X := X) (E := ℝ) g μ) :
-            ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ))
-        Filter.atTop
-        (𝓝 (0 :
-          ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ)) :=
-    manifoldDifferentialL2Section_zeroExtend_tendsto_zero_of_localSeminormSq_tendsto_zero
-      (I := I) (g := g) (μ := μ) hQ_meas (fun n : ℕ ↦ du (φ n))
-      hduSeqQ hgrad_subseq
-  intro e he test v
-  let ΩP : Set H := manifoldChartRegion e (interior P)
-  let ΩU : Set H := manifoldChartRegion e U
-  let ΩAll : Set H := manifoldChartRegion e (Set.univ : Set X)
-  have hΩP_U : ΩP ⊆ ΩU := by
-    intro z hz
-    exact ⟨hz.1, hIntP_U hz.2⟩
-  have hΩP_univ : ΩP ⊆ ΩAll := by
-    intro z hz
-    exact ⟨hz.1, trivial⟩
-  let psiAll : SmoothCompactlySupportedManifoldCoordinateFunction ΩAll :=
-    { toFun := test
-      smooth := test.smooth
-      support_subset := by
-        intro z hz
-        exact hΩP_univ (test.support_subset hz)
-      compact_support := test.compact_support }
-  let ψU : SmoothCompactlySupportedManifoldCoordinateFunction ΩU :=
-    { toFun := test
-      smooth := test.smooth
-      support_subset := by
-        intro z hz
-        exact hΩP_U (test.support_subset hz)
-      compact_support := test.compact_support }
-  let valueSeq : ℕ → SquareIntegrableValueSection (X := X) (E := ℝ) μ :=
-    fun n ↦ squareIntegrableValueSectionIndicator hP_meas (u (φ n)) (hmemSeqP n)
-  let valueLim : SquareIntegrableValueSection (X := X) (E := ℝ) μ :=
-    squareIntegrableValueSectionIndicator hP_meas uLim hmemLimP
-  let diffSeq :
-      ℕ → SquareIntegrableManifoldDifferentialField
-        (I := I) (X := X) (E := ℝ) g μ :=
-    fun n ↦
-      { toSection := manifoldDifferentialFieldZeroExtend I Q (du (φ n))
-        memL2 :=
-          manifoldDifferentialFieldMemHilbertSchmidtL2_zero_extend_of_restrict
-            (I := I) (g := g) (μ := μ) hQ_meas (hduSeqQ n) }
-  let G :=
-    manifoldDifferentialHilbertBundleGeometry
-      (I := I) (X := X) (E := ℝ) g
-  let metric :=
-    manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-      (I := I) (X := X) (E := ℝ) g
-  letI : Bundle.RiemannianBundle
-      (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := ℝ)) :=
-    ⟨metric.toRiemannianMetric⟩
-  letI (x : X) :
-      NormedAddCommGroup (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := ℝ) x) :=
-    manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-      (I := I) (X := X) (E := ℝ) metric x
-  letI (x : X) :
-      InnerProductSpace ℝ (ManifoldDifferentialBundleFiber
-        (I := I) (X := X) (E := ℝ) x) :=
-    manifoldDifferentialHilbertSchmidtInnerProductSpace
-      (I := I) (X := X) (E := ℝ) metric x
-  let diffZero :
-      SquareIntegrableManifoldDifferentialField
-        (I := I) (X := X) (E := ℝ) g μ :=
-    { toSection := 0
-      memL2 := hilbertBundleSectionMemL2_zero
-        (I := I) (G := G) (by intro x A B; rfl) μ }
-  rcases
-    manifoldValueCoordinateTestPairing_tendsto_of_tendsto_l2_sections
-      (I := I) (X := X) (E := ℝ) μ hμ
-      (u := valueSeq) (uLim := valueLim)
-      (uLimClass :=
-        (Quotient.mk
-          (SquareIntegrableValueSection.aeSetoid
-            (X := X) (E := ℝ) (μ := μ)) valueLim :
-          ValueL2Section (X := X) (E := ℝ) μ))
-      rfl (by simpa [valueSeq, valueLim] using hvalue_tendsto)
-      e he psiAll v with
-    ⟨hleftLim_ext_int, hleft_ext_tendsto⟩
-  have hdiffZero_eq :
-      (Quotient.mk
-        (SquareIntegrableManifoldDifferentialField.aeSetoid
-          (I := I) (X := X) (E := ℝ) (g := g) (μ := μ)) diffZero :
-        ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ) =
-        (0 : ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ) := by
-    rfl
-  rcases
-    manifoldDifferentialCoordinateTestPairing_tendsto_of_tendsto_l2_sections
-      (I := I) (X := X) (E := ℝ) g μ hμ
-      (du := diffSeq) (duLim := diffZero)
-      (duLimClass :=
-        (0 : ManifoldDifferentialL2Section (I := I) (X := X) (E := ℝ) g μ))
-      hdiffZero_eq (by simpa [diffSeq] using hdifferential_tendsto)
-      e he psiAll v with
-    ⟨_hrightLim_ext_int, hright_ext_tendsto⟩
-  let leftLim : H → ℝ :=
-    fun z ↦ (fderiv ℝ (test : H → ℝ) z v) • uLim (e.symm z)
-  let rightZero : H → ℝ :=
-    fun z ↦ test z • ManifoldDifferentialField.evalChart
-      (0 : ManifoldDifferentialField I X ℝ) e z v
-  let leftExt : ℕ → H → ℝ :=
-    fun n z ↦
-      (fderiv ℝ (psiAll : H → ℝ) z v) • (valueSeq n).toFunction (e.symm z)
-  let leftOrig : ℕ → H → ℝ :=
-    fun n z ↦ (fderiv ℝ (test : H → ℝ) z v) • u (φ n) (e.symm z)
-  let rightExt : ℕ → H → ℝ :=
-    fun n z ↦
-      psiAll z • ManifoldDifferentialField.evalChart (diffSeq n).toField e z v
-  let rightOrig : ℕ → H → ℝ :=
-    fun n z ↦ test z • ManifoldDifferentialField.evalChart (du (φ n)) e z v
-  have leftOrig_zero_P :
-      ∀ z : H, z ∉ ΩP → leftLim z = 0 := by
-    intro z hzP
-    have hz_not :
-        z ∉ tsupport (fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) := by
-      intro hz
-      exact hzP <| test.support_subset <|
-        (tsupport_fderiv_apply_subset (𝕜 := ℝ)
-          (f := (test : H → ℝ)) v) hz
-    have hzero :
-        fderiv ℝ (test : H → ℝ) z v = 0 :=
-      image_eq_zero_of_notMem_tsupport
-        (f := fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) hz_not
-    simp [leftLim, hzero]
-  have hleftLim_ext_eq :
-      (fun z : H ↦
-        (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)) =
-        leftLim := by
-    funext z
-    by_cases hzP : z ∈ ΩP
-    · have hxP : e.symm z ∈ P := interior_subset hzP.2
-      simp [leftLim, valueLim, squareIntegrableValueSectionIndicator,
-        SquareIntegrableValueSection.toFunction, psiAll, hxP]
-    · have hz_not :
-          z ∉ tsupport (fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) := by
-        intro hz
-        exact hzP <| test.support_subset <|
-          (tsupport_fderiv_apply_subset (𝕜 := ℝ)
-            (f := (test : H → ℝ)) v) hz
-      have hderiv_zero :
-          fderiv ℝ (test : H → ℝ) z v = 0 :=
-        image_eq_zero_of_notMem_tsupport
-          (f := fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) hz_not
-      simp [leftLim, valueLim, squareIntegrableValueSectionIndicator,
-        SquareIntegrableValueSection.toFunction, psiAll, hderiv_zero]
-  have hleftLim_int_P : Integrable leftLim (MeasureTheory.volume.restrict ΩP) := by
-    have hres := hleftLim_ext_int.restrict (s := ΩP)
-    have hres' :
-        Integrable
-          (fun z : H ↦
-            (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z))
-          (MeasureTheory.volume.restrict ΩP) := by
-      simpa [ΩP, ΩAll, Measure.restrict_restrict_of_subset hΩP_univ] using hres
-    exact hres'.congr (Filter.EventuallyEq.of_eq hleftLim_ext_eq)
-  have hrightZero_int_P :
-      Integrable rightZero (MeasureTheory.volume.restrict ΩP) := by
-    have hzero : rightZero = fun _ : H ↦ (0 : ℝ) := by
-      funext z
-      simp [rightZero, ManifoldDifferentialField.evalChart]
-    rw [hzero]
-    exact integrable_zero H ℝ (MeasureTheory.volume.restrict ΩP)
-  have hrightZero_integral :
-      ∫ z in ΩP, rightZero z ∂MeasureTheory.volume = 0 := by
-    have hzero : rightZero = fun _ : H ↦ (0 : ℝ) := by
-      funext z
-      simp [rightZero, ManifoldDifferentialField.evalChart]
-    rw [hzero]
-    simp
-  have hleftLim_global_eq_local :
-      ∫ z in ΩAll,
-          (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)
-          ∂MeasureTheory.volume =
-        ∫ z in ΩP, leftLim z ∂MeasureTheory.volume := by
-    rw [integral_congr_ae (Filter.Eventually.of_forall fun z ↦
-      congrFun hleftLim_ext_eq z)]
-    rw [setIntegral_eq_integral_of_forall_compl_eq_zero
-        (fun z hz ↦ leftOrig_zero_P z (fun hzP ↦ hz (hΩP_univ hzP))),
-      setIntegral_eq_integral_of_forall_compl_eq_zero leftOrig_zero_P]
-  have hrightZero_global :
-      ∫ z in ΩAll,
-          psiAll z • ManifoldDifferentialField.evalChart diffZero.toField e z v
-          ∂MeasureTheory.volume = 0 := by
-    have hzero :
-        (fun z : H ↦
-          psiAll z • ManifoldDifferentialField.evalChart diffZero.toField e z v) =
-          fun _ : H ↦ (0 : ℝ) := by
-      funext z
-      simp [diffZero, SquareIntegrableManifoldDifferentialField.toField,
-        ManifoldDifferentialField.evalChart]
-    rw [hzero]
-    simp
-  have hleft_ext_eq_orig :
-      ∀ n : ℕ, leftExt n = leftOrig n := by
-    intro n
-    funext z
-    by_cases hzP : z ∈ ΩP
-    · have hxP : e.symm z ∈ P := interior_subset hzP.2
-      simp [leftExt, leftOrig, valueSeq, squareIntegrableValueSectionIndicator,
-        SquareIntegrableValueSection.toFunction, psiAll, hxP]
-    · have hz_not :
-          z ∉ tsupport (fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) := by
-        intro hz
-        exact hzP <| test.support_subset <|
-          (tsupport_fderiv_apply_subset (𝕜 := ℝ)
-            (f := (test : H → ℝ)) v) hz
-      have hderiv_zero :
-          fderiv ℝ (test : H → ℝ) z v = 0 :=
-        image_eq_zero_of_notMem_tsupport
-          (f := fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) hz_not
-      simp [leftExt, leftOrig, valueSeq, squareIntegrableValueSectionIndicator,
-        SquareIntegrableValueSection.toFunction, psiAll, hderiv_zero]
-  have hright_ext_eq_orig :
-      ∀ n : ℕ, rightExt n = rightOrig n := by
-    intro n
-    funext z
-    by_cases hzP : z ∈ ΩP
-    · have hxQ : e.symm z ∈ Q :=
-        interior_subset (hPQ (interior_subset hzP.2))
-      have heval_eq :
-          ManifoldDifferentialField.evalChart (diffSeq n).toField e z v =
-            ManifoldDifferentialField.evalChart (du (φ n)) e z v := by
-        simp [diffSeq, SquareIntegrableManifoldDifferentialField.toField,
-          manifoldDifferentialFieldZeroExtend, ManifoldDifferentialField.evalChart, hxQ]
-      change
-        psiAll z • ManifoldDifferentialField.evalChart (diffSeq n).toField e z v =
-          test z • ManifoldDifferentialField.evalChart (du (φ n)) e z v
-      rw [heval_eq]
-    · have hz_not : z ∉ tsupport (test : H → ℝ) := by
-        intro hz
-        exact hzP (test.support_subset hz)
-      have htest_zero : test z = 0 :=
-        image_eq_zero_of_notMem_tsupport hz_not
-      simp [rightExt, rightOrig, diffSeq, psiAll, htest_zero]
-  have hleftOrig_zero :
-      ∀ n : ℕ, ∀ z : H, z ∉ ΩP → leftOrig n z = 0 := by
-    intro n z hzP
-    have hz_not :
-        z ∉ tsupport (fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) := by
-      intro hz
-      exact hzP <| test.support_subset <|
-        (tsupport_fderiv_apply_subset (𝕜 := ℝ)
-          (f := (test : H → ℝ)) v) hz
-    have hderiv_zero :
-        fderiv ℝ (test : H → ℝ) z v = 0 :=
-      image_eq_zero_of_notMem_tsupport
-        (f := fun y : H ↦ fderiv ℝ (test : H → ℝ) y v) hz_not
-    simp [leftOrig, hderiv_zero]
-  have hrightOrig_zero :
-      ∀ n : ℕ, ∀ z : H, z ∉ ΩP → rightOrig n z = 0 := by
-    intro n z hzP
-    have hz_not : z ∉ tsupport (test : H → ℝ) := by
-      intro hz
-      exact hzP (test.support_subset hz)
-    have htest_zero : test z = 0 :=
-      image_eq_zero_of_notMem_tsupport hz_not
-    simp [rightOrig, htest_zero]
-  have hleft_ext_eq_U :
-      ∀ n : ℕ,
-        ∫ z in ΩAll, leftExt n z ∂MeasureTheory.volume =
-          ∫ z in ΩU, leftOrig n z ∂MeasureTheory.volume := by
-    intro n
-    rw [hleft_ext_eq_orig n]
-    rw [setIntegral_eq_integral_of_forall_compl_eq_zero
-        (fun z hz ↦ hleftOrig_zero n z (fun hzP ↦ hz (hΩP_univ hzP))),
-      setIntegral_eq_integral_of_forall_compl_eq_zero
-        (fun z hz ↦ hleftOrig_zero n z (fun hzP ↦ hz (hΩP_U hzP)))]
-  have hright_ext_eq_U :
-      ∀ n : ℕ,
-        ∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume =
-          ∫ z in ΩU, rightOrig n z ∂MeasureTheory.volume := by
-    intro n
-    rw [hright_ext_eq_orig n]
-    rw [setIntegral_eq_integral_of_forall_compl_eq_zero
-        (fun z hz ↦ hrightOrig_zero n z (fun hzP ↦ hz (hΩP_univ hzP))),
-      setIntegral_eq_integral_of_forall_compl_eq_zero
-        (fun z hz ↦ hrightOrig_zero n z (fun hzP ↦ hz (hΩP_U hzP)))]
-  have hweak_ext :
-      ∀ n : ℕ,
-        ∫ z in ΩAll, leftExt n z ∂MeasureTheory.volume =
-          -∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume := by
-    intro n
-    rcases (hlocal (φ n)).1 e he ψU v with ⟨_hL, _hR, hweak⟩
-    calc
-      ∫ z in ΩAll, leftExt n z ∂MeasureTheory.volume
-          = ∫ z in ΩU, leftOrig n z ∂MeasureTheory.volume :=
-            hleft_ext_eq_U n
-      _ = -∫ z in ΩU, rightOrig n z ∂MeasureTheory.volume := by
-            simpa [leftOrig, rightOrig, ψU, ΩU] using hweak
-      _ = -∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume := by
-            rw [hright_ext_eq_U n]
-  have hleft_tendsto :
-      Filter.Tendsto
-        (fun n : ℕ ↦ ∫ z in ΩAll, leftExt n z ∂MeasureTheory.volume)
-        Filter.atTop
-        (𝓝 (∫ z in ΩAll,
-          (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)
-          ∂MeasureTheory.volume)) := by
-    simpa [leftExt, valueSeq, ΩAll] using hleft_ext_tendsto
-  have hright_tendsto_zero :
-      Filter.Tendsto
-        (fun n : ℕ ↦ ∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume)
-        Filter.atTop (𝓝 0) := by
-    have hright_tendsto :
-        Filter.Tendsto
-          (fun n : ℕ ↦ ∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume)
-          Filter.atTop
-          (𝓝 (∫ z in ΩAll,
-            psiAll z • ManifoldDifferentialField.evalChart diffZero.toField e z v
-            ∂MeasureTheory.volume)) := by
-      simpa [rightExt, diffSeq, ΩAll] using hright_ext_tendsto
-    rw [hrightZero_global] at hright_tendsto
-    exact hright_tendsto
-  have hleft_global_zero :
-      ∫ z in ΩAll,
-          (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)
-          ∂MeasureTheory.volume =
-        -(0 : ℝ) := by
-    have hneg_tendsto_left :
-        Filter.Tendsto
-          (fun n : ℕ ↦ -∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume)
-          Filter.atTop
-          (𝓝 (∫ z in ΩAll,
-            (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)
-            ∂MeasureTheory.volume)) := by
-      exact Filter.Tendsto.congr'
-        (Filter.Eventually.of_forall fun n ↦ hweak_ext n) hleft_tendsto
-    have hneg_tendsto_zero :
-        Filter.Tendsto
-          (fun n : ℕ ↦ -∫ z in ΩAll, rightExt n z ∂MeasureTheory.volume)
-          Filter.atTop (𝓝 (-(0 : ℝ))) :=
-      hright_tendsto_zero.neg
-    exact tendsto_nhds_unique hneg_tendsto_left hneg_tendsto_zero
-  refine ⟨?_, ?_, ?_⟩
-  · simpa [leftLim, ΩP] using hleftLim_int_P
-  · simpa [rightZero, ΩP] using hrightZero_int_P
-  · calc
-      ∫ z in manifoldChartRegion e (interior P),
-          (fderiv ℝ (test : H → ℝ) z v) • uLim (e.symm z)
-          ∂MeasureTheory.volume
-          = ∫ z in ΩP, leftLim z ∂MeasureTheory.volume := rfl
-      _ = ∫ z in ΩAll,
-          (fderiv ℝ (psiAll : H → ℝ) z v) • valueLim.toFunction (e.symm z)
-          ∂MeasureTheory.volume := hleftLim_global_eq_local.symm
-      _ = -(0 : ℝ) := hleft_global_zero
-      _ = -∫ z in ΩP, rightZero z ∂MeasureTheory.volume := by
-            rw [hrightZero_integral]
-      _ = -∫ z in manifoldChartRegion e (interior P),
-          test z • ManifoldDifferentialField.evalChart
-            (0 : ManifoldDifferentialField I X ℝ) e z v
-          ∂MeasureTheory.volume := rfl
-
-/--
-%%handwave
-name:
-  Rellich limits with vanishing differentials have zero weak differential
-statement:
-  Let \(P\subset\operatorname{int}Q\subset Q\subset U\), with \(P,Q\)
-  compact.  Suppose \(u_n\) is locally \(W^{1,2}\) on \(U\), uniformly
-  \(W^{1,2}\)-bounded on \(Q\), and its differential energy on \(Q\) tends to
-  zero.  If a subsequence converges in \(L^2(P)\) to \(u\), then \(u\) is
-  locally Sobolev on \(\operatorname{int}P\) and has zero weak differential
-  there.
-proof:
-  This is the localized closed-graph step.  Test functions supported in
-  \(\operatorname{int}P\) have compact support contained in \(P\).  The value
-  pairings pass to the \(L^2(P)\)-limit, while the differential pairings tend
-  to zero because the differential \(L^2(Q)\)-norm tends to zero and
-  \(P\subset\operatorname{int}Q\).
--/
-theorem localRellich_limit_zeroGradient_on_interior_of_compact
-    {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
-    [SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [IsManifold I 1 X] [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {P Q U : Set X} (hP : IsCompact P) (hPQ : P ⊆ interior Q)
-    (hQU : Q ⊆ U) (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (u : ℕ → X → ℝ) (du : ℕ → ManifoldDifferentialField I X ℝ)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hgrad_tendsto :
-      Filter.Tendsto (fun n : ℕ ↦ manifoldLocalDifferentialSeminormSq I g μ Q (du n))
-        Filter.atTop (𝓝 0))
-    {uLim : X → ℝ} {φ : ℕ → ℕ} (hφ : StrictMono φ)
-    (hmemLimP : MemLp uLim 2 (μ.restrict P))
-    (hlimP : TendstoInLocalL2OnManifoldWithValues μ P
-      (fun n x ↦ u (φ n) x) uLim) :
-    IsLocalSobolevH1OnManifoldWithValues (I := I) g μ (interior P) uLim
-      (0 : ManifoldDifferentialField I X ℝ) := by
-  refine ⟨?_, ?_⟩
-  · exact
-      localRellich_limit_zeroGradient_weakDerivative_on_interior_of_compact
-        (I := I) (g := g) (μ := μ) hμ hP hPQ hQU hQ hU_open
-        u du hlocal hbounded hgrad_tendsto hφ hmemLimP hlimP
-  · intro K hK hK_subset
-    have hKP : K ⊆ P := hK_subset.trans interior_subset
-    have hmemLimK : MemLp uLim 2 (μ.restrict K) :=
-      hmemLimP.mono_measure (Measure.restrict_mono hKP le_rfl)
-    let G :=
-      manifoldDifferentialHilbertBundleGeometry
-        (I := I) (X := X) (E := ℝ) g
-    let metric :=
-      manifoldDifferentialHilbertSchmidtContinuousRiemannianMetric
-        (I := I) (X := X) (E := ℝ) g
-    letI : Bundle.RiemannianBundle
-        (ManifoldDifferentialBundleFiber (I := I) (X := X) (E := ℝ)) :=
-      ⟨metric.toRiemannianMetric⟩
-    letI (x : X) :
-        NormedAddCommGroup (ManifoldDifferentialBundleFiber
-          (I := I) (X := X) (E := ℝ) x) :=
-      manifoldDifferentialHilbertSchmidtNormedAddCommGroup
-        (I := I) (X := X) (E := ℝ) metric x
-    letI (x : X) :
-        InnerProductSpace ℝ (ManifoldDifferentialBundleFiber
-          (I := I) (X := X) (E := ℝ) x) :=
-      manifoldDifferentialHilbertSchmidtInnerProductSpace
-        (I := I) (X := X) (E := ℝ) metric x
-    refine ⟨trivial_real_hilbertBundleSectionMemL2_of_memLp hmemLimK, ?_⟩
-    exact
-      hilbertBundleSectionMemL2_zero
-        (I := I) (G := G) (by intro x A B; rfl) (μ.restrict K)
-
-/--
-%%handwave
-name:
-  Two-collar Rellich compactness with vanishing gradients gives constants
-statement:
-  Let \(K\subset\operatorname{int}P\subset P\subset
-  \operatorname{int}Q\subset Q\subset U\), where \(K,P,Q\) are compact and
-  \(\operatorname{int}P\) is preconnected.  If a sequence of real-valued
-  locally \(W^{1,2}\) functions is uniformly \(W^{1,2}\)-bounded on \(Q\) and
-  its weak differentials tend to zero in \(L^2(Q)\), then a subsequence
-  converges in \(L^2(K)\) to a constant function.
-proof:
-  Apply local Rellich compactness to obtain a subsequence converging in
-  \(L^2(P)\).  The localized closed-graph step shows that the \(P\)-limit has
-  zero weak differential on \(\operatorname{int}P\).  Since
-  \(\operatorname{int}P\) is preconnected, zero-gradient rigidity makes the
-  limit a single constant there, and the \(L^2(P)\)-convergence restricts to
-  \(K\).
--/
-theorem localRellich_zeroGradient_subsequence_constant_on_preconnected_interior
-    {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
-    [SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [IsManifold I 1 X] [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K P Q U : Set X} (_hK : IsCompact K) (hKP : K ⊆ interior P)
-    (hP : IsCompact P) (hPQ : P ⊆ interior Q) (hQU : Q ⊆ U)
-    (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (hP_preconnected : IsPreconnected (interior P))
-    (u : ℕ → X → ℝ) (du : ℕ → ManifoldDifferentialField I X ℝ)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hgrad_tendsto :
-      Filter.Tendsto (fun n : ℕ ↦ manifoldLocalDifferentialSeminormSq I g μ Q (du n))
-        Filter.atTop (𝓝 0)) :
-    ∃ (a : ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInLocalL2OnManifoldWithValues μ K (fun n x ↦ u (φ n) x)
-          (fun _ ↦ a) := by
-  rcases
-    localRellich_subsequence_on_compact_with_memLp
-      (I := I) (g := g) (μ := μ) hμ
-      hP hPQ hQU hQ hU_open u du hlocal hbounded with
-    ⟨uLim, φ, hmemLimP, hφ, hlimP⟩
-  have huLim_zero :
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ (interior P) uLim
-        (0 : ManifoldDifferentialField I X ℝ) :=
-    localRellich_limit_zeroGradient_on_interior_of_compact
-      (I := I) (g := g) (μ := μ) hμ
-      hP hPQ hQU hQ hU_open u du hlocal hbounded hgrad_tendsto
-      hφ hmemLimP hlimP
-  have hlimK :
-      TendstoInLocalL2OnManifoldWithValues μ K
-        (fun n x ↦ u (φ n) x) uLim :=
-    hlimP.mono_set (hKP.trans interior_subset)
-  rcases
-    localRellich_zeroGradient_constant_limit_on_compact
-      (I := I) (g := g) (μ := μ) hμ hKP isOpen_interior hP_preconnected
-      hlimK huLim_zero with
-    ⟨a, hlim_const⟩
-  exact ⟨a, φ, hφ, hlim_const⟩
-
-/--
-%%handwave
-name:
-  Rellich compactness with vanishing gradients gives constants
-statement:
-  Let \(M\) be a finite-dimensional second-countable \(C^1\) real Riemannian
-  manifold, equipped with a smooth positive measure.  Let
-  \(K\subset\operatorname{int}P\subset P\subset\operatorname{int}Q\subset
-  Q\subset U\), where \(K,P,Q\) are compact, \(U\) is open, and
-  \(\operatorname{int}P\) is preconnected.  If a sequence of real-valued
-  locally \(W^{1,2}\) functions is uniformly \(W^{1,2}\)-bounded on \(Q\) and
-  its weak differentials tend to zero in \(L^2(Q)\), then a subsequence
-  converges in \(L^2(K)\) to a constant function.
-proof:
-  Apply [the two-collar Rellich extraction principle](lean:JJMath.Uniformization.localRellich_zeroGradient_subsequence_constant_on_preconnected_interior).
--/
-theorem localRellich_zeroGradient_subsequence_constant
-    {H X : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    {I : ModelWithCorners ℝ H H} [TopologicalSpace X] [R1Space X] [T2Space X]
-    [ChartedSpace H X]
-    [MeasureSpace H] [BorelSpace H] [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [MeasurableSpace X] [BorelSpace X] [MeasurableEq X] [SecondCountableTopology X]
-    [SecondCountableTopology (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (Bundle.TotalSpace ℝ (Bundle.Trivial X ℝ))]
-    [IsManifold I 1 X] [IsIdentityManifoldModel H I] [FiniteDimensional ℝ H]
-    [SecondCountableTopology (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    [TopologicalSpace.PseudoMetrizableSpace
-      (ManifoldDifferentialTotalSpace (I := I) X ℝ)]
-    {g : SmoothRiemannianMetricOnManifold I X} {μ : Measure X}
-    (hμ : SmoothPositiveMeasureOnManifold (I := I) μ)
-    {K P Q U : Set X} (hK : IsCompact K) (hKP : K ⊆ interior P)
-    (hP : IsCompact P) (hPQ : P ⊆ interior Q) (hQU : Q ⊆ U)
-    (hQ : IsCompact Q) (hU_open : IsOpen U)
-    (hP_preconnected : IsPreconnected (interior P))
-    (u : ℕ → X → ℝ) (du : ℕ → ManifoldDifferentialField I X ℝ)
-    (hlocal : ∀ n : ℕ,
-      IsLocalSobolevH1OnManifoldWithValues (I := I) g μ U (u n) (du n))
-    (hbounded : BoundedInLocalSobolevH1OnManifoldWithValues (I := I) g μ Q u du)
-    (hgrad_tendsto :
-      Filter.Tendsto (fun n : ℕ ↦ manifoldLocalDifferentialSeminormSq I g μ Q (du n))
-        Filter.atTop (𝓝 0)) :
-    ∃ (a : ℝ) (φ : ℕ → ℕ),
-      StrictMono φ ∧
-        TendstoInLocalL2OnManifoldWithValues μ K (fun n x ↦ u (φ n) x)
-          (fun _ ↦ a) := by
-  exact
-    localRellich_zeroGradient_subsequence_constant_on_preconnected_interior
-      (I := I) (g := g) (μ := μ) hμ hK hKP hP hPQ hQU hQ hU_open
-      hP_preconnected u du hlocal hbounded hgrad_tendsto
 
 end
 

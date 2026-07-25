@@ -20,7 +20,13 @@ noncomputable section
 universe v w m
 universe v' w' m'
 
-/-- The unique vertex of the standard zero-simplex. -/
+/--
+%%handwave
+name:
+  Vertex of the standard zero-simplex
+statement:
+  The standard $0$-simplex has the unique barycentric point whose sole coordinate is $1$.
+-/
 def standardZeroSimplexVertex : StandardSimplex 0 :=
   ⟨fun _ => 1, by
     constructor
@@ -50,7 +56,13 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
-/-- Integration of a smooth form over a smooth singular chain. -/
+/--
+%%handwave
+name:
+  Integral of a smooth form over a smooth chain
+statement:
+  For a smooth real $k$-form $\omega$ and smooth singular $k$-chain $c$, the integral $\int_c\omega$ is the linear sum of the pullback integrals over the simplices of $c$.
+-/
 noncomputable def integrateSmoothChain
     {k : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ k)
@@ -94,115 +106,6 @@ theorem integrateSmoothChain_add {k : ℕ}
       integrateSmoothChain (I := I) omega c₁ +
         integrateSmoothChain (I := I) omega c₂ := by
   simp [integrateSmoothChain, integrateChain, integrateChainHom]
-
-/--
-%%handwave
-name:
-  Integer homogeneity of integration in the chain
-statement:
-  For \(m\in\mathbb Z\) and a smooth \(k\)-chain \(c\),
-  \(\int_{m c}\omega=m\int_c\omega\).
-proof:
-  Every additive homomorphism of abelian groups commutes with integer scalar
-  multiplication.
--/
-theorem integrateSmoothChain_zsmul {k : ℕ}
-    (omega : SmoothForms (I := I) (M := M) ℝ k)
-    (n : ℤ) (c : SingularChain (I := I) (M := M) k ∞) :
-    integrateSmoothChain (I := I) omega (n • c) =
-      n • integrateSmoothChain (I := I) omega c := by
-  exact map_zsmul
-    (integrateChainHom (I := I) (F := ℝ)
-      (pullbackSimplexIntegrationTheory (I := I) (M := M) (F := ℝ))
-      (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-      (DifferentialForm.toContinuous
-        (I := I) (M := M) (F := ℝ) (n := k) omega)) n c
-
-/--
-%%handwave
-name:
-  Additivity of integration in the differential form
-statement:
-  For smooth \(k\)-forms \(\omega,\eta\) and a smooth \(k\)-chain \(c\),
-  \(\int_c(\omega+\eta)=\int_c\omega+\int_c\eta\).
-proof:
-  Reduce by linearity of chains to a single simplex.  There the pullback
-  coefficient is pointwise additive, and additivity of the Lebesgue integral
-  gives the result.
--/
-theorem integrateSmoothChain_add_form {k : ℕ}
-    (omega eta : SmoothForms (I := I) (M := M) ℝ k)
-    (c : SingularChain (I := I) (M := M) k ∞) :
-    integrateSmoothChain (I := I) (omega + eta) c =
-      integrateSmoothChain (I := I) omega c +
-        integrateSmoothChain (I := I) eta c := by
-  classical
-  induction c using Finsupp.induction_linear with
-  | zero => simp
-  | add c d hc hd =>
-      rw [integrateSmoothChain_add, integrateSmoothChain_add,
-        integrateSmoothChain_add, hc, hd]
-      ring
-  | single sigma n =>
-      unfold integrateSmoothChain
-      rw [integrateChain_single, integrateChain_single, integrateChain_single]
-      simp only [integrateSimplex, pullbackSimplexIntegrationTheory]
-      unfold integrateSimplexByPullback
-      have hcoeff (x : Fin k → ℝ) :
-          simplexPullbackCoefficient (I := I) (F := ℝ)
-              (DifferentialForm.toContinuous (omega + eta)) sigma x =
-            simplexPullbackCoefficient (I := I) (F := ℝ)
-                (DifferentialForm.toContinuous omega) sigma x +
-              simplexPullbackCoefficient (I := I) (F := ℝ)
-                (DifferentialForm.toContinuous eta) sigma x := by
-        rfl
-      simp_rw [hcoeff]
-      rw [MeasureTheory.integral_add
-        (integrableOn_simplexPullbackCoefficient (I := I)
-          (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-          (DifferentialForm.toContinuous omega) sigma)
-        (integrableOn_simplexPullbackCoefficient (I := I)
-          (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-          (DifferentialForm.toContinuous eta) sigma)]
-      module
-
-/--
-%%handwave
-name:
-  Real homogeneity of integration in the differential form
-statement:
-  For \(a\in\mathbb R\), a smooth \(k\)-form \(\omega\), and a smooth
-  \(k\)-chain \(c\), \(\int_c a\omega=a\int_c\omega\).
-proof:
-  Reduce by linearity of chains to a single simplex.  Pullback evaluation is
-  pointwise homogeneous, and scalar multiplication commutes with integration.
--/
-theorem integrateSmoothChain_smul_form {k : ℕ}
-    (a : ℝ) (omega : SmoothForms (I := I) (M := M) ℝ k)
-    (c : SingularChain (I := I) (M := M) k ∞) :
-    integrateSmoothChain (I := I) (a • omega) c =
-      a * integrateSmoothChain (I := I) omega c := by
-  classical
-  induction c using Finsupp.induction_linear with
-  | zero => simp
-  | add c d hc hd =>
-      rw [integrateSmoothChain_add, integrateSmoothChain_add, hc, hd]
-      ring
-  | single sigma n =>
-      unfold integrateSmoothChain
-      rw [integrateChain_single, integrateChain_single]
-      simp only [integrateSimplex, pullbackSimplexIntegrationTheory]
-      unfold integrateSimplexByPullback
-      have hcoeff (x : Fin k → ℝ) :
-          simplexPullbackCoefficient (I := I) (F := ℝ)
-              (DifferentialForm.toContinuous (a • omega)) sigma x =
-            a • simplexPullbackCoefficient (I := I) (F := ℝ)
-              (DifferentialForm.toContinuous omega) sigma x := by
-        rfl
-      simp_rw [hcoeff]
-      rw [MeasureTheory.integral_smul]
-      simp only [smul_eq_mul]
-      ring
 
 /--
 %%handwave
@@ -358,210 +261,13 @@ theorem isContMDiffForm_of_locally_eventuallyEq_smoothForms
   exact (omega.isContMDiff e he y hy).congr_of_eventuallyEq_of_mem
     hcoordinate hy
 
-/-- Extend a smooth form from one side of a set by zero, assuming the form
-already vanishes near every frontier point. -/
-noncomputable def smoothFormPiecewiseZero
-    {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x, omega.toFun y = 0) :
-    SmoothForms (I := I) (M := M) ℝ n := by
-  classical
-  exact
-    { toFun := fun x => if x ∈ U then omega.toFun x else 0
-      isContMDiff := by
-        apply isContMDiffForm_of_locally_eventuallyEq_smoothForms (I := I)
-        intro x
-        by_cases hxU : x ∈ interior U
-        · refine ⟨omega, ?_⟩
-          filter_upwards [isOpen_interior.mem_nhds hxU] with y hy
-          simp [interior_subset hy]
-        by_cases hxclosure : x ∈ closure U
-        · have hxfrontier : x ∈ frontier U := ⟨hxclosure, hxU⟩
-          refine ⟨0, ?_⟩
-          filter_upwards [hzero x hxfrontier] with y hy
-          by_cases hyU : y ∈ U <;> simp [hyU, hy]
-        · refine ⟨0, ?_⟩
-          have hxcompl : x ∈ (closure U)ᶜ := by simpa using hxclosure
-          filter_upwards [isClosed_closure.isOpen_compl.mem_nhds hxcompl] with y hy
-          have hyU : y ∉ U := fun hyU => hy (subset_closure hyU)
-          simp [hyU] }
-
 /--
 %%handwave
 name:
-  Extension by zero on the retained region
+  Postcomposition of a smooth singular simplex
 statement:
-  If a smooth form \(\omega\) is extended by zero outside \(U\), then at every
-  \(x\in U\) the extended form equals \(\omega_x\).
-proof:
-  The piecewise definition selects \(\omega\) at points of \(U\).
+  A $C^r$ map $f:M\to N$ sends a smooth singular simplex $\sigma:\Delta^k\to M$ to the smooth singular simplex $f\circ\sigma:\Delta^k\to N$.
 -/
-@[simp]
-theorem smoothFormPiecewiseZero_toFun_of_mem
-    {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x, omega.toFun y = 0)
-    {x : M} (hx : x ∈ U) :
-    (smoothFormPiecewiseZero (I := I) omega U hzero).toFun x = omega.toFun x := by
-  classical
-  simp [smoothFormPiecewiseZero, hx]
-
-/--
-%%handwave
-name:
-  Extension by zero off the retained region
-statement:
-  If a smooth form \(\omega\) is extended by zero outside \(U\), then at every
-  \(x\notin U\) the extended form equals \(0\).
-proof:
-  The piecewise definition selects the zero form outside \(U\).
--/
-@[simp]
-theorem smoothFormPiecewiseZero_toFun_of_not_mem
-    {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x, omega.toFun y = 0)
-    {x : M} (hx : x ∉ U) :
-    (smoothFormPiecewiseZero (I := I) omega U hzero).toFun x = 0 := by
-  classical
-  simp [smoothFormPiecewiseZero, hx]
-
-/--
-%%handwave
-name:
-  Closedness of an extension by zero
-statement:
-  Let \(\omega\) be a closed smooth \(n\)-form and suppose that near every
-  point of the frontier of \(U\), \(\omega\) vanishes.  Then the form equal to
-  \(\omega\) on \(U\) and \(0\) outside \(U\) is closed.
-proof:
-  At an interior point it has the same germ as \(\omega\); at a frontier or
-  exterior point it has the same germ as zero.  Exterior differentiation
-  depends only on the germ, so it vanishes everywhere.
--/
-theorem deRhamDifferential_smoothFormPiecewiseZero_eq_zero
-    {n : ℕ} (omega : SmoothForms (I := I) (M := M) ℝ n) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x, omega.toFun y = 0)
-    (hclosed : deRhamDifferential (I := I) (M := M) (A := ℝ) n omega = 0) :
-    deRhamDifferential (I := I) (M := M) (A := ℝ) n
-      (smoothFormPiecewiseZero (I := I) omega U hzero) = 0 := by
-  classical
-  apply DifferentialForm.ext
-  intro x
-  by_cases hxU : x ∈ interior U
-  · have hlocal : ∀ᶠ y in 𝓝 x,
-        (smoothFormPiecewiseZero (I := I) omega U hzero).toFun y =
-          omega.toFun y := by
-      filter_upwards [isOpen_interior.mem_nhds hxU] with y hy
-      simp [interior_subset hy]
-    rw [deRhamDifferential_toFun_eq_of_eventuallyEq
-      (I := I) (smoothFormPiecewiseZero (I := I) omega U hzero) omega hlocal]
-    simpa using congrArg (fun theta => theta.toFun x) hclosed
-  by_cases hxclosure : x ∈ closure U
-  · have hxfrontier : x ∈ frontier U := ⟨hxclosure, hxU⟩
-    have hlocal : ∀ᶠ y in 𝓝 x,
-        (smoothFormPiecewiseZero (I := I) omega U hzero).toFun y =
-          (0 : SmoothForms (I := I) (M := M) ℝ n).toFun y := by
-      filter_upwards [hzero x hxfrontier] with y hy
-      by_cases hyU : y ∈ U <;> simp [hyU, hy]
-    rw [deRhamDifferential_toFun_eq_of_eventuallyEq
-      (I := I) (smoothFormPiecewiseZero (I := I) omega U hzero) 0 hlocal]
-    have hdzero :
-        deRhamDifferential (I := I) (M := M) (A := ℝ) n
-          (0 : SmoothForms (I := I) (M := M) ℝ n) = 0 := by
-      exact LinearMap.map_zero _
-    simpa using congrArg (fun theta => theta.toFun x) hdzero
-
-  · have hxcompl : x ∈ (closure U)ᶜ := by simpa using hxclosure
-    have hlocal : ∀ᶠ y in 𝓝 x,
-        (smoothFormPiecewiseZero (I := I) omega U hzero).toFun y =
-          (0 : SmoothForms (I := I) (M := M) ℝ n).toFun y := by
-      filter_upwards [isClosed_closure.isOpen_compl.mem_nhds hxcompl] with y hy
-      have hyU : y ∉ U := fun hyU => hy (subset_closure hyU)
-      simp [hyU]
-    rw [deRhamDifferential_toFun_eq_of_eventuallyEq
-      (I := I) (smoothFormPiecewiseZero (I := I) omega U hzero) 0 hlocal]
-    have hdzero :
-        deRhamDifferential (I := I) (M := M) (A := ℝ) n
-          (0 : SmoothForms (I := I) (M := M) ℝ n) = 0 := by
-      exact LinearMap.map_zero _
-    simpa using congrArg (fun theta => theta.toFun x) hdzero
-
-/-- A locally supported exact form, extended by zero across a region's
-frontier, is a global closed one-form. -/
-noncomputable def piecewiseExactOneForm
-    (theta : SmoothForms (I := I) (M := M) ℝ 0) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x,
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) 0 theta).toFun y = 0) :
-    DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1 :=
-  ⟨smoothFormPiecewiseZero (I := I)
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) 0 theta) U hzero,
-    deRhamDifferential_smoothFormPiecewiseZero_eq_zero
-      (I := I)
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) 0 theta) U hzero
-      (deRhamDifferential_comp_eq_zero (I := I) (M := M) (A := ℝ) theta)⟩
-
-/--
-%%handwave
-name:
-  Simplex integrals depend only on values along the simplex
-statement:
-  If two continuous \(k\)-forms \(\omega,\eta\) have equal values at every
-  point of a smooth simplex \(\sigma:\Delta^k\to M\), then
-  \(\int_\sigma\omega=\int_\sigma\eta\).
-proof:
-  On the simplex coordinate domain, both pullback coefficients use the same
-  parameterization and derivative; equality of the form values makes the
-  integrands pointwise equal.
--/
-theorem integrateSimplexByPullback_eq_of_toFun_eqOn
-    {k : ℕ} {r : WithTop ℕ∞} (hcell : (1 : WithTop ℕ∞) ≤ r)
-    (omega eta : ContinuousDifferentialForm (I := I) (M := M) (F := ℝ) k)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := M) k r)
-    (hform : ∀ q : StandardSimplex k,
-      omega.toFun (sigma q) = eta.toFun (sigma q)) :
-    integrateSimplexByPullback (I := I) (F := ℝ) hcell omega sigma =
-      integrateSimplexByPullback (I := I) (F := ℝ) hcell eta sigma := by
-  classical
-  unfold integrateSimplexByPullback
-  congr 1
-  apply MeasureTheory.setIntegral_congr_fun
-    (measurableSet_simplexCoordinateDomain k)
-  intro x hx
-  let q : StandardSimplex k :=
-    ⟨simplexCoordinateMap k x, simplexCoordinateMap_mem_stdSimplex hx⟩
-  have hextension : sigma.extension (simplexCoordinateMap k x) = sigma q :=
-    sigma.extension_eq q
-  simp only [simplexPullbackCoefficient, simplexPullbackCoefficientUsingExtension,
-    simplexPullbackFormUsingExtension, simplexParametrizationUsingExtension]
-  rw [hextension, hform q]
-
-/--
-%%handwave
-name:
-  Equality of singleton-chain integrals from pointwise equality
-statement:
-  If smooth \(k\)-forms \(\omega,\eta\) agree at every point of a smooth
-  simplex \(\sigma\), then their integrals over the singleton chain
-  \([\sigma]\) are equal.
-proof:
-  Integration over a singleton chain is the simplex pullback integral, which
-  depends only on the values of the form along \(\sigma\).
--/
-theorem integrateSmoothChain_single_eq_of_toFun_eqOn
-    {k : ℕ} (omega eta : SmoothForms (I := I) (M := M) ℝ k)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := M) k ∞)
-    (hform : ∀ q : StandardSimplex k,
-      omega.toFun (sigma q) = eta.toFun (sigma q)) :
-    integrateSmoothChain (I := I) omega (Finsupp.single sigma (1 : ℤ)) =
-      integrateSmoothChain (I := I) eta (Finsupp.single sigma (1 : ℤ)) := by
-  unfold integrateSmoothChain
-  rw [integrateChain_single, integrateChain_single]
-  simp only [one_zsmul, integrateSimplex, pullbackSimplexIntegrationTheory]
-  exact integrateSimplexByPullback_eq_of_toFun_eqOn
-    (I := I) (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-    (DifferentialForm.toContinuous (I := I) (M := M) (F := ℝ) (n := k) omega)
-    (DifferentialForm.toContinuous (I := I) (M := M) (F := ℝ) (n := k) eta)
-    sigma hform
-
-/-- Postcompose a smooth singular simplex with a smooth map. -/
 noncomputable def ContMDiffSingularSimplex.postcompose
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -579,29 +285,6 @@ noncomputable def ContMDiffSingularSimplex.postcompose
     · exact f.contMDiff.comp_contMDiffOn sigma.extension_contMDiffOn
     · intro q
       exact congrArg f (sigma.extension_eq q)
-
-/--
-%%handwave
-name:
-  Pointwise formula for postcomposing a simplex
-statement:
-  For a smooth map \(f:M\to N\), a smooth simplex \(\sigma\), and
-  \(q\in\Delta^k\), \((f\circ\sigma)(q)=f(\sigma(q))\).
-proof:
-  This is the definition of postcomposition.
--/
-@[simp]
-theorem ContMDiffSingularSimplex.postcompose_apply
-    {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
-    {H' : Type w'} [TopologicalSpace H']
-    {N : Type m'} [TopologicalSpace N] [ChartedSpace H' N]
-    {I' : ModelWithCorners ℝ E' H'} [IsManifold I' ∞ N]
-    {k : ℕ} {r : WithTop ℕ∞}
-    (f : C^r⟮I, M; I', N⟯)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := M) k r)
-    (q : StandardSimplex k) :
-    sigma.postcompose (I := I) f q = f (sigma q) :=
-  rfl
 
 /--
 %%handwave
@@ -627,7 +310,13 @@ theorem ContMDiffSingularSimplex.postcompose_face
       (sigma.face i).postcompose (I := I) f := by
   rfl
 
-/-- Postcompose every simplex in a smooth singular chain with a smooth map. -/
+/--
+%%handwave
+name:
+  Pushforward of a smooth singular chain
+statement:
+  A $C^r$ map $f:M\to N$ pushes a smooth singular chain forward by postcomposing every simplex with $f$ and preserving its integer coefficient.
+-/
 noncomputable def SingularChain.postcompose
     {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace ℝ E']
     {H' : Type w'} [TopologicalSpace H']
@@ -780,8 +469,13 @@ theorem SingularChain.postcompose_boundary
       rw [map_zsmul]
       simp [ContMDiffSingularSimplex.postcompose_face]
 
-/-- Regard a smooth singular simplex in an open subset as a simplex in the
-ambient manifold. -/
+/--
+%%handwave
+name:
+  Ambient inclusion of a simplex in an open subset
+statement:
+  A smooth singular simplex $\sigma:\Delta^k\to U$ in an open subset $U\subseteq M$ determines the ambient simplex $\Delta^k\to M$ obtained by composing with the inclusion.
+-/
 noncomputable def ContMDiffSingularSimplex.openInclusion
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
     (sigma : ContMDiffSingularSimplex (I := I) (M := U) k r) :
@@ -794,52 +488,6 @@ noncomputable def ContMDiffSingularSimplex.openInclusion
         sigma.extension_contMDiffOn
     · intro q
       exact congrArg Subtype.val (sigma.extension_eq q)
-
-/--
-%%handwave
-name:
-  Pointwise formula for inclusion of an open-subset simplex
-statement:
-  If \(U\subseteq M\) is open, \(\sigma:\Delta^k\to U\), and
-  \(q\in\Delta^k\), then the included simplex takes \(q\) to the underlying
-  point of \(\sigma(q)\) in \(M\).
-proof:
-  This is the definition of inclusion.
--/
-@[simp]
-theorem ContMDiffSingularSimplex.openInclusion_apply
-    (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
-    (sigma : ContMDiffSingularSimplex (I := I) (M := U) k r)
-    (q : StandardSimplex k) :
-    sigma.openInclusion (I := I) U q = (sigma q : M) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Injectivity of including simplices from an open subset
-statement:
-  Inclusion \(U\hookrightarrow M\) induces an injective map from smooth
-  simplices in \(U\) to smooth simplices in \(M\).
-proof:
-  Equality after inclusion gives equality of underlying points because the
-  subtype inclusion is injective, hence equality of the original simplices.
--/
-theorem ContMDiffSingularSimplex.openInclusion_injective
-    (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞} :
-    Function.Injective
-      (fun sigma : ContMDiffSingularSimplex (I := I) (M := U) k r =>
-        sigma.openInclusion (I := I) U) := by
-  intro sigma tau h
-  rcases sigma with ⟨sigma, hsigma⟩
-  rcases tau with ⟨tau, htau⟩
-  have hmaps : sigma = tau := by
-    apply ContinuousMap.ext
-    intro q
-    apply Subtype.ext
-    exact congrArg (fun s => s q) h
-  subst tau
-  rfl
 
 /--
 %%handwave
@@ -861,8 +509,13 @@ theorem ContMDiffSingularSimplex.openInclusion_face
   rcases sigma with ⟨sigma, hsigma⟩
   rfl
 
-/-- Regard a smooth singular chain in an open subset as a chain in the
-ambient manifold. -/
+/--
+%%handwave
+name:
+  Ambient inclusion of a chain in an open subset
+statement:
+  A smooth singular chain in an open subset $U\subseteq M$ is included into $M$ by applying the ambient inclusion to each simplex and retaining its coefficient.
+-/
 noncomputable def SingularChain.openInclusion
     (U : TopologicalSpace.Opens M) {k : ℕ} {r : WithTop ℕ∞}
     (c : SingularChain (I := I) (M := U) k r) :
@@ -1004,8 +657,13 @@ theorem SingularChain.openInclusion_boundary
       rw [map_zsmul]
       simp [ContMDiffSingularSimplex.openInclusion_face]
 
-/-- Include a smooth singular simplex from a smaller open subset into a
-larger open subset of the same manifold. -/
+/--
+%%handwave
+name:
+  Nested open inclusion of a smooth simplex
+statement:
+  For open subsets $U\subseteq V$ of a manifold, a smooth singular simplex in $U$ determines a simplex in $V$ by composition with the inclusion $U\hookrightarrow V$.
+-/
 noncomputable def ContMDiffSingularSimplex.nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} {r : WithTop ℕ∞}
@@ -1020,27 +678,6 @@ noncomputable def ContMDiffSingularSimplex.nestedOpenInclusion
         sigma.extension_contMDiffOn
     · intro q
       exact congrArg (TopologicalSpace.Opens.inclusion hUV) (sigma.extension_eq q)
-
-/--
-%%handwave
-name:
-  Pointwise formula for inclusion between nested open subsets
-statement:
-  If \(U\subseteq V\) are open and \(\sigma:\Delta^k\to U\), then at every
-  \(q\in\Delta^k\) the included simplex is the image of \(\sigma(q)\) under
-  \(U\hookrightarrow V\).
-proof:
-  This is the defining formula for nested inclusion.
--/
-@[simp]
-theorem ContMDiffSingularSimplex.nestedOpenInclusion_apply
-    {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
-    {k : ℕ} {r : WithTop ℕ∞}
-    (sigma : ContMDiffSingularSimplex (I := I) (M := U) k r)
-    (q : StandardSimplex k) :
-    sigma.nestedOpenInclusion (I := I) hUV q =
-      TopologicalSpace.Opens.inclusion hUV (sigma q) :=
-  rfl
 
 /--
 %%handwave
@@ -1063,8 +700,13 @@ theorem ContMDiffSingularSimplex.nestedOpenInclusion_face
   rcases sigma with ⟨sigma, hsigma⟩
   rfl
 
-/-- Include a smooth singular chain from a smaller open subset into a larger
-one. -/
+/--
+%%handwave
+name:
+  Nested open inclusion of a smooth chain
+statement:
+  For open subsets $U\subseteq V$, a smooth singular chain in $U$ is included into $V$ by including each simplex and preserving its integer coefficient.
+-/
 noncomputable def SingularChain.nestedOpenInclusion
     {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
     {k : ℕ} {r : WithTop ℕ∞}
@@ -1072,23 +714,6 @@ noncomputable def SingularChain.nestedOpenInclusion
     SingularChain (I := I) (M := V) k r :=
   Finsupp.mapDomain
     (fun sigma => sigma.nestedOpenInclusion (I := I) hUV) c
-
-/--
-%%handwave
-name:
-  Nested open inclusion preserves the zero chain
-statement:
-  For \(U\subseteq V\), the induced map on chains sends \(0\) to \(0\).
-proof:
-  It is induced by mapping the simplex basis.
--/
-@[simp]
-theorem SingularChain.nestedOpenInclusion_zero
-    {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
-    {k : ℕ} {r : WithTop ℕ∞} :
-    SingularChain.nestedOpenInclusion (I := I) hUV
-        (0 : SingularChain (I := I) (M := U) k r) = 0 := by
-  simp [SingularChain.nestedOpenInclusion]
 
 /--
 %%handwave
@@ -1216,181 +841,6 @@ theorem SingularChain.nestedOpenInclusion_boundary
       intro i hi
       rw [map_zsmul]
       simp [ContMDiffSingularSimplex.nestedOpenInclusion_face]
-
-/--
-%%handwave
-name:
-  Pullback coefficient under inclusion of nested open subsets
-statement:
-  Let \(U\subseteq V\), let \(\omega\) be a smooth \(k\)-form on \(V\), and
-  let \(\sigma:\Delta^k\to U\).  At every simplex coordinate \(x\), the
-  pullback coefficient of \(\omega\) along the included simplex equals that
-  of \(\omega|_U\) along \(\sigma\).
-proof:
-  The included parameterization is the inclusion composed with the original
-  one.  The chain rule identifies its derivative, and the definition of
-  restriction composes \(\omega\) with exactly that inclusion derivative.
--/
-theorem simplexPullbackCoefficient_nestedOpenInclusion
-    {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
-    {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := U) k ∞)
-    {x : Fin k → ℝ} (hx : x ∈ simplexCoordinateDomain k) :
-    simplexPullbackCoefficient (I := I) (F := ℝ)
-        (DifferentialForm.toContinuous
-          (I := I) (M := V) (F := ℝ) (n := k) omega)
-        (sigma.nestedOpenInclusion (I := I) hUV) x =
-      simplexPullbackCoefficient (I := I) (F := ℝ)
-        (DifferentialForm.toContinuous
-          (I := I) (M := U) (F := ℝ) (n := k)
-          (restrictSmoothFormsOfLE (I := I) (A := ℝ) hUV k omega))
-        sigma x := by
-  let sigmaV := sigma.nestedOpenInclusion (I := I) hUV
-  let G : SimplexAmbient k → V := fun q =>
-    TopologicalSpace.Opens.inclusion hUV (sigma.extension q)
-  have hGdiff :
-      ContMDiffOn 𝓘(ℝ, SimplexAmbient k) I ∞ G
-        (stdSimplex ℝ (Fin (k + 1))) := by
-    exact (contMDiff_inclusion (I := I) (n := ∞) hUV).comp_contMDiffOn
-      sigma.extension_contMDiffOn
-  have hGeq : ∀ q : StandardSimplex k, G q = sigmaV q := by
-    intro q
-    exact congrArg (TopologicalSpace.Opens.inclusion hUV)
-      (sigma.extension_eq q)
-  have hextension :
-      simplexPullbackCoefficientUsingExtension (I := I) (F := ℝ)
-          (DifferentialForm.toContinuous
-            (I := I) (M := V) (F := ℝ) (n := k) omega)
-          sigmaV.extension x =
-        simplexPullbackCoefficientUsingExtension (I := I) (F := ℝ)
-          (DifferentialForm.toContinuous
-            (I := I) (M := V) (F := ℝ) (n := k) omega)
-          G x := by
-    exact simplexPullbackCoefficientUsingExtension_eq_of_eqOn
-      (I := I) (F := ℝ)
-      (DifferentialForm.toContinuous
-        (I := I) (M := V) (F := ℝ) (n := k) omega)
-      sigmaV sigmaV.extension_contMDiffOn hGdiff sigmaV.extension_eq hGeq hx
-  rw [show simplexPullbackCoefficient (I := I) (F := ℝ)
-        (DifferentialForm.toContinuous
-          (I := I) (M := V) (F := ℝ) (n := k) omega)
-        sigmaV x =
-      simplexPullbackCoefficientUsingExtension (I := I) (F := ℝ)
-        (DifferentialForm.toContinuous
-          (I := I) (M := V) (F := ℝ) (n := k) omega)
-        sigmaV.extension x by rfl,
-    hextension]
-  let f : (Fin k → ℝ) → U :=
-    simplexParametrizationUsingExtension sigma.extension
-  let g : U → V := TopologicalSpace.Opens.inclusion hUV
-  have hf : MDifferentiableWithinAt 𝓘(ℝ, Fin k → ℝ) I f
-      (simplexCoordinateDomain k) x := by
-    exact ContMDiffSingularSimplex.mdifferentiableWithinAt_simplexParametrization
-      (I := I) (M := U) sigma (show (∞ : WithTop ℕ∞) ≠ 0 by simp) hx
-  have hg : MDifferentiableAt I I g (f x) :=
-    (contMDiff_inclusion (I := I) (n := ∞) hUV).contMDiffAt.mdifferentiableAt
-      (by simp)
-  have hderiv :
-      mfderivWithin 𝓘(ℝ, Fin k → ℝ) I (g ∘ f)
-          (simplexCoordinateDomain k) x =
-        (mfderiv I I g (f x)).comp
-          (mfderivWithin 𝓘(ℝ, Fin k → ℝ) I f
-            (simplexCoordinateDomain k) x) :=
-    mfderiv_comp_mfderivWithin
-      (I := 𝓘(ℝ, Fin k → ℝ)) (I' := I) (I'' := I)
-      (f := f) (g := g) (s := simplexCoordinateDomain k) (x := x) hg hf
-      ((uniqueDiffOn_simplexCoordinateDomain k) x hx).uniqueMDiffWithinAt
-  change
-    ((omega.toFun (G (simplexCoordinateMap k x))).compContinuousLinearMap
-      (mfderivWithin 𝓘(ℝ, Fin k → ℝ) I
-        (simplexParametrizationUsingExtension G)
-        (simplexCoordinateDomain k) x)) (fun i => Pi.single i 1) = _
-  change
-    ((omega.toFun ((g ∘ f) x)).compContinuousLinearMap
-      (mfderivWithin 𝓘(ℝ, Fin k → ℝ) I (g ∘ f)
-        (simplexCoordinateDomain k) x)) (fun i => Pi.single i 1) = _
-  rw [hderiv]
-  rfl
-
-/--
-%%handwave
-name:
-  Simplex integration under inclusion of nested open subsets
-statement:
-  If \(U\subseteq V\), \(\omega\) is a smooth \(k\)-form on \(V\), and
-  \(\sigma:\Delta^k\to U\), then
-  \[
-    \int_{\iota\circ\sigma}\omega=\int_\sigma\omega|_U.
-  \]
-proof:
-  The two pullback coefficients agree pointwise on the common simplex
-  coordinate domain, so their integrals agree.
--/
-theorem integrateSimplexByPullback_nestedOpenInclusion
-    {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
-    {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := U) k ∞) :
-    integrateSimplexByPullback (I := I) (F := ℝ)
-        (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-        (DifferentialForm.toContinuous
-          (I := I) (M := V) (F := ℝ) (n := k) omega)
-        (sigma.nestedOpenInclusion (I := I) hUV) =
-      integrateSimplexByPullback (I := I) (F := ℝ)
-        (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-        (DifferentialForm.toContinuous
-          (I := I) (M := U) (F := ℝ) (n := k)
-          (restrictSmoothFormsOfLE (I := I) (A := ℝ) hUV k omega))
-        sigma := by
-  unfold integrateSimplexByPullback
-  congr 1
-  apply MeasureTheory.setIntegral_congr_fun
-    (measurableSet_simplexCoordinateDomain k)
-  intro x hx
-  exact simplexPullbackCoefficient_nestedOpenInclusion
-    (I := I) hUV omega sigma hx
-
-/--
-%%handwave
-name:
-  Chain integration under inclusion of nested open subsets
-statement:
-  If \(U\subseteq V\), \(\omega\) is a smooth \(k\)-form on \(V\), and \(c\)
-  is a smooth \(k\)-chain in \(U\), then
-  \[
-    \int_{\iota_*c}\omega=\int_c\omega|_U.
-  \]
-proof:
-  Reduce linearly to a singleton simplex and apply the corresponding simplex
-  integration identity.
--/
-theorem integrateSmoothChain_nestedOpenInclusion
-    {U V : TopologicalSpace.Opens M} (hUV : U ≤ V)
-    {k : ℕ} (omega : SmoothForms (I := I) (M := V) ℝ k)
-    (c : SingularChain (I := I) (M := U) k ∞) :
-    integrateSmoothChain (I := I) omega
-        (SingularChain.nestedOpenInclusion (I := I) hUV c) =
-      integrateSmoothChain (I := I)
-        (restrictSmoothFormsOfLE (I := I) (A := ℝ) hUV k omega) c := by
-  classical
-  induction c using Finsupp.induction_linear with
-  | zero => simp
-  | add c d hc hd => simp [integrateSmoothChain_add, hc, hd]
-  | single sigma n =>
-      simp only [SingularChain.nestedOpenInclusion_single]
-      unfold integrateSmoothChain
-      rw [integrateChain_single, integrateChain_single]
-      change n • integrateSimplexByPullback (I := I) (F := ℝ)
-          (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-          (DifferentialForm.toContinuous
-            (I := I) (M := V) (F := ℝ) (n := k) omega)
-          (sigma.nestedOpenInclusion (I := I) hUV) =
-        n • integrateSimplexByPullback (I := I) (F := ℝ)
-          (show (1 : WithTop ℕ∞) ≤ ∞ by simp)
-          (DifferentialForm.toContinuous
-            (I := I) (M := U) (F := ℝ) (n := k)
-            (restrictSmoothFormsOfLE (I := I) (A := ℝ) hUV k omega))
-          sigma
-      rw [integrateSimplexByPullback_nestedOpenInclusion]
 
 /--
 %%handwave
@@ -2001,54 +1451,6 @@ theorem integrateSmoothChain_openInclusion_eq_endpoint_sub_of_restrict_eq_d
 /--
 %%handwave
 name:
-  Fundamental theorem for an exact form extended by zero
-statement:
-  Let \(f:M\to\mathbb R\) be smooth and extend \(df\) by zero outside a set
-  \(U\), assuming it vanishes near the frontier.  If a smooth one-simplex
-  \(\sigma\) lies in \(U\), then
-  \[
-    \int_\sigma \widetilde{df}
-      =f(\sigma(1))-f(\sigma(0)).
-  \]
-proof:
-  Along \(\sigma\), the extension agrees pointwise with \(df\), so the
-  simplex integral agrees with that of \(df\).  Apply the fundamental theorem
-  for a smooth one-simplex.
--/
-theorem integrate_piecewiseExactOneForm_single_eq_endpoint_sub
-    (f : C^∞⟮I, M; ℝ⟯) (U : Set M)
-    (hzero : ∀ x ∈ frontier U, ∀ᶠ y in 𝓝 x,
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) 0
-        (smoothRealFunctionToZeroForm (I0 := I) f)).toFun y = 0)
-    (sigma : ContMDiffSingularSimplex (I := I) (M := M) 1 ∞)
-    (hsigma : ∀ q : StandardSimplex 1, sigma q ∈ U) :
-    integrateSmoothChain (I := I)
-        ((piecewiseExactOneForm (I := I)
-          (smoothRealFunctionToZeroForm (I0 := I) f) U hzero :
-            DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1) :
-          SmoothForms (I := I) (M := M) ℝ 1)
-        (Finsupp.single sigma (1 : ℤ)) =
-      f (sigma.face 0 standardZeroSimplexVertex) -
-        f (sigma.face 1 standardZeroSimplexVertex) := by
-  rw [integrateSmoothChain_single_eq_of_toFun_eqOn
-    (I := I)
-    ((piecewiseExactOneForm (I := I)
-      (smoothRealFunctionToZeroForm (I0 := I) f) U hzero :
-        DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1) :
-      SmoothForms (I := I) (M := M) ℝ 1)
-    (deRhamDifferential (I := I) (M := M) (A := ℝ) 0
-      (smoothRealFunctionToZeroForm (I0 := I) f)) sigma]
-  · exact integrateSmoothChain_deRhamDifferential_zero_single_eq_endpoint_sub
-      (I := I) f sigma
-  · intro q
-    exact smoothFormPiecewiseZero_toFun_of_mem
-      (I := I)
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) 0
-        (smoothRealFunctionToZeroForm (I0 := I) f)) U hzero (hsigma q)
-
-/--
-%%handwave
-name:
   Exact one-forms have zero period
 statement:
   The integral of an exact smooth one-form over every smooth singular
@@ -2128,42 +1530,6 @@ theorem deRhamCohomologyClass_ne_zero_of_nonzero_period
     (integrateSmoothChain_eq_zero_of_mem_deRhamExactForms_one
       (I := I) (omega := (omega : SmoothForms (I := I) (M := M) ℝ 1))
       hexact c hcycle)
-
-/--
-%%handwave
-name:
-  A nonzero local period detects a nonzero restricted class
-statement:
-  Let \(W\subseteq V\) be open.  If a closed one-form \(\omega\) on \(V\)
-  has nonzero period after restriction to a one-cycle \(c\) in \(W\), then
-  the restricted class \([\omega]|_W\) is nonzero in
-  \(H_{\mathrm{dR}}^1(W;\mathbb R)\).
-proof:
-  The restricted form is closed and retains the asserted nonzero period.
-  Hence its de Rham class is nonzero by the period criterion.
--/
-theorem deRhamCohomologyRestrictionOfLE_ne_zero_of_nonzero_period
-    {W V : TopologicalSpace.Opens M} (hWV : W ≤ V)
-    (omega : DeRhamClosedForms (I := I) (M := V) (A := ℝ) 1)
-    (c : SingularChain (I := I) (M := W) 1 ∞)
-    (hcycle : boundary (I := I) c = 0)
-    (hperiod :
-      integrateSmoothChain (I := I)
-        (restrictSmoothFormsOfLE (I := I) (A := ℝ) hWV 1
-          (omega : SmoothForms (I := I) (M := V) ℝ 1)) c ≠ 0) :
-    deRhamCohomologyRestrictionOfLE (I := I) (A := ℝ) hWV 1
-        ((DeRhamExactClosedForms
-          (I := I) (M := V) (A := ℝ) 1).mkQ omega) ≠ 0 := by
-  let omegaW := deRhamClosedFormsRestrictionOfLE
-    (I := I) (A := ℝ) hWV 1 omega
-  have hperiodW :
-      integrateSmoothChain (I := I)
-        (omegaW : SmoothForms (I := I) (M := W) ℝ 1) c ≠ 0 := by
-    simpa [omegaW, deRhamClosedFormsRestrictionOfLE] using hperiod
-  have hclassW := deRhamCohomologyClass_ne_zero_of_nonzero_period
-    (I := I) omegaW c hcycle hperiodW
-  simpa [deRhamCohomologyRestrictionOfLE, omegaW,
-    Submodule.mapQ_apply] using hclassW
 
 /--
 %%handwave

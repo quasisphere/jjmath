@@ -34,60 +34,6 @@ instance instLocallyCompactSpaceComplexUnitDisc : LocallyCompactSpace Complex.Un
 /--
 %%handwave
 name:
-  Unique preimages imply surjectivity
-statement:
-  If every \(y\) has a unique \(x\) satisfying \(f(x)=y\), then \(f\) is
-  surjective.
-proof:
-  For each \(y\), discard uniqueness and retain the asserted preimage.
--/
-theorem surjective_of_existsUnique_preimage {α β : Type*} {f : α → β}
-    (hfiber : ∀ y : β, ∃! x : α, f x = y) :
-    Function.Surjective f := by
-  intro y
-  rcases hfiber y with ⟨x, hx, _⟩
-  exact ⟨x, hx⟩
-
-/--
-%%handwave
-name:
-  Unique preimages imply injectivity
-statement:
-  If every target fiber of \(f:\alpha\to\beta\) contains exactly one point,
-  then \(f\) is injective.
-proof:
-  If \(f(x)=f(y)\), both \(x\) and \(y\) are the unique preimage of
-  \(f(x)\), so they are equal.
--/
-theorem injective_of_existsUnique_preimage {α β : Type*} {f : α → β}
-    (hfiber : ∀ y : β, ∃! x : α, f x = y) :
-    Function.Injective f := by
-  intro x y hxy
-  rcases hfiber (f x) with ⟨w, _hw, huniq⟩
-  have hxw : x = w := huniq x rfl
-  have hyw : y = w := huniq y (by simp [hxy])
-  exact hxw.trans hyw.symm
-
-/--
-%%handwave
-name:
-  Unique preimages imply bijectivity
-statement:
-  If every target fiber of a map contains exactly one point, then the map is
-  bijective.
-proof:
-  The unique-preimage hypothesis separately gives injectivity and
-  surjectivity.
--/
-theorem bijective_of_existsUnique_preimage {α β : Type*} {f : α → β}
-    (hfiber : ∀ y : β, ∃! x : α, f x = y) :
-    Function.Bijective f :=
-  ⟨injective_of_existsUnique_preimage hfiber,
-    surjective_of_existsUnique_preimage hfiber⟩
-
-/--
-%%handwave
-name:
   Neighborhood statements through an open complex embedding
 statement:
   Let \(\varphi:Y\to\mathbb C\) be an open embedding.  A property \(P(y)\)
@@ -273,31 +219,6 @@ theorem eq_of_old_fiber_mem_pairwiseDisjoint_fiber_neighborhood
 /--
 %%handwave
 name:
-  A selected fiber neighborhood isolates its indexed point
-statement:
-  Under pairwise disjoint selected neighborhoods containing their indexed
-  old-fiber points,
-  \(U_{x_0}\cap f^{-1}(y_0)\subseteq\{x_0\}\).
-proof:
-  Any point in the intersection is an old-fiber point lying in
-  \(U_{x_0}\), so the preceding uniqueness result identifies it with
-  \(x_0\).
--/
-theorem fiber_neighborhood_inter_old_fiber_subset_singleton
-    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    {f : α → β} {y₀ : β} {U : α → Set α}
-    (hU_mem : ∀ x : α, f x = y₀ → x ∈ U x)
-    (hpair : ({x : α | f x = y₀}.PairwiseDisjoint U))
-    {x₀ : α} (hx₀ : f x₀ = y₀) :
-    U x₀ ∩ {z : α | f z = y₀} ⊆ {x₀} := by
-  intro z hz
-  exact Set.mem_singleton_iff.mpr
-    (eq_of_old_fiber_mem_pairwiseDisjoint_fiber_neighborhood
-      hU_mem hpair hx₀ hz.2 hz.1)
-
-/--
-%%handwave
-name:
   Other fiber points are locally outside a selected neighborhood
 statement:
   Let \((U_x)\) be pairwise disjoint open neighborhoods of
@@ -349,36 +270,6 @@ theorem existsUnique_fiber_neighborhood_of_mem_fiber_subset_pairwiseDisjoint
   exact (eq_of_mem_pairwiseDisjoint_fiber_neighborhoods
     (f := f) (y₀ := y₀) (U := U) hpair
     (x₀ := x₀.1) (x₁ := x₁.1) (z := z) x₀.2 x₁.2 hzU hzU₁).symm
-
-/--
-%%handwave
-name:
-  Eventual unique assignment to old-fiber neighborhoods
-statement:
-  Let \(f\) be proper with Hausdorff source and finite fiber over \(y_0\).
-  There are pairwise disjoint open neighborhoods of the old fiber points such
-  that, for every sufficiently nearby \(y\), each point of \(f^{-1}(y)\) lies
-  in exactly one selected neighborhood.
-proof:
-  Choose disjoint neighborhoods whose union eventually contains every nearby
-  fiber, then apply uniqueness of the containing neighborhood pointwise.
--/
-theorem eventually_existsUnique_fiber_neighborhood_of_properMap_finite_fiber
-    {α β : Type*} [TopologicalSpace α] [T2Space α] [TopologicalSpace β]
-    {f : α → β} (hproper : IsProperMap f) (y₀ : β)
-    (hfinite : {x : α | f x = y₀}.Finite) :
-    ∃ U : α → Set α,
-      (∀ x : α, x ∈ {x : α | f x = y₀} → x ∈ U x ∧ IsOpen (U x)) ∧
-        ({x : α | f x = y₀}.PairwiseDisjoint U) ∧
-          ∀ᶠ y in 𝓝 y₀,
-            ∀ z : α, f z = y →
-              ∃! x₀ : {x : α | f x = y₀}, z ∈ U x₀.1 := by
-  rcases properMap_finite_fiber_exists_pairwiseDisjoint_open_nhds_eventually
-      hproper y₀ hfinite with ⟨U, hU, hpair, hcover_event⟩
-  refine ⟨U, hU, hpair, ?_⟩
-  filter_upwards [hcover_event] with y hcover z hz
-  exact existsUnique_fiber_neighborhood_of_mem_fiber_subset_pairwiseDisjoint
-    hpair hcover hz
 
 /--
 %%handwave
@@ -580,63 +471,6 @@ theorem locallyFinite_singletons_of_isClosed_of_isolated_points {α : Type*}
 /--
 %%handwave
 name:
-  Fibers of a nonconstant holomorphic map are locally finite
-statement:
-  If \(f:X\to\mathbb C\) is a nonconstant holomorphic map from a Riemann
-  surface, then the singleton family indexed by each fiber \(f^{-1}(a)\) is
-  locally finite.
-proof:
-  Continuity makes the fiber closed.  The isolated-zero theorem for a
-  nonconstant holomorphic map gives an isolating neighborhood at each fiber
-  point, so the closed isolated-set criterion applies.
--/
-theorem nonconstant_holomorphicMap_fiber_singletons_locallyFinite
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {f : X → ℂ}
-    (hf : HolomorphicMap X ℂ f)
-    (hnonconstant : (Set.range f).Nontrivial) (a : ℂ) :
-    LocallyFinite fun x : {x : X | f x = a} ↦ ({(x : X)} : Set X) := by
-  refine locallyFinite_singletons_of_isClosed_of_isolated_points ?_ ?_
-  · simpa [Set.setOf_eq_eq_singleton] using
-      (isClosed_eq hf.continuous continuous_const : IsClosed {x : X | f x = a})
-  · intro x
-    rcases nonconstant_holomorphicMap_exists_isolatedFiber_neighborhood
-        (f := f) hf hnonconstant x with
-      ⟨P, hP_open, hxP, hP_iso⟩
-    refine ⟨P, hP_open, hxP, ?_⟩
-    intro y hyP
-    apply Subtype.ext
-    by_contra hyne
-    have hne : (y : X) ≠ (x : X) := hyne
-    have hvalue_ne : f (y : X) ≠ f (x : X) :=
-      hP_iso (y : X) hyP hne
-    exact hvalue_ne (by rw [y.2, x.2])
-
-/--
-%%handwave
-name:
-  Proper nonconstant holomorphic maps to the plane have finite fibers
-statement:
-  A proper nonconstant holomorphic map from a Riemann surface to
-  \(\mathbb C\) has finite fibers.
-proof:
-  Each fiber is compact by properness and its singleton family is locally
-  finite by isolation of zeros.  Hence the fiber is finite.
--/
-theorem proper_nonconstant_holomorphicMap_fiber_finite
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {F : X → ℂ}
-    (hF : HolomorphicMap X ℂ F)
-    (hnonconstant : (Set.range F).Nontrivial)
-    (hproper : IsProperMap F) (z : ℂ) :
-    {x : X | F x = z}.Finite :=
-  finite_fiber_of_isProperMap_of_locallyFinite_singletons hproper z
-    (nonconstant_holomorphicMap_fiber_singletons_locallyFinite
-      (f := F) hF hnonconstant z)
-
-/--
-%%handwave
-name:
   Open mapping theorem for Riemann surfaces
 statement:
   A nonconstant holomorphic map from a Riemann surface to \(\mathbb C\) is an
@@ -703,180 +537,6 @@ theorem nonconstant_holomorphicMap_isOpenMap
       filter_upwards [e.open_source.mem_nhds hx_source] with y hy
       simp [e.left_inv hy])
   simpa [hmap_eq] using hlocal_surface
-
-/--
-%%handwave
-name:
-  A proper nonconstant holomorphic map to the plane is surjective
-statement:
-  Every proper nonconstant holomorphic map from a Riemann surface to
-  \(\mathbb C\) is surjective.
-proof:
-  Its range is open by the open mapping theorem and closed by properness.  It
-  is nonempty, and the complex plane is connected, so the range is all of
-  \(\mathbb C\).
--/
-theorem proper_nonconstant_holomorphicMap_surjective
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {F : X → ℂ}
-    (hF : HolomorphicMap X ℂ F)
-    (hnonconstant : (Set.range F).Nontrivial)
-    (hproper : IsProperMap F) :
-    Function.Surjective F := by
-  classical
-  have hopen_map : IsOpenMap F :=
-    nonconstant_holomorphicMap_isOpenMap hF hnonconstant
-  have hclosed : IsClosed (Set.range F) :=
-    hproper.isClosed_range
-  have hopen : IsOpen (Set.range F) := by
-    simpa [Set.image_univ] using hopen_map Set.univ isOpen_univ
-  have hnonempty : (Set.range F).Nonempty := by
-    rcases hnonconstant with ⟨z, hz, _w, _hw, _hzw⟩
-    exact ⟨z, hz⟩
-  have hrange_univ : Set.range F = Set.univ :=
-    IsClopen.eq_univ ⟨hclosed, hopen⟩ hnonempty
-  intro z
-  have hz : z ∈ Set.range F := by
-    rw [hrange_univ]
-    exact Set.mem_univ z
-  simpa [Set.mem_range] using hz
-
-/--
-%%handwave
-name:
-  Fibers of a nonconstant pointed disk map are locally finite
-statement:
-  For a pointed holomorphic map \(F:X\to\mathbb D\) whose complex range is
-  nontrivial, the singleton family indexed by each fiber is locally finite.
-proof:
-  The fiber is closed by continuity.  After composing with the inclusion
-  \(\mathbb D\hookrightarrow\mathbb C\), nonconstancy gives isolated fiber
-  points, so the closed isolated-set criterion applies.
--/
-theorem nonconstant_pointedDiskMap_fiber_singletons_locallyFinite
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hnonconstant :
-      (Set.range fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)).Nontrivial)
-    (z : Complex.UnitDisc) :
-    LocallyFinite fun x : {x : X | F.toFun x = z} ↦ ({(x : X)} : Set X) := by
-  refine locallyFinite_singletons_of_isClosed_of_isolated_points ?_ ?_
-  · simpa using
-      (isClosed_eq F.holomorphic.continuous continuous_const :
-        IsClosed {x : X | F.toFun x = z})
-  · intro x
-    rcases nonconstant_holomorphicMap_exists_isolatedFiber_neighborhood
-        (f := fun y : X ↦ ((F.toFun y : Complex.UnitDisc) : ℂ))
-        F.holomorphic_coe_unitDisc hnonconstant (x : X) with
-      ⟨P, hP_open, hxP, hP_iso⟩
-    refine ⟨P, hP_open, hxP, ?_⟩
-    intro y hyP
-    apply Subtype.ext
-    by_contra hyne
-    have hne : (y : X) ≠ (x : X) := hyne
-    have hvalue_ne :
-        ((F.toFun (y : X) : Complex.UnitDisc) : ℂ) ≠
-          ((F.toFun (x : X) : Complex.UnitDisc) : ℂ) :=
-      hP_iso (y : X) hyP hne
-    exact hvalue_ne (by rw [y.2, x.2])
-
-/--
-%%handwave
-name:
-  Proper nonconstant pointed disk maps have finite fibers
-statement:
-  A proper pointed holomorphic map to the unit disk with nontrivial complex
-  range has finite fibers.
-proof:
-  Properness makes each fiber compact, while nonconstancy makes its singleton
-  family locally finite.  Compactness then forces finiteness.
--/
-theorem proper_nonconstant_pointedDiskMap_fiber_finite
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hnonconstant :
-      (Set.range fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)).Nontrivial)
-    (hproper : IsProperMap F.toFun) (z : Complex.UnitDisc) :
-    {x : X | F.toFun x = z}.Finite :=
-  finite_fiber_of_isProperMap_of_locallyFinite_singletons hproper z
-    (nonconstant_pointedDiskMap_fiber_singletons_locallyFinite F hnonconstant z)
-
-/--
-%%handwave
-name:
-  Open mapping theorem for pointed disk maps
-statement:
-  A pointed holomorphic map \(F:X\to\mathbb D\) with nontrivial complex range
-  is open.
-proof:
-  Its composite with the inclusion into \(\mathbb C\) is nonconstant and
-  holomorphic, hence open.  Since the disk has the subspace topology, the
-  image under \(F\) of any open set is the inverse image in the disk of that
-  open complex image.
--/
-theorem nonconstant_pointedDiskMap_isOpenMap
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hnonconstant :
-      (Set.range fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)).Nontrivial) :
-    IsOpenMap F.toFun := by
-  let f : X → ℂ := fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)
-  have hfopen : IsOpenMap f :=
-    nonconstant_holomorphicMap_isOpenMap F.holomorphic_coe_unitDisc hnonconstant
-  intro U hU
-  have hcomplex_open : IsOpen (f '' U) :=
-    hfopen U hU
-  have himage_eq :
-      F.toFun '' U = Subtype.val ⁻¹' (f '' U) := by
-    ext z
-    constructor
-    · rintro ⟨x, hxU, rfl⟩
-      exact ⟨x, hxU, rfl⟩
-    · rintro ⟨x, hxU, hx⟩
-      refine ⟨x, hxU, ?_⟩
-      exact Subtype.ext hx
-  rw [himage_eq]
-  exact hcomplex_open.preimage continuous_subtype_val
-
-/--
-%%handwave
-name:
-  A proper nonconstant pointed disk map is surjective
-statement:
-  A proper pointed holomorphic map to \(\mathbb D\) with nontrivial complex
-  range is onto the disk.
-proof:
-  Its range is open by the disk open mapping theorem and closed by properness.
-  The range is nonempty, and the disk is connected, so it equals the whole
-  disk.
--/
-theorem proper_nonconstant_pointedDiskMap_surjective
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hnonconstant :
-      (Set.range fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)).Nontrivial)
-    (hproper : IsProperMap F.toFun) :
-    Function.Surjective F.toFun := by
-  classical
-  have hopen_map : IsOpenMap F.toFun :=
-    nonconstant_pointedDiskMap_isOpenMap F hnonconstant
-  have hclosed : IsClosed (Set.range F.toFun) :=
-    hproper.isClosed_range
-  have hopen : IsOpen (Set.range F.toFun) := by
-    simpa [Set.image_univ] using hopen_map Set.univ isOpen_univ
-  have hnonempty : (Set.range F.toFun).Nonempty :=
-    ⟨F.toFun p, ⟨p, rfl⟩⟩
-  have hrange_univ : Set.range F.toFun = Set.univ :=
-    IsClopen.eq_univ ⟨hclosed, hopen⟩ hnonempty
-  intro z
-  have hz : z ∈ Set.range F.toFun := by
-    rw [hrange_univ]
-    exact Set.mem_univ z
-  simpa [Set.mem_range] using hz
 
 /--
 %%handwave
@@ -1097,15 +757,26 @@ theorem proper_holomorphicMap_to_openComplexModel_eventually_fiber_neighborhood_
     hpair hcover hz
 
 /--
-The local multiplicity of a complex-valued holomorphic map at a source point,
-with respect to a chosen source coordinate and target value.
+%%handwave
+name: Local analytic order in a chosen surface coordinate
+statement:
+  For a pointed coordinate $\chi$ at $x$, a map $F:X\to\mathbb C$, and
+  $a\in\mathbb C$, define
+  $\operatorname{ord}_{x,\chi}(F-a)=
+  \operatorname{ord}_{\chi(x)}(F\circ\chi^{-1}-a)\in\mathbb N\cup\{\infty\}$.
 -/
 noncomputable def holomorphicMapLocalOrderAtValueInCoordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) (a : ℂ) : ℕ∞ :=
   analyticOrderAt (fun z : ℂ ↦ F (χ.chart.symm z) - a) (χ.chart x)
 
-/-- The local analytic order at the value of the point itself. -/
+/--
+%%handwave
+name: Local analytic order at the attained value
+statement:
+  For a pointed coordinate $\chi$ at $x$, define
+  $\operatorname{ord}_{x,\chi}(F)=\operatorname{ord}_{x,\chi}(F-F(x))$.
+-/
 noncomputable def holomorphicMapLocalOrderInCoordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) : ℕ∞ :=
@@ -1163,15 +834,25 @@ theorem holomorphicMapLocalOrderInCoordinate_ne_top_of_injective
   exact hz_ne hz_eq
 
 /--
-The natural-number local multiplicity of a complex-valued holomorphic map at a
-source point, with respect to a chosen source coordinate and target value.
+%%handwave
+name: Finite local multiplicity in a chosen coordinate
+statement:
+  For $\chi$, $F$, $x$, and $a$ as above, define the natural-number
+  multiplicity of $F-a$ at $x$ from the analytic order of
+  $F\circ\chi^{-1}-a$ at $\chi(x)$.
 -/
 noncomputable def holomorphicMapLocalMultiplicityAtValueInCoordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) (a : ℂ) : ℕ :=
   analyticOrderNatAt (fun z : ℂ ↦ F (χ.chart.symm z) - a) (χ.chart x)
 
-/-- The local multiplicity at the value of the point itself. -/
+/--
+%%handwave
+name: Local multiplicity at the attained value
+statement:
+  Define the local multiplicity of $F$ at $x$ in the coordinate $\chi$ to be
+  the multiplicity of $F-F(x)$ there.
+-/
 noncomputable def holomorphicMapLocalMultiplicityInCoordinate
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     {x : X} (χ : PointedSurfaceCoordinate X x) (F : X → ℂ) : ℕ :=
@@ -1348,27 +1029,6 @@ theorem holomorphicMapLocalMultiplicityAtValueInCoordinate_eq_one_of_deriv_ne_ze
 /--
 %%handwave
 name:
-  A noncritical point has multiplicity one at its image
-statement:
-  If a holomorphic map has nonzero coordinate derivative at \(x\), then its
-  local multiplicity over the value \(F(x)\) is one.
-proof:
-  Apply the noncritical-zero result to the value \(a=F(x)\).
--/
-theorem holomorphicMapLocalMultiplicityInCoordinate_eq_one_of_deriv_ne_zero
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] {x : X} (χ : PointedSurfaceCoordinate X x)
-    {F : X → ℂ}
-    (hF : HolomorphicMap X ℂ F)
-    (hderiv : surfaceComplexDerivativeInCoordinate χ F ≠ 0) :
-    holomorphicMapLocalMultiplicityInCoordinate χ F = 1 := by
-  exact
-    holomorphicMapLocalMultiplicityAtValueInCoordinate_eq_one_of_deriv_ne_zero
-      χ hF rfl hderiv
-
-/--
-%%handwave
-name:
   A point of a finite fiber has finite local order
 statement:
   If \(F^{-1}(a)\) is finite and \(F(x)=a\), then in every pointed coordinate
@@ -1491,7 +1151,14 @@ theorem one_le_holomorphicMapLocalMultiplicityAtValueInCoordinate_of_mem_finite_
     simp
   exact Nat.succ_le_of_lt (Nat.pos_of_ne_zero hmult_ne_zero)
 
-/-- The canonical coordinate used for counting local multiplicity at a point. -/
+/--
+%%handwave
+name: Canonical pointed chart at a surface point
+statement:
+  At $x\in X$, use the chart selected by the ambient charted-space structure,
+  together with its atlas and source membership, as a pointed surface
+  coordinate.
+-/
 noncomputable def chartAtPointedSurfaceCoordinate
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] (x : X) :
     PointedSurfaceCoordinate X x where
@@ -1500,9 +1167,13 @@ noncomputable def chartAtPointedSurfaceCoordinate
   base_mem_source := mem_chart_source ℂ x
 
 /--
-The fiber multiplicity sum of a complex-coordinate model of a holomorphic
-map, counted in the canonical source coordinate at each point of a finite
-fiber.
+%%handwave
+name: Total multiplicity of a finite fiber in target coordinates
+statement:
+  For $F:X\to Y$, a target coordinate $\varphi:Y\to\mathbb C$, and a finite
+  fiber $F^{-1}(y)$, define
+  $m_F(y)=\sum_{x\in F^{-1}(y)}
+  \operatorname{mult}_x(\varphi\circ F-\varphi(y))$.
 -/
 noncomputable def holomorphicMapFiberMultiplicityInCoordinateModel
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1514,8 +1185,12 @@ noncomputable def holomorphicMapFiberMultiplicityInCoordinateModel
       (fun x' : X ↦ φ (F x')) (φ y)
 
 /--
-The part of the fiber multiplicity sum coming from preimages lying in a
-specified subset of the source.
+%%handwave
+name: Fiber multiplicity restricted to a source set
+statement:
+  For $U\subseteq X$, define
+  $m_{F,U}(y)=\sum_{x\in U\cap F^{-1}(y)}
+  \operatorname{mult}_x(\varphi\circ F-\varphi(y))$.
 -/
 noncomputable def holomorphicMapFiberMultiplicityInCoordinateModelOnSet
     {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1529,8 +1204,11 @@ noncomputable def holomorphicMapFiberMultiplicityInCoordinateModelOnSet
       (fun x' : X ↦ φ (F x')) (φ y)
 
 /--
-The corresponding local fiber-multiplicity contribution for a genuinely
-complex-valued map, counted over a source subset.
+%%handwave
+name: Restricted fiber multiplicity of a complex-valued map
+statement:
+  For $f:X\to\mathbb C$, a finite fiber over $a$, and $U\subseteq X$, define
+  $m_{f,U}(a)=\sum_{x\in U\cap f^{-1}(a)}\operatorname{mult}_x(f-a)$.
 -/
 noncomputable def holomorphicMapComplexFiberMultiplicityOnSet
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -1623,8 +1301,12 @@ theorem holomorphicMapComplexFiberMultiplicityOnSet_eq_of_mem_iff_on_fiber
   simp [holomorphicMapComplexFiberMultiplicityOnSet, hfilter]
 
 /--
-A complex-valued map is proper over a neighborhood of a value if compact
-subsets of some neighborhood of that value have compact preimage.
+%%handwave
+name: Properness over a complex neighborhood
+statement:
+  A map $f:X\to\mathbb C$ is proper over a neighborhood of $a_0$ when there
+  is $V\in\mathcal N(a_0)$ such that $f^{-1}(K)$ is compact for every compact
+  set $K\subseteq V$.
 -/
 def IsProperOverComplexNeighborhood
     {X : Type} [TopologicalSpace X] (f : X → ℂ) (a₀ : ℂ) : Prop :=
@@ -1682,32 +1364,6 @@ theorem eventually_fiber_forall_of_isProperOverComplexNeighborhood
       exact haK
     simpa [L] using hxK
   exact ha ⟨x, hxL⟩ (by simpa [g] using hx)
-
-/--
-%%handwave
-name:
-  Nearby fibers lie in any open neighborhood of a locally proper fiber
-statement:
-  Let \(f:X\to\mathbb C\) be continuous and proper over a neighborhood of
-  \(a_0\).  If an open set \(U\) contains \(f^{-1}(a_0)\), then
-  \(f^{-1}(a)\subseteq U\) for every sufficiently close \(a\) to \(a_0\).
-proof:
-  Apply fiberwise neighborhood control to the property of belonging to
-  \(U\).  Openness makes this property hold on a neighborhood of every old
-  fiber point.
--/
-theorem eventually_fiber_subset_open_of_isProperOverComplexNeighborhood
-    {X : Type} [TopologicalSpace X] {f : X → ℂ} {a₀ : ℂ}
-    (hfcont : Continuous f)
-    (hproper_local : IsProperOverComplexNeighborhood f a₀)
-    {U : Set X} (hU_open : IsOpen U)
-    (hcover : {x : X | f x = a₀} ⊆ U) :
-    ∀ᶠ a in 𝓝 a₀, {x : X | f x = a} ⊆ U := by
-  filter_upwards
-    [eventually_fiber_forall_of_isProperOverComplexNeighborhood
-      hfcont hproper_local
-      (fun x hx ↦ hU_open.mem_nhds (hcover hx))] with a ha x hx
-  exact ha x hx
 
 /--
 %%handwave
@@ -1990,33 +1646,6 @@ theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
 /--
 %%handwave
 name:
-  Surjectivity gives positive total multiplicity in every fiber
-statement:
-  Under the finite-fiber holomorphic coordinate-model hypotheses, if
-  \(F:X\to Y\) is surjective, then every fiber has total multiplicity at least
-  one.
-proof:
-  For each \(y\), choose \(x\) with \(F(x)=y\) and apply positivity of the
-  total multiplicity of a nonempty finite fiber.
--/
-theorem one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_surjective
-    {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [TopologicalSpace Y]
-    {F : X → Y} {φ : Y → ℂ}
-    (hφ_inj : Function.Injective φ)
-    (hF : HolomorphicMap X ℂ (fun x : X ↦ φ (F x)))
-    (hfinite : ∀ y : Y, {x : X | F x = y}.Finite)
-    (hsurjective : Function.Surjective F) :
-    ∀ y : Y, 1 ≤ holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y := by
-  intro y
-  rcases hsurjective y with ⟨x, hx⟩
-  exact
-    one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
-      hφ_inj hF hfinite hx
-
-/--
-%%handwave
-name:
   Zero total multiplicity characterizes an empty fiber
 statement:
   Under the finite-fiber holomorphic coordinate-model hypotheses, the total
@@ -2059,65 +1688,6 @@ theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_no_fiber
       · intro hxempty
         cases hxempty
     simp [holomorphicMapFiberMultiplicityInCoordinateModel, hfiber_empty]
-
-/--
-%%handwave
-name:
-  Zero total fiber multiplicity characterizes points outside the range
-statement:
-  The total multiplicity of the fiber over \(y\) is zero if and only if
-  \(y\notin F(X)\).
-proof:
-  Membership in the range is exactly the existence of a preimage.  Rewrite
-  the empty-fiber characterization using this equivalence.
--/
-theorem holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_not_mem_range
-    {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [TopologicalSpace Y]
-    {F : X → Y} {φ : Y → ℂ}
-    (hφ_inj : Function.Injective φ)
-    (hF : HolomorphicMap X ℂ (fun x : X ↦ φ (F x)))
-    (hfinite : ∀ y : Y, {x : X | F x = y}.Finite)
-    (y : Y) :
-    holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y = 0 ↔
-      y ∉ Set.range F := by
-  simpa [Set.mem_range] using
-    holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_no_fiber
-      hφ_inj hF hfinite y
-
-/--
-%%handwave
-name:
-  Positive total fiber multiplicity characterizes the range
-statement:
-  The total multiplicity of the fiber over \(y\) is positive if and only if
-  \(y\in F(X)\).
-proof:
-  Outside the range the total multiplicity is zero.  If \(y=F(x)\), positivity
-  follows from the local contribution at \(x\).
--/
-theorem holomorphicMapFiberMultiplicityInCoordinateModel_pos_iff_mem_range
-    {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [TopologicalSpace Y]
-    {F : X → Y} {φ : Y → ℂ}
-    (hφ_inj : Function.Injective φ)
-    (hF : HolomorphicMap X ℂ (fun x : X ↦ φ (F x)))
-    (hfinite : ∀ y : Y, {x : X | F x = y}.Finite)
-    (y : Y) :
-    0 < holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y ↔
-      y ∈ Set.range F := by
-  constructor
-  · intro hpos
-    by_contra hnot
-    have hzero :
-        holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y = 0 :=
-      (holomorphicMapFiberMultiplicityInCoordinateModel_eq_zero_iff_not_mem_range
-        hφ_inj hF hfinite y).mpr hnot
-    exact (Nat.ne_of_gt hpos) hzero
-  · rintro ⟨x, rfl⟩
-    exact lt_of_lt_of_le zero_lt_one
-      (one_le_holomorphicMapFiberMultiplicityInCoordinateModel_of_mem
-        hφ_inj hF hfinite rfl)
 
 /--
 %%handwave
@@ -2255,59 +1825,6 @@ theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_of_all
     (exists_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
       hφ_inj hF hfinite (hmult y))
     (hmult y)
-
-/--
-%%handwave
-name:
-  Unit multiplicity in every fiber implies surjectivity
-statement:
-  If every finite fiber of \(F:X\to Y\) has total multiplicity one, then
-  \(F\) is surjective.
-proof:
-  For every target point, unit total multiplicity rules out the empty fiber
-  and therefore supplies a preimage.
--/
-theorem surjective_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
-    {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [TopologicalSpace Y]
-    {F : X → Y} {φ : Y → ℂ}
-    (hφ_inj : Function.Injective φ)
-    (hF : HolomorphicMap X ℂ (fun x : X ↦ φ (F x)))
-    (hfinite : ∀ y : Y, {x : X | F x = y}.Finite)
-    (hmult :
-      ∀ y : Y,
-        holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y = 1) :
-    Function.Surjective F := by
-  intro y
-  exact exists_of_holomorphicMapFiberMultiplicityInCoordinateModel_eq_one
-    hφ_inj hF hfinite (hmult y)
-
-/--
-%%handwave
-name:
-  Every unit-multiplicity fiber has a unique point
-statement:
-  Under the finite-fiber holomorphic coordinate-model hypotheses, if every
-  fiber has total multiplicity one, then every \(y\) has a unique preimage.
-proof:
-  Apply the result that unit multiplicity itself forces both existence and
-  uniqueness in each fiber; the additional surjectivity hypothesis is
-  redundant.
--/
-theorem existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one
-    {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [TopologicalSpace Y]
-    {F : X → Y} {φ : Y → ℂ}
-    (hφ_inj : Function.Injective φ)
-    (hF : HolomorphicMap X ℂ (fun x : X ↦ φ (F x)))
-    (hfinite : ∀ y : Y, {x : X | F x = y}.Finite)
-    (_hsurjective : Function.Surjective F)
-    (hmult :
-      ∀ y : Y,
-        holomorphicMapFiberMultiplicityInCoordinateModel F φ hfinite y = 1) :
-    ∀ y : Y, ∃! x : X, F x = y := by
-  exact existsUnique_of_fiberMultiplicityInCoordinateModel_eq_one_of_all
-    hφ_inj hF hfinite hmult
 
 /--
 %%handwave
@@ -2498,8 +2015,12 @@ theorem holomorphicMapLocalMultiplicityAtValueInCoordinate_congr_coordinate
     analyticOrderNatAt, fχ, fψ, z₀, w₀, horder]
 
 /--
-The zero-counting multiplicity of a complex analytic level set inside a
-specified plane set.
+%%handwave
+name: Analytic level multiplicity on a plane set
+statement:
+  If $\{z\in U:F(z)=a\}$ is finite, define
+  $N_U(F,a)=\sum_{\substack{z\in U\\F(z)=a}}
+  \operatorname{ord}_z(F-a)$.
 -/
 noncomputable def complexAnalyticLevelMultiplicityOnSet
     (F : ℂ → ℂ) (U : Set ℂ)
@@ -4422,23 +3943,6 @@ theorem complex_pow_not_injOn_of_mem_nhds_zero {n : ℕ} (hn : 2 ≤ n)
 /--
 %%handwave
 name:
-  A higher complex power is not locally injective at zero
-statement:
-  If \(n\ge2\), there is no neighborhood of \(0\) on which
-  \(z\mapsto z^n\) is injective.
-proof:
-  Any proposed injective neighborhood contradicts the noninjectivity of the
-  power map on every neighborhood of zero.
--/
-theorem complex_pow_not_locally_injective_at_zero {n : ℕ} (hn : 2 ≤ n) :
-    ¬ ∃ U : Set ℂ, U ∈ 𝓝 (0 : ℂ) ∧
-      Set.InjOn (fun z : ℂ ↦ z ^ n) U := by
-  rintro ⟨U, hU, hinj⟩
-  exact complex_pow_not_injOn_of_mem_nhds_zero hn hU hinj
-
-/--
-%%handwave
-name:
   An injective holomorphic map has nonzero coordinate derivative
 statement:
   Let \(F:X\to\mathbb C\) be an injective holomorphic map from a complex
@@ -5561,380 +5065,6 @@ theorem bounded_harmonicOn_punctured_complex_ball_has_removable_extension_core
 /--
 %%handwave
 name:
-  Bounded punctured disk harmonic functions have a finite limit
-statement:
-  A bounded harmonic function on a punctured Euclidean disk has a finite limit
-  at the puncture.
-proof:
-  Apply the removable-extension theorem.  The harmonic extension is continuous
-  at the puncture, and the original function agrees with it eventually on the
-  punctured neighborhood.
--/
-theorem bounded_harmonicOn_punctured_complex_ball_has_limit
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ}
-    (hharm :
-      InnerProductSpace.HarmonicOnNhd f (Metric.ball c r \ {c}))
-    (hbound :
-      ∃ M : ℝ,
-        ∀ᶠ z in 𝓝[Metric.ball c r \ {c}] c, ‖f z‖ ≤ M) :
-    ∃ a : ℝ, Filter.Tendsto f (𝓝[Metric.ball c r \ {c}] c) (𝓝 a) := by
-  rcases bounded_harmonicOn_punctured_complex_ball_has_removable_extension_core
-      hr hharm hbound with
-    ⟨δ, F, hδ_pos, _hδ_le, hF_harm, hF_eq⟩
-  refine ⟨F c, ?_⟩
-  have hcδ : c ∈ Metric.ball c δ := by
-    simpa [Metric.mem_ball] using hδ_pos
-  have hF_cont : ContinuousOn F (Metric.ball c δ) :=
-    hF_harm.continuousOn
-  have hF_tendsto : Filter.Tendsto F (𝓝[Metric.ball c δ] c) (𝓝 (F c)) :=
-    hF_cont c hcδ
-  have hsmall :
-      Metric.ball c δ ∈ 𝓝[Metric.ball c r \ {c}] c :=
-    mem_nhdsWithin_of_mem_nhds (Metric.ball_mem_nhds c hδ_pos)
-  have hmono :
-      𝓝[Metric.ball c r \ {c}] c ≤ 𝓝[Metric.ball c δ] c :=
-    nhdsWithin_le_iff.mpr hsmall
-  have hFeq :
-      F =ᶠ[𝓝[Metric.ball c r \ {c}] c] f := by
-    filter_upwards [hF_eq] with z hz
-    exact hz.symm
-  exact (hF_tendsto.mono_left hmono).congr' hFeq
-
-/--
-%%handwave
-name:
-  The punctured disk accumulates at its centre
-statement:
-  In the complex plane, the centre of a positive-radius disk lies in the
-  closure of the same disk with the centre removed.
-proof:
-  Every neighborhood of the centre contains a smaller point on a real radius.
--/
-theorem complex_punctured_ball_nhdsWithin_neBot
-    {c : ℂ} {r : ℝ} (hr : 0 < r) :
-    Filter.NeBot (𝓝[Metric.ball c r \ {c}] c) := by
-  refine mem_closure_iff_nhdsWithin_neBot.mp ?_
-  rw [Metric.mem_closure_iff]
-  intro ε hε
-  let δ : ℝ := min r ε / 2
-  have hδ_pos : 0 < δ := half_pos (lt_min hr hε)
-  have hδ_le_r_half : δ ≤ r / 2 := by
-    dsimp [δ]
-    exact div_le_div_of_nonneg_right (min_le_left r ε) (by norm_num : (0 : ℝ) ≤ 2)
-  have hδ_lt_r : δ < r :=
-    hδ_le_r_half.trans_lt (half_lt_self hr)
-  have hδ_le_ε_half : δ ≤ ε / 2 := by
-    dsimp [δ]
-    exact div_le_div_of_nonneg_right (min_le_right r ε) (by norm_num : (0 : ℝ) ≤ 2)
-  have hδ_lt_ε : δ < ε :=
-    hδ_le_ε_half.trans_lt (half_lt_self hε)
-  let z : ℂ := c + (δ : ℂ)
-  have hz_dist : dist z c = δ := by
-    rw [Complex.dist_eq]
-    have hsub : z - c = (δ : ℂ) := by
-      simp [z]
-    rw [hsub, Complex.norm_real, Real.norm_of_nonneg hδ_pos.le]
-  have hz_ne : z ≠ c := by
-    intro hzc
-    have hδ_zero : (δ : ℂ) = 0 := by
-      calc
-        (δ : ℂ) = z - c := by simp [z]
-        _ = 0 := by simp [hzc]
-    have : δ = 0 := Complex.ofReal_injective hδ_zero
-    exact hδ_pos.ne' this
-  refine ⟨z, ?_, ?_⟩
-  · exact ⟨by simpa [Metric.mem_ball, hz_dist] using hδ_lt_r,
-      by simpa [Set.mem_singleton_iff] using hz_ne⟩
-  · have hz_dist' : dist c z = δ := by
-      simpa [dist_comm] using hz_dist
-    simpa [Metric.mem_ball, hz_dist'] using hδ_lt_ε
-
-/--
-%%handwave
-name:
-  A finite-limit punctured harmonic function is removable
-statement:
-  If a harmonic function on a punctured Euclidean disk has a finite limit at
-  the puncture, then updating the function to that limiting value is harmonic
-  on a smaller full disk.
-proof:
-  The finite limit gives continuity of the updated function at the puncture.
-  Apply the removable singularity theorem for harmonic functions, equivalently
-  apply the holomorphic removable singularity theorem to local harmonic
-  conjugates on small simply connected disks and identify the real parts.
--/
-theorem punctured_harmonicOn_complex_ball_update_harmonic_of_tendsto
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ} {a : ℝ}
-    (hharm :
-      InnerProductSpace.HarmonicOnNhd f (Metric.ball c r \ {c}))
-    (hlim : Filter.Tendsto f (𝓝[Metric.ball c r \ {c}] c) (𝓝 a)) :
-    ∃ δ : ℝ,
-      0 < δ ∧ δ ≤ r ∧
-        InnerProductSpace.HarmonicOnNhd (Function.update f c a) (Metric.ball c δ) := by
-  let l : Filter ℂ := 𝓝[Metric.ball c r \ {c}] c
-  haveI : Filter.NeBot l := complex_punctured_ball_nhdsWithin_neBot hr
-  have hbound :
-      ∃ M : ℝ,
-        ∀ᶠ z in 𝓝[Metric.ball c r \ {c}] c, ‖f z‖ ≤ M := by
-    have hnorm : Filter.Tendsto (fun z ↦ ‖f z‖) l (𝓝 ‖a‖) :=
-      tendsto_norm.comp hlim
-    refine ⟨‖a‖ + 1, ?_⟩
-    exact (hnorm.eventually (Iio_mem_nhds (lt_add_of_pos_right ‖a‖ zero_lt_one))).mono
-      (by intro z hz; exact le_of_lt hz)
-  rcases bounded_harmonicOn_punctured_complex_ball_has_removable_extension_core
-      hr hharm hbound with
-    ⟨δ, F, hδ_pos, hδ_le, hF_harm, hF_eq⟩
-  have hcδ : c ∈ Metric.ball c δ := by
-    simpa [Metric.mem_ball] using hδ_pos
-  have hF_cont : ContinuousOn F (Metric.ball c δ) :=
-    hF_harm.continuousOn
-  have hF_tendsto_ball : Filter.Tendsto F (𝓝[Metric.ball c δ] c) (𝓝 (F c)) :=
-    hF_cont c hcδ
-  have hsmall :
-      Metric.ball c δ ∈ 𝓝[Metric.ball c r \ {c}] c :=
-    mem_nhdsWithin_of_mem_nhds (Metric.ball_mem_nhds c hδ_pos)
-  have hmono :
-      𝓝[Metric.ball c r \ {c}] c ≤ 𝓝[Metric.ball c δ] c :=
-    nhdsWithin_le_iff.mpr hsmall
-  have hF_tendsto_punct :
-      Filter.Tendsto F (𝓝[Metric.ball c r \ {c}] c) (𝓝 (F c)) :=
-    hF_tendsto_ball.mono_left hmono
-  have hF_tendsto_a :
-      Filter.Tendsto F (𝓝[Metric.ball c r \ {c}] c) (𝓝 a) :=
-    hlim.congr' hF_eq
-  have hFc : F c = a :=
-    tendsto_nhds_unique hF_tendsto_punct hF_tendsto_a
-  have hupdate_eq_F_nhds : Function.update f c a =ᶠ[𝓝 c] F := by
-    let E : Set ℂ := {z : ℂ | z ∈ Metric.ball c r \ {c} → f z = F z}
-    have hE_nhds : E ∈ 𝓝 c := by
-      simpa [E] using eventually_nhdsWithin_iff.mp hF_eq
-    filter_upwards [hE_nhds, Metric.ball_mem_nhds c hr] with z hzE hzball
-    by_cases hzc : z = c
-    · subst z
-      simp [hFc]
-    · have hzpunct : z ∈ Metric.ball c r \ {c} :=
-        ⟨hzball, by simpa [Set.mem_singleton_iff] using hzc⟩
-      simpa [Function.update, hzc] using hzE hzpunct
-  refine ⟨δ, hδ_pos, hδ_le, ?_⟩
-  intro z hz
-  by_cases hzc : z = c
-  · subst z
-    exact (InnerProductSpace.harmonicAt_congr_nhds hupdate_eq_F_nhds).2
-      (hF_harm c hcδ)
-  · have hz_ball_r : z ∈ Metric.ball c r := by
-      rw [Metric.mem_ball] at hz ⊢
-      exact hz.trans_le hδ_le
-    have hupdate_eq_f_nhds : Function.update f c a =ᶠ[𝓝 z] f := by
-      filter_upwards [eventually_ne_nhds hzc] with y hy
-      simp [Function.update, hy]
-    exact (InnerProductSpace.harmonicAt_congr_nhds hupdate_eq_f_nhds).2
-      (hharm z ⟨hz_ball_r, by simpa [Set.mem_singleton_iff] using hzc⟩)
-
-/--
-%%handwave
-name:
-  A removable punctured disk harmonic function is harmonic on the whole disk
-statement:
-  If a harmonic function on a punctured disk has a finite limit at the
-  puncture, then filling in that limiting value gives a harmonic function on
-  the entire disk.
-proof:
-  The removable-singularity theorem gives harmonicity in a small full disk
-  around the puncture.  Away from the puncture the filled-in function agrees
-  locally with the original harmonic function.
--/
-theorem punctured_harmonicOn_complex_ball_update_harmonicOn_ball_of_tendsto
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ} {a : ℝ}
-    (hharm :
-      InnerProductSpace.HarmonicOnNhd f (Metric.ball c r \ {c}))
-    (hlim : Filter.Tendsto f (𝓝[Metric.ball c r \ {c}] c) (𝓝 a)) :
-    InnerProductSpace.HarmonicOnNhd (Function.update f c a)
-      (Metric.ball c r) := by
-  rcases punctured_harmonicOn_complex_ball_update_harmonic_of_tendsto
-      hr hharm hlim with
-    ⟨δ, hδ_pos, _hδ_le, hupdate_local⟩
-  intro z hz
-  by_cases hzc : z = c
-  · subst z
-    exact hupdate_local c (by simpa [Metric.mem_ball] using hδ_pos)
-  · have hupdate_eq_f_nhds :
-        Function.update f c a =ᶠ[𝓝 z] f := by
-      filter_upwards [eventually_ne_nhds hzc] with y hy
-      simp [Function.update, hy]
-    exact (InnerProductSpace.harmonicAt_congr_nhds hupdate_eq_f_nhds).2
-      (hharm z ⟨hz, by simpa [Set.mem_singleton_iff] using hzc⟩)
-
-/--
-%%handwave
-name:
-  The Euclidean coordinate logarithm is harmonic off its centre
-statement:
-  On a punctured complex disk, the function \(z\mapsto \log |z-c|\) is
-  harmonic.
-proof:
-  It is the logarithm of the norm of the nonvanishing holomorphic function
-  \(z\mapsto z-c\) on the punctured disk.
--/
-theorem complex_log_norm_sub_harmonicOn_punctured_ball
-    {c : ℂ} {r : ℝ} :
-    InnerProductSpace.HarmonicOnNhd
-      (fun z : ℂ ↦ Real.log ‖z - c‖) (Metric.ball c r \ {c}) := by
-  intro z hz
-  have hzc : z ≠ c := by
-    simpa [Set.mem_singleton_iff] using hz.2
-  have hne : (fun w : ℂ ↦ w - c) z ≠ 0 := sub_ne_zero.mpr hzc
-  exact (by fun_prop :
-    AnalyticAt ℂ (fun w : ℂ ↦ w - c) z).harmonicAt_log_norm hne
-
-/--
-%%handwave
-name:
-  Filling a punctured disk limit gives closed-disk continuity
-statement:
-  If a real-valued function is continuous on the punctured closed disk and has
-  a finite limit at the puncture through the punctured open disk, then filling
-  in that limiting value gives a continuous function on the closed disk.
-proof:
-  Away from the puncture, changing the value at the puncture is irrelevant.
-  At the puncture, a closed-disk approach eventually lies in the open disk, so
-  the assumed punctured-disk limit applies.
--/
-theorem punctured_tendsto_update_continuousOn_closedBall
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ} {a : ℝ}
-    (hlim : Filter.Tendsto f (𝓝[Metric.ball c r \ {c}] c) (𝓝 a))
-    (hcont : ContinuousOn f (Metric.closedBall c r \ {c})) :
-    ContinuousOn (Function.update f c a) (Metric.closedBall c r) := by
-  rw [continuousOn_update_iff]
-  refine ⟨hcont, ?_⟩
-  intro _hc_closed
-  have hsmall :
-      Metric.ball c r \ {c} ∈ 𝓝[Metric.closedBall c r \ {c}] c := by
-    filter_upwards
-      [mem_nhdsWithin_of_mem_nhds (Metric.ball_mem_nhds c hr),
-        (self_mem_nhdsWithin :
-          Metric.closedBall c r \ {c} ∈
-            𝓝[Metric.closedBall c r \ {c}] c)] with
-        z hz_ball hz_closed
-    exact ⟨hz_ball, hz_closed.2⟩
-  exact hlim.mono_left (nhdsWithin_le_iff.mpr hsmall)
-
-/--
-%%handwave
-name:
-  Boundary norm bounds control disk harmonic functions
-statement:
-  A harmonic function on a disk, continuous on the closed disk, whose absolute
-  value is bounded by \(M\) on the boundary circle, has absolute value bounded
-  by \(M\) throughout the disk.
-proof:
-  Apply the maximum principle to the function and to its negative.
--/
-theorem harmonicOn_complex_ball_norm_le_of_frontier_norm_le
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {F : ℂ → ℝ} {M : ℝ}
-    (hF_harm : InnerProductSpace.HarmonicOnNhd F (Metric.ball c r))
-    (hF_cont : ContinuousOn F (closure (Metric.ball c r)))
-    (hfront : ∀ z ∈ frontier (Metric.ball c r), ‖F z‖ ≤ M) :
-    ∀ z ∈ Metric.ball c r, ‖F z‖ ≤ M := by
-  have hF_front_le : ∀ z ∈ frontier (Metric.ball c r), F z ≤ M := by
-    intro z hz
-    have hz_abs : |F z| ≤ M := by
-      simpa [Real.norm_eq_abs] using hfront z hz
-    exact (abs_le.mp hz_abs).2
-  have hF_front_ge : ∀ z ∈ frontier (Metric.ball c r), -M ≤ F z := by
-    intro z hz
-    have hz_abs : |F z| ≤ M := by
-      simpa [Real.norm_eq_abs] using hfront z hz
-    exact (abs_le.mp hz_abs).1
-  have hball_compact : IsCompact (closure (Metric.ball c r)) := by
-    rw [closure_ball c hr.ne']
-    exact isCompact_closedBall c r
-  have hfront_nonempty : (frontier (Metric.ball c r)).Nonempty := by
-    refine ⟨c + (r : ℂ), ?_⟩
-    rw [frontier_ball c hr.ne']
-    have hdist : dist (c + (r : ℂ)) c = r := by
-      rw [Complex.dist_eq]
-      have hsub : c + (r : ℂ) - c = (r : ℂ) := by ring
-      rw [hsub, Complex.norm_real, Real.norm_of_nonneg hr.le]
-    simpa [Metric.mem_sphere] using hdist
-  have hF_le : ∀ z ∈ Metric.ball c r, F z ≤ M :=
-    harmonicOnNhd_le_constant_of_boundary_le
-      Metric.isOpen_ball Metric.isPreconnected_ball hball_compact
-      hfront_nonempty hF_harm hF_cont hF_front_le
-  have hnegF_harm :
-      InnerProductSpace.HarmonicOnNhd (fun z : ℂ ↦ -F z)
-        (Metric.ball c r) :=
-    hF_harm.neg
-  have hnegF_cont : ContinuousOn (fun z : ℂ ↦ -F z)
-      (closure (Metric.ball c r)) :=
-    hF_cont.neg
-  have hnegF_front_le :
-      ∀ z ∈ frontier (Metric.ball c r), -F z ≤ M := by
-    intro z hz
-    exact neg_le.mp (hF_front_ge z hz)
-  have hnegF_le : ∀ z ∈ Metric.ball c r, -F z ≤ M :=
-    harmonicOnNhd_le_constant_of_boundary_le
-      Metric.isOpen_ball Metric.isPreconnected_ball hball_compact
-      hfront_nonempty hnegF_harm hnegF_cont hnegF_front_le
-  intro z hz
-  have hF_abs : |F z| ≤ M :=
-    abs_le.mpr ⟨neg_le.mp (hnegF_le z hz), hF_le z hz⟩
-  simpa [Real.norm_eq_abs] using hF_abs
-
-/--
-%%handwave
-name:
-  Boundary norm bounds control removable punctured disk harmonic functions
-statement:
-  Let a harmonic function on a punctured disk have a finite limit at the
-  puncture and be continuous on the punctured closed disk.  If its absolute
-  value is bounded on the outer circle, then the same bound holds throughout
-  the punctured disk.
-proof:
-  Fill in the puncture by the limiting value.  The filled-in function is
-  harmonic on the whole disk and continuous on the closed disk, so the disk
-  maximum principle applied to the function and to its negative gives the
-  asserted absolute-value bound.
--/
-theorem punctured_harmonicOn_complex_ball_norm_le_of_frontier_norm_le_of_tendsto
-    {c : ℂ} {r : ℝ} (hr : 0 < r) {f : ℂ → ℝ} {a M : ℝ}
-    (hharm :
-      InnerProductSpace.HarmonicOnNhd f (Metric.ball c r \ {c}))
-    (hlim : Filter.Tendsto f (𝓝[Metric.ball c r \ {c}] c) (𝓝 a))
-    (hcont : ContinuousOn f (Metric.closedBall c r \ {c}))
-    (hfront : ∀ z ∈ frontier (Metric.ball c r), ‖f z‖ ≤ M) :
-    ∀ z ∈ Metric.ball c r \ {c}, ‖f z‖ ≤ M := by
-  let F : ℂ → ℝ := Function.update f c a
-  have hF_harm :
-      InnerProductSpace.HarmonicOnNhd F (Metric.ball c r) := by
-    simpa [F] using
-      punctured_harmonicOn_complex_ball_update_harmonicOn_ball_of_tendsto
-        hr hharm hlim
-  have hF_cont_closed :
-      ContinuousOn F (Metric.closedBall c r) := by
-    simpa [F] using
-      punctured_tendsto_update_continuousOn_closedBall
-        hr hlim hcont
-  have hF_cont :
-      ContinuousOn F (closure (Metric.ball c r)) := by
-    rwa [closure_ball c hr.ne']
-  have hF_front : ∀ z ∈ frontier (Metric.ball c r), ‖F z‖ ≤ M := by
-    intro z hz
-    have hz_sphere : z ∈ Metric.sphere c r := by
-      simpa [frontier_ball c hr.ne'] using hz
-    have hzc : z ≠ c := Metric.ne_of_mem_sphere hz_sphere hr.ne'
-    simpa [F, Function.update, hzc] using hfront z hz
-  have hmax :
-      ∀ z ∈ Metric.ball c r, ‖F z‖ ≤ M :=
-    harmonicOn_complex_ball_norm_le_of_frontier_norm_le
-      hr hF_harm hF_cont hF_front
-  intro z hz
-  have hzc : z ≠ c := by
-    simpa [Set.mem_singleton_iff] using hz.2
-  simpa [F, Function.update, hzc] using hmax z hz.1
-
-/--
-%%handwave
-name:
   Bounded punctured disk harmonic functions are removable
 statement:
   A bounded harmonic function on a punctured Euclidean disk has a harmonic
@@ -6255,37 +5385,6 @@ theorem proper_holomorphicMap_degree_one_of_simple_single_zero_to_openComplexMod
 /--
 %%handwave
 name:
-  A pointed disk map with a unique zero has nontrivial complex range
-statement:
-  Let \(F:X\to\mathbb D\) be a pointed holomorphic map from a Riemann surface,
-  taking \(p\) to \(0\).  If its complex value is zero exactly at \(p\), then
-  its complex range contains two distinct values.
-proof:
-  Choose \(q\ne p\).  The pointed value at \(p\) is zero, while uniqueness of
-  the zero forces the complex value at \(q\) to be nonzero.
--/
-theorem pointedDiskMap_complex_range_nontrivial_of_unique_zero
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (F : PointedHolomorphicMap X Complex.UnitDisc p 0)
-    (hzero : ∀ x : X, (((F.toFun x : Complex.UnitDisc) : ℂ) = 0) ↔ x = p) :
-    (Set.range fun x : X ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)).Nontrivial := by
-  classical
-  haveI : Nontrivial X := riemannSurface_nontrivial X p
-  rcases exists_ne p with ⟨q, hq⟩
-  refine
-    ⟨((F.toFun p : Complex.UnitDisc) : ℂ), ⟨p, rfl⟩,
-      ((F.toFun q : Complex.UnitDisc) : ℂ), ⟨q, rfl⟩, ?_⟩
-  intro hpq
-  have hp_zero : ((F.toFun p : Complex.UnitDisc) : ℂ) = 0 :=
-    (hzero p).mpr rfl
-  have hq_zero : ((F.toFun q : Complex.UnitDisc) : ℂ) = 0 := by
-    simpa [hp_zero] using hpq.symm
-  exact hq ((hzero q).mp hq_zero)
-
-/--
-%%handwave
-name:
   Tiny closed coordinate disks avoid two prescribed exterior points
 statement:
   Given a point \(p\) on a Riemann surface and two points different
@@ -6436,227 +5535,6 @@ theorem punctured_nhds_neBot_riemannSurface
 /--
 %%handwave
 name:
-  Nonnegative harmonic functions with pole blow-up are positive
-statement:
-  Let \(u\) be a nonnegative harmonic function on the punctured surface
-  \(X\setminus\{p\}\), and suppose \(u\to+\infty\) at \(p\).  Then \(u\) is
-  strictly positive on \(X\setminus\{p\}\).
-proof:
-  If \(u\) vanished at a punctured point, then nonnegativity would make that
-  point a local minimum.  The strong minimum principle for harmonic functions
-  would make \(u\) vanish on the punctured component.  A connected Riemann
-  surface remains connected after removing one point, so this would contradict
-  the blow-up at the pole.
--/
-theorem nonnegative_harmonicOn_punctured_tendsto_atTop_positive
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] (p : X) {u : X → ℝ}
-    (hnonneg : ∀ x : X, 0 ≤ u x)
-    (hharm : IsHarmonicOnSurface {x : X | x ≠ p} u)
-    (hblow : Filter.Tendsto u (𝓝[≠] p) Filter.atTop) :
-    ∀ x : X, x ≠ p → 0 < u x := by
-  intro x hxp
-  by_contra hnot_pos
-  have hux_nonpos : u x ≤ 0 := le_of_not_gt hnot_pos
-  have hux_zero : u x = 0 := le_antisymm hux_nonpos (hnonneg x)
-  let U : Set X := {y : X | y ≠ p}
-  have hU_open : IsOpen U := by
-    simpa [U] using (isOpen_ne (x := p) : IsOpen {y : X | y ≠ p})
-  have hU_preconnected : IsPreconnected U := by
-    simpa [U] using punctured_riemannSurface_preconnected X p
-  have hxU : x ∈ U := hxp
-  have hmax_neg : IsMaxOn (fun y : X ↦ -u y) U x := by
-    intro y _hy
-    have hy_nonneg : 0 ≤ u y := hnonneg y
-    simpa [hux_zero] using neg_nonpos.mpr hy_nonneg
-  have hneg_const :
-      Set.EqOn (fun y : X ↦ -u y) (fun _ ↦ -u x) U :=
-    harmonicOnSurface_eqOn_of_isPreconnected_of_isMaxOn
-      hU_open hU_preconnected (harmonicOnSurface_neg hharm) hxU hmax_neg
-  have hzero_on_U : Set.EqOn u (fun _ : X ↦ 0) U := by
-    intro y hy
-    have hneg : -u y = -u x := hneg_const hy
-    exact (neg_inj.mp hneg).trans hux_zero
-  have hevent_zero : u =ᶠ[𝓝[≠] p] fun _ : X ↦ 0 := by
-    filter_upwards [(self_mem_nhdsWithin : U ∈ 𝓝[≠] p)] with y hy
-    exact hzero_on_U hy
-  have htendsto_zero : Filter.Tendsto u (𝓝[≠] p) (𝓝 0) :=
-    hevent_zero.tendsto
-  haveI : Filter.NeBot (𝓝[≠] p) :=
-    punctured_nhds_neBot_riemannSurface X p
-  exact (not_tendsto_nhds_of_tendsto_atTop hblow (0 : ℝ)) htendsto_zero
-
-/--
-%%handwave
-name:
-  Punctured nonnegative harmonic functions with pole blow-up are positive
-statement:
-  Let \(u\) be harmonic and nonnegative on the punctured surface
-  \(X\setminus\{p\}\), and suppose \(u\to+\infty\) at \(p\).  Then \(u\) is
-  strictly positive on \(X\setminus\{p\}\).
-proof:
-  If \(u\) vanished at a punctured point, then nonnegativity on the punctured
-  surface would make that point a local minimum.  The strong minimum
-  principle for harmonic functions would force \(u\) to vanish on the
-  punctured surface, contradicting the blow-up at the pole.
--/
-theorem nonnegative_on_punctured_harmonicOn_punctured_tendsto_atTop_positive
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] (p : X) {u : X → ℝ}
-    (hnonneg : ∀ x : X, x ≠ p → 0 ≤ u x)
-    (hharm : IsHarmonicOnSurface {x : X | x ≠ p} u)
-    (hblow : Filter.Tendsto u (𝓝[≠] p) Filter.atTop) :
-    ∀ x : X, x ≠ p → 0 < u x := by
-  intro x hxp
-  by_contra hnot_pos
-  have hux_nonpos : u x ≤ 0 := le_of_not_gt hnot_pos
-  have hux_zero : u x = 0 := le_antisymm hux_nonpos (hnonneg x hxp)
-  let U : Set X := {y : X | y ≠ p}
-  have hU_open : IsOpen U := by
-    simpa [U] using (isOpen_ne (x := p) : IsOpen {y : X | y ≠ p})
-  have hU_preconnected : IsPreconnected U := by
-    simpa [U] using punctured_riemannSurface_preconnected X p
-  have hxU : x ∈ U := hxp
-  have hmax_neg : IsMaxOn (fun y : X ↦ -u y) U x := by
-    intro y hy
-    have hy_nonneg : 0 ≤ u y := hnonneg y hy
-    simpa [hux_zero] using neg_nonpos.mpr hy_nonneg
-  have hneg_const :
-      Set.EqOn (fun y : X ↦ -u y) (fun _ ↦ -u x) U :=
-    harmonicOnSurface_eqOn_of_isPreconnected_of_isMaxOn
-      hU_open hU_preconnected (harmonicOnSurface_neg hharm) hxU hmax_neg
-  have hzero_on_U : Set.EqOn u (fun _ : X ↦ 0) U := by
-    intro y hy
-    have hneg : -u y = -u x := hneg_const hy
-    exact (neg_inj.mp hneg).trans hux_zero
-  have hevent_zero : u =ᶠ[𝓝[≠] p] fun _ : X ↦ 0 := by
-    filter_upwards [(self_mem_nhdsWithin : U ∈ 𝓝[≠] p)] with y hy
-    exact hzero_on_U hy
-  have htendsto_zero : Filter.Tendsto u (𝓝[≠] p) (𝓝 0) :=
-    hevent_zero.tendsto
-  haveI : Filter.NeBot (𝓝[≠] p) :=
-    punctured_nhds_neBot_riemannSurface X p
-  exact (not_tendsto_nhds_of_tendsto_atTop hblow (0 : ℝ)) htendsto_zero
-
-/--
-%%handwave
-name:
-  Pointed coordinate annulus
-statement:
-  The pointed coordinate annulus \(\rho<|z-z(p)|<R\) is the part of the
-  coordinate source where the coordinate distance from the pole lies between
-  \(\rho\) and \(R\).
--/
-def pointedCoordinateAnnulus
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    {p : X} (χ : PointedSurfaceCoordinate X p) (ρ R : ℝ) : Set X :=
-  χ.chart.source ∩
-    {x : X | ρ < ‖χ.chart x - χ.chart p‖ ∧
-      ‖χ.chart x - χ.chart p‖ < R}
-
-/--
-%%handwave
-name:
-  Logarithmic annular patch with constant exterior
-statement:
-  This patch is the logarithmic model on an inner coordinate ball, a harmonic
-  support on the surrounding annulus, and a positive constant outside a larger
-  coordinate ball.
--/
-noncomputable def pointedCoordinateLogarithmicConstantAnnularPatch
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    {p : X} (χ : PointedSurfaceCoordinate X p) (r R : ℝ)
-    (h : X → ℝ) (A B : ℝ) : X → ℝ :=
-  by
-    classical
-    exact fun x : X ↦
-      if x = p then 0
-      else if x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < r then
-        -Real.log ‖χ.chart x - χ.chart p‖ + A
-      else if x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < R then
-        h x
-      else B
-
-/--
-%%handwave
-name:
-  The constant-exterior annular patch is nonnegative
-statement:
-  If the inner logarithmic model, the annular support, and the exterior
-  constant are nonnegative on their respective pieces, then the whole
-  constant-exterior annular patch is nonnegative.
-proof:
-  Split according to whether the point is the pole, lies in the inner
-  coordinate ball, lies in the surrounding coordinate ball, or lies outside.
-  The four values are respectively \(0\), the logarithmic model, the annular
-  support, and the exterior constant, so the corresponding hypothesis applies
-  in each case.
--/
-theorem pointedCoordinateLogarithmicConstantAnnularPatch_nonnegative
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    {p : X} (χ : PointedSurfaceCoordinate X p) {r R A B : ℝ}
-    {h : X → ℝ}
-    (hlog_nonneg :
-      ∀ x ∈ χ.chart.source,
-        ‖χ.chart x - χ.chart p‖ < r →
-          x ≠ p →
-            0 ≤ -Real.log ‖χ.chart x - χ.chart p‖ + A)
-    (hbridge_nonneg :
-      ∀ x ∈ χ.chart.source,
-        r ≤ ‖χ.chart x - χ.chart p‖ →
-          ‖χ.chart x - χ.chart p‖ < R →
-            0 ≤ h x)
-    (hB_nonneg : 0 ≤ B) :
-    ∀ x : X,
-      0 ≤ pointedCoordinateLogarithmicConstantAnnularPatch X χ r R h A B x := by
-  intro x
-  by_cases hxp : x = p
-  · simp [pointedCoordinateLogarithmicConstantAnnularPatch, hxp]
-  · by_cases hinner : x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < r
-    · simp [pointedCoordinateLogarithmicConstantAnnularPatch, hxp, hinner,
-        hlog_nonneg x hinner.1 hinner.2 hxp]
-    · by_cases houter : x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < R
-      · have hr_le : r ≤ ‖χ.chart x - χ.chart p‖ := by
-          exact le_of_not_gt (fun hlt ↦ hinner ⟨houter.1, hlt⟩)
-        have hnot_lt : ¬ ‖χ.chart x - χ.chart p‖ < r := by
-          intro hlt
-          exact hinner ⟨houter.1, hlt⟩
-        simp [pointedCoordinateLogarithmicConstantAnnularPatch, hxp, houter,
-          hnot_lt, hbridge_nonneg x houter.1 hr_le houter.2]
-      · simp [pointedCoordinateLogarithmicConstantAnnularPatch, hxp, hinner,
-          houter, hB_nonneg]
-
-/--
-%%handwave
-name:
-  The constant-exterior annular patch has the exact local model
-statement:
-  On the punctured inner coordinate ball, the constant-exterior annular patch
-  agrees with \(-\log |z-z(p)|\) plus the chosen constant.
-proof:
-  At a non-pole point of the inner coordinate ball, the first nontrivial branch
-  of the piecewise definition is selected, and that branch is exactly the
-  stated logarithmic model.
--/
-theorem pointedCoordinateLogarithmicConstantAnnularPatch_eq_model
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    {p : X} (χ : PointedSurfaceCoordinate X p) {r R A B : ℝ}
-    {h : X → ℝ} :
-    ∀ x ∈ χ.chart.source,
-      ‖χ.chart x - χ.chart p‖ < r →
-        x ≠ p →
-          pointedCoordinateLogarithmicConstantAnnularPatch X χ r R h A B x =
-            -Real.log ‖χ.chart x - χ.chart p‖ + A := by
-  intro x hxsource hxr hxp
-  have hinner : x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < r :=
-    ⟨hxsource, hxr⟩
-  simp [pointedCoordinateLogarithmicConstantAnnularPatch, hxp, hinner]
-
-
-
-/--
-%%handwave
-name:
   Pointed coordinate inner balls are eventually reached from any pointed coordinate
 statement:
   If \(r>0\), then every point sufficiently close to \(p\) in any pointed
@@ -6683,217 +5561,6 @@ theorem pointedCoordinate_eventually_mem_inner_ball
   filter_upwards [mem_nhdsWithin_of_mem_nhds hsource,
     mem_nhdsWithin_of_mem_nhds hball] with x hxsource hxball
   exact ⟨hxsource, hxball⟩
-
-/--
-%%handwave
-name:
-  Pointed-coordinate logarithmic distance differences are locally harmonic
-statement:
-  For two pointed coordinates at the same pole, the difference of their
-  logarithmic coordinate distances has a harmonic extension across the pole on
-  a small neighborhood.
-proof:
-  Write the transition as \(F\) in the second coordinate.  Since the transition
-  derivative is nonzero at the pole, the divided slope
-  \((F(z)-F(z_0))/(z-z_0)\), extended by \(F'(z_0)\), is analytic and nonzero
-  near \(z_0\).  The logarithm of its norm is harmonic and equals the
-  difference of the two coordinate logarithmic distances off the pole.
--/
-theorem pointedCoordinate_log_distance_difference_local_harmonic_extension
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (χ ψ : PointedSurfaceCoordinate X p) :
-    ∃ U : Set X, ∃ H : X → ℝ,
-      IsOpen U ∧ p ∈ U ∧ U ⊆ χ.chart.source ∧
-        IsHarmonicOnSurface U H ∧
-          ∀ᶠ x in 𝓝[χ.chart.source ∩ {x : X | x ≠ p}] p,
-            Real.log ‖χ.chart x - χ.chart p‖ -
-              Real.log ‖ψ.chart x - ψ.chart p‖ = H x := by
-  let F : ℂ → ℂ := fun z ↦ χ.chart (ψ.chart.symm z)
-  let z₀ : ℂ := ψ.chart p
-  let q : ℂ → ℂ := dslope F z₀
-  have hz₀_target : z₀ ∈ ψ.chart.target := by
-    dsimp [z₀]
-    exact ψ.chart.map_source ψ.base_mem_source
-  have hz₀_sourceχ : ψ.chart.symm z₀ ∈ χ.chart.source := by
-    dsimp [z₀]
-    simpa [ψ.chart.left_inv ψ.base_mem_source] using χ.base_mem_source
-  have hF_an : AnalyticAt ℂ F z₀ := by
-    dsimp [F, z₀]
-    exact chartTransition_analyticAt ψ.chart ψ.chart_mem_atlas
-      χ.chart χ.chart_mem_atlas hz₀_target hz₀_sourceχ
-  have hq_an : AnalyticAt ℂ q z₀ := by
-    rcases hF_an with ⟨pF, hpF⟩
-    exact (HasFPowerSeriesAt.has_fpower_series_dslope_fslope hpF).analyticAt
-  have hq_z₀_ne : q z₀ ≠ 0 := by
-    dsimp [q]
-    simpa [F, z₀] using pointedCoordinate_transition_deriv_ne_zero X χ ψ
-  rcases hq_an.exists_ball_analyticOnNhd with
-    ⟨r_an, hr_an_pos, hq_an_ball⟩
-  have hq_ne_nhds : {z : ℂ | q z ≠ 0} ∈ 𝓝 z₀ :=
-    hq_an.differentiableAt.continuousAt.preimage_mem_nhds
-      (isOpen_ne.mem_nhds hq_z₀_ne)
-  rcases Metric.mem_nhds_iff.mp hq_ne_nhds with
-    ⟨r_ne, hr_ne_pos, hq_ne_ball⟩
-  let δ : ℝ := min r_an r_ne
-  have hδ_pos : 0 < δ := by
-    dsimp [δ]
-    exact lt_min hr_an_pos hr_ne_pos
-  have hδ_le_an : δ ≤ r_an := by
-    dsimp [δ]
-    exact min_le_left _ _
-  have hδ_le_ne : δ ≤ r_ne := by
-    dsimp [δ]
-    exact min_le_right _ _
-  let U : Set X :=
-    χ.chart.source ∩ (ψ.chart.source ∩ ψ.chart ⁻¹' Metric.ball z₀ δ)
-  let H : X → ℝ := fun x ↦ Real.log ‖q (ψ.chart x)‖
-  have hU_open : IsOpen U := by
-    dsimp [U]
-    exact χ.chart.open_source.inter
-      (ψ.chart.isOpen_inter_preimage Metric.isOpen_ball)
-  have hpU : p ∈ U := by
-    refine ⟨χ.base_mem_source, ψ.base_mem_source, ?_⟩
-    simp [z₀, hδ_pos]
-  have hUχ : U ⊆ χ.chart.source := fun _ hx ↦ hx.1
-  have hq_an_on :
-      ∀ z ∈ Metric.ball z₀ δ, AnalyticAt ℂ q z := by
-    intro z hz
-    exact hq_an_ball z (Metric.ball_subset_ball hδ_le_an hz)
-  have hq_ne_on :
-      ∀ z ∈ Metric.ball z₀ δ, q z ≠ 0 := by
-    intro z hz
-    exact hq_ne_ball (Metric.ball_subset_ball hδ_le_ne hz)
-  have hlog_harm :
-      InnerProductSpace.HarmonicOnNhd
-        (fun z : ℂ ↦ Real.log ‖q z‖) (Metric.ball z₀ δ) := by
-    intro z hz
-    exact (hq_an_on z hz).harmonicAt_log_norm (hq_ne_on z hz)
-  have hH_harm : IsHarmonicOnSurface U H := by
-    intro e he z hz
-    have hz_target : z ∈ e.target := hz.1
-    have hxU : e.symm z ∈ U := hz.2
-    have hxψ_source : e.symm z ∈ ψ.chart.source := hxU.2.1
-    have hxball : ψ.chart (e.symm z) ∈ Metric.ball z₀ δ := hxU.2.2
-    have h_at :
-        InnerProductSpace.HarmonicAt
-          (fun z : ℂ ↦ Real.log ‖q z‖) (ψ.chart (e.symm z)) :=
-      hlog_harm (ψ.chart (e.symm z)) hxball
-    have htransition :
-        AnalyticAt ℂ (fun w : ℂ ↦ ψ.chart (e.symm w)) z :=
-      chartTransition_analyticAt e he ψ.chart ψ.chart_mem_atlas
-        hz_target hxψ_source
-    simpa [H, Function.comp_def] using
-      harmonicAt_comp_analyticAt h_at htransition
-  have heq_on_U :
-      ∀ x ∈ U, x ≠ p →
-        Real.log ‖χ.chart x - χ.chart p‖ -
-          Real.log ‖ψ.chart x - ψ.chart p‖ = H x := by
-    intro x hxU hxne
-    have hxψ_source : x ∈ ψ.chart.source := hxU.2.1
-    have hz_ne : ψ.chart x ≠ z₀ := by
-      intro hz
-      exact hxne (ψ.chart.injOn hxψ_source ψ.base_mem_source (by
-        simpa [z₀] using hz))
-    have hψ_pos : 0 < ‖ψ.chart x - ψ.chart p‖ := by
-      exact norm_pos_iff.mpr (sub_ne_zero.mpr (by simpa [z₀] using hz_ne))
-    have hq_ne : q (ψ.chart x) ≠ 0 :=
-      hq_ne_on (ψ.chart x) hxU.2.2
-    have hq_pos : 0 < ‖q (ψ.chart x)‖ :=
-      norm_pos_iff.mpr hq_ne
-    have hdiff :
-        χ.chart x - χ.chart p =
-          (ψ.chart x - ψ.chart p) * q (ψ.chart x) := by
-      have h := (sub_smul_dslope F z₀ (ψ.chart x)).symm
-      simpa [q, F, z₀, smul_eq_mul, ψ.chart.left_inv hxψ_source,
-        ψ.chart.left_inv ψ.base_mem_source] using h
-    calc
-      Real.log ‖χ.chart x - χ.chart p‖ -
-          Real.log ‖ψ.chart x - ψ.chart p‖
-          = Real.log (‖ψ.chart x - ψ.chart p‖ * ‖q (ψ.chart x)‖) -
-              Real.log ‖ψ.chart x - ψ.chart p‖ := by
-              rw [hdiff, norm_mul]
-      _ = Real.log ‖q (ψ.chart x)‖ := by
-          rw [Real.log_mul hψ_pos.ne' hq_pos.ne']
-          ring
-      _ = H x := rfl
-  refine ⟨U, H, hU_open, hpU, hUχ, hH_harm, ?_⟩
-  filter_upwards
-    [mem_nhdsWithin_of_mem_nhds (hU_open.mem_nhds hpU),
-      self_mem_nhdsWithin]
-    with x hxU hxχpunct
-  exact heq_on_U x hxU hxχpunct.2
-
-/--
-%%handwave
-name:
-  Pointed coordinate distances are locally comparable
-statement:
-  For two pointed coordinates at the same point, the distance to the marked
-  point in one coordinate is bounded above by a fixed multiple of the distance
-  in the other coordinate near the marked point.
-proof:
-  The transition map from the second coordinate to the first is holomorphic
-  and has nonzero derivative at the marked point.  The inverse-function
-  estimate therefore bounds the norm of the transition map by a fixed
-  multiple of the norm of its argument on a sufficiently small punctured
-  neighborhood.
--/
-theorem pointedCoordinate_distances_eventually_le_mul
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {p : X}
-    (χ ψ : PointedSurfaceCoordinate X p) :
-    ∃ C : ℝ, 1 ≤ C ∧
-      ∀ᶠ x in 𝓝[ψ.chart.source ∩ {x : X | x ≠ p}] p,
-        x ∈ χ.chart.source ∧
-          ‖χ.chart x - χ.chart p‖ ≤
-            C * ‖ψ.chart x - ψ.chart p‖ := by
-  let F : ℂ → ℂ := fun z ↦ χ.chart (ψ.chart.symm z)
-  let z₀ : ℂ := ψ.chart p
-  have hz₀_target : z₀ ∈ ψ.chart.target := by
-    dsimp [z₀]
-    exact ψ.chart.map_source ψ.base_mem_source
-  have hz₀_source : ψ.chart.symm z₀ ∈ χ.chart.source := by
-    dsimp [z₀]
-    simpa [ψ.chart.left_inv ψ.base_mem_source] using χ.base_mem_source
-  have hF_an : AnalyticAt ℂ F z₀ := by
-    dsimp [F, z₀]
-    exact chartTransition_analyticAt ψ.chart ψ.chart_mem_atlas
-      χ.chart χ.chart_mem_atlas hz₀_target hz₀_source
-  have hbig :
-      (fun z : ℂ ↦ F z - F z₀) =O[𝓝 z₀] (fun z : ℂ ↦ z - z₀) :=
-    hF_an.differentiableAt.isBigO_sub
-  rcases hbig.exists_pos with ⟨C₀, hC₀_pos, hC₀⟩
-  refine ⟨max 1 C₀, le_max_left 1 C₀, ?_⟩
-  have hψ_tendsto :
-      Filter.Tendsto ψ.chart
-        (𝓝[ψ.chart.source ∩ {x : X | x ≠ p}] p) (𝓝 z₀) := by
-    dsimp [z₀]
-    exact (ψ.chart.continuousAt ψ.base_mem_source).mono_left nhdsWithin_le_nhds
-  have hbound :
-      ∀ᶠ x in 𝓝[ψ.chart.source ∩ {x : X | x ≠ p}] p,
-        ‖F (ψ.chart x) - F z₀‖ ≤ C₀ * ‖ψ.chart x - z₀‖ :=
-    hψ_tendsto hC₀.bound
-  have hχsource_event :
-      ∀ᶠ x in 𝓝[ψ.chart.source ∩ {x : X | x ≠ p}] p,
-        x ∈ χ.chart.source ∧ ‖χ.chart x - χ.chart p‖ < (1 : ℝ) :=
-    pointedCoordinate_eventually_mem_inner_ball X χ ψ zero_lt_one
-  filter_upwards [hbound, hχsource_event, self_mem_nhdsWithin] with
-    x hboundx hxχ hxψ
-  refine ⟨hxχ.1, ?_⟩
-  have hF_eq : F (ψ.chart x) = χ.chart x := by
-    dsimp [F]
-    rw [ψ.chart.left_inv hxψ.1]
-  have hF₀_eq : F z₀ = χ.chart p := by
-    dsimp [F, z₀]
-    rw [ψ.chart.left_inv ψ.base_mem_source]
-  calc
-    ‖χ.chart x - χ.chart p‖ = ‖F (ψ.chart x) - F z₀‖ := by
-      rw [hF_eq, hF₀_eq]
-    _ ≤ C₀ * ‖ψ.chart x - ψ.chart p‖ := by
-      simpa [z₀] using hboundx
-    _ ≤ max 1 C₀ * ‖ψ.chart x - ψ.chart p‖ :=
-      mul_le_mul_of_nonneg_right (le_max_right (1 : ℝ) C₀) (norm_nonneg _)
 
 /--
 %%handwave
@@ -7011,68 +5678,6 @@ theorem logarithmic_singularity_tendsto_atTop
 /--
 %%handwave
 name:
-  Logarithmic zero asymptotics imply pole decay
-statement:
-  A function whose difference with \(\log |z-z(p)|\) is harmonically removable
-  at \(p\) tends to \(-\infty\) along the punctured surface.
-proof:
-  In a pointed coordinate, the harmonic remainder is finite and continuous at
-  the pole, while \(\log |z-z(p)|\to-\infty\).  Therefore the original function,
-  equal to the harmonic remainder plus the logarithm, tends to \(-\infty\).
--/
-theorem logarithmic_zero_tendsto_atBot
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] (p : X) {u : X → ℝ}
-    (hlog :
-      ∀ χ : PointedSurfaceCoordinate X p,
-        ∃ h : X → ℝ,
-          IsHarmonicOnSurface χ.chart.source h ∧
-            ∀ᶠ x in 𝓝[χ.chart.source ∩ {x : X | x ≠ p}] p,
-              u x - Real.log ‖χ.chart x - χ.chart p‖ = h x) :
-    Filter.Tendsto u (𝓝[≠] p) Filter.atBot := by
-  let χ : PointedSurfaceCoordinate X p :=
-    { chart := chartAt ℂ p
-      chart_mem_atlas := chart_mem_atlas ℂ p
-      base_mem_source := mem_chart_source ℂ p }
-  let F : Filter X := 𝓝[χ.chart.source ∩ {x : X | x ≠ p}] p
-  have hF_eq : F = 𝓝[≠] p := by
-    have hsource_mem : χ.chart.source ∈ 𝓝[{x : X | x ≠ p}] p :=
-      mem_nhdsWithin_of_mem_nhds
-        (χ.chart.open_source.mem_nhds χ.base_mem_source)
-    simpa [F] using nhdsWithin_inter_of_mem hsource_mem
-  rcases hlog χ with ⟨h, hharm, hevent⟩
-  have hh_cont :
-      Filter.Tendsto h F (𝓝 (h p)) := by
-    have hcont_on : ContinuousOn h χ.chart.source :=
-      harmonicOnSurface_continuousOn χ.chart.open_source hharm
-    have hwithin :
-        Filter.Tendsto h (𝓝[χ.chart.source] p) (𝓝 (h p)) :=
-      hcont_on.continuousWithinAt χ.base_mem_source
-    exact hwithin.mono_left (by
-      simpa [F] using
-        (nhdsWithin_mono p (Set.inter_subset_left :
-          χ.chart.source ∩ {x : X | x ≠ p} ⊆ χ.chart.source)))
-  have hlog_bot :
-      Filter.Tendsto
-        (fun x : X => Real.log ‖χ.chart x - χ.chart p‖)
-        F Filter.atBot := by
-    simpa [F] using pointedCoordinate_log_norm_tendsto_atBot X χ
-  have hsum_bot :
-      Filter.Tendsto
-        (fun x : X => h x + Real.log ‖χ.chart x - χ.chart p‖)
-        F Filter.atBot :=
-    hh_cont.add_atBot hlog_bot
-  have hu_event :
-      (fun x : X => h x + Real.log ‖χ.chart x - χ.chart p‖) =ᶠ[F] u := by
-    filter_upwards [by simpa [F] using hevent] with x hx
-    linarith
-  have hu_tendsto_F : Filter.Tendsto u F Filter.atBot :=
-    Filter.Tendsto.congr' hu_event hsum_bot
-  simpa [hF_eq] using hu_tendsto_F
-
-/--
-%%handwave
-name:
   Compact subsets of the disk stay away from the boundary
 statement:
   Every compact subset of the unit disk is contained in a closed subdisk of
@@ -7106,121 +5711,8 @@ theorem compact_unitDisc_subset_closed_norm_lt_one
     intro z hzK
     exact (hne ⟨z, hzK⟩).elim
 
-/--
-%%handwave
-name:
-  Green function with one pole
-statement:
-  A Green function with pole \(p\) is a positive harmonic function on the
-  punctured surface, with the standard logarithmic pole at \(p\), vanishing at
-  infinity, and compact positive superlevel sets after adjoining the pole.
--/
-structure GreenFunctionWithPole (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    (p : X) where
-  /-- The Green function, represented as an ambient real-valued function. -/
-  toFun : X → ℝ
-  /-- The Green function is positive away from the pole. -/
-  positive_away_pole : ∀ x : X, x ≠ p → 0 < toFun x
-  /-- The Green function is harmonic on the punctured surface. -/
-  harmonic_away_pole : IsHarmonicOnSurface {x : X | x ≠ p} toFun
-  /-- The Green function diverges to \(+\infty\) at the pole. -/
-  tends_to_infinity_at_pole :
-    Filter.Tendsto toFun (𝓝[≠] p) Filter.atTop
-  /-- In every coordinate at the pole, the logarithmic singularity is removable. -/
-  logarithmic_singularity :
-    ∀ χ : PointedSurfaceCoordinate X p,
-      ∃ h : X → ℝ,
-        IsHarmonicOnSurface χ.chart.source h ∧
-          ∀ᶠ x in 𝓝[χ.chart.source ∩ {x : X | x ≠ p}] p,
-            toFun x + Real.log ‖χ.chart x - χ.chart p‖ = h x
-  /-- The Green function tends to zero along the ends of the surface. -/
-  tends_to_zero_at_infinity :
-    Filter.Tendsto toFun (Filter.cocompact X) (𝓝 0)
-  /--
-  Positive superlevel sets of the Green function are compact after adjoining
-  the pole.  The pole is adjoined explicitly because `toFun` is represented as
-  an ordinary real-valued function at `p`, while the mathematical limiting
-  value there is `+∞`.
-  -/
-  compact_positive_superlevel :
-    ∀ a : ℝ, 0 < a → IsCompact ({p} ∪ {x : X | a ≤ toFun x})
-
-/--
-%%handwave
-name:
-  Potential-theoretically parabolic surface
-statement:
-  A Riemann surface is potential-theoretically parabolic when it has no Green
-  function with any pole.
--/
-def IsPotentialTheoreticallyParabolic
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ p : X, ¬ Nonempty (GreenFunctionWithPole X p)
 
 
-
-/--
-%%handwave
-name:
-  Evans potential
-statement:
-  An Evans potential with logarithmic zero at \(p\) is harmonic on the
-  punctured surface, has local form \(\log |z-z(p)|\) plus a harmonic
-  function near \(p\), and tends to \(+\infty\) at infinity with compact
-  sublevel sets after adjoining \(p\).
--/
-structure EvansPotentialAt (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    (p : X) where
-  /-- The real-valued Evans potential. -/
-  toFun : X → ℝ
-  /-- The potential is harmonic away from its logarithmic zero. -/
-  harmonic_away_pole : IsHarmonicOnSurface {x : X | x ≠ p} toFun
-  /-- The potential tends to \(-\infty\) at its logarithmic zero. -/
-  tends_to_neg_infinity_at_pole :
-    Filter.Tendsto toFun (𝓝[≠] p) Filter.atBot
-  /-- In every coordinate at the pole, the logarithmic singularity is removable. -/
-  logarithmic_zero :
-    ∀ χ : PointedSurfaceCoordinate X p,
-      ∃ h : X → ℝ,
-        IsHarmonicOnSurface χ.chart.source h ∧
-          ∀ᶠ x in 𝓝[χ.chart.source ∩ {x : X | x ≠ p}] p,
-            toFun x - Real.log ‖χ.chart x - χ.chart p‖ = h x
-  /-- The potential tends to \(+\infty\) along the ends of the surface. -/
-  tends_to_infinity_at_infinity :
-    Filter.Tendsto toFun (Filter.cocompact X) Filter.atTop
-  /--
-  Sublevel sets of the potential are compact after adjoining the logarithmic
-  zero.  The point is adjoined explicitly because `toFun` is represented as an
-  ordinary real-valued function at `p`, while the mathematical limiting value
-  there is `-∞`.
-  -/
-  compact_sublevel_with_zero :
-    ∀ a : ℝ, IsCompact ({p} ∪ {x : X | toFun x ≤ a})
-
-/--
-%%handwave
-name:
-  Plane map associated to an Evans potential
-statement:
-  A holomorphic plane map is associated to an Evans potential when its
-  logarithmic modulus is the potential away from \(p\), its only zero is
-  \(p\), and that zero is simple.
--/
-structure EvansPotentialPlaneMap
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] {p : X}
-    (E : EvansPotentialAt X p) where
-  /-- The holomorphic map to the complex plane. -/
-  toFun : X → ℂ
-  /-- The map is holomorphic. -/
-  holomorphic : HolomorphicMap X ℂ toFun
-  /-- Away from the zero, the logarithmic modulus is the Evans potential. -/
-  log_norm_eq : ∀ x : X, x ≠ p → Real.log ‖toFun x‖ = E.toFun x
-  /-- The only zero of the plane map is the marked point. -/
-  zero_fiber : ∀ x : X, toFun x = 0 ↔ x = p
-  /-- The zero at the marked point is simple. -/
-  simple_zero :
-    ∀ χ : PointedSurfaceCoordinate X p,
-      surfaceComplexDerivativeInCoordinate χ toFun ≠ 0
 
 end Uniformization
 

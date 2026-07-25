@@ -19,8 +19,13 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
 
-/-- Coherent finite transports obtained by appending one controlled finite
-path at each stage. -/
+/--
+%%handwave
+name: Coherent finite transports obtained by appending one controlled finite path at each stage
+statement:
+  Coherent finite transports obtained by appending one controlled finite
+  path at each stage.
+-/
 noncomputable def controlledAtlasVortexPathTransport
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -59,8 +64,13 @@ theorem controlledAtlasVortexPathTransport_phase_succ
     ((path n).exists_append_transport
       (controlledAtlasVortexPathTransport p W v path T₀ hpW n) (hpW n)) z hzW
 
-/-- A blockwise finite transport phase, totalized on the initially punctured
-surface by assigning an irrelevant value at its moving terminal point. -/
+/--
+%%handwave
+name: A blockwise finite transport phase, totalized on the initially punctured surface by assigning an irrelevant value at its moving terminal point
+statement:
+  A blockwise finite transport phase, totalized on the initially punctured
+  surface by assigning an irrelevant value at its moving terminal point.
+-/
 noncomputable def controlledAtlasVortexPathTransportPartialPhase
     (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
     (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
@@ -257,36 +267,6 @@ theorem exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths_wit
         p W v path T₀ hpW n z⟩
   exact exists_circlePrimitive_of_locally_eventuallyEq_unitPhase_with_stability
     SurfaceRealModel f hlocal hnorm
-
-/--
-%%handwave
-name:
-  Circle primitive from locally escaping controlled vortex paths
-statement:
-  Under the same local escape hypotheses, there is a smooth unit phase on
-  \(X\setminus\{p\}\) whose canonical logarithmic one-form admits a circle
-  primitive.
-proof:
-  Apply the stable escaping-path construction and discard its additional
-  pointwise stabilization statement.
--/
-theorem exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths
-    (p : X) (W : ℕ → TopologicalSpace.Opens X) (v : ℕ → X)
-    (path : ∀ n, ControlledAtlasVortexPath (W n) (v n) (v (n + 1)))
-    (T₀ : AtlasVortexTransportData X p (v 0))
-    (hpW : ∀ n, p ∉ W n)
-    (hescape : ∀ z : atlasVortexInitialOpen p,
-      ∃ N : ℕ, ∃ U : TopologicalSpace.Opens (atlasVortexInitialOpen p),
-        z ∈ U ∧ ∀ n ≥ N, ∀ y ∈ U, (y : X) ∉ W n) :
-    ∃ (P : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
-          (atlasVortexInitialOpen p) ℂ ∞)
-        (hP : ∀ z : atlasVortexInitialOpen p, ‖P z‖ = 1),
-      Nonempty (JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-        (smoothUnitPhaseOneForm SurfaceRealModel P hP)) := by
-  rcases
-      exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths_with_stability
-        p W v path T₀ hpW hescape with ⟨P, hP, _hstable, hprimitive⟩
-  exact ⟨P, hP, hprimitive⟩
 
 end
 

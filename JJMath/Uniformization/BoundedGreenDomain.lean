@@ -18,7 +18,13 @@ namespace JJMath.Uniformization
 
 noncomputable section
 
-/-- The open submanifold carried by a smooth boundary domain. -/
+/--
+%%handwave
+name: Open submanifold underlying a smooth boundary domain
+statement:
+  For a smooth-boundary domain $D$ in a surface $X$, regard its open carrier
+  $D\subseteq X$ as an open submanifold.
+-/
 def SmoothBoundaryDomain.openCarrier
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (Ω : SmoothBoundaryDomain X) : TopologicalSpace.Opens X :=
@@ -50,13 +56,6 @@ theorem SmoothBoundaryDomain.openCarrier_riemannSurface
   exact riemannSurface_openSubset Ω.openCarrier
     hnonempty hpre
 
-noncomputable instance SmoothBoundaryDomain.openCarrier.instRiemannSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    (Ω : SmoothBoundaryDomain X) [PathConnectedSpace Ω.carrier]
-    [Nonempty Ω.carrier] :
-    RiemannSurface Ω.openCarrier :=
-  Ω.openCarrier_riemannSurface
 
 /--
 %%handwave

@@ -16,280 +16,22 @@ namespace HyperbolicMetric
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
 
-/-- Global data target for local curvature-derived solving. -/
-abbrev LocalCurvatureSolvingTheorem (X : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] :=
-  ∀ (g : HyperbolicMetric X), g.HasCurvatureLiouvilleDevelopingConstructionAtlas
 
-/--
-Global theorem target for expanding the abstract curvature predicate into the
-local conformal curvature formula `K = -exp (-2u) Δu`.
 
-This is the remaining geometric bridge between the lightweight
-`ConformalMetric.curvature_eq` predicate and the coordinate formula layer.
--/
-def LocalCurvatureFormulaExpansionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X), g.HasLocalCurvatureMetricFormulaAtlas
 
-/--
-Local solving data for one curvature-derived Liouville formula atlas.
-
-This isolates the PDE step after curvature has already been expanded into
-local Liouville formulas.
--/
-structure LocalSolvingFromCurvatureFormula (g : HyperbolicMetric X)
-    (curvatureFormulaAtlas : CurvatureLiouvilleFormulaAtlas X g) where
-  /-- Local upper-half-plane developing constructions solving the metric formulas. -/
-  developingConstructionAtlas : LocalLiouvilleDevelopingConstructionAtlas X g
-  /-- The constructions solve exactly the chosen curvature-derived formulas. -/
-  constructions_solve_curvature_formulas :
-    developingConstructionAtlas.toLocalLiouvilleMetricFormulaAtlas =
-      curvatureFormulaAtlas.toLocalLiouvilleMetricFormulaAtlas
-
-/--
-Local solving data for an arbitrary Liouville metric-formula atlas.
-
-This isolates the local PDE/ODE step independently of curvature provenance:
-given local conformal factors satisfying Liouville's equation, construct local
-maps to `ℍ` whose Poincare pullback formulas realize the metric, with
-real-Mobius overlap transitions.
--/
-structure LocalSolvingFromLiouvilleFormulaAtlas (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g) where
-  /-- Local upper-half-plane developing constructions solving the metric formulas. -/
-  developingConstructionAtlas : LocalLiouvilleDevelopingConstructionAtlas X g
-  /-- The constructions solve exactly the chosen Liouville metric formulas. -/
-  constructions_solve_metric_formulas :
-    developingConstructionAtlas.toLocalLiouvilleMetricFormulaAtlas =
-      metricFormulaAtlas
-
-/--
-Local solving data obtained from Schwarzian branches over a Liouville
-metric-formula atlas.
-
-This is slightly weaker, and closer to the analytic construction, than
-`LocalSolvingFromLiouvilleFormulaAtlas`: the Schwarzian solution branch may be
-defined on a smaller coordinate neighbourhood, so the produced developing
-solution uses the restricted conformal factor recorded in
-`SurfaceSchwarzianBranchData`.
--/
-structure LocalSolvingFromSchwarzianBranchData (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g) where
-  /-- Schwarzian data, upper-half-plane branches, and real Mobius transitions. -/
-  branchData : SurfaceSchwarzianBranchData metricFormulaAtlas
-
-namespace LocalSolvingFromSchwarzianBranchData
-
-variable {g : HyperbolicMetric X}
-    {metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g}
-
-/-- The local Liouville developing-solution atlas produced by the branch data. -/
-def toLocalLiouvilleDevelopingSolutionAtlas
-    (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
-    LocalLiouvilleDevelopingSolutionAtlas X g :=
-  S.branchData.toLocalLiouvilleDevelopingSolutionAtlas
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Developing-solution atlas from surface Schwarzian branches
-statement:
-  If a local metric-formula atlas is equipped with covering upper-half-plane Schwarzian branches and compatible real Mobius transitions, then the metric admits an atlas of local Liouville developing solutions.
-proof:
-  Assemble the branch data directly into the local developing-solution atlas.
--/
-theorem hasLocalLiouvilleDevelopingSolutionAtlas
-    (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasLocalLiouvilleDevelopingSolutionAtlas :=
-  ⟨S.toLocalLiouvilleDevelopingSolutionAtlas⟩
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Coordinate Poincare formulas from surface Schwarzian branches
-statement:
-  Covering Schwarzian branches with real Mobius transitions determine an atlas of coordinate formulas expressing the metric as pullbacks of the Poincare metric.
-proof:
-  First form the local Liouville developing-solution atlas, then retain its coordinate Poincare pullback formulas.
--/
-theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
-    (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasCoordinateUpperHalfPlanePullbackFormulaAtlas :=
-  HyperbolicMetric.hasCoordinateUpperHalfPlanePullbackFormulaAtlas_of_hasLocalLiouvilleDevelopingSolutionAtlas
-    S.hasLocalLiouvilleDevelopingSolutionAtlas
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Local upper-half-plane models from surface Schwarzian branches
-statement:
-  Covering upper-half-plane Schwarzian branches with real Mobius transitions give local upper-half-plane models of the hyperbolic metric.
-proof:
-  Assemble the branches into a local Liouville developing-solution atlas and apply the standard passage from that atlas to local models.
--/
-theorem hasUpperHalfPlaneLocalModels
-    (S : LocalSolvingFromSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasUpperHalfPlaneLocalModels :=
-  HyperbolicMetric.hasUpperHalfPlaneLocalModels_of_hasLocalLiouvilleDevelopingSolutionAtlas
-    S.hasLocalLiouvilleDevelopingSolutionAtlas
-
-end LocalSolvingFromSchwarzianBranchData
-
-/--
-Local solving data obtained from pointed Schwarzian branches over a Liouville
-metric-formula atlas.
-
-This matches the actual local ODE output more closely than
-`LocalSolvingFromSchwarzianBranchData`: each branch is only required to contain
-the coordinate of its base point.  The branch data then shrinks the surface
-formula domains before producing the local developing atlas.
--/
-structure LocalSolvingFromPointedSchwarzianBranchData (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g) where
-  /--
-  Pointed Schwarzian data, upper-half-plane branches, surface-domain shrinkings,
-  and real Mobius transitions after shrinking.
-  -/
-  branchData : SurfaceSchwarzianPointedBranchData metricFormulaAtlas
-
-namespace LocalSolvingFromPointedSchwarzianBranchData
-
-variable {g : HyperbolicMetric X}
-    {metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g}
-
-/-- The local Liouville developing-solution atlas produced by pointed branch data. -/
-def toLocalLiouvilleDevelopingSolutionAtlas
-    (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
-    LocalLiouvilleDevelopingSolutionAtlas X g :=
-  S.branchData.toLocalLiouvilleDevelopingSolutionAtlas
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Developing-solution atlas from pointed Schwarzian branches
-statement:
-  Suppose each surface point has a local upper-half-plane Schwarzian branch defined at its coordinate, and after restricting the surface domains these branches have compatible real Mobius transitions. Then the metric admits an atlas of local Liouville developing solutions.
-proof:
-  Shrink every metric formula to the inverse image of its pointed branch domain and assemble the resulting branches into the developing-solution atlas.
--/
-theorem hasLocalLiouvilleDevelopingSolutionAtlas
-    (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasLocalLiouvilleDevelopingSolutionAtlas :=
-  ⟨S.toLocalLiouvilleDevelopingSolutionAtlas⟩
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Coordinate Poincare formulas from pointed Schwarzian branches
-statement:
-  Compatible pointed Schwarzian branches, after restricting their surface domains, determine an atlas of coordinate Poincare pullback formulas for the metric.
-proof:
-  Construct the restricted local developing-solution atlas and forget to its coordinate pullback formulas.
--/
-theorem hasCoordinateUpperHalfPlanePullbackFormulaAtlas
-    (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasCoordinateUpperHalfPlanePullbackFormulaAtlas :=
-  HyperbolicMetric.hasCoordinateUpperHalfPlanePullbackFormulaAtlas_of_hasLocalLiouvilleDevelopingSolutionAtlas
-    S.hasLocalLiouvilleDevelopingSolutionAtlas
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name: Local models from pointed Schwarzian branches
-statement:
-  Compatible pointed upper-half-plane Schwarzian branches give local upper-half-plane models after their surface chart domains are restricted to the branch domains.
-proof:
-  Build the restricted local developing-solution atlas and apply its local-model consequence.
--/
-theorem hasUpperHalfPlaneLocalModels
-    (S : LocalSolvingFromPointedSchwarzianBranchData g metricFormulaAtlas) :
-    g.HasUpperHalfPlaneLocalModels :=
-  HyperbolicMetric.hasUpperHalfPlaneLocalModels_of_hasLocalLiouvilleDevelopingSolutionAtlas
-    S.hasLocalLiouvilleDevelopingSolutionAtlas
-
-end LocalSolvingFromPointedSchwarzianBranchData
-
-/--
-Global theorem target for choosing Schwarzian data and upper-half-plane
-branches over any Liouville metric-formula atlas.
--/
-def SurfaceSchwarzianBranchDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g),
-    Nonempty (SurfaceSchwarzianBranchData metricFormulaAtlas)
-
-/--
-Global theorem target for choosing pointed Schwarzian branches over any
-Liouville metric-formula atlas.
-
-This is currently the sharper local ODE boundary: branches only need to be
-defined at the base coordinate, and the surface domains are then shrunk to fit
-the branch domains.
--/
-def SurfaceSchwarzianPointedBranchDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g),
-    Nonempty (SurfaceSchwarzianPointedBranchData metricFormulaAtlas)
-
-/--
-Global theorem target for assembling coordinate real branch atlases into
-pointed surface branch data over any Liouville metric-formula atlas.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g),
-    Nonempty (SurfaceRealUpperHalfPlaneBranchAtlasData metricFormulaAtlas)
-
-/--
-Surface assembly theorem target.
-
-Given a real upper-half-plane branch atlas in every coordinate conformal factor
-of a Liouville formula atlas, assemble the selected pointed branches into
-surface data by proving the required surface-domain openness and real Mobius
-compatibility after shrinking.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasAssemblyTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g),
-    (∀ x : X,
-      Nonempty
-        (LocalRealUpperHalfPlaneBranchAtlas
-          (metricFormulaAtlas.formulaAt x).conformalFactor)) →
-      Nonempty (SurfaceRealUpperHalfPlaneBranchAtlasData metricFormulaAtlas)
-
-/--
-Surface-domain openness target for coordinate real branch atlases.
-
-Once the local Liouville formulas are tied to genuine continuous coordinate
-charts, this should follow by taking the preimage of the open branch domain and
-intersecting with the open formula domain.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasRestrictedDomainOpennessTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (realBranchAtlasAt :
-      ∀ x : X,
-        LocalRealUpperHalfPlaneBranchAtlas
-          (metricFormulaAtlas.formulaAt x).conformalFactor),
-    ∀ x : X, IsOpen
-      {y : X | y ∈ (metricFormulaAtlas.formulaAt x).domain ∧
-        (metricFormulaAtlas.formulaAt x).coordinate y ∈
-          ((realBranchAtlasAt x).branchNear
-            ⟨(metricFormulaAtlas.formulaAt x).coordinate x,
-              (metricFormulaAtlas.formulaAt x).coordinate_mem_conformalFactor_domain x
-                (metricFormulaAtlas.mem_formulaAt_domain x)⟩).domain}
 
 /--
 Surface-domain openness for one chosen Liouville metric formula atlas.
 
 This is the pointwise version of
 `SurfaceRealUpperHalfPlaneBranchAtlasRestrictedDomainOpennessTheorem`.
+
+%%handwave
+name: Surface-domain openness for one chosen Liouville metric formula atlas
+statement:
+  For every choice of local real Liouville branches in a fixed metric-formula
+  atlas and every center $x$, the surface points whose formula coordinates
+  lie in the selected branch domain form an open subset of $X$.
 -/
 def SurfaceRealUpperHalfPlaneBranchAtlasRestrictedDomainOpennessFor
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -308,99 +50,15 @@ def SurfaceRealUpperHalfPlaneBranchAtlasRestrictedDomainOpennessFor
                 (metricFormulaAtlas.mem_formulaAt_domain x)⟩).domain}
 
 /--
-Surface real-Mobius transition compatibility for one chosen Liouville metric
-formula atlas.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasSurfaceTransitionFor
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X}
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g) : Prop :=
-  ∀ (preData : SurfaceRealUpperHalfPlaneBranchAtlasPreData metricFormulaAtlas),
-    ∀ x y : X,
-      HyperbolicLocalChart.HasRealMobiusTransition
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart)
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart)
-
-/--
-Overlapping off-diagonal surface real-Mobius transition compatibility for one
-chosen Liouville metric formula atlas.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasOverlappingOffDiagonalSurfaceTransitionFor
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X}
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g) : Prop :=
-  ∀ (preData : SurfaceRealUpperHalfPlaneBranchAtlasPreData metricFormulaAtlas),
-    ∀ x y : X, x ≠ y →
-      Set.Nonempty
-        ((((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart).domain ∩
-          (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart).domain) →
-      HyperbolicLocalChart.HasRealMobiusTransition
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart)
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart)
-
-/--
-Curvature-derived overlapping off-diagonal surface transition target.
-
-This is sharper than the Liouville-atlas target: it only asks for the
-Liouville formula atlases obtained by rewriting local curvature formula
-atlases.
--/
-def LocalCurvatureMetricFormulaAtlasOverlappingOffDiagonalSurfaceTransitionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g),
-    SurfaceRealUpperHalfPlaneBranchAtlasOverlappingOffDiagonalSurfaceTransitionFor
-      curvatureFormulaAtlas.toLocalLiouvilleMetricFormulaAtlas
-
-/--
-Coordinate-preimage openness for Liouville metric formula atlases.
-
-This is the formula-atlas topological input behind restricted branch-domain
-openness.  It says that if one restricts a local metric formula by an open set
-in its coordinate image, the resulting surface domain is open.
--/
-def LocalLiouvilleMetricFormulaAtlasCoordinatePreimageOpennessTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (x : X) (V : Set ℂ),
-    IsOpen V →
-      IsOpen
-        {y : X | y ∈ (metricFormulaAtlas.formulaAt x).domain ∧
-          (metricFormulaAtlas.formulaAt x).coordinate y ∈ V}
-
-/--
-Global continuity of the coordinate maps in a Liouville metric formula atlas.
-
-This is stronger than ultimately necessary, but gives a simple mathlib-backed
-route to coordinate-preimage openness while the formula structure stores bare
-coordinate functions.
--/
-def LocalLiouvilleMetricFormulaAtlasCoordinateContinuityTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (x : X),
-    Continuous (metricFormulaAtlas.formulaAt x).coordinate
-
-/--
-Continuity of the coordinate maps on their formula domains.
-
-This is the natural topological hypothesis for restricting local Liouville
-formulae: preimages only need to be open after intersecting with the formula
-domain.
--/
-def LocalLiouvilleMetricFormulaAtlasCoordinateContinuousOnDomainTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (x : X),
-    ContinuousOn (metricFormulaAtlas.formulaAt x).coordinate
-      (metricFormulaAtlas.formulaAt x).domain
-
-/--
 Pointwise chart-compatibility predicate for a chosen Liouville metric formula
 atlas.
+
+%%handwave
+name: Pointwise chart-compatibility predicate for a chosen Liouville metric formula atlas
+statement:
+  A local Liouville metric-formula atlas is chart-compatible when, at every
+  center $x$, its formula domain lies in the ambient chart domain and its
+  coordinate agrees there with the ambient complex chart at $x$.
 -/
 def LocalLiouvilleMetricFormulaAtlasCoordinateChartedOnDomain
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -412,75 +70,6 @@ def LocalLiouvilleMetricFormulaAtlasCoordinateChartedOnDomain
         (chartAt ℂ x) (metricFormulaAtlas.formulaAt x).domain
 
 /--
-Pointwise chart-compatibility predicate for a chosen local curvature formula
-atlas.
--/
-def LocalCurvatureMetricFormulaAtlasCoordinateChartedOnDomain
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X}
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g) : Prop :=
-  ∀ x : X,
-    (curvatureFormulaAtlas.formulaAt x).domain ⊆ (chartAt ℂ x).source ∧
-      Set.EqOn (curvatureFormulaAtlas.formulaAt x).coordinate
-        (chartAt ℂ x) (curvatureFormulaAtlas.formulaAt x).domain
-
-/--
-The local formula coordinates are restrictions of the ambient charted-space
-coordinates.
-
-This is the geometric source of the domainwise continuity condition: each
-formula domain is contained in the source of the chosen chart, and the stored
-coordinate function agrees there with that chart.
--/
-def LocalLiouvilleMetricFormulaAtlasCoordinateChartedOnDomainTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g),
-    LocalLiouvilleMetricFormulaAtlasCoordinateChartedOnDomain metricFormulaAtlas
-
-/--
-The curvature formula coordinates are restrictions of the ambient
-charted-space coordinates.
--/
-def LocalCurvatureMetricFormulaAtlasCoordinateChartedOnDomainTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g),
-    LocalCurvatureMetricFormulaAtlasCoordinateChartedOnDomain curvatureFormulaAtlas
-
-/--
-Charted curvature expansion theorem.
-
-This is the sharper geometric form of local curvature expansion: for every
-hyperbolic metric, choose local curvature formulae whose coordinate maps are
-already restrictions of the ambient charted-space coordinates.
--/
-def ChartedLocalCurvatureFormulaExpansionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X),
-    Nonempty
-      {curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g //
-        LocalCurvatureMetricFormulaAtlasCoordinateChartedOnDomain
-          curvatureFormulaAtlas}
-
-/--
-%%handwave
-name: Bundling local curvature formulas with chart compatibility
-statement:
-  Suppose every hyperbolic metric admits a local curvature-formula atlas, and every such atlas has coordinates agreeing with the ambient complex charts on its domains. Then every hyperbolic metric admits a chart-compatible local curvature-formula atlas.
-proof:
-  Choose a curvature-formula atlas and equip that choice with the asserted chart-compatibility property.
--/
-theorem chartedLocalCurvatureFormulaExpansionTheorem_of_expansion_and_coordinateCharted
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    (hExpansion : LocalCurvatureFormulaExpansionTheorem X)
-    (hCharted : LocalCurvatureMetricFormulaAtlasCoordinateChartedOnDomainTheorem X) :
-    ChartedLocalCurvatureFormulaExpansionTheorem X := by
-  intro g
-  refine ⟨⟨Classical.choice (hExpansion g), ?_⟩⟩
-  exact hCharted g (Classical.choice (hExpansion g))
-
-/--
 The charted curvature expansion carried by a hyperbolic metric.
 
 For each point we use the ambient chart `chartAt ℂ x` and the logarithmic
@@ -489,6 +78,14 @@ smoothness of the metric gives the required regularity of the logarithmic
 density, positivity gives `exp (2u) = densitySq`, and
 `g.curvature_minus_one` is exactly the local curvature equation for this
 choice of `u`.
+
+%%handwave
+name: The charted curvature expansion carried by a hyperbolic metric
+statement:
+  At $x\in X$, use the ambient complex chart $\varphi_x$ and the logarithmic
+  conformal density $u=\frac12\log\rho_g^2$ to define the local curvature
+  formula for $g$. Positivity gives $e^{2u}=\rho_g^2$, and $K_g=-1$ gives
+  the corresponding Liouville equation.
 -/
 noncomputable def localCurvatureMetricFormulaInChartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -569,29 +166,21 @@ noncomputable def localCurvatureMetricFormulaInChartAt
       _ = Real.exp (2 * (Real.log (ρ ((chartAt ℂ x) y)) / 2)) := by
             ring_nf
 
-/-- The curvature formula atlas obtained from the ambient complex charts. -/
+/-- The curvature formula atlas obtained from the ambient complex charts.
+
+%%handwave
+name: The curvature formula atlas obtained from the ambient complex charts
+statement:
+  Assigning to each $x\in X$ the curvature formula built from the ambient
+  chart $\varphi_x$ and the conformal density of $g$ defines a local
+  Liouville metric-formula atlas for $g$.
+-/
 noncomputable def localCurvatureMetricFormulaAtlasInChartAt
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : HyperbolicMetric X) :
     LocalCurvatureMetricFormulaAtlas X g where
   formulaAt x := localCurvatureMetricFormulaInChartAt g x
   mem_formulaAt_domain x := mem_chart_source ℂ x
-
-/--
-%%handwave
-name: Canonical chart-compatible curvature atlas
-statement:
-  Every hyperbolic metric on a charted surface admits local curvature formulas whose domain and coordinate at $x$ are the source and coordinate map of the ambient chart $\phi_x$.
-proof:
-  Use at each point the ambient chart and the logarithmic density $u=\frac12\log\rho$, where $\rho$ is the metric density in that chart. Positivity gives $e^{2u}=\rho$, smoothness gives the required regularity, and curvature $-1$ gives the local Liouville equation. The coordinate agreement is definitional.
--/
-theorem chartedLocalCurvatureFormulaExpansionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] :
-    ChartedLocalCurvatureFormulaExpansionTheorem X := by
-  intro g
-  refine ⟨⟨localCurvatureMetricFormulaAtlasInChartAt g, ?_⟩⟩
-  intro x
-  exact ⟨fun _ hy ↦ hy, fun _ _ ↦ rfl⟩
 
 /--
 %%handwave
@@ -613,139 +202,6 @@ theorem isOpen_formulaCoordinate_preimage_of_eqOn_chartAt
     ((chartAt ℂ x).continuousOn_toFun.mono hSub).congr hEq
   simpa [Set.preimage, Set.inter_def] using
     hCont.isOpen_inter_preimage hU hV
-
-/--
-Pointwise chart-compatibility supplies coordinate-preimage openness for one
-chosen Liouville metric formula atlas.
--/
-def localLiouvilleMetricFormulaAtlasCoordinatePreimageOpenness_of_coordinateChartedOnDomain
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X}
-    {metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g}
-    (hChart :
-      LocalLiouvilleMetricFormulaAtlasCoordinateChartedOnDomain
-        metricFormulaAtlas) :
-    ∀ (x : X) (V : Set ℂ),
-      IsOpen V →
-        IsOpen
-          {y : X | y ∈ (metricFormulaAtlas.formulaAt x).domain ∧
-            (metricFormulaAtlas.formulaAt x).coordinate y ∈ V} := by
-  intro x V hV
-  rcases hChart x with ⟨hSub, hEq⟩
-  exact
-    isOpen_formulaCoordinate_preimage_of_eqOn_chartAt
-      (metricFormulaAtlas.formulaAt x).isOpen_domain hSub hEq hV
-
-/--
-Coordinate-preimage openness for one chosen local curvature formula atlas.
-
-This is the curvature-atlas version of
-`LocalLiouvilleMetricFormulaAtlasCoordinatePreimageOpennessTheorem`: it only
-asks for the Liouville atlases obtained by rewriting curvature formulas.
--/
-def LocalCurvatureMetricFormulaAtlasCoordinatePreimageOpenness
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    {g : HyperbolicMetric X}
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g) : Prop :=
-  ∀ (x : X) (V : Set ℂ),
-    IsOpen V →
-      IsOpen
-        {y : X | y ∈ (curvatureFormulaAtlas.formulaAt x).domain ∧
-          (curvatureFormulaAtlas.formulaAt x).coordinate y ∈ V}
-
-/--
-Curvature-atlas coordinate-preimage openness theorem.
-
-This is weaker than the corresponding Liouville-atlas theorem, since it is
-required only for curvature formula atlases.
--/
-def LocalCurvatureMetricFormulaAtlasCoordinatePreimageOpennessTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g),
-    LocalCurvatureMetricFormulaAtlasCoordinatePreimageOpenness
-      curvatureFormulaAtlas
-
-/--
-Restricted surface-domain openness for Liouville atlases obtained from
-curvature formula atlases.
--/
-def LocalCurvatureMetricFormulaAtlasRestrictedDomainOpennessTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (curvatureFormulaAtlas : LocalCurvatureMetricFormulaAtlas X g),
-    SurfaceRealUpperHalfPlaneBranchAtlasRestrictedDomainOpennessFor
-      curvatureFormulaAtlas.toLocalLiouvilleMetricFormulaAtlas
-
-/--
-Surface transition target for the shrunk branches selected from coordinate
-real branch atlases.
-
-The local real atlases give transitions only inside a single coordinate
-formula.  This target is the cross-chart compatibility needed after the
-surface domains have been shrunk.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasSurfaceTransitionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (preData : SurfaceRealUpperHalfPlaneBranchAtlasPreData metricFormulaAtlas),
-    ∀ x y : X,
-      HyperbolicLocalChart.HasRealMobiusTransition
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart)
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart)
-
-/--
-Off-diagonal surface transition target for the shrunk branches selected from
-coordinate real branch atlases.
-
-The diagonal case is formal: a chart has identity transition to itself.  Thus
-the actual cross-chart compatibility input only needs to address `x ≠ y`.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasOffDiagonalSurfaceTransitionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (preData : SurfaceRealUpperHalfPlaneBranchAtlasPreData metricFormulaAtlas),
-    ∀ x y : X, x ≠ y →
-      HyperbolicLocalChart.HasRealMobiusTransition
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart)
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart)
-
-/--
-Overlapping off-diagonal surface transition target.
-
-For disjoint surface domains, the real-Mobius transition condition is
-vacuous.  Thus the geometric transition input only needs to be supplied for
-distinct centers whose selected surface domains actually overlap.
--/
-def SurfaceRealUpperHalfPlaneBranchAtlasOverlappingOffDiagonalSurfaceTransitionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X)
-    (metricFormulaAtlas : LocalLiouvilleMetricFormulaAtlas X g)
-    (preData : SurfaceRealUpperHalfPlaneBranchAtlasPreData metricFormulaAtlas),
-    ∀ x y : X, x ≠ y →
-      Set.Nonempty
-        ((((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart).domain ∩
-          (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart).domain) →
-      HyperbolicLocalChart.HasRealMobiusTransition
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt x).toHyperbolicLocalChart)
-        (((preData.toSurfaceSchwarzianPointedBranchPreData).solutionAt y).toHyperbolicLocalChart)
-
-/--
-Standard uniqueness target for hyperbolic local coordinates.
-
-Two holomorphic local isometries from the same hyperbolic surface to `ℍ`
-should differ by a single real Mobius transformation on each preconnected
-nonempty overlap.  This is the geometric theorem behind the remaining
-cross-chart surface transition boundary.
--/
-def HyperbolicLocalChartsOnPreconnectedOverlapHaveRealMobiusTransitionTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
-  ∀ (g : HyperbolicMetric X) (U V : HyperbolicLocalChart X g),
-    Set.Nonempty (U.domain ∩ V.domain) →
-      IsPreconnected (U.domain ∩ V.domain) →
-        U.HasRealMobiusTransition V
 
 end HyperbolicMetric
 

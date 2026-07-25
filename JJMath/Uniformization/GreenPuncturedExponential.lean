@@ -62,9 +62,14 @@ private theorem mdifferentiableOn_of_eq_openSubtype
     split <;> simp_all
   exact (hcomp.congr_of_eventuallyEq heq).mdifferentiableWithinAt
 
-/-- A punctured holomorphic exponential with logarithmic modulus `-G`
-inherits the first-order pole factorization of any distinguished pole
-branch. -/
+/--
+%%handwave
+name: Pole factorization of a punctured holomorphic exponential
+statement:
+  A punctured holomorphic exponential with logarithmic modulus $-G$
+  inherits the first-order pole factorization of any distinguished pole
+  branch.
+-/
 noncomputable def compactSuperlevelGreenFunction_puncturedPlaneMap_of_holomorphicExp
     (P : CompactSuperlevelGreenFunctionPoleExponentialBranch X G)
     (f : puncturedSurfaceOpen p → ℂ)

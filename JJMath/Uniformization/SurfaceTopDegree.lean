@@ -59,7 +59,14 @@ theorem complexTopDegree_comp_apply_orientedBasis_det
   rw [← hbasis]
   exact h
 
-/-- The oriented coordinate coefficient of a smooth surface two-form. -/
+/--
+%%handwave
+name: Oriented chart coefficient of a surface two-form
+statement:
+  For a smooth two-form $\omega$, a surface chart $e$, and a coordinate
+  point $z$, define its coefficient by evaluating the chart expression of
+  $\omega$ on the oriented basis $(1,i)$.
+-/
 noncomputable def surfaceTwoFormCoefficientInChart
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (omega : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 2)
@@ -67,7 +74,14 @@ noncomputable def surfaceTwoFormCoefficientInChart
   coordinateExpression (I := SurfaceRealModel) (F := ℝ) (n := 2)
     omega.toFun e z complexPlanarOrientedBasis
 
-/-- The two scalar coordinate components of a smooth surface one-form. -/
+/--
+%%handwave
+name: Chart components of a surface one-form
+statement:
+  For a smooth one-form $\eta$ and a surface chart $e$, define
+  $\eta_j(z)$ by evaluating the chart expression of $\eta$ at $z$ on the
+  coordinate vector $e_j$, for $j=0,1$.
+-/
 noncomputable def surfaceOneFormComponentInChart
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (eta : SmoothForms (I := SurfaceRealModel) (M := X) ℝ 1)
@@ -75,8 +89,14 @@ noncomputable def surfaceOneFormComponentInChart
   coordinateExpression (I := SurfaceRealModel) (F := ℝ) (n := 1)
     eta.toFun e z (fun _ : Fin 1 ↦ complexCoordinateVector i)
 
-/-- The intrinsic scalar coefficient of a two-form relative to the positively
-oriented Riemannian area density. -/
+/--
+%%handwave
+name: Density coefficient of a surface two-form
+statement:
+  For a metric $g$ and a smooth two-form $\omega$, define
+  $f_\omega(x)=\omega_x(1,i)/\operatorname{vol}_g(x)$, so that
+  $\omega=f_\omega\,dA_g$.
+-/
 noncomputable def surfaceTwoFormDensityCoefficient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     (g : SmoothRiemannianMetricOnSurface X)
@@ -159,7 +179,14 @@ theorem surfaceTwoFormDensityCoefficient_mul_volumeDensityInChart
     hdensity, abs_of_pos hdetpos]
   field_simp [hbasepos.ne']
 
-/-- The positively oriented area form determined by a smooth surface metric. -/
+/--
+%%handwave
+name: Oriented area form of a smooth surface metric
+statement:
+  For a smooth Riemannian metric $g$, define
+  $(dA_g)_x=\operatorname{vol}_g(x)\,
+  d\operatorname{Re}\wedge d\operatorname{Im}$ in the complex orientation.
+-/
 noncomputable def surfaceMetricVolumeForm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [ComplexOneManifold X]
@@ -211,38 +238,6 @@ noncomputable def surfaceMetricVolumeForm
           complexPlanarAreaForm) e.target :=
       hρ.smul contDiffOn_const
     exact hsmooth.congr (fun z hz ↦ hcoord z hz)
-
-/--
-%%handwave
-name:
-  The metric area form has coefficient one
-statement:
-  Relative to itself, the positively oriented metric area form has intrinsic
-  density coefficient \(1\) at every point.
-proof:
-  Its value on the oriented basis is the metric volume density, since the
-  standard planar area form evaluates to one; divide by that positive density.
--/
-@[simp]
-theorem surfaceTwoFormDensityCoefficient_surfaceMetricVolumeForm
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X]
-    (g : SmoothRiemannianMetricOnSurface X) (x : X) :
-    surfaceTwoFormDensityCoefficient g (surfaceMetricVolumeForm g) x = 1 := by
-  rw [surfaceTwoFormDensityCoefficient]
-  change (surfaceMetricVolumeDensityAt g x *
-      complexPlanarAreaForm complexPlanarOrientedBasis) /
-        surfaceMetricVolumeDensityAt g x = 1
-  have harea : complexPlanarAreaForm complexPlanarOrientedBasis = 1 := by
-    have hb : complexPlanarOrientedBasis =
-        (fun i : Fin 2 ↦ Complex.basisOneI i) := by
-      funext i
-      fin_cases i <;>
-        simp [complexPlanarOrientedBasis, Complex.coe_basisOneI]
-    rw [hb]
-    exact complexPlanarAreaForm_basis
-  rw [harea, mul_one]
-  exact div_self (surfaceMetricVolumeDensityAt_pos g x).ne'
 
 /--
 %%handwave
@@ -655,8 +650,13 @@ theorem surfaceTwoFormDensityCoefficient_continuous
   exact (isSmoothOnSurface_univ_contMDiff
     (surfaceTwoFormDensityCoefficient_isSmoothOnSurface g omega)).continuous
 
-/-- Integral of a smooth surface two-form against its oriented Riemannian
-area density. -/
+/--
+%%handwave
+name: Integral of a smooth surface two-form
+statement:
+  If $\omega=f_\omega\,dA_g$, define
+  $\int_X\omega=\int_X f_\omega(x)\,d\operatorname{vol}_g(x)$.
+-/
 noncomputable def surfaceTwoFormIntegral
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [MeasurableSpace X]
@@ -829,41 +829,6 @@ theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_compact
       rw [tsupport, hχsupport]
       exact closure_minimal hSC hCcompact.isClosed
     exact fun hx ↦ hxC (htsupport hx)
-
-/--
-%%handwave
-name:
-  A positive closed two-form supported in a coordinate disk
-statement:
-  Given a point \(y\) in the open interior of a closed coordinate disk, there
-  exists a closed smooth two-form supported in that closed disk and having
-  positive total integral.
-proof:
-  Apply the compact-support construction to the expanded open disk of the
-  same radius, which is contained in the closed coordinate disk and contains
-  \(y\).
--/
-theorem exists_closedSurfaceTwoForm_integral_pos_supported_in_closedCoordinateDisk
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [MeasurableSpace X] [RiemannSurface X] [CompactSpace X]
-    [IsManifold SurfaceRealModel ∞ X] [SigmaCompactSpace X]
-    (g : SmoothRiemannianMetricOnSurface X)
-    (measureGeometry : SurfaceMetricMeasureGeometry X g)
-    (D : ClosedCoordinateDisk X) (y : X)
-    (hy : y ∈ D.expandedOpenDisk D.closedRadius) :
-    ∃ omega : DeRhamClosedForms
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 2,
-      0 < surfaceTwoFormIntegral g measureGeometry omega.1 ∧
-      ∀ x : X, x ∉ D.carrier → omega.1.toFun x = 0 := by
-  apply exists_closedSurfaceTwoForm_integral_pos_supported_in_compact
-    g measureGeometry
-    (D.expandedOpenDisk D.closedRadius) D.carrier
-    (D.expandedOpenDisk_isOpen D.closedRadius) D.compact (y := y)
-  · intro x hx
-    rw [ClosedCoordinateDisk.expandedOpenDisk] at hx
-    rw [D.carrier_eq]
-    exact ⟨hx.1, Metric.ball_subset_closedBall hx.2⟩
-  · exact hy
 
 /--
 %%handwave

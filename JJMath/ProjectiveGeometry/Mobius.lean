@@ -39,33 +39,33 @@ abbrev MobiusRepresentative : Type :=
 abbrev MobiusGroup : Type :=
   PGL(2, ℂ)
 
-/-- A map of the Riemann sphere is Mobius if it is induced by a `GL(2, ℂ)` matrix. -/
-def IsMobiusMap (f : RiemannSphere → RiemannSphere) : Prop :=
-  ∃ g : MobiusRepresentative, f = fun z ↦ g • z
+/--
+%%handwave
+name:
+  Affine numerator of a Möbius transformation
+statement:
+  For $A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)$ and $z\in\mathbb C$, the affine numerator of the associated Möbius transformation is $a_{00}z+a_{01}$.
+-/
+def mobiusFiniteNum (A : MobiusRepresentative) (z : ℂ) : ℂ :=
+  A 0 0 * z + A 0 1
 
 /--
 %%handwave
 name:
-  Matrix actions are Möbius maps
+  Affine denominator of a Möbius transformation
 statement:
-  For every \(g\in\operatorname{GL}_2(\mathbb C)\), the map
-  \(z\mapsto g\cdot z\) on \(\widehat{\mathbb C}\) is a Möbius map.
-proof:
-  Use \(g\) itself as the required matrix representative.
+  For $A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)$ and $z\in\mathbb C$, the affine denominator of the associated Möbius transformation is $a_{10}z+a_{11}$.
 -/
-theorem isMobiusMap_smul (g : MobiusRepresentative) :
-    IsMobiusMap (fun z : RiemannSphere ↦ g • z) :=
-  ⟨g, rfl⟩
-
-/-- The numerator of a complex Mobius representative in the finite affine chart. -/
-def mobiusFiniteNum (A : MobiusRepresentative) (z : ℂ) : ℂ :=
-  A 0 0 * z + A 0 1
-
-/-- The denominator of a complex Mobius representative in the finite affine chart. -/
 def mobiusFiniteDenom (A : MobiusRepresentative) (z : ℂ) : ℂ :=
   A 1 0 * z + A 1 1
 
-/-- The finite affine formula for a complex Mobius representative. -/
+/--
+%%handwave
+name:
+  Affine formula for a Möbius transformation
+statement:
+  For $A=(a_{ij})\in\operatorname{GL}_2(\mathbb C)$, the finite-chart formula for its Möbius action is $z\mapsto (a_{00}z+a_{01})/(a_{10}z+a_{11})$.
+-/
 def mobiusFiniteFormula (A : MobiusRepresentative) (z : ℂ) : ℂ :=
   mobiusFiniteNum A z / mobiusFiniteDenom A z
 
@@ -232,11 +232,23 @@ theorem mobiusFiniteFormula_deriv_ne_zero
   rw [mobiusFiniteFormula_deriv A hden]
   exact div_ne_zero A.det_ne_zero (pow_ne_zero 2 hden)
 
-/-- Inversion on the finite part of the Riemann sphere, with `0` sent to infinity. -/
+/--
+%%handwave
+name:
+  Inversion of finite points on the Riemann sphere
+statement:
+  The finite-point inversion map $\mathbb C\to\widehat{\mathbb C}$ sends $0$ to $\infty$ and every $z\ne0$ to the finite point $z^{-1}$.
+-/
 def riemannSphereInvFinite (z : ℂ) : RiemannSphere :=
   if z = 0 then OnePoint.infty else ((z⁻¹ : ℂ) : RiemannSphere)
 
-/-- Inversion on the Riemann sphere, exchanging `0` and infinity. -/
+/--
+%%handwave
+name:
+  Inversion on the Riemann sphere
+statement:
+  Spherical inversion $\iota:\widehat{\mathbb C}\to\widehat{\mathbb C}$ exchanges $0$ and $\infty$ and sends every nonzero finite point $z$ to $z^{-1}$.
+-/
 def riemannSphereInv (z : RiemannSphere) : RiemannSphere :=
   z.elim ((0 : ℂ) : RiemannSphere) riemannSphereInvFinite
 
@@ -357,7 +369,13 @@ theorem riemannSphereInv_continuous :
     simp [riemannSphereInv, riemannSphereInvFinite, hz]
   · simpa [riemannSphereInv] using riemannSphereInvFinite_continuous
 
-/-- Translation of the complex plane as a homeomorphism. -/
+/--
+%%handwave
+name:
+  Complex translation homeomorphism
+statement:
+  For $a\in\mathbb C$, translation by $a$ is the homeomorphism $z\mapsto z+a$ of $\mathbb C$, with inverse $z\mapsto z-a$.
+-/
 def complexTranslationHomeomorph (a : ℂ) : ℂ ≃ₜ ℂ where
   toFun z := z + a
   invFun z := z - a
@@ -366,7 +384,13 @@ def complexTranslationHomeomorph (a : ℂ) : ℂ ≃ₜ ℂ where
   continuous_toFun := continuous_id.add continuous_const
   continuous_invFun := continuous_id.sub continuous_const
 
-/-- Translation on the Riemann sphere, fixing infinity. -/
+/--
+%%handwave
+name:
+  Translation on the Riemann sphere
+statement:
+  For $a\in\mathbb C$, translation extends to $\widehat{\mathbb C}$ by $z\mapsto z+a$ on finite points and $\infty\mapsto\infty$.
+-/
 def riemannSphereTranslation (a : ℂ) : RiemannSphere → RiemannSphere :=
   OnePoint.map (fun z : ℂ ↦ z + a)
 
@@ -415,7 +439,13 @@ theorem riemannSphereTranslation_coe (a z : ℂ) :
     riemannSphereTranslation a (z : RiemannSphere) = ((z + a : ℂ) : RiemannSphere) :=
   rfl
 
-/-- Nonzero dilation on the Riemann sphere, fixing infinity. -/
+/--
+%%handwave
+name:
+  Dilation on the Riemann sphere
+statement:
+  For $a\in\mathbb C$, multiplication by $a$ extends to $\widehat{\mathbb C}$ by $z\mapsto az$ on finite points and $\infty\mapsto\infty$.
+-/
 def riemannSphereDilation (a : ℂ) : RiemannSphere → RiemannSphere :=
   OnePoint.map (fun z : ℂ ↦ a * z)
 
@@ -575,9 +605,6 @@ theorem mobiusRepresentative_smul_continuous
   · exact mobiusRepresentative_smul_continuous_of_lowerLeft_eq_zero A hc
   · exact mobiusRepresentative_smul_continuous_of_lowerLeft_ne_zero A hc
 
-instance instContinuousConstSMulMobiusRepresentativeRiemannSphere :
-    ContinuousConstSMul MobiusRepresentative RiemannSphere where
-  continuous_const_smul := mobiusRepresentative_smul_continuous
 
 end
 

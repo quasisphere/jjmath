@@ -20,8 +20,14 @@ noncomputable section
 
 open JJMath.Manifold
 
-/-- The open region obtained from a smooth domain, a transition band, and one
-component of the complement of the domain closure. -/
+/--
+%%handwave
+name: The open region obtained from a smooth domain, a transition band, and one component of the complement of the domain closure
+statement:
+  For a smooth domain $\Omega$, its boundary transition band $B$, and a
+  component $V$ of $X\setminus\overline\Omega$, define the open region
+  $\Omega\cup B\cup V$.
+-/
 def BoundaryComponentTransition.exactRegion
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -33,8 +39,14 @@ def BoundaryComponentTransition.exactRegion
     (D.isOpen.union T.band.isOpen).union
       (hV.isOpen_of_isOpen isClosed_closure.isOpen_compl)⟩
 
-/-- Extend the local step set-theoretically outside its band.  Only its germ
-at points of the band will be used. -/
+/--
+%%handwave
+name: Extend the local step set-theoretically outside its band
+statement:
+  Extend the band step $\chi:B\to\mathbb R$ to a set-theoretic function on
+  $X$ by assigning the value $0$ outside $B$; only its restriction near
+  points of $B$ is used.
+-/
 def BoundaryComponentTransition.stepExtension
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -64,8 +76,20 @@ theorem BoundaryComponentTransition.stepExtension_apply_of_mem
     T.stepExtension x = T.step ⟨x, hx⟩ := by
   exact Subtype.val_injective.extend_apply T.step 0 ⟨x, hx⟩
 
-/-- The set-theoretic primitive: use the step on the band, zero on the domain
-side outside the band, and one on the chosen complementary side. -/
+/--
+%%handwave
+name: The set-theoretic primitive: use the step on the band, zero on the domain side outside the band, and one on the chosen complementary side
+statement:
+  Define
+  \[
+    F(x)=
+    \begin{cases}
+      \chi(x),&x\in B,\\
+      0,&x\notin B\text{ and }x\in\Omega,\\
+      1,&x\notin B\text{ and }x\notin\Omega.
+    \end{cases}
+  \]
+-/
 noncomputable def BoundaryComponentTransition.exactPrimitiveFunction
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -239,8 +263,14 @@ theorem BoundaryComponentTransition.contMDiff_exactPrimitiveFunction_on_exactReg
         simp [BoundaryComponentTransition.exactPrimitiveFunction,
           hyband, hynotD]
 
-/-- The smooth primitive of the boundary-component form on the retained
-domain-band-component region. -/
+/--
+%%handwave
+name: The smooth primitive of the boundary-component form on the retained domain-band-component region
+statement:
+  Restrict the piecewise function $F$, equal to the transition step on the
+  band, $0$ on the domain side, and $1$ on the chosen complementary side,
+  to $\Omega\cup B\cup V$ and regard it as a smooth real-valued function.
+-/
 noncomputable def BoundaryComponentTransition.exactPrimitive
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

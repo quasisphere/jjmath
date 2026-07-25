@@ -517,156 +517,11 @@ private theorem euclideanSobolevUnitBallRadialTailMajorant_polar
 /--
 %%handwave
 name:
-  Fubini principle with a null-measurable exceptional set
+  Stereographic polar patch map
 statement:
-  Suppose the failure set \(\{(a,b):\neg P(a,b)\}\) is null-measurable for \(\mu\times\nu\), where \(\nu\) is \(\sigma\)-finite in the generalized sense.  If \(P(a,b)\) holds for \(\mu\)-almost every \(a\) and then for \(\nu\)-almost every \(b\), it holds for \((\mu\times\nu)\)-almost every pair.
-proof:
-  Replace the failure set by a measurable set equal to it almost everywhere.  Fubini shows that almost every section of this measurable replacement is null; the iterated hypothesis forces the replacement itself to be product-null, and hence so is the original failure set.
+  For a pole $v$ on the unit sphere in an $(n+1)$-dimensional Euclidean space, the polar patch sends $(r,y)\in\mathbb R\times\mathbb R^n$ to $r\,\sigma_v^{-1}(y)$, where $\sigma_v^{-1}(y)$ is the inverse stereographic point on the unit sphere.
 -/
-private theorem ae_prod_of_ae_ae_of_nullMeasurable_bad
-    {α β : Type} [MeasurableSpace α] [MeasurableSpace β]
-    {μ : Measure α} {ν : Measure β} [SFinite ν]
-    {P : α × β → Prop}
-    (hbad : NullMeasurableSet {p : α × β | ¬ P p} (μ.prod ν))
-    (hP : ∀ᵐ a ∂μ, ∀ᵐ b ∂ν, P (a, b)) :
-    ∀ᵐ p ∂μ.prod ν, P p := by
-  classical
-  let bad : Set (α × β) := {p | ¬ P p}
-  let B : Set (α × β) := MeasureTheory.toMeasurable (μ.prod ν) bad
-  have hB_meas : MeasurableSet B := by
-    simp [B, measurableSet_toMeasurable (μ.prod ν) bad]
-  have hB_bad : B =ᵐ[μ.prod ν] bad := by
-    simpa [B, bad] using hbad.toMeasurable_ae_eq
-  have hB_bad_slices :
-      ∀ᵐ a ∂μ, ∀ᵐ b ∂ν,
-        (((a, b) : α × β) ∈ B) = (((a, b) : α × β) ∈ bad) :=
-    Measure.ae_ae_of_ae_prod hB_bad
-  have hnotB_slices :
-      ∀ᵐ a ∂μ, ∀ᵐ b ∂ν, ((a, b) : α × β) ∉ B := by
-    filter_upwards [hP, hB_bad_slices] with a hPa hBada
-    filter_upwards [hPa, hBada] with b hPab hBadab hBmem
-    have hbadmem : ((a, b) : α × β) ∈ bad := by
-      rwa [← hBadab]
-    have hnotP : ¬ P (a, b) := by
-      simpa [bad] using hbadmem
-    exact hnotP hPab
-  have hnotB_prod :
-      ∀ᵐ p ∂μ.prod ν, p ∉ B := by
-    exact
-      (Measure.ae_prod_iff_ae_ae
-        (show MeasurableSet {p : α × β | p ∉ B} from hB_meas.compl)).2
-        hnotB_slices
-  have hB_zero : μ.prod ν B = 0 := by
-    simpa [ae_iff] using hnotB_prod
-  have hbad_zero : μ.prod ν bad = 0 := by
-    have hto_zero :
-        μ.prod ν (MeasureTheory.toMeasurable (μ.prod ν) bad) = 0 := by
-      simpa [B] using hB_zero
-    rw [measure_toMeasurable] at hto_zero
-    simpa [bad] using hto_zero
-  simpa [ae_iff, bad] using hbad_zero
-
-/--
-%%handwave
-name:
-  Points have zero spherical measure in dimension at least two
-statement:
-  On the unit sphere of a finite-dimensional real normed space of dimension
-  at least two, every singleton has zero spherical measure.
-proof:
-  Use the polar definition of spherical measure.  The cone over a single
-  sphere point is contained in the line spanned by that point.  Since the
-  ambient dimension is at least two, this line is a proper linear subspace,
-  hence has zero Haar measure.
--/
-theorem toSphere_singleton_eq_zero_of_one_lt_finrank
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    (hfin : 1 < Module.finrank ℝ H)
-    (v : Metric.sphere (0 : H) 1) :
-    (MeasureTheory.volume : Measure H).toSphere
-        ({v} : Set (Metric.sphere (0 : H) 1)) = 0 := by
-  classical
-  let L : Submodule ℝ H := ℝ ∙ (v : H)
-  have hv_ne : (v : H) ≠ 0 := ne_zero_of_mem_unit_sphere v
-  have hL_rank : Module.finrank ℝ L = 1 := by
-    simpa [L] using (finrank_span_singleton (K := ℝ) hv_ne)
-  have hL_ne_top : L ≠ ⊤ := by
-    intro htop
-    have hL_rank_top : Module.finrank ℝ L = Module.finrank ℝ H := by
-      rw [htop, finrank_top]
-    have hdim_eq_one : Module.finrank ℝ H = 1 := by
-      rw [← hL_rank_top, hL_rank]
-    omega
-  have hcone_subset :
-      Set.Ioo (0 : ℝ) 1 •
-          ((↑) '' ({v} : Set (Metric.sphere (0 : H) 1))) ⊆
-        (L : Set H) := by
-    rintro x ⟨a, _ha, y, hy, rfl⟩
-    rcases hy with ⟨θ, hθ, rfl⟩
-    have hθ : θ = v := by simpa using hθ
-    subst θ
-    exact L.smul_mem a (Submodule.mem_span_singleton_self (v : H))
-  have hline_zero :
-      (MeasureTheory.volume : Measure H) (L : Set H) = 0 :=
-    MeasureTheory.Measure.addHaar_submodule
-      (MeasureTheory.volume : Measure H) L hL_ne_top
-  have hcone_zero :
-      (MeasureTheory.volume : Measure H)
-          (Set.Ioo (0 : ℝ) 1 •
-            ((↑) '' ({v} : Set (Metric.sphere (0 : H) 1)))) = 0 :=
-    measure_mono_null hcone_subset hline_zero
-  rw [MeasureTheory.Measure.toSphere_apply'
-    (μ := (MeasureTheory.volume : Measure H)) (hs := measurableSet_singleton v),
-    hcone_zero, mul_zero]
-
-/--
-%%handwave
-name:
-  A stereographic chart covers almost every sphere direction
-statement:
-  In ambient dimension at least two, if a property holds for almost every
-  direction in one stereographic coordinate source, then it holds for almost
-  every direction on the whole unit sphere.
-proof:
-  The complement of a stereographic source is its pole.  By
-  [points have zero spherical measure in dimension at least two](lean:JJMath.Uniformization.toSphere_singleton_eq_zero_of_one_lt_finrank),
-  this pole can be discarded from any almost-everywhere statement.
--/
-theorem ae_toSphere_of_ae_restrict_stereographic_source_of_one_lt_finrank
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (hfin : 1 < Module.finrank ℝ H)
-    (v : Metric.sphere (0 : H) 1)
-    {P : Metric.sphere (0 : H) 1 → Prop}
-    (hP :
-      ∀ᵐ θ ∂((MeasureTheory.volume : Measure H).toSphere.restrict
-          (stereographic' n v).source), P θ) :
-    ∀ᵐ θ ∂((MeasureTheory.volume : Measure H).toSphere), P θ := by
-  have hsource_meas : MeasurableSet (stereographic' n v).source :=
-    (stereographic' n v).open_source.measurableSet
-  have hP_imp :
-      ∀ᵐ θ ∂((MeasureTheory.volume : Measure H).toSphere),
-        θ ∈ (stereographic' n v).source → P θ :=
-    (ae_restrict_iff' hsource_meas).1 hP
-  have hpole_zero :
-      (MeasureTheory.volume : Measure H).toSphere
-          ({v} : Set (Metric.sphere (0 : H) 1)) = 0 :=
-    toSphere_singleton_eq_zero_of_one_lt_finrank hfin v
-  have hsource_ae :
-      ∀ᵐ θ ∂((MeasureTheory.volume : Measure H).toSphere),
-        θ ∈ (stereographic' n v).source := by
-    rw [stereographic'_source]
-    simpa using (compl_mem_ae_iff.mpr hpole_zero)
-  filter_upwards [hP_imp, hsource_ae] with θ hθ_imp hθ_source
-  exact hθ_imp hθ_source
-
-private def stereographicPolarPatchMap
+def stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
     {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
@@ -737,33 +592,11 @@ private theorem stereographicPolarPatchMap_apply_chart
 /--
 %%handwave
 name:
-  Explicit inverse-stereographic polar formula
+  Open stereographic polar cylinder
 statement:
-  Let \(U:v^\perp\to\mathbb R^n\) be the orthonormal coordinate map.  The polar patch is
-  \[
-  \Phi_v(r,y)=r\left(\frac{4\,U^{-1}y}{\|U^{-1}y\|^2+4}
-  +\frac{\|U^{-1}y\|^2-4}{\|U^{-1}y\|^2+4}\,v\right).
-  \]
-proof:
-  Insert the standard explicit formula for inverse stereographic projection into \(\Phi_v(r,y)=r\,\sigma_v(y)\).
+  The stereographic polar cylinder in dimension $n+1$ is the set of pairs $(r,y)\in\mathbb R\times\mathbb R^n$ with $0<r<1$.
 -/
-private theorem stereographicPolarPatchMap_apply_explicit
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (r : ℝ) (y : EuclideanSpace ℝ (Fin n)) :
-    stereographicPolarPatchMap v (r, y) =
-      r •
-        (let U : (ℝ ∙ (v : H))ᗮ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin n) :=
-          (OrthonormalBasis.fromOrthogonalSpanSingleton n
-            (ne_zero_of_mem_unit_sphere v)).repr
-        (‖(U.symm y : H)‖ ^ 2 + 4)⁻¹ • (4 : ℝ) • (U.symm y : H) +
-          (‖(U.symm y : H)‖ ^ 2 + 4)⁻¹ •
-                    (‖(U.symm y : H)‖ ^ 2 - 4) • v.val) := by
-  rw [stereographicPolarPatchMap_apply, stereographic'_symm_apply]
-
-private def stereographicPolarPatchCylinder (n : ℕ) :
+def stereographicPolarPatchCylinder (n : ℕ) :
     Set (ℝ × EuclideanSpace ℝ (Fin n)) :=
   {p | 0 < p.1 ∧ p.1 < 1}
 
@@ -811,11 +644,11 @@ private theorem norm_stereographicPolarPatchMap
 name:
   The positive polar cylinder maps into the unit ball
 statement:
-  The map \(\Phi_v\) sends every \((r,y)\) with \(0<r<1\) into the open unit ball.
+  The map $\Phi_v$ sends every $(r,y)$ with $0<r<1$ into the open unit ball.
 proof:
-  The image has norm \(|r|=r<1\).
+  The image has norm $|r|=r<1$.
 -/
-private theorem stereographicPolarPatchMap_mapsTo_cylinder_unitBall
+theorem stereographicPolarPatchMap_mapsTo_cylinder_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
     {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
@@ -829,59 +662,6 @@ private theorem stereographicPolarPatchMap_mapsTo_cylinder_unitBall
     rw [norm_stereographicPolarPatchMap (n := n) v p.1 p.2,
       abs_of_nonneg hp.1.le]
   simpa [Metric.mem_ball, dist_eq_norm, hnorm] using hp.2
-
-/--
-%%handwave
-name:
-  Injectivity of a stereographic polar patch
-statement:
-  The map \((r,y)\mapsto r\,\sigma_v(y)\) is injective on the cylinder \(0<r<1\).
-proof:
-  Equality of two images first gives equality of their positive radii by taking norms.  Cancelling the common nonzero radius gives equality of the unit directions, and injectivity of inverse stereographic projection then gives equality of the coordinates.
--/
-private theorem stereographicPolarPatchMap_injOn_cylinder
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1) :
-    Set.InjOn (stereographicPolarPatchMap v)
-      (stereographicPolarPatchCylinder n) := by
-  intro p hp q hq hpq
-  have hp_norm :
-      ‖stereographicPolarPatchMap v p‖ = p.1 := by
-    rw [norm_stereographicPolarPatchMap (n := n) v p.1 p.2,
-      abs_of_nonneg hp.1.le]
-  have hq_norm :
-      ‖stereographicPolarPatchMap v q‖ = q.1 := by
-    rw [norm_stereographicPolarPatchMap (n := n) v q.1 q.2,
-      abs_of_nonneg hq.1.le]
-  have hfirst : p.1 = q.1 := by
-    rw [← hp_norm, hpq, hq_norm]
-  have hdir :
-      ((stereographic' n v).symm p.2 :
-          Metric.sphere (0 : H) 1) =
-        (stereographic' n v).symm q.2 := by
-    apply Subtype.ext
-    have hscaled0 :
-        p.1 • ((stereographic' n v).symm p.2 : H) =
-          q.1 • ((stereographic' n v).symm q.2 : H) := by
-      simpa [stereographicPolarPatchMap_apply] using hpq
-    have hscaled :
-        p.1 • ((stereographic' n v).symm p.2 : H) =
-          p.1 • ((stereographic' n v).symm q.2 : H) := by
-      simpa [hfirst] using hscaled0
-    have hcancel :=
-      congrArg (fun z : H ↦ (p.1⁻¹ : ℝ) • z) hscaled
-    simpa [smul_smul, hp.1.ne'] using hcancel
-  have hsecond : p.2 = q.2 := by
-    have hp_target : p.2 ∈ (stereographic' n v).target := by
-      simp [stereographic'_target]
-    have hq_target : q.2 ∈ (stereographic' n v).target := by
-      simp [stereographic'_target]
-    have happ := congrArg (fun θ => (stereographic' n v) θ) hdir
-    simpa [(stereographic' n v).right_inv hp_target,
-      (stereographic' n v).right_inv hq_target] using happ
-  exact Prod.ext hfirst hsecond
 
 /--
 %%handwave
@@ -1041,101 +821,14 @@ private theorem stereographicPolarPatchMap_image_Ioo_prod_eq_cone_chart_preimage
 /--
 %%handwave
 name:
-  Vertical lines map to radial lines
-statement:
-  For every \(r,t\in\mathbb R\) and stereographic coordinate \(y\),
-  \[
-    \Phi_v((r,y)+t(1,0))=\Phi_v(r,y)+t\,\sigma_v(y).
-  \]
-proof:
-  Expand the polar patch and use distributivity of scalar multiplication over addition.
--/
-private theorem stereographicPolarPatchMap_vertical_segment
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (r t : ℝ) (y : EuclideanSpace ℝ (Fin n)) :
-    stereographicPolarPatchMap v
-        (((r, y) : ℝ × EuclideanSpace ℝ (Fin n)) +
-          t • ((1 : ℝ), (0 : EuclideanSpace ℝ (Fin n)))) =
-      stereographicPolarPatchMap v (r, y) +
-        t • ((stereographic' n v).symm y : H) := by
-  simp [stereographicPolarPatchMap, add_smul]
-
-/--
-%%handwave
-name:
-  Affine radial interpolation in a polar patch
-statement:
-  For \(r,s,u\in\mathbb R\),
-  \[
-    \Phi_v(r+u(s-r),y)=\Phi_v(r,y)+u(s-r)\,\sigma_v(y).
-  \]
-proof:
-  Apply the vertical-line formula with displacement \(u(s-r)\).
--/
-private theorem stereographicPolarPatchMap_vertical_affine
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (r s u : ℝ) (y : EuclideanSpace ℝ (Fin n)) :
-    stereographicPolarPatchMap v (r + u * (s - r), y) =
-      stereographicPolarPatchMap v (r, y) +
-        (u * (s - r)) • ((stereographic' n v).symm y : H) := by
-  simpa [Prod.smul_mk, smul_eq_mul] using
-    stereographicPolarPatchMap_vertical_segment
-      (n := n) v r (u * (s - r)) y
-
-/--
-%%handwave
-name:
-  Initial endpoint of radial interpolation
-statement:
-  The affine radial path satisfies \(\Phi_v(r+0(s-r),y)=\Phi_v(r,y)\).
-proof:
-  Simplify the zero scalar and the resulting sum.
--/
-private theorem stereographicPolarPatchMap_vertical_affine_zero
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (r s : ℝ) (y : EuclideanSpace ℝ (Fin n)) :
-    stereographicPolarPatchMap v (r + (0 : ℝ) * (s - r), y) =
-      stereographicPolarPatchMap v (r, y) := by
-  simp
-
-/--
-%%handwave
-name:
-  Final endpoint of radial interpolation
-statement:
-  The affine radial path satisfies \(\Phi_v(r+1(s-r),y)=\Phi_v(s,y)\).
-proof:
-  Simplify \(r+(s-r)=s\).
--/
-private theorem stereographicPolarPatchMap_vertical_affine_one
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (r s : ℝ) (y : EuclideanSpace ℝ (Fin n)) :
-    stereographicPolarPatchMap v (r + (1 : ℝ) * (s - r), y) =
-      stereographicPolarPatchMap v (s, y) := by
-  simp [stereographicPolarPatchMap_apply]
-
-/--
-%%handwave
-name:
   Continuity of the stereographic polar patch
 statement:
-  The map \(\Phi_v:\mathbb R\times\mathbb R^n\to H\), \((r,y)\mapsto r\,\sigma_v(y)\), is continuous.
+  The map $\Phi_v:\mathbb R\times\mathbb R^n\to H$,
+  $(r,y)\mapsto r\,\sigma_v(y)$, is continuous.
 proof:
   Inverse stereographic projection is continuous, as is scalar multiplication; compose these maps with the two coordinate projections.
 -/
-private theorem continuous_stereographicPolarPatchMap
+theorem continuous_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
     {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
@@ -1189,11 +882,13 @@ private theorem contDiff_stereographic'_symm_coe
 name:
   Smoothness of the stereographic polar patch
 statement:
-  The polar patch \(\Phi_v(r,y)=r\,\sigma_v(y)\) is smooth on \(\mathbb R\times\mathbb R^n\).
+  The polar patch $\Phi_v(r,y)=r\,\sigma_v(y)$ is smooth on
+  $\mathbb R\times\mathbb R^n$.
 proof:
-  The first coordinate and the inverse stereographic direction are smooth, and scalar multiplication is a smooth bilinear operation.
+  The first coordinate and the inverse stereographic direction are smooth,
+  and scalar multiplication is a smooth bilinear operation.
 -/
-private theorem contDiff_stereographicPolarPatchMap
+theorem contDiff_stereographicPolarPatchMap
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [FiniteDimensional ℝ H]
     {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
@@ -1466,25 +1161,6 @@ private theorem measurable_stereographicPolarPatchInv
     hst.comp hunit
   simpa [stereographicPolarPatchInv] using
     continuous_norm.measurable.prod hangular
-
-/--
-%%handwave
-name:
-  Almost-everywhere measurability of a stereographic polar patch
-statement:
-  For every measure \(\mu\) on \(\mathbb R\times\mathbb R^n\), the polar patch \(\Phi_v\) is \(\mu\)-almost-everywhere measurable.
-proof:
-  The polar patch is continuous, hence Borel measurable, and every measurable map is almost-everywhere measurable for any measure.
--/
-private theorem aemeasurable_stereographicPolarPatchMap
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasurableSpace H] [BorelSpace H]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    (μ : Measure (ℝ × EuclideanSpace ℝ (Fin n))) :
-    AEMeasurable (stereographicPolarPatchMap (n := n) v) μ :=
-  (continuous_stereographicPolarPatchMap (n := n) v).measurable.aemeasurable
 
 /--
 %%handwave
@@ -2037,48 +1713,6 @@ theorem stereographic_toSphere_restrict_chart_map_absolutelyContinuous_volume
 /--
 %%handwave
 name:
-  Stereographic coordinates express spherical measure by a density
-statement:
-  On a stereographic coordinate patch of the unit sphere, the push-forward
-  of spherical measure is Lebesgue measure multiplied by a nonnegative
-  measurable density in the Euclidean coordinate space.
-proof:
-  Use the absolute continuity of the coordinate push-forward measure with
-  respect to Lebesgue measure and apply the Radon-Nikodym theorem.
--/
-theorem stereographic_toSphere_restrict_chart_map_eq_withDensity
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1) :
-    ∃ ρ : EuclideanSpace ℝ (Fin n) → ℝ≥0∞,
-      Measure.map (stereographic' n v)
-          ((MeasureTheory.volume : Measure H).toSphere.restrict
-            (stereographic' n v).source) =
-        (MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))).withDensity ρ := by
-  let μ : Measure (EuclideanSpace ℝ (Fin n)) :=
-    Measure.map (stereographic' n v)
-      ((MeasureTheory.volume : Measure H).toSphere.restrict
-        (stereographic' n v).source)
-  let ν : Measure (EuclideanSpace ℝ (Fin n)) :=
-    MeasureTheory.volume
-  refine ⟨μ.rnDeriv ν, ?_⟩
-  have hμν : μ ≪ ν := by
-    simpa [μ, ν] using
-      stereographic_toSphere_restrict_chart_map_absolutelyContinuous_volume
-        (n := n) v
-  have hsing : μ.singularPart ν = 0 :=
-    Measure.singularPart_eq_zero_of_ac hμν
-  have hdec : μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
-    Measure.haveLebesgueDecomposition_add μ ν
-  rw [hsing, zero_add] at hdec
-  simpa [μ, ν] using hdec
-
-/--
-%%handwave
-name:
   Transfer of almost-everywhere properties to a stereographic sphere patch
 statement:
   If \(P(y)\) holds for Lebesgue-almost every \(y\in\mathbb R^n\), then \(P(\operatorname{stereo}_v(\theta))\) holds for spherical-almost every \(\theta\ne v\), with spherical measure restricted to the stereographic source.
@@ -2208,98 +1842,6 @@ private theorem volume_absolutelyContinuous_stereographic_toSphere_restrict_char
       volume_null_of_Ioo_prod_null
         (E := EuclideanSpace ℝ (Fin n)) hprod_zero
   exact measure_mono_null hAT hT_volume_zero
-
-/--
-%%handwave
-name:
-  The stereographic chart density is nonzero almost everywhere
-statement:
-  The Radon-Nikodym density of spherical measure in a stereographic coordinate
-  chart is nonzero for Lebesgue-almost every coordinate point.
-proof:
-  In stereographic coordinates the spherical measure has the explicit smooth
-  positive density \(c(4+|y|^2)^{-m}\) with respect to Lebesgue measure.
-  Hence its Radon-Nikodym derivative is positive, and in particular nonzero,
-  almost everywhere.
--/
-private theorem stereographic_toSphere_restrict_chart_rnDeriv_ne_zero_ae
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1) :
-    ∀ᵐ y ∂(MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))),
-      (Measure.map (stereographic' n v)
-          ((MeasureTheory.volume : Measure H).toSphere.restrict
-            (stereographic' n v).source)).rnDeriv
-        (MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))) y ≠ 0 := by
-  let μ : Measure (EuclideanSpace ℝ (Fin n)) :=
-    Measure.map (stereographic' n v)
-      ((MeasureTheory.volume : Measure H).toSphere.restrict
-        (stereographic' n v).source)
-  let ν : Measure (EuclideanSpace ℝ (Fin n)) := MeasureTheory.volume
-  have hνμ : ν ≪ μ := by
-    simpa [μ, ν] using
-      volume_absolutelyContinuous_stereographic_toSphere_restrict_chart_map_core
-        (n := n) v
-  have hpos : ∀ᵐ y ∂ν, 0 < μ.rnDeriv ν y := by
-    exact Measure.rnDeriv_pos' (μ := ν) (ν := μ) hνμ
-  filter_upwards [hpos] with y hy
-  exact ne_of_gt hy
-
-/--
-%%handwave
-name:
-  Stereographic coordinates have a positive density
-statement:
-  In a stereographic chart on the unit sphere, Lebesgue measure in the
-  coordinate space and the push-forward of spherical measure restricted to
-  the chart source differ by a measurable density that is nonzero almost
-  everywhere.
-proof:
-  The stereographic coordinate formula writes the spherical measure in the
-  chart as a smooth strictly positive multiple of Lebesgue measure.  Since the
-  density is finite and positive at every coordinate point, it is measurable
-  and nonzero almost everywhere.
--/
-private theorem stereographic_toSphere_restrict_chart_map_eq_withDensity_positive
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1) :
-    ∃ ρ : EuclideanSpace ℝ (Fin n) → ℝ≥0∞,
-      Measure.map (stereographic' n v)
-        ((MeasureTheory.volume : Measure H).toSphere.restrict
-          (stereographic' n v).source) =
-        (MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))).withDensity ρ ∧
-      AEMeasurable ρ
-        (MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))) ∧
-      ∀ᵐ y ∂(MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))),
-        ρ y ≠ 0 := by
-  let μ : Measure (EuclideanSpace ℝ (Fin n)) :=
-    Measure.map (stereographic' n v)
-      ((MeasureTheory.volume : Measure H).toSphere.restrict
-        (stereographic' n v).source)
-  let ν : Measure (EuclideanSpace ℝ (Fin n)) :=
-    MeasureTheory.volume
-  refine ⟨μ.rnDeriv ν, ?_, ?_, ?_⟩
-  · have hμν : μ ≪ ν := by
-      simpa [μ, ν] using
-        stereographic_toSphere_restrict_chart_map_absolutelyContinuous_volume
-          (n := n) v
-    have hsing : μ.singularPart ν = 0 :=
-      Measure.singularPart_eq_zero_of_ac hμν
-    have hdec : μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν) :=
-      Measure.haveLebesgueDecomposition_add μ ν
-    rw [hsing, zero_add] at hdec
-    simpa [μ, ν] using hdec
-  · exact (Measure.measurable_rnDeriv μ ν).aemeasurable
-  · simpa [μ, ν] using
-      stereographic_toSphere_restrict_chart_rnDeriv_ne_zero_ae
-        (n := n) v
 
 /--
 %%handwave
@@ -2450,17 +1992,55 @@ theorem IsWeakDerivativeOnEuclideanRegionWithValues.congr_ae
 /--
 %%handwave
 name:
+  Weak differentials are unchanged by null-set modifications
+statement:
+  If $D u$ is a weak differential of $u$ on a Euclidean region and
+  $G=D u$ almost everywhere there, then $G$ is also a weak differential of
+  $u$ on that region.
+proof:
+  In every integration-by-parts identity, the derivative-side integrands
+  agree almost everywhere. Their integrability and integrals are therefore
+  unchanged, while the function-side integrand is identical.
+-/
+theorem IsWeakDerivativeOnEuclideanRegionWithValues.congr_derivative_ae
+    {H E : Type} [NormedAddCommGroup H] [NormedSpace ℝ H] [MeasureSpace H]
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {Ω : Set H} {u : H → E} {du du' : H → H →L[ℝ] E}
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues Ω u du)
+    (hdu' : du' =ᵐ[MeasureTheory.volume.restrict Ω] du) :
+    IsWeakDerivativeOnEuclideanRegionWithValues Ω u du' := by
+  intro φ v
+  rcases hweak φ v with ⟨hleft, hright, hEq⟩
+  have hright_ae :
+      (fun z ↦ φ z • du z v) =ᵐ[MeasureTheory.volume.restrict Ω]
+        fun z ↦ φ z • du' z v := by
+    filter_upwards [hdu'.symm] with z hz
+    rw [hz]
+  refine ⟨hleft, hright.congr hright_ae, ?_⟩
+  calc
+    ∫ z in Ω, (fderiv ℝ (φ : H → ℝ) z v) • u z
+        ∂MeasureTheory.volume =
+        -∫ z in Ω, φ z • du z v ∂MeasureTheory.volume := hEq
+    _ = -∫ z in Ω, φ z • du' z v ∂MeasureTheory.volume := by
+      rw [integral_congr_ae hright_ae]
+
+/--
+%%handwave
+name:
   Endpoint bound for an absolutely continuous real function
 statement:
-  Let \(r<s\).  If \(f\) is absolutely continuous on \([r,s]\) and \(f'(t)=g(t)\) for almost every \(t\in[r,s]\), then
-  \[
+  Let $r<s$.  If $f$ is absolutely continuous on $[r,s]$ and $f'(t)=g(t)$
+  for almost every $t\in[r,s]$, then
+  $$
     \operatorname{ofReal}(\|f(r)-f(s)\|)
     \le \int_{r<t<s}^{-}\operatorname{ofReal}(\|g(t)\|)\,dt.
-  \]
+  $$
 proof:
-  The fundamental theorem of calculus writes \(f(s)-f(r)\) as the integral of \(f'\).  Apply the norm bound for the integral, replace \(f'\) by \(g\) almost everywhere, and note that the endpoints are Lebesgue-null.
+  The fundamental theorem of calculus writes $f(s)-f(r)$ as the integral of
+  $f'$.  Apply the norm bound for the integral, replace $f'$ by $g$ almost
+  everywhere, and note that the endpoints are Lebesgue-null.
 -/
-private theorem real_acl_endpoint_lintegral_bound
+theorem real_acl_endpoint_lintegral_bound
     {f g : ℝ → ℝ} {r s : ℝ}
     (hrs : r < s)
     (hacl : AbsolutelyContinuousOnInterval f r s)
@@ -3264,7 +2844,7 @@ theorem firstCoordinateAnchoredRepresentative_linewise_acl_on_unit_strip
 name:
   The stereographic polar chart preserves null sets into the ball
 statement:
-  The map \((r,y)\mapsto r\sigma(y)\), restricted to \(0<r<1\), sends the
+  The map $(r,y)\mapsto r\sigma(y)$, restricted to $0<r<1$, sends the
   product Lebesgue measure on the cylinder quasi-measure-preservingly into
   Lebesgue measure on the unit ball.
 proof:
@@ -3276,7 +2856,7 @@ proof:
   ball.  Since the cylinder measure is mutually absolutely continuous with
   this weighted product measure on \(0<r<1\), null sets pull back to null sets.
 -/
-private theorem stereographicPolarPatchMap_quasiMeasurePreserving_cylinder_unitBall
+theorem stereographicPolarPatchMap_quasiMeasurePreserving_cylinder_unitBall
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [Nontrivial H]
     [MeasureSpace H] [BorelSpace H]
@@ -3703,10 +3283,10 @@ theorem stereographicPolarPatch_radialDerivative_aestronglyMeasurable
 name:
   Pulling a weak derivative through a stereographic polar chart
 statement:
-  Let \(u\) be a scalar Sobolev function on the unit ball with weak derivative
-  \(Du\).  On the stereographic polar cylinder \(0<r<1\), the pullback
-  \(U(r,y)=u(r\sigma(y))\) has weak derivative obtained by composing
-  \(Du(r\sigma(y))\) with the derivative of the polar coordinate map.
+  Let $u$ be a scalar Sobolev function on the unit ball with weak derivative
+  $Du$.  On the stereographic polar cylinder $0<r<1$, the pullback
+  $U(r,y)=u(r\sigma(y))$ has weak derivative obtained by composing
+  $Du(r\sigma(y))$ with the derivative of the polar coordinate map.
 proof:
   The polar coordinate map is smooth and locally bi-Lipschitz on the cylinder,
   with inverse given by radius and stereographic angular coordinate.  Its
@@ -3714,7 +3294,7 @@ proof:
   identity to this image and apply
   [weak derivatives pull back under locally bi-Lipschitz coordinate changes](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
 -/
-private theorem scalarWeakSobolev_stereographic_polar_patch_pullback_weakDerivative
+theorem scalarWeakSobolev_stereographic_polar_patch_pullback_weakDerivative
     {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
     [Nontrivial H]
     [MeasureSpace H] [BorelSpace H]
@@ -3835,6 +3415,356 @@ theorem scalarWeakSobolev_stereographic_polar_patch_fiberwise_realWeakDerivative
         (n := n) v du (r, y)
   rw [hG] at hy
   simpa [U] using hy
+
+/--
+%%handwave
+name:
+  Continuous Sobolev functions satisfy radial ACL on one polar patch
+statement:
+  Let $u$ be continuous on the Euclidean unit ball and have weak differential
+  $D u\in L^2$. For almost every unit direction $\theta$ in a fixed
+  stereographic patch and every $0<r<s<1$,
+  $$
+    |u(r\theta)-u(s\theta)|
+      \leq \int_r^s |D u(t\theta)\theta|\,dt.
+  $$
+proof:
+  Pull $u$ and its weak differential back by the stereographic polar map
+  $(r,y)\mapsto r\sigma(y)$. The pullback remains continuous, so
+  [continuous scalar Sobolev functions are absolutely continuous on almost every vertical line](lean:JJMath.Uniformization.scalarWeakSobolev_firstCoordinate_fiberwise_acl_of_continuousOn_unit_strip).
+  The fundamental theorem of calculus gives the endpoint estimate, and the
+  radial derivative of the polar map is $\sigma(y)$.
+-/
+theorem
+    scalarWeakSobolev_stereographic_polar_patch_all_segments_acl_of_continuousOn
+    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+    [Nontrivial H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H]
+    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
+    (v : Metric.sphere (0 : H) 1)
+    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
+    (hcont : ContinuousOn u (Metric.ball (0 : H) 1))
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
+      (Metric.ball (0 : H) 1) u du)
+    (hu : MemLp u 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
+    (hdu : MemLp du 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
+    ∀ᵐ θ : Metric.sphere (0 : H) 1
+        ∂((MeasureTheory.volume : Measure H).toSphere.restrict
+          (stereographic' n v).source),
+      ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+        ENNReal.ofReal
+          ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+        ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+          ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+          ∂MeasureTheory.volume := by
+  classical
+  let E : Type := EuclideanSpace ℝ (Fin n)
+  let U : ℝ × E → ℝ :=
+    fun p => u (stereographicPolarPatchMap v p)
+  let DU : ℝ × E → (ℝ × E) →L[ℝ] ℝ :=
+    fun p =>
+      (du (stereographicPolarPatchMap v p)).comp
+        (fderiv ℝ (stereographicPolarPatchMap v) p)
+  have hpull :
+      IsWeakDerivativeOnEuclideanRegionWithValues
+        {p : ℝ × E | 0 < p.1 ∧ p.1 < 1} U DU := by
+    simpa [E, U, DU, stereographicPolarPatchCylinder] using
+      scalarWeakSobolev_stereographic_polar_patch_pullback_weakDerivative
+        (n := n) v hweak hu hdu
+  have hU_cont :
+      ContinuousOn U {p : ℝ × E | 0 < p.1 ∧ p.1 < 1} := by
+    have hmap :
+        Set.MapsTo (stereographicPolarPatchMap (n := n) v)
+          {p : ℝ × E | 0 < p.1 ∧ p.1 < 1}
+          (Metric.ball (0 : H) 1) := by
+      simpa [E, stereographicPolarPatchCylinder] using
+        stereographicPolarPatchMap_mapsTo_cylinder_unitBall (n := n) v
+    exact hcont.comp
+      (continuous_stereographicPolarPatchMap (n := n) v).continuousOn hmap
+  have hlines :=
+    scalarWeakSobolev_firstCoordinate_fiberwise_acl_of_continuousOn_unit_strip
+      (E := E) (U := U) (DU := DU) hU_cont hpull
+  have hcoord :
+      ∀ᵐ y ∂(MeasureTheory.volume : Measure E),
+        ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+          ENNReal.ofReal
+            ‖u (stereographicPolarPatchMap v (r, y)) -
+              u (stereographicPolarPatchMap v (s, y))‖ ≤
+          ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+            ENNReal.ofReal
+              ‖du (stereographicPolarPatchMap v (t, y))
+                (((stereographic' n v).symm y :
+                  Metric.sphere (0 : H) 1) : H)‖
+            ∂MeasureTheory.volume := by
+    filter_upwards [hlines] with y hy
+    intro r s hr hrs hs
+    rcases hy r s hr hrs hs with ⟨hacl, hderiv⟩
+    have hderiv_imp :
+        ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
+          t ∈ Set.uIcc r s →
+            HasDerivAt
+              (fun ρ : ℝ => U (ρ, y))
+              (stereographicPolarPatchRadialDerivative v du (t, y)) t := by
+      have hderiv_full :
+          ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
+            t ∈ Set.Ioo r s →
+              HasDerivAt (fun ρ : ℝ => U (ρ, y))
+                (DU (t, y) ((1 : ℝ), (0 : E))) t :=
+        (ae_restrict_iff' measurableSet_Ioo).1 hderiv
+      filter_upwards [hderiv_full,
+        compl_mem_ae_iff.mpr (MeasureTheory.measure_singleton (r : ℝ)),
+        compl_mem_ae_iff.mpr (MeasureTheory.measure_singleton (s : ℝ))] with
+          t ht htr hts htu
+      have htu' : t ∈ Set.Icc r s := by
+        simpa [Set.uIcc_of_le hrs.le] using htu
+      have htr' : t ≠ r := by simpa using htr
+      have hts' : t ≠ s := by simpa using hts
+      have htIoo : t ∈ Set.Ioo r s := by
+        exact ⟨lt_of_le_of_ne htu'.1 htr'.symm,
+          lt_of_le_of_ne htu'.2 hts'⟩
+      have htderiv := ht htIoo
+      have hradial :
+          DU (t, y) ((1 : ℝ), (0 : E)) =
+            stereographicPolarPatchRadialDerivative v du (t, y) := by
+        simpa [E, DU, stereographicPolarPatchRadialDerivative] using
+          stereographicPolarPatchMap_pullback_firstCoordinate_derivative
+            (n := n) v du (t, y)
+      simpa [hradial] using htderiv
+    simpa [U, stereographicPolarPatchRadialDerivative] using
+      real_acl_endpoint_lintegral_bound
+        (f := fun ρ : ℝ => U (ρ, y))
+        (g := fun t : ℝ =>
+          stereographicPolarPatchRadialDerivative v du (t, y))
+        hrs hacl hderiv_imp
+  have hpatch :=
+    ae_stereographic_toSphere_restrict_of_ae_volume
+      (n := n) v hcoord
+  have hsource_meas : MeasurableSet (stereographic' n v).source :=
+    (stereographic' n v).open_source.measurableSet
+  filter_upwards [hpatch, ae_restrict_mem hsource_meas] with
+    θ hθ hθ_source
+  intro r s hr hrs hs
+  have hbound := hθ r s hr hrs hs
+  rw [stereographicPolarPatchMap_apply_chart (n := n) v hθ_source r,
+    stereographicPolarPatchMap_apply_chart (n := n) v hθ_source s] at hbound
+  have hdir :
+      (((stereographic' n v).symm
+        ((stereographic' n v) θ) : Metric.sphere (0 : H) 1) : H) =
+        (θ : H) :=
+    stereographic'_symm_apply_apply_of_mem_source (n := n) v hθ_source
+  have hpoint : ∀ t : ℝ,
+      stereographicPolarPatchMap v (t, (stereographic' n v) θ) =
+        t • (θ : H) := by
+    intro t
+    exact stereographicPolarPatchMap_apply_chart (n := n) v hθ_source t
+  simpa [hpoint, hdir] using hbound
+
+/--
+%%handwave
+name:
+  Continuous Sobolev functions satisfy radial ACL on almost every ray
+statement:
+  Let $u$ be continuous on the Euclidean unit ball and have weak differential
+  $D u\in L^2$. For almost every unit direction $\theta$ and every
+  $0<r<s<1$,
+  $$
+    |u(r\theta)-u(s\theta)|
+      \leq \int_r^s |D u(t\theta)\theta|\,dt.
+  $$
+  In particular, the endpoint values in the estimate are those of the given
+  continuous function, not merely those of an almost-everywhere
+  representative.
+proof:
+  Apply
+  [the continuous radial ACL theorem on a stereographic patch](lean:JJMath.Uniformization.scalarWeakSobolev_stereographic_polar_patch_all_segments_acl_of_continuousOn)
+  in the two charts with opposite poles. The two chart sources cover the unit
+  sphere; split directions according to the sign of their inner product with
+  a fixed unit vector.
+-/
+theorem scalarWeakSobolev_unit_ball_radial_acl_all_segments_of_continuousOn
+    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+    [Nontrivial H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H]
+    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
+    (hcont : ContinuousOn u (Metric.ball (0 : H) 1))
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
+      (Metric.ball (0 : H) 1) u du)
+    (hu : MemLp u 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
+    (hdu : MemLp du 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
+    ∀ᵐ θ : Metric.sphere (0 : H) 1
+        ∂((MeasureTheory.volume : Measure H).toSphere),
+      ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+        ENNReal.ofReal
+          ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+        ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+          ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+          ∂MeasureTheory.volume := by
+  classical
+  let n : ℕ := Module.finrank ℝ H - 1
+  have hfin_pos : 0 < Module.finrank ℝ H :=
+    Module.finrank_pos (R := ℝ) (M := H)
+  haveI : Fact (Module.finrank ℝ H = n + 1) := by
+    refine ⟨?_⟩
+    dsimp [n]
+    omega
+  rcases
+      (NormedSpace.sphere_nonempty
+        (E := H) (x := (0 : H)) (r := (1 : ℝ))).2
+        (by norm_num : (0 : ℝ) ≤ 1) with
+    ⟨v₀, hv₀⟩
+  let v : Metric.sphere (0 : H) 1 := ⟨v₀, hv₀⟩
+  have hminus :=
+    scalarWeakSobolev_stereographic_polar_patch_all_segments_acl_of_continuousOn
+      (n := n) v hcont hweak hu hdu
+  have hplus :=
+    scalarWeakSobolev_stereographic_polar_patch_all_segments_acl_of_continuousOn
+      (n := n) (-v) hcont hweak hu hdu
+  let μS : Measure (Metric.sphere (0 : H) 1) :=
+    (MeasureTheory.volume : Measure H).toSphere
+  have hsource_minus_meas : MeasurableSet (stereographic' n v).source :=
+    (stereographic' n v).open_source.measurableSet
+  have hsource_plus_meas : MeasurableSet (stereographic' n (-v)).source :=
+    (stereographic' n (-v)).open_source.measurableSet
+  have hminus_imp :
+      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
+        θ ∈ (stereographic' n v).source →
+          ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+            ENNReal.ofReal
+              ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+            ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+              ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+              ∂MeasureTheory.volume :=
+    (ae_restrict_iff' hsource_minus_meas).1 (by
+      simpa [μS] using hminus)
+  have hplus_imp :
+      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
+        θ ∈ (stereographic' n (-v)).source →
+          ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+            ENNReal.ofReal
+              ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+            ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+              ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+              ∂MeasureTheory.volume :=
+    (ae_restrict_iff' hsource_plus_meas).1 (by
+      simpa [μS] using hplus)
+  have hpositive :
+      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
+        0 < inner ℝ (θ : H) (v : H) →
+          ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+            ENNReal.ofReal
+              ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+            ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+              ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+              ∂MeasureTheory.volume := by
+    filter_upwards [hplus_imp] with θ hθ hθ_pos
+    apply hθ
+    rw [stereographic'_source]
+    intro hθpole
+    have hθeq : θ = (-v : Metric.sphere (0 : H) 1) := by
+      simpa using hθpole
+    subst θ
+    have hvnorm : ‖(v : H)‖ = 1 := norm_eq_of_mem_sphere v
+    have hneg :
+        inner ℝ ((-v : Metric.sphere (0 : H) 1) : H) (v : H) = -1 := by
+      simp [hvnorm]
+    have hbad : (0 : ℝ) < -1 := by
+      simpa [hneg] using hθ_pos
+    norm_num at hbad
+  have hnonpositive :
+      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
+        ¬ 0 < inner ℝ (θ : H) (v : H) →
+          ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+            ENNReal.ofReal
+              ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+            ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+              ENNReal.ofReal ‖du (t • (θ : H)) (θ : H)‖
+              ∂MeasureTheory.volume := by
+    filter_upwards [hminus_imp] with θ hθ hθ_nonpos
+    apply hθ
+    rw [stereographic'_source]
+    intro hθpole
+    have hθeq : θ = v := by simpa using hθpole
+    subst θ
+    apply hθ_nonpos
+    have hvnorm : ‖(v : H)‖ = 1 := norm_eq_of_mem_sphere v
+    simp [hvnorm]
+  simpa [μS] using
+    (hpositive.and hnonpositive).mono fun θ hθ ↦ by
+      by_cases hθ_pos : 0 < inner ℝ (θ : H) (v : H)
+      · exact hθ.1 hθ_pos
+      · exact hθ.2 hθ_pos
+
+/--
+%%handwave
+name:
+  Measurable weak differential with radial ACL for a continuous function
+statement:
+  Let $u$ be continuous on the Euclidean unit ball and have a square-integrable
+  weak differential $D u$. There is a measurable field $G=D u$ almost
+  everywhere such that, for almost every unit direction $\theta$ and every
+  $0<r<s<1$,
+  $$
+    |u(r\theta)-u(s\theta)|
+      \leq \int_r^s |G(t\theta)\theta|\,dt.
+  $$
+proof:
+  Choose the measurable representative of the square-integrable differential
+  field. By
+  [weak differentials are unchanged by null-set modifications](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.congr_derivative_ae),
+  this representative is still a weak differential of $u$. Apply
+  [radial ACL for the original continuous function](lean:JJMath.Uniformization.scalarWeakSobolev_unit_ball_radial_acl_all_segments_of_continuousOn).
+-/
+theorem
+    scalarWeakSobolev_unit_ball_exists_measurable_weakDifferential_radial_acl_all_segments_of_continuousOn
+    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+    [Nontrivial H]
+    [MeasureSpace H] [BorelSpace H]
+    [Measure.IsAddHaarMeasure (volume : Measure H)]
+    [FiniteDimensional ℝ H]
+    {u : H → ℝ} {du : H → H →L[ℝ] ℝ}
+    (hcont : ContinuousOn u (Metric.ball (0 : H) 1))
+    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
+      (Metric.ball (0 : H) 1) u du)
+    (hu : MemLp u 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
+    (hdu : MemLp du 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
+    ∃ du₀ : H → H →L[ℝ] ℝ,
+      Measurable du₀ ∧
+      du₀ =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] du ∧
+      ∀ᵐ θ : Metric.sphere (0 : H) 1
+          ∂((MeasureTheory.volume : Measure H).toSphere),
+        ∀ r s : ℝ, 0 < r → r < s → s < 1 →
+          ENNReal.ofReal
+            ‖u (r • (θ : H)) - u (s • (θ : H))‖ ≤
+          ∫⁻ t in {t : ℝ | r < t ∧ t < s},
+            ENNReal.ofReal ‖du₀ (t • (θ : H)) (θ : H)‖
+            ∂MeasureTheory.volume := by
+  let du₀ : H → H →L[ℝ] ℝ := hdu.aestronglyMeasurable.mk du
+  have hdu₀_meas : Measurable du₀ := by
+    dsimp [du₀]
+    exact hdu.aestronglyMeasurable.measurable_mk
+  have hdu₀_eq :
+      du₀ =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] du := by
+    dsimp [du₀]
+    exact hdu.aestronglyMeasurable.ae_eq_mk.symm
+  have hweak₀ : IsWeakDerivativeOnEuclideanRegionWithValues
+      (Metric.ball (0 : H) 1) u du₀ :=
+    hweak.congr_derivative_ae hdu₀_eq
+  have hdu₀ : MemLp du₀ 2
+      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)) :=
+    (memLp_congr_ae hdu₀_eq).2 hdu
+  exact ⟨du₀, hdu₀_meas, hdu₀_eq,
+    scalarWeakSobolev_unit_ball_radial_acl_all_segments_of_continuousOn
+      hcont hweak₀ hu hdu₀⟩
 
 /--
 %%handwave
@@ -4481,1236 +4411,6 @@ theorem scalarWeakSobolev_stereographic_polar_patch_full_vertical_acl_representa
 /--
 %%handwave
 name:
-  Radial ACL in flat stereographic product coordinates
-statement:
-  After pulling a scalar \(W^{1,2}\) function on the unit ball back by the
-  map \((r,y)\mapsto r\sigma(y)\), there is a representative, equal to the
-  original Sobolev function almost everywhere after pushing back to the ball,
-  for which almost every vertical coordinate line satisfies the finite
-  radial ACL estimate.
-proof:
-  Pull the weak-derivative identity through the locally bi-Lipschitz map
-  \((r,y)\mapsto r\sigma(y)\).  The derivative in the \(r\)-direction is
-  \(\sigma(y)\).  Apply the one-dimensional ACL representative theorem on
-  almost every vertical line, then use the absolute continuity of the radial
-  density \(r^{m-1}\,dr\) with respect to \(dr\).
--/
-theorem scalarWeakSobolev_stereographic_polar_patch_volume_coordinate_acl_representative
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wpatch : H → ℝ,
-      Measurable wpatch ∧
-      wpatch =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          ∀ᵐ y ∂(MeasureTheory.volume : Measure (EuclideanSpace ℝ (Fin n))),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                  (Module.finrank ℝ H - 1)).restrict
-                    {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wpatch
-                      (stereographicPolarPatchMap v
-                        (((r : Set.Ioi (0 : ℝ)) : ℝ), y)) -
-                    wpatch (stereographicPolarPatchMap v (s, y))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal
-                      ‖dw (stereographicPolarPatchMap v (t, y))
-                        (((stereographic' n v).symm y :
-                          Metric.sphere (0 : H) 1) : H)‖
-                    ∂MeasureTheory.volume := by
-  classical
-  rcases
-    scalarWeakSobolev_stereographic_polar_patch_full_vertical_acl_representative
-      (n := n) v _hweak _hw _hdw with
-    ⟨wpatch, hwpatch_meas, hwpatch_eq, hline⟩
-  refine ⟨wpatch, hwpatch_meas, hwpatch_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  filter_upwards [hline] with y hy
-  filter_upwards with r
-  intro hrs
-  exact hy ((r : Set.Ioi (0 : ℝ)) : ℝ) s r.2 hrs hs_lt_one
-
-/--
-%%handwave
-name:
-  Radial ACL in stereographic radial coordinates
-statement:
-  On one stereographic coordinate patch, a scalar \(W^{1,2}\) function on the
-  unit ball has a representative, equal almost everywhere to the original
-  function, whose pullback by \((r,y)\mapsto r\sigma(y)\) satisfies the
-  one-dimensional ACL estimate in the radial coordinate for almost every
-  coordinate line.
-proof:
-  In the coordinates \((r,y)\), the map into the ball is smooth and locally
-  bi-Lipschitz on compact subcylinders with radii bounded away from the origin.
-  Pull back the weak derivative identity through this map using
-  [weak derivatives pull back under locally bi-Lipschitz changes of variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
-  The derivative in the radial coordinate is the inverse stereographic point
-  \(\sigma(y)\).  The first-coordinate ACL theorem applied to the pulled-back
-  function gives the displayed estimate; the stereographic chart transfers the
-  transverse almost-everywhere statement back to the patch of the sphere.
--/
-private theorem scalarWeakSobolev_stereographic_polar_patch_coordinate_acl_representative
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wpatch : H → ℝ,
-      Measurable wpatch ∧
-      wpatch =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere.restrict
-                (stereographic' n v).source),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                  (Module.finrank ℝ H - 1)).restrict
-                    {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wpatch
-                      (stereographicPolarPatchMap v
-                        (((r : Set.Ioi (0 : ℝ)) : ℝ),
-                          (stereographic' n v) θ)) -
-                    wpatch
-                      (stereographicPolarPatchMap v
-                        (s, (stereographic' n v) θ))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal
-                      ‖dw
-                        (stereographicPolarPatchMap v
-                          (t, (stereographic' n v) θ))
-                        (((stereographic' n v).symm
-                      ((stereographic' n v) θ) : Metric.sphere (0 : H) 1) :
-                          H)‖
-                    ∂MeasureTheory.volume := by
-  classical
-  rcases
-    scalarWeakSobolev_stereographic_polar_patch_volume_coordinate_acl_representative
-      (n := n) v _hweak _hw _hdw with
-    ⟨wpatch, hwpatch_meas, hwpatch_eq, hcoord⟩
-  refine ⟨wpatch, hwpatch_meas, hwpatch_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  exact
-    ae_stereographic_toSphere_restrict_of_ae_volume
-      (n := n) v (hcoord s hs_pos hs_lt_one)
-
-/--
-%%handwave
-name:
-  Radial ACL on one stereographic patch
-statement:
-  Fix a stereographic coordinate patch on the unit sphere.  A scalar
-  \(W^{1,2}\) function on the unit ball has a representative, equal to the
-  original function almost everywhere in the ball, such that on this patch
-  almost every radial line satisfies the finite-endpoint radial ACL estimate.
-proof:
-  Write the patch in coordinates as \((y,r)\mapsto r\sigma(y)\), where
-  \(\sigma\) is the inverse stereographic parametrization.  The explicit
-  formula for inverse stereographic projection is smooth on all coordinate
-  space, and on compact coordinate subcylinders the polar map is bi-Lipschitz
-  onto its image.  Pull back the weak derivative identity through this
-  locally bi-Lipschitz map using
-  [weak derivatives pull back under locally bi-Lipschitz changes of variables](lean:JJMath.Uniformization.IsWeakDerivativeOnEuclideanRegionWithValues.comp_locallyBiLipschitz).
-  In the pulled-back coordinates the radial derivative is the first coordinate
-  derivative, so the one-dimensional ACL theorem on almost every vertical
-  fiber gives the displayed radial estimate.
--/
-private theorem scalarWeakSobolev_stereographic_polar_patch_acl_representative
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (v : Metric.sphere (0 : H) 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wpatch : H → ℝ,
-      Measurable wpatch ∧
-      wpatch =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere.restrict
-                (stereographic' n v).source),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                  (Module.finrank ℝ H - 1)).restrict
-                    {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wpatch ((r : ℝ) • (θ : H)) -
-                    wpatch (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  classical
-  rcases
-    scalarWeakSobolev_stereographic_polar_patch_coordinate_acl_representative
-      (n := n) v _hweak _hw _hdw with
-    ⟨wpatch, hwpatch_meas, hwpatch_eq, hpatch_coord⟩
-  refine ⟨wpatch, hwpatch_meas, hwpatch_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  have hsource_meas : MeasurableSet (stereographic' n v).source :=
-    (stereographic' n v).open_source.measurableSet
-  filter_upwards [hpatch_coord s hs_pos hs_lt_one,
-    ae_restrict_mem hsource_meas] with θ hθ_acl hθ_source
-  filter_upwards [hθ_acl] with r hr_acl
-  intro hrs
-  have hbound := hr_acl hrs
-  rw [stereographicPolarPatchMap_apply_chart (n := n) v hθ_source
-      (((r : Set.Ioi (0 : ℝ)) : ℝ)),
-    stereographicPolarPatchMap_apply_chart (n := n) v hθ_source s] at hbound
-  have hdir :
-      (((stereographic' n v).symm
-        ((stereographic' n v) θ) : Metric.sphere (0 : H) 1) : H) =
-        (θ : H) :=
-    stereographic'_symm_apply_apply_of_mem_source (n := n) v hθ_source
-  have hpoint : ∀ t : ℝ,
-      stereographicPolarPatchMap v (t, (stereographic' n v) θ) =
-        t • (θ : H) := by
-    intro t
-    exact stereographicPolarPatchMap_apply_chart (n := n) v hθ_source t
-  simpa [hpoint, hdir] using hbound
-
-/--
-%%handwave
-name:
-  One stereographic chart gives the radial ACL representative in dimension at
-  least two
-statement:
-  In ambient dimension at least two, a scalar \(W^{1,2}\) function on the unit
-  ball has a representative, equal almost everywhere to the original function,
-  whose radial ACL estimate holds for almost every direction and almost every
-  radius.
-proof:
-  Apply the one-chart radial ACL theorem.  The only missing direction is the
-  stereographic pole, which has zero spherical measure, so the chartwise
-  almost-everywhere statement becomes a full spherical almost-everywhere
-  statement.
--/
-theorem
-    scalarWeakSobolev_unit_ball_radial_acl_representative_one_stereographic_patch_of_one_lt_finrank
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {n : ℕ} [Fact (Module.finrank ℝ H = n + 1)]
-    (hfin : 1 < Module.finrank ℝ H)
-    (v : Metric.sphere (0 : H) 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      Measurable wacl ∧
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                  (Module.finrank ℝ H - 1)).restrict
-                    {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((r : ℝ) • (θ : H)) -
-                    wacl (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  rcases scalarWeakSobolev_stereographic_polar_patch_acl_representative
-      (n := n) v hweak hw hdw with
-    ⟨wpatch, hwpatch_meas, hwpatch_eq, hpatch⟩
-  refine ⟨wpatch, hwpatch_meas, hwpatch_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  exact
-    ae_toSphere_of_ae_restrict_stereographic_source_of_one_lt_finrank
-      (n := n) hfin v (hpatch s hs_pos hs_lt_one)
-
-/--
-%%handwave
-name:
-  The polar segment evaluation map is quasi-measure-preserving
-statement:
-  For \(0<s<1\), the map
-  \[
-    (\theta,r,t)\mapsto t\theta
-  \]
-  from the polar product restricted to \(r<t<s\) sends null sets in the unit
-  ball to null preimages.  Here \(r\) is measured with the radial polar
-  measure and \(t\) with one-dimensional Lebesgue measure.
-proof:
-  It is enough to test measurable null sets in the ball, and then pass to
-  arbitrary null sets by measurable hulls.  Polar coordinates show that for
-  almost every direction, the set of bad radii is null for the radial polar
-  measure.  Since Lebesgue measure on the positive ray is absolutely
-  continuous with respect to the positive polar density \(r^{m-1}\,dr\), this
-  remains true for the Lebesgue segment parameter \(t\).  Fubini over
-  \((\theta,r,t)\), restricted to \(r<t<s\), gives the desired null preimage.
--/
-theorem polarSegmentEval_quasiMeasurePreserving_restrict
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    (s : ℝ) (_hs_pos : 0 < s) (hs_lt_one : s < 1) :
-    Measure.QuasiMeasurePreserving
-      (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-        q.2 • (q.1.1 : H))
-      ((((MeasureTheory.volume : Measure H).toSphere.prod
-          ((MeasureTheory.Measure.volumeIoiPow
-            (Module.finrank ℝ H - 1)).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})).prod
-          MeasureTheory.volume).restrict
-            {q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ |
-              ((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s})
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)) := by
-  classical
-  let μS : Measure (Metric.sphere (0 : H) 1) :=
-    (MeasureTheory.volume : Measure H).toSphere
-  let μR : Measure (Set.Ioi (0 : ℝ)) :=
-    MeasureTheory.Measure.volumeIoiPow (Module.finrank ℝ H - 1)
-  let R : Set (Set.Ioi (0 : ℝ)) := {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}
-  let μBase : Measure (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :=
-    μS.prod (μR.restrict R)
-  let A : Set ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) :=
-    {q | ((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s}
-  let μSrc : Measure ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) :=
-    (μBase.prod MeasureTheory.volume).restrict A
-  let μTgt : Measure H :=
-    MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)
-  let f : ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) → H :=
-    fun q ↦ q.2 • (q.1.1 : H)
-  have hf_meas : Measurable f := by
-    dsimp [f]
-    measurability
-  refine ⟨by simpa [f] using hf_meas, ?_⟩
-  have hA_meas : MeasurableSet A := by
-    dsimp [A]
-    measurability
-  have hmeasurable_null :
-      ∀ ⦃M : Set H⦄, MeasurableSet M → μTgt M = 0 →
-        Measure.map f μSrc M = 0 := by
-    intro M hM hM_zero
-    have hP : ∀ᵐ z ∂μTgt, z ∉ M := by
-      rw [ae_iff]
-      simpa only [Set.mem_setOf_eq, not_not] using hM_zero
-    have hpolar :
-        ∀ᵐ p ∂μBase, ((p.2 : ℝ) • (p.1 : H)) ∉ M := by
-      simpa [μBase, μS, μR, R, μTgt] using
-        ae_polar_product_unitBall_of_ae_volume_unitBall
-          (H := H) (P := fun z : H ↦ z ∉ M) hP
-    have hpolar_pred_meas :
-        MeasurableSet
-          {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-            ((p.2 : ℝ) • (p.1 : H)) ∉ M} := by
-      exact hM.compl.preimage (by measurability)
-    have htheta :
-        ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-          ∀ᵐ r : Set.Ioi (0 : ℝ) ∂μR.restrict R,
-            ((r : ℝ) • (θ : H)) ∉ M := by
-      simpa [μBase] using
-        (Measure.ae_prod_iff_ae_ae hpolar_pred_meas).1 hpolar
-    have htheta_segment :
-        ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-          ∀ r : Set.Ioi (0 : ℝ),
-            ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
-              ((r : ℝ) < t ∧ t < s) → t • (θ : H) ∉ M := by
-      filter_upwards [htheta] with θ hθ
-      intro r
-      have ht_unweighted :
-          ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
-            ∀ (ht_pos : 0 < t), t < 1 →
-              (((⟨t, ht_pos⟩ : Set.Ioi (0 : ℝ)) : ℝ) •
-                (θ : H)) ∉ M :=
-        ae_volume_Ioo_zero_one_of_ae_volumeIoiPow_restrict
-          (n := Module.finrank ℝ H - 1)
-          (P := fun ρ : Set.Ioi (0 : ℝ) ↦ ((ρ : ℝ) • (θ : H)) ∉ M)
-          hθ
-      filter_upwards [ht_unweighted] with t ht
-      intro hrt
-      exact ht (lt_trans r.2 hrt.1) (lt_trans hrt.2 hs_lt_one)
-    have hbase :
-        ∀ᵐ p ∂μBase,
-          ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
-            (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s) →
-              t • (p.1 : H) ∉ M := by
-      have hmap :
-          ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂Measure.map Prod.fst μBase,
-            ∀ r : Set.Ioi (0 : ℝ),
-              ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
-                ((r : ℝ) < t ∧ t < s) → t • (θ : H) ∉ M := by
-        have hsmul :
-            ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂((μR.restrict R Set.univ) • μS),
-              ∀ r : Set.Ioi (0 : ℝ),
-                ∀ᵐ t ∂(MeasureTheory.volume : Measure ℝ),
-                  ((r : ℝ) < t ∧ t < s) → t • (θ : H) ∉ M :=
-          Measure.ae_smul_measure htheta_segment (μR.restrict R Set.univ)
-        simpa [μBase] using hsmul
-      filter_upwards
-        [ae_of_ae_map (μ := μBase) (f := Prod.fst)
-          measurable_fst.aemeasurable hmap] with p hp
-      exact hp p.2
-    have hprod_pred_meas :
-        MeasurableSet
-          {q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ |
-            (((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s) →
-              q.2 • (q.1.1 : H) ∉ M} := by
-      let B : Set ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) :=
-        {q | ((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s}
-      let C : Set ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) :=
-        {q | q.2 • (q.1.1 : H) ∈ M}
-      have hB : MeasurableSet B := by
-        dsimp [B]
-        measurability
-      have hC : MeasurableSet C := by
-        dsimp [C]
-        exact hM.preimage (by measurability)
-      convert hB.compl.union hC.compl using 1
-      ext q
-      by_cases hqB : q ∈ B
-      · change
-          ((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s at hqB
-        rcases hqB with ⟨hqB_left, hqB_right⟩
-        simp [B, C, hqB_left, hqB_right]
-      · change
-          ¬ (((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s) at hqB
-        simp [B, C, hqB]
-        intro hq_left hq_right
-        exact False.elim (hqB ⟨hq_left, hq_right⟩)
-    have hprod :
-        ∀ᵐ q ∂μBase.prod MeasureTheory.volume,
-          (((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s) →
-            q.2 • (q.1.1 : H) ∉ M :=
-      (Measure.ae_prod_iff_ae_ae hprod_pred_meas).2 hbase
-    have hsrc_ae : ∀ᵐ q ∂μSrc, f q ∉ M := by
-      filter_upwards [ae_restrict_of_ae hprod, ae_restrict_mem hA_meas] with q hq hqA
-      exact hq hqA
-    have hpre_zero : μSrc (f ⁻¹' M) = 0 := by
-      have hnot_pre : ∀ᵐ q ∂μSrc, q ∉ f ⁻¹' M := by
-        simpa [Set.preimage] using hsrc_ae
-      simpa using (ae_iff.mp hnot_pre)
-    rw [Measure.map_apply hf_meas hM]
-    exact hpre_zero
-  intro N hN
-  let M : Set H := toMeasurable μTgt N
-  have hM_meas : MeasurableSet M :=
-    measurableSet_toMeasurable μTgt N
-  have hM_zero : μTgt M = 0 := by
-    simpa [M] using (measure_toMeasurable (μ := μTgt) N).trans hN
-  have hmapM_zero : Measure.map f μSrc M = 0 :=
-    hmeasurable_null hM_meas hM_zero
-  exact nonpos_iff_eq_zero.1
-    ((measure_mono (subset_toMeasurable μTgt N)).trans_eq hmapM_zero)
-
-/--
-%%handwave
-name:
-  The radial derivative segment integral is measurable
-statement:
-  If the weak derivative is square-integrable on the unit ball, then for each
-  fixed \(0<s<1\) the function of the polar pair \((\theta,r)\) given by
-  \[
-    \int_{\{t:r<t<s\}} |D w(t\theta)\theta|\,dt
-  \]
-  is measurable up to null sets for spherical measure times the restricted
-  radial measure.
-proof:
-  Write the set integral as the integral over \(t\) of the indicator of the
-  measurable region \(r<t<s\) times the pullback of \(|D w|\) by
-  \((\theta,r,t)\mapsto t\theta\).  On this region the map lands in the unit
-  ball, and polar coordinates make it quasi-measure-preserving into Lebesgue
-  measure on the ball.  The square-integrability of \(D w\) gives
-  almost-everywhere measurability of the pulled-back integrand; Tonelli then
-  gives measurability of the parameter integral.
--/
-theorem scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_aemeasurable_of_memLp
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {dw : H → H →L[ℝ] ℝ}
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (s : ℝ) (_hs_pos : 0 < s) (_hs_lt_one : s < 1) :
-    AEMeasurable
-      (fun p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) ↦
-        ∫⁻ t in
-          {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-          ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-          ∂MeasureTheory.volume)
-      ((MeasureTheory.volume : Measure H).toSphere.prod
-        ((MeasureTheory.Measure.volumeIoiPow
-          (Module.finrank ℝ H - 1)).restrict
-            {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) := by
-  classical
-  let μ : Measure (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :=
-    (MeasureTheory.volume : Measure H).toSphere.prod
-      ((MeasureTheory.Measure.volumeIoiPow
-        (Module.finrank ℝ H - 1)).restrict
-          {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})
-  let A : Set ((Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ) :=
-    {q | ((q.1.2 : Set.Ioi (0 : ℝ)) : ℝ) < q.2 ∧ q.2 < s}
-  let F : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ → ℝ≥0∞ :=
-    fun q ↦
-      A.indicator
-        (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-          ENNReal.ofReal ‖dw (q.2 • (q.1.1 : H)) (q.1.1 : H)‖) q
-  have hA_meas : MeasurableSet A := by
-    dsimp [A]
-    measurability
-  have hqmp :
-      Measure.QuasiMeasurePreserving
-        (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-          q.2 • (q.1.1 : H))
-        ((μ.prod MeasureTheory.volume).restrict A)
-        (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)) := by
-    simpa [μ, A] using
-      polarSegmentEval_quasiMeasurePreserving_restrict
-        (H := H) s _hs_pos _hs_lt_one
-  have hDw :
-      AEStronglyMeasurable
-        (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-          dw (q.2 • (q.1.1 : H)))
-        ((μ.prod MeasureTheory.volume).restrict A) := by
-    simpa [Function.comp_def] using
-      _hdw.aestronglyMeasurable.comp_quasiMeasurePreserving hqmp
-  have hθ :
-      AEStronglyMeasurable
-        (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-          (q.1.1 : H))
-        ((μ.prod MeasureTheory.volume).restrict A) := by
-    exact (by measurability : Measurable
-      (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-        (q.1.1 : H))).aestronglyMeasurable
-  have hval :
-      AEStronglyMeasurable
-        (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-          dw (q.2 • (q.1.1 : H)) (q.1.1 : H))
-        ((μ.prod MeasureTheory.volume).restrict A) := by
-    simpa using
-      (ContinuousLinearMap.apply ℝ ℝ).flip.aestronglyMeasurable_comp₂
-        hDw hθ
-  have hF : AEMeasurable F (μ.prod MeasureTheory.volume) := by
-    have hraw :
-        AEMeasurable
-          (A.indicator
-            (fun q : (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) × ℝ ↦
-              ENNReal.ofReal ‖dw (q.2 • (q.1.1 : H)) (q.1.1 : H)‖))
-          (μ.prod MeasureTheory.volume) :=
-      (aemeasurable_indicator_iff (μ := μ.prod MeasureTheory.volume) hA_meas).2
-        hval.norm.aemeasurable.ennreal_ofReal
-    simpa [F] using hraw
-  have hInt :
-      AEMeasurable
-        (fun p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) ↦
-          ∫⁻ t, F (p, t) ∂MeasureTheory.volume) μ :=
-    hF.lintegral_prod_right
-  convert hInt using 1
-  ext p
-  have hpt_meas :
-      MeasurableSet
-        {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s} := by
-    measurability
-  rw [← lintegral_indicator hpt_meas]
-  rfl
-
-/--
-%%handwave
-name:
-  The radial ACL exceptional set is null-measurable
-statement:
-  If the chosen representative is measurable and the weak derivative is
-  square-integrable on the unit ball, then, for each fixed endpoint radius
-  \(0<s<1\), the set of polar pairs where the finite radial ACL estimate
-  fails is null-measurable for the product of spherical measure and the
-  radial polar measure.
-proof:
-  The left side of the inequality is measurable because the representative is
-  measurable and the polar evaluation maps are continuous.  The right side is
-  an iterated nonnegative integral of an almost-everywhere measurable
-  integrand, using square-integrability of the derivative and the
-  polar-coordinate map.  Hence the failure set is a null-measurable comparison
-  set of two almost-everywhere measurable extended-real functions.
--/
-theorem scalarWeakSobolev_unit_ball_radial_acl_badSet_nullMeasurable_of_measurable
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {wacl : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hwacl_meas : Measurable wacl)
-    (hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (s : ℝ) (hs_pos : 0 < s) (hs_lt_one : s < 1) :
-    NullMeasurableSet
-      {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-        ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-          ENNReal.ofReal
-            ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-              wacl (s • (p.1 : H))‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume)}
-      ((MeasureTheory.volume : Measure H).toSphere.prod
-        ((MeasureTheory.Measure.volumeIoiPow
-          (Module.finrank ℝ H - 1)).restrict
-            {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) := by
-  classical
-  let μ : Measure (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :=
-    (MeasureTheory.volume : Measure H).toSphere.prod
-      ((MeasureTheory.Measure.volumeIoiPow
-        (Module.finrank ℝ H - 1)).restrict
-          {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})
-  let lhs : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) → ℝ≥0∞ :=
-    fun p ↦
-      ENNReal.ofReal
-        ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-          wacl (s • (p.1 : H))‖
-  let rhs : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) → ℝ≥0∞ :=
-    fun p ↦
-      ∫⁻ t in
-        {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-        ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-        ∂MeasureTheory.volume
-  have hlhs : AEMeasurable lhs μ := by
-    have hpoint_r :
-        Measurable
-          (fun p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) ↦
-            ((p.2 : ℝ) • (p.1 : H))) := by
-      measurability
-    have hpoint_s :
-        Measurable
-          (fun p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) ↦
-            s • (p.1 : H)) := by
-      measurability
-    have hreal :
-        AEMeasurable
-          (fun p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) ↦
-            ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-              wacl (s • (p.1 : H))‖) μ := by
-      exact
-        ((hwacl_meas.comp hpoint_r).aemeasurable.sub
-          (hwacl_meas.comp hpoint_s).aemeasurable).norm
-    simpa [lhs] using hreal.ennreal_ofReal
-  have hrhs : AEMeasurable rhs μ := by
-    simpa [μ, rhs] using
-      scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_aemeasurable_of_memLp
-        (H := H) (dw := dw) hdw s hs_pos hs_lt_one
-  have hlt : NullMeasurableSet {p | rhs p < lhs p} μ :=
-    nullMeasurableSet_lt hrhs hlhs
-  have hr_lt_meas :
-      NullMeasurableSet
-        {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-          ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s} μ :=
-    (by
-      have hmeas :
-          MeasurableSet
-            {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-              ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s} := by
-        measurability
-      exact hmeas.nullMeasurableSet)
-  have hbad :
-      NullMeasurableSet
-        ({p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-          ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s} ∩
-          {p | rhs p < lhs p}) μ :=
-    hr_lt_meas.inter hlt
-  convert hbad using 1
-  ext p
-  simp only [Set.mem_setOf_eq, Set.mem_inter_iff, lhs, rhs]
-  constructor
-  · intro h
-    have hr : ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s := by
-      by_contra hnr
-      exact h (fun hp ↦ False.elim (hnr hp))
-    have hnot_le :
-        ¬ ENNReal.ofReal
-            ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-              wacl (s • (p.1 : H))‖ ≤
-          ∫⁻ t in
-            {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-            ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-            ∂MeasureTheory.volume := by
-      intro hle
-      exact h (fun _ ↦ hle)
-    exact ⟨hr, lt_of_not_ge hnot_le⟩
-  · intro h himp
-    exact not_le_of_gt h.2 (himp h.1)
-
-/--
-%%handwave
-name:
-  Raywise radial ACL representative from two stereographic hemispheres
-statement:
-  A scalar \(W^{1,2}\) function on the unit ball has a representative,
-  equal almost everywhere to the original function, whose finite radial ACL
-  estimate holds for almost every direction and almost every radius.  The
-  exceptional polar set is null-measurable.
-proof:
-  Choose a unit vector \(v\).  On the open half of the sphere where
-  \(\langle\theta,v\rangle>0\), use the stereographic chart with pole
-  \(-v\); on the complementary half, use the chart with pole \(v\).  These
-  two choices cover all directions.  Define the representative by the same
-  measurable half-space partition in the ball.  Along each positive radial
-  line the sign of \(\langle r\theta,v\rangle\) is constant, so the chartwise
-  radial ACL estimates become the desired estimate for this single
-  representative.  Null-measurability of the failure set follows from the
-  measurability of the representative and the square-integrability of the
-  weak derivative.
--/
-theorem
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts_two_hemispheres
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          NullMeasurableSet
-            {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-              ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                    wacl (s • (p.1 : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                    ∂MeasureTheory.volume)}
-            ((MeasureTheory.volume : Measure H).toSphere.prod
-              ((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((r : ℝ) • (θ : H)) -
-                    wacl (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  classical
-  let n : ℕ := Module.finrank ℝ H - 1
-  have hfin_pos : 0 < Module.finrank ℝ H :=
-    Module.finrank_pos (R := ℝ) (M := H)
-  haveI : Fact (Module.finrank ℝ H = n + 1) := by
-    refine ⟨?_⟩
-    dsimp [n]
-    omega
-  rcases (NormedSpace.sphere_nonempty (E := H) (x := (0 : H)) (r := (1 : ℝ))).2
-      (by norm_num : (0 : ℝ) ≤ 1) with
-    ⟨v₀, hv₀⟩
-  let v : Metric.sphere (0 : H) 1 := ⟨v₀, hv₀⟩
-  rcases scalarWeakSobolev_stereographic_polar_patch_acl_representative
-      (n := n) v hweak hw hdw with
-    ⟨wminusHemisphere, hwminus_meas, hwminus_eq, hwminus_acl⟩
-  rcases scalarWeakSobolev_stereographic_polar_patch_acl_representative
-      (n := n) (-v) hweak hw hdw with
-    ⟨wplusHemisphere, hwplus_meas, hwplus_eq, hwplus_acl⟩
-  let A : Set H := {z : H | 0 < inner ℝ z (v : H)}
-  let wacl : H → ℝ := fun z ↦ if z ∈ A then wplusHemisphere z else wminusHemisphere z
-  have hA_meas : MeasurableSet A := by
-    dsimp [A]
-    measurability
-  have hwacl_meas : Measurable wacl := by
-    dsimp [wacl]
-    exact Measurable.piecewise hA_meas hwplus_meas hwminus_meas
-  have hwacl_eq :
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w := by
-    filter_upwards [hwplus_eq, hwminus_eq] with z hzplus hzminus
-    by_cases hzA : z ∈ A
-    · simp [wacl, hzA, hzplus]
-    · simp [wacl, hzA, hzminus]
-  refine ⟨wacl, hwacl_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  have hbad :
-      NullMeasurableSet
-        {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-          ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-            ENNReal.ofReal
-              ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                wacl (s • (p.1 : H))‖ ≤
-              ∫⁻ t in
-                {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume)}
-        ((MeasureTheory.volume : Measure H).toSphere.prod
-          ((MeasureTheory.Measure.volumeIoiPow
-            (Module.finrank ℝ H - 1)).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) :=
-    scalarWeakSobolev_unit_ball_radial_acl_badSet_nullMeasurable_of_measurable
-      (H := H) (wacl := wacl) (dw := dw) hwacl_meas hdw s hs_pos hs_lt_one
-  refine ⟨hbad, ?_⟩
-  let μS : Measure (Metric.sphere (0 : H) 1) :=
-    (MeasureTheory.volume : Measure H).toSphere
-  have hsource_minus_meas : MeasurableSet (stereographic' n v).source :=
-    (stereographic' n v).open_source.measurableSet
-  have hsource_plus_meas : MeasurableSet (stereographic' n (-v)).source :=
-    (stereographic' n (-v)).open_source.measurableSet
-  have hminus_imp :
-      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-        θ ∈ (stereographic' n v).source →
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-              ENNReal.ofReal
-                ‖wminusHemisphere ((r : ℝ) • (θ : H)) -
-                  wminusHemisphere (s • (θ : H))‖ ≤
-                ∫⁻ t in
-                  {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                  ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                  ∂MeasureTheory.volume :=
-    (ae_restrict_iff' hsource_minus_meas).1
-      (by simpa [μS] using hwminus_acl s hs_pos hs_lt_one)
-  have hplus_imp :
-      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-        θ ∈ (stereographic' n (-v)).source →
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-              ENNReal.ofReal
-                ‖wplusHemisphere ((r : ℝ) • (θ : H)) -
-                  wplusHemisphere (s • (θ : H))‖ ≤
-                ∫⁻ t in
-                  {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                  ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                  ∂MeasureTheory.volume :=
-    (ae_restrict_iff' hsource_plus_meas).1
-      (by simpa [μS] using hwplus_acl s hs_pos hs_lt_one)
-  have hplus_half :
-      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-        0 < inner ℝ (θ : H) (v : H) →
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-              ENNReal.ofReal
-                ‖wacl ((r : ℝ) • (θ : H)) -
-                  wacl (s • (θ : H))‖ ≤
-                ∫⁻ t in
-                  {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                  ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                  ∂MeasureTheory.volume := by
-    filter_upwards [hplus_imp] with θ hθ_plus hθ_pos
-    have hθ_source : θ ∈ (stereographic' n (-v)).source := by
-      rw [stereographic'_source]
-      intro hθ
-      have hθeq : θ = (-v : Metric.sphere (0 : H) 1) := by
-        simpa using hθ
-      subst θ
-      have hneg :
-          inner ℝ ((-v : Metric.sphere (0 : H) 1) : H) (v : H) = -1 := by
-        have hvnorm : ‖(v : H)‖ = 1 := norm_eq_of_mem_sphere v
-        simp [hvnorm]
-      have hbad_pos : (0 : ℝ) < -1 := by
-        simpa [hneg] using hθ_pos
-      norm_num at hbad_pos
-    filter_upwards [hθ_plus hθ_source] with r hr
-    intro hrs
-    have hrA : ((r : ℝ) • (θ : H)) ∈ A := by
-      dsimp [A]
-      simpa [real_inner_smul_left] using mul_pos r.2 hθ_pos
-    have hsA : (s • (θ : H)) ∈ A := by
-      dsimp [A]
-      simpa [real_inner_smul_left] using mul_pos hs_pos hθ_pos
-    simpa [wacl, hrA, hsA] using hr hrs
-  have hminus_half :
-      ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂μS,
-        ¬ 0 < inner ℝ (θ : H) (v : H) →
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-              ENNReal.ofReal
-                ‖wacl ((r : ℝ) • (θ : H)) -
-                  wacl (s • (θ : H))‖ ≤
-                ∫⁻ t in
-                  {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                  ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                  ∂MeasureTheory.volume := by
-    filter_upwards [hminus_imp] with θ hθ_minus hθ_not_pos
-    have hθ_source : θ ∈ (stereographic' n v).source := by
-      rw [stereographic'_source]
-      intro hθ
-      have hθeq : θ = v := by
-        simpa using hθ
-      subst θ
-      have hvnorm : ‖(v : H)‖ = 1 := norm_eq_of_mem_sphere v
-      apply hθ_not_pos
-      simp [hvnorm]
-    have hθ_nonpos : inner ℝ (θ : H) (v : H) ≤ 0 :=
-      le_of_not_gt hθ_not_pos
-    filter_upwards [hθ_minus hθ_source] with r hr
-    intro hrs
-    have hrA : ((r : ℝ) • (θ : H)) ∉ A := by
-      dsimp [A]
-      have hinner_nonpos :
-          inner ℝ ((r : ℝ) • (θ : H)) (v : H) ≤ 0 := by
-        simpa [real_inner_smul_left] using
-          mul_nonpos_of_nonneg_of_nonpos (le_of_lt r.2) hθ_nonpos
-      exact not_lt_of_ge hinner_nonpos
-    have hsA : (s • (θ : H)) ∉ A := by
-      dsimp [A]
-      have hinner_nonpos :
-          inner ℝ (s • (θ : H)) (v : H) ≤ 0 := by
-        simpa [real_inner_smul_left] using
-          mul_nonpos_of_nonneg_of_nonpos (le_of_lt hs_pos) hθ_nonpos
-      exact not_lt_of_ge hinner_nonpos
-    simpa [wacl, hrA, hsA] using hr hrs
-  simpa [μS] using
-    (hplus_half.and hminus_half).mono fun θ hθ ↦ by
-      by_cases hθ_pos : 0 < inner ℝ (θ : H) (v : H)
-      · exact hθ.1 hθ_pos
-      · exact hθ.2 hθ_pos
-
-/--
-%%handwave
-name:
-  Raywise radial ACL in ambient dimension at least two
-statement:
-  In ambient dimension at least two, a scalar \(W^{1,2}\) function on the unit
-  ball admits a measurable representative, equal to the original function
-  almost everywhere, such that the finite radial ACL estimate holds for almost
-  every direction and almost every radius, and the corresponding exceptional
-  polar set is null-measurable.
-proof:
-  Choose one stereographic chart.  Its missing pole has zero spherical measure
-  in ambient dimension at least two, so the one-chart radial ACL statement
-  gives the almost-everywhere conclusion on the whole sphere.  The
-  null-measurability of the failure set follows from the measurable
-  representative and square-integrability of the weak derivative.
--/
-private theorem
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts_of_one_lt_finrank
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    (hfin : 1 < Module.finrank ℝ H)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          NullMeasurableSet
-            {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-              ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                    wacl (s • (p.1 : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                    ∂MeasureTheory.volume)}
-            ((MeasureTheory.volume : Measure H).toSphere.prod
-              ((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((r : ℝ) • (θ : H)) -
-                    wacl (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  classical
-  let n : ℕ := Module.finrank ℝ H - 1
-  have hfin_pos : 0 < Module.finrank ℝ H :=
-    Module.finrank_pos (R := ℝ) (M := H)
-  haveI : Fact (Module.finrank ℝ H = n + 1) := by
-    refine ⟨?_⟩
-    dsimp [n]
-    omega
-  rcases (NormedSpace.sphere_nonempty (E := H) (x := (0 : H)) (r := (1 : ℝ))).2
-      (by norm_num : (0 : ℝ) ≤ 1) with
-    ⟨v₀, hv₀⟩
-  let v : Metric.sphere (0 : H) 1 := ⟨v₀, hv₀⟩
-  rcases
-    scalarWeakSobolev_unit_ball_radial_acl_representative_one_stereographic_patch_of_one_lt_finrank
-      (n := n) hfin v hweak hw hdw with
-    ⟨wacl, hwacl_meas, hwacl_eq, hwacl_aeae⟩
-  refine ⟨wacl, hwacl_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  exact
-    ⟨scalarWeakSobolev_unit_ball_radial_acl_badSet_nullMeasurable_of_measurable
-      (H := H) (wacl := wacl) (dw := dw) hwacl_meas hdw s hs_pos hs_lt_one,
-      hwacl_aeae s hs_pos hs_lt_one⟩
-
-/--
-%%handwave
-name:
-  Raywise radial ACL in ambient dimension one
-statement:
-  In ambient dimension one, the unit sphere consists of the two radial
-  directions.  A scalar \(W^{1,2}\) function on the unit interval therefore
-  admits a representative whose restrictions to the two rays satisfy the
-  finite radial ACL estimate, with a null-measurable exceptional polar set.
-proof:
-  This is a specialization of the two-chart half-space construction.  The
-  two stereographic charts cover the sphere, and the representative is chosen
-  by the same measurable half-space partition on the ball.
--/
-theorem
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts_of_finrank_le_one
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    (_hfin_le : Module.finrank ℝ H ≤ 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          NullMeasurableSet
-            {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-              ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                    wacl (s • (p.1 : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                    ∂MeasureTheory.volume)}
-            ((MeasureTheory.volume : Measure H).toSphere.prod
-              ((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((r : ℝ) • (θ : H)) -
-                    wacl (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  exact
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts_two_hemispheres
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Raywise radial ACL representative from local polar coordinates
-statement:
-  If \(w\) is a scalar \(W^{1,2}\) function on the Euclidean unit ball with
-  weak derivative \(D w\), then it has a representative \(\widetilde w\) that
-  agrees with \(w\) almost everywhere in the ball and, for every \(0<s<1\),
-  for almost every direction \(\theta\), the finite radial segment from
-  \(r\theta\) to \(s\theta\) satisfies
-  \[
-    |\widetilde w(r\theta)-\widetilde w(s\theta)|
-      \le \int_r^s |D w(t\theta)\theta|\,dt
-  \]
-  for almost every radius \(0<r<s\).  The corresponding exceptional subset
-  of polar space is null-measurable.
-proof:
-  Choose a unit vector \(v\), use the chart with pole \(-v\) on the
-  hemisphere \(\langle\theta,v\rangle>0\), and use the chart with pole \(v\)
-  on the complementary hemisphere.  On each chart the map
-  \((y,r)\mapsto r\sigma(y)\) turns radial lines into vertical coordinate
-  lines, so the chartwise ACL theorem gives the estimate.  Defining the
-  representative by the same half-space partition in the ball gives one
-  measurable representative, and null-measurability of the exceptional polar
-  set follows from measurability of the two sides of the inequality.
--/
-theorem scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          NullMeasurableSet
-            {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-              ¬ (((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                    wacl (s • (p.1 : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                    ∂MeasureTheory.volume)}
-            ((MeasureTheory.volume : Measure H).toSphere.prod
-              ((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-          ∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            ∀ᵐ r : Set.Ioi (0 : ℝ)
-                ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-              ((r : Set.Ioi (0 : ℝ)) : ℝ) < s →
-                ENNReal.ofReal
-                  ‖wacl ((r : ℝ) • (θ : H)) -
-                    wacl (s • (θ : H))‖ ≤
-                  ∫⁻ t in
-                    {t : ℝ | ((r : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                    ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                    ∂MeasureTheory.volume := by
-  exact
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts_two_hemispheres
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  A radial ACL representative from local polar coordinates
-statement:
-  If \(w\) is a scalar \(W^{1,2}\) function on the Euclidean unit ball with
-  weak derivative \(D w\), then it has a representative \(\widetilde w\) that
-  agrees with \(w\) almost everywhere in the ball and, for every \(0<s<1\),
-  the finite radial segment from \(r\theta\) to \(s\theta\) satisfies
-  \[
-    |\widetilde w(r\theta)-\widetilde w(s\theta)|
-      \le \int_r^s |D w(t\theta)\theta|\,dt
-  \]
-  for almost every polar pair \((\theta,r)\) with \(0<r<s\).
-proof:
-  Apply the raywise polar-coordinate ACL representative theorem and use
-  Fubini to pass from almost every direction and then almost every radius to
-  almost every polar pair.
--/
-theorem scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_bound_ae_polar_endpoints
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-        ∀ s : ℝ, 0 < s → s < 1 →
-          ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-              ((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-            ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-              ENNReal.ofReal
-                ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                  wacl (s • (p.1 : H))‖ ≤
-                ∫⁻ t in
-                  {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                  ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                  ∂MeasureTheory.volume := by
-  rcases
-    scalarWeakSobolev_unit_ball_radial_acl_representative_raywise_polar_charts
-      _hweak _hw _hdw with
-    ⟨wacl, hwacl_eq, hwacl_raywise⟩
-  refine ⟨wacl, hwacl_eq, ?_⟩
-  intro s hs_pos hs_lt_one
-  rcases hwacl_raywise s hs_pos hs_lt_one with
-    ⟨hbad_null, hpolar_ae_ae⟩
-  exact
-    ae_prod_of_ae_ae_of_nullMeasurable_bad
-      hbad_null hpolar_ae_ae
-
-/--
-%%handwave
-name:
   Full radial ACL on one stereographic patch
 statement:
   On one stereographic coordinate patch of the unit sphere, a scalar
@@ -5982,53 +4682,6 @@ theorem scalarWeakSobolev_unit_ball_radial_acl_all_segments_ae_sphere
 /--
 %%handwave
 name:
-  Fixed-endpoint radial absolute continuity for an ACL representative
-statement:
-  Let \(0<s<1\).  A scalar \(W^{1,2}\) function on the Euclidean unit ball has
-  a representative agreeing with it almost everywhere in the ball such that
-  almost every finite radial segment ending at \(s\theta\) satisfies the ACL
-  segment estimate.
-proof:
-  Apply the representative form that works for all interior endpoints and
-  specialize to the chosen endpoint radius.
--/
-theorem scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_bound_ae_polar_endpoint
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {s : ℝ} (hs_pos : 0 < s) (hs_lt_one : s < 1)
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ wacl : H → ℝ,
-      wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w ∧
-      ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-          ((MeasureTheory.Measure.volumeIoiPow
-            (Module.finrank ℝ H - 1)).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-        ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-          ENNReal.ofReal
-            ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-              wacl (s • (p.1 : H))‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-  rcases
-    scalarWeakSobolev_unit_ball_radial_acl_segmentIntegral_bound_ae_polar_endpoints
-      hweak hw hdw with
-    ⟨wacl, hwacl_eq, hwacl_segments⟩
-  exact ⟨wacl, hwacl_eq, hwacl_segments s hs_pos hs_lt_one⟩
-
-/--
-%%handwave
-name:
   An \(L^1\)-Cauchy family of spherical slices converges in measure
 statement:
   Let \(s_k\) be radii and suppose each slice \(\theta\mapsto w(s_k\theta)\) belongs to \(L^1\) of the unit sphere.  If these slices are Cauchy in \(L^1\), then there is a measurable \(\tau:H\to\mathbb R\) such that \(w(s_k\theta)\) converges in spherical measure to \(\tau(\theta)\).
@@ -6218,52 +4871,6 @@ private theorem exists_seq_tendsto_one_of_ae_volumeIoiPow_restrict
       ?_ ?_
     · exact Filter.Eventually.of_forall fun k ↦ le_of_lt (hs k).2.1
     · exact Filter.Eventually.of_forall fun k ↦ le_of_lt (hs k).2.2
-
-/--
-%%handwave
-name:
-  Selecting boundary-approaching radii where representatives agree
-statement:
-  If \(f=g\) almost everywhere in the unit ball, then there are radii \(s_k<1\) with \(s_k\to1\) such that \(f(s_k\theta)=g(s_k\theta)\) for spherical-almost every \(\theta\), for every \(k\).
-proof:
-  Almost-everywhere equality in the ball yields the slice equality for almost every radial parameter.  Apply the selection of good radii converging to \(1\) to this radial property.
--/
-private theorem exists_seq_tendsto_one_sphere_slice_eq_of_ae_volume_unitBall
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {f g : H → ℝ}
-    (hfg : f =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] g) :
-    ∃ s : ℕ → Set.Ioi (0 : ℝ),
-      (∀ k : ℕ,
-        ((s k : Set.Ioi (0 : ℝ)) : ℝ) < 1 ∧
-          (∀ᵐ θ : Metric.sphere (0 : H) 1
-              ∂((MeasureTheory.volume : Measure H).toSphere),
-            f (((s k : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) =
-              g (((s k : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)))) ∧
-        Filter.Tendsto (fun k : ℕ ↦ ((s k : Set.Ioi (0 : ℝ)) : ℝ))
-          Filter.atTop (𝓝 (1 : ℝ)) := by
-  classical
-  let P : Set.Ioi (0 : ℝ) → Prop :=
-    fun r ↦
-      ∀ᵐ θ : Metric.sphere (0 : H) 1
-          ∂((MeasureTheory.volume : Measure H).toSphere),
-        f ((r : ℝ) • (θ : H)) = g ((r : ℝ) • (θ : H))
-  have hP :
-      ∀ᵐ r : Set.Ioi (0 : ℝ)
-          ∂((MeasureTheory.Measure.volumeIoiPow
-            (Module.finrank ℝ H - 1)).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-        P r :=
-    ae_radius_sphere_slice_eq_of_ae_volume_unitBall (H := H) hfg
-  rcases
-    exists_seq_tendsto_one_of_ae_volumeIoiPow_restrict
-      (n := Module.finrank ℝ H - 1) (P := P) hP with
-    ⟨s, hs, hs_tendsto⟩
-  refine ⟨s, ?_, hs_tendsto⟩
-  intro k
-  simpa [P] using hs k
 
 /--
 %%handwave
@@ -7203,118 +5810,6 @@ private theorem exists_seq_tendsto_one_sphere_slice_eq_memLp_of_ae_volume_unitBa
   refine ⟨s, ?_, hs_tendsto⟩
   intro k
   simpa [P] using hs k
-
-/--
-%%handwave
-name:
-  Transferring radial segment bounds from a representative to the original function
-statement:
-  Let \(w_{\mathrm{ac}}=w\) almost everywhere in the unit ball.  Suppose \(w_{\mathrm{ac}}\) satisfies the radial segment estimate up to every \(s\in(0,1)\).  For radii \(s_k<1\) where \(w_{\mathrm{ac}}(s_k\theta)=w(s_k\theta)\) almost everywhere on the sphere, the same segment estimate with both endpoints evaluated using \(w\) holds for product-almost every \((\theta,r)\) with \(r<s_k\).
-proof:
-  Polar coordinates transfer the interior almost-everywhere equality \(w_{\mathrm{ac}}=w\) to product-almost every \((\theta,r)\).  Combine this with the assumed segment estimate and the endpoint equality at \(s_k\), then replace both function values.
--/
-private theorem radial_acl_segments_for_original_of_representative
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w wacl : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (hwacl_eq : wacl =ᵐ[MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)] w)
-    (hsegments :
-      ∀ s : ℝ, 0 < s → s < 1 →
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < s →
-            ENNReal.ofReal
-              ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-                wacl (s • (p.1 : H))‖ ≤
-              ∫⁻ t in
-                {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < s},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume)
-    {s : ℕ → Set.Ioi (0 : ℝ)}
-    (hs_lt : ∀ n : ℕ, ((s n : Set.Ioi (0 : ℝ)) : ℝ) < 1)
-    (hs_endpoint :
-      ∀ n : ℕ,
-        ∀ᵐ θ : Metric.sphere (0 : H) 1
-            ∂((MeasureTheory.volume : Measure H).toSphere),
-          wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) =
-            w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H))) :
-    ∀ n : ℕ,
-      ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-          ((MeasureTheory.Measure.volumeIoiPow
-            (Module.finrank ℝ H - 1)).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-        ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) <
-            ((s n : Set.Ioi (0 : ℝ)) : ℝ) →
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) -
-              w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H))‖ ≤
-            ∫⁻ t in
-              {t : ℝ |
-                ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧
-                  t < ((s n : Set.Ioi (0 : ℝ)) : ℝ)},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-  classical
-  let μS : Measure (Metric.sphere (0 : H) 1) :=
-    (MeasureTheory.volume : Measure H).toSphere
-  let μR : Measure (Set.Ioi (0 : ℝ)) :=
-    MeasureTheory.Measure.volumeIoiPow (Module.finrank ℝ H - 1)
-  let R : Set (Set.Ioi (0 : ℝ)) := {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}
-  let ν : Measure (Set.Ioi (0 : ℝ)) := μR.restrict R
-  let μ : Measure (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :=
-    μS.prod ν
-  have hbase :
-      ∀ᵐ p ∂μ,
-        wacl ((p.2 : ℝ) • (p.1 : H)) =
-          w ((p.2 : ℝ) • (p.1 : H)) := by
-    simpa [μ, μS, μR, R, ν, Filter.EventuallyEq] using
-      ae_polar_product_unitBall_of_ae_volume_unitBall
-        (H := H) (P := fun z : H ↦ wacl z = w z) hwacl_eq
-  intro n
-  have hend :
-      ∀ᵐ p ∂μ,
-        wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H)) =
-          w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H)) := by
-    have hmap :
-        ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂Measure.map Prod.fst μ,
-          wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) =
-            w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) := by
-      have hsmul :
-          ∀ᵐ θ : Metric.sphere (0 : H) 1 ∂((ν Set.univ) • μS),
-            wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) =
-              w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (θ : H)) :=
-        Measure.ae_smul_measure (hs_endpoint n) (ν Set.univ)
-      simpa [μ, μS, μR, R, ν] using hsmul
-    simpa [μ, μS, μR, R, ν] using
-      (MeasureTheory.ae_of_ae_map
-        (μ := μ) (f := Prod.fst) measurable_fst.aemeasurable hmap)
-  have hseg :
-      ∀ᵐ p ∂μ,
-        ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) <
-            ((s n : Set.Ioi (0 : ℝ)) : ℝ) →
-          ENNReal.ofReal
-            ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-              wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H))‖ ≤
-            ∫⁻ t in
-              {t : ℝ |
-                ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧
-                  t < ((s n : Set.Ioi (0 : ℝ)) : ℝ)},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-    simpa [μ, μS, μR, R, ν] using
-      hsegments (((s n : Set.Ioi (0 : ℝ)) : ℝ)) (s n).2 (hs_lt n)
-  filter_upwards [hbase, hend, hseg] with p hp_base hp_end hp_seg hpr
-  have hnorm :
-      ‖w ((p.2 : ℝ) • (p.1 : H)) -
-          w (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H))‖ =
-        ‖wacl ((p.2 : ℝ) • (p.1 : H)) -
-          wacl (((s n : Set.Ioi (0 : ℝ)) : ℝ) • (p.1 : H))‖ := by
-    rw [← hp_base, ← hp_end]
-  simpa [hnorm] using hp_seg hpr
 
 /--
 %%handwave
@@ -8517,620 +7012,6 @@ private theorem
 /--
 %%handwave
 name:
-  Radial endpoint bounds for the polar product measure in explicit form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  polar pair \((\theta,r)\) with \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  This is exactly
-  [the radial \(L^1\)-Cauchy trace endpoint estimate](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_l1_cauchy_trace_polar_product_raw_analytic_leaf).
--/
-private theorem
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic_leaf
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-  exact
-    euclideanSobolev_unit_ball_radial_l1_cauchy_trace_polar_product_raw_analytic_leaf
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Raywise radial endpoint bounds in explicit polar form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  direction \(\theta\), for almost every \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-  Moreover the exceptional set for this inequality is null-measurable in the
-  corresponding polar product measure.
-proof:
-  Apply
-  [the polar-product endpoint estimate](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic_leaf).
-  The failure set has measure zero, hence is null-measurable, and Fubini gives
-  the almost-everywhere statement on almost every radial line.
--/
-private theorem
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw_analytic
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        NullMeasurableSet
-          {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-            ¬ ENNReal.ofReal
-                ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-              ∫⁻ t in
-                {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume}
-          ((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-        ∀ᵐ θ : Metric.sphere (0 : H) 1
-            ∂((MeasureTheory.volume : Measure H).toSphere),
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ENNReal.ofReal
-              ‖w ((r : ℝ) • (θ : H)) - τ (θ : H)‖ ≤
-              ∫⁻ t in {t : ℝ | (r : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                ∂MeasureTheory.volume := by
-  rcases
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic_leaf
-      _hweak _hw _hdw with
-    ⟨τ, hτ_meas, hprod⟩
-  refine ⟨τ, hτ_meas, ?_, ?_⟩
-  · refine NullMeasurableSet.of_null ?_
-    simpa [ae_iff] using hprod
-  · exact Measure.ae_ae_of_ae_prod hprod
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds for the polar product measure in explicit form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  polar pair \((\theta,r)\) with \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  This is exactly
-  [the polar-product endpoint estimate](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic_leaf).
--/
-private theorem
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-  exact
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic_leaf
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Raywise radial endpoint bounds in explicit polar form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  direction \(\theta\), for almost every \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-  Moreover the exceptional set for this inequality is null-measurable in the
-  corresponding polar product measure.
-proof:
-  This is exactly
-  [the raywise endpoint estimate with a null-measurable exceptional set](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw_analytic).
--/
-private theorem
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        NullMeasurableSet
-          {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-            ¬ ENNReal.ofReal
-                ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-              ∫⁻ t in
-                {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume}
-          ((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-        ∀ᵐ θ : Metric.sphere (0 : H) 1
-            ∂((MeasureTheory.volume : Measure H).toSphere),
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ENNReal.ofReal
-              ‖w ((r : ℝ) • (θ : H)) - τ (θ : H)‖ ≤
-              ∫⁻ t in {t : ℝ | (r : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                ∂MeasureTheory.volume := by
-  exact
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_raywise_polar_raw_analytic
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds for the polar product in explicit form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  polar pair \((\theta,r)\) with \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  Apply the raywise polar endpoint estimate, which gives the inequality for
-  almost every radius on almost every direction and identifies the exceptional
-  set as null-measurable.  The product-measure form follows by Fubini for this
-  null-measurable exceptional set.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_core
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-              ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-              ∂MeasureTheory.volume := by
-  exact
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_analytic
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds on almost every ray in explicit polar form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  direction \(\theta\), for almost every \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-  The exceptional set in polar coordinates is null-measurable.
-proof:
-  Use polar decomposition to reduce the weak Sobolev information to almost
-  every radial line.  On those lines the one-dimensional Sobolev
-  representative is absolutely continuous and has an endpoint limit at
-  \(r=1\); these endpoint limits define \(\tau\), and the fundamental theorem
-  of calculus gives the tail estimate.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_ae_polar_raw
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        NullMeasurableSet
-          {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-            ¬ ENNReal.ofReal
-                ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-              ∫⁻ t in
-                {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume}
-          ((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-        ∀ᵐ θ : Metric.sphere (0 : H) 1
-            ∂((MeasureTheory.volume : Measure H).toSphere),
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1)).restrict
-                  {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ENNReal.ofReal
-              ‖w ((r : ℝ) • (θ : H)) - τ (θ : H)‖ ≤
-              ∫⁻ t in {t : ℝ | (r : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (θ : H)) (θ : H)‖
-                ∂MeasureTheory.volume := by
-  rcases
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_core
-      _hweak _hw _hdw with
-    ⟨τ, hτ_meas, hprod⟩
-  refine ⟨τ, hτ_meas, ?_, ?_⟩
-  · refine NullMeasurableSet.of_null ?_
-    simpa [ae_iff] using hprod
-  · exact Measure.ae_ae_of_ae_prod hprod
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds in explicit polar form
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  polar pair \((\theta,r)\) with \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  Apply the polar-product form of the radial endpoint estimate.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_raw
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            ∫⁻ t in
-              {t : ℝ | ((p.2 : Set.Ioi (0 : ℝ)) : ℝ) < t ∧ t < 1},
-                ENNReal.ofReal ‖dw (t • (p.1 : H)) (p.1 : H)‖
-                ∂MeasureTheory.volume := by
-  exact
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_polar_product_raw_core
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds for the polar product measure
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  polar pair \((\theta,r)\) with \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  Apply the explicit polar radial endpoint estimate and use
-  \(\|r\theta\|=r\), \(r^{-1}(r\theta)=\theta\) for \(0<r<1\), to identify
-  the radial tail integral with the stated majorant.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_core
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            euclideanSobolevUnitBallRadialTailMajorant dw
-              ((p.2 : ℝ) • (p.1 : H)) := by
-  rcases
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_raw
-      _hweak _hw _hdw with
-    ⟨τ, hτ_meas, hraw⟩
-  refine ⟨τ, hτ_meas, ?_⟩
-  filter_upwards [hraw] with p hp
-  rw [euclideanSobolevUnitBallRadialTailMajorant_polar (dw := dw) p]
-  exact hp
-
-/--
-%%handwave
-name:
-  Radial endpoint bounds on almost every ray
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable boundary representative \(\tau\) such that, for almost every
-  direction \(\theta\), the one-dimensional radial restriction satisfies, for
-  almost every \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-  The exceptional set where this inequality fails is null-measurable in polar
-  coordinates.
-proof:
-  Apply
-  [the tail estimate for almost every polar pair](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_core).
-  Its exceptional set has measure zero, hence is null-measurable, and Fubini
-  gives the corresponding almost-everywhere statement on almost every ray.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_ae_polar
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        NullMeasurableSet
-          {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-            ¬ ENNReal.ofReal
-                ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-              euclideanSobolevUnitBallRadialTailMajorant dw
-                ((p.2 : ℝ) • (p.1 : H))}
-          ((MeasureTheory.volume : Measure H).toSphere.prod
-            (((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1) :
-                Measure (Set.Ioi (0 : ℝ)))).restrict
-              {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})) ∧
-        ∀ᵐ θ : Metric.sphere (0 : H) 1
-            ∂((MeasureTheory.volume : Measure H).toSphere),
-          ∀ᵐ r : Set.Ioi (0 : ℝ)
-              ∂(((MeasureTheory.Measure.volumeIoiPow
-                (Module.finrank ℝ H - 1) :
-                  Measure (Set.Ioi (0 : ℝ)))).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1}),
-            ENNReal.ofReal
-              ‖w ((r : ℝ) • (θ : H)) - τ (θ : H)‖ ≤
-              euclideanSobolevUnitBallRadialTailMajorant dw
-                ((r : ℝ) • (θ : H)) := by
-  rcases
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_core
-      _hweak _hw _hdw with
-    ⟨τ, hτ_meas, hprod⟩
-  refine ⟨τ, hτ_meas, ?_, ?_⟩
-  · refine NullMeasurableSet.of_null ?_
-    simpa [ae_iff] using hprod
-  · exact Measure.ae_ae_of_ae_prod hprod
-
-/--
-%%handwave
-name:
-  Radial ACL endpoint trace bound for the polar product measure
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable endpoint representative \(\tau\) on the unit sphere such that,
-  for almost every pair \((\theta,r)\) in the polar product measure with
-  \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  This is exactly
-  [the tail estimate for almost every polar pair](lean:JJMath.Uniformization.euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_core).
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂((MeasureTheory.volume : Measure H).toSphere.prod
-            ((MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1)).restrict
-                {r : Set.Ioi (0 : ℝ) | (r : ℝ) < 1})),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            euclideanSobolevUnitBallRadialTailMajorant dw
-              ((p.2 : ℝ) • (p.1 : H)) := by
-  exact
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product_core
-      _hweak _hw _hdw
-
-/--
-%%handwave
-name:
-  Radial ACL endpoint trace bound in polar coordinates
-statement:
-  In positive dimension, a scalar \(W^{1,2}\) function on the unit ball has a
-  measurable endpoint representative \(\tau\) on the unit sphere such that,
-  for almost every direction \(\theta\) and radius \(0<r<1\),
-  \[
-    |w(r\theta)-\tau(\theta)|
-      \le
-    \int_r^1 |Dw(t\theta)\theta|\,dt .
-  \]
-proof:
-  Apply the polar product measure form of the radial endpoint theorem and use
-  the identity between restricting the product measure to \(r<1\) and taking
-  the product with the restricted radial measure.
--/
-theorem euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar
-    {H : Type} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [Nontrivial H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {w : H → ℝ} {dw : H → H →L[ℝ] ℝ}
-    (_hweak : IsWeakDerivativeOnEuclideanRegionWithValues
-      (Metric.ball (0 : H) 1) w dw)
-    (_hw : MemLp w 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1)))
-    (_hdw : MemLp dw 2
-      (MeasureTheory.volume.restrict (Metric.ball (0 : H) 1))) :
-    ∃ τ : H → ℝ,
-      Measurable τ ∧
-        ∀ᵐ p ∂(((MeasureTheory.volume : Measure H).toSphere.prod
-            (MeasureTheory.Measure.volumeIoiPow
-              (Module.finrank ℝ H - 1))).restrict
-              {p : Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ) |
-                (p.2 : ℝ) < 1}),
-          ENNReal.ofReal
-            ‖w ((p.2 : ℝ) • (p.1 : H)) - τ (p.1 : H)‖ ≤
-            euclideanSobolevUnitBallRadialTailMajorant dw
-              ((p.2 : ℝ) • (p.1 : H)) := by
-  let μS : Measure (Metric.sphere (0 : H) 1) :=
-    (MeasureTheory.volume : Measure H).toSphere
-  let μR : Measure (Set.Ioi (0 : ℝ)) :=
-    MeasureTheory.Measure.volumeIoiPow (Module.finrank ℝ H - 1)
-  let R : Set (Set.Ioi (0 : ℝ)) := {r | (r : ℝ) < 1}
-  let S : Set (Metric.sphere (0 : H) 1 × Set.Ioi (0 : ℝ)) :=
-    {p | (p.2 : ℝ) < 1}
-  rcases
-    euclideanSobolev_unit_ball_radial_acl_trace_tail_bound_ae_polar_product
-      _hweak _hw _hdw with
-    ⟨τ, hτ_meas, hpolar⟩
-  refine ⟨τ, hτ_meas, ?_⟩
-  have hS_eq : S = Set.univ ×ˢ R := by
-    ext p
-    simp [S, R]
-  have hmeasure :
-      (μS.prod μR).restrict S = μS.prod (μR.restrict R) := by
-    rw [hS_eq]
-    have hprod :=
-      Measure.prod_restrict (μ := μS) (ν := μR) Set.univ R
-    simpa using hprod.symm
-  simpa [μS, μR, R, S, hmeasure] using hpolar
-
-/--
-%%handwave
-name:
   Radial ACL endpoint trace bound in positive dimension
 statement:
   In a nonzero finite-dimensional Euclidean space, a scalar \(W^{1,2}\)
@@ -10174,170 +8055,6 @@ theorem euclideanSobolev_unit_ball_radial_tailIntegral_collar_le_xfirst_dilation
       exact (lt_div_iff₀ hden_pos).2 hmul_lt
     exact ⟨hq.1, hq_lt_inv, hq.2⟩
   exact htail.trans (lintegral_mono_set hsubset)
-
-/--
-%%handwave
-name:
-  The dilation average can be integrated in either order for measurable data
-statement:
-  If \(F\) is measurable, then the \(x\)-first integral over the inner collar
-  and the admissible dilation factors is bounded by the corresponding
-  \(q\)-first integral.
-proof:
-  Apply Tonelli's theorem to the measurable nonnegative function
-  \((x,q)\mapsto F(qx)\), restricted to the set
-  \(1-\varepsilon<\|x\|<1\), \(1<q<(1-\varepsilon)^{-1}\), and
-  \(\|qx\|<1\).  On the \(q\)-first side, the condition \(\|x\|<1\) is
-  redundant because \(q>1\) and \(\|qx\|<1\).
--/
-theorem euclideanSobolev_unit_ball_radial_tailIntegral_xfirst_dilation_le_qfirst_of_measurable
-    {H : Type} [NormedAddCommGroup H] [NormedSpace ℝ H]
-    [MeasureSpace H] [BorelSpace H]
-    [Measure.IsAddHaarMeasure (volume : Measure H)]
-    [FiniteDimensional ℝ H]
-    {F : H → ℝ≥0∞} (hF : Measurable F) {ε : ℝ} :
-      (∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖x‖ < 1},
-          ∫⁻ q in {q : ℝ |
-              1 < q ∧ q < ((1 : ℝ) - ε)⁻¹ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂MeasureTheory.volume ∂MeasureTheory.volume) ≤
-        ∫⁻ q in {q : ℝ | 1 < q ∧ q < ((1 : ℝ) - ε)⁻¹},
-          ∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂MeasureTheory.volume ∂MeasureTheory.volume := by
-  classical
-  let μH : Measure H := MeasureTheory.volume
-  let μR : Measure ℝ := MeasureTheory.volume
-  let S : Set H := {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖x‖ < 1}
-  let I : Set ℝ := {q : ℝ | 1 < q ∧ q < ((1 : ℝ) - ε)⁻¹}
-  let A : Set (H × ℝ) :=
-    {p : H × ℝ | p.1 ∈ S ∧ p.2 ∈ I ∧ ‖p.2 • p.1‖ < 1}
-  let G : H → ℝ → ℝ≥0∞ :=
-    fun x q ↦ A.indicator (fun p : H × ℝ ↦ F (p.2 • p.1)) (x, q)
-  have hA_meas : MeasurableSet A := by
-    dsimp [A, S, I]
-    measurability
-  have hsmul_cont : Continuous (fun p : H × ℝ ↦ p.2 • p.1) :=
-    continuous_snd.smul continuous_fst
-  have hbase_meas :
-      Measurable (fun p : H × ℝ ↦ F (p.2 • p.1)) :=
-    hF.comp hsmul_cont.measurable
-  have hG_ae : AEMeasurable (Function.uncurry G) (μH.prod μR) := by
-    simpa [G, Function.uncurry] using
-      (hbase_meas.indicator hA_meas).aemeasurable
-  have hswap :
-      (∫⁻ x, ∫⁻ q, G x q ∂μR ∂μH) =
-        ∫⁻ q, ∫⁻ x, G x q ∂μH ∂μR := by
-    exact MeasureTheory.lintegral_lintegral_swap
-      (μ := μH) (ν := μR) (f := G) hG_ae
-  have hS_meas : MeasurableSet S := by
-    dsimp [S]
-    measurability
-  have hI_meas : MeasurableSet I := by
-    dsimp [I]
-    measurability
-  have hleft_le :
-      (∫⁻ x in S,
-          ∫⁻ q in {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1},
-            F (q • x) ∂μR ∂μH) ≤
-        ∫⁻ x, ∫⁻ q, G x q ∂μR ∂μH := by
-    rw [← lintegral_indicator hS_meas]
-    refine lintegral_mono fun x ↦ ?_
-    change S.indicator
-        (fun x : H ↦
-          ∫⁻ q in {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1},
-            F (q • x) ∂μR) x ≤
-      ∫⁻ q, G x q ∂μR
-    by_cases hx : x ∈ S
-    · rw [Set.indicator_of_mem hx]
-      have hQ_meas : MeasurableSet {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1} := by
-        have hnorm_open : IsOpen {q : ℝ | ‖q • x‖ < 1} := by
-          exact isOpen_lt
-            ((continuous_id.smul continuous_const).norm)
-            continuous_const
-        exact hI_meas.inter hnorm_open.measurableSet
-      rw [← lintegral_indicator hQ_meas]
-      refine lintegral_mono fun q ↦ ?_
-      by_cases hq : q ∈ I ∧ ‖q • x‖ < 1
-      · have hpA : (x, q) ∈ A := ⟨hx, hq.1, hq.2⟩
-        change
-          ({q : ℝ | q ∈ I ∧ ‖q • x‖ < 1}).indicator
-              (fun q : ℝ ↦ F (q • x)) q ≤
-            A.indicator (fun p : H × ℝ ↦ F (p.2 • p.1)) (x, q)
-        rw [Set.indicator_of_mem
-          (s := {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1}) hq]
-        rw [Set.indicator_of_mem hpA]
-      · rw [Set.indicator_of_notMem
-          (s := {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1}) hq]
-        exact zero_le
-    · rw [Set.indicator_of_notMem hx]
-      exact zero_le
-  have hright_le :
-      (∫⁻ q, ∫⁻ x, G x q ∂μH ∂μR) ≤
-        ∫⁻ q in I,
-          ∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂μH ∂μR := by
-    rw [← lintegral_indicator hI_meas]
-    refine lintegral_mono fun q ↦ ?_
-    change (∫⁻ x, G x q ∂μH) ≤
-      I.indicator
-        (fun q : ℝ ↦
-          ∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂μH) q
-    by_cases hqI : q ∈ I
-    · rw [Set.indicator_of_mem hqI]
-      have hD_meas :
-          MeasurableSet {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1} := by
-        have hinner_open : IsOpen {x : H | (1 : ℝ) - ε < ‖x‖} :=
-          isOpen_lt continuous_const continuous_norm
-        have hdil_open : IsOpen {x : H | ‖q • x‖ < 1} := by
-          exact isOpen_lt
-            ((continuous_const.smul continuous_id).norm)
-            continuous_const
-        exact (hinner_open.inter hdil_open).measurableSet
-      rw [← lintegral_indicator hD_meas]
-      refine lintegral_mono fun x ↦ ?_
-      by_cases hxA : (x, q) ∈ A
-      · have hxD :
-            x ∈ {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1} :=
-          ⟨hxA.1.1, hxA.2.2⟩
-        change
-          A.indicator (fun p : H × ℝ ↦ F (p.2 • p.1)) (x, q) ≤
-            ({x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1}).indicator
-              (fun x : H ↦ F (q • x)) x
-        rw [Set.indicator_of_mem hxA]
-        rw [Set.indicator_of_mem
-          (s := {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1}) hxD]
-      · change
-          A.indicator (fun p : H × ℝ ↦ F (p.2 • p.1)) (x, q) ≤
-            ({x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1}).indicator
-              (fun x : H ↦ F (q • x)) x
-        rw [Set.indicator_of_notMem hxA]
-        exact zero_le
-    · rw [Set.indicator_of_notMem hqI]
-      rw [← lintegral_zero]
-      refine lintegral_mono fun x ↦ ?_
-      have hxA : (x, q) ∉ A := by
-        intro hp
-        exact hqI hp.2.1
-      change A.indicator (fun p : H × ℝ ↦ F (p.2 • p.1)) (x, q) ≤ 0
-      rw [Set.indicator_of_notMem hxA]
-  calc
-    (∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖x‖ < 1},
-        ∫⁻ q in {q : ℝ |
-            1 < q ∧ q < ((1 : ℝ) - ε)⁻¹ ∧ ‖q • x‖ < 1},
-          F (q • x) ∂MeasureTheory.volume ∂MeasureTheory.volume)
-          = ∫⁻ x in S,
-              ∫⁻ q in {q : ℝ | q ∈ I ∧ ‖q • x‖ < 1},
-                F (q • x) ∂μR ∂μH := by
-              simp [S, I, μH, μR, and_assoc]
-    _ ≤ ∫⁻ x, ∫⁻ q, G x q ∂μR ∂μH := hleft_le
-    _ = ∫⁻ q, ∫⁻ x, G x q ∂μH ∂μR := hswap
-    _ ≤ ∫⁻ q in I,
-          ∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂μH ∂μR := hright_le
-    _ = ∫⁻ q in {q : ℝ | 1 < q ∧ q < ((1 : ℝ) - ε)⁻¹},
-          ∫⁻ x in {x : H | (1 : ℝ) - ε < ‖x‖ ∧ ‖q • x‖ < 1},
-            F (q • x) ∂MeasureTheory.volume ∂MeasureTheory.volume := by
-          simp [I, μH, μR]
 
 /--
 %%handwave

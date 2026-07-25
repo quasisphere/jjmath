@@ -23,15 +23,6 @@ namespace HyperbolicMetric
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
-/--
-The derivative of a hyperbolic local chart in the coordinate stored in its
-local-isometry data.
--/
-def hyperbolicLocalChartStoredCoordinateDerivativeAt
-    {g : HyperbolicMetric X} (U : HyperbolicLocalChart X g) (x : X) : ℂ :=
-  deriv (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ))
-    (U.local_isometry.coordinate x)
-
 end HyperbolicMetric
 
 namespace HyperbolicLocalChart
@@ -58,67 +49,6 @@ theorem storedCoordinate_continuousOnDomain :
       U.local_isometry.coordinate x.property).mp
       (U.coordinate_continuousWithinAt x.property)
 
-/--
-%%handwave
-name: Continuity of the derivative of a stored local map
-statement:
-  Let \(U\) be a hyperbolic local chart and let \(f\) be its holomorphic complex coordinate map. The derivative \(f'\) is continuous on the coordinate domain of \(U\).
-proof:
-  Holomorphicity makes \(f\) differentiable on the open coordinate domain, hence \(C^1\) there. The derivative of a \(C^1\) function is continuous.
--/
-theorem storedLocalMap_deriv_continuousOn_coordinateDomain :
-    ContinuousOn
-      (deriv (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ)))
-      U.local_isometry.coordinateDomain := by
-  have hdiff :
-      DifferentiableOn ℂ
-        (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ))
-        U.local_isometry.coordinateDomain := by
-    intro z hz
-    exact (U.local_isometry.holomorphic_on_domain z hz).differentiableWithinAt
-  have hcontDiff :
-      ContDiffOn ℂ (1 : WithTop ℕ∞)
-        (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ))
-        U.local_isometry.coordinateDomain :=
-    hdiff.contDiffOn U.local_isometry.isOpen_coordinateDomain
-  exact
-    hcontDiff.continuousOn_deriv_of_isOpen
-      U.local_isometry.isOpen_coordinateDomain le_rfl
-
-/--
-%%handwave
-name: Continuity of the stored-coordinate derivative
-statement:
-  Let \(U\) be a hyperbolic local chart with stored coordinate \(z_U\) and holomorphic local map \(f_U\). Then \(x \mapsto f_U'(z_U(x))\) is continuous on the domain of \(U\).
-proof:
-  The derivative \(f_U'\) is continuous on the coordinate domain, and the stored coordinate \(z_U\) is continuous on the chart domain. Compose these two maps.
--/
-theorem storedCoordinateDerivative_continuousOnDomain :
-    Continuous
-      (fun x : {x : X // x ∈ U.domain} ↦
-        HyperbolicMetric.hyperbolicLocalChartStoredCoordinateDerivativeAt U
-          (x : X)) := by
-  rw [continuous_iff_continuousAt]
-  intro x
-  have hderivAt :
-      ContinuousAt
-        (deriv (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ)))
-        (U.local_isometry.coordinate (x : X)) :=
-    U.storedLocalMap_deriv_continuousOn_coordinateDomain.continuousAt
-      (U.local_isometry.isOpen_coordinateDomain.mem_nhds
-        (U.local_isometry.coordinate_mem_domain (x : X) x.property))
-  have hcoordAt :
-      ContinuousAt
-        (fun y : {y : X // y ∈ U.domain} ↦
-          U.local_isometry.coordinate (y : X)) x :=
-    U.storedCoordinate_continuousOnDomain.continuousAt
-  simpa [Function.comp_def,
-    HyperbolicMetric.hyperbolicLocalChartStoredCoordinateDerivativeAt] using
-    (ContinuousAt.comp'
-      (f := fun y : {y : X // y ∈ U.domain} ↦
-        U.local_isometry.coordinate (y : X))
-      hderivAt hcoordAt)
-
 end HyperbolicLocalChart
 
 namespace HyperbolicMetric
@@ -129,6 +59,13 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 The target local chart written in the fixed source coordinate stored by the
 left chart `U`.  This is the common-coordinate expression needed for honest
 first-order comparisons on an overlap; no moving `chartAt` appears here.
+
+%%handwave
+name: The target local chart written in the fixed source coordinate stored by the left chart U
+statement:
+  For hyperbolic local charts $U,V$, define the fixed-source expression
+  $F_{U,V}(z)=V(U_{\mathrm{coord}}^{-1}(z))$, where the inverse is taken in
+  the ambient complex chart stored by $U$.
 -/
 def hyperbolicLocalChartLeftSourceCoordinateExpression
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g) : ℂ → ℂ :=
@@ -137,6 +74,13 @@ def hyperbolicLocalChartLeftSourceCoordinateExpression
 /--
 Derivative of `V` after writing it in the fixed source coordinate stored by
 `U`.
+
+%%handwave
+name: Derivative of V after writing it in the fixed source coordinate stored by U
+statement:
+  For $x\in X$, define
+  $D_{U,V}(x)=F_{U,V}'(U_{\mathrm{coord}}(x))$, the derivative of the
+  $V$-chart expressed in the fixed coordinate stored by $U$.
 -/
 def hyperbolicLocalChartLeftSourceCoordinateDerivativeAt
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g) (x : X) : ℂ :=
@@ -146,6 +90,13 @@ def hyperbolicLocalChartLeftSourceCoordinateDerivativeAt
 /--
 The fixed source-coordinate overlap on which `V` written in `U`'s source
 coordinate is the honest coordinate expression of the overlap map.
+
+%%handwave
+name: The fixed source-coordinate overlap on which V written in U's source coordinate is the honest coordinate expression of the overlap map
+statement:
+  For hyperbolic local charts $U,V$, define $\Omega_{U,V}$ to be the points
+  in the target of the stored chart of $U$ whose inverse images lie in
+  $\operatorname{dom}U\cap\operatorname{dom}V$.
 -/
 def hyperbolicLocalChartLeftSourceCoordinateOverlap
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g) : Set ℂ :=
@@ -198,6 +149,13 @@ theorem hyperbolicLocalChart_coordinate_mem_leftSourceCoordinateOverlap
 Regularity target for fixed-source coordinate expressions.  This is the
 mathematical derivative-continuity input: the target chart written in the
 left chart's fixed coordinate is `C¹` on the coordinate overlap.
+
+%%handwave
+name: First-order regularity of fixed-source coordinate expressions
+statement:
+  For every hyperbolic metric and every pair of its local charts $U,V$, the
+  fixed-source expression $F_{U,V}$ is of class $C^1$ on
+  $\Omega_{U,V}$.
 -/
 def HyperbolicLocalChartLeftSourceCoordinateExpressionContDiffOnTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
@@ -476,6 +434,13 @@ theorem hyperbolicLocalChart_chartAt_to_storedChartTransitionDerivative_ne
 /--
 Continuity target for the fixed-left-source derivative itself, before adding
 the real-Mobius multiplier on the right side of the first-order equation.
+
+%%handwave
+name: Continuity of the fixed-left-source derivative itself, before adding the real-Möbius multiplier on the right side of the first-order equation
+statement:
+  For every hyperbolic metric and local charts $U,V$, the function
+  $x\mapsto D_{U,V}(x)$ is continuous on
+  $\operatorname{dom}U\cap\operatorname{dom}V$.
 -/
 def HyperbolicLocalChartLeftSourceCoordinateDerivativeContinuousOnOverlapTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=

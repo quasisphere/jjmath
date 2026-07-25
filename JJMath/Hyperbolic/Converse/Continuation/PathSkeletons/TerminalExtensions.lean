@@ -147,401 +147,6 @@ end TerminalBranchDataEq
 
 omit [RiemannSurface X] in
 /--
-%%handwave
-name:
-  Changing the terminal chart preserves the terminal value
-statement:
-  Let $A$ be local transition data at the endpoint from the terminal chart of a skeleton to another chart. After adjoining this chart change as the final handoff, the terminal value is unchanged.
-proof:
-  The new accumulated representative is $M A^{-1}$ and the new chart coordinate is $A\cdot\phi(x)$; associativity and cancellation give $(M A^{-1})\cdot(A\cdot\phi(x))=M\cdot\phi(x)$.
--/
-@[simp]
-theorem terminalChartChangeSkeleton_terminalValue_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x) :
-    (S.terminalChartChangeSkeleton c hc T).terminalValue =
-      S.terminalValue := by
-  change
-    realMobiusRepresentativeAction
-        (S.terminalChartChangeSkeleton c hc T).terminalMobius
-        ((localModels.chartAt
-          (S.terminalChartChangeSkeleton c hc T).terminalCenter).toUpperHalfPlane x) =
-      realMobiusRepresentativeAction S.terminalMobius
-        ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x)
-  rw [S.terminalChartChangeSkeleton_terminalMobius_eq c hc T,
-    S.terminalChartChangeSkeleton_terminalCenter c hc T]
-  exact localRealMobiusTransitionData_accumulated_handoff
-    T T.mem_neighborhood S.terminalMobius
-
-omit [RiemannSurface X] in
-/--
-After a terminal chart change, the terminal branch formula agrees with the
-old one on the actual neighborhood where the final local transition is valid.
-
-%%handwave
-name:
-  A terminal chart change preserves the branch formula locally
-statement:
-  If $A$ is a local transition from the old terminal chart to a new chart, then after adjoining this transition the new and old terminal branch formulas agree at every point $z$ of the transition neighborhood.
-proof:
-  On that neighborhood the new coordinate is $A$ applied to the old coordinate, while the new accumulated representative is $M A^{-1}$; the two $A$ factors cancel.
--/
-theorem terminalChartChangeSkeleton_terminalFormulaAt_eq_of_mem
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    {z : X} (hz : z ∈ T.neighborhood) :
-    (S.terminalChartChangeSkeleton c hc T).terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  change
-    realMobiusRepresentativeAction
-        (S.terminalChartChangeSkeleton c hc T).terminalMobius
-        ((localModels.chartAt
-          (S.terminalChartChangeSkeleton c hc T).terminalCenter).toUpperHalfPlane z) =
-      realMobiusRepresentativeAction S.terminalMobius
-        ((localModels.chartAt S.terminalCenter).toUpperHalfPlane z)
-  rw [S.terminalChartChangeSkeleton_terminalMobius_eq c hc T,
-    S.terminalChartChangeSkeleton_terminalCenter c hc T]
-  exact localRealMobiusTransitionData_accumulated_handoff
-    T hz S.terminalMobius
-
-omit [RiemannSurface X] in
-/--
-The automatic endpoint transition from the terminal chart of one same-path
-skeleton to the terminal chart of another.
--/
-noncomputable def terminalChartChangeDataTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    HyperbolicLocalChart.LocalRealMobiusTransitionData
-      (localModels.chartAt S.terminalCenter)
-      (localModels.chartAt T.terminalCenter)
-      x := by
-  classical
-  exact Classical.choice
-    (localModels.transition_localRealMobius S.terminalCenter T.terminalCenter
-      x ⟨S.terminal_endpoint_mem_domain, T.terminal_endpoint_mem_domain⟩)
-
-omit [RiemannSurface X] in
-/--
-Change the terminal chart of `S` to the terminal chart of `T`, inserting only
-a final zero-length handoff at the endpoint.
--/
-noncomputable def terminalChartChangeSkeletonTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-  S.terminalChartChangeSkeleton T.terminalCenter
-    T.terminal_endpoint_mem_domain (S.terminalChartChangeDataTo T)
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Automatic chart change reaches the prescribed terminal center
-statement:
-  Changing the terminal chart of a skeleton $S$ to the terminal chart selected by a same-path skeleton $T$ produces a skeleton whose terminal center is the terminal center of $T$.
-proof:
-  The chart-change construction assigns the prescribed center to its new final vertex.
--/
-@[simp]
-theorem terminalChartChangeSkeletonTo_terminalCenter
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    (S.terminalChartChangeSkeletonTo T).terminalCenter = T.terminalCenter := by
-  simp [terminalChartChangeSkeletonTo]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Automatic terminal chart change preserves the terminal value
-statement:
-  Replacing the terminal chart of $S$ by the terminal chart of another same-path skeleton leaves the terminal value of $S$ unchanged.
-proof:
-  Apply terminal-value invariance of a chart change to the automatically selected local transition at the common endpoint.
--/
-@[simp]
-theorem terminalChartChangeSkeletonTo_terminalValue_eq
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    (S.terminalChartChangeSkeletonTo T).terminalValue = S.terminalValue := by
-  simp [terminalChartChangeSkeletonTo]
-
-omit [RiemannSurface X] in
-/--
-The automatic chart-change-to skeleton has the same adjusted terminal PSL
-class as the original skeleton.
-
-%%handwave
-name:
-  Adjusted terminal class after automatic chart change
-statement:
-  If $A$ is the automatically chosen transition from the terminal chart of $S$ to that of $T$, then the chart-changed skeleton satisfies $[M_{S'}A]=[M_S]$.
-proof:
-  The chart-change construction sets $M_{S'}=M_SA^{-1}$; project to $\mathrm{PSL}_2(\mathbb R)$ and cancel $A^{-1}A$.
--/
-theorem terminalChartChangeSkeletonTo_adjustedTerminalMobius_projection_eq
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    realMobiusProjection
-        ((S.terminalChartChangeSkeletonTo T).terminalMobius *
-          (S.terminalChartChangeDataTo T).representative) =
-      realMobiusProjection S.terminalMobius := by
-  simp [terminalChartChangeSkeletonTo]
-
-omit [RiemannSurface X] in
-/--
-The automatic terminal chart change agrees with the old terminal branch on
-the endpoint-transition neighborhood.
-
-%%handwave
-name:
-  Local formula invariance under automatic terminal chart change
-statement:
-  On the neighborhood of the automatically chosen transition from the terminal chart of $S$ to that of a same-path skeleton $T$, the terminal formula of the chart-changed skeleton agrees with the terminal formula of $S$.
-proof:
-  This is local terminal-formula invariance for a chart change applied to the selected endpoint transition.
--/
-theorem terminalChartChangeSkeletonTo_terminalFormulaAt_eq_of_mem
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {z : X} (hz : z ∈ (S.terminalChartChangeDataTo T).neighborhood) :
-    (S.terminalChartChangeSkeletonTo T).terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  simpa [terminalChartChangeSkeletonTo] using
-    S.terminalChartChangeSkeleton_terminalFormulaAt_eq_of_mem
-      T.terminalCenter T.terminal_endpoint_mem_domain
-      (S.terminalChartChangeDataTo T) hz
-
-omit [RiemannSurface X] in
-/--
-Append a duplicate terminal vertex to a based weak handoff skeleton over the
-same path.  The new final handoff is the identity transition in the terminal
-chart, so terminal values are preserved.
--/
-noncomputable def terminalStutterSkeleton
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p where
-  length := S.length + 1
-  length_pos := Nat.succ_pos S.length
-  parameterAt := S.terminalStutterParameterAt
-  parameterAt_zero := S.terminalStutterParameterAt_zero
-  parameterAt_last := S.terminalStutterParameterAt_last
-  parameterAt_mono := S.terminalStutterParameterAt_mono
-  centerAt := S.terminalStutterCenterAt
-  sample_mem_model_domain := S.terminalStutter_sample_mem_model_domain
-  path_segment_mem_model_domain := S.terminalStutter_path_segment_mem_model_domain
-  terminal_endpoint_mem_domain := S.terminalStutter_terminal_endpoint_mem_domain
-  transitionAt := by
-    intro k
-    by_cases hk : (k : ℕ) < S.length
-    · let k₀ : Fin S.length := ⟨k, hk⟩
-      have hleft :
-          k.castSucc = (k₀.castSucc : Fin (S.length + 1)).castSucc := by
-        ext
-        rfl
-      have hright : k.succ = (k₀.succ : Fin (S.length + 1)).castSucc := by
-        ext
-        rfl
-      have hU :
-          localModels.chartAt (S.terminalStutterCenterAt k.castSucc) =
-            localModels.chartAt (S.centerAt k₀.castSucc) := by
-        rw [hleft]
-        simp
-      have hV :
-          localModels.chartAt (S.terminalStutterCenterAt k.succ) =
-            localModels.chartAt (S.centerAt k₀.succ) := by
-        rw [hright]
-        simp
-      have hpath :
-          p (S.terminalStutterParameterAt k.succ) =
-            p (S.parameterAt k₀.succ) := by
-        rw [hright, S.terminalStutterParameterAt_castSucc]
-      exact localRealMobiusTransitionData_congr hU hV hpath
-        (S.transitionAt k₀)
-    · have hk_last : k = Fin.last S.length := by
-        ext
-        exact Nat.le_antisymm (Nat.le_of_lt_succ k.isLt)
-          (Nat.le_of_not_gt hk)
-      subst k
-      have hx :
-          p (S.terminalStutterParameterAt (Fin.last (S.length + 1))) ∈
-            (localModels.chartAt S.terminalCenter).domain := by
-        simpa [S.terminalStutterCenterAt_last] using
-          S.terminalStutter_sample_mem_model_domain
-            (Fin.last (S.length + 1))
-      have hU :
-          localModels.chartAt
-              (S.terminalStutterCenterAt
-                ((Fin.last S.length : Fin (S.length + 1)).castSucc)) =
-            localModels.chartAt S.terminalCenter := by
-        simp [terminalCenter]
-      have hV :
-          localModels.chartAt
-              (S.terminalStutterCenterAt
-                ((Fin.last S.length : Fin (S.length + 1)).succ)) =
-            localModels.chartAt S.terminalCenter := by
-        rw [fin_last_succ_eq_last]
-        simp
-      have hpoint :
-          p (S.terminalStutterParameterAt
-              ((Fin.last S.length : Fin (S.length + 1)).succ)) =
-            p (S.terminalStutterParameterAt (Fin.last (S.length + 1))) := by
-        rw [fin_last_succ_eq_last]
-      exact localRealMobiusTransitionData_congr hU hV hpoint
-        (localRealMobiusTransitionData_self
-          (localModels.chartAt S.terminalCenter) hx)
-  initialTransition := by
-    exact localRealMobiusTransitionData_congr rfl
-      (by simp [S.terminalStutterCenterAt_zero]) rfl S.initialTransition
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Terminal stuttering preserves the terminal center
-statement:
-  Adding a duplicate final vertex at parameter $1$ with the same terminal chart leaves the terminal center unchanged.
-proof:
-  The new last center is defined to be the old terminal center.
--/
-@[simp]
-theorem terminalStutterSkeleton_terminalCenter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalStutterSkeleton.terminalCenter = S.terminalCenter := by
-  simp [terminalStutterSkeleton, terminalCenter]
-
-omit [RiemannSurface X] in
-/--
-Along the old part of a terminal-stutter skeleton, the accumulated Mobius
-product agrees with the original skeleton.
-
-%%handwave
-name:
-  Terminal stuttering preserves accumulated products on the old prefix
-statement:
-  If $S'$ is obtained from $S$ by duplicating the terminal vertex, then $M_j(S')=M_j(S)$ for every $j$ up to the original length.
-proof:
-  Induct on $j$; the initial transition and every old handoff representative are transported unchanged, so the same product recurrence applies.
--/
-theorem terminalStutterSkeleton_accumulatedMobiusNat_eq_of_le
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ∀ n : ℕ, n ≤ S.length →
-      S.terminalStutterSkeleton.accumulatedMobiusNat n =
-        S.accumulatedMobiusNat n := by
-  intro n hn
-  induction n with
-  | zero =>
-      simp [terminalStutterSkeleton, accumulatedMobiusNat]
-  | succ n ih =>
-      have hnlt : n < S.length := Nat.succ_le_iff.mp hn
-      have hnle : n ≤ S.length := Nat.le_of_lt hnlt
-      let T := S.terminalStutterSkeleton
-      have hTstep :
-          T.accumulatedMobiusNat (n + 1) =
-            T.accumulatedMobiusNat n *
-              (T.transitionAt ⟨n, Nat.lt_succ_of_lt hnlt⟩).representative⁻¹ :=
-        T.accumulatedMobiusNat_succ_of_lt (Nat.lt_succ_of_lt hnlt)
-      have hSstep :
-          S.accumulatedMobiusNat (n + 1) =
-            S.accumulatedMobiusNat n *
-              (S.transitionAt ⟨n, hnlt⟩).representative⁻¹ :=
-        S.accumulatedMobiusNat_succ_of_lt hnlt
-      have htrans :
-          (T.transitionAt ⟨n, Nat.lt_succ_of_lt hnlt⟩).representative =
-            (S.transitionAt ⟨n, hnlt⟩).representative := by
-        simp [T, terminalStutterSkeleton, hnlt]
-      rw [hTstep, ih hnle, htrans, hSstep]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Terminal stuttering preserves the terminal Möbius representative
-statement:
-  Duplicating the terminal vertex with an identity handoff leaves the terminal accumulated representative unchanged.
-proof:
-  The accumulated product through the old final vertex is unchanged, and the added transition representative is the identity.
--/
-@[simp]
-theorem terminalStutterSkeleton_terminalMobius_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalStutterSkeleton.terminalMobius = S.terminalMobius := by
-  let T := S.terminalStutterSkeleton
-  have hprefix :
-      T.accumulatedMobiusNat S.length = S.accumulatedMobiusNat S.length :=
-    S.terminalStutterSkeleton_accumulatedMobiusNat_eq_of_le S.length le_rfl
-  have hstep :
-      T.accumulatedMobiusNat (S.length + 1) =
-        T.accumulatedMobiusNat S.length *
-          (T.transitionAt (Fin.last S.length)).representative⁻¹ := by
-    exact T.accumulatedMobiusNat_succ_of_lt (Nat.lt_succ_self S.length)
-  have htrans :
-      (T.transitionAt (Fin.last S.length)).representative = 1 := by
-    simp [T, terminalStutterSkeleton, localRealMobiusTransitionData_self]
-  change T.accumulatedMobiusNat (S.length + 1) =
-    S.accumulatedMobiusNat S.length
-  rw [hstep, htrans, hprefix]
-  simp
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Terminal stuttering preserves the terminal value
-statement:
-  Adding a duplicate terminal vertex with identity transition does not alter the terminal value.
-proof:
-  Both the terminal center and terminal accumulated representative are preserved, so the defining endpoint evaluation is unchanged.
--/
-@[simp]
-theorem terminalStutterSkeleton_terminalValue_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalStutterSkeleton.terminalValue = S.terminalValue := by
-  simp [terminalValue]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Terminal stuttering preserves the complete terminal formula
-statement:
-  Adding a duplicate terminal vertex with identity transition leaves the terminal branch formula unchanged at every $z\in X$.
-proof:
-  The stutter preserves both the terminal center and the terminal accumulated representative; substitute these equalities in the formula.
--/
-@[simp]
-theorem terminalStutterSkeleton_terminalFormulaAt_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (z : X) :
-    S.terminalStutterSkeleton.terminalFormulaAt z = S.terminalFormulaAt z := by
-  exact
-    S.terminalStutterSkeleton.terminalFormulaAt_eq_of_terminalMobius_eq_terminalCenter_eq
-      S
-      S.terminalStutterSkeleton_terminalMobius_eq
-      S.terminalStutterSkeleton_terminalCenter
-      z
-
-omit [RiemannSurface X] in
-/--
 A skeleton over a path that is pointwise constant at the basepoint, with its
 terminal chart and terminal Mobius normalized to match the initial branch of a
 given suffix skeleton.
@@ -549,6 +154,14 @@ given suffix skeleton.
 This is the initial-prefix analogue of terminal stuttering.  It is used when
 a raw endpoint cut contains one or more constant basepoint pieces before the
 actual path.
+
+%%handwave
+name: A skeleton over a path that is pointwise constant at the basepoint, with its terminal chart and terminal Möbius normalized to match the initial branch of a given suffix skeleton
+statement:
+  A skeleton over a path that is pointwise constant at the basepoint, with its terminal chart
+  and terminal Möbius normalized to match the initial branch of a given suffix skeleton. This is
+  the initial-prefix analogue of terminal stuttering. It is used when a raw endpoint cut
+  contains one or more constant basepoint pieces before the actual path.
 -/
 noncomputable def constantPrefixSkeletonForInitialChart
     {x : X} {p : Path x₀ x}
@@ -753,42 +366,6 @@ theorem exists_terminalBranchDataEq_after_constantPrefix_trans
 
 omit [RiemannSurface X] in
 /--
-Appending a pointwise-constant terminal suffix preserves the terminal value.
-
-%%handwave
-name:
-  A constant terminal suffix does not change terminal value
-statement:
-  If $\sigma:x\rightsquigarrow x$ is pointwise constant and $C$ is a skeleton over $p:x_0\rightsquigarrow x$, then there exists a skeleton over $p*\sigma$ with terminal value equal to that of $C$.
-proof:
-  Extend $C$ along $\sigma$ inside its terminal chart. The extension has the same terminal formula, and evaluation at the unchanged endpoint $x$ gives equality of terminal values.
--/
-theorem exists_terminalValue_eq_after_constantSuffix_trans
-    {x : X} {p : Path x₀ x}
-    (C : PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {σ : Path x x} (hσ : ∀ t : unitInterval, σ t = x) :
-    ∃ (S :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-          (p.trans σ)),
-      S.terminalValue = C.terminalValue := by
-  have hσmem :
-      ∀ t : unitInterval,
-        σ t ∈ (localModels.chartAt C.terminalCenter).domain := by
-    intro t
-    rw [hσ t]
-    exact C.terminal_endpoint_mem_domain
-  refine ⟨C.terminalExtensionAlongSkeleton σ hσmem, ?_⟩
-  calc
-    (C.terminalExtensionAlongSkeleton σ hσmem).terminalValue =
-        (C.terminalExtensionAlongSkeleton σ hσmem).terminalFormulaAt x := by
-          exact
-            (C.terminalExtensionAlongSkeleton σ hσmem).terminalFormulaAt_endpoint.symm
-    _ = C.terminalFormulaAt x := by
-          exact C.terminalExtensionAlongSkeleton_terminalFormulaAt_eq σ hσmem x
-    _ = C.terminalValue := C.terminalFormulaAt_endpoint
-
-omit [RiemannSurface X] in
-/--
 Appending a pointwise-constant terminal suffix preserves terminal branch data.
 
 %%handwave
@@ -819,280 +396,17 @@ theorem exists_terminalBranchDataEq_after_constantSuffix_trans
   · rw [C.terminalExtensionAlongSkeleton_terminalMobius_eq σ hσmem]
 
 omit [RiemannSurface X] in
-/-- Iterate terminal-stutter refinements `n` times. -/
-noncomputable def terminalStutterIterateSkeleton
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ℕ → PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  | 0 => S
-  | n + 1 => (terminalStutterIterateSkeleton S n).terminalStutterSkeleton
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Zero terminal stutters leave the skeleton unchanged
-statement:
-  Iterating the terminal-vertex duplication operation zero times returns the original skeleton.
-proof:
-  This is the zero clause of the iteration.
--/
-@[simp]
-theorem terminalStutterIterateSkeleton_zero
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalStutterIterateSkeleton 0 = S :=
-  rfl
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Successor recursion for iterated terminal stuttering
-statement:
-  Applying $n+1$ terminal stutters is the same as applying $n$ stutters and then duplicating the resulting terminal vertex once more.
-proof:
-  This is the successor clause of the iteration.
--/
-@[simp]
-theorem terminalStutterIterateSkeleton_succ
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (n : ℕ) :
-    S.terminalStutterIterateSkeleton (n + 1) =
-      (S.terminalStutterIterateSkeleton n).terminalStutterSkeleton :=
-  rfl
-
-omit [RiemannSurface X] in
-/-- Iterated terminal-stutter refinements preserve terminal value.
-
-%%handwave
-name:
-  Iterated terminal stuttering preserves the terminal value
-statement:
-  For every $n\ge0$, duplicating the terminal vertex $n$ times leaves the terminal value unchanged.
-proof:
-  Induct on $n$ and use terminal-value invariance of one stutter in the successor step.
--/
-theorem terminalStutterIterateSkeleton_terminalValue_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ∀ n : ℕ,
-      (S.terminalStutterIterateSkeleton n).terminalValue = S.terminalValue := by
-  intro n
-  induction n with
-  | zero =>
-      rfl
-  | succ n ih =>
-      simp [terminalStutterIterateSkeleton_succ, ih]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Length after iterated terminal stuttering
-statement:
-  If a skeleton has length $\ell$, then after $n$ terminal stutters its length is $\ell+n$.
-proof:
-  Induct on $n$; each stutter adds exactly one segment.
--/
-@[simp]
-theorem terminalStutterIterateSkeleton_length
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ∀ n : ℕ, (S.terminalStutterIterateSkeleton n).length = S.length + n := by
-  intro n
-  induction n with
-  | zero =>
-      simp
-  | succ n ih =>
-      rw [terminalStutterIterateSkeleton_succ]
-      simp [terminalStutterSkeleton, ih, Nat.add_assoc]
-
-omit [RiemannSurface X] in
-/--
-Iterated terminal stutters preserve every original subdivision parameter in
-the initial prefix.
-
-%%handwave
-name:
-  Original parameters survive iterated terminal stuttering
-statement:
-  After any number $m$ of terminal stutters, every original parameter $t_j$ with $0\le j\le\ell$ remains the parameter at index $j$.
-proof:
-  Induct on $m$. One terminal stutter embeds all previous vertices unchanged, so the induction hypothesis transfers to the new skeleton.
--/
-theorem terminalStutterIterateSkeleton_parameterAt_prefix
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ∀ m n
-      (hnOld : n < S.length + 1)
-      (hnNew : n < (S.terminalStutterIterateSkeleton m).length + 1),
-      (S.terminalStutterIterateSkeleton m).parameterAt ⟨n, hnNew⟩ =
-        S.parameterAt ⟨n, hnOld⟩ := by
-  intro m
-  induction m with
-  | zero =>
-      intro n hnOld hnNew
-      rfl
-  | succ m ih =>
-      intro n hnOld hnNew
-      let R := S.terminalStutterIterateSkeleton m
-      have hnR : n < R.length + 1 := by
-        rw [terminalStutterIterateSkeleton_length] at hnNew
-        rw [terminalStutterIterateSkeleton_length]
-        omega
-      have hidx :
-          (⟨n, hnNew⟩ : Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-            ((⟨n, hnR⟩ : Fin (R.length + 1)).castSucc) := by
-        ext
-        rfl
-      change R.terminalStutterSkeleton.parameterAt
-          (⟨n, hnNew⟩ :
-            Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-        S.parameterAt ⟨n, hnOld⟩
-      rw [hidx]
-      change R.terminalStutterParameterAt
-          ((⟨n, hnR⟩ : Fin (R.length + 1)).castSucc) =
-        S.parameterAt ⟨n, hnOld⟩
-      rw [R.terminalStutterParameterAt_castSucc ⟨n, hnR⟩]
-      exact ih n hnOld hnR
-
-omit [RiemannSurface X] in
-/--
-Every parameter added by iterated terminal stutters is the terminal parameter
-`1`.
-
-%%handwave
-name:
-  Every stuttered tail parameter equals one
-statement:
-  After iterating terminal stutters, every parameter whose index is at least the original length is $1$.
-proof:
-  Induct on the number of stutters. Existing tail vertices keep their value $1$, and the only new vertex is the last vertex, also assigned $1$.
--/
-theorem terminalStutterIterateSkeleton_parameterAt_tail
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    ∀ m n
-      (_hTail : S.length ≤ n)
-      (hnNew : n < (S.terminalStutterIterateSkeleton m).length + 1),
-      (S.terminalStutterIterateSkeleton m).parameterAt ⟨n, hnNew⟩ = 1 := by
-  intro m
-  induction m with
-  | zero =>
-      intro n _hTail hnNew
-      have hnNew' : n < S.length + 1 := by
-        simpa using hnNew
-      have hn_eq : n = S.length := by omega
-      subst n
-      simpa using S.parameterAt_last
-  | succ m ih =>
-      intro n hTail hnNew
-      let R := S.terminalStutterIterateSkeleton m
-      by_cases hnR : n < R.length + 1
-      · have hidx :
-            (⟨n, hnNew⟩ :
-              Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-              ((⟨n, hnR⟩ : Fin (R.length + 1)).castSucc) := by
-          ext
-          rfl
-        change R.terminalStutterSkeleton.parameterAt
-            (⟨n, hnNew⟩ :
-              Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-          1
-        rw [hidx]
-        change R.terminalStutterParameterAt
-            ((⟨n, hnR⟩ : Fin (R.length + 1)).castSucc) =
-          1
-        rw [R.terminalStutterParameterAt_castSucc ⟨n, hnR⟩]
-        exact ih n hTail hnR
-      · have hn_last : n = R.length + 1 := by
-          have hn_bound : n < R.length + 2 := by
-            have hLenSucc :
-                (S.terminalStutterIterateSkeleton (m + 1)).length =
-                  R.length + 1 := by
-              change R.terminalStutterSkeleton.length = R.length + 1
-              simp [terminalStutterSkeleton]
-            omega
-          omega
-        subst n
-        have hidx :
-            (⟨R.length + 1, hnNew⟩ :
-              Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-              (Fin.last (R.length + 1) :
-                Fin (R.terminalStutterSkeleton.length + 1)) := by
-          ext
-          rfl
-        change R.terminalStutterSkeleton.parameterAt
-            (⟨R.length + 1, hnNew⟩ :
-              Fin ((S.terminalStutterIterateSkeleton (m + 1)).length + 1)) =
-          1
-        rw [hidx]
-        exact R.terminalStutterParameterAt_last
-
-omit [RiemannSurface X] in
-/--
-If `T` has the same initial subdivision parameters as `S` and only terminal
-duplicates after `S.length`, then iterated terminal stuttering of `S` aligns
-its parameter list with `T`.
-
-%%handwave
-name:
-  Terminal stuttering aligns a matching prefix with a terminal tail
-statement:
-  Suppose $\ell_S\le\ell_T$, the parameters of $S$ and $T$ agree through index $\ell_S$, and every remaining parameter of $T$ equals $1$. After $\ell_T-\ell_S$ terminal stutters, $S$ has length $\ell_T$ and agrees with $T$ at every subdivision parameter.
-proof:
-  The length formula gives the desired length. At an index in the old prefix use preservation of original parameters and the prefix hypothesis; at a tail index both the stuttered skeleton and $T$ have parameter $1$.
--/
-theorem terminalStutterIterateSkeleton_parameterAt_eq_of_prefix_and_tail
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLe : S.length ≤ T.length)
-    (hPrefix :
-      ∀ n (hnS : n ≤ S.length) (hnT : n ≤ T.length),
-        S.parameterAt ⟨n, Nat.lt_succ_of_le hnS⟩ =
-          T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩)
-    (hTail :
-      ∀ n (_hSn : S.length ≤ n) (hnT : n ≤ T.length),
-        T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩ = 1) :
-    let U := S.terminalStutterIterateSkeleton (T.length - S.length)
-    U.length = T.length ∧
-      ∀ n (hnU : n ≤ U.length) (hnT : n ≤ T.length),
-        U.parameterAt ⟨n, Nat.lt_succ_of_le hnU⟩ =
-          T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩ := by
-  classical
-  intro U
-  have hLen : U.length = T.length := by
-    simp [U]
-    omega
-  refine ⟨hLen, ?_⟩
-  intro n hnU hnT
-  by_cases hnPrefix : n ≤ S.length
-  · have hnOld : n < S.length + 1 := Nat.lt_succ_of_le hnPrefix
-    have hnNew : n < U.length + 1 := Nat.lt_succ_of_le hnU
-    have hU :
-        U.parameterAt ⟨n, hnNew⟩ =
-          S.parameterAt ⟨n, hnOld⟩ := by
-      simpa [U] using
-        S.terminalStutterIterateSkeleton_parameterAt_prefix
-          (T.length - S.length) n hnOld hnNew
-    simpa using hU.trans (hPrefix n hnPrefix hnT)
-  · have hSn : S.length ≤ n := by omega
-    have hnNew : n < U.length + 1 := Nat.lt_succ_of_le hnU
-    have hU :
-        U.parameterAt ⟨n, hnNew⟩ = 1 := by
-      simpa [U] using
-        S.terminalStutterIterateSkeleton_parameterAt_tail
-          (T.length - S.length) n hSn hnNew
-    rw [hU, hTail n hSn hnT]
-
-omit [RiemannSurface X] in
 /--
 The vertex at which an interior segment split is inserted.
 
 For a segment `k`, this is the new vertex between the old vertices
 `k.castSucc` and `k.succ`.
+
+%%handwave
+name: The vertex at which an interior segment split is inserted
+statement:
+  The vertex at which an interior segment split is inserted. For a segment k, this is the new
+  vertex between the old vertices the old embedded index and its successor.
 -/
 def segmentSplitInsertVertex
     (S :
@@ -1106,6 +420,12 @@ Subdivision parameters after inserting a point `τ` into segment `k`.
 
 The old vertices are embedded by `succAbove`, while the inserted vertex is
 assigned parameter `τ`.
+
+%%handwave
+name: Subdivision parameters after inserting a point τ into segment k
+statement:
+  Subdivision parameters after inserting a point τ into segment k. The old vertices are embedded
+  by the order-preserving index embedding, while the inserted vertex is assigned parameter τ.
 -/
 noncomputable def segmentSplitParameterAt
     (S :
@@ -1122,6 +442,12 @@ omit [RiemannSurface X] in
 /--
 Centers after inserting a point `τ` into segment `k`.  The inserted vertex
 uses the same chart as the left half of the split segment.
+
+%%handwave
+name: Centers after inserting a point τ into segment k
+statement:
+  Centers after inserting a point τ into segment k. The inserted vertex uses the same chart as
+  the left half of the split segment.
 -/
 noncomputable def segmentSplitCenterAt
     (S :
@@ -1792,6 +1118,12 @@ omit [RiemannSurface X] in
 /--
 The new left handoff created by a segment split is the identity transition in
 the chart already controlling the original segment.
+
+%%handwave
+name: The new left handoff created by a segment split is the identity transition in the chart already controlling the original segment
+statement:
+  The new left handoff created by a segment split is the identity transition in the chart
+  already controlling the original segment.
 -/
 def segmentSplitLeftIdentityTransition
     (S :
@@ -1832,6 +1164,12 @@ omit [RiemannSurface X] in
 /--
 The new right handoff created by a segment split is the original handoff for
 the split segment.
+
+%%handwave
+name: The new right handoff created by a segment split is the original handoff for the split segment
+statement:
+  The new right handoff created by a segment split is the original handoff for the split
+  segment.
 -/
 def segmentSplitRightOriginalTransition
     (S :
@@ -1864,39 +1202,18 @@ theorem segmentSplitRightOriginalTransition_representative
 
 omit [RiemannSurface X] in
 /--
-The two transition factors created by a segment split multiply to the original
-transition factor.
-
-%%handwave
-name:
-  The two split handoffs reproduce the original transition factor
-statement:
-  If the original update is $M\mapsto MT_k^{-1}$, then the updates across the two halves of a split segment satisfy $(M1^{-1})T_k^{-1}=MT_k^{-1}$.
-proof:
-  Substitute the identity representative for the new left handoff and the original representative for the new right handoff, then simplify.
--/
-theorem segmentSplit_transitionFactors_eq_original
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (M : RealMobiusRepresentative) :
-    (M *
-        (S.segmentSplitLeftIdentityTransition k τ hτ_left hτ_right).representative⁻¹) *
-        (S.segmentSplitRightOriginalTransition k).representative⁻¹ =
-      M * (S.transitionAt k).representative⁻¹ := by
-  rw [S.segmentSplitLeftIdentityTransition_representative k τ hτ_left hτ_right,
-    S.segmentSplitRightOriginalTransition_representative k]
-  simp
-
-omit [RiemannSurface X] in
-/--
 Transition data for every handoff of a segment-split skeleton.
 
 The split segment contributes two transitions: an identity transition into the
 inserted vertex and the original transition out of it. All other handoffs are
 transported from the old skeleton.
+
+%%handwave
+name: Transition data for every handoff of a segment-split skeleton
+statement:
+  Transition data for every handoff of a segment-split skeleton. The split segment contributes
+  two transitions: an identity transition into the inserted vertex and the original transition
+  out of it. All other handoffs are transported from the old skeleton.
 -/
 def segmentSplitTransitionAt
     (S :
@@ -2024,6 +1341,13 @@ Split a single segment of a based weak handoff skeleton.
 The inserted vertex uses the chart controlling the left half of the old
 segment.  The new handoffs are the identity at the inserted point followed by
 the original transition at the old right endpoint.
+
+%%handwave
+name: Split a single segment of a based weak handoff skeleton
+statement:
+  Split a single segment of a based weak handoff skeleton. The inserted vertex uses the chart
+  controlling the left half of the old segment. The new handoffs are the identity at the
+  inserted point followed by the original transition at the old right endpoint.
 -/
 noncomputable def segmentSplitSkeleton
     (S :
@@ -2386,30 +1710,14 @@ theorem segmentSplitSkeleton_terminalValue_eq
 
 omit [RiemannSurface X] in
 /--
-%%handwave
-name:
-  Segment splitting preserves the terminal formula
-statement:
-  Inserting a subdivision point inside a segment leaves the terminal branch formula unchanged at every $z\in X$.
-proof:
-  The split preserves the terminal chart center and terminal accumulated representative; substitute these equalities in the formula.
--/
-@[simp]
-theorem segmentSplitSkeleton_terminalFormulaAt_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (z : X) :
-    (S.segmentSplitSkeleton k τ hτ_left hτ_right).terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  simp [terminalFormulaAt]
-
-omit [RiemannSurface X] in
-/--
 Split a skeleton at an arbitrary unit-interval parameter, using the locator
 lemma to choose a containing segment.
+
+%%handwave
+name: Split a skeleton at an arbitrary unit-interval parameter, using the locator lemma to choose a containing segment
+statement:
+  Split a skeleton at an arbitrary unit-interval parameter, using the locator lemma to choose a
+  containing segment.
 -/
 noncomputable def splitAtParameterSkeleton
     (S :
@@ -2443,26 +1751,6 @@ omit [RiemannSurface X] in
 /--
 %%handwave
 name:
-  Splitting at an arbitrary parameter preserves the terminal formula
-statement:
-  For every $\tau\in[0,1]$, inserting $\tau$ into the subdivision leaves the terminal branch formula unchanged at every point $z\in X$.
-proof:
-  Locate a segment containing $\tau$ and apply terminal-formula invariance for an interior segment split.
--/
-@[simp]
-theorem splitAtParameterSkeleton_terminalFormulaAt_eq
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (τ : unitInterval) (z : X) :
-    (S.splitAtParameterSkeleton τ).terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  classical
-  simp [splitAtParameterSkeleton]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
   Splitting at one parameter adds one segment
 statement:
   Inserting any parameter into a skeleton of length $\ell$ produces a skeleton of length $\ell+1$.
@@ -2486,6 +1774,14 @@ chart attached to any old vertex.  This is the "plain duplicate" padding used
 after mutual endpoint-chart insertion: endpoint-chart insertion adds two
 copies of the other subdivision vertices, while this operation adds the
 missing single copy of the original subdivision vertices.
+
+%%handwave
+name: Split S at the first m sampled parameters of T, without changing the chart attached to any old vertex
+statement:
+  Split S at the first m sampled parameters of T, without changing the chart attached to any old
+  vertex. This is the "plain duplicate" padding used after mutual endpoint-chart insertion:
+  endpoint-chart insertion adds two copies of the other subdivision vertices, while this
+  operation adds the missing single copy of the original subdivision vertices.
 -/
 noncomputable def splitFirstVerticesOfSkeleton
     (S T :
@@ -2531,7 +1827,13 @@ theorem splitFirstVerticesOfSkeleton_length_of_le
         Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
 
 omit [RiemannSurface X] in
-/-- Split `S` at every sampled parameter of `T`, adding one duplicate each. -/
+/-- Split `S` at every sampled parameter of `T`, adding one duplicate each.
+
+%%handwave
+name: Split S at every sampled parameter of T, adding one duplicate each
+statement:
+  Split S at every sampled parameter of T, adding one duplicate each.
+-/
 noncomputable def splitAllVerticesOfSkeleton
     (S T :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -2558,7 +1860,13 @@ theorem splitAllVerticesOfSkeleton_length
     S.splitFirstVerticesOfSkeleton_length_of_le T (T.length + 1) le_rfl
 
 omit [RiemannSurface X] in
-/-- The subdivision parameters of a based weak handoff skeleton as a list. -/
+/-- The subdivision parameters of a based weak handoff skeleton as a list.
+
+%%handwave
+name: The subdivision parameters of a based weak handoff skeleton as a list
+statement:
+  The subdivision parameters of a based weak handoff skeleton as a list.
+-/
 def parameterList
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -2584,45 +1892,6 @@ theorem parameterList_sortedLE
   rw [parameterList, List.sortedLE_iff_isChain, List.isChain_ofFn]
   intro i hi
   exact S.parameterAt_mono ⟨i, by omega⟩
-
-omit [RiemannSurface X] in
-/--
-Sortedness turns a permutation comparison of parameter lists into the
-pointwise aligned-subdivision equality used by the continuation proof.
-
-%%handwave
-name:
-  Permuted sorted parameter lists agree pointwise
-statement:
-  If the weakly increasing parameter lists of two skeletons are permutations of one another, then their entries at every common valid index $j$ are equal: $t_j(S)=t_j(T)$.
-proof:
-  Two sorted lists related by a permutation are equal as lists. Taking the $j$th optional entry and using the bounds on $j$ yields equality of the corresponding parameters.
--/
-theorem parameterAt_eq_of_parameterList_perm
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hPerm : List.Perm S.parameterList T.parameterList) :
-    ∀ n (hnS : n ≤ S.length) (hnT : n ≤ T.length),
-      S.parameterAt ⟨n, Nat.lt_succ_of_le hnS⟩ =
-        T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩ := by
-  classical
-  have hList : S.parameterList = T.parameterList :=
-    List.Perm.eq_of_sortedLE S.parameterList_sortedLE T.parameterList_sortedLE hPerm
-  intro n hnS hnT
-  have hget := congrArg (fun l : List unitInterval => l[n]?) hList
-  change S.parameterList[n]? = T.parameterList[n]? at hget
-  have hSget :
-      S.parameterList[n]? =
-        some (S.parameterAt ⟨n, Nat.lt_succ_of_le hnS⟩) := by
-    rw [parameterList, List.getElem?_ofFn]
-    simp [Nat.lt_succ_of_le hnS]
-  have hTget :
-      T.parameterList[n]? =
-        some (T.parameterAt ⟨n, Nat.lt_succ_of_le hnT⟩) := by
-    rw [parameterList, List.getElem?_ofFn]
-    simp [Nat.lt_succ_of_le hnT]
-  rw [hSget, hTget] at hget
-  exact Option.some.inj hget
 
 omit [RiemannSurface X] in
 /--
@@ -2684,6 +1953,13 @@ omit [RiemannSurface X] in
 The first `m` sampled parameters of a skeleton, listed in reverse recursive
 order.  This is the natural bookkeeping order for repeated splits, since each
 new split contributes its parameter at the head of the list up to permutation.
+
+%%handwave
+name: The first m sampled parameters of a skeleton, listed in reverse recursive order
+statement:
+  The first m sampled parameters of a skeleton, listed in reverse recursive order. This is the
+  natural bookkeeping order for repeated splits, since each new split contributes its parameter
+  at the head of the list up to permutation.
 -/
 def firstParameterListOfSkeleton
     (T :
@@ -2861,6 +2137,13 @@ omit [RiemannSurface X] in
 Centers after inserting a zero-length chart handoff at the right endpoint of
 segment `k`.  The inserted vertex uses the chosen center `c`; all old vertices
 are embedded exactly as in `segmentSplitCenterAt`.
+
+%%handwave
+name: Centers after inserting a zero-length chart handoff at the right endpoint of segment k
+statement:
+  Centers after inserting a zero-length chart handoff at the right endpoint of segment k. The
+  inserted vertex uses the chosen center c; all old vertices are embedded exactly as in the
+  center of the split segment.
 -/
 noncomputable def segmentEndpointChartInsertCenterAt
     (S :
@@ -3153,6 +2436,13 @@ Transition data for every handoff of an endpoint chart-insertion skeleton.
 
 The old handoff `U → W` at the right endpoint of segment `k` is replaced by
 `U → c → W`; all other handoffs are transported from the old skeleton.
+
+%%handwave
+name: Transition data for every handoff of an endpoint chart-insertion skeleton
+statement:
+  Transition data for every handoff of an endpoint chart-insertion skeleton. The old handoff U →
+  W at the right endpoint of segment k is replaced by U → c → W; all other handoffs are
+  transported from the old skeleton.
 -/
 def segmentEndpointChartInsertTransitionAt
     (S :
@@ -3293,6 +2583,11 @@ def segmentEndpointChartInsertTransitionAt
 omit [RiemannSurface X] in
 /--
 Insert a zero-length chart handoff at the right endpoint of segment `k`.
+
+%%handwave
+name: Insert a zero-length chart handoff at the right endpoint of segment k
+statement:
+  Insert a zero-length chart handoff at the right endpoint of segment k.
 -/
 noncomputable def segmentEndpointChartInsertSkeleton
     (S :
@@ -3886,6 +3181,13 @@ Split a skeleton at a located parameter and insert a chosen chart at the new
 vertex.  This is the primitive alignment operation used to compare two
 same-path handoff skeletons: after the split, the selected chart `c` is
 inserted by a zero-length handoff at the inserted parameter.
+
+%%handwave
+name: Split a skeleton at a located parameter and insert a chosen chart at the new vertex
+statement:
+  Split a skeleton at a located parameter and insert a chosen chart at the new vertex. This is
+  the primitive alignment operation used to compare two same-path handoff skeletons: after the
+  split, the selected chart c is inserted by a zero-length handoff at the inserted parameter.
 -/
 noncomputable def segmentSplitEndpointChartInsertSkeleton
     (S :
@@ -3939,6 +3241,12 @@ omit [RiemannSurface X] in
 /--
 Split a skeleton at an arbitrary parameter and insert a chosen chart at the
 new vertex, choosing a containing segment by `exists_segment_contains_parameter`.
+
+%%handwave
+name: Split a skeleton at an arbitrary parameter and insert a chosen chart at the new vertex, choosing a containing segment by exists_segment_contains_parameter
+statement:
+  Split a skeleton at an arbitrary parameter and insert a chosen chart at the new vertex,
+  choosing a containing segment by exists_segment_contains_parameter.
 -/
 noncomputable def splitAtParameterEndpointChartInsertSkeleton
     (S :
@@ -3957,6 +3265,13 @@ Insert the first `m` vertices of `T` into `S`, using the chart carried by
 
 The recursion is deliberately parameter-count based rather than list based:
 `m = T.length + 1` inserts every sampled vertex of `T`.
+
+%%handwave
+name: Insert the first m vertices of T into S, using the chart carried by T at each inserted vertex
+statement:
+  Insert the first m vertices of T into S, using the chart carried by T at each inserted vertex.
+  The recursion is deliberately parameter-count based rather than list based: m = T.length + 1
+  inserts every sampled vertex of T.
 -/
 noncomputable def insertFirstVerticesOfSkeleton
     (S T :
@@ -3974,7 +3289,13 @@ noncomputable def insertFirstVerticesOfSkeleton
         R
 
 omit [RiemannSurface X] in
-/-- Insert every sampled vertex of `T` into `S`. -/
+/-- Insert every sampled vertex of `T` into `S`.
+
+%%handwave
+name: Insert every sampled vertex of T into S
+statement:
+  Insert every sampled vertex of T into S.
+-/
 noncomputable def insertAllVerticesOfSkeleton
     (S T :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -4223,7 +3544,13 @@ theorem splitAtParameterEndpointChartInsertSkeleton_parameterList_perm
       (Classical.choose_spec (S.exists_segment_contains_parameter τ)).2 c hc
 
 omit [RiemannSurface X] in
-/-- The first `m` sampled parameters, with two recursive copies of each. -/
+/-- The first `m` sampled parameters, with two recursive copies of each.
+
+%%handwave
+name: The first m sampled parameters, with two recursive copies of each
+statement:
+  The first m sampled parameters, with two recursive copies of each.
+-/
 def firstDoubleParameterListOfSkeleton
     (T :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :

@@ -20,8 +20,13 @@ open JJMath.Manifold
 
 noncomputable section
 
-/-- Normalize the denominator of the zero--pole ratio so that it equals one
-at the zero endpoint. -/
+/--
+%%handwave
+name: Normalized denominator of a planar vortex pair
+statement:
+  For marked points $a,b$, define $D_{a,b}(z)=(z-b)/(a-b)$, normalized so
+  that $D_{a,b}(a)=1$ when $a\ne b$.
+-/
 def planarVortexNormalizedDenominator (a b z : ℂ) : ℂ :=
   (z - b) / (a - b)
 
@@ -45,8 +50,14 @@ theorem planarVortexNormalizedDenominator_left {a b : ℂ} (hab : a ≠ b) :
   rw [planarVortexNormalizedDenominator, div_self]
   exact sub_ne_zero.mpr hab
 
-/-- The punctured germ on which the compact vortex is unflattened and the
-normalized denominator has its principal smooth logarithm. -/
+/--
+%%handwave
+name: Left logarithmic germ of a planar vortex pair
+statement:
+  For $a\ne b$, define the open germ of points
+  $z\in\mathbb C\setminus\{a,b\}$ satisfying
+  $|A_{a,b}(z)|<2$ and $D_{a,b}(z)\in\mathbb C_{\mathrm{slit}}$.
+-/
 def planarVortexLeftGermOpen {a b : ℂ} (_hab : a ≠ b) :
     TopologicalSpace.Opens (planarVortexPairOpenAt a b) := by
   let f : planarVortexPairOpenAt a b → ℂ := fun z ↦
@@ -64,7 +75,12 @@ def planarVortexLeftGermOpen {a b : ℂ} (_hab : a ≠ b) :
       (isOpen_lt (continuous_norm.comp hf) continuous_const).inter
         (Complex.isOpen_slitPlane.preimage hg)⟩
 
-/-- The normalized denominator on the planar vortex germ. -/
+/--
+%%handwave
+name: Denominator function on the left vortex germ
+statement:
+  Restrict $D_{a,b}(z)=(z-b)/(a-b)$ to the left logarithmic germ.
+-/
 def planarVortexLeftGermDenominator {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexLeftGermOpen hab) : ℂ :=
   planarVortexNormalizedDenominator a b z
@@ -87,7 +103,13 @@ theorem planarVortexLeftGermDenominator_ne_zero {a b : ℂ} (hab : a ≠ b)
     div_ne_zero_iff]
   exact ⟨sub_ne_zero.mpr z.1.2.2, sub_ne_zero.mpr hab⟩
 
-/-- The smooth logarithmic correction contributed by the pole denominator. -/
+/--
+%%handwave
+name: Logarithmic denominator correction on the left germ
+statement:
+  On the left germ, define
+  $h_{a,b}(z)=-\operatorname{Im}\log D_{a,b}(z)$.
+-/
 def planarVortexLeftGermCorrection {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexLeftGermOpen hab) : ℝ :=
   -(Complex.log (planarVortexLeftGermDenominator hab z)).im
@@ -146,8 +168,13 @@ theorem contMDiff_planarVortexLeftGermCorrection {a b : ℂ} (hab : a ≠ b) :
     Complex.imCLM.contDiff.contMDiff
   exact (him.comp hlog).neg
 
-/-- The radial phase at the zero endpoint, rotated by the constant inverse
-direction of the pole denominator. -/
+/--
+%%handwave
+name: Rotated radial phase at the vortex zero
+statement:
+  On the left germ, define
+  $R_{a,b}(z)=\frac{z-a}{|z-a|}\frac{|a-b|}{a-b}$.
+-/
 def planarVortexLeftRotatedRadialPhase {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexLeftGermOpen hab) : ℂ :=
   ((z : ℂ) - a) / ‖(z : ℂ) - a‖ * (‖a - b‖ / (a - b))
@@ -208,33 +235,24 @@ theorem contMDiff_planarVortexLeftRotatedRadialPhase
 
 /--
 %%handwave
-name:
-  Unit norm of the rotated radial vortex phase
+name: Smooth map of the rotated radial phase
 statement:
-  For every point in the punctured left germ,
-  \[
-    \left|\frac{z-a}{|z-a|}\frac{|a-b|}{a-b}\right|=1.
-  \]
-proof:
-  Both factors have modulus one because \(z\ne a\) and \(a\ne b\); multiply
-  their norms.
+  Bundle $z\mapsto R_{a,b}(z)$ as a smooth complex-valued map on the left
+  logarithmic germ.
 -/
-theorem norm_planarVortexLeftRotatedRadialPhase
-    {a b : ℂ} (hab : a ≠ b) (z : planarVortexLeftGermOpen hab) :
-    ‖planarVortexLeftRotatedRadialPhase hab z‖ = 1 := by
-  simp [planarVortexLeftRotatedRadialPhase,
-    Complex.norm_real,
-    div_self (norm_ne_zero_iff.mpr (sub_ne_zero.mpr z.1.2.1)),
-    div_self (norm_ne_zero_iff.mpr (sub_ne_zero.mpr hab))]
-
-/-- The rotated radial phase as a smooth map on the left germ. -/
 def planarVortexLeftRotatedRadialPhaseMap {a b : ℂ} (hab : a ≠ b) :
     ContMDiffMap (modelWithCornersSelf ℝ ℂ) (modelWithCornersSelf ℝ ℂ)
       (planarVortexLeftGermOpen hab) ℂ ∞ where
   val := planarVortexLeftRotatedRadialPhase hab
   property := contMDiff_planarVortexLeftRotatedRadialPhase hab
 
-/-- The unrotated radial direction at the zero endpoint. -/
+/--
+%%handwave
+name: Radial phase at the vortex zero
+statement:
+  On the left germ, define the unit radial direction
+  $U_a(z)=(z-a)/|z-a|$.
+-/
 def planarVortexLeftRadialPhase {a b : ℂ} (hab : a ≠ b)
     (z : planarVortexLeftGermOpen hab) : ℂ :=
   ((z : ℂ) - a) / ‖(z : ℂ) - a‖
@@ -295,73 +313,17 @@ theorem norm_planarVortexLeftRadialPhase
   simp [planarVortexLeftRadialPhase,
     div_self (norm_ne_zero_iff.mpr (sub_ne_zero.mpr z.1.2.1))]
 
-/-- The unrotated radial direction as a smooth unit phase. -/
+/--
+%%handwave
+name: Smooth map of the radial vortex phase
+statement:
+  Bundle $z\mapsto U_a(z)$ as a smooth unit-complex phase on the left germ.
+-/
 def planarVortexLeftRadialPhaseMap {a b : ℂ} (hab : a ≠ b) :
     ContMDiffMap (modelWithCornersSelf ℝ ℂ) (modelWithCornersSelf ℝ ℂ)
       (planarVortexLeftGermOpen hab) ℂ ∞ where
   val := planarVortexLeftRadialPhase hab
   property := contMDiff_planarVortexLeftRadialPhase hab
-
-/--
-%%handwave
-name:
-  Constant rotation does not change the radial angular one-form
-statement:
-  The canonical logarithmic one-form of
-  \((z-a)/|z-a|\cdot |a-b|/(a-b)\) equals that of the unrotated radial phase
-  \((z-a)/|z-a|\) on the left germ.
-proof:
-  Write the constant unit factor \(|a-b|/(a-b)\) as \(e^{i\theta}\).  The
-  phase-product formula changes the one-form by \(d\theta\), which is zero
-  because \(\theta\) is constant.
--/
-theorem planarVortexLeftGermRotatedRadialOneForm_eq_radial
-    {a b : ℂ} (hab : a ≠ b) :
-    smoothUnitPhaseOneForm (modelWithCornersSelf ℝ ℂ)
-        (planarVortexLeftRotatedRadialPhaseMap hab)
-        (norm_planarVortexLeftRotatedRadialPhase hab) =
-      smoothUnitPhaseOneForm (modelWithCornersSelf ℝ ℂ)
-        (planarVortexLeftRadialPhaseMap hab)
-        (norm_planarVortexLeftRadialPhase hab) := by
-  let k : ℂ := (‖a - b‖ : ℂ) / (a - b)
-  have hkNorm : ‖k‖ = 1 := by
-    simp [k, div_self (norm_ne_zero_iff.mpr (sub_ne_zero.mpr hab))]
-  have hkExp : Complex.exp (((Complex.arg k : ℂ) * Complex.I)) = k := by
-    have h := Complex.norm_mul_exp_arg_mul_I k
-    rw [hkNorm, Complex.ofReal_one, one_mul] at h
-    exact h
-  let theta : C^∞⟮modelWithCornersSelf ℝ ℂ,
-      planarVortexLeftGermOpen hab; ℝ⟯ :=
-    smoothRealConstantFunction (I0 := modelWithCornersSelf ℝ ℂ)
-      (Complex.arg k)
-  have hphase : ∀ z : planarVortexLeftGermOpen hab,
-      planarVortexLeftRotatedRadialPhaseMap hab z =
-        planarVortexLeftRadialPhaseMap hab z *
-          Complex.exp ((((theta z : ℝ) : ℂ) * Complex.I)) := by
-    intro z
-    change ((z : ℂ) - a) / ‖(z : ℂ) - a‖ *
-        (‖a - b‖ / (a - b)) =
-      ((z : ℂ) - a) / ‖(z : ℂ) - a‖ *
-        Complex.exp (((Complex.arg k : ℂ) * Complex.I))
-    rw [hkExp]
-  have hforms := SmoothCirclePrimitive.oneForm_eq_addExact_of_phase_eq
-    (modelWithCornersSelf ℝ ℂ)
-    (smoothUnitPhaseCirclePrimitive (modelWithCornersSelf ℝ ℂ)
-      (planarVortexLeftRotatedRadialPhaseMap hab)
-      (norm_planarVortexLeftRotatedRadialPhase hab))
-    (smoothUnitPhaseCirclePrimitive (modelWithCornersSelf ℝ ℂ)
-      (planarVortexLeftRadialPhaseMap hab)
-      (norm_planarVortexLeftRadialPhase hab)) theta hphase
-  dsimp [theta] at hforms
-  change _ = _ + deRhamDifferential
-    (I := modelWithCornersSelf ℝ ℂ)
-    (M := planarVortexLeftGermOpen hab) (A := ℝ) 0
-    (smoothRealFunctionToZeroForm
-      (I0 := modelWithCornersSelf ℝ ℂ)
-      (smoothRealConstantFunction (I0 := modelWithCornersSelf ℝ ℂ)
-        (Complex.arg k))) at hforms
-  rw [deRhamDifferential_smoothRealFunctionToZeroForm_const] at hforms
-  simpa using hforms
 
 /--
 %%handwave
@@ -413,75 +375,19 @@ theorem planarVortexCompactPhaseAt_eq_rotatedRadial_mul_exp_correction
   field_simp [hx, hd, hc, norm_ne_zero_iff.mpr hx,
     norm_ne_zero_iff.mpr hd, norm_ne_zero_iff.mpr hc]
 
-/-- The compact vortex phase, restricted to its left logarithmic germ. -/
+/--
+%%handwave
+name: Compact vortex phase on the left logarithmic germ
+statement:
+  Restrict the compact phase of the vortex pair at $a,b$ to its left
+  logarithmic germ and bundle the restriction as a smooth complex-valued map.
+-/
 def planarVortexLeftGermCompactPhaseMap {a b : ℂ} (hab : a ≠ b) :
     ContMDiffMap (modelWithCornersSelf ℝ ℂ) (modelWithCornersSelf ℝ ℂ)
       (planarVortexLeftGermOpen hab) ℂ ∞ where
   val := fun z ↦ planarVortexCompactPhaseAt hab z.1
   property := (contMDiff_planarVortexCompactPhaseAt hab).comp
     contMDiff_subtype_val
-
-/--
-%%handwave
-name:
-  Unit norm of the compact vortex phase on its left germ
-statement:
-  The compact zero--pole vortex phase has complex modulus one at every point
-  of its left logarithmic germ.
-proof:
-  Restrict the global unit-norm identity for the compact planar vortex phase
-  to the germ.
--/
-theorem norm_planarVortexLeftGermCompactPhaseMap
-    {a b : ℂ} (hab : a ≠ b) (z : planarVortexLeftGermOpen hab) :
-    ‖planarVortexLeftGermCompactPhaseMap hab z‖ = 1 :=
-  norm_planarVortexCompactPhaseAt hab z.1
-
-/-- The logarithmic denominator correction as a smooth real function. -/
-def planarVortexLeftGermCorrectionSmooth {a b : ℂ} (hab : a ≠ b) :
-    C^∞⟮modelWithCornersSelf ℝ ℂ, planarVortexLeftGermOpen hab; ℝ⟯ where
-  val := planarVortexLeftGermCorrection hab
-  property := contMDiff_planarVortexLeftGermCorrection hab
-
-/--
-%%handwave
-name:
-  The compact vortex one-form is radial up to an exact correction
-statement:
-  On the left germ, the logarithmic one-form of the compact vortex equals the
-  logarithmic one-form of the rotated radial phase plus
-  \[
-    d\!\left(-\operatorname{Im}\log\frac{z-b}{a-b}\right).
-  \]
-proof:
-  Apply the circle-primitive product formula to the radial factorization
-  \(P_{a,b}=P_{\mathrm{radial}}e^{ih}\), with
-  \(h=-\operatorname{Im}\log((z-b)/(a-b))\).
--/
-theorem planarVortexLeftGermCompactOneForm_eq_radial_addExact
-    {a b : ℂ} (hab : a ≠ b) :
-    smoothUnitPhaseOneForm (modelWithCornersSelf ℝ ℂ)
-        (planarVortexLeftGermCompactPhaseMap hab)
-        (norm_planarVortexLeftGermCompactPhaseMap hab) =
-      smoothUnitPhaseOneForm (modelWithCornersSelf ℝ ℂ)
-          (planarVortexLeftRotatedRadialPhaseMap hab)
-          (norm_planarVortexLeftRotatedRadialPhase hab) +
-        deRhamDifferential
-          (I := modelWithCornersSelf ℝ ℂ)
-          (M := planarVortexLeftGermOpen hab) (A := ℝ) 0
-          (smoothRealFunctionToZeroForm
-            (I0 := modelWithCornersSelf ℝ ℂ)
-            (planarVortexLeftGermCorrectionSmooth hab)) := by
-  exact SmoothCirclePrimitive.oneForm_eq_addExact_of_phase_eq
-    (modelWithCornersSelf ℝ ℂ)
-    (smoothUnitPhaseCirclePrimitive (modelWithCornersSelf ℝ ℂ)
-      (planarVortexLeftGermCompactPhaseMap hab)
-      (norm_planarVortexLeftGermCompactPhaseMap hab))
-    (smoothUnitPhaseCirclePrimitive (modelWithCornersSelf ℝ ℂ)
-      (planarVortexLeftRotatedRadialPhaseMap hab)
-      (norm_planarVortexLeftRotatedRadialPhase hab))
-    (planarVortexLeftGermCorrectionSmooth hab)
-    (planarVortexCompactPhaseAt_eq_rotatedRadial_mul_exp_correction hab)
 
 end
 

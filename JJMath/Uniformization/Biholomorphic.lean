@@ -63,7 +63,7 @@ end PointedHolomorphicMap
 name:
   Biholomorphic equivalence
 statement:
-  A biholomorphic equivalence \(X\simeq Y\) is a homeomorphism whose forward
+  A biholomorphic equivalence \(X\simeq Y\) is a homeomorphism \(X \to Y\) whose forward
   and inverse maps are holomorphic.
 -/
 structure Biholomorphic (X : Type u) (Y : Type v)

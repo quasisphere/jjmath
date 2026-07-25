@@ -33,7 +33,14 @@ variable {M : Type w} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M] [T2Space M]
 variable {ι : Type z}
 
-/-- The ambient image of a compact set in an open submanifold. -/
+/--
+%%handwave
+name: Ambient carrier of a subset of an open submanifold
+statement:
+  For an open submanifold $U\subseteq M$ and a subset $K\subseteq U$, define
+  its ambient carrier by
+  $\iota_U(K)=\{x\in M:\exists y\in K,\ \iota_U(y)=x\}$.
+-/
 def smoothFormCompactCore
     (U : TopologicalSpace.Opens M) (K : Set U) : Set M :=
   (fun x : U ↦ (x : M)) '' K
@@ -55,8 +62,13 @@ theorem smoothFormCompactCore_isCompact
     IsCompact (smoothFormCompactCore U K) := by
   exact hK.image continuous_subtype_val
 
-/-- Regard an ambient set contained in an open set as a set in the open
-submanifold. -/
+/--
+%%handwave
+name: Ambient subset viewed in an open submanifold
+statement:
+  For an open submanifold $V\subseteq M$ and a set $C\subseteq M$, define
+  $C|_V=\{x\in V:\iota_V(x)\in C\}$.
+-/
 def smoothFormCompactCoreInOpen
     (V : TopologicalSpace.Opens M) (C : Set M) : Set V :=
   {x | (x : M) ∈ C}
@@ -126,7 +138,13 @@ theorem smoothFormCompactCore_subset
   rintro _ ⟨x, _hx, rfl⟩
   exact x.2
 
-/-- The ambient open set complementary to a compact support core. -/
+/--
+%%handwave
+name: Exterior open set of a compact core
+statement:
+  If $K\subseteq U$ is compact, define the ambient exterior open set
+  $M\setminus\iota_U(K)$.
+-/
 def smoothFormCompactExteriorOpen
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K) :
     TopologicalSpace.Opens M :=
@@ -157,8 +175,15 @@ theorem smoothFormCompact_open_cover
   · exact Or.inr fun hxcore ↦
       hxU (smoothFormCompactCore_subset U K hxcore)
 
-/-- Extend a smooth form supported in a compact subset of an open
-submanifold by zero to the ambient manifold. -/
+/--
+%%handwave
+name: Zero extension of a compactly supported form
+statement:
+  Let $K\subseteq U\subseteq M$ be compact and let $\alpha$ be a smooth
+  $n$-form on $U$ that vanishes on $U\setminus K$.  Define the smooth form
+  $\widetilde\alpha$ on $M$ by gluing $\alpha$ on $U$ to zero on
+  $M\setminus\iota_U(K)$.
+-/
 noncomputable def smoothFormCompactZeroExtension
     (U : TopologicalSpace.Opens M) (K : Set U) (hK : IsCompact K)
     {n : ℕ} (alpha : SmoothForms (I := I) (M := U) ℝ n)
@@ -510,13 +535,24 @@ theorem deRhamDifferential_smoothFormCompactZeroExtension
 
 /-! ## Locally finite sums of smooth forms -/
 
-/-- The ordinary support of a differential form's dependent coefficient
-field. -/
+/--
+%%handwave
+name: Pointwise support of a differential form
+statement:
+  For a smooth form $\omega$ on $M$, define
+  $\operatorname{supp}_0(\omega)=\{x\in M:\omega_x\ne0\}$.
+-/
 def smoothFormSupport {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ n) : Set M :=
   {x | omega.toFun x ≠ 0}
 
-/-- The closed support of a differential form. -/
+/--
+%%handwave
+name: Closed support of a differential form
+statement:
+  For a smooth form $\omega$, define its closed support by
+  $\operatorname{supp}(\omega)=\overline{\{x:\omega_x\ne0\}}$.
+-/
 def smoothFormTSupport {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) ℝ n) : Set M :=
   closure (smoothFormSupport I omega)
@@ -587,7 +623,14 @@ theorem smoothForms_finset_sum_toFun
       change (omega i).toFun x + (∑ j ∈ s, omega j).toFun x = _
       rw [ih]
 
-/-- The pointwise locally finite sum of smooth differential forms. -/
+/--
+%%handwave
+name: Locally finite sum of smooth differential forms
+statement:
+  If the closed supports of smooth $n$-forms $(\omega_i)_{i\in I}$ are
+  locally finite, define their smooth sum $\Omega$ pointwise by
+  $\Omega_x=\sum_i^{\mathrm{fin}}(\omega_i)_x$.
+-/
 noncomputable def smoothFormsLocallyFiniteFinsum
     {n : ℕ} (omega : ι → SmoothForms (I := I) (M := M) ℝ n)
     (hloc : LocallyFinite (fun i ↦ smoothFormTSupport I (omega i))) :
@@ -754,80 +797,50 @@ theorem finsum_nat_sub_succ_eq_of_eventually_zero
   rw [Finset.sum_range_sub']
   rw [hN N le_rfl, sub_zero]
 
-omit [T2Space M] in
-/--
-%%handwave
-name:
-  Primitive from a locally finite telescoping chain
-statement:
-  Let \((\beta_k)_{k\ge0}\) be smooth \((n+1)\)-forms and
-  \((\eta_k)_{k\ge0}\) smooth \(n\)-forms such that
-  \[
-    d\eta_k=\beta_k-\beta_{k+1}.
-  \]
-  Suppose the closed supports of the \(\eta_k\) are locally finite and, at
-  each point, the values \((\beta_k)_x\) are eventually zero.  Then
-  \(\beta_0\) is exact.
-proof:
-  The locally finite sum \(\theta=\sum_k\eta_k\) is smooth, and exterior
-  differentiation commutes with this sum.  Pointwise, the resulting series
-  is \(\sum_k((\beta_k)_x-(\beta_{k+1})_x)\), which telescopes to
-  \((\beta_0)_x\) because the sequence is eventually zero.
--/
-theorem exists_smoothForm_primitive_of_locallyFinite_telescope
-    {n : ℕ}
-    (beta : ℕ → SmoothForms (I := I) (M := M) ℝ (n + 1))
-    (eta : ℕ → SmoothForms (I := I) (M := M) ℝ n)
-    (hloc : LocallyFinite (fun k ↦ smoothFormTSupport I (eta k)))
-    (hd : ∀ k : ℕ,
-      deRhamDifferential (I := I) (M := M) (A := ℝ) n (eta k) =
-        beta k - beta (k + 1))
-    (hbeta : ∀ x : M, ∃ N : ℕ, ∀ k ≥ N, (beta k).toFun x = 0) :
-    ∃ theta : SmoothForms (I := I) (M := M) ℝ n,
-      deRhamDifferential (I := I) (M := M) (A := ℝ) n theta = beta 0 := by
-  let theta := smoothFormsLocallyFiniteFinsum I eta hloc
-  refine ⟨theta, ?_⟩
-  rw [show deRhamDifferential (I := I) (M := M) (A := ℝ) n theta =
-      smoothFormsLocallyFiniteFinsum I
-        (fun k ↦ deRhamDifferential (I := I) (M := M) (A := ℝ) n (eta k))
-        (hloc.subset (fun k ↦ closure_minimal
-          (deRhamDifferential_support_subset_tsupport I (eta k))
-          isClosed_closure)) by
-    exact deRhamDifferential_smoothFormsLocallyFiniteFinsum I eta hloc]
-  apply DifferentialForm.ext
-  intro x
-  rw [smoothFormsLocallyFiniteFinsum_toFun]
-  have hpoint : ∀ k : ℕ,
-      (deRhamDifferential (I := I) (M := M) (A := ℝ) n (eta k)).toFun x =
-        (beta k).toFun x - (beta (k + 1)).toFun x := by
-    intro k
-    rw [hd]
-    rfl
-  rw [finsum_congr hpoint]
-  exact finsum_nat_sub_succ_eq_of_eventually_zero
-    (fun k ↦ (beta k).toFun x) (hbeta x)
-
 /-! ## The planar compact-support calculation -/
 
 /-! ### A canonical normalized density on an interval -/
 
-/-- The left endpoint of the middle third of a real interval. -/
+/--
+%%handwave
+name: Left middle-third point of an interval
+statement:
+  For $a,b\in\mathbb R$, define the left middle-third point
+  $\ell(a,b)=(2a+b)/3$.
+-/
 noncomputable def intervalMiddleLeft (a b : ℝ) : ℝ :=
   (2 * a + b) / 3
 
-/-- The right endpoint of the middle third of a real interval. -/
+/--
+%%handwave
+name: Right middle-third point of an interval
+statement:
+  For $a,b\in\mathbb R$, define the right middle-third point
+  $r(a,b)=(a+2b)/3$.
+-/
 noncomputable def intervalMiddleRight (a b : ℝ) : ℝ :=
   (a + 2 * b) / 3
 
-/-- A smooth step whose entire transition occurs in the middle third of the
-interval from `a` to `b`. -/
+/--
+%%handwave
+name: Smooth middle-third step on an interval
+statement:
+  For $a,b,x\in\mathbb R$, define
+  $s_{a,b}(x)=S((x-\ell(a,b))/(r(a,b)-\ell(a,b)))$, where $S$ is the
+  standard smooth transition from zero to one.
+-/
 noncomputable def intervalMiddleStep (a b : ℝ) (x : ℝ) : ℝ :=
   Real.smoothTransition
     ((x - intervalMiddleLeft a b) /
       (intervalMiddleRight a b - intervalMiddleLeft a b))
 
-/-- The derivative of the middle-third step.  This is the canonical density
-used by the compact-support primitive. -/
+/--
+%%handwave
+name: Normalized interval density
+statement:
+  For $a,b,x\in\mathbb R$, define the canonical interval density
+  $\rho_{a,b}(x)=s'_{a,b}(x)$.
+-/
 noncomputable def intervalNormalizingDensity (a b : ℝ) (x : ℝ) : ℝ :=
   fderiv ℝ (intervalMiddleStep a b) x 1
 
@@ -1012,7 +1025,13 @@ theorem intervalNormalizingDensity_integral_eq_one {a b : ℝ} (hab : a < b) :
   · unfold intervalMiddleRight
     linarith
 
-/-- The product of the canonical densities in two coordinate intervals. -/
+/--
+%%handwave
+name: Normalized rectangular product density
+statement:
+  For two real intervals, define
+  $\sigma_{a,b,c,d}(x,y)=\rho_{a,b}(x)\rho_{c,d}(y)$.
+-/
 noncomputable def planarRectangleNormalizingDensity
     (a b c d : ℝ) (p : ℝ × ℝ) : ℝ :=
   intervalNormalizingDensity a b p.1 *
@@ -1073,7 +1092,13 @@ theorem planarRectangleNormalizingDensity_tsupport_subset
   exact ⟨intervalNormalizingDensity_tsupport_subset hab hx,
     intervalNormalizingDensity_tsupport_subset hcd hy⟩
 
-/-- The horizontal marginal of a planar coefficient on a fixed interval. -/
+/--
+%%handwave
+name: Horizontal marginal over a fixed interval
+statement:
+  For $f:\mathbb R^2\to\mathbb R$, define its horizontal marginal over
+  $[a,b]$ by $m_{a,b}f(y)=\int_a^b f(x,y)\,dx$.
+-/
 def planarHorizontalMarginal (a b : ℝ) (f : ℝ × ℝ → ℝ) (y : ℝ) : ℝ :=
   ∫ x in a..b, f (x, y)
 
@@ -1105,145 +1130,16 @@ theorem planarHorizontalMarginal_contDiff
 
 /-! ### Removing the mass of a planar density -/
 
-/-- The total iterated integral of a coefficient over a rectangle. -/
+/--
+%%handwave
+name: Mass of a planar coefficient on a rectangle
+statement:
+  For $f:\mathbb R^2\to\mathbb R$, define its rectangular mass by
+  $M_{a,b,c,d}(f)=\int_c^d\int_a^b f(x,y)\,dx\,dy$.
+-/
 noncomputable def planarRectangleMass
     (a b c d : ℝ) (f : ℝ × ℝ → ℝ) : ℝ :=
   ∫ y in c..d, planarHorizontalMarginal a b f y
-
-/-- Subtract the canonical rectangle density carrying the same total mass. -/
-noncomputable def planarMassTransportRemainder
-    (a b c d : ℝ) (f : ℝ × ℝ → ℝ) (p : ℝ × ℝ) : ℝ :=
-  f p - planarRectangleMass a b c d f *
-    planarRectangleNormalizingDensity a b c d p
-
-/--
-%%handwave
-name:
-  Smoothness of the rectangular mass-transport remainder
-statement:
-  If \(f:\mathbb R^2\to\mathbb R\) is smooth, then
-  \[
-    r=f-m\sigma_{a,b,c,d},\qquad
-    m=\int_c^d\int_a^b f(x,y)\,dx\,dy,
-  \]
-  is smooth.
-proof:
-  The mass \(m\) is constant and the normalized rectangular density
-  \(\sigma_{a,b,c,d}\) is smooth.  Scalar multiplication and subtraction
-  preserve smoothness.
--/
-theorem planarMassTransportRemainder_contDiff
-    {a b c d : ℝ} {f : ℝ × ℝ → ℝ} (hf : ContDiff ℝ ∞ f) :
-    ContDiff ℝ ∞ (planarMassTransportRemainder a b c d f) := by
-  unfold planarMassTransportRemainder
-  exact hf.sub
-    (contDiff_const.mul planarRectangleNormalizingDensity_contDiff)
-
-/--
-%%handwave
-name:
-  Support of the rectangular mass-transport remainder
-statement:
-  If \(a<b\), \(c<d\), and the closed support of
-  \(f:\mathbb R^2\to\mathbb R\) is contained in
-  \((a,b)\times(c,d)\), then the same is true of
-  \(f-m\sigma_{a,b,c,d}\).
-proof:
-  The closed support of a difference lies in the union of the closed supports
-  of its two terms.  The first is bounded by hypothesis, while the normalized
-  density in the second is supported in the same open rectangle.
--/
-theorem planarMassTransportRemainder_tsupport_subset
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    {f : ℝ × ℝ → ℝ}
-    (hfrect : tsupport f ⊆ Ioo a b ×ˢ Ioo c d) :
-    tsupport (planarMassTransportRemainder a b c d f) ⊆
-      Ioo a b ×ˢ Ioo c d := by
-  intro p hp
-  have hp' : p ∈ tsupport f ∪ tsupport
-      (fun q : ℝ × ℝ ↦ planarRectangleMass a b c d f *
-        planarRectangleNormalizingDensity a b c d q) := by
-    exact tsupport_sub f _
-      (by simpa [planarMassTransportRemainder] using hp)
-  rcases hp' with hpf | hpDensity
-  · exact hfrect hpf
-  · exact planarRectangleNormalizingDensity_tsupport_subset hab hcd
-      (tsupport_mul_subset_right hpDensity)
-
-/--
-%%handwave
-name:
-  Horizontal marginal of the rectangular mass-transport remainder
-statement:
-  If \(a<b\) and \(f:\mathbb R^2\to\mathbb R\) is continuous, then for every
-  \(y\),
-  \[
-    \int_a^b\bigl(f(x,y)-m\rho_{a,b}(x)\rho_{c,d}(y)\bigr)\,dx
-      =\int_a^b f(x,y)\,dx-m\rho_{c,d}(y),
-  \]
-  where \(m\) is the total mass of \(f\) over the rectangle.
-proof:
-  Distribute the interval integral over the difference, pull the constants
-  \(m\) and \(\rho_{c,d}(y)\) outside, and use
-  \(\int_a^b\rho_{a,b}=1\).
--/
-theorem planarHorizontalMarginal_massTransportRemainder
-    {a b c d y : ℝ} (hab : a < b)
-    {f : ℝ × ℝ → ℝ} (hf : Continuous f) :
-    planarHorizontalMarginal a b
-        (planarMassTransportRemainder a b c d f) y =
-      planarHorizontalMarginal a b f y -
-        planarRectangleMass a b c d f *
-          intervalNormalizingDensity c d y := by
-  have hfint : IntervalIntegrable (fun x ↦ f (x, y)) volume a b :=
-    (hf.comp (continuous_id.prodMk continuous_const)).intervalIntegrable a b
-  have hρint : IntervalIntegrable
-      (intervalNormalizingDensity a b) volume a b :=
-    intervalNormalizingDensity_contDiff.continuous.intervalIntegrable a b
-  unfold planarHorizontalMarginal planarMassTransportRemainder
-  change (∫ x in a..b,
-    f (x, y) - planarRectangleMass a b c d f *
-      (intervalNormalizingDensity a b x *
-        intervalNormalizingDensity c d y)) = _
-  rw [intervalIntegral.integral_sub hfint]
-  · rw [intervalIntegral.integral_const_mul]
-    rw [intervalIntegral.integral_mul_const]
-    rw [intervalNormalizingDensity_integral_eq_one hab]
-    ring
-  · exact (hρint.mul_const _).const_mul _
-
-/--
-%%handwave
-name:
-  Zero total mass of the rectangular transport remainder
-statement:
-  If \(a<b\), \(c<d\), and \(f:\mathbb R^2\to\mathbb R\) is smooth, then
-  \[
-    \int_c^d\int_a^b
-      \bigl(f(x,y)-m\sigma_{a,b,c,d}(x,y)\bigr)\,dx\,dy=0,
-  \]
-  where \(m=\int_c^d\int_a^b f\).
-proof:
-  Integrate the horizontal-marginal identity in \(y\).  The first term
-  integrates to \(m\), while the second also integrates to \(m\) because the
-  vertical normalizing density has integral one.
--/
-theorem planarMassTransportRemainder_total_eq_zero
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    {f : ℝ × ℝ → ℝ} (hf : ContDiff ℝ ∞ f) :
-    ∫ y in c..d, planarHorizontalMarginal a b
-        (planarMassTransportRemainder a b c d f) y = 0 := by
-  simp_rw [planarHorizontalMarginal_massTransportRemainder hab hf.continuous]
-  have hfMarg : IntervalIntegrable
-      (planarHorizontalMarginal a b f) volume c d :=
-    (planarHorizontalMarginal_contDiff hab.le hf).continuous.intervalIntegrable c d
-  have hρ : IntervalIntegrable
-      (intervalNormalizingDensity c d) volume c d :=
-    intervalNormalizingDensity_contDiff.continuous.intervalIntegrable c d
-  rw [intervalIntegral.integral_sub hfMarg (hρ.const_mul _)]
-  rw [intervalIntegral.integral_const_mul,
-    intervalNormalizingDensity_integral_eq_one hcd]
-  simp [planarRectangleMass]
 
 /-! ### Moving mass into a smaller target rectangle -/
 
@@ -1278,8 +1174,14 @@ theorem intervalNormalizingDensity_integral_eq_one_of_outer
     ← intervalIntegral.integral_eq_integral_of_support_subset hsuppSmall,
     intervalNormalizingDensity_integral_eq_one hab]
 
-/-- Remove the mass of a coefficient in an outer rectangle and place that
-mass into an independently chosen inner target rectangle. -/
+/--
+%%handwave
+name: Two-rectangle mass-transport remainder
+statement:
+  Given an outer rectangle $[A,B]\times[C,D]$ and a target rectangle
+  $[a,b]\times[c,d]$, define
+  $r(p)=f(p)-M_{A,B,C,D}(f)\sigma_{a,b,c,d}(p)$.
+-/
 noncomputable def planarMassTransportRemainderTo
     (A B C D a b c d : ℝ) (f : ℝ × ℝ → ℝ) (p : ℝ × ℝ) : ℝ :=
   f p - planarRectangleMass A B C D f *
@@ -1492,7 +1394,13 @@ theorem tsupport_planarHorizontalMarginal_subset_Ioo
   rintro y ⟨p, hp, rfl⟩
   exact (hrect hp).2
 
-/-- Remove the horizontal marginal using a fixed density of integral one. -/
+/--
+%%handwave
+name: Zero-horizontal-marginal adjustment
+statement:
+  For $f:\mathbb R^2\to\mathbb R$ and $\rho:\mathbb R\to\mathbb R$, define
+  $h(x,y)=f(x,y)-\rho(x)\int_a^b f(t,y)\,dt$.
+-/
 def planarZeroHorizontalMarginalAdjustment
     (a b : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) : ℝ :=
   f p - ρ p.1 * planarHorizontalMarginal a b f p.2
@@ -1600,8 +1508,13 @@ theorem tsupport_planarZeroHorizontalMarginalAdjustment_subset
     exact ⟨hρsupport hpρ,
       tsupport_planarHorizontalMarginal_subset_Ioo a b c d hfc hfrect hpmarg⟩
 
-/-- Integrate the zero-horizontal-marginal adjustment from the left endpoint
-to the current horizontal coordinate. -/
+/--
+%%handwave
+name: Horizontal primitive of the adjusted coefficient
+statement:
+  For the adjusted coefficient $h$, define
+  $Q(x,y)=\int_a^x h(t,y)\,dt$.
+-/
 def planarHorizontalPrimitive
     (a b : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) : ℝ :=
   ∫ x in a..p.1,
@@ -1827,7 +1740,13 @@ theorem planarHorizontalPrimitive_hasCompactSupport_and_tsupport_subset
     exact ⟨⟨lt_of_lt_of_le haa₀ hx.1, lt_of_le_of_lt hx.2 hb₀b⟩,
       ⟨lt_of_lt_of_le hcc₀ hy.1, lt_of_le_of_lt hy.2 hd₀d⟩⟩
 
-/-- Integrate the horizontal marginal in the vertical direction. -/
+/--
+%%handwave
+name: Vertical primitive of the horizontal marginal
+statement:
+  For $f:\mathbb R^2\to\mathbb R$, define
+  $H(y)=\int_c^y\int_a^b f(x,t)\,dx\,dt$.
+-/
 def planarVerticalMarginalPrimitive
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (y : ℝ) : ℝ :=
   ∫ t in c..y, planarHorizontalMarginal a b f t
@@ -1906,7 +1825,13 @@ theorem planarVerticalMarginalPrimitive_hasCompactSupport_and_tsupport_subset
     exact hsupport'.trans Ioo_subset_Icc_self
   · exact hsupport'
 
-/-- The coefficient of the horizontal part of the desired primitive. -/
+/--
+%%handwave
+name: Vertical correction coefficient
+statement:
+  Given a density $\rho$ and the vertical marginal primitive $H$, define
+  $P(x,y)=-\rho(x)H(y)$.
+-/
 def planarVerticalPrimitiveCoefficient
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ)
     (p : ℝ × ℝ) : ℝ :=
@@ -2080,136 +2005,16 @@ theorem planarCompactSupportPrimitive_curl_eq
   unfold planarZeroHorizontalMarginalAdjustment
   ring
 
-/-- The constant covector with coefficients (P,dx+Q,dy). -/
-def planarCoordinateCovector (P Q : ℝ × ℝ → ℝ) (p : ℝ × ℝ) :
-    (ℝ × ℝ) →L[ℝ] ℝ :=
-  P p • ContinuousLinearMap.fst ℝ ℝ ℝ +
-    Q p • ContinuousLinearMap.snd ℝ ℝ ℝ
-
-/-- Regard the coordinate covector as a one-form coefficient. -/
-def planarPrimitiveOneFormCoefficient
-    (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) :
-    (ℝ × ℝ) [⋀^Fin 1]→L[ℝ] ℝ :=
-  ContinuousAlternatingMap.ofSubsingleton ℝ (ℝ × ℝ) ℝ (0 : Fin 1)
-    (planarCoordinateCovector
-      (planarVerticalPrimitiveCoefficient a b c f ρ)
-      (planarHorizontalPrimitive a b f ρ) p)
-
-/--
-%%handwave
-name:
-  Smoothness of the planar primitive one-form coefficient
-statement:
-  If \(a\le b\) and \(f:\mathbb R^2\to\mathbb R\) and
-  \(\rho:\mathbb R\to\mathbb R\) are smooth, then the one-form coefficient
-  field
-  \[
-    (x,y)\longmapsto P(x,y)\,dx+Q(x,y)\,dy
-  \]
-  produced by the planar primitive construction is smooth.
-proof:
-  The scalar coefficient functions \(P\) and \(Q\) are smooth.  Multiplication
-  by the fixed coordinate covectors \(dx\) and \(dy\), addition, and the
-  canonical identification of covectors with alternating one-forms preserve
-  smoothness.
--/
-theorem planarPrimitiveOneFormCoefficient_contDiff
-    {a b c : ℝ} (hab : a ≤ b) {f : ℝ × ℝ → ℝ} {ρ : ℝ → ℝ}
-    (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
-    ContDiff ℝ ∞ (planarPrimitiveOneFormCoefficient a b c f ρ) := by
-  have hP := planarVerticalPrimitiveCoefficient_contDiff (c := c) hab hf hρ
-  have hQ := planarHorizontalPrimitive_contDiff hab hf hρ
-  unfold planarPrimitiveOneFormCoefficient planarCoordinateCovector
-  exact (ContinuousAlternatingMap.ofSubsingletonLIE
-      (𝕜 := ℝ) (E := ℝ × ℝ) (F := ℝ) (0 : Fin 1)).contDiff.comp
-    (by fun_prop)
-
-/-- The full coordinate plane, regarded as an open subset of itself. -/
-def planarModelOpen : TopologicalSpace.Opens (ℝ × ℝ) := ⊤
-
-/-- The compactly supported coordinate one-form produced by the rectangle
-construction. -/
-noncomputable def planarCompactSupportPrimitiveOneForm
-    (a b c : ℝ) (hab : a ≤ b) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ)
-    (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
-    JJMath.Manifold.SmoothForms
-      (I := modelWithCornersSelf ℝ (ℝ × ℝ)) (M := planarModelOpen) ℝ 1 where
-  toFun := fun p ↦ planarPrimitiveOneFormCoefficient a b c f ρ (p : ℝ × ℝ)
-  isContMDiff := by
-    apply JJMath.Manifold.isContMDiffForm_modelOpen_of_contDiffOn_coeff
-      (E := ℝ × ℝ) planarModelOpen 1
-    refine (planarPrimitiveOneFormCoefficient_contDiff
-      (c := c) hab hf hρ).contDiffOn.congr ?_
-    intro x _hx
-    simp [JJMath.Manifold.modelOpenFormCoeffExtension, planarModelOpen]
-
-/-- The positively oriented coordinate basis of the plane. -/
-def planarOrientedBasis : Fin 2 → ℝ × ℝ
-  | 0 => (1, 0)
-  | 1 => (0, 1)
-
-/--
-%%handwave
-name:
-  Vertical-basis component of the planar primitive one-form
-statement:
-  For the one-form \(P\,dx+Q\,dy\), deleting the first vector from the
-  standard oriented basis \(((1,0),(0,1))\) and evaluating on the remaining
-  vector gives \(Q\).
-proof:
-  The remaining vector is \((0,1)\), on which \(dx\) vanishes and \(dy\)
-  takes the value one.
--/
-@[simp]
-theorem planarPrimitiveOneFormCoefficient_removeNth_zero
-    (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) :
-    planarPrimitiveOneFormCoefficient a b c f ρ p
-        (Fin.removeNth (0 : Fin 2) planarOrientedBasis) =
-      planarHorizontalPrimitive a b f ρ p := by
-  have htail : Fin.tail planarOrientedBasis =
-      (fun _ : Fin 1 ↦ ((0, 1) : ℝ × ℝ)) := by
-    funext i
-    fin_cases i
-    rfl
-  rw [show Fin.removeNth (0 : Fin 2) planarOrientedBasis =
-      Fin.tail planarOrientedBasis by rfl, htail]
-  change planarCoordinateCovector
-      (planarVerticalPrimitiveCoefficient a b c f ρ)
-      (planarHorizontalPrimitive a b f ρ) p (0, 1) = _
-  simp [planarCoordinateCovector]
-
-/--
-%%handwave
-name:
-  Horizontal-basis component of the planar primitive one-form
-statement:
-  For the one-form \(P\,dx+Q\,dy\), deleting the second vector from the
-  standard oriented basis \(((1,0),(0,1))\) and evaluating on the remaining
-  vector gives \(P\).
-proof:
-  The remaining vector is \((1,0)\), on which \(dx\) takes the value one and
-  \(dy\) vanishes.
--/
-@[simp]
-theorem planarPrimitiveOneFormCoefficient_removeNth_one
-    (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (p : ℝ × ℝ) :
-    planarPrimitiveOneFormCoefficient a b c f ρ p
-        (Fin.removeNth (1 : Fin 2) planarOrientedBasis) =
-      planarVerticalPrimitiveCoefficient a b c f ρ p := by
-  have hremove : Fin.removeNth (1 : Fin 2) planarOrientedBasis =
-      (fun _ : Fin 1 ↦ ((1, 0) : ℝ × ℝ)) := by
-    funext i
-    fin_cases i
-    rfl
-  rw [hremove]
-  change planarCoordinateCovector
-      (planarVerticalPrimitiveCoefficient a b c f ρ)
-      (planarHorizontalPrimitive a b f ρ) p (1, 0) = _
-  simp [planarCoordinateCovector]
-
 /-! ## Complex-coordinate wrapper -/
 
-/-- The planar primitive covector written on the complex coordinate plane. -/
+/--
+%%handwave
+name: Complex-coordinate planar primitive covector
+statement:
+  For $z=x+iy$, define the real covector
+  $\eta_z=P(x,y)\,d\operatorname{Re}+Q(x,y)\,d\operatorname{Im}$ from the
+  vertical correction $P$ and horizontal primitive $Q$.
+-/
 def complexPlanarPrimitiveCovector
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (z : ℂ) :
     ℂ →L[ℝ] ℝ :=
@@ -2218,7 +2023,14 @@ def complexPlanarPrimitiveCovector
     planarHorizontalPrimitive a b f ρ (Complex.equivRealProdCLM z) •
       Complex.imCLM
 
-/-- Regard the complex-coordinate covector as a one-form coefficient. -/
+/--
+%%handwave
+name: Alternating one-form coefficient of the planar primitive
+statement:
+  Regard the real covector
+  $P(x,y)\,d\operatorname{Re}+Q(x,y)\,d\operatorname{Im}$ as a continuous
+  alternating one-linear form on the complex tangent plane.
+-/
 def complexPlanarPrimitiveOneFormCoefficient
     (a b c : ℝ) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ) (z : ℂ) :
     ℂ [⋀^Fin 1]→L[ℝ] ℝ :=
@@ -2342,7 +2154,12 @@ theorem complexPlanarPrimitiveOneFormCoefficient_hasCompactSupport_and_tsupport_
       (Set.prod_mono Ioo_subset_Icc_self Ioo_subset_Icc_self))
   · exact hrect
 
-/-- The full complex coordinate plane as an open model subset. -/
+/--
+%%handwave
+name: Full complex-plane model open set
+statement:
+  Define the planar model open set to be all of $\mathbb C$.
+-/
 def complexPlanarModelOpen : TopologicalSpace.Opens ℂ := ⊤
 
 /-! ## Full-plane charts subordinate to an open set -/
@@ -2392,8 +2209,14 @@ theorem ContMDiff.codRestrict_open_aux
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- The usual radial diffeomorphism from the plane onto an open ball, as a
-partial diffeomorphism of the ambient plane. -/
+/--
+%%handwave
+name: Radial diffeomorphism from the plane to a ball
+statement:
+  For $c\in\mathbb C$ and $r>0$, bundle the smooth radial map
+  $z\mapsto c+r(1+\lVert z\rVert^2)^{-1/2}z$ as a partial diffeomorphism
+  from $\mathbb C$ onto $B(c,r)$.
+-/
 noncomputable def complexUnivBallPartialDiffeomorph
     (c : ℂ) (r : ℝ) (hr : 0 < r) :
     PartialDiffeomorph SurfaceRealModel SurfaceRealModel ℂ ℂ ∞ where
@@ -2442,8 +2265,14 @@ theorem complexUnivBallPartialDiffeomorph_target
     (complexUnivBallPartialDiffeomorph c r hr).target = Metric.ball c r := by
   exact OpenPartialHomeomorph.univBall_target c hr
 
-/-- A partial diffeomorphism whose target is the whole complex plane induces
-a diffeomorphism from its open source to the full planar model open set. -/
+/--
+%%handwave
+name: Diffeomorphism from a partial source onto the complex plane
+statement:
+  If a partial diffeomorphism $T:X\dashrightarrow\mathbb C$ has target all of
+  $\mathbb C$, restrict its forward and inverse maps to obtain a
+  diffeomorphism $\operatorname{source}(T)\cong\mathbb C$.
+-/
 noncomputable def partialDiffeomorphSourceToComplexPlanarModelOpen
     {X : Type*} [TopologicalSpace X] [ChartedSpace ℂ X]
     [IsManifold SurfaceRealModel ∞ X]
@@ -2588,7 +2417,14 @@ theorem exists_complexPlanarChart_subordinate
   exact ⟨U, hxU, hUW,
     ⟨partialDiffeomorphSourceToComplexPlanarModelOpen T hTtarget⟩⟩
 
-/-- The rectangle primitive as a one-form on the complex coordinate plane. -/
+/--
+%%handwave
+name: Smooth one-form of the rectangular planar primitive
+statement:
+  Bundle the coefficient field
+  $\eta=P\,d\operatorname{Re}+Q\,d\operatorname{Im}$ as a smooth one-form on
+  $\mathbb C$.
+-/
 noncomputable def complexPlanarCompactSupportPrimitiveOneForm
     (a b c : ℝ) (hab : a ≤ b) (f : ℝ × ℝ → ℝ) (ρ : ℝ → ℝ)
     (hf : ContDiff ℝ ∞ f) (hρ : ContDiff ℝ ∞ ρ) :
@@ -2603,7 +2439,12 @@ noncomputable def complexPlanarCompactSupportPrimitiveOneForm
     intro z _hz
     simp [JJMath.Manifold.modelOpenFormCoeffExtension, complexPlanarModelOpen]
 
-/-- The positively oriented real basis of the complex plane. -/
+/--
+%%handwave
+name: Standard oriented real basis of the complex plane
+statement:
+  Define the ordered real basis of $\mathbb C$ by $e_0=1$ and $e_1=i$.
+-/
 def complexPlanarOrientedBasis : Fin 2 → ℂ
   | 0 => 1
   | 1 => Complex.I
@@ -2819,8 +2660,13 @@ theorem deRhamDifferential_complexPlanarCompactSupportPrimitiveOneForm_apply_bas
 
 /-! ## Exactness of zero-mass two-forms in one complex coordinate plane -/
 
-/-- The scalar coefficient of a two-form on the complex coordinate plane,
-evaluated on the positively oriented real basis. -/
+/--
+%%handwave
+name: Oriented scalar coefficient of a planar two-form
+statement:
+  For a smooth two-form $\omega$ on $\mathbb C$, define its oriented
+  coefficient by $f_\omega(z)=\omega_z(1,i)$.
+-/
 noncomputable def complexPlanarTwoFormCoefficient
     (omega : JJMath.Manifold.SmoothForms
       (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2)
@@ -2867,8 +2713,13 @@ theorem complexPlanarTwoFormCoefficient_contDiff
   exact (ContinuousAlternatingMap.apply ℝ ℂ ℝ
     complexPlanarOrientedBasis).contDiff.comp hfield
 
-/-- The same scalar coefficient, written as a function of real-imaginary
-coordinate pairs. -/
+/--
+%%handwave
+name: Real-coordinate coefficient of a planar two-form
+statement:
+  For a smooth two-form $\omega$ on $\mathbb C$, define
+  $\widehat f_\omega(x,y)=\omega_{x+iy}(1,i)$.
+-/
 noncomputable def planarCoefficientOfComplexTwoForm
     (omega : JJMath.Manifold.SmoothForms
       (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2)
@@ -2931,8 +2782,14 @@ theorem complexTopDegreeContinuousAlternatingMap_ext_basis
       simp [Complex.coe_basisOneI, complexPlanarOrientedBasis]
   simpa [hb] using h
 
-/-- The standard oriented area form on the complex plane, viewed as a
-two-dimensional real vector space. -/
+/--
+%%handwave
+name: Standard oriented area form on the complex plane
+statement:
+  Define the continuous alternating real-bilinear form
+  $d\operatorname{Re}\wedge d\operatorname{Im}$ using the determinant in
+  the oriented basis $(1,i)$.
+-/
 noncomputable def complexPlanarAreaForm : ℂ [⋀^Fin 2]→L[ℝ] ℝ :=
   Complex.basisOneI.det.mkContinuous 2 (by
     intro m
@@ -2980,7 +2837,13 @@ theorem complexPlanarAreaForm_basis :
   change Complex.basisOneI.det (fun i : Fin 2 ↦ Complex.basisOneI i) = 1
   rw [Module.Basis.det_self]
 
-/-- Build a planar two-form from its oriented scalar coefficient. -/
+/--
+%%handwave
+name: Planar two-form with a prescribed scalar coefficient
+statement:
+  For a smooth $f:\mathbb R^2\to\mathbb R$, define the smooth two-form
+  $\omega_{x+iy}=f(x,y)\,d\operatorname{Re}\wedge d\operatorname{Im}$.
+-/
 noncomputable def complexPlanarTwoFormOfCoefficient
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
     SmoothForms (I := SurfaceRealModel)
@@ -3096,8 +2959,14 @@ theorem complexPlanarTwoFormOfPlanarCoefficient
   rw [harea, mul_one]
   rfl
 
-/-- Apply the explicit rectangle primitive to the oriented coefficient of a
-two-form on the complex coordinate plane. -/
+/--
+%%handwave
+name: Rectangular primitive of a planar two-form
+statement:
+  Given a smooth two-form $\omega=f_\omega\,d\operatorname{Re}\wedge
+  d\operatorname{Im}$, define its one-form primitive by applying the explicit
+  rectangular construction to $f_\omega$ and a chosen density $\rho$.
+-/
 noncomputable def complexPlanarPrimitiveOfTwoForm
     (a b c : ℝ) (hab : a ≤ b)
     (omega : JJMath.Manifold.SmoothForms
@@ -3150,8 +3019,14 @@ theorem deRhamDifferential_complexPlanarPrimitiveOfTwoForm
   simpa [planarCoefficientOfComplexTwoForm,
     complexPlanarTwoFormCoefficient] using h
 
-/-- The compact closed rectangle used as a support core in the full complex
-coordinate plane. -/
+/--
+%%handwave
+name: Closed rectangular core in the complex plane
+statement:
+  For $a,b,c,d\in\mathbb R$, define
+  $K_{a,b,c,d}=\{z\in\mathbb C:a\le\operatorname{Re}z\le b,\
+  c\le\operatorname{Im}z\le d\}$.
+-/
 def complexPlanarRectangleCore (a b c d : ℝ) :
     Set complexPlanarModelOpen :=
   {z | Complex.equivRealProdCLM (z : ℂ) ∈
@@ -3243,176 +3118,15 @@ theorem complexPlanarPrimitiveOfTwoForm_toFun_eq_zero_of_not_mem_rectangle
       (planarCoefficientOfComplexTwoForm omega) ρ (z : ℂ) = 0
   exact image_eq_zero_of_notMem_tsupport hzts
 
-/-- The normalized two-form carrying the total mass of a planar coefficient
-inside a prescribed rectangle. -/
-noncomputable def complexPlanarTransportedMassTwoForm
-    (a b c d : ℝ) (f : ℝ × ℝ → ℝ) :
-    SmoothForms (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2 :=
-  complexPlanarTwoFormOfCoefficient
-    (fun p ↦ planarRectangleMass a b c d f *
-      planarRectangleNormalizingDensity a b c d p)
-    (contDiff_const.mul planarRectangleNormalizingDensity_contDiff)
-
-/-- An explicit compactly supported one-form that removes the mass of a
-planar two-form from a rectangle and replaces it by the normalized bump in
-the same rectangle. -/
-noncomputable def complexPlanarMassTransportPrimitive
-    (a b c d : ℝ) (hab : a < b) (f : ℝ × ℝ → ℝ)
-    (hf : ContDiff ℝ ∞ f) :
-    SmoothForms (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 1 :=
-  complexPlanarPrimitiveOfTwoForm a b c hab.le
-    (complexPlanarTwoFormOfCoefficient
-      (planarMassTransportRemainder a b c d f)
-      (planarMassTransportRemainder_contDiff hf))
-    (intervalNormalizingDensity a b)
-    intervalNormalizingDensity_contDiff
-
 /--
 %%handwave
-name:
-  Differential of the planar rectangular mass-transport primitive
+name: Normalized target form for planar mass transport
 statement:
-  Let \(a<b\), let \(f:\mathbb R^2\to\mathbb R\) be smooth, and let
-  \(\eta\) be the explicit planar one-form which subtracts from \(f\) a
-  normalized bump supported in \([a,b]\times[c,d]\) carrying the rectangular
-  mass
-  \[
-    m=\int_c^d\int_a^b f(x,y)\,dx\,dy.
-  \]
-  Then
-  \[
-    d\eta=f\,dx\wedge dy-m\sigma_{a,b,c,d}\,dx\wedge dy,
-  \]
-  where \(\sigma_{a,b,c,d}\) is the normalized rectangular density.
-proof:
-  The primitive construction differentiates to the two-form whose coefficient
-  is the mass-transport remainder
-  \(f-m\sigma_{a,b,c,d}\).  Evaluate both sides on the standard oriented
-  basis to identify this coefficient with the displayed difference of
-  two-forms.
+  Define the target two-form
+  $M_{A,B,C,D}(f)\sigma_{a,b,c,d}\,
+  d\operatorname{Re}\wedge d\operatorname{Im}$, which places the mass of $f$
+  on the outer rectangle into the normalized target rectangle.
 -/
-theorem deRhamDifferential_complexPlanarMassTransportPrimitive
-    {a b c d : ℝ} (hab : a < b)
-    (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
-    deRhamDifferential (I := SurfaceRealModel)
-        (M := complexPlanarModelOpen) (A := ℝ) 1
-        (complexPlanarMassTransportPrimitive a b c d hab f hf) =
-      complexPlanarTwoFormOfCoefficient f hf -
-        complexPlanarTransportedMassTwoForm a b c d f := by
-  rw [complexPlanarMassTransportPrimitive,
-    deRhamDifferential_complexPlanarPrimitiveOfTwoForm]
-  apply DifferentialForm.ext
-  intro z
-  apply complexTopDegreeContinuousAlternatingMap_ext_basis
-  change
-    (complexPlanarTwoFormOfCoefficient
-      (planarMassTransportRemainder a b c d f) _).toFun z
-        complexPlanarOrientedBasis =
-      (complexPlanarTwoFormOfCoefficient f hf).toFun z
-          complexPlanarOrientedBasis -
-        (complexPlanarTransportedMassTwoForm a b c d f).toFun z
-          complexPlanarOrientedBasis
-  rw [complexPlanarTwoFormOfCoefficient_apply_basis,
-    show complexPlanarTransportedMassTwoForm a b c d f =
-      complexPlanarTwoFormOfCoefficient
-        (fun p ↦ planarRectangleMass a b c d f *
-          planarRectangleNormalizingDensity a b c d p)
-        (contDiff_const.mul planarRectangleNormalizingDensity_contDiff) by rfl,
-    complexPlanarTwoFormOfCoefficient_apply_basis,
-    complexPlanarTwoFormOfCoefficient_apply_basis]
-  rfl
-
-/--
-%%handwave
-name:
-  Support of the normalized planar transported-mass form
-statement:
-  If \(a<b\) and \(c<d\), then the two-form
-  \[
-    m\sigma_{a,b,c,d}\,dx\wedge dy
-  \]
-  carrying the rectangular mass \(m\) vanishes outside
-  \([a,b]\times[c,d]\).
-proof:
-  The normalized density \(\sigma_{a,b,c,d}\) is supported in the open
-  rectangle.  At a point outside the closed rectangle its value is therefore
-  zero, so its scalar multiple of the planar area form is zero.
--/
-theorem complexPlanarTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (f : ℝ × ℝ → ℝ) (z : complexPlanarModelOpen)
-    (hz : z ∉ complexPlanarRectangleCore a b c d) :
-    (complexPlanarTransportedMassTwoForm a b c d f).toFun z = 0 := by
-  have hp : ((z : ℂ).re, (z : ℂ).im) ∉
-      tsupport (planarRectangleNormalizingDensity a b c d) := by
-    intro hp
-    apply hz
-    have hp' := planarRectangleNormalizingDensity_tsupport_subset
-      hab hcd hp
-    exact ⟨Ioo_subset_Icc_self hp'.1, Ioo_subset_Icc_self hp'.2⟩
-  have hzero := image_eq_zero_of_notMem_tsupport hp
-  change (planarRectangleMass a b c d f *
-      planarRectangleNormalizingDensity a b c d
-        ((z : ℂ).re, (z : ℂ).im)) • complexPlanarAreaForm = 0
-  rw [hzero, mul_zero, zero_smul]
-
-/--
-%%handwave
-name:
-  Support of the planar rectangular mass-transport primitive
-statement:
-  Let \(a<b\) and \(c<d\), and let \(f:\mathbb R^2\to\mathbb R\) be smooth
-  with closed support contained in \((a,b)\times(c,d)\).  The explicit
-  mass-transport one-form associated with \(f\) vanishes outside the closed
-  rectangle \([a,b]\times[c,d]\).
-proof:
-  Subtracting the normalized rectangular bump gives a smooth remainder still
-  supported in the open rectangle and with total integral zero.  Apply the
-  rectangular support theorem for the explicit primitive to this remainder,
-  using the normalized horizontal density.
--/
-theorem complexPlanarMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f)
-    (hfrect : tsupport f ⊆ Ioo a b ×ˢ Ioo c d)
-    (z : complexPlanarModelOpen)
-    (hz : z ∉ complexPlanarRectangleCore a b c d) :
-    (complexPlanarMassTransportPrimitive a b c d hab f hf).toFun z = 0 := by
-  let r := planarMassTransportRemainder a b c d f
-  have hr : ContDiff ℝ ∞ r := planarMassTransportRemainder_contDiff hf
-  have hcoeff : planarCoefficientOfComplexTwoForm
-      (complexPlanarTwoFormOfCoefficient r hr) = r :=
-    planarCoefficientOfComplexPlanarTwoFormOfCoefficient r hr
-  have hfc : HasCompactSupport
-      (planarCoefficientOfComplexTwoForm
-        (complexPlanarTwoFormOfCoefficient r hr)) := by
-    rw [hcoeff]
-    apply IsCompact.of_isClosed_subset
-      (isCompact_Icc.prod isCompact_Icc)
-      (isClosed_tsupport r)
-    exact (planarMassTransportRemainder_tsupport_subset hab hcd hfrect).trans
-      (Set.prod_mono Ioo_subset_Icc_self Ioo_subset_Icc_self)
-  have hfrect' : tsupport (planarCoefficientOfComplexTwoForm
-      (complexPlanarTwoFormOfCoefficient r hr)) ⊆
-      Ioo a b ×ˢ Ioo c d := by
-    rw [hcoeff]
-    exact planarMassTransportRemainder_tsupport_subset hab hcd hfrect
-  have htotal : ∫ y in c..d,
-      planarHorizontalMarginal a b
-        (planarCoefficientOfComplexTwoForm
-          (complexPlanarTwoFormOfCoefficient r hr)) y = 0 := by
-    rw [hcoeff]
-    exact planarMassTransportRemainder_total_eq_zero hab hcd hf
-  exact complexPlanarPrimitiveOfTwoForm_toFun_eq_zero_of_not_mem_rectangle
-    (omega := complexPlanarTwoFormOfCoefficient r hr)
-    (ρ := intervalNormalizingDensity a b)
-    hab hcd hfc hfrect'
-    intervalNormalizingDensity_contDiff
-    (intervalNormalizingDensity_tsupport_subset hab)
-    (intervalNormalizingDensity_integral_eq_one hab)
-    htotal z hz
-
-/-- The normalized target two-form for a two-rectangle transport step. -/
 noncomputable def complexPlanarTransportedMassTwoFormTo
     (A B C D a b c d : ℝ) (f : ℝ × ℝ → ℝ) :
     SmoothForms (I := SurfaceRealModel) (M := complexPlanarModelOpen) ℝ 2 :=
@@ -3421,8 +3135,15 @@ noncomputable def complexPlanarTransportedMassTwoFormTo
       planarRectangleNormalizingDensity a b c d p)
     (contDiff_const.mul planarRectangleNormalizingDensity_contDiff)
 
-/-- The compactly supported primitive which moves mass from an outer
-rectangle into an inner target rectangle. -/
+/--
+%%handwave
+name: Planar mass-transport primitive between rectangles
+statement:
+  Apply the rectangular primitive construction to
+  $r=f-M_{A,B,C,D}(f)\sigma_{a,b,c,d}$, using the normalized density on
+  $[A,B]$, to obtain a one-form whose differential is the source form minus
+  the target form.
+-/
 noncomputable def complexPlanarMassTransportPrimitiveTo
     (A B C D a b c d : ℝ) (hAB : A < B)
     (f : ℝ × ℝ → ℝ) (hf : ContDiff ℝ ∞ f) :
@@ -3616,8 +3337,14 @@ theorem exists_closed_rectangle_subset_of_mem_open
 
 /-! ## Transport through one complex coordinate chart -/
 
-/-- Write a two-form on a coordinate open set as a two-form on the full
-complex coordinate plane. -/
+/--
+%%handwave
+name: Pushforward of a two-form to a full-plane coordinate
+statement:
+  For a diffeomorphism $\varphi:U\to\mathbb C$ and a smooth two-form
+  $\alpha$ on $U$, define its coordinate pushforward as
+  $(\varphi^{-1})^*\alpha$ on $\mathbb C$.
+-/
 noncomputable def complexCoordinatePushforwardTwoForm
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3741,122 +3468,13 @@ theorem exists_open_rectangle_containing_compact
     (le_max_right |p.1| |p.2|).trans_lt (by simpa using hball)
   exact ⟨abs_lt.mp hfst, abs_lt.mp hsnd⟩
 
-/-- Pull the explicit planar mass-transport primitive back through a complex
-coordinate chart. -/
-noncomputable def complexCoordinateLocalMassTransportPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    (a b c d : ℝ) (hab : a < b)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2) :
-    SmoothForms (I := I) (M := U) ℝ 1 :=
-  smoothFormsPullbackDiffeomorph I SurfaceRealModel phi 1
-    (complexPlanarMassTransportPrimitive a b c d hab
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha))
-      (planarCoefficientOfComplexTwoForm_contDiff
-        (complexCoordinatePushforwardTwoForm I U phi alpha)))
-
-/-- The normalized transported mass two-form in the original coordinate
-open set. -/
-noncomputable def complexCoordinateLocalTransportedMassTwoForm
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    (a b c d : ℝ)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2) :
-    SmoothForms (I := I) (M := U) ℝ 2 :=
-  smoothFormsPullbackDiffeomorph I SurfaceRealModel phi 2
-    (complexPlanarTransportedMassTwoForm a b c d
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)))
-
-omit [T2Space M] in
 /--
 %%handwave
-name:
-  Differential of a local rectangular mass-transport primitive
+name: Closed rectangular core in a complex coordinate chart
 statement:
-  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart, let
-  \(a<b\), and let \(\alpha\) be a smooth two-form on \(U\).  The local
-  rectangular mass-transport one-form \(\eta\), obtained from the coordinate
-  coefficient of \(\alpha\), satisfies
-  \[
-    d\eta=\alpha-\beta,
-  \]
-  where \(\beta\) is the normalized two-form carrying the same total mass in
-  the chosen rectangle.
-proof:
-  Exterior differentiation commutes with pullback through the chart.  Apply
-  the planar mass-transport identity and distribute the pullback over the
-  difference; the inverse pullback composition recovers \(\alpha\).
+  For a full-plane coordinate $\varphi:U\to\mathbb C$, define
+  $K_{a,b,c,d}^{\varphi}=\varphi^{-1}(K_{a,b,c,d})$.
 -/
-theorem deRhamDifferential_complexCoordinateLocalMassTransportPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2) :
-    deRhamDifferential (I := I) (M := U) (A := ℝ) 1
-        (complexCoordinateLocalMassTransportPrimitive
-          I U phi a b c d hab alpha) =
-      alpha - complexCoordinateLocalTransportedMassTwoForm
-        I U phi a b c d alpha := by
-  rw [complexCoordinateLocalMassTransportPrimitive,
-    deRhamDifferential_smoothFormsPullbackDiffeomorph,
-    deRhamDifferential_complexPlanarMassTransportPrimitive,
-    map_sub, complexCoordinateLocalTransportedMassTwoForm,
-    complexPlanarTwoFormOfPlanarCoefficient,
-    complexCoordinatePushforwardTwoForm,
-    smoothFormsPullbackDiffeomorph_comp_symm]
-
-/-- Pull the explicit planar primitive back to the original coordinate open
-set. -/
-noncomputable def complexCoordinateLocalPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    (a b c : ℝ) (hab : a ≤ b)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ) (hρ : ContDiff ℝ ∞ ρ) :
-    SmoothForms (I := I) (M := U) ℝ 1 :=
-  smoothFormsPullbackDiffeomorph I SurfaceRealModel phi 1
-    (complexPlanarPrimitiveOfTwoForm a b c hab
-      (complexCoordinatePushforwardTwoForm I U phi alpha) ρ hρ)
-
-omit [T2Space M] in
-/--
-%%handwave
-name:
-  Differential of a coordinate-local primitive of a two-form
-statement:
-  Let \(\varphi:U\to\mathbb C\) be a smooth complex coordinate chart.  For a
-  smooth two-form \(\alpha\) on \(U\), a horizontal interval \([a,b]\) with
-  \(a\le b\), a reference height \(c\), and a smooth normalizing density
-  \(\rho\), the coordinate-local one-form obtained from the explicit planar
-  construction satisfies
-  \[
-    d\eta=\alpha.
-  \]
-proof:
-  By naturality, differentiating the pulled-back one-form is the pullback of
-  the derivative of the planar primitive.  The planar primitive differentiates
-  to the coordinate pushforward of \(\alpha\), and the two inverse coordinate
-  pullbacks cancel.
--/
-theorem deRhamDifferential_complexCoordinateLocalPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c : ℝ} (hab : a ≤ b)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ) (hρ : ContDiff ℝ ∞ ρ) :
-    deRhamDifferential (I := I) (M := U) (A := ℝ) 1
-        (complexCoordinateLocalPrimitive I U phi a b c hab alpha ρ hρ) =
-      alpha := by
-  rw [complexCoordinateLocalPrimitive,
-    deRhamDifferential_smoothFormsPullbackDiffeomorph,
-    deRhamDifferential_complexPlanarPrimitiveOfTwoForm,
-    complexCoordinatePushforwardTwoForm,
-    smoothFormsPullbackDiffeomorph_comp_symm]
-
-/-- The inverse image of a closed coordinate rectangle in a complex
-coordinate open set. -/
 def complexCoordinateRectangleCore
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -3964,83 +3582,6 @@ omit [T2Space M] in
 /--
 %%handwave
 name:
-  Rectangular support of a local mass-transport primitive
-statement:
-  Suppose \(a<b\), \(c<d\), and the coordinate coefficient of a smooth
-  two-form \(\alpha\) is supported in \((a,b)\times(c,d)\).  The local
-  mass-transport one-form constructed from \(\alpha\) vanishes at every
-  \(x\in U\) with
-  \(\varphi(x)\notin[a,b]\times[c,d]\).
-proof:
-  The corresponding planar primitive vanishes outside the closed rectangle.
-  Its pullback at \(x\) is the zero alternating form composed with the tangent
-  map of the chart, and is therefore zero.
--/
-theorem complexCoordinateLocalMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Ioo a b ×ˢ Ioo c d)
-    (x : U) (hx : x ∉ complexCoordinateRectangleCore I U phi a b c d) :
-    (complexCoordinateLocalMassTransportPrimitive
-      I U phi a b c d hab alpha).toFun x = 0 := by
-  have hplane :=
-    complexPlanarMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
-      hab hcd
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha))
-      (planarCoefficientOfComplexTwoForm_contDiff
-        (complexCoordinatePushforwardTwoForm I U phi alpha))
-      hfrect (phi x) hx
-  change ((complexPlanarMassTransportPrimitive a b c d hab
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha))
-      _).toFun (phi x)).compContinuousLinearMap _ = 0
-  rw [hplane]
-  rfl
-
-omit [T2Space M] in
-/--
-%%handwave
-name:
-  Rectangular support of the local transported-mass two-form
-statement:
-  For \(a<b\) and \(c<d\), the normalized transported-mass two-form associated
-  with a smooth two-form \(\alpha\) on a coordinate chart vanishes at every
-  \(x\in U\) such that \(\varphi(x)\notin[a,b]\times[c,d]\).
-proof:
-  The normalized planar two-form is zero outside the closed rectangle.
-  Pulling it back through the coordinate chart preserves this pointwise
-  vanishing.
--/
-theorem complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (x : U) (hx : x ∉ complexCoordinateRectangleCore I U phi a b c d) :
-    (complexCoordinateLocalTransportedMassTwoForm
-      I U phi a b c d alpha).toFun x = 0 := by
-  have hplane :=
-    complexPlanarTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
-      hab hcd
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha))
-      (phi x) hx
-  change ((complexPlanarTransportedMassTwoForm a b c d
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha))).toFun
-      (phi x)).compContinuousLinearMap _ = 0
-  rw [hplane]
-  rfl
-
-omit [T2Space M] in
-/--
-%%handwave
-name:
   Rectangular coefficient support implies support of the two-form
 statement:
   Let \(\alpha\) be a smooth two-form on a complex coordinate chart.  If the
@@ -4093,8 +3634,14 @@ theorem complexCoordinateTwoForm_toFun_eq_zero_of_coefficient_tsupport
 
 /-! ### Transport between two rectangles in one coordinate chart -/
 
-/-- Pull back the explicit primitive which replaces the mass in an outer
-coordinate rectangle by a normalized bump in an inner target rectangle. -/
+/--
+%%handwave
+name: Local coordinate mass-transport primitive
+statement:
+  Push a two-form $\alpha$ on $U$ to $\mathbb C$, form its planar
+  two-rectangle mass-transport primitive $\eta$, and define the local
+  primitive on $U$ to be $\varphi^*\eta$.
+-/
 noncomputable def complexCoordinateLocalMassTransportPrimitiveTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -4108,7 +3655,14 @@ noncomputable def complexCoordinateLocalMassTransportPrimitiveTo
       (planarCoefficientOfComplexTwoForm_contDiff
         (complexCoordinatePushforwardTwoForm I U phi alpha)))
 
-/-- The normalized target bump of a two-rectangle coordinate transport. -/
+/--
+%%handwave
+name: Local coordinate target form for mass transport
+statement:
+  Push a two-form $\alpha$ on $U$ to the coordinate plane, form the normalized
+  target two-form carrying its outer-rectangle mass, and pull that form back
+  to $U$ through $\varphi$.
+-/
 noncomputable def complexCoordinateLocalTransportedMassTwoFormTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -4270,8 +3824,14 @@ theorem complexCoordinateRectangleCore_target_subset_outer
   exact ⟨⟨hAa.le.trans hx.1.1, hx.1.2.trans hbB.le⟩,
     ⟨hCc.le.trans hx.2.1, hx.2.2.trans hdD.le⟩⟩
 
-/-- Extend a two-rectangle coordinate transport primitive by zero to the
-ambient surface. -/
+/--
+%%handwave
+name: Global zero extension of a coordinate transport primitive
+statement:
+  If the local coordinate transport primitive is supported in the compact
+  outer rectangular core, define a smooth one-form on $M$ by extending it
+  from $U$ by zero.
+-/
 noncomputable def complexCoordinateGlobalMassTransportPrimitiveTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -4331,8 +3891,13 @@ theorem complexCoordinateGlobalMassTransportPrimitiveTo_toFun_eq_zero_of_not_mem
   exact hx (smoothFormCompactCore_subset U
     (complexCoordinateRectangleCore I U phi A B C D) hcore)
 
-/-- Extend the target bump of a two-rectangle coordinate transport by zero
-to the ambient surface. -/
+/--
+%%handwave
+name: Global zero extension of a coordinate target form
+statement:
+  Extend the local normalized target two-form from $U$ to $M$ by zero, using
+  the compact outer coordinate rectangle as a support core.
+-/
 noncomputable def complexCoordinateGlobalTransportedMassTwoFormTo
     (U : TopologicalSpace.Opens M)
     (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
@@ -4940,287 +4505,6 @@ theorem exists_compactSupport_transport_along_path
     change eta.toFun y + etaEnd.toFun y = 0
     rw [heta y hyW,
       hetaEnd y (fun hySelected => hyW (hchainUW (m + 1) hySelected)), zero_add]
-
-/-- Extend the coordinate mass-transport primitive by zero to the ambient
-manifold. -/
-noncomputable def complexCoordinateGlobalMassTransportPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Ioo a b ×ˢ Ioo c d) :
-    SmoothForms (I := I) (M := M) ℝ 1 :=
-  smoothFormCompactZeroExtension I U
-    (complexCoordinateRectangleCore I U phi a b c d)
-    (complexCoordinateRectangleCore_isCompact I U phi a b c d)
-    (complexCoordinateLocalMassTransportPrimitive
-      I U phi a b c d hab alpha)
-    (complexCoordinateLocalMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha hfrect)
-
-/-- Extend the normalized transported mass two-form by zero to the ambient
-manifold. -/
-noncomputable def complexCoordinateGlobalTransportedMassTwoForm
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2) :
-    SmoothForms (I := I) (M := M) ℝ 2 :=
-  smoothFormCompactZeroExtension I U
-    (complexCoordinateRectangleCore I U phi a b c d)
-    (complexCoordinateRectangleCore_isCompact I U phi a b c d)
-    (complexCoordinateLocalTransportedMassTwoForm
-      I U phi a b c d alpha)
-    (complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha)
-
-/--
-%%handwave
-name:
-  Differential of the global coordinate mass-transport primitive
-statement:
-  Suppose the coordinate coefficient of a local two-form \(\alpha\) is
-  supported in \((a,b)\times(c,d)\).  Extending the coordinate
-  mass-transport primitive by zero gives an ambient one-form \(\eta\) with
-  \[
-    d\eta=\widetilde\alpha-\widetilde\beta,
-  \]
-  where \(\widetilde\alpha\) is the zero extension of \(\alpha\) and
-  \(\widetilde\beta\) is the zero extension of the normalized replacement
-  two-form on the same rectangle.
-proof:
-  Exterior differentiation commutes with compactly supported extension by
-  zero.  Apply the local coordinate mass-transport identity
-  \(d\eta_{\mathrm{loc}}=\alpha-\beta\), then use linearity of zero extension
-  with respect to subtraction.
--/
-theorem deRhamDifferential_complexCoordinateGlobalMassTransportPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Ioo a b ×ˢ Ioo c d) :
-    deRhamDifferential (I := I) (M := M) (A := ℝ) 1
-        (complexCoordinateGlobalMassTransportPrimitive
-          I U phi hab hcd alpha hfrect) =
-      smoothFormCompactZeroExtension I U
-          (complexCoordinateRectangleCore I U phi a b c d)
-          (complexCoordinateRectangleCore_isCompact I U phi a b c d)
-          alpha
-          (complexCoordinateTwoForm_toFun_eq_zero_of_coefficient_tsupport
-            I U phi alpha hfrect) -
-        complexCoordinateGlobalTransportedMassTwoForm
-          I U phi hab hcd alpha := by
-  let K := complexCoordinateRectangleCore I U phi a b c d
-  let hK := complexCoordinateRectangleCore_isCompact I U phi a b c d
-  let eta := complexCoordinateLocalMassTransportPrimitive
-    I U phi a b c d hab alpha
-  let beta := complexCoordinateLocalTransportedMassTwoForm
-    I U phi a b c d alpha
-  let heta : ∀ x : U, x ∉ K → eta.toFun x = 0 :=
-    complexCoordinateLocalMassTransportPrimitive_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha hfrect
-  let hbeta : ∀ x : U, x ∉ K → beta.toFun x = 0 :=
-    complexCoordinateLocalTransportedMassTwoForm_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha
-  let halpha : ∀ x : U, x ∉ K → alpha.toFun x = 0 :=
-    complexCoordinateTwoForm_toFun_eq_zero_of_coefficient_tsupport
-      I U phi alpha hfrect
-  rw [complexCoordinateGlobalMassTransportPrimitive,
-    deRhamDifferential_smoothFormCompactZeroExtension]
-  calc
-    smoothFormCompactZeroExtension I U K hK
-        (deRhamDifferential (I := I) (M := U) (A := ℝ) 1 eta)
-        (deRhamDifferential_toFun_eq_zero_of_not_mem_compact
-          I U K hK eta heta) =
-      smoothFormCompactZeroExtension I U K hK (alpha - beta)
-        (fun x hx ↦ by
-          change alpha.toFun x - beta.toFun x = 0
-          rw [halpha x hx, hbeta x hx, sub_self]) := by
-            apply smoothFormCompactZeroExtension_congr I U K hK
-            exact
-              deRhamDifferential_complexCoordinateLocalMassTransportPrimitive
-                I U phi hab alpha
-    _ = smoothFormCompactZeroExtension I U K hK alpha halpha -
-          smoothFormCompactZeroExtension I U K hK beta hbeta :=
-      smoothFormCompactZeroExtension_sub I U K hK alpha beta halpha hbeta
-    _ = _ := rfl
-
-omit [T2Space M] in
-/--
-%%handwave
-name:
-  Support of a coordinate-local primitive with zero total mass
-statement:
-  Let \(a<b\) and \(c<d\).  Suppose the oriented coordinate coefficient of a
-  smooth two-form \(\alpha\) is supported in \((a,b)\times(c,d)\), and let
-  \(\rho\) be a smooth function supported in \((a,b)\) with
-  \(\int_a^b\rho=1\).  If
-  \[
-    \int_c^d\int_a^b f(x,y)\,dx\,dy=0,
-  \]
-  where \(f\) is the coordinate coefficient of \(\alpha\), then the explicit
-  coordinate-local primitive vanishes outside the inverse image of
-  \([a,b]\times[c,d]\).
-proof:
-  The support assumptions make \(f\) compactly supported.  Apply the planar
-  support theorem for the explicit zero-mass primitive and pull the resulting
-  zero value back through the coordinate chart.
--/
-theorem complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Set.Ioo a b ×ˢ Set.Ioo c d)
-    (hρ : ContDiff ℝ ∞ ρ)
-    (hρsupport : tsupport ρ ⊆ Set.Ioo a b)
-    (hρone : ∫ x in a..b, ρ x = 1)
-    (htotal : ∫ y in c..d, planarHorizontalMarginal a b
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) y = 0)
-    (x : U) (hx : x ∉ complexCoordinateRectangleCore I U phi a b c d) :
-    (complexCoordinateLocalPrimitive I U phi a b c hab.le alpha ρ hρ).toFun x =
-      0 := by
-  let omega := complexCoordinatePushforwardTwoForm I U phi alpha
-  have hfc : HasCompactSupport (planarCoefficientOfComplexTwoForm omega) := by
-    apply IsCompact.of_isClosed_subset
-      (isCompact_Icc.prod isCompact_Icc)
-      (isClosed_tsupport (planarCoefficientOfComplexTwoForm omega))
-    exact hfrect.trans
-      (Set.prod_mono Ioo_subset_Icc_self Ioo_subset_Icc_self)
-  have hplane :=
-    complexPlanarPrimitiveOfTwoForm_toFun_eq_zero_of_not_mem_rectangle
-      hab hcd omega ρ hfc hfrect hρ hρsupport hρone htotal (phi x) hx
-  change ((complexPlanarPrimitiveOfTwoForm a b c hab.le omega ρ hρ).toFun
-      (phi x)).compContinuousLinearMap _ = 0
-  rw [hplane]
-  rfl
-
-/--
-%%handwave
-name:
-  Support of a two-form admitting a supported coordinate primitive
-statement:
-  Under the same rectangular support, normalization, and zero-total-mass
-  hypotheses as above, the original smooth two-form \(\alpha\) vanishes
-  outside the inverse image of \([a,b]\times[c,d]\).
-proof:
-  The explicit local primitive vanishes outside the closed coordinate
-  rectangle.  Its exterior derivative therefore vanishes there as well,
-  because differentiation does not enlarge the closed support.  Since this
-  exterior derivative equals \(\alpha\), the asserted vanishing follows.
--/
-theorem complexCoordinateTwoForm_toFun_eq_zero_of_not_mem_rectangle
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Set.Ioo a b ×ˢ Set.Ioo c d)
-    (hρ : ContDiff ℝ ∞ ρ)
-    (hρsupport : tsupport ρ ⊆ Set.Ioo a b)
-    (hρone : ∫ x in a..b, ρ x = 1)
-    (htotal : ∫ y in c..d, planarHorizontalMarginal a b
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) y = 0)
-    (x : U) (hx : x ∉ complexCoordinateRectangleCore I U phi a b c d) :
-    alpha.toFun x = 0 := by
-  let eta := complexCoordinateLocalPrimitive
-    I U phi a b c hab.le alpha ρ hρ
-  have heta : ∀ z : U,
-      z ∉ complexCoordinateRectangleCore I U phi a b c d →
-        eta.toFun z = 0 :=
-    complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha ρ hfrect hρ hρsupport hρone htotal
-  have hdeta := deRhamDifferential_toFun_eq_zero_of_not_mem_compact
-    I U (complexCoordinateRectangleCore I U phi a b c d)
-      (complexCoordinateRectangleCore_isCompact I U phi a b c d)
-      eta heta x hx
-  rw [show deRhamDifferential (I := I) (M := U) (A := ℝ) 1 eta = alpha by
-    exact deRhamDifferential_complexCoordinateLocalPrimitive
-      I U phi hab.le alpha ρ hρ] at hdeta
-  exact hdeta
-
-/-- The global one-form obtained by extending the coordinate-local primitive
-by zero. -/
-noncomputable def complexCoordinateGlobalPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Set.Ioo a b ×ˢ Set.Ioo c d)
-    (hρ : ContDiff ℝ ∞ ρ)
-    (hρsupport : tsupport ρ ⊆ Set.Ioo a b)
-    (hρone : ∫ x in a..b, ρ x = 1)
-    (htotal : ∫ y in c..d, planarHorizontalMarginal a b
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) y = 0) :
-    SmoothForms (I := I) (M := M) ℝ 1 :=
-  smoothFormCompactZeroExtension I U
-    (complexCoordinateRectangleCore I U phi a b c d)
-    (complexCoordinateRectangleCore_isCompact I U phi a b c d)
-    (complexCoordinateLocalPrimitive I U phi a b c hab.le alpha ρ hρ)
-    (complexCoordinateLocalPrimitive_toFun_eq_zero_of_not_mem_rectangle
-      I U phi hab hcd alpha ρ hfrect hρ hρsupport hρone htotal)
-
-/--
-%%handwave
-name:
-  Differential of the global primitive of a zero-mass coordinate two-form
-statement:
-  Let a local two-form \(\alpha\) have coordinate coefficient supported in
-  \((a,b)\times(c,d)\), total integral zero, and let \(\rho\) be a smooth
-  horizontal density of integral one supported in \((a,b)\).  The ambient
-  zero extension of the explicit local primitive \(\eta\) satisfies
-  \[
-    d\widetilde\eta=\widetilde\alpha.
-  \]
-proof:
-  Differentiation commutes with compactly supported extension by zero, and the
-  local rectangle construction satisfies \(d\eta=\alpha\).  Transport this
-  equality through the zero-extension construction.
--/
-theorem deRhamDifferential_complexCoordinateGlobalPrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, SurfaceRealModel⟯ complexPlanarModelOpen)
-    {a b c d : ℝ} (hab : a < b) (hcd : c < d)
-    (alpha : SmoothForms (I := I) (M := U) ℝ 2)
-    (ρ : ℝ → ℝ)
-    (hfrect : tsupport (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) ⊆
-      Set.Ioo a b ×ˢ Set.Ioo c d)
-    (hρ : ContDiff ℝ ∞ ρ)
-    (hρsupport : tsupport ρ ⊆ Set.Ioo a b)
-    (hρone : ∫ x in a..b, ρ x = 1)
-    (htotal : ∫ y in c..d, planarHorizontalMarginal a b
-      (planarCoefficientOfComplexTwoForm
-        (complexCoordinatePushforwardTwoForm I U phi alpha)) y = 0) :
-    deRhamDifferential (I := I) (M := M) (A := ℝ) 1
-        (complexCoordinateGlobalPrimitive I U phi hab hcd alpha ρ hfrect
-          hρ hρsupport hρone htotal) =
-      smoothFormCompactZeroExtension I U
-        (complexCoordinateRectangleCore I U phi a b c d)
-        (complexCoordinateRectangleCore_isCompact I U phi a b c d) alpha
-        (complexCoordinateTwoForm_toFun_eq_zero_of_not_mem_rectangle
-          I U phi hab hcd alpha ρ hfrect hρ hρsupport hρone htotal) := by
-  rw [complexCoordinateGlobalPrimitive,
-    deRhamDifferential_smoothFormCompactZeroExtension]
-  apply smoothFormCompactZeroExtension_congr I U
-  exact deRhamDifferential_complexCoordinateLocalPrimitive
-    I U phi hab.le alpha ρ hρ
 
 end
 

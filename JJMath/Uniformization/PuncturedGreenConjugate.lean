@@ -21,7 +21,12 @@ open JJMath.Manifold
 
 noncomputable section
 
-/-- The punctured surface as an open submanifold. -/
+/--
+%%handwave
+name: The punctured surface as an open submanifold
+statement:
+  The punctured surface as an open submanifold.
+-/
 def puncturedSurfaceOpen
     {X : Type} [TopologicalSpace X] [T1Space X] (p : X) :
     TopologicalSpace.Opens X :=
@@ -68,7 +73,12 @@ structure CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData
 
 namespace CompactSuperlevelGreenFunctionPuncturedConjugateDifferentialData
 
-/-- The glued conjugate differential, packaged as a closed de Rham form. -/
+/--
+%%handwave
+name: The glued conjugate differential, packaged as a closed de Rham form
+statement:
+  The glued conjugate differential, packaged as a closed de Rham form.
+-/
 noncomputable def toClosedForm
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]

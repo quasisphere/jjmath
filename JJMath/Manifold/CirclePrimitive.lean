@@ -25,7 +25,13 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
-/-- The smooth real function underlying a smooth real zero-form. -/
+/--
+%%handwave
+name:
+  Smooth function represented by a zero-form
+statement:
+  A smooth real $0$-form $\theta$ is identified with the smooth function $x\mapsto\theta_x()$, obtained by evaluating its alternating $0$-linear value.
+-/
 noncomputable def smoothRealFunctionOfZeroForm
     (theta : SmoothForms (I := I) (M := M) ℝ 0) : C^∞⟮I, M; ℝ⟯ where
   val := fun x => theta.toFun x (fun i : Fin 0 => nomatch i)
@@ -162,7 +168,13 @@ theorem isLocallyConstant_sub_of_exp_mul_I_eq
   change d y = d x
   rw [hmreal, hnreal, hmn_eq]
 
-/-- Transport a circle primitive across equality of one-forms. -/
+/--
+%%handwave
+name:
+  Transporting a circle primitive along equality
+statement:
+  If smooth one-forms $\omega$ and $\eta$ are equal, any smooth circle-valued primitive representing $\omega$ also represents $\eta$.
+-/
 def congr
     {omega eta : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) (h : omega = eta) :
@@ -210,7 +222,13 @@ theorem norm_phase_eq_one
   rw [hphase xU, Complex.norm_exp]
   simp
 
-/-- Reversing the orientation of a circle primitive negates its one-form. -/
+/--
+%%handwave
+name:
+  Negation of a circle primitive
+statement:
+  Complex conjugation of the phase of a smooth circle primitive for $\omega$ gives a smooth circle primitive for $-\omega$, with each local argument replaced by its negative.
+-/
 noncomputable def neg
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega) :
@@ -245,8 +263,13 @@ noncomputable def neg
               rw [← map_neg]
               congr 1
 
-/-- Multiplying a circle phase by the exponential of a global real function
-adds the differential of that function to the represented one-form. -/
+/--
+%%handwave
+name:
+  Adding an exact differential to a circle primitive
+statement:
+  If a circle phase represents $\omega$ and $\theta$ is a smooth real function, multiplying the phase by $e^{i\theta}$ gives a circle primitive representing $\omega+d\theta$.
+-/
 noncomputable def addExact
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -350,8 +373,13 @@ noncomputable def addExact
               (smoothRealFunctionToZeroForm (I0 := I) totalTheta) := by
                   rw [hzeroAdd, map_add]
 
-/-- Adding the differential of a smooth zero-form to the represented
-one-form. -/
+/--
+%%handwave
+name:
+  Adding an exact zero-form differential to a circle primitive
+statement:
+  If a circle phase represents $\omega$ and $\theta$ is a smooth real $0$-form, then the phase corrected by $e^{i\theta}$ represents $\omega+d\theta$.
+-/
 noncomputable def addExactZeroForm
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -363,7 +391,13 @@ noncomputable def addExactZeroForm
   exact SmoothCirclePrimitive.congr I P' (by
     rw [smoothRealFunctionToZeroForm_smoothRealFunctionOfZeroForm])
 
-/-- Cohomologous closed one-forms have circle primitives simultaneously. -/
+/--
+%%handwave
+name:
+  Circle primitives for cohomologous one-forms
+statement:
+  If closed one-forms $\omega$ and $\eta$ define the same real de Rham cohomology class, a smooth circle primitive for $\omega$ determines one for $\eta$ by an exact phase correction.
+-/
 noncomputable def of_cohomologous
     {omega eta : DeRhamClosedForms (I := I) (M := M) (A := ℝ) 1}
     (P : SmoothCirclePrimitive I omega.1)
@@ -388,8 +422,13 @@ noncomputable def of_cohomologous
   rw [htheta]
   module
 
-/-- An angular circle primitive, possibly with reversed orientation, plus an
-exact correction gives a circle primitive of the resulting one-form. -/
+/--
+%%handwave
+name:
+  Exact correction of an oriented angular primitive
+statement:
+  If a phase represents $2\pi\eta$, then adding an exact form to either $2\pi\eta$ or $-2\pi\eta$ yields a one-form with a circle primitive, using the original or conjugate phase respectively.
+-/
 noncomputable def angularAddExact
     {eta omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I ((2 * Real.pi) • eta))
@@ -419,59 +458,6 @@ end SmoothCirclePrimitive
 section ProperLine
 
 variable [T2Space M]
-
-/-- The canonical circle primitive of `2 * pi` times the proper-line Thom
-form. -/
-noncomputable def properLineTubeCirclePrimitive
-    (U : TopologicalSpace.Opens M)
-    (phi : U ≃ₘ⟮I, ProperLineTubeModel⟯ ℝ × ℝ)
-    (hcore : IsClosed (properLineTubeCore I U phi)) :
-    SmoothCirclePrimitive I
-      ((2 * Real.pi) • properLineTubeGlobalOneForm I U phi hcore) where
-  phase := properLineTubeGlobalPhase I U phi hcore
-  locally_has_argument := by
-    intro x
-    by_cases hxU : x ∈ U
-    · refine ⟨U, hxU, properLineTubeLocalArgument I U phi, ?_, ?_⟩
-      · intro y
-        rw [properLineTubeGlobalPhase_eq_local I U phi hcore y.2]
-        exact properLineTubeLocalPhase_eq_exp_argument I U phi y
-      · calc
-          restrictSmoothFormsToOpen (I := I) (A := ℝ) U 1
-              ((2 * Real.pi) • properLineTubeGlobalOneForm I U phi hcore) =
-            (2 * Real.pi) •
-              restrictSmoothFormsToOpen (I := I) (A := ℝ) U 1
-                (properLineTubeGlobalOneForm I U phi hcore) := by
-                  rw [map_smul]
-          _ = (2 * Real.pi) • properLineTubeLocalOneForm I U phi := by
-                rw [properLineTubeGlobalOneForm_restrict_tube]
-          _ = deRhamDifferential (I := I) (M := U) (A := ℝ) 0
-              (smoothRealFunctionToZeroForm (I0 := I)
-                (properLineTubeLocalArgument I U phi)) :=
-                (deRhamDifferential_properLineTubeLocalArgument I U phi).symm
-    · let V := properLineTubeExteriorOpen I U phi hcore
-      have hxV : x ∈ V := by
-        intro hxcore
-        exact hxU (properLineTubeCore_subset I U phi hxcore)
-      refine ⟨V, hxV,
-        smoothRealConstantFunction (I0 := I) (M0 := V) 0, ?_, ?_⟩
-      · intro y
-        rw [properLineTubeGlobalPhase_eq_one_of_mem_exterior
-          I U phi hcore y.2]
-        simp
-      · calc
-          restrictSmoothFormsToOpen (I := I) (A := ℝ) V 1
-              ((2 * Real.pi) • properLineTubeGlobalOneForm I U phi hcore) =
-            (2 * Real.pi) •
-              restrictSmoothFormsToOpen (I := I) (A := ℝ) V 1
-                (properLineTubeGlobalOneForm I U phi hcore) := by
-                  rw [map_smul]
-          _ = 0 := by
-                rw [properLineTubeGlobalOneForm_restrict_exterior, smul_zero]
-          _ = deRhamDifferential (I := I) (M := V) (A := ℝ) 0
-              (smoothRealFunctionToZeroForm (I0 := I)
-                (smoothRealConstantFunction (I0 := I) (M0 := V) 0)) := by
-                rw [deRhamDifferential_smoothRealFunctionToZeroForm_const]
 
 end ProperLine
 

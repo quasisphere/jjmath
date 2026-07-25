@@ -265,46 +265,41 @@ theorem frechetDBar_frechetDZ_complex_ofReal_log_im_of_hasDerivAt
 abbrev RealProjectiveMobiusRepresentative : Type :=
   GL (Fin 2) ℝ
 
-/-- View a real projective Mobius representative as a complex Mobius representative. -/
+/-- View a real projective Mobius representative as a complex Mobius representative.
+
+%%handwave
+name:
+  Complexification of a real Möbius representative
+statement:
+  Entrywise inclusion $\mathbb R\hookrightarrow\mathbb C$ defines a group homomorphism $\mathrm{GL}_2(\mathbb R)\to\mathrm{GL}_2(\mathbb C)$.
+-/
 def realProjectiveMobiusRepresentativeAsMobiusRepresentative :
     RealProjectiveMobiusRepresentative →* MobiusRepresentative :=
   Matrix.GeneralLinearGroup.map (algebraMap ℝ ℂ)
 
-/-- The complex projective class of a real projective Mobius representative. -/
+/-- The complex projective class of a real projective Mobius representative.
+
+%%handwave
+name:
+  Complex projective class of a real Möbius representative
+statement:
+  Complexification followed by passage to projective class defines a group homomorphism $\mathrm{GL}_2(\mathbb R)\to\mathrm{PGL}_2(\mathbb C)$.
+-/
 def realProjectiveMobiusRepresentativeToMobiusGroup :
     RealProjectiveMobiusRepresentative →* MobiusGroup :=
   (Matrix.ProjGenLinGroup.mk : MobiusRepresentative →* MobiusGroup).comp
     realProjectiveMobiusRepresentativeAsMobiusRepresentative
 
-/-- The subgroup of $\mathrm{PGL}_2(\mathbb C)$ represented by real matrices. -/
-def pgl2rMobiusSubgroup : Subgroup MobiusGroup :=
-  MonoidHom.range realProjectiveMobiusRepresentativeToMobiusGroup
-
-/-- The complexified orientation-preserving real Mobius group lies in the real projective subgroup.
+/-- The subgroup of $\mathrm{PGL}_2(\mathbb C)$ represented by real matrices.
 
 %%handwave
 name:
-  Real Möbius transformations define real projective classes
+  The real projective Möbius subgroup
 statement:
-  The complex projective class obtained from any element of \(\mathrm{PSL}_2(\mathbb R)\) belongs to the embedded subgroup \(\mathrm{PGL}_2(\mathbb R)\subseteq\mathrm{PGL}_2(\mathbb C)\).
-proof:
-  Choose a determinant-one real matrix representing the class. Its complexification is also the complexification of the same invertible real matrix, so its projective class lies in the indicated image.
+  The subgroup $\mathrm{PGL}_2(\mathbb R)\subseteq\mathrm{PGL}_2(\mathbb C)$ is the image of $\mathrm{GL}_2(\mathbb R)$ under complexification and passage to projective class.
 -/
-theorem realMobiusToMobiusGroup_mem_pgl2rMobiusSubgroup
-  (g : RealMobiusGroup) :
-  realMobiusToMobiusGroup g ∈ pgl2rMobiusSubgroup := by
-  induction g using QuotientGroup.induction_on with
-  | H A =>
-      change realMobiusToMobiusGroup (realMobiusProjection A) ∈ pgl2rMobiusSubgroup
-      rw [realMobiusToMobiusGroup_realMobiusProjection]
-      refine ⟨(A : GL (Fin 2) ℝ), ?_⟩
-      have hgl :
-          Matrix.GeneralLinearGroup.map (algebraMap ℝ ℂ)
-              (Matrix.SpecialLinearGroup.toGL A) =
-            Matrix.SpecialLinearGroup.mapGL ℂ A := by
-        ext i j
-        simp [Matrix.SpecialLinearGroup.mapGL]
-      exact congrArg Matrix.ProjGenLinGroup.mk hgl
+def pgl2rMobiusSubgroup : Subgroup MobiusGroup :=
+  MonoidHom.range realProjectiveMobiusRepresentativeToMobiusGroup
 
 /--
 A concrete certificate that a based projective structure has holonomy in the
@@ -325,6 +320,12 @@ structure ComplexProjectiveStructure.PGL2RHolonomyData
 /--
 A complex projective structure has real projective holonomy if the holonomy
 constructed from its own projective atlas lies in $\mathrm{PGL}_2(\mathbb R)$.
+
+%%handwave
+name:
+  Real projective holonomy
+statement:
+  A based complex projective structure has real projective holonomy when its atlas supplies a holonomy representation whose image is contained in $\mathrm{PGL}_2(\mathbb R)\subseteq\mathrm{PGL}_2(\mathbb C)$.
 -/
 def HasPGL2RHolonomy {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -335,68 +336,40 @@ namespace ComplexProjectiveStructure.RealHolonomyData
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {x₀ : X} {P : ComplexProjectiveStructure X}
 
-/-- A PSL-valued real-holonomy certificate is also a PGL-valued certificate. -/
-def toPGL2RHolonomyData
-    (H : P.RealHolonomyData x₀) :
-    P.PGL2RHolonomyData x₀ where
-  projectiveHolonomy := H.projectiveHolonomy
-  holonomy_constructed_from_projective_charts :=
-    H.holonomy_constructed_from_projective_charts
-  projectiveHolonomy_real := by
-    intro γ
-    have hγ :
-        H.projectiveHolonomy γ = realMobiusToMobiusGroup (H.realHolonomy γ) := by
-      change H.projectiveHolonomy.toMonoidHom γ =
-        (realMobiusToMobiusGroup.comp H.realHolonomy.toMonoidHom) γ
-      rw [H.projectiveHolonomy_eq_real]
-    rw [hγ]
-    exact realMobiusToMobiusGroup_mem_pgl2rMobiusSubgroup (H.realHolonomy γ)
-
 end ComplexProjectiveStructure.RealHolonomyData
 
-/-- PSL-valued real holonomy is a special case of PGL-valued real projective holonomy.
+/-- The real projective line inside the Riemann sphere.
 
 %%handwave
 name:
-  Real special-linear holonomy implies real projective holonomy
+  Real projective line in the Riemann sphere
 statement:
-  A complex projective structure whose based holonomy is induced from \(\mathrm{PSL}_2(\mathbb R)\) also has holonomy in \(\mathrm{PGL}_2(\mathbb R)\).
-proof:
-  Keep the same developing-map construction and complex holonomy representation, and regard each orientation-preserving real Möbius transformation as a real projective transformation.
+  The subset $\mathbb P^1(\mathbb R)\subseteq\mathbb P^1(\mathbb C)$ is the image of the one-point compactification of $\mathbb R$ under the inclusion $\mathbb R\hookrightarrow\mathbb C$.
 -/
-theorem hasPGL2RHolonomy_of_hasPSL2RHolonomy
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : HasPSL2RHolonomy x₀ P) :
-    HasPGL2RHolonomy x₀ P := by
-  rcases h with ⟨H⟩
-  exact ⟨H.toPGL2RHolonomyData⟩
-
-/-- The real projective line inside the Riemann sphere. -/
 def realProjectiveLineInRiemannSphere : Set RiemannSphere :=
   Set.range (OnePoint.map (algebraMap ℝ ℂ) : OnePoint ℝ → RiemannSphere)
 
-/-- A point of the Riemann sphere lies on the real projective line. -/
+/-- A point of the Riemann sphere lies on the real projective line.
+
+%%handwave
+name:
+  Membership in the real projective line
+statement:
+  A point $p\in\mathbb P^1(\mathbb C)$ is real projective precisely when $p\in\mathbb P^1(\mathbb R)$ under the standard inclusion.
+-/
 def RiemannSphere.IsRealProjectivePoint (z : RiemannSphere) : Prop :=
   z ∈ realProjectiveLineInRiemannSphere
 
-/-- The affine finite part of a point of the Riemann sphere, with infinity sent to `0`. -/
-def RiemannSphere.finitePart (z : RiemannSphere) : ℂ :=
-  z.elim 0 id
+/-- The affine finite part of a point of the Riemann sphere, with infinity sent to `0`.
 
-/--
 %%handwave
 name:
-  Finite part of an affine sphere point
+  Finite coordinate on the Riemann sphere
 statement:
-  For every \(z\in\mathbb C\), the finite coordinate of the point \([z:1]\in\mathbb P^1(\mathbb C)\) is \(z\).
-proof:
-  This is the affine branch of the definition of the finite coordinate.
+  The finite-coordinate map $\mathbb P^1(\mathbb C)\to\mathbb C$ sends an affine point $[z:1]$ to $z$ and sends the point at infinity to $0$.
 -/
-@[simp]
-theorem RiemannSphere.finitePart_coe (z : ℂ) :
-    RiemannSphere.finitePart (z : RiemannSphere) = z :=
-  rfl
+def RiemannSphere.finitePart (z : RiemannSphere) : ℂ :=
+  z.elim 0 id
 
 /-- Away from infinity, coercing the finite part recovers the original sphere point.
 
@@ -521,40 +494,6 @@ theorem offRealProjectiveLineInRiemannSphere_open :
   change IsOpen realProjectiveLineInRiemannSphereᶜ
   exact realProjectiveLineInRiemannSphere_closed.isOpen_compl
 
-/-- A continuous Mobius normalization has closed real-projective preimage.
-
-%%handwave
-name:
-  Closed real locus under a continuous Möbius map
-statement:
-  If a Möbius transformation \(A\) acts continuously on \(\mathbb P^1(\mathbb C)\), then \(\{p:A(p)\in\mathbb P^1(\mathbb R)\}\) is closed.
-proof:
-  This set is the inverse image of the closed real projective line under the continuous action of \(A\).
--/
-theorem mobius_realProjectiveLine_preimage_closed_of_continuous
-    (A : MobiusRepresentative)
-    (hA : Continuous fun z : RiemannSphere ↦ A • z) :
-    IsClosed {z : RiemannSphere | RiemannSphere.IsRealProjectivePoint (A • z)} := by
-  change IsClosed ((fun z : RiemannSphere ↦ A • z) ⁻¹' realProjectiveLineInRiemannSphere)
-  exact realProjectiveLineInRiemannSphere_closed.preimage hA
-
-/-- A continuous Mobius normalization has open off-real-projective preimage.
-
-%%handwave
-name:
-  Open nonreal locus under a continuous Möbius map
-statement:
-  If a Möbius transformation \(A\) acts continuously on \(\mathbb P^1(\mathbb C)\), then \(\{p:A(p)\notin\mathbb P^1(\mathbb R)\}\) is open.
-proof:
-  This set is the inverse image of the open complement of the real projective line under the continuous action of \(A\).
--/
-theorem mobius_offRealProjectiveLine_preimage_open_of_continuous
-    (A : MobiusRepresentative)
-    (hA : Continuous fun z : RiemannSphere ↦ A • z) :
-    IsOpen {z : RiemannSphere | ¬ RiemannSphere.IsRealProjectivePoint (A • z)} := by
-  change IsOpen ((fun z : RiemannSphere ↦ A • z) ⁻¹' realProjectiveLineInRiemannSphereᶜ)
-  exact realProjectiveLineInRiemannSphere_closed.isOpen_compl.preimage hA
-
 /-- Scalar matrices act trivially on the Riemann sphere.
 
 %%handwave
@@ -622,47 +561,6 @@ theorem realProjectiveMobius_preserves_realProjectiveLine
   refine ⟨A • r, ?_⟩
   exact OnePoint.map_smul (algebraMap ℝ ℂ) A r
 
-/-- Real projective transformations reflect membership in the real projective line.
-
-%%handwave
-name:
-  Real projective transformations reflect the real projective line
-statement:
-  If \(A\in\mathrm{GL}_2(\mathbb R)\) and \(A(p)\in\mathbb P^1(\mathbb R)\), then \(p\in\mathbb P^1(\mathbb R)\).
-proof:
-  Apply preservation of the real projective line to \(A^{-1}\) and use \(A^{-1}A(p)=p\).
--/
-theorem realProjectiveMobius_reflects_realProjectiveLine
-    (A : RealProjectiveMobiusRepresentative) {z : RiemannSphere}
-    (hz : RiemannSphere.IsRealProjectivePoint
-      (realProjectiveMobiusRepresentativeAsMobiusRepresentative A • z)) :
-    RiemannSphere.IsRealProjectivePoint z := by
-  have hpre := realProjectiveMobius_preserves_realProjectiveLine A⁻¹ hz
-  have hcancel :
-      realProjectiveMobiusRepresentativeAsMobiusRepresentative A⁻¹ •
-        (realProjectiveMobiusRepresentativeAsMobiusRepresentative A • z) = z := by
-    rw [← mul_smul]
-    simp [realProjectiveMobiusRepresentativeAsMobiusRepresentative]
-  simpa [hcancel] using hpre
-
-/-- Real projective transformations preserve the complement of the real projective line.
-
-%%handwave
-name:
-  Real projective transformations preserve the nonreal locus
-statement:
-  Every \(A\in\mathrm{GL}_2(\mathbb R)\) maps \(\mathbb P^1(\mathbb C)\setminus\mathbb P^1(\mathbb R)\) into itself.
-proof:
-  If \(A(p)\) were real projective, preservation under \(A^{-1}\) would force \(p\) to be real projective as well.
--/
-theorem realProjectiveMobius_preserves_offRealProjectiveLine
-    (A : RealProjectiveMobiusRepresentative) {z : RiemannSphere}
-    (hz : ¬ RiemannSphere.IsRealProjectivePoint z) :
-    ¬ RiemannSphere.IsRealProjectivePoint
-      (realProjectiveMobiusRepresentativeAsMobiusRepresentative A • z) := by
-  intro hreal
-  exact hz (realProjectiveMobius_reflects_realProjectiveLine A hreal)
-
 /-- Any representative of a real projective class preserves the real projective line.
 
 %%handwave
@@ -685,33 +583,6 @@ theorem pgl2r_representative_preserves_realProjectiveLine
     rfl
   rw [mobiusRepresentative_smul_eq_of_mk_eq hAR]
   exact realProjectiveMobius_preserves_realProjectiveLine R hz
-
-/-- Any representative of a real projective class preserves the off-real projective locus.
-
-%%handwave
-name:
-  Complex representatives of real projective classes preserve the nonreal locus
-statement:
-  Let \(G\in\mathrm{PGL}_2(\mathbb R)\subseteq\mathrm{PGL}_2(\mathbb C)\). Every complex matrix representing \(G\) maps \(\mathbb P^1(\mathbb C)\setminus\mathbb P^1(\mathbb R)\) into itself.
-proof:
-  Replace the chosen matrix by a real representative without changing its projective action. A real projective transformation preserves the complement of the real projective line.
--/
-theorem pgl2r_representative_preserves_offRealProjectiveLine
-    {G : MobiusGroup} (hG : G ∈ pgl2rMobiusSubgroup)
-    {A : MobiusRepresentative} (hA : Matrix.ProjGenLinGroup.mk A = G)
-    {z : RiemannSphere} (hz : ¬ RiemannSphere.IsRealProjectivePoint z) :
-    ¬ RiemannSphere.IsRealProjectivePoint (A • z) := by
-  rcases hG with ⟨R, hR⟩
-  have hAR : Matrix.ProjGenLinGroup.mk A =
-      Matrix.ProjGenLinGroup.mk (realProjectiveMobiusRepresentativeAsMobiusRepresentative R) := by
-    rw [hA, ← hR]
-    rfl
-  intro hreal
-  have hrealR :
-      RiemannSphere.IsRealProjectivePoint
-        (realProjectiveMobiusRepresentativeAsMobiusRepresentative R • z) := by
-    rwa [mobiusRepresentative_smul_eq_of_mk_eq hAR] at hreal
-  exact hz (realProjectiveMobius_reflects_realProjectiveLine R hrealR)
 
 namespace ComplexProjectiveStructure.PGL2RHolonomyData
 
@@ -744,113 +615,6 @@ theorem developingMap_isRealProjectivePoint_of_same_fiber
   rw [← hγ, hdev]
   exact pgl2r_representative_preserves_realProjectiveLine
     (H.projectiveHolonomy_real γ) hA hy
-
-/-- Off-real membership of the developing map is constant on cover fibers.
-
-%%handwave
-name:
-  The off-real developing locus is constant on cover fibers
-statement:
-  If two cover points project to the same surface point and one developing value lies outside ℝP¹, then the other also lies outside ℝP¹.
-proof:
-  Relate the lifts by a deck transformation and use that its PGL₂(ℝ) holonomy preserves the complement of ℝP¹.
--/
-theorem developingMap_not_isRealProjectivePoint_of_same_fiber
-    (H : P.PGL2RHolonomyData x₀)
-    {y z : H.holonomy_constructed_from_projective_charts.developingData.cover.total}
-    (hyz : H.holonomy_constructed_from_projective_charts.developingData.cover.projection y =
-      H.holonomy_constructed_from_projective_charts.developingData.cover.projection z)
-    (hy : ¬ RiemannSphere.IsRealProjectivePoint
-      (H.holonomy_constructed_from_projective_charts.developingData.developingMap y)) :
-    ¬ RiemannSphere.IsRealProjectivePoint
-      (H.holonomy_constructed_from_projective_charts.developingData.developingMap z) := by
-  let cover := H.holonomy_constructed_from_projective_charts.developingData.cover
-  rcases cover.deckAction_same_fiber_transitive y z hyz with ⟨γ, hγ⟩
-  rcases (H.holonomy_constructed_from_projective_charts.developingData).equivariant_representatives γ with
-    ⟨A, hA, hdev⟩
-  rw [← hγ, hdev]
-  exact pgl2r_representative_preserves_offRealProjectiveLine
-    (H.projectiveHolonomy_real γ) hA hy
-
-/-- Real-projective membership of the developing map is independent of the chosen lift.
-
-%%handwave
-name:
-  Real-projective membership is independent of the lift
-statement:
-  Two developing-cover points over the same surface point have developing values in ℝP¹ simultaneously.
-proof:
-  Apply fiberwise preservation in each direction, reversing the equality of projections for the converse.
--/
-theorem developingMap_isRealProjectivePoint_iff_same_fiber
-    (H : P.PGL2RHolonomyData x₀)
-    {y z : H.holonomy_constructed_from_projective_charts.developingData.cover.total}
-    (hyz : H.holonomy_constructed_from_projective_charts.developingData.cover.projection y =
-      H.holonomy_constructed_from_projective_charts.developingData.cover.projection z) :
-    RiemannSphere.IsRealProjectivePoint
-        (H.holonomy_constructed_from_projective_charts.developingData.developingMap y) ↔
-      RiemannSphere.IsRealProjectivePoint
-        (H.holonomy_constructed_from_projective_charts.developingData.developingMap z) := by
-  constructor
-  · exact H.developingMap_isRealProjectivePoint_of_same_fiber hyz
-  · exact H.developingMap_isRealProjectivePoint_of_same_fiber hyz.symm
-
-/--
-Two local developing-chart agreements over the same surface point differ by a
-real projective Mobius transformation.
-
-%%handwave
-name:
-  Normalized local developing charts have real-projective transitions
-statement:
-  Two local developing-chart agreements defined at the same surface point differ there by an element of PGL₂(ℝ) after their normalizations.
-proof:
-  Lift the point through both local sections, relate the lifts by a deck transformation, and use developing-map equivariance together with real projective holonomy.
--/
-theorem localAgreement_normalizedChart_transition_realProjective
-    (H : P.PGL2RHolonomyData x₀)
-    {y₁ y₂ : H.holonomy_constructed_from_projective_charts.developingData.cover.total}
-    (L₁ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₁)
-    (L₂ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₂)
-    {x : X} (hx₁ : x ∈ L₁.chart.source) (hx₂ : x ∈ L₂.chart.source) :
-    ∃ R : RealProjectiveMobiusRepresentative,
-      L₂.normalization • L₂.chart x =
-        realProjectiveMobiusRepresentativeAsMobiusRepresentative R •
-          (L₁.normalization • L₁.chart x) := by
-  let developingData := H.holonomy_constructed_from_projective_charts.developingData
-  let cover := developingData.cover
-  let y₁x : cover.total := L₁.lift ⟨x, hx₁⟩
-  let y₂x : cover.total := L₂.lift ⟨x, hx₂⟩
-  have hfiber : cover.projection y₁x = cover.projection y₂x := by
-    calc
-      cover.projection y₁x = x := by
-        simpa [cover, developingData, y₁x] using L₁.lift_projects ⟨x, hx₁⟩
-      _ = cover.projection y₂x := by
-        simpa [cover, developingData, y₂x] using (L₂.lift_projects ⟨x, hx₂⟩).symm
-  rcases cover.deckAction_same_fiber_transitive y₁x y₂x hfiber with ⟨γ, hγ⟩
-  rcases developingData.equivariant_representatives γ with
-    ⟨A, hA, hdev⟩
-  rcases H.projectiveHolonomy_real γ with ⟨R, hR⟩
-  refine ⟨R, ?_⟩
-  have hAR : Matrix.ProjGenLinGroup.mk A =
-      Matrix.ProjGenLinGroup.mk (realProjectiveMobiusRepresentativeAsMobiusRepresentative R) := by
-    rw [hA, ← hR]
-    rfl
-  have hdev_eq :
-      developingData.developingMap y₂x = A • developingData.developingMap y₁x := by
-    rw [← hγ]
-    exact hdev y₁x
-  have hdev_eq_real :
-      developingData.developingMap y₂x =
-        realProjectiveMobiusRepresentativeAsMobiusRepresentative R •
-          developingData.developingMap y₁x := by
-    rw [hdev_eq, mobiusRepresentative_smul_eq_of_mk_eq hAR]
-  have h₁ := L₁.developing_eq_normalized_chart ⟨x, hx₁⟩
-  have h₂ := L₂.developing_eq_normalized_chart ⟨x, hx₂⟩
-  rw [h₂, h₁] at hdev_eq_real
-  exact hdev_eq_real
 
 /--
 If two local developing-chart sections differ by a fixed deck transformation
@@ -1039,95 +803,28 @@ theorem localAgreement_normalizedChart_transition_realProjective_eventuallyEq_nh
   rcases hx' with ⟨p, hp, hp_eq⟩
   simpa [← hp_eq] using hp
 
-/--
-Finite affine coordinates from two local developing-chart agreements differ by
-the holomorphic fractional-linear formula of a real projective matrix.
+/-- The real-projective locus obtained by descending the developing-map preimage.
 
 %%handwave
 name:
-  Finite local developing values differ by a real fractional-linear map
+  Descended real-projective locus
 statement:
-  If two normalized local developing charts have finite off-real values z₁ and z₂ at the same point, then z₂=(az₁+b)/(cz₁+d) for some real projective matrix.
-proof:
-  Use the real-projective transition between the normalized charts and pass from projective to affine coordinates; the denominator is nonzero because z₁ is off real.
+  For a projective structure with real holonomy, the real-projective locus is the set of surface points whose chosen developing lift maps into $\mathbb P^1(\mathbb R)$.
 -/
-theorem localAgreement_finiteCoordinate_transition_realProjective
-    (H : P.PGL2RHolonomyData x₀)
-    {y₁ y₂ : H.holonomy_constructed_from_projective_charts.developingData.cover.total}
-    (L₁ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₁)
-    (L₂ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₂)
-    {x : X} (hx₁ : x ∈ L₁.chart.source) (hx₂ : x ∈ L₂.chart.source)
-    {z₁ z₂ : ℂ}
-    (hz₁_eq : L₁.normalization • L₁.chart x = (z₁ : RiemannSphere))
-    (hz₂_eq : L₂.normalization • L₂.chart x = (z₂ : RiemannSphere))
-    (hz₁_im : z₁.im ≠ 0) :
-    ∃ R : RealProjectiveMobiusRepresentative,
-      z₂ = UpperHalfPlane.num R z₁ / UpperHalfPlane.denom R z₁ := by
-  rcases H.localAgreement_normalizedChart_transition_realProjective
-      L₁ L₂ hx₁ hx₂ with
-    ⟨R, htransition⟩
-  refine ⟨R, ?_⟩
-  rw [hz₂_eq, hz₁_eq] at htransition
-  have hden :
-      ¬ realProjectiveMobiusRepresentativeAsMobiusRepresentative R 1 0 * z₁ +
-          realProjectiveMobiusRepresentativeAsMobiusRepresentative R 1 1 = 0 := by
-    simpa [realProjectiveMobiusRepresentativeAsMobiusRepresentative, UpperHalfPlane.denom]
-      using UpperHalfPlane.denom_ne_zero_of_im R hz₁_im
-  rw [OnePoint.smul_some_eq_ite, if_neg hden] at htransition
-  have hcomplex := OnePoint.coe_injective htransition
-  simpa [realProjectiveMobiusRepresentativeAsMobiusRepresentative,
-    UpperHalfPlane.num, UpperHalfPlane.denom] using hcomplex
-
-/--
-%%handwave
-name:
-  Local developing branches define the same hyperbolic density
-statement:
-  Suppose two normalized projective branches have finite values
-  $z_1,z_2\in\mathbb C\setminus\mathbb R$ at the same point. Then there is
-  $R\in\mathrm{GL}_2(\mathbb R)$ such that $z_2=R\cdot z_1$ and
-  \[
-    \frac{|(R\cdot)'(z_1)|^2}{(\operatorname{Im}z_2)^2}
-      =\frac{1}{(\operatorname{Im}z_1)^2}.
-  \]
-proof:
-  Real projective holonomy supplies the transition $R$ between the normalized branches. [The squared Poincaré density on $\mathbb C\setminus\mathbb R$ is invariant under real Möbius transformations](lean:JJMath.pgl2r_preserves_offRealLineDensity_holomorphic), which gives the displayed identity.
--/
-theorem localAgreement_finiteCoordinate_preserves_density
-    (H : P.PGL2RHolonomyData x₀)
-    {y₁ y₂ : H.holonomy_constructed_from_projective_charts.developingData.cover.total}
-    (L₁ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₁)
-    (L₂ : ProjectiveHolonomyLocalChartAgreementData X P
-      H.holonomy_constructed_from_projective_charts.developingData y₂)
-    {x : X} (hx₁ : x ∈ L₁.chart.source) (hx₂ : x ∈ L₂.chart.source)
-    {z₁ z₂ : ℂ}
-    (hz₁_eq : L₁.normalization • L₁.chart x = (z₁ : RiemannSphere))
-    (hz₂_eq : L₂.normalization • L₂.chart x = (z₂ : RiemannSphere))
-    (hz₁_im : z₁.im ≠ 0) :
-    ∃ R : RealProjectiveMobiusRepresentative,
-      z₂ = UpperHalfPlane.num R z₁ / UpperHalfPlane.denom R z₁ ∧
-        poincareDensitySqInChart z₂ *
-            Complex.normSq
-              (deriv (fun w : ℂ ↦ UpperHalfPlane.num R w / UpperHalfPlane.denom R w) z₁) =
-          poincareDensitySqInChart z₁ := by
-  rcases H.localAgreement_finiteCoordinate_transition_realProjective
-      L₁ L₂ hx₁ hx₂ hz₁_eq hz₂_eq hz₁_im with
-    ⟨R, hz₂⟩
-  refine ⟨R, hz₂, ?_⟩
-  rw [hz₂]
-  exact pgl2r_preserves_offRealLineDensity_holomorphic R hz₁_im
-
-/-- The real-projective locus obtained by descending the developing-map preimage. -/
 def realProjectiveLocus (H : P.PGL2RHolonomyData x₀) : Set X :=
   {x | RiemannSphere.IsRealProjectivePoint
       (H.holonomy_constructed_from_projective_charts.developingData.developingMap
       (Classical.choose
         ((H.holonomy_constructed_from_projective_charts.developingData.cover).projection_surjective x)))}
 
-/-- The regular locus is the complement of the descended real-projective locus. -/
+/-- The regular locus is the complement of the descended real-projective locus.
+
+%%handwave
+name:
+  Regular locus of a real-holonomy projective structure
+statement:
+  The regular locus is $X\setminus S$, where $S$ is the descended inverse image of $\mathbb P^1(\mathbb R)$ under the developing map.
+-/
 def regularSet (H : P.PGL2RHolonomyData x₀) : Set X :=
   H.realProjectiveLocusᶜ
 
@@ -1161,90 +858,6 @@ theorem realProjectiveLocus_eq_developing_preimage
     change RiemannSphere.IsRealProjectivePoint
       (H.holonomy_constructed_from_projective_charts.developingData.developingMap y₀)
     exact H.developingMap_isRealProjectivePoint_of_same_fiber hy₀.symm h
-
-/-- The regular locus is exactly the projected off-real developing-map preimage.
-
-%%handwave
-name:
-  The regular locus is the projected off-real developing locus
-statement:
-  A projected cover point is regular exactly when its developing value lies outside ℝP¹.
-proof:
-  Take complements in the characterization of the descended real-projective locus.
--/
-theorem regularSet_eq_developing_offReal_preimage
-    (H : P.PGL2RHolonomyData x₀)
-    (y : H.holonomy_constructed_from_projective_charts.developingData.cover.total) :
-    H.holonomy_constructed_from_projective_charts.developingData.cover.projection y
-        ∈ H.regularSet ↔
-      ¬ RiemannSphere.IsRealProjectivePoint
-        (H.holonomy_constructed_from_projective_charts.developingData.developingMap y) := by
-  rw [regularSet, Set.mem_compl_iff, H.realProjectiveLocus_eq_developing_preimage y]
-
-/-- A point is regular exactly when one chosen lift has off-real developing value.
-
-%%handwave
-name:
-  Regularity can be tested on any chosen lift
-statement:
-  If y projects to x, then x is regular exactly when dev(y) lies outside ℝP¹.
-proof:
-  Rewrite x as the projection of y and apply the cover-level characterization of the regular locus.
--/
-theorem regularSet_iff_developing_offReal_of_lift
-    (H : P.PGL2RHolonomyData x₀)
-    {x : X}
-    (y : H.holonomy_constructed_from_projective_charts.developingData.cover.total)
-    (hy : H.holonomy_constructed_from_projective_charts.developingData.cover.projection y = x) :
-    x ∈ H.regularSet ↔
-      ¬ RiemannSphere.IsRealProjectivePoint
-        (H.holonomy_constructed_from_projective_charts.developingData.developingMap y) := by
-  rw [← hy]
-  exact H.regularSet_eq_developing_offReal_preimage y
-
-/--
-The regular locus can be read directly from finite off-real values of the
-developing map on the cover.
-
-%%handwave
-name:
-  Regular points have finite nonreal developing values
-statement:
-  A surface point is regular exactly when some lift has developing value [z:1] with Im z ≠ 0.
-proof:
-  Choose a lift by surjectivity of the cover. A projective point avoids ℝP¹ exactly when it is a finite complex point with nonzero imaginary part.
--/
-theorem regularSet_iff_exists_developing_finite_offReal
-    (H : P.PGL2RHolonomyData x₀) {x : X} :
-    x ∈ H.regularSet ↔
-      ∃ y : H.holonomy_constructed_from_projective_charts.developingData.cover.total,
-        H.holonomy_constructed_from_projective_charts.developingData.cover.projection y = x ∧
-          ∃ z : ℂ,
-            H.holonomy_constructed_from_projective_charts.developingData.developingMap y =
-              (z : RiemannSphere) ∧
-              z.im ≠ 0 := by
-  let cover := H.holonomy_constructed_from_projective_charts.developingData.cover
-  constructor
-  · intro hx
-    rcases cover.projection_surjective x with ⟨y, hy⟩
-    have hy_reg : cover.projection y ∈ H.regularSet := by
-      simpa [hy] using hx
-    have hy_offReal :=
-      (H.regularSet_eq_developing_offReal_preimage y).mp hy_reg
-    exact
-      ⟨y, hy,
-        (RiemannSphere.not_isRealProjectivePoint_iff_exists_im_ne_zero
-          (H.holonomy_constructed_from_projective_charts.developingData.developingMap y)).mp
-            hy_offReal⟩
-  · rintro ⟨y, hy, z, hz, hz_im⟩
-    have hy_offReal :
-        ¬ RiemannSphere.IsRealProjectivePoint
-          (H.holonomy_constructed_from_projective_charts.developingData.developingMap y) :=
-      (RiemannSphere.not_isRealProjectivePoint_iff_exists_im_ne_zero
-        (H.holonomy_constructed_from_projective_charts.developingData.developingMap y)).mpr
-        ⟨z, hz, hz_im⟩
-    have hy_reg := (H.regularSet_eq_developing_offReal_preimage y).mpr hy_offReal
-    simpa [hy] using hy_reg
 
 /--
 On a local agreement chart, the regular-locus condition is the off-real
@@ -1331,223 +944,17 @@ theorem exists_localAgreement_normalizedChart_offReal_finiteCoordinate
     exact L.projected_mem
   exact ⟨y, L, hy, hxsource, H.normalizedChart_offReal_finiteCoordinate L hxsource hreg⟩
 
-/--
-Pointwise finite off-real projective coordinate data at a regular point.
 
-This is the local coordinate seed for the forward pullback metric: after a
-single Mobius normalization of a projective chart, the point has a finite
-affine coordinate with nonzero imaginary part.
--/
-structure RegularLocusFiniteCoordinateData
-    (H : P.PGL2RHolonomyData x₀) (x : X) where
-  /-- A projective chart around the point. -/
-  chart : ProjectiveChart X
-  /-- The chart belongs to the stored projective atlas. -/
-  chart_mem : chart ∈ P.atlasSet
-  /-- The point lies in the chart source. -/
-  mem_chart_source : x ∈ chart.source
-  /-- The Mobius normalization putting the point in the finite off-real affine coordinate. -/
-  normalization : MobiusRepresentative
-  /-- The finite affine coordinate value at the point. -/
-  finiteCoordinateAt : ℂ
-  /-- The normalized projective coordinate equals the finite affine coordinate. -/
-  normalizedChart_eq_finiteCoordinateAt :
-    normalization • chart x = (finiteCoordinateAt : RiemannSphere)
-  /-- The finite affine coordinate is off the real line. -/
-  finiteCoordinateAt_offReal :
-    finiteCoordinateAt ∈ offRealLineInComplexPlane
-
-/-- Existence form of the finite off-real coordinate data at a regular point.
-
-%%handwave
-name:
-  Finite off-real coordinate data exist at every regular point
-statement:
-  Every regular point admits a projective chart, a Möbius normalization, and a finite coordinate value z with Im z ≠ 0 representing the normalized chart value.
-proof:
-  Choose the off-real normalized local chart at the point and package its chart, normalization, and finite value.
--/
-theorem regularLocusFiniteCoordinateData_nonempty
-    (H : P.PGL2RHolonomyData x₀) {x : X} (hreg : x ∈ H.regularSet) :
-    Nonempty (H.RegularLocusFiniteCoordinateData x) := by
-  rcases H.exists_localAgreement_normalizedChart_offReal_finiteCoordinate hreg with
-    ⟨_y, L, _hy, hxsource, z, hz_eq, hz_offReal⟩
-  exact
-    ⟨{ chart := L.chart
-       chart_mem := L.chart_mem
-       mem_chart_source := hxsource
-       normalization := L.normalization
-       finiteCoordinateAt := z
-       normalizedChart_eq_finiteCoordinateAt := hz_eq
-       finiteCoordinateAt_offReal := hz_offReal }⟩
-
-/-- A chosen finite off-real projective coordinate package at a regular point. -/
-def regularLocusFiniteCoordinateData
-    (H : P.PGL2RHolonomyData x₀) {x : X} (hreg : x ∈ H.regularSet) :
-    H.RegularLocusFiniteCoordinateData x :=
-  Classical.choice (H.regularLocusFiniteCoordinateData_nonempty hreg)
-
-namespace RegularLocusFiniteCoordinateData
-
-variable {H : P.PGL2RHolonomyData x₀} {x : X}
-
-/-- The compatible complex chart selected by the projective structure for this projective chart. -/
-def compatibleComplexChartData
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    ProjectiveCompatibleComplexChartData D.chart :=
-  P.chart_complex_compatible_of_mem D.chart_mem
-
-/-- The selected ambient complex chart for the projective chart. -/
-def compatibleComplexChart
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    OpenPartialHomeomorph X ℂ :=
-  D.compatibleComplexChartData.complexChart
-
-/-- The finite coordinate expressing the projective chart in the selected complex chart. -/
-def compatibleFiniteCoordinate
-    (D : H.RegularLocusFiniteCoordinateData x) : ℂ → ℂ :=
-  D.compatibleComplexChartData.compatibility.finiteCoordinate
-
-/-- The regular point lies in the selected compatible complex chart.
-
-%%handwave
-name:
-  The base point lies in the compatible complex chart
-statement:
-  The regular surface point underlying a selected projective chart lies in the source of its compatible complex chart.
-proof:
-  Projective–complex chart compatibility includes containment of the projective chart source in the complex chart source.
--/
-theorem mem_compatibleComplexChart_source
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    x ∈ D.compatibleComplexChart.source :=
-  D.compatibleComplexChartData.projective_source_subset_complex_source D.mem_chart_source
-
-/-- The compatible complex coordinate of the point lies in the chart-to-projective transition source.
-
-%%handwave
-name:
-  The compatible coordinate lies in the projective transition domain
-statement:
-  The compatible complex coordinate of the base point belongs to the domain on which the compatible complex chart and selected projective chart may be composed.
-proof:
-  Use membership in both chart sources and the inverse-chart identities to verify the two conditions defining the transition domain.
--/
-theorem compatibleCoordinate_mem_transition_source
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    D.compatibleComplexChart x ∈ (D.compatibleComplexChart.symm.trans D.chart).source := by
-  rw [OpenPartialHomeomorph.trans_source]
-  have hxsource : x ∈ D.compatibleComplexChart.source :=
-    D.mem_compatibleComplexChart_source
-  constructor
-  · simpa [OpenPartialHomeomorph.symm_source] using
-      D.compatibleComplexChart.map_source hxsource
-  · simpa [D.compatibleComplexChart.left_inv hxsource] using D.mem_chart_source
-
-/--
-In the selected compatible complex chart, the projective chart has a finite
-holomorphic representative at the regular point.
-
-%%handwave
-name:
-  A compatible finite coordinate represents the projective chart
-statement:
-  In a complex chart compatible with a selected projective chart, the compatibility Möbius representative sends the projective chart value to the finite coordinate value.
-proof:
-  Evaluate the projective–complex compatibility identity and simplify the chart inverse at the base point.
--/
-theorem compatibleFiniteCoordinate_eq_projectiveChart
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    D.compatibleComplexChartData.compatibility.representative • D.chart x =
-      (D.compatibleFiniteCoordinate (D.compatibleComplexChart x) : RiemannSphere) := by
-  have hsource := D.compatibleCoordinate_mem_transition_source
-  have heq :=
-    D.compatibleComplexChartData.compatibility.finiteCoordinate_eq
-      (D.compatibleComplexChart x) hsource
-  have hxsource : x ∈ D.compatibleComplexChart.source :=
-    D.mem_compatibleComplexChart_source
-  rw [OpenPartialHomeomorph.trans_apply] at heq
-  have hleft :
-      D.compatibleComplexChartData.complexChart.symm (D.compatibleComplexChart x) = x := by
-    simpa [compatibleComplexChart] using D.compatibleComplexChart.left_inv hxsource
-  rw [hleft] at heq
-  simpa [compatibleFiniteCoordinate] using heq
-
-/-- The compatible finite coordinate is holomorphic at the regular point.
-
-%%handwave
-name:
-  Holomorphicity of a compatible finite projective coordinate
-statement:
-  The finite coordinate representing a projective chart in a compatible complex chart is holomorphic at the regular point.
-proof:
-  Apply the local holomorphicity field of the projective–complex chart compatibility.
--/
-theorem compatibleFiniteCoordinate_holomorphic_at
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    DifferentiableAt ℂ D.compatibleFiniteCoordinate (D.compatibleComplexChart x) :=
-  D.compatibleComplexChartData.compatibility.finiteCoordinate_holomorphic
-    (D.compatibleComplexChart x) D.compatibleCoordinate_mem_transition_source
-
-/-- The compatible finite coordinate is locally biholomorphic at the regular point.
-
-%%handwave
-name:
-  Nondegeneracy of the compatible finite coordinate
-statement:
-  The finite coordinate expressing a projective chart in a compatible complex chart has nonzero derivative at the selected point.
-proof:
-  Apply the local biholomorphism property included in projective–complex chart compatibility.
--/
-theorem compatibleFiniteCoordinate_deriv_ne_zero
-    (D : H.RegularLocusFiniteCoordinateData x) :
-    deriv D.compatibleFiniteCoordinate (D.compatibleComplexChart x) ≠ 0 :=
-  D.compatibleComplexChartData.compatibility.finiteCoordinate_deriv_ne_zero
-    (D.compatibleComplexChart x) D.compatibleCoordinate_mem_transition_source
-
-end RegularLocusFiniteCoordinateData
-
-/--
-At every regular point there is a projective chart with a compatible finite
-complex coordinate that is locally biholomorphic, and after one Mobius
-normalization the projective value is off the real line.
-
-%%handwave
-name:
-  Regular points have nondegenerate compatible projective coordinates
-statement:
-  At every regular point there is a projective chart and compatible complex chart with a holomorphic finite coordinate of nonzero derivative, together with a Möbius normalization whose value is finite and nonreal.
-proof:
-  Choose the finite-coordinate package at the point and collect its chart compatibility, holomorphicity, nondegeneracy, and normalized off-real value.
--/
-theorem regularSet_has_compatible_local_projective_coordinate
-    (H : P.PGL2RHolonomyData x₀) {x : X} (hreg : x ∈ H.regularSet) :
-    ∃ chart : ProjectiveChart X,
-      ∃ complexChart : OpenPartialHomeomorph X ℂ,
-        ∃ finiteCoordinate : ℂ → ℂ,
-          ∃ normalization : MobiusRepresentative,
-            chart ∈ P.atlasSet ∧
-              x ∈ chart.source ∧
-                x ∈ complexChart.source ∧
-                  complexChart x ∈ (complexChart.symm.trans chart).source ∧
-                    DifferentiableAt ℂ finiteCoordinate (complexChart x) ∧
-                      deriv finiteCoordinate (complexChart x) ≠ 0 ∧
-                        ∃ z : ℂ,
-                          normalization • chart x = (z : RiemannSphere) ∧
-                            z.im ≠ 0 := by
-  let D := H.regularLocusFiniteCoordinateData hreg
-  exact
-    ⟨D.chart, D.compatibleComplexChart, D.compatibleFiniteCoordinate, D.normalization,
-      D.chart_mem, D.mem_chart_source, D.mem_compatibleComplexChart_source,
-      D.compatibleCoordinate_mem_transition_source,
-      D.compatibleFiniteCoordinate_holomorphic_at,
-      D.compatibleFiniteCoordinate_deriv_ne_zero,
-      D.finiteCoordinateAt, D.normalizedChart_eq_finiteCoordinateAt,
-      D.finiteCoordinateAt_offReal⟩
 
 /--
 The affine finite-part expression for a normalized projective chart in a chosen
 complex coordinate.
+
+%%handwave
+name:
+  Finite normalized projective coordinate
+statement:
+  Given a normalized projective chart and a complex coordinate $e$, define $F(w)$ to be the affine finite coordinate of the normalized projective value at $e^{-1}(w)$, with a pole assigned the value $0$.
 -/
 def normalizedChartFinitePart
     (H : P.PGL2RHolonomyData x₀)
@@ -1605,36 +1012,6 @@ theorem normalizedChartFinitePart_eventually_eq
   · exact hfinite_nhds.mono fun w hw ↦ by
       exact RiemannSphere.coe_finitePart_eq_of_ne_infty hw
   · simpa [normalizedChartFinitePart, hv] using hv_im
-
-/--
-At a regular point in any complex chart, there is a finite normalized
-projective coordinate branch representing the developing coordinate locally.
-
-%%handwave
-name:
-  A finite normalized developing branch exists in every regular chart
-statement:
-  At every regular chart point there is a complex function F, a projective chart, and a Möbius normalization such that [F:1] locally equals the normalized chart and Im F(z) ≠ 0.
-proof:
-  Choose a local developing-chart agreement and take the finite part of its normalized projective coordinate on a neighborhood avoiding infinity.
--/
-theorem exists_normalizedFiniteCoordinateBranch
-    (H : P.PGL2RHolonomyData x₀)
-    (e : OpenPartialHomeomorph X ℂ) {z : ℂ}
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet) :
-    ∃ F : ℂ → ℂ, ∃ chart : ProjectiveChart X, ∃ normalization : MobiusRepresentative,
-      chart ∈ P.atlasSet ∧
-        e.symm z ∈ chart.source ∧
-          (∀ᶠ w in 𝓝 z,
-            ((F w : ℂ) : RiemannSphere) = normalization • chart (e.symm w)) ∧
-            (F z).im ≠ 0 := by
-  rcases H.exists_localAgreement_normalizedChart_offReal_finiteCoordinate hreg with
-    ⟨_y, L, _hy, hxsource, _v, _hv, _hv_im⟩
-  rcases H.normalizedChartFinitePart_eventually_eq L e hz hxsource hreg with
-    ⟨hF_eq, hF_offReal⟩
-  exact
-    ⟨H.normalizedChartFinitePart L e, L.chart, L.normalization,
-      L.chart_mem, hxsource, hF_eq, hF_offReal⟩
 
 /--
 The local coordinate half of the forward pullback-density witness.
@@ -1709,7 +1086,14 @@ theorem regularLocusLocalPullbackCoordinateData_nonempty
        finiteCoordinate_eventually_eq := hF'_eq
        finiteCoordinate_offReal := hF'_offReal }⟩
 
-/-- A chosen local pullback-coordinate package at a regular chart point. -/
+/-- A chosen local pullback-coordinate package at a regular chart point.
+
+%%handwave
+name:
+  Chosen local pullback coordinate
+statement:
+  At each regular point in a complex chart, choose a finite normalized developing branch that is locally represented by a projective chart and has nonzero imaginary part at the base point.
+-/
 def regularLocusLocalPullbackCoordinateData
     (H : P.PGL2RHolonomyData x₀)
     (e : OpenPartialHomeomorph X ℂ) {z : ℂ}
@@ -1722,19 +1106,40 @@ namespace RegularLocusLocalPullbackCoordinateData
 variable {H : P.PGL2RHolonomyData x₀}
     {e : OpenPartialHomeomorph X ℂ} {z : ℂ}
 
-/-- The compatible complex chart selected by the projective structure for this branch. -/
+/-- The compatible complex chart selected by the projective structure for this branch.
+
+%%handwave
+name:
+  Compatible complex-chart data for a branch
+statement:
+  The projective atlas assigns to the projective chart underlying a finite branch a compatible complex chart together with their projective transition data.
+-/
 def compatibleComplexChartData
     (C : H.RegularLocusLocalPullbackCoordinateData e z) :
     ProjectiveCompatibleComplexChartData C.chart :=
   P.chart_complex_compatible_of_mem C.chart_mem
 
-/-- The selected ambient complex chart for the projective chart underlying this branch. -/
+/-- The selected ambient complex chart for the projective chart underlying this branch.
+
+%%handwave
+name:
+  Compatible complex chart for a finite branch
+statement:
+  The compatible complex chart of a finite branch is the complex chart selected by the compatibility data of its underlying projective chart.
+-/
 def compatibleComplexChart
     (C : H.RegularLocusLocalPullbackCoordinateData e z) :
     OpenPartialHomeomorph X ℂ :=
   C.compatibleComplexChartData.complexChart
 
-/-- The finite coordinate expressing the projective chart in the compatible complex chart. -/
+/-- The finite coordinate expressing the projective chart in the compatible complex chart.
+
+%%handwave
+name:
+  Compatible finite projective coordinate
+statement:
+  The compatible finite coordinate is the holomorphic affine function that expresses the underlying projective chart in its selected complex coordinate.
+-/
 def compatibleFiniteCoordinate
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℂ :=
   C.compatibleComplexChartData.compatibility.finiteCoordinate
@@ -1742,35 +1147,76 @@ def compatibleFiniteCoordinate
 /--
 The complex Mobius representative carrying the compatible finite projective
 coordinate to this branch's normalized developing coordinate.
+
+%%handwave
+name:
+  Möbius transition to the normalized developing branch
+statement:
+  If $N$ is the branch normalization and $B$ is the representative relating the projective chart to its compatible finite coordinate, the transition carrying that coordinate to the normalized developing branch is $NB^{-1}$.
 -/
 def affineTransitionRepresentative
     (C : H.RegularLocusLocalPullbackCoordinateData e z) :
     MobiusRepresentative :=
   C.normalization * C.compatibleComplexChartData.compatibility.representative⁻¹
 
-/-- The squared pullback density represented by this finite developing-coordinate branch. -/
+/-- The squared pullback density represented by this finite developing-coordinate branch.
+
+%%handwave
+name:
+  Squared Poincaré pullback density of a finite branch
+statement:
+  For a finite developing branch $F$, the squared pullback density is $q(w)=(\operatorname{Im}F(w))^{-2}|F'(w)|^2$.
+-/
 noncomputable def pullbackDensityFunction
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℝ :=
   fun w ↦ poincareDensitySqInChart (C.finiteCoordinate w) *
     Complex.normSq (deriv C.finiteCoordinate w)
 
-/-- The logarithmic density of the local pullback-density branch. -/
+/-- The logarithmic density of the local pullback-density branch.
+
+%%handwave
+name:
+  Logarithmic Poincaré pullback density
+statement:
+  For the squared pullback density $q$, the logarithmic density is the function $w\mapsto\tfrac12\log q(w)$.
+-/
 noncomputable def pullbackLogDensityFunction
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℝ :=
   logDensityFromDensitySq C.pullbackDensityFunction
 
-/-- The derivative part of the explicit local pullback logarithmic density. -/
+/-- The derivative part of the explicit local pullback logarithmic density.
+
+%%handwave
+name:
+  Logarithmic derivative contribution
+statement:
+  For a finite branch $F$, the derivative contribution to its logarithmic pullback density is $w\mapsto\tfrac12\log |F'(w)|^2$.
+-/
 noncomputable def pullbackLogDerivativeTerm
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℝ :=
   fun w : ℂ ↦
     Real.log (Complex.normSq (deriv C.finiteCoordinate w)) / 2
 
-/-- The imaginary-coordinate part of the explicit local pullback logarithmic density. -/
+/-- The imaginary-coordinate part of the explicit local pullback logarithmic density.
+
+%%handwave
+name:
+  Logarithmic height contribution
+statement:
+  For a finite branch $F$, the height contribution to its logarithmic pullback density is $w\mapsto\log(\operatorname{Im}F(w))$.
+-/
 noncomputable def pullbackLogImaginaryTerm
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℝ :=
   fun w : ℂ ↦ Real.log (C.finiteCoordinate w).im
 
-/-- The explicit local formula for the pullback logarithmic density. -/
+/-- The explicit local formula for the pullback logarithmic density.
+
+%%handwave
+name:
+  Explicit logarithmic pullback-density expression
+statement:
+  For a finite branch $F$, the explicit logarithmic density is $\tfrac12\log |F'|^2-\log(\operatorname{Im}F)$.
+-/
 noncomputable def pullbackLogDensityExpression
     (C : H.RegularLocusLocalPullbackCoordinateData e z) : ℂ → ℝ :=
   C.pullbackLogDerivativeTerm - C.pullbackLogImaginaryTerm
@@ -1804,71 +1250,6 @@ theorem pullbackDensityFunction_apply
     C.pullbackDensityFunction w =
       poincareDensitySqInChart (C.finiteCoordinate w) *
         Complex.normSq (deriv C.finiteCoordinate w) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Formula for the logarithmic pullback density
-statement:
-  The logarithmic density attached to a squared density $q$ is $\frac12\log q$.
-proof:
-  This is the definition of logarithmic density from a squared density.
--/
-@[simp]
-theorem pullbackLogDensityFunction_apply
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) (w : ℂ) :
-    C.pullbackLogDensityFunction w =
-      logDensityFromDensitySq C.pullbackDensityFunction w :=
-  rfl
-
-/--
-%%handwave
-name:
-  Explicit split formula for the pullback log-density
-statement:
-  For a finite branch $F$, the explicit pullback logarithmic density is $\log|F'|-\log|\operatorname{Im}F|$.
-proof:
-  Expand the derivative and height terms in the defining difference.
--/
-@[simp]
-theorem pullbackLogDensityExpression_apply
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) (w : ℂ) :
-    C.pullbackLogDensityExpression w =
-      Real.log (Complex.normSq (deriv C.finiteCoordinate w)) / 2 -
-        Real.log (C.finiteCoordinate w).im :=
-  rfl
-
-/--
-%%handwave
-name:
-  Formula for the logarithmic derivative term
-statement:
-  The derivative contribution to the pullback logarithmic density is $\frac12\log|F'|^2=\log|F'|$.
-proof:
-  This is the definition of the derivative term.
--/
-@[simp]
-theorem pullbackLogDerivativeTerm_apply
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) (w : ℂ) :
-    C.pullbackLogDerivativeTerm w =
-      Real.log (Complex.normSq (deriv C.finiteCoordinate w)) / 2 :=
-  rfl
-
-/--
-%%handwave
-name:
-  Formula for the logarithmic height term
-statement:
-  The height contribution to the pullback logarithmic density is $\log(\operatorname{Im}F)$ on the chosen half-plane branch.
-proof:
-  This is the definition of the height term.
--/
-@[simp]
-theorem pullbackLogImaginaryTerm_apply
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) (w : ℂ) :
-    C.pullbackLogImaginaryTerm w =
-      Real.log (C.finiteCoordinate w).im :=
   rfl
 
 /--
@@ -2049,31 +1430,6 @@ theorem compatibleFiniteCoordinate_contDiffAt
     exact (hlocal w hw).1.differentiableWithinAt
   exact (hDiffOn.contDiffOn hUopen).contDiffAt (hUopen.mem_nhds hmem)
 
-/-- The derivative of the compatible finite projective coordinate is complex-smooth.
-
-%%handwave
-name:
-  Smoothness of the compatible derivative
-statement:
-  The derivative of the compatible finite projective coordinate is complex C∞ at the selected point.
-proof:
-  The derivative of a holomorphic function remains holomorphic and smooth.
--/
-theorem compatibleFiniteCoordinate_deriv_contDiffAt
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) :
-    ContDiffAt ℂ ⊤ (fun w : ℂ ↦ deriv C.compatibleFiniteCoordinate w)
-      (C.compatibleComplexChart (e.symm z)) := by
-  rcases C.compatibleComplexChartData.compatibility.finiteCoordinate_local
-      (C.compatibleComplexChart (e.symm z))
-      C.compatibleCoordinate_mem_transition_source with
-    ⟨U, hUopen, hmem, _hsubset, hlocal⟩
-  have hDiffOn : DifferentiableOn ℂ C.compatibleFiniteCoordinate U := by
-    intro w hw
-    exact (hlocal w hw).1.differentiableWithinAt
-  have hDerivDiffOn : DifferentiableOn ℂ (deriv C.compatibleFiniteCoordinate) U :=
-    hDiffOn.deriv hUopen
-  exact (hDerivDiffOn.contDiffOn hUopen).contDiffAt (hUopen.mem_nhds hmem)
-
 /--
 At the selected point, the normalized developing coordinate is a finite affine
 Mobius transform of the projective chart's compatible finite coordinate.
@@ -2144,92 +1500,7 @@ theorem affineTransition_denominator_ne_zero_at
     _ = (C.finiteCoordinate z : RiemannSphere) :=
       C.finiteCoordinate_eq_normalizedChart_at.symm
 
-/-- Pointwise formula for the selected finite branch in compatible coordinates.
-
-%%handwave
-name:
-  Pointwise affine formula for the finite branch
-statement:
-  At the base point, the selected finite branch is the fractional-linear affine transition applied to the compatible finite coordinate.
-proof:
-  Convert the projective factorization to affine coordinates using the nonzero denominator.
--/
-theorem finiteCoordinate_eq_mobiusFiniteFormula_compatible_at
-    (C : H.RegularLocusLocalPullbackCoordinateData e z) :
-    C.finiteCoordinate z =
-      mobiusFiniteFormula C.affineTransitionRepresentative
-        (C.compatibleFiniteCoordinate (C.compatibleComplexChart (e.symm z))) := by
-  have h :
-      C.affineTransitionRepresentative •
-          (C.compatibleFiniteCoordinate
-            (C.compatibleComplexChart (e.symm z)) : RiemannSphere) =
-        (C.finiteCoordinate z : RiemannSphere) := by
-    calc
-      C.affineTransitionRepresentative •
-          (C.compatibleFiniteCoordinate
-            (C.compatibleComplexChart (e.symm z)) : RiemannSphere) =
-          C.normalization • C.chart (e.symm z) :=
-        C.normalizedChart_eq_affineTransition_at.symm
-      _ = (C.finiteCoordinate z : RiemannSphere) :=
-        C.finiteCoordinate_eq_normalizedChart_at.symm
-  exact (mobiusFiniteFormula_eq_of_smul_coe_eq_coe
-    C.affineTransitionRepresentative h).symm
-
 end RegularLocusLocalPullbackCoordinateData
-
-/--
-Two selected finite developing-coordinate branches at the same regular point
-differ by a real projective fractional-linear map, and the off-real-line
-hyperbolic density is invariant under that change.
-
-%%handwave
-name:
-  Real-projective changes preserve the branch density
-statement:
-  If two normalized finite developing branches represent the same regular surface point, some R∈PGL₂(ℝ) relates their values and preserves the off-real Poincare density with the derivative factor.
-proof:
-  Compare their normalized chart agreements using real projective holonomy, then apply Poincare-density invariance under R.
--/
-theorem localPullbackCoordinateData_finiteCoordinate_preserves_density
-    (H : P.PGL2RHolonomyData x₀)
-    {e₁ e₂ : OpenPartialHomeomorph X ℂ} {z₁ z₂ : ℂ}
-    (C₁ : H.RegularLocusLocalPullbackCoordinateData e₁ z₁)
-    (C₂ : H.RegularLocusLocalPullbackCoordinateData e₂ z₂)
-    (hx : e₁.symm z₁ = e₂.symm z₂) :
-    ∃ R : RealProjectiveMobiusRepresentative,
-      C₂.finiteCoordinate z₂ =
-          UpperHalfPlane.num R (C₁.finiteCoordinate z₁) /
-            UpperHalfPlane.denom R (C₁.finiteCoordinate z₁) ∧
-        poincareDensitySqInChart (C₂.finiteCoordinate z₂) *
-            Complex.normSq
-              (deriv (fun w : ℂ ↦ UpperHalfPlane.num R w / UpperHalfPlane.denom R w)
-                (C₁.finiteCoordinate z₁)) =
-          poincareDensitySqInChart (C₁.finiteCoordinate z₁) := by
-  have hx₁ : e₁.symm z₁ ∈ C₁.localAgreement.chart.source := by
-    simpa [C₁.chart_eq_localAgreement_chart] using C₁.mem_chart_source
-  have hx₂_at : e₂.symm z₂ ∈ C₂.localAgreement.chart.source := by
-    simpa [C₂.chart_eq_localAgreement_chart] using C₂.mem_chart_source
-  have hx₂ : e₁.symm z₁ ∈ C₂.localAgreement.chart.source := by
-    simpa [hx] using hx₂_at
-  have hz₁_eq :
-      C₁.localAgreement.normalization •
-          C₁.localAgreement.chart (e₁.symm z₁) =
-        (C₁.finiteCoordinate z₁ : RiemannSphere) :=
-    (C₁.finiteCoordinate_eq_localAgreement_normalizedChart_at).symm
-  have hz₂_eq_at :
-      C₂.localAgreement.normalization •
-          C₂.localAgreement.chart (e₂.symm z₂) =
-        (C₂.finiteCoordinate z₂ : RiemannSphere) :=
-    (C₂.finiteCoordinate_eq_localAgreement_normalizedChart_at).symm
-  have hz₂_eq :
-      C₂.localAgreement.normalization •
-          C₂.localAgreement.chart (e₁.symm z₁) =
-        (C₂.finiteCoordinate z₂ : RiemannSphere) := by
-    simpa [hx] using hz₂_eq_at
-  exact
-    H.localAgreement_finiteCoordinate_preserves_density
-      C₁.localAgreement C₂.localAgreement hx₁ hx₂ hz₁_eq hz₂_eq
-      C₁.finiteCoordinate_offReal
 
 /--
 The real-projective transition between two selected finite developing branches
@@ -2558,26 +1829,6 @@ theorem complexChartTransition_contDiffAt
     contMDiffAt_of_mem_maximalAtlas
       (IsManifold.subset_maximalAtlas (I := 𝓘(ℂ)) (n := ⊤) he') hz'
   exact (hchart_mdiff.comp z hsymm_mdiff).contDiffAt
-
-/-- The derivative of a complex chart change is smooth.
-
-%%handwave
-name:
-  Smoothness of the chart-transition derivative
-statement:
-  The derivative of a complex chart transition is complex C∞ on the overlap.
-proof:
-  Differentiate the holomorphic smooth coordinate change; its derivative remains holomorphic.
--/
-theorem complexChartTransition_deriv_contDiffAt
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hz' : e.symm z ∈ e'.source) :
-    ContDiffAt ℂ ⊤
-      (fun w : ℂ ↦ deriv (fun u : ℂ ↦ e' (e.symm u)) w) z := by
-  have hτ : ContDiffAt ℂ ⊤ (fun w : ℂ ↦ e' (e.symm w)) z :=
-    complexChartTransition_contDiffAt e he e' he' hz hz'
-  simpa using hτ.derivWithin (m := ⊤) (by simp)
 
 /-- Complex coordinate changes between surface charts have nonzero derivative.
 
@@ -2965,36 +2216,6 @@ theorem pullbackDensityFunction_pos
   exact mul_pos
     (poincareDensitySqInChart_pos_of_im_ne_zero C.finiteCoordinate_offReal)
     (Complex.normSq_pos.mpr (C.finiteCoordinate_deriv_ne_zero he hz))
-
-/--
-At the base point, the local pullback log-density is the usual expression
-`log |F'| - log |Im F|`, written in squared-density form.
-
-%%handwave
-name:
-  Logarithmic pullback density formula at the base point
-statement:
-  For an off-real locally univalent branch F, ½ log ρ²(z) = log|F′(z)| − log|Im F(z)| at the regular base point.
-proof:
-  Expand ρ²=|F′|²/(Im F)², use positivity and nonvanishing to split the logarithm of a quotient, and simplify ½ log|a|² = log|a|.
--/
-theorem pullbackLogDensityFunction_eq_log_deriv_sub_log_im_at
-    (C : H.RegularLocusLocalPullbackCoordinateData e z)
-    (he : e ∈ atlas ℂ X) (hz : z ∈ e.target) :
-    C.pullbackLogDensityFunction z = C.pullbackLogDensityExpression z := by
-  have him_ne : (C.finiteCoordinate z).im ≠ 0 :=
-    C.finiteCoordinate_offReal
-  have hden_ne : (((C.finiteCoordinate z).im ^ 2)⁻¹ : ℝ) ≠ 0 :=
-    inv_ne_zero (pow_ne_zero 2 him_ne)
-  have hnorm_ne : Complex.normSq (deriv C.finiteCoordinate z) ≠ 0 := by
-    exact (Complex.normSq_pos.mpr (C.finiteCoordinate_deriv_ne_zero he hz)).ne'
-  rw [pullbackLogDensityFunction, logDensityFromDensitySq,
-    pullbackDensityFunction_apply, poincareDensitySqInChart]
-  rw [Real.log_mul hden_ne hnorm_ne, Real.log_inv, Real.log_pow]
-  unfold pullbackLogDensityExpression pullbackLogDerivativeTerm
-    pullbackLogImaginaryTerm
-  simp [Pi.sub_apply]
-  ring_nf
 
 /--
 Near the base point, the local pullback log-density is represented by the
@@ -3603,7 +2824,14 @@ theorem regularLocusLocalPullbackCoordinateData_transition_eventuallyEq
     H.localPullbackCoordinateData_finiteCoordinate_transition_eventuallyEq
       hz hz' C C'
 
-/-- The canonical pullback-density candidate in a complex chart. -/
+/-- The canonical pullback-density candidate in a complex chart.
+
+%%handwave
+name:
+  Canonical chartwise pullback density
+statement:
+  In a complex chart, the canonical squared density equals the Poincaré pullback density of the chosen finite developing branch at regular chart points, and is extended by the value $1$ elsewhere.
+-/
 noncomputable def canonicalPullbackDensityInChart
     (H : P.PGL2RHolonomyData x₀)
     (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ) : ℝ :=
@@ -3706,119 +2934,6 @@ theorem canonicalPullbackDensityInChart_pos_of_finiteCoordinate_deriv_ne_zero
     (Complex.normSq_pos.mpr hderiv)
 
 /--
-The canonical density candidate satisfies the conformal transition law once the
-derivative chain rule is known for the real-projective transition between the
-two selected finite developing-coordinate branches.
-
-%%handwave
-name:
-  Density transition from a branch derivative identity
-statement:
-  Suppose two overlapping finite developing branches are related by a real projective Möbius map and their derivatives satisfy the corresponding chain rule. Then their canonical chart densities obey q_e=q_e′|(e′∘e⁻¹)′|² at the base point.
-proof:
-  Use invariance of the Poincare density under the real projective map and multiply the branch derivative identity by squared norms.
--/
-theorem canonicalPullbackDensityInChart_transition_of_branch_derivative
-    (H : P.PGL2RHolonomyData x₀)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-    (hz' : e.symm z ∈ e'.source)
-    (hderiv :
-      ∀ R : RealProjectiveMobiusRepresentative,
-        (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-              (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) =
-            UpperHalfPlane.num R
-                ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) /
-              UpperHalfPlane.denom R
-                ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) →
-        deriv
-            (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-              (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) *
-            deriv (fun w : ℂ ↦ e' (e.symm w)) z =
-          deriv (fun w : ℂ ↦ UpperHalfPlane.num R w / UpperHalfPlane.denom R w)
-              ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) *
-            deriv
-              (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) :
-    H.canonicalPullbackDensityInChart e he z =
-      H.canonicalPullbackDensityInChart e' he' (e' (e.symm z)) *
-        Complex.normSq (deriv (fun w : ℂ ↦ e' (e.symm w)) z) := by
-  let z' : ℂ := e' (e.symm z)
-  have hz'_target : z' ∈ e'.target := e'.map_source hz'
-  have hreg' : e'.symm z' ∈ H.regularSet := by
-    simpa [z', e'.left_inv hz'] using hreg
-  let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-  let C' := H.regularLocusLocalPullbackCoordinateData e' hz'_target hreg'
-  have hx_same : e.symm z = e'.symm z' := by
-    simpa [z'] using (e'.left_inv hz').symm
-  rcases H.localPullbackCoordinateData_finiteCoordinate_preserves_density C C' hx_same with
-    ⟨R, hvalue, hdensity⟩
-  have htransition :=
-    H.localPullbackCoordinateData_pullbackDensity_transition_of_derivative
-      C C' R hdensity (hderiv R (by simpa [C, C', z', hreg'] using hvalue))
-  rw [H.canonicalPullbackDensityInChart_eq_pullbackDensity e he hz hreg]
-  rw [H.canonicalPullbackDensityInChart_eq_pullbackDensity e' he' hz'_target hreg']
-  exact htransition
-
-/--
-The canonical density candidate satisfies the conformal transition law once the
-selected finite branches are differentiable and locally related by the
-real-projective transition supplied at the point.
-
-%%handwave
-name:
-  Density transition from local branch equality
-statement:
-  If two differentiable finite branches agree locally after a real projective Möbius transformation, then their canonical chart densities satisfy the conformal transition law at the overlap point.
-proof:
-  Differentiate the germ equality, apply the chart-transition chain rule, and invoke invariance of the Poincare density under the real projective map.
--/
-theorem canonicalPullbackDensityInChart_transition_of_branch_eventuallyEq
-    (H : P.PGL2RHolonomyData x₀)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-    (hz' : e.symm z ∈ e'.source)
-    (hC :
-      DifferentiableAt ℂ
-        (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z)
-    (hC' :
-      DifferentiableAt ℂ
-        (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-          (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate
-        (e' (e.symm z)))
-    (hEq :
-      ∀ R : RealProjectiveMobiusRepresentative,
-        (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-              (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) =
-            UpperHalfPlane.num R
-                ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) /
-              UpperHalfPlane.denom R
-                ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) →
-          (fun w : ℂ ↦
-            (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-              (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate
-                (e' (e.symm w))) =ᶠ[𝓝 z]
-            (fun w : ℂ ↦
-              UpperHalfPlane.num R
-                  ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w) /
-                UpperHalfPlane.denom R
-                  ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w))) :
-    H.canonicalPullbackDensityInChart e he z =
-      H.canonicalPullbackDensityInChart e' he' (e' (e.symm z)) *
-        Complex.normSq (deriv (fun w : ℂ ↦ e' (e.symm w)) z) := by
-  refine H.canonicalPullbackDensityInChart_transition_of_branch_derivative
-    e he e' he' hz hreg hz' ?_
-  intro R hvalue
-  exact
-    H.localPullbackCoordinateData_transition_derivative_of_eventuallyEq_chartTransition
-      he he' hz hz'
-      (H.regularLocusLocalPullbackCoordinateData e hz hreg)
-      (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-        (by simpa [e'.left_inv hz'] using hreg))
-      R (hEq R hvalue) hC hC'
-
-/--
 The canonical density candidate satisfies the conformal transition law from
 one locally valid real-projective transition between the selected branches.
 
@@ -3902,76 +3017,6 @@ theorem canonicalPullbackDensityInChart_transition_of_branch_eventuallyEq_exists
   exact htransition
 
 /--
-The canonical pullback-density candidate satisfies the conformal transition
-law on the regular locus.  The real-projective branch transition is supplied
-canonically by the developing map.
-
-%%handwave
-name:
-  The canonical pullback density obeys the chart transition law
-statement:
-  At a regular point represented in two complex charts, the canonical squared density satisfies q_e(z) = q_e′(e′∘e⁻¹(z)) |(e′∘e⁻¹)′(z)|².
-proof:
-  Choose the canonical real-projective transition between the two finite developing branches. Invariance of the Poincare density under that transition and the derivative chain rule give the formula.
--/
-theorem canonicalPullbackDensityInChart_transition
-    (H : P.PGL2RHolonomyData x₀)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-    (hz' : e.symm z ∈ e'.source) :
-    H.canonicalPullbackDensityInChart e he z =
-      H.canonicalPullbackDensityInChart e' he' (e' (e.symm z)) *
-        Complex.normSq (deriv (fun w : ℂ ↦ e' (e.symm w)) z) :=
-  H.canonicalPullbackDensityInChart_transition_of_branch_eventuallyEq_exists
-    e he e' he' hz hreg hz'
-    (H.regularLocusLocalPullbackCoordinateData_finiteCoordinate_differentiableAt
-      e he z hz hreg)
-    (H.regularLocusLocalPullbackCoordinateData_finiteCoordinate_differentiableAt
-      e' he' (e' (e.symm z)) (e'.map_source hz')
-      (by simpa [e'.left_inv hz'] using hreg))
-    (H.regularLocusLocalPullbackCoordinateData_transition_eventuallyEq
-      e he e' he' z hz hreg hz')
-
-/--
-Curvature transfer for the canonical density follows from local agreement with
-the fixed branch pullback density and the curvature computation for that fixed
-branch.
-
-%%handwave
-name:
-  Curvature transfers through local density agreement
-statement:
-  If the canonical chart density agrees near z with a finite branch pullback density whose curvature equals the Poincare model curvature at F(z), then the canonical density has that same curvature at z.
-proof:
-  Gaussian curvature depends only on the germ of the squared density. Replace the canonical density by the locally equal branch density and apply the assumed curvature identity.
--/
-theorem canonicalPullbackDensityInChart_curvature_transfer_of_eventuallyEq_pullbackDensityFunction
-    (H : P.PGL2RHolonomyData x₀)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-    (hEq :
-      H.canonicalPullbackDensityInChart e he =ᶠ[𝓝 z]
-        (H.regularLocusLocalPullbackCoordinateData e hz hreg).pullbackDensityFunction)
-    (hcurv :
-      gaussianCurvatureOfDensitySq
-          (H.regularLocusLocalPullbackCoordinateData e hz hreg).pullbackDensityFunction z =
-        gaussianCurvatureOfDensitySq poincareDensitySqInChart
-          ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z)) :
-    gaussianCurvatureOfDensitySq (H.canonicalPullbackDensityInChart e he) z =
-      gaussianCurvatureOfDensitySq poincareDensitySqInChart
-        ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) := by
-  calc
-    gaussianCurvatureOfDensitySq (H.canonicalPullbackDensityInChart e he) z =
-        gaussianCurvatureOfDensitySq
-          (H.regularLocusLocalPullbackCoordinateData e hz hreg).pullbackDensityFunction z :=
-      gaussianCurvatureOfDensitySq_congr_nhds hEq
-    _ =
-        gaussianCurvatureOfDensitySq poincareDensitySqInChart
-          ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) :=
-      hcurv
-
-/--
 On a local agreement chart, the regular locus is open provided the fixed
 normalization acts continuously on the Riemann sphere.
 
@@ -4010,6 +3055,12 @@ theorem regularSet_local_open_of_normalization_continuous
 /--
 Every point of the developing cover admits a local agreement chart whose
 normalization acts continuously on the Riemann sphere.
+
+%%handwave
+name:
+  Continuous local developing normalizations
+statement:
+  A real-holonomy projective structure has continuous local normalizations when every point of its developing cover admits a locally agreeing projective chart whose fixed normalizing Möbius transformation acts continuously on $\mathbb P^1(\mathbb C)$.
 -/
 def HasContinuousLocalNormalizations (H : P.PGL2RHolonomyData x₀) : Prop :=
   ∀ y : H.holonomy_constructed_from_projective_charts.developingData.cover.total,
@@ -4050,32 +3101,6 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
     {developingData : ProjectiveHolonomyDevelopingData X basepoint ρ}
     {y : developingData.cover.total}
 
-/--
-For a local chart/developing agreement, the off-real part of the normalized
-projective coordinate is open whenever the fixed normalization acts
-continuously on the Riemann sphere.
-
-%%handwave
-name:
-  The off-real locus of a normalized projective chart is open
-statement:
-  If a chart normalization acts continuously on ℂP¹, then the points of the chart whose normalized values avoid ℝP¹ form an open subset of the surface.
-proof:
-  Compose the continuous chart with the continuous normalization and take the inverse image of the open set ℂP¹ ∖ ℝP¹ inside the open chart domain.
--/
-theorem normalized_offReal_locus_open
-    (L : ProjectiveHolonomyLocalChartAgreementData X P developingData y)
-    (hA : Continuous fun z : RiemannSphere ↦ L.normalization • z) :
-    IsOpen (L.chart.source ∩
-      {x : X | ¬ RiemannSphere.IsRealProjectivePoint (L.normalization • L.chart x)}) := by
-  have hnorm : ContinuousOn
-      (fun x : X ↦ L.normalization • L.chart x) L.chart.source := by
-    exact hA.continuousOn.comp L.chart.continuousOn (by
-      intro x hx
-      exact Set.mem_univ _)
-  exact hnorm.isOpen_inter_preimage L.chart.open_source
-    offRealProjectiveLineInRiemannSphere_open
-
 end ProjectiveHolonomyLocalChartAgreementData
 
 /--
@@ -4109,156 +3134,68 @@ namespace ConformalMetricOn
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {U : Set X}
 
-/--
-Positivity of the squared density at regular points.
+/-- Gaussian curvature computed from the regular-locus density in a chosen chart.
 
 %%handwave
 name:
-  Positivity of a conformal squared density on its locus
+  Gaussian curvature in a conformal chart
 statement:
-  For a conformal metric defined on a locus U, its chartwise squared density is positive at every chart point representing a point of U.
-proof:
-  This is the positivity condition included in the definition of the conformal metric on U.
+  The chartwise Gaussian curvature of a conformal metric is the curvature computed from its squared density in that chart.
 -/
-theorem positive_densitySqInChart (g : ConformalMetricOn X U)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hzU : e.symm z ∈ U) :
-    0 < g.densitySqInChart e he z :=
-  g.densitySq_pos e he z hz hzU
-
-/--
-The chartwise coordinate-change law at regular points.
-
-%%handwave
-name:
-  The coordinate-change law for a conformal squared density
-statement:
-  If two complex charts overlap at a point of U, then their squared densities satisfy q_e(z) = q_e′(e′∘e⁻¹(z)) |(e′∘e⁻¹)′(z)|².
-proof:
-  Apply the transition condition included in the conformal metric on U.
--/
-theorem densitySq_transition' (g : ConformalMetricOn X U)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hzU : e.symm z ∈ U) (hz' : e.symm z ∈ e'.source) :
-    g.densitySqInChart e he z =
-      g.densitySqInChart e' he' (e' (e.symm z)) *
-        Complex.normSq (deriv (fun w : ℂ ↦ e' (e.symm w)) z) :=
-  g.densitySq_transition e he e' he' z hz hzU hz'
-
-/-- Gaussian curvature computed from the regular-locus density in a chosen chart. -/
 noncomputable def gaussianCurvatureInChart (g : ConformalMetricOn X U)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) : ℂ → ℝ :=
   gaussianCurvatureOfDensitySq (g.densitySqInChart e he)
 
-/-- Smoothness of the squared density on the coordinate part of the chosen locus. -/
+/-- Smoothness of the squared density on the coordinate part of the chosen locus.
+
+%%handwave
+name:
+  Chartwise smoothness of a conformal metric
+statement:
+  A conformal metric on $U\subseteq X$ is chartwise smooth when every squared-density representative is $C^\infty$ on the chart points representing $U$.
+-/
 def smooth_in_charts (g : ConformalMetricOn X U) : Prop :=
   ∀ e he, ContDiffOn ℝ ⊤ (g.densitySqInChart e he) (e.target ∩ e.symm ⁻¹' U)
 
-/-- Smoothness predicate for a regular-locus conformal metric. -/
+/-- Smoothness predicate for a regular-locus conformal metric.
+
+%%handwave
+name:
+  Smooth conformal metric on a locus
+statement:
+  A conformal metric on a locus is smooth exactly when all of its chartwise squared-density representatives are $C^\infty$ there.
+-/
 def IsSmooth (g : ConformalMetricOn X U) : Prop :=
   g.smooth_in_charts
 
-/-- The Gaussian-curvature predicate on the chosen locus. -/
+/-- The Gaussian-curvature predicate on the chosen locus.
+
+%%handwave
+name:
+  Constant chartwise curvature on a locus
+statement:
+  A conformal metric has curvature $K$ on $U$ when its Gaussian curvature in every complex chart equals $K$ at every chart point representing a point of $U$.
+-/
 def curvature_eq (g : ConformalMetricOn X U) (K : ℝ) : Prop :=
   ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) z,
     z ∈ e.target → e.symm z ∈ U → g.gaussianCurvatureInChart e he z = K
 
-/-- The metric has Gaussian curvature `-1` on the chosen locus. -/
+/-- The metric has Gaussian curvature `-1` on the chosen locus.
+
+%%handwave
+name:
+  Curvature minus one on a locus
+statement:
+  A conformal metric has curvature minus one on $U$ when its chartwise Gaussian curvature is identically $-1$ at every point of $U$.
+-/
 def HasCurvatureMinusOne (g : ConformalMetricOn X U) : Prop :=
   g.curvature_eq (-1)
 
 end ConformalMetricOn
 
-/-- The hyperbolic conformal metric on the complement of the real line in the affine chart. -/
-def offRealLineModelConformalMetric :
-    ConformalMetricOn ℂ offRealLineInComplexPlane where
-  densitySqInChart := fun _ _ ↦ poincareDensitySqInChart
-  densitySq_pos := by
-    intro e he z _hz hzU
-    have heq : e = OpenPartialHomeomorph.refl ℂ := by
-      simpa using he
-    subst e
-    exact poincareDensitySqInChart_pos_of_im_ne_zero hzU
-  densitySq_transition := by
-    intro e he e' he' z _hz _hzU _hz'
-    have heq : e = OpenPartialHomeomorph.refl ℂ := by
-      simpa using he
-    have heq' : e' = OpenPartialHomeomorph.refl ℂ := by
-      simpa using he'
-    subst e
-    subst e'
-    simp [poincareDensitySqInChart]
-
-/--
-The off-real-line model density is smooth on its domain.
-
-%%handwave
-name:
-  Smoothness of the off-real-line hyperbolic metric
-statement:
-  The squared density q(z) = (Im z)⁻² is smooth on ℂ ∖ ℝ.
-proof:
-  The imaginary part is smooth and nonzero off the real line, so inversion and squaring preserve smoothness.
--/
-theorem offRealLineModelConformalMetric_smooth :
-    offRealLineModelConformalMetric.IsSmooth := by
-  intro e he
-  have heq : e = OpenPartialHomeomorph.refl ℂ := by
-    simpa using he
-  subst e
-  simpa [ConformalMetricOn.smooth_in_charts, offRealLineModelConformalMetric]
-    using poincareDensitySqInChart_contDiffOn_offRealLine
-
-/--
-The off-real-line model metric has curvature `-1` in either half-plane.
-
-%%handwave
-name:
-  Curvature of the off-real-line hyperbolic metric
-statement:
-  On either half-plane, the conformal metric (Im z)⁻²|dz|² has Gaussian curvature −1.
-proof:
-  Compute Δ log((Im z)⁻¹) = (Im z)⁻² and use K = −(Δ log ρ)/ρ².
--/
-theorem offRealLineModelConformalMetric_curvature_minus_one :
-    offRealLineModelConformalMetric.HasCurvatureMinusOne := by
-  intro e he z _hz hzU
-  have heq : e = OpenPartialHomeomorph.refl ℂ := by
-    simpa using he
-  subst e
-  exact offRealLineDensitySq_gaussianCurvature_eq_minus_one (z := z) hzU
-
 namespace ConformalMetric
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-
-/-- Restrict a global conformal metric to a specified locus. -/
-def restrictTo (g : ConformalMetric X) (U : Set X) : ConformalMetricOn X U where
-  densitySqInChart := fun e he ↦ g.densitySqInChart e he
-  densitySq_pos := by
-    intro e he z hz _hzU
-    exact g.positive_densitySqInChart e he hz
-  densitySq_transition := by
-    intro e he e' he' z hz _hzU hz'
-    exact g.densitySq_transition e he e' he' hz hz'
-
-/--
-Curvature `-1` restricts from a global conformal metric to any locus.
-
-%%handwave
-name:
-  Restriction preserves curvature minus one
-statement:
-  If a global conformal metric has Gaussian curvature −1, then its restriction to any subset has curvature −1 at every point where it is defined.
-proof:
-  The restricted metric uses the same chartwise density, so the original curvature identity applies pointwise.
--/
-theorem restrictTo_hasCurvatureMinusOne (g : ConformalMetric X) {U : Set X}
-    (h : g.HasCurvatureMinusOne) :
-    (g.restrictTo U).HasCurvatureMinusOne := by
-  intro e he z hz _hzU
-  exact h e he z hz
 
 end ConformalMetric
 
@@ -4278,6 +3215,12 @@ structure RegularLocusTopologicalData (H : P.PGL2RHolonomyData x₀) where
 /--
 Continuous local normalizations supply the topological part of the regular
 locus data.
+
+%%handwave
+name:
+  Topological regular-locus data from continuous normalizations
+statement:
+  Continuous normalized developing charts determine topological regular-locus data by proving that the complement of the descended real-projective locus is open.
 -/
 def regularLocusTopologicalData_of_continuousLocalNormalizations
     (H : P.PGL2RHolonomyData x₀)
@@ -4300,6 +3243,12 @@ def regularLocusTopologicalData_of_continuousLocalNormalizations
 /--
 Continuity of fixed Mobius actions on the Riemann sphere gives the topological
 regular-locus data.
+
+%%handwave
+name:
+  Topological regular-locus data from continuous Möbius actions
+statement:
+  If every fixed complex Möbius transformation acts continuously on $\mathbb P^1(\mathbb C)$, then a real-holonomy projective structure has an open regular locus.
 -/
 def regularLocusTopologicalData_of_mobiusAction_continuous
     (H : P.PGL2RHolonomyData x₀)
@@ -4308,7 +3257,14 @@ def regularLocusTopologicalData_of_mobiusAction_continuous
   H.regularLocusTopologicalData_of_continuousLocalNormalizations
     (H.hasContinuousLocalNormalizations_of_mobiusAction_continuous hcont)
 
-/-- The topological regular-locus data supplied by continuity of Mobius transformations. -/
+/-- The topological regular-locus data supplied by continuity of Mobius transformations.
+
+%%handwave
+name:
+  Canonical topological data of the regular locus
+statement:
+  The canonical topological data records that the complement of the descended real-projective developing locus is open, using continuity of Möbius actions.
+-/
 def regularLocusTopologicalData (H : P.PGL2RHolonomyData x₀) :
     H.RegularLocusTopologicalData :=
   H.regularLocusTopologicalData_of_mobiusAction_continuous
@@ -4532,48 +3488,6 @@ structure RegularLocusConformalMetricData (H : P.PGL2RHolonomyData x₀) where
                     metric.densitySqInChart e he z =
                       ((F z).im ^ 2)⁻¹ * Complex.normSq (deriv F z)
 
-/--
-Pullback metric data on the canonical regular locus of a real-projective
-developing map.
-
-This package isolates the geometric computation: the metric is built as a
-pullback of the off-real-line model density, and its chartwise curvature is
-computed by transferring to that model coordinate.
--/
-structure RegularLocusPullbackMetricData (H : P.PGL2RHolonomyData x₀) where
-  /-- The conformal metric on the regular locus. -/
-  metric : ConformalMetricOn X H.regularSet
-  /-- The regular-locus metric is smooth. -/
-  metric_smooth_on_regularSet : metric.IsSmooth
-  /--
-  Chartwise curvature transfers to the off-real-line model coordinate.
-  The model coordinate may lie in either half-plane.
-  -/
-  curvature_transfers_to_offRealLine :
-    ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ),
-      z ∈ e.target →
-      e.symm z ∈ H.regularSet →
-        ∃ F : ℂ → ℂ,
-          (F z).im ≠ 0 ∧
-            metric.gaussianCurvatureInChart e he z =
-              gaussianCurvatureOfDensitySq poincareDensitySqInChart (F z)
-  /--
-  Away from the real-projective locus, the metric density is locally the
-  pullback of the off-real-line hyperbolic density by a finite normalized
-  projective coordinate.
-  -/
-  pullback_density_on_regularSet :
-    ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ),
-      z ∈ e.target →
-      e.symm z ∈ H.regularSet →
-        ∃ F : ℂ → ℂ, ∃ chart : ProjectiveChart X, ∃ normalization : MobiusRepresentative,
-          chart ∈ P.atlasSet ∧
-            e.symm z ∈ chart.source ∧
-              (∀ᶠ w in 𝓝 z,
-                ((F w : ℂ) : RiemannSphere) = normalization • chart (e.symm w)) ∧
-                  (F z).im ≠ 0 ∧
-                  metric.densitySqInChart e he z =
-                      ((F z).im ^ 2)⁻¹ * Complex.normSq (deriv F z)
 
 /--
 Canonical pullback metric data using the normalized finite-coordinate branches
@@ -4609,59 +3523,6 @@ namespace RegularLocusCanonicalPullbackMetricData
 variable {H : P.PGL2RHolonomyData x₀}
 
 /--
-Ordinary curvature `-1` on the regular locus is enough to transfer curvature
-to the canonical off-real model coordinate.
-
-%%handwave
-name:
-  Curvature minus one transfers to the finite model coordinate
-statement:
-  If a conformal metric has curvature −1 on the regular locus, then at each regular point its curvature equals that of the off-real Poincare model at the canonical finite developing value.
-proof:
-  Both curvatures equal −1: the first by hypothesis and the second because the canonical finite value has nonzero imaginary part.
--/
-theorem curvature_transfers_to_normalizedFiniteCoordinate_of_curvature_minus_one
-    (metric : ConformalMetricOn X H.regularSet)
-    (hcurv : metric.HasCurvatureMinusOne)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet) :
-    let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-    metric.gaussianCurvatureInChart e he z =
-      gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z) := by
-  let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-  calc
-    metric.gaussianCurvatureInChart e he z = -1 :=
-      hcurv e he z hz hreg
-    _ = gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z) :=
-      (offRealLineDensitySq_gaussianCurvature_eq_minus_one
-        (z := C.finiteCoordinate z) C.finiteCoordinate_offReal).symm
-
-/--
-Build canonical pullback data from a regular-locus metric, its curvature, and
-the canonical density pullback formula.
--/
-def ofCurvatureAndDensity
-    (metric : ConformalMetricOn X H.regularSet)
-    (metric_smooth_on_regularSet : metric.IsSmooth)
-    (curvature_minus_one : metric.HasCurvatureMinusOne)
-    (density_eq_normalizedFiniteCoordinate_pullback :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-          metric.densitySqInChart e he z =
-            ((C.finiteCoordinate z).im ^ 2)⁻¹ *
-              Complex.normSq (deriv C.finiteCoordinate z)) :
-    H.RegularLocusCanonicalPullbackMetricData where
-  metric := metric
-  metric_smooth_on_regularSet := metric_smooth_on_regularSet
-  curvature_transfers_to_normalizedFiniteCoordinate := by
-    intro e he z hz hreg
-    exact curvature_transfers_to_normalizedFiniteCoordinate_of_curvature_minus_one
-      metric curvature_minus_one e he z hz hreg
-  density_eq_normalizedFiniteCoordinate_pullback :=
-    density_eq_normalizedFiniteCoordinate_pullback
-
-/--
 %%handwave
 name:
   Curvature of the canonical metric on the regular locus
@@ -4685,62 +3546,20 @@ theorem curvature_minus_one (D : H.RegularLocusCanonicalPullbackMetricData) :
   exact offRealLineDensitySq_gaussianCurvature_eq_minus_one
     (z := C.finiteCoordinate z) C.finiteCoordinate_offReal
 
-/-- Forget canonical pullback provenance after deriving curvature from the model. -/
+/-- Forget canonical pullback provenance after deriving curvature from the model.
+
+%%handwave
+name:
+  Conformal metric data from canonical pullback data
+statement:
+  Canonical pullback metric data determine a smooth conformal metric of curvature $-1$ on the regular locus, retaining the local finite-branch pullback formula while forgetting the canonical choice.
+-/
 def toRegularLocusConformalMetricData
     (D : H.RegularLocusCanonicalPullbackMetricData) :
     H.RegularLocusConformalMetricData where
   metric := D.metric
   metric_smooth_on_regularSet := D.metric_smooth_on_regularSet
   curvature_minus_one := D.curvature_minus_one
-  pullback_density_on_regularSet := by
-    intro e he z hz hreg
-    let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-    exact
-      ⟨C.finiteCoordinate, C.chart, C.normalization,
-        C.chart_mem, C.mem_chart_source, C.finiteCoordinate_eventually_eq,
-        C.finiteCoordinate_offReal,
-        D.density_eq_normalizedFiniteCoordinate_pullback e he z hz hreg⟩
-
-/--
-The canonical finite coordinate branch is locally nondegenerate at every
-regular point where it recovers the metric by pullback.
-
-%%handwave
-name:
-  Metric recovery forces the finite branch derivative to be nonzero
-statement:
-  If a positive conformal density satisfies q(z) = |F′(z)|²/(Im F(z))² at a regular point, then F′(z) ≠ 0.
-proof:
-  If F′(z)=0, the pullback formula makes q(z)=0, contradicting positivity of the metric density.
--/
-theorem finiteCoordinate_deriv_ne_zero
-    (D : H.RegularLocusCanonicalPullbackMetricData)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-    (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet) :
-    deriv (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z ≠ 0 := by
-  let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-  change deriv C.finiteCoordinate z ≠ 0
-  intro hderiv
-  have hmetric_pos : 0 < D.metric.densitySqInChart e he z :=
-    D.metric.positive_densitySqInChart e he hz hreg
-  have hdensity := D.density_eq_normalizedFiniteCoordinate_pullback e he z hz hreg
-  have hnorm_zero : Complex.normSq (deriv C.finiteCoordinate z) = 0 := by
-    simp [hderiv]
-  rw [hdensity, hnorm_zero, mul_zero] at hmetric_pos
-  exact (lt_irrefl (0 : ℝ)) hmetric_pos
-
-/-- Canonical-branch data supplies the explicit pullback-metric package. -/
-def toRegularLocusPullbackMetricData
-    (D : H.RegularLocusCanonicalPullbackMetricData) :
-    H.RegularLocusPullbackMetricData where
-  metric := D.metric
-  metric_smooth_on_regularSet := D.metric_smooth_on_regularSet
-  curvature_transfers_to_offRealLine := by
-    intro e he z hz hreg
-    let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-    exact
-      ⟨C.finiteCoordinate, C.finiteCoordinate_offReal,
-        D.curvature_transfers_to_normalizedFiniteCoordinate e he z hz hreg⟩
   pullback_density_on_regularSet := by
     intro e he z hz hreg
     let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
@@ -4781,6 +3600,12 @@ variable {H : P.PGL2RHolonomyData x₀}
 /--
 Build canonical-density analytic data from smoothness of the canonical density
 and curvature transfer for the fixed local pullback-density functions.
+
+%%handwave
+name:
+  Canonical-density data from local curvature transfer
+statement:
+  If the canonical chartwise density is smooth and every fixed finite-branch density has curvature equal to the off-real Poincaré model at the branch value, then the canonical density has the same curvature-transfer property.
 -/
 noncomputable def ofLocalPullbackDensityCurvature
     (smooth_densitySq :
@@ -4806,6 +3631,12 @@ noncomputable def ofLocalPullbackDensityCurvature
 /--
 Build canonical-density analytic data from pointwise smoothness and curvature
 transfer for the fixed local pullback-density functions.
+
+%%handwave
+name:
+  Canonical-density data from branchwise analytic data
+statement:
+  Pointwise smoothness and curvature transfer for every finite-branch pullback density imply smoothness and curvature transfer for the canonical chartwise density on the regular locus.
 -/
 noncomputable def ofLocalPullbackDensityAnalyticData
     (pullbackDensityFunction_contDiffAt :
@@ -4827,36 +3658,6 @@ noncomputable def ofLocalPullbackDensityAnalyticData
         e he (fun z hz hreg ↦
           pullbackDensityFunction_contDiffAt e he z hz hreg))
     curvature_transfers_to_pullbackDensityFunction
-
-/-- The conformal metric represented by the canonical density data. -/
-noncomputable def toConformalMetricOn
-    (_A : H.RegularLocusCanonicalDensityAnalyticData) :
-    ConformalMetricOn X H.regularSet where
-  densitySqInChart := H.canonicalPullbackDensityInChart
-  densitySq_pos := by
-    intro e he z hz hreg
-    exact H.canonicalPullbackDensityInChart_pos_of_finiteCoordinate_deriv_ne_zero
-      e he hz hreg
-      (H.regularLocusLocalPullbackCoordinateData_finiteCoordinate_deriv_ne_zero
-        e he z hz hreg)
-  densitySq_transition := by
-    intro e he e' he' z hz hreg hz'
-    exact H.canonicalPullbackDensityInChart_transition e he e' he' hz hreg hz'
-
-/-- Canonical density analytic data supplies canonical pullback metric data. -/
-noncomputable def toRegularLocusCanonicalPullbackMetricData
-    (A : H.RegularLocusCanonicalDensityAnalyticData) :
-    H.RegularLocusCanonicalPullbackMetricData where
-  metric := A.toConformalMetricOn
-  metric_smooth_on_regularSet := by
-    intro e he
-    exact A.smooth_densitySq e he
-  curvature_transfers_to_normalizedFiniteCoordinate := by
-    intro e he z hz hreg
-    exact A.curvature_transfers_to_normalizedFiniteCoordinate e he z hz hreg
-  density_eq_normalizedFiniteCoordinate_pullback := by
-    intro e he z hz hreg
-    exact H.canonicalPullbackDensityInChart_eq_pullback_formula e he hz hreg
 
 end RegularLocusCanonicalDensityAnalyticData
 
@@ -4889,6 +3690,12 @@ variable {H : P.PGL2RHolonomyData x₀}
 /--
 Build branch-level density analytic data from smoothness of the finite branch,
 smoothness of its derivative, and the pullback curvature computation.
+
+%%handwave
+name:
+  Pullback-density data from finite-coordinate regularity
+statement:
+  If every finite developing branch $F$ and its derivative $F'$ are smooth and the associated density $|F'|^2/(\operatorname{Im}F)^2$ has the model curvature, then these branch densities form the required local analytic data.
 -/
 noncomputable def ofFiniteCoordinateAnalyticData
     (finiteCoordinate_contDiffAt :
@@ -4921,6 +3728,12 @@ noncomputable def ofFiniteCoordinateAnalyticData
 Build branch-level density analytic data from the local pullback curvature
 calculation.  The smoothness of the local finite developing branches follows
 from the smooth surface atlas and projective-chart compatibility.
+
+%%handwave
+name:
+  Pullback-density data from curvature transfer
+statement:
+  If every finite-branch pullback density has curvature equal to the off-real Poincaré model at the branch value, then the established smoothness of the branch and its derivative supplies all local pullback-density analytic data.
 -/
 noncomputable def ofCurvatureTransfer
     (curvature_transfers_to_pullbackDensityFunction :
@@ -4943,6 +3756,12 @@ noncomputable def ofCurvatureTransfer
 /--
 Build branch-level density analytic data from the Liouville equation for each
 local pullback log-density.
+
+%%handwave
+name:
+  Pullback-density data from Liouville's equation
+statement:
+  If every finite-branch density $q$ satisfies $\Delta(\tfrac12\log q)=q$ at its base point, then the branch density is smooth and its Gaussian curvature agrees with the curvature $-1$ Poincaré model.
 -/
 noncomputable def ofLiouvilleEquation
     (pullbackDensityFunction_liouville :
@@ -4959,7 +3778,14 @@ noncomputable def ofLiouvilleEquation
       C.pullbackDensityFunction_curvature_transfer_of_liouville he hz
         (pullbackDensityFunction_liouville e he z hz hreg))
 
-/-- Branch-level analytic data supplies canonical-density analytic data. -/
+/-- Branch-level analytic data supplies canonical-density analytic data.
+
+%%handwave
+name:
+  Canonical analytic density from branch densities
+statement:
+  Smoothness and curvature transfer for all local finite-branch densities descend to smoothness and curvature transfer for the branch-independent canonical chartwise density.
+-/
 noncomputable def toRegularLocusCanonicalDensityAnalyticData
     (A : H.RegularLocusLocalPullbackDensityAnalyticData) :
     H.RegularLocusCanonicalDensityAnalyticData :=
@@ -5011,169 +3837,16 @@ namespace RegularLocusCanonicalBranchAnalyticData
 variable {H : P.PGL2RHolonomyData x₀}
 
 /--
-Build the branch-analytic package from the local derivative transition law,
-plus smoothness and curvature-transfer inputs.
--/
-noncomputable def ofDerivativeTransition
-    (finiteCoordinate_deriv_ne_zero :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          deriv (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z ≠ 0)
-    (finiteCoordinate_transition_derivative :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X)
-        (e' : OpenPartialHomeomorph X ℂ) (_he' : e' ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-        (hz' : e.symm z ∈ e'.source),
-          ∀ R : RealProjectiveMobiusRepresentative,
-            (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) =
-                UpperHalfPlane.num R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) /
-                  UpperHalfPlane.denom R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) →
-            deriv
-                (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) *
-                deriv (fun w : ℂ ↦ e' (e.symm w)) z =
-              deriv (fun w : ℂ ↦ UpperHalfPlane.num R w / UpperHalfPlane.denom R w)
-                  ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) *
-                deriv
-                  (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z)
-    (smooth_densitySq :
-      ∀ e he,
-        ContDiffOn ℝ ⊤ (H.canonicalPullbackDensityInChart e he)
-          (e.target ∩ e.symm ⁻¹' H.regularSet))
-    (curvature_transfers_to_normalizedFiniteCoordinate :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-          gaussianCurvatureOfDensitySq (H.canonicalPullbackDensityInChart e he) z =
-            gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z)) :
-    H.RegularLocusCanonicalBranchAnalyticData where
-  finiteCoordinate_deriv_ne_zero := finiteCoordinate_deriv_ne_zero
-  densitySq_transition := by
-    intro e he e' he' z hz hreg hz'
-    exact H.canonicalPullbackDensityInChart_transition_of_branch_derivative
-      e he e' he' hz hreg hz'
-      (finiteCoordinate_transition_derivative e he e' he' z hz hreg hz')
-  smooth_densitySq := smooth_densitySq
-  curvature_transfers_to_normalizedFiniteCoordinate :=
-    curvature_transfers_to_normalizedFiniteCoordinate
-
-/--
-Build the branch-analytic package from local eventual equality of branch
-transitions, plus differentiability, smoothness, and curvature-transfer inputs.
--/
-noncomputable def ofEventuallyEqTransition
-    (finiteCoordinate_deriv_ne_zero :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          deriv (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z ≠ 0)
-    (finiteCoordinate_differentiableAt :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          DifferentiableAt ℂ
-            (H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z)
-    (finiteCoordinate_transition_eventuallyEq :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X)
-        (e' : OpenPartialHomeomorph X ℂ) (_he' : e' ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-        (hz' : e.symm z ∈ e'.source),
-          ∀ R : RealProjectiveMobiusRepresentative,
-            (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) =
-                UpperHalfPlane.num R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) /
-                  UpperHalfPlane.denom R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) →
-              (fun w : ℂ ↦
-                (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate
-                    (e' (e.symm w))) =ᶠ[𝓝 z]
-                (fun w : ℂ ↦
-                  UpperHalfPlane.num R
-                      ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w) /
-                    UpperHalfPlane.denom R
-                      ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w)))
-    (smooth_densitySq :
-      ∀ e he,
-        ContDiffOn ℝ ⊤ (H.canonicalPullbackDensityInChart e he)
-          (e.target ∩ e.symm ⁻¹' H.regularSet))
-    (curvature_transfers_to_normalizedFiniteCoordinate :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-          gaussianCurvatureOfDensitySq (H.canonicalPullbackDensityInChart e he) z =
-            gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z)) :
-    H.RegularLocusCanonicalBranchAnalyticData where
-  finiteCoordinate_deriv_ne_zero := finiteCoordinate_deriv_ne_zero
-  densitySq_transition := by
-    intro e he e' he' z hz hreg hz'
-    exact H.canonicalPullbackDensityInChart_transition_of_branch_eventuallyEq
-      e he e' he' hz hreg hz'
-      (finiteCoordinate_differentiableAt e he z hz hreg)
-      (finiteCoordinate_differentiableAt e' he' (e' (e.symm z))
-        (e'.map_source hz') (by simpa [e'.left_inv hz'] using hreg))
-      (finiteCoordinate_transition_eventuallyEq e he e' he' z hz hreg hz')
-  smooth_densitySq := smooth_densitySq
-  curvature_transfers_to_normalizedFiniteCoordinate :=
-    curvature_transfers_to_normalizedFiniteCoordinate
-
-/--
-Build the branch-analytic package from local eventual equality of branch
-transitions.  The first-order holomorphicity and nondegeneracy of the selected
-branches are supplied by the projective-chart compatibility data above.
--/
-noncomputable def ofEventuallyEqTransitionWithCanonicalDerivatives
-    (finiteCoordinate_transition_eventuallyEq :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X)
-        (e' : OpenPartialHomeomorph X ℂ) (_he' : e' ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet)
-        (hz' : e.symm z ∈ e'.source),
-          ∀ R : RealProjectiveMobiusRepresentative,
-            (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate (e' (e.symm z)) =
-                UpperHalfPlane.num R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) /
-                  UpperHalfPlane.denom R
-                    ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate z) →
-              (fun w : ℂ ↦
-                (H.regularLocusLocalPullbackCoordinateData e' (e'.map_source hz')
-                  (by simpa [e'.left_inv hz'] using hreg)).finiteCoordinate
-                    (e' (e.symm w))) =ᶠ[𝓝 z]
-                (fun w : ℂ ↦
-                  UpperHalfPlane.num R
-                      ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w) /
-                    UpperHalfPlane.denom R
-                      ((H.regularLocusLocalPullbackCoordinateData e hz hreg).finiteCoordinate w)))
-    (smooth_densitySq :
-      ∀ e he,
-        ContDiffOn ℝ ⊤ (H.canonicalPullbackDensityInChart e he)
-          (e.target ∩ e.symm ⁻¹' H.regularSet))
-    (curvature_transfers_to_normalizedFiniteCoordinate :
-      ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) (z : ℂ)
-        (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-          let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-          gaussianCurvatureOfDensitySq (H.canonicalPullbackDensityInChart e he) z =
-            gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z)) :
-    H.RegularLocusCanonicalBranchAnalyticData :=
-  ofEventuallyEqTransition
-    (H := H)
-    (fun e he z hz hreg ↦
-      H.regularLocusLocalPullbackCoordinateData_finiteCoordinate_deriv_ne_zero
-        e he z hz hreg)
-    (fun e he z hz hreg ↦
-      H.regularLocusLocalPullbackCoordinateData_finiteCoordinate_differentiableAt
-        e he z hz hreg)
-    finiteCoordinate_transition_eventuallyEq
-    smooth_densitySq
-    curvature_transfers_to_normalizedFiniteCoordinate
-
-/--
 Build the branch-analytic package from an actual local real-projective
 transition representative on each chart overlap.  This is the non-tautological
 form: the transition data is existential rather than asking every
 point-matching real projective map to be the local transition.
+
+%%handwave
+name:
+  Compatible branch data from real-projective transition germs
+statement:
+  If canonical finite branches are locally related on every chart overlap by some element of $\mathrm{PGL}_2(\mathbb R)$, and the canonical density is smooth with curvature transferred from the model, then the branches determine compatible analytic pullback data.
 -/
 noncomputable def ofExistentialEventuallyEqTransitionWithCanonicalDerivatives
     (finiteCoordinate_transition_eventuallyEq :
@@ -5230,6 +3903,12 @@ noncomputable def ofExistentialEventuallyEqTransitionWithCanonicalDerivatives
 Build the branch-analytic package using the canonical real-projective branch
 transitions proved from the developing map.  The arguments provide smoothness
 of the canonical density and the curvature-transfer computation.
+
+%%handwave
+name:
+  Compatible branch data from canonical transitions
+statement:
+  Smoothness and model-curvature transfer for the canonical density, together with the real-projective transition germs supplied by the developing map, determine canonical analytic branch data.
 -/
 noncomputable def ofCanonicalTransitions
     (smooth_densitySq :
@@ -5251,7 +3930,14 @@ noncomputable def ofCanonicalTransitions
     smooth_densitySq
     curvature_transfers_to_normalizedFiniteCoordinate
 
-/-- The conformal metric represented by the canonical pullback-density candidate. -/
+/-- The conformal metric represented by the canonical pullback-density candidate.
+
+%%handwave
+name:
+  Conformal metric from compatible canonical branches
+statement:
+  Compatible canonical branches define a conformal metric on the regular locus whose squared densities are their canonical Poincaré pullbacks.
+-/
 noncomputable def toConformalMetricOn
     (A : H.RegularLocusCanonicalBranchAnalyticData) :
     ConformalMetricOn X H.regularSet where
@@ -5262,7 +3948,14 @@ noncomputable def toConformalMetricOn
       e he hz hreg (A.finiteCoordinate_deriv_ne_zero e he z hz hreg)
   densitySq_transition := A.densitySq_transition
 
-/-- Analytic branch data supplies the canonical regular-locus pullback metric data. -/
+/-- Analytic branch data supplies the canonical regular-locus pullback metric data.
+
+%%handwave
+name:
+  Canonical pullback metric data from analytic branches
+statement:
+  Compatible analytic finite branches determine a smooth regular-locus conformal metric whose density is their Poincaré pullback and whose curvature transfers to the off-real model.
+-/
 noncomputable def toRegularLocusCanonicalPullbackMetricData
     (A : H.RegularLocusCanonicalBranchAnalyticData) :
     H.RegularLocusCanonicalPullbackMetricData where
@@ -5279,40 +3972,6 @@ noncomputable def toRegularLocusCanonicalPullbackMetricData
 
 end RegularLocusCanonicalBranchAnalyticData
 
-namespace RegularLocusPullbackMetricData
-
-variable {H : P.PGL2RHolonomyData x₀}
-
-/--
-The pullback curvature transfer and the off-real-line model computation give
-curvature `-1` on the regular locus.
-
-%%handwave
-name:
-  Curvature transfer from the off-real model
-statement:
-  If the curvature of a regular-locus pullback metric agrees pointwise with the curvature of (Im w)⁻²|dw|² at an off-real developing value, then the metric has curvature −1.
-proof:
-  The model metric has curvature −1 at every point with nonzero imaginary part; substitute this into the curvature-transfer identity.
--/
-theorem curvature_minus_one (D : H.RegularLocusPullbackMetricData) :
-    D.metric.HasCurvatureMinusOne := by
-  intro e he z hz hreg
-  rcases D.curvature_transfers_to_offRealLine e he z hz hreg with
-    ⟨F, hF_offReal, hcurv⟩
-  rw [hcurv]
-  exact offRealLineDensitySq_gaussianCurvature_eq_minus_one (z := F z) hF_offReal
-
-/-- Forget pullback provenance after deriving curvature from the model. -/
-def toRegularLocusConformalMetricData
-    (D : H.RegularLocusPullbackMetricData) :
-    H.RegularLocusConformalMetricData where
-  metric := D.metric
-  metric_smooth_on_regularSet := D.metric_smooth_on_regularSet
-  curvature_minus_one := D.curvature_minus_one
-  pullback_density_on_regularSet := D.pullback_density_on_regularSet
-
-end RegularLocusPullbackMetricData
 
 /--
 Metric data on the canonical regular locus of a real-projective developing map.
@@ -5396,7 +4055,14 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {x₀ : X} {P : ComplexProjectiveStructure X}
     {H : P.PGL2RHolonomyData x₀}
 
-/-- Combine topological and conformal data into full regular-locus metric data. -/
+/-- Combine topological and conformal data into full regular-locus metric data.
+
+%%handwave
+name:
+  Regular-locus metric data from topology and conformal geometry
+statement:
+  An open regular locus together with smooth curvature-$-1$ conformal pullback data combine into the full regular-locus metric package.
+-/
 def ofTopologicalAndConformal
     (T : H.RegularLocusTopologicalData)
     (M : H.RegularLocusConformalMetricData) :
@@ -5404,28 +4070,14 @@ def ofTopologicalAndConformal
   toRegularLocusTopologicalData := T
   toRegularLocusConformalMetricData := M
 
-/--
-Full regular-locus metric data is exactly the topological and conformal pieces.
+/-- The singular hyperbolic metric obtained from metric data on the canonical regular locus.
 
 %%handwave
 name:
-  Regular-locus metric data split into topological and conformal parts
+  Singular hyperbolic metric from regular-locus data
 statement:
-  Full regular-locus metric data exist exactly when both openness data for the regular locus and smooth curvature −1 conformal metric data exist.
-proof:
-  Project full data to its two components in one direction; in the other, combine the given topological and conformal records.
+  Full metric data on the complement of the descended real-projective locus determine a singular hyperbolic metric whose singular set is that locus and whose regular metric is the prescribed Poincaré pullback metric.
 -/
-theorem nonempty_iff :
-    Nonempty H.RegularLocusMetricData ↔
-      Nonempty H.RegularLocusTopologicalData ∧
-        Nonempty H.RegularLocusConformalMetricData := by
-  constructor
-  · rintro ⟨M⟩
-    exact ⟨⟨M.toRegularLocusTopologicalData⟩, ⟨M.toRegularLocusConformalMetricData⟩⟩
-  · rintro ⟨⟨T⟩, ⟨M⟩⟩
-    exact ⟨ofTopologicalAndConformal T M⟩
-
-/-- The singular hyperbolic metric obtained from metric data on the canonical regular locus. -/
 def toSingularHyperbolicMetric
     (M : H.RegularLocusMetricData) :
     SingularHyperbolicMetric X where
@@ -5445,42 +4097,33 @@ def toSingularHyperbolicMetric
 
 end ComplexProjectiveStructure.PGL2RHolonomyData.RegularLocusMetricData
 
-/--
-Concrete forward-construction data for the singular hyperbolic metric attached
-to a real projective structure.
--/
-structure ComplexProjectiveStructure.ForwardSingularHyperbolicMetricData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] (x₀ : X) (P : ComplexProjectiveStructure X) where
-  /-- Real projective holonomy data tied to the projective atlas. -/
-  pgl2rHolonomyData : P.PGL2RHolonomyData x₀
-  /-- Metric data on the canonical regular locus. -/
-  regularLocusMetricData : pgl2rHolonomyData.RegularLocusMetricData
 
-namespace ComplexProjectiveStructure.ForwardSingularHyperbolicMetricData
-
-variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {x₀ : X} {P : ComplexProjectiveStructure X}
-
-/-- The singular hyperbolic metric obtained from the stored forward construction data. -/
-def toSingularHyperbolicMetric
-    (D : P.ForwardSingularHyperbolicMetricData x₀) :
-    SingularHyperbolicMetric X :=
-  D.regularLocusMetricData.toSingularHyperbolicMetric
-
-end ComplexProjectiveStructure.ForwardSingularHyperbolicMetricData
 
 namespace ComplexProjectiveStructure
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
 
-/-- The regular-locus metric construction package for the forward direction. -/
+/-- The regular-locus metric construction package for the forward direction.
+
+%%handwave
+name:
+  Existence of the canonical regular-locus metric construction
+statement:
+  A based projective structure admits the regular-locus metric construction when every compatible real-holonomy developing datum yields a smooth canonical Poincaré pullback metric with curvature $-1$.
+-/
 def HasRegularLocusMetricConstruction (x₀ : X) (P : ComplexProjectiveStructure X) :
     Prop :=
   ∀ H : P.PGL2RHolonomyData x₀, Nonempty H.RegularLocusCanonicalPullbackMetricData
 
-/-- The branch-analytic construction package for the forward direction. -/
+/-- The branch-analytic construction package for the forward direction.
+
+%%handwave
+name:
+  Existence of canonical analytic branch data
+statement:
+  A based projective structure admits canonical analytic branch data when every compatible real-holonomy developing datum yields nondegenerate finite branches with compatible smooth pullback densities and model curvature.
+-/
 def HasRegularLocusCanonicalBranchAnalyticConstruction
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
   ∀ H : P.PGL2RHolonomyData x₀, Nonempty H.RegularLocusCanonicalBranchAnalyticData
@@ -5489,6 +4132,12 @@ def HasRegularLocusCanonicalBranchAnalyticConstruction
 Canonical-density analytic construction package: smoothness of the canonical
 density and transfer of its curvature calculation to the off-real model
 coordinate.
+
+%%handwave
+name:
+  Existence of canonical-density analytic data
+statement:
+  A based projective structure admits canonical-density analytic data when, for every compatible real-holonomy developing datum, its canonical chartwise density is smooth and its curvature agrees with the off-real Poincaré model at each normalized finite developing value.
 -/
 def HasRegularLocusCanonicalDensityAnalyticConstruction
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5498,6 +4147,12 @@ def HasRegularLocusCanonicalDensityAnalyticConstruction
 Branch-level analytic construction package for the forward direction:
 smoothness and curvature transfer for the fixed local pullback-density
 functions.
+
+%%handwave
+name:
+  Existence of local pullback-density analytic data
+statement:
+  A based projective structure admits local pullback-density analytic data when every compatible real-holonomy developing datum has smooth finite-branch Poincaré pullback densities whose curvature agrees with the off-real model.
 -/
 def HasRegularLocusLocalPullbackDensityAnalyticConstruction
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5505,45 +4160,14 @@ def HasRegularLocusLocalPullbackDensityAnalyticConstruction
     Nonempty H.RegularLocusLocalPullbackDensityAnalyticData
 
 /--
-Curvature-transfer form of the local forward calculation.
-
-At this stage, branch smoothness is proved from the smooth atlas and the
-projective compatibility data, so this package isolates the curvature identity
-for the pullback density.
--/
-def HasRegularLocusLocalPullbackDensityCurvatureTransfer
-    (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
-  ∀ H : P.PGL2RHolonomyData x₀,
-    ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ)
-      (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-        let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-        gaussianCurvatureOfDensitySq C.pullbackDensityFunction z =
-          gaussianCurvatureOfDensitySq poincareDensitySqInChart (C.finiteCoordinate z)
-
-/--
-The local pullback curvature-transfer calculation supplies the branch-level
-analytic construction, since branch smoothness is now internal.
+Explicit-Laplacian form of the local calculation for the pullback density. This
+asks for the Laplacian of the local expression `log |F'| - log |Im F|`.
 
 %%handwave
 name:
-  Curvature transfer gives local pullback-density analytic data
+  Explicit local Laplacian property for pullback densities
 statement:
-  If every finite developing branch transfers the curvature of its pullback density to the off-real-line Poincare model, then these branch densities are smooth and have curvature −1 on the regular locus.
-proof:
-  Use the internally proved smoothness of each finite branch and package the assumed pointwise curvature-transfer identity.
--/
-theorem hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityCurvatureTransfer
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityCurvatureTransfer x₀) :
-    P.HasRegularLocusLocalPullbackDensityAnalyticConstruction x₀ := by
-  intro H
-  exact
-    ⟨PGL2RHolonomyData.RegularLocusLocalPullbackDensityAnalyticData.ofCurvatureTransfer
-      (H := H) (h H)⟩
-
-/--
-Explicit-Laplacian form of the local calculation for the pullback density. This
-asks for the Laplacian of the local expression `log |F'| - log |Im F|`.
+  A based projective structure has the explicit local Laplacian property when every regular finite developing branch $F$ satisfies $\Delta(\log|F'|-\log|\operatorname{Im}F|)=|F'|^2/(\operatorname{Im}F)^2$ at its base point.
 -/
 def HasRegularLocusLocalPullbackDensityExplicitLaplacian
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5555,24 +4179,15 @@ def HasRegularLocusLocalPullbackDensityExplicitLaplacian
           C.pullbackDensityFunction z
 
 /--
-Split-Laplacian form of the local calculation.  The derivative contribution
-is harmonic, while the imaginary-coordinate contribution supplies the
-negative of the pulled-back hyperbolic density.
--/
-def HasRegularLocusLocalPullbackDensitySplitLaplacian
-    (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
-  ∀ H : P.PGL2RHolonomyData x₀,
-    ∀ (e : OpenPartialHomeomorph X ℂ) (_he : e ∈ atlas ℂ X) (z : ℂ)
-      (hz : z ∈ e.target) (hreg : e.symm z ∈ H.regularSet),
-        let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-        Laplacian.laplacian C.pullbackLogDerivativeTerm z = 0 ∧
-          Laplacian.laplacian C.pullbackLogImaginaryTerm z =
-            - C.pullbackDensityFunction z
-
-/--
 Height-term form of the local calculation: after the derivative term has been
 proved harmonic, the moving height term supplies minus the pulled-back
 hyperbolic density.
+
+%%handwave
+name:
+  Height-term Laplacian property for pullback densities
+statement:
+  A based projective structure has the height-term Laplacian property when every regular finite developing branch $F$ satisfies $\Delta\log|\operatorname{Im}F|=-|F'|^2/(\operatorname{Im}F)^2$ at its base point.
 -/
 def HasRegularLocusLocalPullbackDensityImaginaryLaplacian
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5604,6 +4219,12 @@ theorem hasRegularLocusLocalPullbackDensityImaginaryLaplacian
 
 /--
 Liouville-equation form of the local calculation for the pullback density.
+
+%%handwave
+name:
+  Local Liouville property for pullback densities
+statement:
+  A based projective structure has the local Liouville property when every regular finite-branch squared density $q=|F'|^2/(\operatorname{Im}F)^2$ satisfies $\Delta(\tfrac12\log q)=q$ at its base point.
 -/
 def HasRegularLocusLocalPullbackDensityLiouvilleEquation
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5634,27 +4255,6 @@ theorem hasRegularLocusLocalPullbackDensityLiouvilleEquation_of_localPullbackDen
   let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
   exact C.pullbackDensityFunction_liouville_of_laplacian_logDensityExpression he hz
     (h H e he z hz hreg)
-
-/--
-The split local Laplacian calculation gives the explicit local Liouville
-calculation for the pulled-back density.
-
-%%handwave
-name:
-  The split Laplacian gives the explicit pullback formula
-statement:
-  If Δ log|F′| = 0 and Δ log|Im F| = −|F′|²/(Im F)², then Δ(log|F′| − log|Im F|) = |F′|²/(Im F)².
-proof:
-  Use linearity of the Laplacian on the difference and substitute the two assumed identities.
--/
-theorem hasRegularLocusLocalPullbackDensityExplicitLaplacian_of_localPullbackDensitySplitLaplacian
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensitySplitLaplacian x₀) :
-    P.HasRegularLocusLocalPullbackDensityExplicitLaplacian x₀ := by
-  intro H e he z hz hreg
-  let C := H.regularLocusLocalPullbackCoordinateData e hz hreg
-  exact C.pullbackDensityFunction_laplacian_logDensityExpression_of_split he hz
-    (h H e he z hz hreg).1 (h H e he z hz hreg).2
 
 /--
 The moving-height Laplacian calculation gives the explicit local Liouville
@@ -5716,25 +4316,6 @@ theorem hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullback
     P.HasRegularLocusLocalPullbackDensityAnalyticConstruction x₀ :=
   P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityLiouvilleEquation
     (P.hasRegularLocusLocalPullbackDensityLiouvilleEquation_of_localPullbackDensityExplicitLaplacian h)
-
-/--
-The split local Laplacian calculation gives the branch-level analytic
-construction.
-
-%%handwave
-name:
-  Local pullback-density analytic data from harmonicity of log|F′| and the height identity Δ log|Im F| = −ρ²
-statement:
-  If every regular finite developing branch satisfies harmonicity of log|F′| and the height identity Δ log|Im F| = −ρ², then its pullback density is smooth and has curvature −1.
-proof:
-  Convert the assumed local identity to the Liouville equation for the pullback density, then use K = −(Δ log ρ)/ρ². The necessary branch smoothness is already established.
--/
-theorem hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensitySplitLaplacian
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensitySplitLaplacian x₀) :
-    P.HasRegularLocusLocalPullbackDensityAnalyticConstruction x₀ :=
-  P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityExplicitLaplacian
-    (P.hasRegularLocusLocalPullbackDensityExplicitLaplacian_of_localPullbackDensitySplitLaplacian h)
 
 /--
 The moving-height Laplacian calculation gives the branch-level analytic
@@ -5885,28 +4466,15 @@ theorem hasRegularLocusMetricConstruction
   P.hasRegularLocusMetricConstruction_of_canonicalBranchAnalyticConstruction
     (P.hasRegularLocusCanonicalBranchAnalyticConstruction x₀)
 
-/--
-The reduced canonical-density analytic construction is enough for the
-regular-locus metric construction.
-
-%%handwave
-name:
-  The canonical density directly constructs the regular-locus metric
-statement:
-  A smooth canonical pullback density whose curvature transfers to normalized finite coordinates determines a curvature −1 conformal metric on the regular locus.
-proof:
-  Use the canonical density as the chartwise metric density, its proved transition law for gluing, and curvature transfer to the Poincare model.
--/
-theorem hasRegularLocusMetricConstruction_of_canonicalDensityAnalyticConstruction
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusCanonicalDensityAnalyticConstruction x₀) :
-    P.HasRegularLocusMetricConstruction x₀ := by
-  intro H
-  rcases h H with ⟨A⟩
-  exact ⟨A.toRegularLocusCanonicalPullbackMetricData⟩
-
 end ComplexProjectiveStructure
 
+/--
+%%handwave
+name:
+  Induction of a singular hyperbolic metric
+statement:
+  A based complex projective structure induces a singular hyperbolic metric when there exists such a metric whose underlying projective structure and base point are the given ones.
+-/
 def ComplexProjectiveStructure.InducesSingularHyperbolicMetric
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
     (x₀ : X) (P : ComplexProjectiveStructure X) : Prop :=
@@ -5937,372 +4505,6 @@ theorem ComplexProjectiveStructure.inducesSingularHyperbolicMetric
   exact ⟨M.toSingularHyperbolicMetric, rfl, rfl⟩
 
 /--
-Forget the projective-structure witness and retain existence of a singular metric.
-
-%%handwave
-name:
-  An induced singular metric exists
-statement:
-  If a projective structure induces a singular hyperbolic metric tied to a chosen base point, then a singular hyperbolic metric on the underlying surface exists.
-proof:
-  Forget the equalities identifying the inducing projective structure and base point, retaining the metric itself.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_induces
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.InducesSingularHyperbolicMetric x₀) :
-    Nonempty (SingularHyperbolicMetric X) := by
-  rcases h with ⟨metric, _hP, _hx₀⟩
-  exact ⟨metric⟩
-
-/--
-Metric data on the canonical regular locus produces a singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from regular-locus metric data
-statement:
-  Let (P) be a complex projective structure whose holonomy lies in
-  (mathrm{PGL}_2(mathbb R)). If its regular locus carries a conformal
-  metric of curvature (-1) with the prescribed developing-map pullback
-  formula, then the surface carries a singular hyperbolic metric.
-proof:
-  Use the given metric on the open regular locus and take the complementary
-  real-projective locus as the singular set; the supplied curvature and
-  pullback identities are exactly the required metric properties.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_regularLocusMetricData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    {H : P.PGL2RHolonomyData x₀}
-    (M : H.RegularLocusMetricData) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  ⟨M.toSingularHyperbolicMetric⟩
-
-/--
-Topological and conformal pieces on the regular locus produce a singular metric.
-
-%%handwave
-name:
-  An open regular locus with a curvature minus one metric determines a singular hyperbolic metric
-statement:
-  Suppose the real-projective locus is closed and its complement carries a smooth conformal metric of curvature −1 with the prescribed developing-map pullback formula. Then this regular-locus metric extends to a singular hyperbolic metric whose singular set is the real-projective locus.
-proof:
-  Use closedness to identify the open regular locus, combine it with the curvature −1 conformal metric there, and declare the complementary real-projective locus to be singular.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_regularLocusPieces
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    {H : P.PGL2RHolonomyData x₀}
-    (T : H.RegularLocusTopologicalData)
-    (M : H.RegularLocusConformalMetricData) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_regularLocusMetricData
-    (ComplexProjectiveStructure.PGL2RHolonomyData.RegularLocusMetricData.ofTopologicalAndConformal
-      T M)
-
-/--
-Pullback metric data on the regular locus produces a singular metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from smooth pullback metric data on the regular locus
-statement:
-  Let (P) be a complex projective structure whose holonomy lies in
-  (mathrm{PGL}_2(mathbb R)). Smooth developing-map pullback metric data on
-  its regular locus determine a singular hyperbolic metric on the surface.
-proof:
-  Derive curvature −1 from transfer to the off-real Poincare model, then combine with the canonical topological data.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_regularLocusPullbackData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    {H : P.PGL2RHolonomyData x₀}
-    (D : H.RegularLocusPullbackMetricData) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_regularLocusPieces
-    H.regularLocusTopologicalData D.toRegularLocusConformalMetricData
-
-/--
-Canonical pullback metric data on the regular locus produces a singular metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from canonical pullback metric data on the regular locus
-statement:
-  Let (P) be a complex projective structure whose holonomy lies in
-  (mathrm{PGL}_2(mathbb R)). Its canonical pullback metric on the regular
-  locus determines a singular hyperbolic metric on the surface.
-proof:
-  Forget to general pullback metric data and construct the singular metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_regularLocusCanonicalPullbackData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    {H : P.PGL2RHolonomyData x₀}
-    (D : H.RegularLocusCanonicalPullbackMetricData) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_regularLocusPullbackData
-    D.toRegularLocusPullbackMetricData
-
-/--
-Canonical branch analytic data on the regular locus produces a singular metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from compatible analytic normalized-branch data
-statement:
-  Let (P) be a complex projective structure whose holonomy lies in
-  (mathrm{PGL}_2(mathbb R)). Compatible analytic normalized branches on
-  its regular locus determine a singular hyperbolic metric on the surface.
-proof:
-  Turn the branch data into the canonical pullback conformal metric and package the singular metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_regularLocusBranchAnalyticData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    {H : P.PGL2RHolonomyData x₀}
-    (A : H.RegularLocusCanonicalBranchAnalyticData) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_regularLocusCanonicalPullbackData
-    A.toRegularLocusCanonicalPullbackMetricData
-
-/--
-Construction data for the forward metric produces a singular hyperbolic metric.
-
-%%handwave
-name:
-  The canonical forward construction produces a singular hyperbolic metric
-statement:
-  A projective structure equipped with its canonical curvature −1 metric on the complement of the real-projective locus determines a singular hyperbolic metric on the whole surface.
-proof:
-  Take the constructed regular-locus metric, use the real-projective locus as the singular set, and retain the developing-map pullback formula.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_forwardData
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (D : P.ForwardSingularHyperbolicMetricData x₀) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  ⟨D.toSingularHyperbolicMetric⟩
-
-/--
-Regular-locus metric construction data for every real-projective holonomy
-certificate produces a singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from a regular-locus curvature −1 metric construction
-statement:
-  If P has real projective holonomy and a regular-locus curvature −1 metric construction, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  Choose the given real-projective holonomy realization. The assumed
-  construction supplies its canonical pullback metric on the regular locus,
-  which determines the singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_metricConstruction
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusMetricConstruction x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) := by
-  rcases hP with ⟨H⟩
-  rcases h H with ⟨D⟩
-  exact P.induceSingularHyperbolicMetric_of_regularLocusCanonicalPullbackData D
-
-/--
-Branch analytic construction data for every real-projective holonomy
-certificate produces a singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from compatible normalized branches with smooth curvature −1 densities
-statement:
-  If P has real projective holonomy and compatible normalized branches with smooth curvature −1 densities, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  Choose the given real-projective holonomy realization. The assumed
-  construction supplies compatible normalized branches, whose canonical
-  pullback metric determines the singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_branchAnalyticConstruction
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusCanonicalBranchAnalyticConstruction x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) := by
-  rcases hP with ⟨H⟩
-  rcases h H with ⟨A⟩
-  exact P.induceSingularHyperbolicMetric_of_regularLocusBranchAnalyticData A
-
-/--
-Canonical-density analytic construction data for the forward metric produces a
-singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from a smooth canonical pullback density with curvature transfer
-statement:
-  If P has real projective holonomy and a smooth canonical pullback density with curvature transfer, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  Convert the smooth canonical density and its curvature transfer into
-  compatible normalized-branch data, then use the corresponding regular-locus
-  metric to obtain the singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_canonicalDensityAnalyticConstruction
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusCanonicalDensityAnalyticConstruction x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_branchAnalyticConstruction
-    (P.hasRegularLocusCanonicalBranchAnalyticConstruction_of_canonicalDensityAnalyticConstruction h)
-    hP
-
-/--
-Branch-level smoothness and curvature transfer for the local pullback-density
-functions produce the singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from smooth local branch pullback densities with curvature transfer
-statement:
-  If P has real projective holonomy and smooth local branch pullback densities with curvature transfer, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  The smooth local pullback densities and their curvature transfer determine
-  the canonical density construction. Its regular-locus metric gives the
-  singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityAnalyticConstruction x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_canonicalDensityAnalyticConstruction
-    (P.hasRegularLocusCanonicalDensityAnalyticConstruction_of_localPullbackDensityAnalyticConstruction h)
-    hP
-
-/--
-The local pullback curvature-transfer calculation is enough to produce the
-singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from local curvature transfer from branch pullbacks to the Poincare model
-statement:
-  If P has real projective holonomy and local curvature transfer from branch pullbacks to the Poincare model, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  The local curvature-transfer identity supplies smooth curvature-(-1)
-  pullback densities. Apply the regular-locus metric construction to obtain
-  the singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensityCurvatureTransfer
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityCurvatureTransfer x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    (P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityCurvatureTransfer h)
-    hP
-
-/--
-The Liouville equation for the local pullback density is enough to produce
-the singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from the local Liouville equation Δ log ρ = ρ²
-statement:
-  If P has real projective holonomy and the local Liouville equation Δ log ρ = ρ², then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  The Liouville equation gives curvature (-1) for the local pullback
-  densities. These densities define the regular-locus metric and hence the
-  singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensityLiouvilleEquation
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityLiouvilleEquation x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    (P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityLiouvilleEquation h)
-    hP
-
-/--
-The explicit local Laplacian calculation for `log |F'| - log |Im F|` is enough
-to produce the singular hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from the identity Δ(log|F′| − log|Im F|) = ρ²
-statement:
-  If P has real projective holonomy and the identity Δ(log|F′| − log|Im F|) = ρ², then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  The displayed Laplacian identity is the Liouville equation for the local
-  pullback density. It yields the regular-locus curvature-(-1) metric and
-  therefore the singular hyperbolic metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensityExplicitLaplacian
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityExplicitLaplacian x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    (P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityExplicitLaplacian h)
-    hP
-
-/--
-The split local Laplacian calculation for the derivative and
-imaginary-coordinate terms is enough to produce the singular hyperbolic
-metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from the split derivative and height Laplacian identities
-statement:
-  If P has real projective holonomy and the split derivative and height Laplacian identities, then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  Combine the derivative and height Laplacian identities to obtain the
-  Liouville equation for the pullback density, then construct the
-  curvature-(-1) regular-locus metric and the resulting singular metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensitySplitLaplacian
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensitySplitLaplacian x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    (P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensitySplitLaplacian h)
-    hP
-
-/--
-The moving-height Laplacian calculation is enough to produce the singular
-hyperbolic metric.
-
-%%handwave
-name:
-  A singular hyperbolic metric from the height identity Δ log|Im F| = −ρ²
-statement:
-  If P has real projective holonomy and the height identity Δ log|Im F| = −ρ², then a singular hyperbolic metric exists on the underlying surface.
-proof:
-  The height identity, together with harmonicity of the logarithm of the
-  nonvanishing derivative, gives the Liouville equation for the pullback
-  density. The resulting regular-locus metric defines the singular metric.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_localPullbackDensityImaginaryLaplacian
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (h : P.HasRegularLocusLocalPullbackDensityImaginaryLaplacian x₀)
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_localPullbackDensityAnalyticConstruction
-    (P.hasRegularLocusLocalPullbackDensityAnalyticConstruction_of_localPullbackDensityImaginaryLaplacian h)
-    hP
-
-/--
 %%handwave
 name:
   Real projective structures induce singular hyperbolic metrics
@@ -6323,62 +4525,6 @@ theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric
     (hP : HasPGL2RHolonomy x₀ P) :
     P.InducesSingularHyperbolicMetric x₀ :=
   P.inducesSingularHyperbolicMetric hP
-
-/--
-Forget the inducing projective structure and retain existence of a singular metric.
-
-%%handwave
-name:
-  Existence of the induced singular hyperbolic metric
-statement:
-  Every complex projective structure with holonomy in PGL₂(ℝ) admits a singular hyperbolic metric on its underlying surface.
-proof:
-  Construct the metric together with its inducing projective-structure witness, then forget that witness.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (hP : HasPGL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_induces
-    (P.induceSingularHyperbolicMetric hP)
-
-/--
-The orientation-preserving real-holonomy case follows from the real-projective version.
-
-%%handwave
-name:
-  Orientation-preserving real holonomy induces a singular metric
-statement:
-  A complex projective structure with holonomy in PSL₂(ℝ) induces a singular hyperbolic metric on the complement of its real-projective locus.
-proof:
-  View PSL₂(ℝ) holonomy as PGL₂(ℝ) holonomy and apply the real-projective construction.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_of_hasPSL2RHolonomy
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (hP : HasPSL2RHolonomy x₀ P) :
-    P.InducesSingularHyperbolicMetric x₀ :=
-  P.induceSingularHyperbolicMetric (hasPGL2RHolonomy_of_hasPSL2RHolonomy hP)
-
-/--
-The orientation-preserving real-holonomy case also gives plain metric existence.
-
-%%handwave
-name:
-  A singular metric exists for orientation-preserving real holonomy
-statement:
-  Every complex projective structure with holonomy in PSL₂(ℝ) admits a singular hyperbolic metric.
-proof:
-  Promote the holonomy to PGL₂(ℝ), construct the induced metric, and forget the inducing witness.
--/
-theorem ComplexProjectiveStructure.induceSingularHyperbolicMetric_nonempty_of_hasPSL2RHolonomy
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [RiemannSurface X]
-    {x₀ : X} {P : ComplexProjectiveStructure X}
-    (hP : HasPSL2RHolonomy x₀ P) :
-    Nonempty (SingularHyperbolicMetric X) :=
-  P.induceSingularHyperbolicMetric_of_induces
-    (P.induceSingularHyperbolicMetric_of_hasPSL2RHolonomy hP)
 
 end
 

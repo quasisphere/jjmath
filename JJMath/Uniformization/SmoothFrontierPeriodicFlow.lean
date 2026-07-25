@@ -74,12 +74,27 @@ theorem ContMDiff.codRestrict_open
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- A symmetric open interval, regarded as an open real submanifold. -/
+/--
+%%handwave
+name: A symmetric open interval, regarded as an open real submanifold
+statement:
+  For $\rho\in\mathbb R$, define the open real submanifold
+  $(-\rho,\rho)$.
+-/
 def symmetricOpenInterval (rho : ℝ) : TopologicalSpace.Opens ℝ :=
   ⟨Ioo (-rho) rho, isOpen_Ioo⟩
 
-/-- Every nonempty symmetric open interval is smoothly diffeomorphic to the
-real line. -/
+/--
+%%handwave
+name: Every nonempty symmetric open interval is smoothly diffeomorphic to the real line
+statement:
+  For $\rho>0$, define a diffeomorphism
+  \[
+    (-\rho,\rho)\longrightarrow\mathbb R,\qquad
+    x\longmapsto\tan\!\left(\frac{\pi x}{2\rho}\right),
+  \]
+  with inverse $y\mapsto(2\rho/\pi)\arctan y$.
+-/
 noncomputable def symmetricOpenIntervalDiffeomorphReal
     (rho : ℝ) (hrho : 0 < rho) :
     symmetricOpenInterval rho ≃ₘ⟮
@@ -254,12 +269,22 @@ theorem symmetricOpenIntervalDiffeomorphReal_pos_iff
     exact Real.tan_pos_of_pos_of_lt_pi_div_two
       (mul_pos hkpos hx) hright
 
-/-- The negative real axis as an open one-dimensional manifold. -/
+/--
+%%handwave
+name: The negative real axis as an open one-dimensional manifold
+statement:
+  Define the open one-manifold $\mathbb R_{<0}=(-\infty,0)$.
+-/
 def negativeRealOpen : TopologicalSpace.Opens ℝ :=
   ⟨Iio 0, isOpen_Iio⟩
 
-/-- The negative real axis is smoothly diffeomorphic to the real line via
-the real logarithm. -/
+/--
+%%handwave
+name: The negative real axis is smoothly diffeomorphic to the real line via the real logarithm
+statement:
+  Define the diffeomorphism $\mathbb R_{<0}\to\mathbb R$ by
+  $x\mapsto\log|x|$, with inverse $t\mapsto-e^t$.
+-/
 noncomputable def negativeRealDiffeomorphReal :
     negativeRealOpen ≃ₘ⟮modelWithCornersSelf ℝ ℝ,
       modelWithCornersSelf ℝ ℝ⟯ ℝ := by
@@ -290,13 +315,25 @@ noncomputable def negativeRealDiffeomorphReal :
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- The negative half of the standard annular cylinder. -/
+/--
+%%handwave
+name: The negative half of the standard annular cylinder
+statement:
+  Define the negative half-cylinder $S^1\times(-\infty,0)$ as an open
+  submanifold of $S^1\times\mathbb R$.
+-/
 def negativeAnnularCylinderOpen :
     TopologicalSpace.Opens (Circle × ℝ) :=
   ⟨univ ×ˢ Iio 0, isOpen_univ.prod isOpen_Iio⟩
 
-/-- Reassociate the subtype defining the negative half-cylinder with the
-product of the circle and the negative real axis. -/
+/--
+%%handwave
+name: Reassociate the subtype defining the negative half-cylinder with the product of the circle and the negative real axis
+statement:
+  Define the canonical product diffeomorphism
+  $\{(q,t)\in S^1\times\mathbb R:t<0\}\to S^1\times\mathbb R_{<0}$ by
+  $(q,t)\mapsto(q,t)$.
+-/
 noncomputable def negativeAnnularCylinderOpenDiffeomorphProduct :
     negativeAnnularCylinderOpen ≃ₘ⟮
       JJMath.Manifold.AnnularCylinderModel,
@@ -340,8 +377,13 @@ noncomputable def negativeAnnularCylinderOpenDiffeomorphProduct :
       contMDiff_toFun := hto
       contMDiff_invFun := hinv }
 
-/-- The negative half of the annular cylinder is itself an annular
-cylinder. -/
+/--
+%%handwave
+name: The negative half of the annular cylinder is itself an annular cylinder
+statement:
+  Identify $S^1\times(-\infty,0)$ with $S^1\times\mathbb R$ by
+  $(q,t)\mapsto(q,\log|t|)$.
+-/
 noncomputable def negativeAnnularCylinderOpenDiffeomorphAnnularCylinder :
     negativeAnnularCylinderOpen ≃ₘ⟮
       JJMath.Manifold.AnnularCylinderModel,
@@ -351,12 +393,24 @@ noncomputable def negativeAnnularCylinderOpenDiffeomorphAnnularCylinder :
       (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin 1))) Circle ∞).prodCongr
         negativeRealDiffeomorphReal)
 
-/-- The sine of the short signed angle from `z` to `w`. -/
+/--
+%%handwave
+name: Sine of a local signed circle angle
+statement:
+  For $z,w\in S^1$, define the sine of the short signed angle from $z$ to
+  $w$ as $\operatorname{Im}(\overline z w)$.
+-/
 noncomputable def circleLocalSine (z w : Circle) : ℝ :=
   (conj (z : ℂ) * (w : ℂ)).im
 
-/-- The short signed angle from `z`, defined on the semicircle where the
-arcsine branch is valid.  Only its germ at `z` is used. -/
+/--
+%%handwave
+name: Local signed angle on the circle
+statement:
+  Define the short signed angle from $z$ to $w$ by applying the principal
+  arcsine to $\operatorname{Im}(\overline z w)$; only its germ at $z$ is
+  used.
+-/
 noncomputable def circleLocalAngle (z w : Circle) : ℝ :=
   Real.arcsin (circleLocalSine z w)
 
@@ -503,9 +557,14 @@ theorem addCircle_homeomorphCircle_symm_exp
   have hpi : Real.pi ≠ 0 := ne_of_gt Real.pi_pos
   field_simp
 
-/-- The derivative, in a centered product chart, of the oriented tangent
-field.  We use the within-derivative because the partial coordinate is only
-specified to be smooth on its source. -/
+/--
+%%handwave
+name: The derivative, in a centered product chart, of the oriented tangent field
+statement:
+  At $x$ in a centered boundary product chart, apply the derivative of the
+  chart coordinate, taken within its source, to the oriented frontier
+  tangent vector at $x$, obtaining its two real coordinate components.
+-/
 noncomputable def smoothFrontierProductCoordinateVelocity
     (D : SmoothBoundaryDomain X) (q : frontier D.carrier) (x : X) :
     ℝ × ℝ :=
@@ -1924,8 +1983,14 @@ theorem exists_smooth_circle_frontierComponent_parametrization
   exact ⟨phi, hphiSmooth,
     ⟨hphi_injective, hphi_range, hlocalInverse⟩⟩
 
-/-- A connected component of the smooth frontier, packaged as an open
-submanifold of the frontier. -/
+/--
+%%handwave
+name: A connected component of the smooth frontier, packaged as an open submanifold of the frontier
+statement:
+  For $p\in\partial\Omega$, define the open frontier submanifold
+  $C_p$ whose carrier is the connected component of $p$ in
+  $\partial\Omega$.
+-/
 noncomputable def smoothFrontierComponentOpen
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     TopologicalSpace.Opens (frontier D.carrier) where
@@ -2359,7 +2424,14 @@ theorem sidePreservingAnnularCollar_exteriorSide_isPreconnected
   rw [← himage]
   exact hTpre.image f hf.continuousOn
 
-/-- Restrict a side-preserving annular collar to its domain half. -/
+/--
+%%handwave
+name: Restrict a side-preserving annular collar to its domain half
+statement:
+  If a collar $\varphi:W\to S^1\times\mathbb R$ satisfies
+  $x\in\Omega\iff\varphi(x)_2<0$, restrict it to a diffeomorphism
+  $W\cap\Omega\to S^1\times(-\infty,0)$.
+-/
 noncomputable def sidePreservingAnnularCollarDomainRestriction
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,
@@ -2423,8 +2495,15 @@ noncomputable def sidePreservingAnnularCollarDomainRestriction
       contMDiff_toFun := htoNeg
       contMDiff_invFun := hfromNeg }
 
-/-- The domain half of a side-preserving frontier collar is itself an
-annular cylinder. -/
+/--
+%%handwave
+name: The domain half of a side-preserving frontier collar is itself an annular cylinder
+statement:
+  Compose the restricted collar
+  $W\cap\Omega\to S^1\times(-\infty,0)$ with logarithmic reparametrization
+  of the negative coordinate to identify $W\cap\Omega$ with
+  $S^1\times\mathbb R$.
+-/
 noncomputable def sidePreservingAnnularCollarDomainDiffeomorph
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,

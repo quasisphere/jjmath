@@ -24,6 +24,13 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 The concrete first-order relation in the fixed source coordinate stored by
 the left chart.  This is the common-coordinate replacement for the older
 moving-`chartAt` concrete first-order relation.
+
+%%handwave
+name: The concrete first-order relation in the fixed source coordinate stored by the left chart
+statement:
+  In the fixed source coordinate of $U$, charts $U,V$ satisfy the
+  first-order relation for $A$ at $x$ when
+  $D_{U,V}(x)=A'(U(x))D_{U,U}(x)$.
 -/
 def HyperbolicLocalChartLeftSourceConcreteFirstOrderMatch
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g)
@@ -168,6 +175,13 @@ theorem hyperbolicLocalChartLeftSourceConcreteFirstOrderMatch_of_eventuallyEq_re
 /--
 The value-plus-left-source-first-order locus for a pointed real-Mobius
 comparison of two hyperbolic local charts.
+
+%%handwave
+name: The value-plus-left-source-first-order locus for a pointed real-Möbius comparison of two hyperbolic local charts
+statement:
+  For charts $U,V$ and a real Möbius transformation $A$, define the relative
+  matching locus in their overlap by the two equations
+  $V(x)=A(U(x))$ and $D_{U,V}(x)=A'(U(x))D_{U,U}(x)$.
 -/
 def pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderMatchSet
     {g : HyperbolicMetric X} (U V : HyperbolicLocalChart X g)
@@ -181,6 +195,13 @@ def pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderM
 /--
 Continuity target for the two derivative-comparison maps in the fixed
 left-source coordinate.
+
+%%handwave
+name: Continuity of the two derivative-comparison maps in the fixed left-source coordinate
+statement:
+  For every pointed comparison of charts $U,V$ by $A$, both
+  $x\mapsto D_{U,V}(x)$ and
+  $x\mapsto A'(U(x))D_{U,U}(x)$ are continuous on the common chart domain.
 -/
 def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderDerivativeContinuityTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
@@ -198,6 +219,13 @@ def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderD
 
 /--
 Closedness target for the fixed-left-source value-plus-first-order locus.
+
+%%handwave
+name: Closedness of the fixed-left-source value-plus-first-order locus
+statement:
+  For every pointed comparison of $U,V$ by $A$, the locus in their overlap
+  where both $V(x)=A(U(x))$ and
+  $D_{U,V}(x)=A'(U(x))D_{U,U}(x)$ hold is closed.
 -/
 def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderMatchSetIsClosedTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
@@ -211,6 +239,12 @@ def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderM
 /--
 Derivative continuity in the fixed left-source coordinate makes the
 value-plus-first-order locus closed.
+
+%%handwave
+name: Derivative continuity in the fixed left-source coordinate makes the value-plus-first-order locus closed
+statement:
+  Derivative continuity in the fixed left-source coordinate makes the value-plus-first-order
+  locus closed.
 -/
 def pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderMatchSetIsClosedTheorem_of_derivativeContinuity
     (hDeriv :
@@ -322,6 +356,13 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOr
 Openness target for the fixed-left-source value-plus-first-order locus.  This
 is where the local analytic identity principle should enter, stated without
 moving source charts.
+
+%%handwave
+name: Openness of the fixed-left-source value-plus-first-order locus
+statement:
+  For every pointed comparison of $U,V$ by $A$, the locus in their overlap
+  where both $V(x)=A(U(x))$ and
+  $D_{U,V}(x)=A'(U(x))D_{U,U}(x)$ hold is open.
 -/
 def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderMatchSetIsOpenTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=
@@ -430,6 +471,13 @@ theorem pointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOr
 Boundary saying that the pointed transition chosen at `x₀` satisfies the
 fixed-left-source first-order equation at the base point.  This replaces any
 need to compare continuously varying `chartAt` derivatives.
+
+%%handwave
+name: A pointed transition satisfies the fixed-source first-order equation
+statement:
+  If $A$ matches hyperbolic local charts $U,V$ to first order at $x_0$, then
+  $D_{U,V}(x_0)=A'(U(x_0))D_{U,U}(x_0)$ in the fixed coordinate stored by
+  $U$.
 -/
 def PointedHyperbolicLocalChartRealMobiusTransitionLeftSourceConcreteFirstOrderAtPointedTransitionTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop :=

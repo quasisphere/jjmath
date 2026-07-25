@@ -132,42 +132,6 @@ theorem exists_primitive_of_compactSupport_exteriorChain_with_support
   apply hthetaSupport y
   simpa [W] using hy
 
-/-- A compactly supported two-form carried by the first chart of a nested
-exterior path chain has a global primitive.
-
-%%handwave
-name: Primitive along a nested exterior chain
-statement:
-  Under the same exterior-chain hypotheses, a two-form compactly supported in the initial planar chart is globally exact.
-proof:
-  Apply the supported exterior-chain theorem and discard the support conclusion.
--/
-theorem exists_primitive_of_compactSupport_exteriorChain
-    (E : SmoothRelativelyCompactExhaustion X) (N : ℕ)
-    (U : ℕ → Set X) (x : ℕ → X)
-    (gamma : ∀ n : ℕ, Path (x n) (x (n + 1)))
-    (hU : ∀ n : ℕ,
-      IsExteriorComponent (closure (E.domain (N + n)).carrier) (U n))
-    (hx : ∀ n : ℕ, x n ∈ U n)
-    (hgamma : ∀ n : ℕ, ∀ t : unitInterval, gamma n t ∈ U n)
-    (V0 : TopologicalSpace.Opens X) (hV0 : V0 ≤ U 0)
-    (y0 : V0)
-    (phi0 : Nonempty
-      (V0 ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen))
-    (K0 : Set V0) (hK0 : IsCompact K0)
-    (omega : JJMath.Manifold.SmoothForms
-      (I := SurfaceRealModel) (M := X) ℝ 2)
-    (hzero : ∀ y : X,
-      y ∉ smoothFormCompactCore V0 K0 → omega.toFun y = 0) :
-    ∃ theta : JJMath.Manifold.SmoothForms
-        (I := SurfaceRealModel) (M := X) ℝ 1,
-      JJMath.Manifold.deRhamDifferential
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1 theta = omega := by
-  rcases exists_primitive_of_compactSupport_exteriorChain_with_support
-      E N U x gamma hU hx hgamma V0 hV0 y0 phi0 K0 hK0 omega hzero with
-    ⟨theta, htheta, _hsupport⟩
-  exact ⟨theta, htheta⟩
-
 /-- A two-form compactly supported in a full-plane coordinate chart inside
 an exterior component is globally exact, with a primitive supported in that
 component.  The compact mass is first moved to the nested exterior chain and
@@ -233,37 +197,6 @@ theorem IsExteriorComponent.exists_primitive_of_compactSupport_in_coordinateChar
     · intro hyUnion
       rcases mem_iUnion.mp hyUnion with ⟨n, hyn⟩
       exact hyV (hU0V (hUanti (Nat.zero_le n) hyn))
-
-/-- A two-form compactly supported in a full-plane coordinate chart inside
-an exterior component is globally exact.
-
-%%handwave
-name: Exactness of chartwise compact mass in an exterior component
-statement:
-  A smooth two-form compactly supported in a full-plane coordinate chart inside an exterior component is globally exact.
-proof:
-  Apply the supported chartwise primitive theorem and forget the support property.
--/
-theorem IsExteriorComponent.exists_primitive_of_compactSupport_in_coordinateChart
-    (E : SmoothRelativelyCompactExhaustion X)
-    {K V : Set X} (hKcompact : IsCompact K)
-    (hV : IsExteriorComponent K V)
-    (V0 : TopologicalSpace.Opens X) (hV0 : V0 ≤ V)
-    (y0 : V0)
-    (phi0 : V0 ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ complexPlanarModelOpen)
-    (K0 : Set V0) (hK0 : IsCompact K0)
-    (omega : JJMath.Manifold.SmoothForms
-      (I := SurfaceRealModel) (M := X) ℝ 2)
-    (hzero : ∀ y : X,
-      y ∉ smoothFormCompactCore V0 K0 → omega.toFun y = 0) :
-    ∃ theta : JJMath.Manifold.SmoothForms
-        (I := SurfaceRealModel) (M := X) ℝ 1,
-      JJMath.Manifold.deRhamDifferential
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1 theta = omega := by
-  rcases hV.exists_primitive_of_compactSupport_in_coordinateChart_with_support
-      E hKcompact V0 hV0 y0 phi0 K0 hK0 omega hzero with
-    ⟨theta, htheta, _hsupport⟩
-  exact ⟨theta, htheta⟩
 
 /--
 %%handwave

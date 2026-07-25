@@ -1,5 +1,5 @@
 import JJMath.Manifold.DeRhamPoincare
-import JJMath.Topology.FineSheaf
+import JJMath.Topology.FineSheafAcyclic
 import JJMath.Topology.SheafAcyclicResolution
 import JJMath.Topology.SingularCohomology
 import Mathlib.Algebra.Category.Grp.Ulift
@@ -37,38 +37,6 @@ instance instOrderTop (X : Type*) [TopologicalSpace X] :
 end TopologicalSpace.Opens
 
 namespace CategoryTheory
-namespace GrothendieckTopology
-
-open CategoryTheory.Limits
-
-universe uC vC uA vA uPoint
-
-variable {C : Type uC} [Category.{vC} C]
-variable {J : GrothendieckTopology C}
-variable {A : Type uA} [Category.{vA} A] [Preadditive A]
-variable [HasColimitsOfSize.{uPoint, uPoint} A]
-
-instance point_presheafFiber_additive (Φ : Point.{uPoint} J) :
-    (Φ.presheafFiber (A := A)).Additive := by
-  dsimp [Point.presheafFiber]
-  let W : (Cᵒᵖ ⥤ A) ⥤ (Φ.fiber.Elementsᵒᵖ ⥤ A) :=
-    (Functor.whiskeringLeft Φ.fiber.Elementsᵒᵖ Cᵒᵖ A).obj
-      (CategoryOfElements.π Φ.fiber).op
-  haveI : W.Additive := by
-    constructor
-    intro X Y f g
-    ext U
-    rfl
-  change (W ⋙ colim).Additive
-  infer_instance
-
-instance point_sheafFiber_additive [HasSheafify J A] (Φ : Point.{uPoint} J) :
-    (Φ.sheafFiber (A := A)).Additive := by
-  dsimp [Point.sheafFiber]
-  infer_instance
-
-end GrothendieckTopology
-
 namespace ShiftedHom
 
 universe u₁ v₁ u₂ v₂ wM
@@ -77,84 +45,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {M : Type wM} [AddMonoid M] [HasShift C M] [HasShift D M]
 
-/--
-%%handwave
-name:
-  Fully faithful functors give bijections on shifted morphisms
-statement:
-  A fully faithful functor which commutes with shifts identifies shifted
-  morphisms before and after applying the functor.
-proof:
-  A shifted morphism \(X\to Y[a]\) maps to the composite
-  \(F(X)\to F(Y[a])\to F(Y)[a]\).  The inverse first composes with the inverse
-  shift-commutation isomorphism and then uses full faithfulness of \(F\).
-  The two inverse laws are the two triangle identities for that isomorphism.
--/
-noncomputable def mapEquivOfFullyFaithful (F : C ⥤ D) [F.CommShift M]
-    (hF : F.FullyFaithful) (X Y : C) (a : M) :
-    ShiftedHom X Y a ≃ ShiftedHom (F.obj X) (F.obj Y) a := by
-  letI : F.Full := hF.full
-  letI : F.Faithful := hF.faithful
-  refine
-    { toFun := fun f => f.map F
-      invFun := fun g => F.preimage (g ≫ (F.commShiftIso a).inv.app Y)
-      left_inv := ?_
-      right_inv := ?_ }
-  · intro f
-    apply F.map_injective
-    dsimp [ShiftedHom.map]
-    rw [Functor.map_preimage]
-    simpa [Category.assoc] using
-      congrArg (fun k => F.map f ≫ k) ((F.commShiftIso a).hom_inv_id_app Y)
-  · intro g
-    dsimp [ShiftedHom.map]
-    rw [Functor.map_preimage]
-    simpa [Category.assoc] using
-      congrArg (fun k => g ≫ k) ((F.commShiftIso a).inv_hom_id_app Y)
-
-/--
-%%handwave
-name:
-  The shifted-morphism map of a fully faithful functor is bijective
-statement:
-  A fully faithful functor which commutes with shifts induces a bijection on
-  each shifted morphism set.
-proof:
-  Take the bijectivity of [the shifted-morphism equivalence induced by a fully faithful functor](lean:CategoryTheory.ShiftedHom.mapEquivOfFullyFaithful).
--/
-theorem map_bijective_of_fullyFaithful (F : C ⥤ D) [F.CommShift M]
-    (hF : F.FullyFaithful) (X Y : C) (a : M) :
-    Function.Bijective (fun f : ShiftedHom X Y a => f.map F) :=
-  (mapEquivOfFullyFaithful F hF X Y a).bijective
-
 variable {X X' Y Y' : C}
-
-/--
-%%handwave
-name:
-  Isomorphic source and target identify shifted morphisms
-statement:
-  An isomorphism of sources and an isomorphism of targets induce a bijection
-  on shifted morphism sets.
-proof:
-  Send a shifted morphism \(X\to Y[a]\) to the composite obtained by
-  precomposing with the source isomorphism and postcomposing with the shifted
-  target isomorphism.  The inverse uses the inverse source and target
-  isomorphisms, and the two inverse laws are the ordinary isomorphism
-  identities after applying the shift functor.
--/
-noncomputable def isoCongrEquiv (eX : X' ≅ X) (eY : Y ≅ Y') (a : M) :
-    ShiftedHom X Y a ≃ ShiftedHom X' Y' a where
-  toFun f := eX.hom ≫ f ≫ eY.hom⟦a⟧'
-  invFun g := eX.inv ≫ g ≫ eY.inv⟦a⟧'
-  left_inv f := by
-    simp only [Category.assoc]
-    rw [Iso.inv_hom_id_assoc]
-    simp only [← Functor.map_comp, Iso.hom_inv_id, Functor.map_id, Category.comp_id]
-  right_inv g := by
-    simp only [Category.assoc]
-    rw [Iso.hom_inv_id_assoc]
-    simp only [← Functor.map_comp, Iso.inv_hom_id, Functor.map_id, Category.comp_id]
 
 end ShiftedHom
 
@@ -206,8 +97,13 @@ theorem sheafCompose_preservesLimitsOfShape_of_preserves
   exact preservesLimitsOfShape_of_reflects_of_preserves
     (sheafCompose J F) (sheafToPresheaf J B)
 
-/-- The standard sheafified colimit cocone commutes with postcomposition by a
-functor which commutes with sheafification. -/
+/--
+%%handwave
+name:
+  Compatibility of sheafified colimits with coefficient functors
+statement:
+  If a coefficient functor $F$ commutes with sheafification, then sheafifying the objectwise image under $F$ of a presheaf cocone is canonically isomorphic to applying $F$ to the sheafified cocone.
+-/
 noncomputable def sheafifyCocone_composeIso
     [HasSheafify J A] [HasSheafify J B] [J.PreservesSheafification F]
     {G : K ⥤ Sheaf J A}
@@ -294,76 +190,6 @@ variable {D₁ : Type u₃} [Category.{v₃} D₁]
 variable {D₂ : Type u₄} [Category.{v₄} D₂]
 variable {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
-noncomputable def localizedFunctor_fullyFaithful_of_homMap_bijective
-    (Φ : LocalizerMorphism W₁ W₂)
-    (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
-    (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
-    (G : D₁ ⥤ D₂) [CatCommSq Φ.functor L₁ L₂ G]
-    (hbij :
-      ∀ X Y : C₁,
-        Function.Bijective
-          (Φ.homMap L₁ L₂ :
-            (L₁.obj X ⟶ L₁.obj Y) →
-              (L₂.obj (Φ.functor.obj X) ⟶
-                L₂.obj (Φ.functor.obj Y)))) :
-    G.FullyFaithful := by
-  classical
-  letI : L₁.EssSurj := Localization.essSurj L₁ W₁
-  refine
-    { preimage := fun {A B} f => ?_
-      map_preimage := ?_
-      preimage_map := ?_ }
-  · let X := L₁.objPreimage A
-    let Y := L₁.objPreimage B
-    let eA := L₁.objObjPreimageIso A
-    let eB := L₁.objObjPreimageIso B
-    let e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G := CatCommSq.iso Φ.functor L₁ L₂ G
-    let u :
-        L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y) :=
-      e.hom.app X ≫ G.map eA.hom ≫ f ≫ G.map eB.inv ≫ e.inv.app Y
-    exact eA.inv ≫ Classical.choose ((hbij X Y).2 u) ≫ eB.hom
-  · intro A B f
-    let X := L₁.objPreimage A
-    let Y := L₁.objPreimage B
-    let eA := L₁.objObjPreimageIso A
-    let eB := L₁.objObjPreimageIso B
-    let e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G := CatCommSq.iso Φ.functor L₁ L₂ G
-    let u :
-        L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y) :=
-      e.hom.app X ≫ G.map eA.hom ≫ f ≫ G.map eB.inv ≫ e.inv.app Y
-    let g := Classical.choose ((hbij X Y).2 u)
-    have hg : Φ.homMap L₁ L₂ g = u :=
-      Classical.choose_spec ((hbij X Y).2 u)
-    rw [LocalizerMorphism.homMap_apply
-      (Φ := Φ) (L₁ := L₁) (L₂ := L₂) (G := G) (e := e)] at hg
-    have hgmap : G.map g = G.map eA.hom ≫ f ≫ G.map eB.inv := by
-      apply (cancel_epi (e.hom.app X)).1
-      apply (cancel_mono (e.inv.app Y)).1
-      simpa [u, Category.assoc] using hg
-    change G.map (eA.inv ≫ g ≫ eB.hom) = f
-    simp [Functor.map_comp, hgmap, Category.assoc]
-  · intro A B f
-    let X := L₁.objPreimage A
-    let Y := L₁.objPreimage B
-    let eA := L₁.objObjPreimageIso A
-    let eB := L₁.objObjPreimageIso B
-    let e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G := CatCommSq.iso Φ.functor L₁ L₂ G
-    let u :
-        L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y) :=
-      e.hom.app X ≫ G.map eA.hom ≫ G.map f ≫ G.map eB.inv ≫ e.inv.app Y
-    let g := Classical.choose ((hbij X Y).2 u)
-    have hg : Φ.homMap L₁ L₂ g = u :=
-      Classical.choose_spec ((hbij X Y).2 u)
-    have hg' : g = eA.hom ≫ f ≫ eB.inv := by
-      apply (hbij X Y).1
-      rw [hg]
-      dsimp [u]
-      rw [LocalizerMorphism.homMap_apply
-        (Φ := Φ) (L₁ := L₁) (L₂ := L₂) (G := G) (e := e)]
-      simp [Functor.map_comp, Category.assoc]
-    change eA.inv ≫ g ≫ eB.hom = f
-    simp [hg', Category.assoc]
-
 end LocalizerMorphism
 
 namespace Functor
@@ -377,90 +203,10 @@ set_option checkBinderAnnotations false in
 /--
 %%handwave
 name:
-  Fully faithful derived functors identify Ext groups
+  Full faithfulness on homological complexes
 statement:
-  If an exact functor induces a fully faithful functor on derived categories,
-  then it induces a bijection on all Ext groups.
-proof:
-  Interpret Ext groups as morphisms from a single complex to a shifted single
-  complex in the derived category.  The exact functor commutes with the single
-  complex embedding and with shifts, and the induced derived functor is fully
-  faithful, so the corresponding map on these morphism groups is bijective.
+  A fully faithful zero-morphism-preserving functor between abelian categories induces a fully faithful functor on homological complexes of any fixed shape.
 -/
-theorem mapExtAddHom_bijective_of_mapDerivedCategory_fullyFaithful
-    [HasDerivedCategory.{t₁} C] [HasDerivedCategory.{t₂} D]
-    (F : C ⥤ D) [F.Additive] [Limits.PreservesFiniteLimits F]
-    [Limits.PreservesFiniteColimits F]
-    [HasExt.{w₁} C] [HasExt.{w₂} D]
-    (hF : F.mapDerivedCategory.FullyFaithful) (X Y : C) (n : ℕ) :
-    Function.Bijective (F.mapExtAddHom X Y n) := by
-  let eSingle := F.mapDerivedCategorySingleFunctor 0
-  let eShifted :=
-    ShiftedHom.mapEquivOfFullyFaithful F.mapDerivedCategory hF
-      ((DerivedCategory.singleFunctor C 0).obj X)
-      ((DerivedCategory.singleFunctor C 0).obj Y) (n : ℤ)
-  let eTransport :=
-    ShiftedHom.isoCongrEquiv ((eSingle.app X).symm) (eSingle.app Y) (n : ℤ)
-  let eExt : Abelian.Ext.{w₁} X Y n ≃ Abelian.Ext.{w₂} (F.obj X) (F.obj Y) n :=
-    Abelian.Ext.homEquiv.trans
-      (eShifted.trans (eTransport.trans Abelian.Ext.homEquiv.symm))
-  have hfun : ⇑(F.mapExtAddHom X Y n) = eExt := by
-    funext α
-    apply Abelian.Ext.homEquiv.injective
-    dsimp [eExt, eShifted, eTransport, ShiftedHom.isoCongrEquiv,
-      ShiftedHom.mapEquivOfFullyFaithful]
-    change (Abelian.Ext.mapExactFunctor F α).hom = _
-    rw [Abelian.Ext.mapExactFunctor_hom]
-    rw [Equiv.apply_symm_apply]
-    rfl
-  rw [hfun]
-  exact eExt.bijective
-
-/--
-%%handwave
-name:
-  Exact functors carry degree-zero postcomposition in Ext to degree-zero postcomposition
-statement:
-  For an exact additive functor, the induced map on Ext sends postcomposition
-  by a morphism in degree zero to postcomposition by the image of that
-  morphism.
-proof:
-  Compare the two Ext classes as shifted morphisms in the derived category.
-  The exact functor commutes with single complexes and with shifts, and the
-  shifted-morphism map respects composition and degree-zero morphisms.
--/
-theorem mapExtAddHom_comp_mk₀
-    [HasDerivedCategory.{t₁} C] [HasDerivedCategory.{t₂} D]
-    (F : C ⥤ D) [F.Additive] [Limits.PreservesFiniteLimits F]
-    [Limits.PreservesFiniteColimits F]
-    [HasExt.{w₁} C] [HasExt.{w₂} D]
-    {X Y Z : C} (n : ℕ) (α : Abelian.Ext X Y n) (f : Y ⟶ Z) :
-    F.mapExtAddHom X Z n
-        (α.comp (Abelian.Ext.mk₀ f) (add_zero n)) =
-      (F.mapExtAddHom X Y n α).comp
-        (Abelian.Ext.mk₀ (F.map f)) (add_zero n) := by
-  apply Abelian.Ext.homEquiv.injective
-  rw [Functor.mapExtAddHom_apply, Functor.mapExtAddHom_apply]
-  simp only [Abelian.Ext.mapExactFunctor_hom, Abelian.Ext.comp_hom,
-    Abelian.Ext.mk₀_hom, ShiftedHom.map_comp, ShiftedHom.map_mk₀]
-  rw [ShiftedHom.comp_mk₀, ShiftedHom.comp_mk₀]
-  have hnat :
-      (shiftFunctor (DerivedCategory D) (n : ℤ)).map
-          (F.mapDerivedCategory.map ((DerivedCategory.singleFunctor C 0).map f)) ≫
-        (shiftFunctor (DerivedCategory D) (n : ℤ)).map
-          ((F.mapDerivedCategorySingleFunctor 0).hom.app Z) =
-      (shiftFunctor (DerivedCategory D) (n : ℤ)).map
-          ((F.mapDerivedCategorySingleFunctor 0).hom.app Y) ≫
-        (shiftFunctor (DerivedCategory D) (n : ℤ)).map
-          ((DerivedCategory.singleFunctor D 0).map (F.map f)) := by
-    simpa [Functor.comp_map] using
-      congrArg ((shiftFunctor (DerivedCategory D) (n : ℤ)).map)
-        ((F.mapDerivedCategorySingleFunctor 0).hom.naturality f)
-  simpa [Category.assoc] using
-    congrArg (fun k =>
-      (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
-        α.hom.map F.mapDerivedCategory ≫ k) hnat
-
 noncomputable def mapHomologicalComplex_fullyFaithful
     (F : C ⥤ D) [F.PreservesZeroMorphisms] (hF : F.FullyFaithful)
     {ι : Type*} (c : ComplexShape ι) :
@@ -480,6 +226,13 @@ noncomputable def mapHomologicalComplex_fullyFaithful
     ext i
     exact hF.preimage_map (φ.f i)
 
+/--
+%%handwave
+name:
+  Reflection of chain homotopies by a fully faithful functor
+statement:
+  If an additive fully faithful functor sends two chain maps to homotopic maps, applying its inverse on hom-spaces to the homotopy components yields a chain homotopy between the original maps.
+-/
 noncomputable def homotopyOfMapHomotopy
     (F : C ⥤ D) [F.Additive] (hF : F.FullyFaithful)
     {ι : Type*} {c : ComplexShape ι}
@@ -498,6 +251,13 @@ noncomputable def homotopyOfMapHomotopy
     apply hF.map_injective
     simpa [dNext, prevD, Functor.mapHomologicalComplex_obj_d] using h.comm i
 
+/--
+%%handwave
+name:
+  Full faithfulness on homotopy categories
+statement:
+  If an additive functor is fully faithful on homological complexes and reflects chain homotopies, then its induced functor on the corresponding homotopy categories is fully faithful.
+-/
 noncomputable def mapHomotopyCategory_fullyFaithful_of_mapHomologicalComplex
     (F : C ⥤ D) [F.Additive]
     {ι : Type*} (c : ComplexShape ι)
@@ -561,33 +321,6 @@ noncomputable def mapHomotopyCategory_fullyFaithful_of_mapHomologicalComplex
             exact HomotopyCategory.eq_of_homotopy _ _ (hreflect Hmap)
       _ = φ := HomotopyCategory.quotient_map_out φ
 
-noncomputable def mapDerivedCategory_fullyFaithful_of_localizedHom_bijective
-    (F : C ⥤ D) [F.Additive] [Limits.PreservesFiniteLimits F]
-    [Limits.PreservesFiniteColimits F]
-    [HasDerivedCategory C] [HasDerivedCategory D]
-    (Φ :
-      LocalizerMorphism
-        (HomotopyCategory.quasiIso C (ComplexShape.up ℤ))
-        (HomotopyCategory.quasiIso D (ComplexShape.up ℤ)))
-    [CatCommSq Φ.functor (DerivedCategory.Qh (C := C))
-      (DerivedCategory.Qh (C := D)) F.mapDerivedCategory]
-    (hbij :
-      ∀ K L : HomotopyCategory C (ComplexShape.up ℤ),
-        Function.Bijective
-          (Φ.homMap (DerivedCategory.Qh (C := C))
-            (DerivedCategory.Qh (C := D)) :
-              ((DerivedCategory.Qh (C := C)).obj K ⟶
-                (DerivedCategory.Qh (C := C)).obj L) →
-              ((DerivedCategory.Qh (C := D)).obj (Φ.functor.obj K) ⟶
-                (DerivedCategory.Qh (C := D)).obj (Φ.functor.obj L)))) :
-    F.mapDerivedCategory.FullyFaithful := by
-  exact
-    LocalizerMorphism.localizedFunctor_fullyFaithful_of_homMap_bijective
-      (Φ := Φ)
-      (L₁ := DerivedCategory.Qh (C := C))
-      (L₂ := DerivedCategory.Qh (C := D))
-      (G := F.mapDerivedCategory) hbij
-
 end Functor
 
 end CategoryTheory
@@ -638,126 +371,6 @@ variable {E : Type v} [NormedAddCommGroup E]
 variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 
-noncomputable local instance realConstantSheafCohomologyModule_topCatOf
-    {M0 : Type m} [TopologicalSpace M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    [HasExt.{m}
-      (Sheaf (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-        AddCommGrpCat.{m})]
-    (n : ℕ) :
-    Module ℝ
-      (JJMath.Cohomology.RealConstantSheafCohomology
-        (TopCat.of M0 : TopCat.{m}) n) :=
-  JJMath.Cohomology.realConstantSheafCohomologyModule
-    (TopCat.of M0 : TopCat.{m}) n
-
-/--
-%%handwave
-name:
-  Convex subtargets of boundaryless charts
-statement:
-  Around every point of a finite-dimensional smooth real manifold modeled on a
-  vector space without boundary, one can choose a chart and shrink its target
-  to a nonempty convex open set still lying in the chart target.
-proof:
-  Since the chart target is open in the normed model vector space, choose a
-  sufficiently small open ball around the coordinate of the point.  Open balls
-  in a normed vector space are convex.
--/
-theorem deRham_selfModel_exists_convex_chart_restriction
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    [FiniteDimensional ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (x : M0) :
-    ∃ (e : OpenPartialHomeomorph M0 E0)
-      (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0),
-      e ∈ atlas E0 M0 ∧
-        x ∈ U ∧
-          Convex ℝ (V : Set E0) ∧
-            (V : Set E0).Nonempty ∧
-              (U : Set M0) = e.source ∩ e ⁻¹' (V : Set E0) ∧
-                (V : Set E0) ⊆ e.target := by
-  let e : OpenPartialHomeomorph M0 E0 := chartAt E0 x
-  have hx_source : x ∈ e.source := by
-    simp [e]
-  have hx_target : e x ∈ e.target := e.map_source hx_source
-  rcases Metric.isOpen_iff.1 e.open_target (e x) hx_target with
-    ⟨r, hr, hball⟩
-  let V : TopologicalSpace.Opens E0 :=
-    ⟨Metric.ball (e x) r, Metric.isOpen_ball⟩
-  let U : TopologicalSpace.Opens M0 :=
-    ⟨e.source ∩ e ⁻¹' (V : Set E0), e.isOpen_inter_preimage V.2⟩
-  refine ⟨e, U, V, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · simp [e]
-  · exact ⟨hx_source, by simpa [V] using Metric.mem_ball_self (x := e x) hr⟩
-  · simpa [V] using convex_ball (e x) r
-  · exact ⟨e x, by simpa [V] using Metric.mem_ball_self (x := e x) hr⟩
-  · rfl
-  · simpa [V] using hball
-
-/--
-%%handwave
-name:
-  Subordinate convex subtargets of boundaryless charts
-statement:
-  Around every point of an open set in a finite-dimensional smooth real
-  manifold modeled on a vector space without boundary, one can choose a chart
-  and shrink its target to a nonempty convex open set whose source
-  restriction is contained in the given open set.
-proof:
-  Intersect the chart source with the prescribed open set and take its image
-  under the chart.  This image is open and contains the coordinate of the
-  point, so it contains a small convex ball.  The inverse image of that ball
-  inside the chart source is contained in the prescribed open set by
-  injectivity of the chart on its source.
--/
-theorem deRham_selfModel_exists_convex_chart_restriction_subordinate
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    [FiniteDimensional ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (x : M0) (W : TopologicalSpace.Opens M0) (hxW : x ∈ W) :
-    ∃ (e : OpenPartialHomeomorph M0 E0)
-      (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0),
-      e ∈ atlas E0 M0 ∧
-        x ∈ U ∧
-          U ≤ W ∧
-            Convex ℝ (V : Set E0) ∧
-              (V : Set E0).Nonempty ∧
-                (U : Set M0) = e.source ∩ e ⁻¹' (V : Set E0) ∧
-                  (V : Set E0) ⊆ e.target := by
-  let e : OpenPartialHomeomorph M0 E0 := chartAt E0 x
-  have hx_source : x ∈ e.source := by
-    simp [e]
-  let s : Set M0 := e.source ∩ (W : Set M0)
-  have hs_open : IsOpen s := e.open_source.inter W.2
-  have hs_subset : s ⊆ e.source := inter_subset_left
-  have hs_image_open : IsOpen (e '' s) :=
-    e.isOpen_image_of_subset_source hs_open hs_subset
-  have hx_image : e x ∈ e '' s := ⟨x, ⟨hx_source, hxW⟩, rfl⟩
-  rcases Metric.isOpen_iff.1 hs_image_open (e x) hx_image with
-    ⟨r, hr, hball⟩
-  let V : TopologicalSpace.Opens E0 :=
-    ⟨Metric.ball (e x) r, Metric.isOpen_ball⟩
-  let U : TopologicalSpace.Opens M0 :=
-    ⟨e.source ∩ e ⁻¹' (V : Set E0), e.isOpen_inter_preimage V.2⟩
-  refine ⟨e, U, V, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · simp [e]
-  · exact ⟨hx_source, by simpa [V] using Metric.mem_ball_self (x := e x) hr⟩
-  · intro y hyU
-    have hy_source : y ∈ e.source := hyU.1
-    have hey_image : e y ∈ e '' s := hball hyU.2
-    rcases hey_image with ⟨z, hz, hzy⟩
-    have hyz : y = z := e.injOn hy_source hz.1 hzy.symm
-    simpa [hyz] using hz.2
-  · simpa [V] using convex_ball (e x) r
-  · exact ⟨e x, by simpa [V] using Metric.mem_ball_self (x := e x) hr⟩
-  · rfl
-  · intro y hyV
-    rcases hball hyV with ⟨z, hz, rfl⟩
-    exact e.map_source hz.1
 
 /--
 %%handwave
@@ -793,222 +406,6 @@ theorem deRham_selfModel_chart_restriction_image
 /--
 %%handwave
 name:
-  A two-sided chart restriction is a homeomorphism
-statement:
-  If an open subset of a chart source is the preimage of an open subset of the
-  chart target, then the chart restricts to a homeomorphism between the two
-  open subspaces.
-proof:
-  The source subset lies in the chart source, and the previous image statement
-  identifies its image with the target subset.  Restrict the partial
-  homeomorphism to this subset.
--/
-theorem deRham_selfModel_chart_restriction_homeomorph
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0]
-    (e : OpenPartialHomeomorph M0 E0)
-    (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0)
-    (hU : (U : Set M0) = e.source ∩ e ⁻¹' (V : Set E0))
-    (hV : (V : Set E0) ⊆ e.target) :
-    Nonempty (U ≃ₜ V) := by
-  have hUsource : (U : Set M0) ⊆ e.source := by
-    intro x hxU
-    rw [hU] at hxU
-    exact hxU.1
-  have himage :
-      e '' (U : Set M0) = (V : Set E0) :=
-    deRham_selfModel_chart_restriction_image (e := e) U V hU hV
-  exact ⟨e.homeomorphOfImageSubsetSource hUsource himage⟩
-
-/--
-%%handwave
-name:
-  Smoothness of a two-sided restricted chart
-statement:
-  The homeomorphism obtained by restricting a smooth chart to an open subset
-  of its source and to the corresponding open subset of its target is smooth
-  in both directions.
-proof:
-  The forward map is locally the original smooth chart, and the inverse map is
-  locally the inverse smooth chart.  Smoothness is local on open submanifolds.
--/
-theorem deRham_selfModel_chart_restriction_homeomorph_smooth
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (e : OpenPartialHomeomorph M0 E0) (he : e ∈ atlas E0 M0)
-    (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0)
-    (hUsource : (U : Set M0) ⊆ e.source)
-    (himage : e '' (U : Set M0) = (V : Set E0)) :
-    let φ : U ≃ₜ V := e.homeomorphOfImageSubsetSource hUsource himage
-    ContMDiff 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞ φ ∧
-      ContMDiff 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞ φ.symm := by
-  let φ : U ≃ₜ V := e.homeomorphOfImageSubsetSource hUsource himage
-  change ContMDiff 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞ φ ∧
-    ContMDiff 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞ φ.symm
-  have heMax : e ∈ IsManifold.maximalAtlas 𝓘(ℝ, E0) ∞ M0 :=
-    IsManifold.subset_maximalAtlas (I := 𝓘(ℝ, E0)) (n := ∞) he
-  have heSmooth : ContMDiffOn 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞ e e.source :=
-    contMDiffOn_of_mem_maximalAtlas heMax
-  constructor
-  · intro x
-    rw [contMDiffAt_iff_target_of_mem_source
-      (I := 𝓘(ℝ, E0)) (I' := 𝓘(ℝ, E0)) (y := φ x)]
-    constructor
-    · exact φ.continuous.continuousAt
-    · have hchart : ContMDiffAt 𝓘(ℝ, E0) 𝓘(ℝ, E0) ∞
-          (fun z : U => e (z : M0)) x := by
-        rw [contMDiffAt_subtype_iff]
-        exact heSmooth.contMDiffAt (e.open_source.mem_nhds (hUsource x.2))
-      simpa [TopologicalSpace.Opens.chartAt_eq, chartAt_self_eq,
-        extChartAt_model_space_eq_id, φ,
-        OpenPartialHomeomorph.homeomorphOfImageSubsetSource,
-        Function.comp_def] using hchart
-    · exact mem_chart_source E0 (φ x)
-  · intro y
-    have hUne : Nonempty U := ⟨φ.symm y⟩
-    let eU : OpenPartialHomeomorph U E0 := e.subtypeRestr hUne
-    have heU : eU ∈ IsManifold.maximalAtlas 𝓘(ℝ, E0) ∞ U := by
-      dsimp [eU]
-      exact StructureGroupoid.subtypeRestr_mem_maximalAtlas
-        (G := contDiffGroupoid ∞ 𝓘(ℝ, E0)) he hUne
-    have hy_src : y ∈ (chartAt E0 y).source := mem_chart_source E0 y
-    have hy_tgt : φ.symm y ∈ eU.source := by
-      dsimp [eU]
-      rw [OpenPartialHomeomorph.subtypeRestr_source]
-      exact hUsource (φ.symm y).2
-    have hsourceMax : chartAt E0 y ∈ IsManifold.maximalAtlas 𝓘(ℝ, E0) ∞ V :=
-      IsManifold.chart_mem_maximalAtlas (I := 𝓘(ℝ, E0)) (n := ∞) y
-    have hsrc_subset : (univ : Set V) ⊆ (chartAt E0 y).source := by
-      intro z _
-      exact mem_chart_source E0 z
-    rw [← contMDiffWithinAt_univ]
-    rw [contMDiffWithinAt_iff_image
-      (I := 𝓘(ℝ, E0)) (I' := 𝓘(ℝ, E0))
-      (e := chartAt E0 y) (e' := eU)
-      (f := φ.symm) (s := univ) hsourceMax heU hsrc_subset hy_src hy_tgt]
-    constructor
-    · exact φ.symm.continuous.continuousWithinAt
-    · refine contDiffWithinAt_id.congr_of_mem ?_ ?_
-      · intro z hz
-        rcases hz with ⟨zV, _hzV, rfl⟩
-        have hztarget :
-            (chartAt E0 y).extend 𝓘(ℝ, E0) zV ∈ (chartAt E0 y).target := by
-          change (chartAt E0 y) zV ∈ (chartAt E0 y).target
-          exact (chartAt E0 y).map_source (mem_chart_source E0 zV)
-        let w : V := (chartAt E0 y).symm ((chartAt E0 y).extend 𝓘(ℝ, E0) zV)
-        have hwcoe : (w : E0) = (chartAt E0 y).extend 𝓘(ℝ, E0) zV :=
-          (chartAt E0 y).right_inv hztarget
-        have hφcoe : e ((φ.symm w : U) : M0) = (w : E0) := by
-          change ((φ (φ.symm w) : V) : E0) = (w : E0)
-          exact congrArg (fun q : V => (q : E0)) (φ.apply_symm_apply w)
-        change e ((φ.symm w : U) : M0) = (chartAt E0 y).extend 𝓘(ℝ, E0) zV
-        exact hφcoe.trans hwcoe
-      · simp [TopologicalSpace.Opens.chartAt_eq]
-
-/--
-%%handwave
-name:
-  A restricted smooth chart is a diffeomorphism
-statement:
-  If an open subset of a smooth boundaryless chart source is exactly the
-  preimage of an open subset of the chart target, then the chart restricts to
-  a diffeomorphism between the two open submanifolds.
-proof:
-  Restrict the chart homeomorphism to the prescribed source and target.  The
-  smoothness of the two restricted maps follows from smoothness of charts and
-  inverse charts.
--/
-theorem deRham_selfModel_chart_restriction_diffeomorph
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (e : OpenPartialHomeomorph M0 E0) (he : e ∈ atlas E0 M0)
-    (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0)
-    (hU : (U : Set M0) = e.source ∩ e ⁻¹' (V : Set E0))
-    (hV : (V : Set E0) ⊆ e.target) :
-    Nonempty (U ≃ₘ⟮𝓘(ℝ, E0), 𝓘(ℝ, E0)⟯ V) := by
-  have hUsource : (U : Set M0) ⊆ e.source := by
-    intro x hxU
-    rw [hU] at hxU
-    exact hxU.1
-  have himage :
-      e '' (U : Set M0) = (V : Set E0) :=
-    deRham_selfModel_chart_restriction_image (e := e) U V hU hV
-  let φ : U ≃ₜ V := e.homeomorphOfImageSubsetSource hUsource himage
-  have hsmooth :=
-    deRham_selfModel_chart_restriction_homeomorph_smooth
-      (e := e) he U V hUsource himage
-  refine ⟨{ toEquiv := φ.toEquiv, contMDiff_toFun := ?_, contMDiff_invFun := ?_ }⟩
-  · simpa [φ] using hsmooth.1
-  · simpa [φ] using hsmooth.2
-
-/--
-%%handwave
-name:
-  Convex coordinate neighborhoods
-statement:
-  Around every point of a finite-dimensional smooth real manifold modeled on a
-  vector space without boundary, there is an open neighborhood diffeomorphic
-  to a nonempty convex open subset of the model vector space.
-proof:
-  Choose a smooth chart and shrink its target to a convex coordinate ball.
-  Restricting the chart gives the required diffeomorphism.
--/
-theorem deRham_selfModel_chart_convex_neighborhood
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    [FiniteDimensional ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (x : M0) :
-    ∃ (U : TopologicalSpace.Opens M0) (V : TopologicalSpace.Opens E0),
-      x ∈ U ∧
-        Convex ℝ (V : Set E0) ∧
-          (V : Set E0).Nonempty ∧
-            Nonempty (U ≃ₘ⟮𝓘(ℝ, E0), 𝓘(ℝ, E0)⟯ V) := by
-  rcases deRham_selfModel_exists_convex_chart_restriction
-      (E0 := E0) (M0 := M0) x with
-    ⟨e, U, V, he, hxU, hconvex, hne, hU, hV⟩
-  exact
-    ⟨U, V, hxU, hconvex, hne,
-      deRham_selfModel_chart_restriction_diffeomorph
-        (E0 := E0) (M0 := M0) e he U V hU hV⟩
-
-/--
-%%handwave
-name:
-  Local Poincare lemma in boundaryless charts
-statement:
-  Around every point of a finite-dimensional smooth real manifold modeled on a
-  vector space without boundary, there is an open neighborhood on which all
-  positive-degree real de Rham cohomology vanishes.
-proof:
-  Choose [a coordinate neighborhood diffeomorphic to a nonempty convex open subset of the model vector space](lean:JJMath.Manifold.deRham_selfModel_chart_convex_neighborhood).  The convex open set has vanishing positive-degree de Rham cohomology by the Poincare homotopy operator, and the diffeomorphism transports this vanishing back to the manifold neighborhood.
--/
-theorem deRham_local_poincareLemma_selfModel
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    [FiniteDimensional ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0]
-    (x : M0) :
-    ∃ U : TopologicalSpace.Opens M0,
-      x ∈ U ∧
-        ∀ n : ℕ,
-          Subsingleton
-            (DeRhamCohomology (I := 𝓘(ℝ, E0)) (M := U) (A := ℝ) (n + 1)) := by
-  rcases deRham_selfModel_chart_convex_neighborhood
-      (E0 := E0) (M0 := M0) x with
-    ⟨U, V, hxU, hconvex, hne, hUV⟩
-  refine ⟨U, hxU, fun n ↦ ?_⟩
-  rcases hUV with ⟨φ⟩
-  exact
-    deRhamCohomology_subsingleton_of_diffeomorphic
-      (𝓘(ℝ, E0)) (𝓘(ℝ, E0)) φ (n + 1)
-      (deRham_poincareLemma_convex_open (E := E0) V hconvex hne n)
-
-/--
-%%handwave
-name:
   Extended charts for boundaryless models
 statement:
   If a model with corners has no boundary, then an ordinary chart followed by
@@ -1032,8 +429,13 @@ def deRham_boundarylessExtendedChart
   continuousOn_invFun := by
     simpa using (OpenPartialHomeomorph.continuousOn_extend_symm (f := e) (I := Iℝ))
 
-/-- The canonical restriction of a boundaryless extended chart to prescribed
-open source and target sets. -/
+/--
+%%handwave
+name:
+  Diffeomorphism obtained by restricting a boundaryless chart
+statement:
+  If a boundaryless extended chart carries an open set $U$ exactly onto an open subset $V$ of its target, then restricting the chart gives a smooth diffeomorphism $U\cong V$.
+-/
 noncomputable def deRham_boundarylessExtendedChart_restrictionDiffeomorph
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
     [IsManifold Iℝ ∞ M]
@@ -1132,37 +534,6 @@ noncomputable def deRham_boundarylessExtendedChart_restrictionDiffeomorph
 /--
 %%handwave
 name:
-  Coordinate value of the restricted extended-chart diffeomorphism
-statement:
-  The diffeomorphism obtained by restricting a boundaryless extended chart
-  has, after forgetting the target subtype, the same value as the extended
-  chart itself.
-proof:
-  Restriction changes only the source and target membership data, not the
-  underlying coordinate function.
--/
-@[simp]
-theorem deRham_boundarylessExtendedChart_restrictionDiffeomorph_coe_apply
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
-    [IsManifold Iℝ ∞ M]
-    (e : OpenPartialHomeomorph M H) (he : e ∈ atlas H M)
-    (U : TopologicalSpace.Opens M) (V : TopologicalSpace.Opens E)
-    (hU :
-      (U : Set M) =
-        (deRham_boundarylessExtendedChart (M := M) Iℝ e).source ∩
-          deRham_boundarylessExtendedChart (M := M) Iℝ e ⁻¹' (V : Set E))
-    (hV :
-      (V : Set E) ⊆
-        (deRham_boundarylessExtendedChart (M := M) Iℝ e).target)
-    (x : U) :
-    ((deRham_boundarylessExtendedChart_restrictionDiffeomorph
-      Iℝ e he U V hU hV x : V) : E) =
-      deRham_boundarylessExtendedChart (M := M) Iℝ e (x : M) := by
-  rfl
-
-/--
-%%handwave
-name:
   Restricted boundaryless extended charts are diffeomorphisms
 statement:
   Let \(U\) be the preimage, inside a chart source, of an open subset \(V\) of
@@ -1189,56 +560,6 @@ theorem deRham_boundarylessExtendedChart_restriction_diffeomorph
     Nonempty (U ≃ₘ⟮Iℝ, 𝓘(ℝ, E)⟯ V) := by
   exact ⟨deRham_boundarylessExtendedChart_restrictionDiffeomorph
     Iℝ e he U V hU hV⟩
-
-/--
-%%handwave
-name:
-  Convex subtargets of boundaryless extended charts
-statement:
-  Around every point of a finite-dimensional smooth manifold modeled by a
-  boundaryless real model, one can choose an extended chart and shrink
-  its target to a nonempty convex open set still lying in the extended-chart
-  target.
-proof:
-  Since the extended-chart target is open in the normed model vector space,
-  choose a sufficiently small open ball around the coordinate of the point.
-  Open balls in a normed vector space are convex.
--/
-theorem deRham_boundarylessModel_exists_convex_extendedChart_restriction
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
-    [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E]
-    (x : M) :
-    ∃ (e : OpenPartialHomeomorph M H)
-      (U : TopologicalSpace.Opens M) (V : TopologicalSpace.Opens E),
-      e ∈ atlas H M ∧
-        x ∈ U ∧
-          Convex ℝ (V : Set E) ∧
-            (V : Set E).Nonempty ∧
-              (U : Set M) =
-                (deRham_boundarylessExtendedChart (M := M) Iℝ e).source ∩
-                  deRham_boundarylessExtendedChart (M := M) Iℝ e ⁻¹' (V : Set E) ∧
-                (V : Set E) ⊆
-                  (deRham_boundarylessExtendedChart (M := M) Iℝ e).target := by
-  let e : OpenPartialHomeomorph M H := chartAt H x
-  let eI : OpenPartialHomeomorph M E :=
-    deRham_boundarylessExtendedChart (M := M) Iℝ e
-  have hx_source : x ∈ eI.source := by
-    dsimp [eI, deRham_boundarylessExtendedChart]
-    exact ⟨mem_chart_source H x, by simp [ModelWithCorners.source_eq]⟩
-  have hx_target : eI x ∈ eI.target := eI.map_source hx_source
-  rcases Metric.isOpen_iff.1 eI.open_target (eI x) hx_target with
-    ⟨r, hr, hball⟩
-  let V : TopologicalSpace.Opens E :=
-    ⟨Metric.ball (eI x) r, Metric.isOpen_ball⟩
-  let U : TopologicalSpace.Opens M :=
-    ⟨eI.source ∩ eI ⁻¹' (V : Set E), eI.isOpen_inter_preimage V.2⟩
-  refine ⟨e, U, V, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · exact chart_mem_atlas H x
-  · exact ⟨hx_source, by simpa [V] using Metric.mem_ball_self (x := eI x) hr⟩
-  · simpa [V] using convex_ball (eI x) r
-  · exact ⟨eI x, by simpa [V] using Metric.mem_ball_self (x := eI x) hr⟩
-  · rfl
-  · simpa [V] using hball
 
 /--
 %%handwave
@@ -1310,67 +631,6 @@ theorem deRham_boundarylessModel_exists_convex_extendedChart_restriction_subordi
 /--
 %%handwave
 name:
-  Convex coordinate neighborhoods for boundaryless models
-statement:
-  Around every point of a finite-dimensional smooth manifold modeled by a
-  boundaryless real model, there is an open neighborhood
-  diffeomorphic to a nonempty convex open subset of the ambient model vector
-  space.
-proof:
-  Choose a boundaryless extended chart and shrink its target to a convex
-  coordinate ball.  Restricting the extended chart gives the required
-  diffeomorphism.
--/
-theorem deRham_boundarylessModel_chart_convex_neighborhood
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
-    [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E]
-    (x : M) :
-    ∃ (U : TopologicalSpace.Opens M) (V : TopologicalSpace.Opens E),
-      x ∈ U ∧
-        Convex ℝ (V : Set E) ∧
-          (V : Set E).Nonempty ∧
-            Nonempty (U ≃ₘ⟮Iℝ, 𝓘(ℝ, E)⟯ V) := by
-  rcases deRham_boundarylessModel_exists_convex_extendedChart_restriction
-      (M := M) Iℝ x with
-    ⟨e, U, V, he, hxU, hconvex, hne, hU, hV⟩
-  exact
-    ⟨U, V, hxU, hconvex, hne,
-      deRham_boundarylessExtendedChart_restriction_diffeomorph
-        (M := M) Iℝ e he U V hU hV⟩
-
-/--
-%%handwave
-name:
-  Local Poincare lemma for boundaryless models
-statement:
-  Around every point of a finite-dimensional smooth real manifold modeled by a
-  boundaryless real model, there is an open neighborhood on which all
-  positive-degree real de Rham cohomology vanishes.
-proof:
-  Choose [a coordinate neighborhood diffeomorphic to a nonempty convex open subset of the ambient model vector space](lean:JJMath.Manifold.deRham_boundarylessModel_chart_convex_neighborhood).  The convex open set has vanishing positive-degree de Rham cohomology by the Poincare homotopy operator, and the diffeomorphism transports this vanishing back to the manifold neighborhood.
--/
-theorem deRham_local_poincareLemma_boundarylessModel
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [Iℝ.Boundaryless]
-    [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E]
-    (x : M) :
-    ∃ U : TopologicalSpace.Opens M,
-      x ∈ U ∧
-        ∀ n : ℕ,
-          Subsingleton
-            (DeRhamCohomology (I := Iℝ) (M := U) (A := ℝ) (n + 1)) := by
-  rcases deRham_boundarylessModel_chart_convex_neighborhood
-      (M := M) Iℝ x with
-    ⟨U, V, hxU, hconvex, hne, hUV⟩
-  refine ⟨U, hxU, fun n ↦ ?_⟩
-  rcases hUV with ⟨φ⟩
-  exact
-    deRhamCohomology_subsingleton_of_diffeomorphic
-      Iℝ (𝓘(ℝ, E)) φ (n + 1)
-      (deRham_poincareLemma_convex_open (E := E) V hconvex hne n)
-
-/--
-%%handwave
-name:
   Local Poincare neighborhoods form a basis
 statement:
   A smooth real manifold has a local Poincare basis if, inside every open
@@ -1389,41 +649,6 @@ def DeRhamLocalPoincareBasis [NormedSpace ℝ E]
         ∀ n : ℕ,
           Subsingleton
             (DeRhamCohomology (I := Iℝ) (M := U) (A := ℝ) (n + 1))
-
-/--
-%%handwave
-name:
-  Boundaryless vector-space models have a local Poincare basis
-statement:
-  On a finite-dimensional smooth real manifold modeled on a real vector space,
-  every point has arbitrarily small open neighborhoods with vanishing
-  positive-degree real de Rham cohomology.
-proof:
-  Given an open neighborhood, choose a smooth chart at the point and shrink
-  the chart target to a convex open ball whose preimage is contained in the
-  prescribed neighborhood.  The convex Poincare lemma kills positive-degree
-  de Rham cohomology on that ball, and the restricted chart transports the
-  vanishing to the manifold neighborhood.
--/
-theorem deRham_local_poincareBasis_selfModel
-    {E0 : Type v} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    [FiniteDimensional ℝ E0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace E0 M0]
-    [IsManifold 𝓘(ℝ, E0) ∞ M0] :
-    DeRhamLocalPoincareBasis (M := M0) (𝓘(ℝ, E0)) := by
-  intro x W hxW
-  rcases deRham_selfModel_exists_convex_chart_restriction_subordinate
-      (E0 := E0) (M0 := M0) x W hxW with
-    ⟨e, U, V, he, hxU, hUW, hconvex, hne, hU, hV⟩
-  refine ⟨U, hxU, hUW, fun n ↦ ?_⟩
-  rcases
-    deRham_selfModel_chart_restriction_diffeomorph
-      (E0 := E0) (M0 := M0) e he U V hU hV with
-    ⟨φ⟩
-  exact
-    deRhamCohomology_subsingleton_of_diffeomorphic
-      (𝓘(ℝ, E0)) (𝓘(ℝ, E0)) φ (n + 1)
-      (deRham_poincareLemma_convex_open (E := E0) V hconvex hne n)
 
 /--
 %%handwave
@@ -1470,8 +695,6 @@ proof:
   restricted form is still closed because exterior differentiation commutes
   with restriction.  Vanishing of the positive-degree de Rham cohomology of
   the smaller neighborhood makes that closed form exact.
-tags:
-  milestone
 -/
 theorem DeRhamLocalPoincareBasis.exists_primitive_on_smaller_open
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
@@ -1797,27 +1020,6 @@ noncomputable def smoothFormsPresheaf [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  The form presheaf restricts by the usual open-inclusion map
-statement:
-  The restriction map of the presheaf of smooth \(n\)-forms associated to an
-  inclusion \(V\subseteq U\) is the usual restriction of forms from \(U\) to
-  \(V\).
-proof:
-  This is the definition of the presheaf map.
--/
-@[simp]
-theorem smoothFormsPresheaf_map_homOfLE [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) {U V : TopologicalSpace.Opens M}
-    [IsManifold Iℝ ∞ M] (hVU : V ≤ U) (n : ℕ) :
-    (smoothFormsPresheaf (M := M) Iℝ n).map
-        (CategoryTheory.homOfLE hVU).op =
-      ModuleCat.ofHom
-        (restrictSmoothFormsOfLE (I := Iℝ) (A := ℝ) (M := M) hVU n) := by
-  rfl
-
-/--
-%%handwave
-name:
   Exterior differentiation is natural for the form presheaves
 statement:
   For every inclusion of open subsets \(V\subseteq U\), exterior
@@ -1931,22 +1133,6 @@ noncomputable def smoothFormsPresheafCochainComplex [NormedSpace ℝ E]
       simpa [ComplexShape.up, ComplexShape.up'] using hjk
     subst k
     simp [deRhamDifferentialPresheafNatTrans_comp_eq_zero]
-
-/--
-%%handwave
-name:
-  Terms of the presheaf de Rham complex
-statement:
-  The term of the presheaf de Rham complex in degree \(n\) is the presheaf of
-  smooth \(n\)-forms.
-proof:
-  This is the definition of the presheaf de Rham complex.
--/
-@[simp]
-theorem smoothFormsPresheafCochainComplex_X [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M] (n : ℕ) :
-    (smoothFormsPresheafCochainComplex (M := M) Iℝ).X n =
-      smoothFormsPresheaf (M := M) Iℝ n := rfl
 
 /--
 %%handwave
@@ -2801,27 +1987,6 @@ noncomputable def smoothFormsPointwiseSMulAddSheafHom [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  The smooth-function sheaf endomorphism is pointwise multiplication
-statement:
-  On each open set, the sheaf endomorphism induced by a smooth function sends
-  a form to its pointwise product with the restricted function.
-proof:
-  This is the construction of the sheaf endomorphism.
--/
-@[simp]
-theorem smoothFormsPointwiseSMulAddSheafHom_app_apply [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
-    (n : ℕ) (χ : C^∞⟮Iℝ, M; ℝ⟯)
-    (U : (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ)
-    (omega : (smoothFormsAddSheaf (M := M) Iℝ n).obj.obj U) :
-    (smoothFormsPointwiseSMulAddSheafHom (M := M) Iℝ n χ).hom.app U omega =
-      smoothFormsPointwiseSMul (I := Iℝ) (M := U.unop) (A := ℝ)
-        (smoothFunctionRestrictToOpen (I := Iℝ) (M := M) U.unop χ) omega :=
-  rfl
-
-/--
-%%handwave
-name:
   Cutoff multiplication is zero on stalks outside the support
 statement:
   If a point is outside the topological support of a smooth function, then
@@ -3190,24 +2355,6 @@ noncomputable def smoothFormsAddSheafCochainComplex [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  Terms of the sheaf de Rham complex
-statement:
-  The term of the sheaf de Rham complex in degree \(n\) is the sheaf of smooth
-  \(n\)-forms.
-proof:
-  This is the definition of the sheaf de Rham complex.
--/
-@[simp]
-theorem smoothFormsAddSheafCochainComplex_X [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-      AddCommGrpCat.{max v m}] (n : ℕ) :
-    (smoothFormsAddSheafCochainComplex (M := M) Iℝ).X n =
-      smoothFormsAddSheaf (M := M) Iℝ n := rfl
-
-/--
-%%handwave
-name:
   Differential of the sheaf de Rham complex
 statement:
   The differential from degree \(n\) to degree \(n+1\) in the sheaf de Rham
@@ -3305,28 +2452,6 @@ noncomputable def smoothFormsAddSheafGlobalSectionsCochainComplex [NormedSpace �
 /--
 %%handwave
 name:
-  Terms of the global sheaf de Rham complex
-statement:
-  The \(n\)-th term of the global-sections sheaf de Rham complex is the group
-  of global sections of the sheaf of smooth \(n\)-forms.
-proof:
-  This is the definition of the complex obtained by applying global sections
-  degreewise.
--/
-@[simp]
-theorem smoothFormsAddSheafGlobalSectionsCochainComplex_X [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-      AddCommGrpCat.{max v m}] (n : ℕ) :
-    (smoothFormsAddSheafGlobalSectionsCochainComplex (M := M) Iℝ).X n =
-      (CategoryTheory.Sheaf.Γ
-        (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-        AddCommGrpCat.{max v m}).obj (smoothFormsAddSheaf (M := M) Iℝ n) :=
-  rfl
-
-/--
-%%handwave
-name:
   Top-open sections of the presheaf de Rham complex
 statement:
   Evaluating the additive presheaf de Rham complex on the whole space gives a
@@ -3392,49 +2517,6 @@ theorem smoothFormsAddPresheafTopCochainComplexScalarEnd_f_apply
   intro x
   ext v
   change r • omega.toFun x v = ((r • omega).toFun x) v
-  rfl
-
-/--
-%%handwave
-name:
-  Terms of the top-open presheaf de Rham complex
-statement:
-  The \(n\)-th term of the top-open presheaf de Rham complex is the group of
-  smooth \(n\)-forms on the whole space, viewed as the top open subset.
-proof:
-  This is the definition of the additive presheaf of smooth forms evaluated
-  on the terminal open subset.
--/
-@[simp]
-theorem smoothFormsAddPresheafTopCochainComplex_X [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M] (n : ℕ) :
-    (smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).X n =
-      AddCommGrpCat.of
-        (SmoothForms (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))) ℝ n) := by
-  rfl
-
-/--
-%%handwave
-name:
-  Differential of the top-open presheaf de Rham complex
-statement:
-  The differential from degree \(n\) to \(n+1\) in the top-open presheaf de
-  Rham complex is the exterior derivative on the whole space, viewed as the
-  top open subset.
-proof:
-  This is the defining presheaf differential, evaluated on the terminal open
-  subset.
--/
-@[simp]
-theorem smoothFormsAddPresheafTopCochainComplex_d_succ [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M] (n : ℕ) :
-    (smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).d n (n + 1) =
-      ((CategoryTheory.evaluation
-        (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ
-        AddCommGrpCat.{max v m}).obj
-          (Opposite.op (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-        ).map ((smoothFormsAddPresheafCochainComplex (M := M) Iℝ).d n (n + 1)) := by
   rfl
 
 /--
@@ -4130,33 +3212,6 @@ def realULiftULiftAddEquiv : ULift.{v} (ULift.{m} ℝ) ≃+ ULift.{max v m} ℝ 
 /--
 %%handwave
 name:
-  Iterated universe lifts of the integer additive group agree
-statement:
-  The additive group obtained by first placing \(\mathbb Z\) in the manifold
-  universe and then applying the smooth-form universe lift is canonically
-  isomorphic to the additive group obtained by placing \(\mathbb Z\) directly
-  in the smooth-form coefficient universe.
-proof:
-  Send an iterated lift to the same integer in the single larger lift, and use
-  the inverse operation in the other direction.
--/
-def intULiftULiftAddEquiv : ULift.{v} (ULift.{m} ℤ) ≃+ ULift.{max v m} ℤ where
-  toFun x := ULift.up x.down.down
-  invFun x := ULift.up (ULift.up x.down)
-  left_inv x := by
-    cases x
-    rfl
-  right_inv x := by
-    cases x
-    rfl
-  map_add' x y := by
-    cases x
-    cases y
-    rfl
-
-/--
-%%handwave
-name:
   The constant sheaf maps to smooth zero-forms
 statement:
   The constant real sheaf maps canonically to the sheaf of smooth zero-forms by
@@ -4220,40 +3275,6 @@ theorem realConstantAddSheafToSmoothFormsAddSheaf_comp_d [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  The constant-to-zero-forms presheaf map preserves scalar multiplication
-statement:
-  On the constant presheaf, multiplying a constant by \(r\) and then viewing it
-  as a smooth zero-form agrees with first viewing it as a zero-form and then
-  multiplying that zero-form by the constant smooth function \(r\).
-proof:
-  Evaluate on an open set, a real constant, a point, and the unique tangent
-  input of a zero-form.
--/
-theorem realConstantAddPresheafToSmoothFormsAddPresheaf_comp_scalarEnd
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M]
-    (r : ℝ) :
-    realConstantAddPresheafToSmoothFormsAddPresheaf (M := M) Iℝ ≫
-        smoothFormsPointwiseSMulAddPresheafHom (M := M) Iℝ 0
-          (smoothRealConstantFunction (I0 := Iℝ) (M0 := M) r) =
-      ((Functor.const
-          (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ).map
-        (AddCommGrpCat.ofHom
-          (JJMath.Cohomology.realULiftScalarAddMonoidHom.{max v m} r))) ≫
-        realConstantAddPresheafToSmoothFormsAddPresheaf (M := M) Iℝ := by
-  ext U c
-  apply DifferentialForm.ext
-  intro x
-  ext v
-  change
-    (r • (realConstantZeroForm (M := M) Iℝ U.unop c).toFun x) v =
-      (realConstantZeroForm (M := M) Iℝ U.unop
-        (ULift.up (r * c.down) : ULift.{max v m} ℝ)).toFun x v
-  simp [realConstantZeroForm, smoothRealFunctionToZeroForm,
-    smoothRealConstantFunction]
-
-/--
-%%handwave
-name:
   The constant-to-zero-forms augmentation preserves scalar multiplication
 statement:
   The canonical map from the constant real sheaf to smooth zero-forms
@@ -4307,6 +3328,13 @@ theorem realConstantAddSheafToSmoothFormsAddSheaf_comp_scalarEnd [NormedSpace �
 universe uLift uTop
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+%%handwave
+name:
+  Site point associated with a topological point
+statement:
+  A point $x$ of a topological space determines a universe-lifted point of its open-set site whose fiber over an open set $U$ records the proposition $x\in U$.
+-/
 def liftedPointGrothendieckTopology {X : Type uTop} [TopologicalSpace X] (x : X) :
     Point.{max uLift uTop} (Opens.grothendieckTopology X) where
   fiber :=
@@ -4328,6 +3356,13 @@ def liftedPointGrothendieckTopology {X : Type uTop} [TopologicalSpace X] (x : X)
     obtain ⟨V, f, hf, hV⟩ := hR x hU
     exact ⟨_, _, hf, ⟨⟨hV⟩⟩, rfl⟩
 
+/--
+%%handwave
+name:
+  Family of site points arising from ordinary points
+statement:
+  The lifted ordinary points of a topological space form the object property on points of its open-set site consisting precisely of those induced by $x\in X$.
+-/
 def liftedPointsGrothendieckTopology (X : Type uTop) [TopologicalSpace X] :
     ObjectProperty (Point.{max uLift uTop} (Opens.grothendieckTopology X)) :=
   ObjectProperty.ofObj liftedPointGrothendieckTopology
@@ -4974,417 +4009,102 @@ theorem realConstantAddSheaf_to_smoothFormsAddSheaf_exact [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  Closed smooth zero-forms are locally constant in the same universe
+  Locally constant functions inject into smooth zero-forms
 statement:
-  If the smooth-form coefficient groups and the underlying space live in the
-  same universe, the constant real sheaf, the sheaf of smooth zero-forms, and
-  exterior differentiation form an exact short complex of sheaves.
+  The canonical morphism from the constant real sheaf to the sheaf of smooth
+  real-valued zero-forms on a smooth manifold is a monomorphism.
 proof:
-  Specialize [the sheaf-level local constancy statement for closed smooth zero-forms](lean:JJMath.Manifold.realConstantAddSheaf_to_smoothFormsAddSheaf_exact)
-  to the case where the model vector space and the manifold have the same
-  universe.
+  Monicity may be checked on stalks.  A germ of a locally constant real
+  function that maps to the zero germ of smooth functions is represented by a
+  constant function vanishing on a nonempty neighborhood, so its constant
+  value is zero and the original germ is zero.
 -/
-theorem realConstantAddSheaf_to_smoothFormsAddSheaf_exact_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [Iℝ.Boundaryless]
-    [IsManifold Iℝ ∞ M0] [FiniteDimensional ℝ E0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}] :
-    ({ f := realConstantAddSheafToSmoothFormsAddSheaf (M := M0) Iℝ,
-       g := deRhamDifferentialAddSheafHom (M := M0) Iℝ 0,
-       zero := realConstantAddSheafToSmoothFormsAddSheaf_comp_d (M := M0) Iℝ } :
-      ShortComplex
-        (TopCat.Sheaf AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}))).Exact := by
-  simpa using
-    realConstantAddSheaf_to_smoothFormsAddSheaf_exact (M := M0) Iℝ
-
-
-/--
-%%handwave
-name:
-  The sheaf de Rham complex is exact at constants
-statement:
-  The constant real sheaf maps into smooth functions so that the resulting
-  short complex with exterior derivative is exact.
-proof:
-  The map sends a locally constant real function to the corresponding smooth
-  zero-form.  Exactness says precisely that a smooth zero-form has zero
-  differential iff it is locally constant.
--/
-theorem exists_realConstantAddSheaf_to_smoothFormsAddSheaf_exact
+theorem realConstantAddSheafToSmoothFormsAddSheaf_mono
     [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [Iℝ.Boundaryless] [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E]
+    [IsManifold Iℝ ∞ M]
     [HasSheafify (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
       AddCommGrpCat.{max v m}] :
-    ∃ ε :
-      realConstantAddSheafSmoothFormsUniverse (TopCat.of M : TopCat.{m}) ⟶
-        smoothFormsAddSheaf (M := M) Iℝ 0,
-      ∃ hε : ε ≫ deRhamDifferentialAddSheafHom (M := M) Iℝ 0 = 0,
-        ({ f := ε,
-           g := deRhamDifferentialAddSheafHom (M := M) Iℝ 0,
-           zero := hε } :
-          ShortComplex
-            (Sheaf (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-              AddCommGrpCat.{max v m})).Exact := by
-  refine ⟨realConstantAddSheafToSmoothFormsAddSheaf (M := M) Iℝ, ?_⟩
-  refine ⟨realConstantAddSheafToSmoothFormsAddSheaf_comp_d (M := M) Iℝ, ?_⟩
-  exact realConstantAddSheaf_to_smoothFormsAddSheaf_exact (M := M) Iℝ
-
-/--
-%%handwave
-name:
-  Same-universe sheaf exactness follows from stalk exactness
-statement:
-  If the model vector space and manifold live in the same universe, exactness
-  of the sheaf de Rham complex in a positive degree follows from exactness of
-  the corresponding complex on all ordinary stalks.
-proof:
-  Apply the standard theorem that exactness of a short complex of sheaves of
-  abelian groups may be checked on stalks.  The same-universe hypothesis is
-  what lets the topological-space universe match the coefficient-group
-  universe of the smooth-form sheaves.
--/
-theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_stalk_exact_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    (n : ℕ)
-    (hstalk :
-      ∀ x : (TopCat.of M0 : TopCat.{m}),
-        (((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1)).map
-          (TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-            TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x)).Exact) :
-    (smoothFormsAddSheafCochainComplex (M := M0) Iℝ).ExactAt (n + 1) := by
-  rw [HomologicalComplex.exactAt_iff]
-  exact
-    (TopCat.Sheaf.exact_iff_stalkFunctor_map_exact
-      ((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1))).2 hstalk
-
-/--
-%%handwave
-name:
-  Local Poincaré lemma lifts closed stalk germs
-statement:
-  Assume every point has a neighborhood basis with vanishing positive de
-  Rham cohomology.  In equal universes, every closed germ of a smooth
-  \((n+1)\)-form at \(x\) is the exterior derivative of a germ of a smooth
-  \(n\)-form.
-proof:
-  Represent the germ on an open neighborhood and shrink until its derivative
-  vanishes as a section.  The local Poincaré hypothesis gives a primitive on
-  a still smaller neighborhood; taking its germ yields the desired lift.
--/
-theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) (x : (TopCat.of M0 : TopCat.{m}))
-    (η : ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).obj
-      (smoothFormsAddSheaf (M := M0) Iℝ (n + 1))).stalk x)
-    (hη :
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        (deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom) η = 0) :
-    ∃ θ : ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).obj
-      (smoothFormsAddSheaf (M := M0) Iℝ n)).stalk x,
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        (deRhamDifferentialAddSheafHom (M := M0) Iℝ n).hom) θ = η := by
-  let Fnp1 : TopCat.Presheaf AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) :=
-    (smoothFormsAddSheaf (M := M0) Iℝ (n + 1)).obj
-  let Fnp2 : TopCat.Presheaf AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) :=
-    (smoothFormsAddSheaf (M := M0) Iℝ (n + 2)).obj
-  let Fn : TopCat.Presheaf AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) :=
-    (smoothFormsAddSheaf (M := M0) Iℝ n).obj
-  rcases Fnp1.exists_germ_eq η with ⟨W, hxW, omega, homega⟩
-  have hclosed_germ :
-      Fnp2.germ W x hxW
-          ((deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom.app
-            (Opposite.op W) omega) =
-        Fnp2.germ W x hxW 0 := by
-    have hη' := hη
-    rw [← homega] at hη'
-    rw [TopCat.Presheaf.stalkFunctor_map_germ_apply] at hη'
-    calc
-      Fnp2.germ W x hxW
-          ((deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom.app
-            (Opposite.op W) omega) = 0 := by
-        simpa [Fnp2] using hη'
-      _ = Fnp2.germ W x hxW 0 := by
-        simp
-  rcases Fnp2.germ_eq x hxW hxW
-      ((deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom.app
-        (Opposite.op W) omega) 0 hclosed_germ with
-    ⟨W₀, hxW₀, iW₀W, iW₀W', hclosed_restrict⟩
-  have hclosed_restrict' :
-      Fnp2.map iW₀W.op
-          ((deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom.app
-            (Opposite.op W) omega) = 0 := by
-    simpa [Subsingleton.elim iW₀W' iW₀W] using hclosed_restrict
-  let hW₀W : W₀ ≤ W := CategoryTheory.leOfHom iW₀W
-  let omegaW₀ : SmoothForms (I := Iℝ) (M := W₀) ℝ (n + 1) :=
-    restrictSmoothFormsOfLE (I := Iℝ) (M := M0) (A := ℝ) hW₀W (n + 1) omega
-  have hclosedW₀ :
-      deRhamDifferential (I := Iℝ) (M := W₀) (A := ℝ) (n + 1) omegaW₀ = 0 := by
-    have hnat :=
-      deRhamDifferential_restrictSmoothFormsOfLE
-        (I := Iℝ) (M := M0) (A := ℝ) hW₀W omega
-    calc
-      deRhamDifferential (I := Iℝ) (M := W₀) (A := ℝ) (n + 1) omegaW₀ =
-          restrictSmoothFormsOfLE (I := Iℝ) (M := M0) (A := ℝ)
-            hW₀W (n + 2)
-            (deRhamDifferential (I := Iℝ) (M := W) (A := ℝ) (n + 1) omega) := by
-        simpa [omegaW₀, hW₀W] using hnat
-      _ = 0 := by
-        simpa [Fnp2, hW₀W, smoothFormsAddSheaf_obj, smoothFormsAddPresheaf,
-          smoothFormsPresheaf, deRhamDifferentialAddSheafHom,
-          smoothFormsAddPresheafCochainComplex, smoothFormsPresheafCochainComplex,
-          deRhamDifferentialPresheafNatTrans] using hclosed_restrict'
-  rcases hlocal.exists_primitive_on_smaller_open Iℝ x W₀ hxW₀ n omegaW₀ hclosedW₀ with
-    ⟨U, hUW₀, hxU, theta, htheta⟩
-  refine ⟨Fn.germ U x hxU theta, ?_⟩
-  have hmap_theta :
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        (deRhamDifferentialAddSheafHom (M := M0) Iℝ n).hom)
-          (Fn.germ U x hxU theta) =
-        Fnp1.germ U x hxU
-          (deRhamDifferential (I := Iℝ) (M := U) (A := ℝ) n theta) := by
-    rw [TopCat.Presheaf.stalkFunctor_map_germ_apply]
-    congr 1
-    simp [deRhamDifferentialAddSheafHom, smoothFormsAddPresheafCochainComplex,
-      smoothFormsPresheafCochainComplex, deRhamDifferentialPresheafNatTrans,
-      smoothFormsPresheaf, ObjectProperty.homMk_hom, Functor.mapHomologicalComplex_obj_d]
-    change (deRhamDifferential (I := Iℝ) (M := U) (A := ℝ) n) theta =
-      exteriorDerivative (I := Iℝ) (r := ∞) theta
-    exact deRhamDifferential_apply (I := Iℝ) (M := U) (A := ℝ) theta
-  rw [hmap_theta, htheta]
-  have hgerm_restrict_W₀ :
-      Fnp1.germ U x hxU
-        (restrictSmoothFormsOfLE (I := Iℝ) (M := M0) (A := ℝ)
-          (V := W₀) (W := U) hUW₀ (n + 1) omegaW₀) =
-      Fnp1.germ W₀ x hxW₀ omegaW₀ := by
-    simpa [omegaW₀, hW₀W, smoothFormsAddSheaf_obj, smoothFormsAddPresheaf,
-      smoothFormsPresheaf, Fnp1] using
-      (Fnp1.germ_res_apply'
-        (CategoryTheory.homOfLE hUW₀).op x hxU omegaW₀)
-  rw [hgerm_restrict_W₀]
-  have hgerm_restrict_W :
-      Fnp1.germ W₀ x hxW₀ omegaW₀ =
-      Fnp1.germ W x hxW omega := by
-    simpa [omegaW₀, hW₀W, smoothFormsAddSheaf_obj, smoothFormsAddPresheaf,
-      smoothFormsPresheaf, Fnp1] using
-      (Fnp1.germ_res_apply'
-        iW₀W.op x hxW₀ omega)
-  exact hgerm_restrict_W.trans homega
-
-/--
-%%handwave
-name:
-  Closed stalk germs lift through the forgotten sheaf differential
-statement:
-  Under the local Poincaré hypothesis, if a stalk germ of a smooth
-  \((n+1)\)-form is killed by the differential after forgetting the sheaf
-  structure, it is the differential of a germ of a smooth \(n\)-form.
-proof:
-  Identify the forgotten differential on stalks with the underlying
-  presheaf differential and apply the closed-germ lifting theorem.
--/
-theorem smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_forget_map_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) (x : (TopCat.of M0 : TopCat.{m}))
-    (η : ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).obj
-      (smoothFormsAddSheaf (M := M0) Iℝ (n + 1))).stalk x)
-    (hη :
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).map
-          (deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)))) η = 0) :
-    ∃ θ : ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).obj
-      (smoothFormsAddSheaf (M := M0) Iℝ n)).stalk x,
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).map
-          (deRhamDifferentialAddSheafHom (M := M0) Iℝ n))) θ = η := by
-  have hηhom :
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        (deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)).hom) η = 0 := by
-    simpa [ObjectProperty.homMk_hom] using hη
-  rcases smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_sameUniverse
-      (M0 := M0) Iℝ hlocal n x η hηhom with
-    ⟨θ, hθ⟩
-  refine ⟨θ, ?_⟩
-  simpa [ObjectProperty.homMk_hom] using hθ
-
-/--
-%%handwave
-name:
-  Local Poincaré exactness of the three-term stalk complex
-statement:
-  Under the local Poincaré hypothesis, the three-term stalk complex
-  \[
-    \Omega^n_x\longrightarrow\Omega^{n+1}_x\longrightarrow\Omega^{n+2}_x
-  \]
-  is exact.
-proof:
-  A germ in the kernel of the second differential is closed.  Lift it to a
-  primitive germ by the local Poincaré closed-germ theorem.
--/
-theorem smoothFormsAddSheafCochainComplex_stalk_scPrime_exact_of_local_poincare_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) (x : (TopCat.of M0 : TopCat.{m})) :
-    let K : CochainComplex AddCommGrpCat.{m} ℕ :=
-      ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-          TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).mapHomologicalComplex
-        (ComplexShape.up ℕ)).obj
-          (smoothFormsAddSheafCochainComplex (M := M0) Iℝ)
-    (K.sc' n (n + 1) (n + 2)).Exact := by
-  let K : CochainComplex AddCommGrpCat.{m} ℕ :=
-    ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-        TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).mapHomologicalComplex
-      (ComplexShape.up ℕ)).obj
-        (smoothFormsAddSheafCochainComplex (M := M0) Iℝ)
-  change (K.sc' n (n + 1) (n + 2)).Exact
-  rw [ShortComplex.ab_exact_iff]
-  intro η hη
-  have hη' :
-      ((TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).map
-        ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m})).map
-          (deRhamDifferentialAddSheafHom (M := M0) Iℝ (n + 1)))) η = 0 := by
-    simpa [K, HomologicalComplex.shortComplexFunctor',
-      smoothFormsAddSheafCochainComplex_d_succ] using hη
-  rcases smoothFormsAddSheaf_stalk_lift_closed_germ_of_local_poincare_forget_map_sameUniverse
-      (M0 := M0) Iℝ hlocal n x η hη' with
-    ⟨θ, hθ⟩
-  refine ⟨θ, ?_⟩
-  simpa [K, HomologicalComplex.shortComplexFunctor',
-    smoothFormsAddSheafCochainComplex_d_succ] using hθ
-
-/--
-%%handwave
-name:
-  Local Poincare lifts closed positive-degree germs
-statement:
-  On a smooth real manifold whose form sheaves live in the same universe as
-  the space, if every point has arbitrarily small neighborhoods with
-  vanishing positive-degree real de Rham cohomology, then every closed germ of
-  a positive-degree form has a local primitive germ.
-proof:
-  A germ in the kernel of \(d:\Omega^{n+1}\to\Omega^{n+2}\) is represented by
-  a form on some neighborhood of the point whose differential germ vanishes.
-  Shrink inside that representative neighborhood until the differential
-  actually vanishes, and then shrink again to a Poincare neighborhood.
-  Vanishing of \(H^{n+1}\) there gives a primitive, and the primitive
-  represents a germ mapping to the original germ.
--/
-theorem smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) (x : (TopCat.of M0 : TopCat.{m})) :
-    let S : ShortComplex AddCommGrpCat.{m} :=
-      (((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1)).map
-        (TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-          TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x))
-    ∀ η : S.X₂, S.g η = 0 → ∃ θ : S.X₁, S.f θ = η := by
-  intro S η hη
-  have hExact : S.Exact := by
-    let K : CochainComplex AddCommGrpCat.{m} ℕ :=
-      ((TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-          TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x).mapHomologicalComplex
-        (ComplexShape.up ℕ)).obj
-          (smoothFormsAddSheafCochainComplex (M := M0) Iℝ)
-    change (K.sc (n + 1)).Exact
-    change K.ExactAt (n + 1)
+    Mono (realConstantAddSheafToSmoothFormsAddSheaf (M := M) Iℝ) := by
+  let J :=
+    Opens.grothendieckTopology (TopCat.of M : TopCat.{m})
+  let P :
+      (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ ⥤
+        AddCommGrpCat.{max v m} :=
+    ((Functor.const
+      (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ).obj
+        (AddCommGrpCat.of (ULift.{max v m} ℝ)))
+  let Q :
+      (TopologicalSpace.Opens (TopCat.of M : TopCat.{m}))ᵒᵖ ⥤
+        AddCommGrpCat.{max v m} :=
+    smoothFormsAddPresheaf (M := M) Iℝ 0
+  let η : P ⟶ Q :=
+    realConstantAddPresheafToSmoothFormsAddPresheaf (M := M) Iℝ
+  letI hη : Presheaf.IsLocallyInjective J η := by
+    constructor
+    intro U c d hcd
+    by_cases hU : Nonempty U.unop
+    · letI : Nonempty U.unop := hU
+      have hinjective : Function.Injective (η.app U) := by
+        intro a b hab
+        apply sub_eq_zero.mp
+        apply
+          (realConstantZeroForm_eq_zero_iff
+            (M := M) Iℝ U.unop (a - b)).mp
+        change η.app U (a - b) = 0
+        rw [map_sub, hab, sub_self]
+      have hab : c = d := hinjective hcd
+      subst d
+      simpa using J.top_mem U.unop
+    · change
+        ∀ x ∈ U.unop,
+          ∃ (V : TopologicalSpace.Opens M) (f : V ⟶ U.unop),
+          Presheaf.equalizerSieve c d f ∧ x ∈ V
+      intro x hx
+      exact (hU ⟨⟨x, hx⟩⟩).elim
+  let ε :=
+    realConstantAddSheafToSmoothFormsAddSheaf (M := M) Iℝ
+  have hfac :
+      CategoryTheory.toSheafify J P ≫ ε.hom = η := by
+    simpa [ε, P, Q, η, J, realConstantAddSheafToSmoothFormsAddSheaf] using
+      CategoryTheory.toSheafify_sheafifyLift J η
+        (smoothFormsAddSheaf (M := M) Iℝ 0).property
+  change Mono ε
+  let Pts := liftedPointsGrothendieckTopology.{v, m} M
+  have hPts : Pts.IsConservativeFamilyOfPoints :=
+    isConservativeFamilyOfPoints_liftedPointsGrothendieckTopology.{v, m} M
+  have hreflect :=
+    hPts.jointlyReflectMonomorphisms AddCommGrpCat.{max v m}
+  apply (hreflect.mono_iff ε).2
+  intro Φ
+  let PF :=
+    Φ.obj.presheafFiber (A := AddCommGrpCat.{max v m})
+  haveI hηmono : Mono (PF.map η) := by
+    rw [AddCommGrpCat.mono_iff_injective]
     exact
-      (HomologicalComplex.exactAt_iff' (K := K) (i := n) (j := n + 1) (k := n + 2)
-        (CochainComplex.prev_nat_succ n) (CochainComplex.next ℕ (n + 1))).2
-        (smoothFormsAddSheafCochainComplex_stalk_scPrime_exact_of_local_poincare_sameUniverse
-          (M0 := M0) Iℝ hlocal n x)
-  rw [ShortComplex.ab_exact_iff] at hExact
-  exact hExact η hη
-
-/--
-%%handwave
-name:
-  Local Poincare gives exact germs in positive degree
-statement:
-  On a smooth real manifold whose form sheaves live in the same universe as
-  the space, if every point has arbitrarily small neighborhoods with
-  vanishing positive-degree real de Rham cohomology, then the stalk complex of
-  smooth forms is exact in every positive degree at every point.
-proof:
-  Use the elementwise exactness criterion for short complexes of abelian
-  groups.  Exactness is precisely [the statement that every closed positive-degree form germ has a local primitive germ](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse).
--/
-theorem smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) (x : (TopCat.of M0 : TopCat.{m})) :
-    (((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1)).map
-      (TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-        TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x)).Exact := by
-  let S : ShortComplex AddCommGrpCat.{m} :=
-    (((smoothFormsAddSheafCochainComplex (M := M0) Iℝ).sc (n + 1)).map
-      (TopCat.Sheaf.forget AddCommGrpCat.{m} (TopCat.of M0 : TopCat.{m}) ⋙
-        TopCat.Presheaf.stalkFunctor AddCommGrpCat.{m} x))
-  change S.Exact
-  rw [ShortComplex.ab_exact_iff]
-  exact
-    smoothFormsAddSheafCochainComplex_stalk_lift_closed_germ_of_local_poincare_sameUniverse
-      (M0 := M0) Iℝ hlocal n x
-
-/--
-%%handwave
-name:
-  Same-universe local Poincare gives positive-degree sheaf exactness
-statement:
-  If the smooth-form coefficient groups and the underlying space live in the
-  same universe and every point has arbitrarily small neighborhoods with
-  vanishing
-  positive-degree real de Rham cohomology, then the sheaf de Rham complex is
-  exact in every positive degree.
-proof:
-  Apply the stalk criterion for sheaf exactness to [the germwise exactness supplied by local Poincare neighborhoods](lean:JJMath.Manifold.smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse).
--/
-theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare_sameUniverse
-    {E0 : Type m} [NormedAddCommGroup E0] [NormedSpace ℝ E0]
-    {H0 : Type w} [TopologicalSpace H0]
-    {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
-    (Iℝ : ModelWithCorners ℝ E0 H0) [IsManifold Iℝ ∞ M0]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M0 : TopCat.{m}))
-      AddCommGrpCat.{m}]
-    (hlocal : DeRhamLocalPoincareBasis (M := M0) Iℝ)
-    (n : ℕ) :
-    (smoothFormsAddSheafCochainComplex (M := M0) Iℝ).ExactAt (n + 1) := by
-  exact
-    smoothFormsAddSheafCochainComplex_exactAt_succ_of_stalk_exact_sameUniverse
-      (M0 := M0) Iℝ n
-      (fun x =>
-        smoothFormsAddSheafCochainComplex_stalk_exactAt_succ_of_local_poincare_sameUniverse
-          (M0 := M0) Iℝ hlocal n x)
-
+      Φ.obj.toPresheafFiber_map_injective η
+  haveI hunit :
+      IsIso (PF.map (CategoryTheory.toSheafify J P)) := by
+    dsimp [PF]
+    infer_instance
+  have hmapfac :
+      PF.map (CategoryTheory.toSheafify J P) ≫
+          PF.map ε.hom =
+        PF.map η := by
+    exact
+      (PF.map_comp
+        (CategoryTheory.toSheafify J P) ε.hom).symm.trans
+        (congrArg PF.map hfac)
+  haveI hcompmono :
+      Mono
+        (PF.map (CategoryTheory.toSheafify J P) ≫
+          PF.map ε.hom) := by
+    rw [hmapfac]
+    exact hηmono
+  haveI hεmono : Mono (PF.map ε.hom) :=
+    (mono_comp_iff_of_isIso
+      (PF.map (CategoryTheory.toSheafify J P))
+      (PF.map ε.hom)).1 inferInstance
+  simpa [PF, Point.sheafFiber] using hεmono
 
 /--
 %%handwave
@@ -5731,6 +4451,35 @@ theorem smoothFormsAddSheafCochainComplex_exactAt_succ_of_local_poincare
 /--
 %%handwave
 name:
+  Open subspaces of sigma-compact finite-dimensional manifolds are paracompact
+statement:
+  Every open subspace $U$ of a Hausdorff sigma-compact smooth manifold
+  modelled on a finite-dimensional real normed vector space is paracompact.
+proof:
+  Finite-dimensionality makes the model second countable, and sigma-compactness
+  then makes the charted manifold second countable.  The open subspace $U$
+  inherits second countability and local compactness, hence is sigma-compact.
+  A locally compact sigma-compact Hausdorff space is paracompact.
+-/
+theorem smoothManifold_open_paracompactSpace [NormedSpace ℝ E]
+    (Iℝ : ModelWithCorners ℝ E H)
+    [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E]
+    [T2Space M] [SigmaCompactSpace M]
+    (U : TopologicalSpace.Opens M) :
+    ParacompactSpace U := by
+  letI : SecondCountableTopology H := Iℝ.secondCountableTopology
+  letI : SecondCountableTopology M :=
+    ChartedSpace.secondCountable_of_sigmaCompact H M
+  letI : LocallyCompactSpace H := Iℝ.locallyCompactSpace
+  letI : LocallyCompactSpace M := ChartedSpace.locallyCompactSpace H M
+  letI : SecondCountableTopology U := inferInstance
+  letI : LocallyCompactSpace U := IsOpen.locallyCompactSpace U.isOpen
+  letI : SigmaCompactSpace U := inferInstance
+  infer_instance
+
+/--
+%%handwave
+name:
   Smooth-form sheaves are fine
 statement:
   On a finite-dimensional Hausdorff sigma-compact smooth real manifold, every
@@ -5771,29 +4520,6 @@ theorem smoothFormsAddSheaf_isFine [NormedSpace ℝ E]
       smoothPartitionOfUnity_smoothFormsPointwiseSMulAddSheafHom_stalk_partitionOfIdentity
         (M := M) Iℝ p ρ x
 
-
-/--
-%%handwave
-name:
-  Global smooth-form homology is top-open smooth-form homology
-statement:
-  The homology of the global-sections sheaf de Rham complex is additively
-  isomorphic to the homology of the top-open presheaf de Rham complex.
-proof:
-  Apply homology to [the isomorphism between the two cochain complexes](lean:JJMath.Manifold.smoothFormsAddSheafGlobalSectionsCochainComplexIsoTopCochainComplex) and forget the resulting categorical isomorphism to an additive equivalence.
--/
-theorem smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-      AddCommGrpCat.{max v m}]
-    (n : ℕ) :
-    Nonempty
-      (↥((smoothFormsAddSheafGlobalSectionsCochainComplex (M := M) Iℝ).homology n) ≃+
-        ↥((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).homology n)) := by
-  exact ⟨(HomologicalComplex.homologyMapIso
-    (smoothFormsAddSheafGlobalSectionsCochainComplexIsoTopCochainComplex
-      (M := M) Iℝ) n).addCommGroupIsoToAddEquiv⟩
 
 /--
 %%handwave
@@ -5919,27 +4645,6 @@ noncomputable def smoothFormsAddPresheafTopCohomologyExplicitQuotientAddEquiv
       smoothFormsAddPresheafTopCochainHomologyQuotient (M := M) Iℝ n :=
   (((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).sc n).abHomologyIso
     ).addCommGroupIsoToAddEquiv
-
-/--
-%%handwave
-name:
-  Terminal-open smooth-form homology is its explicit quotient
-statement:
-  The homology of the terminal-open smooth-form complex is additively
-  isomorphic to the explicit quotient of cycles by boundaries in degree \(n\).
-proof:
-  This is the explicit quotient model for homology of short complexes of
-  abelian groups, applied to the short complex centered in degree \(n\).
--/
-theorem smoothFormsAddPresheafTopCohomology_addEquiv_explicitQuotient
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty
-      (↥((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).homology n) ≃+
-        smoothFormsAddPresheafTopCochainHomologyQuotient (M := M) Iℝ n) := by
-  exact ⟨smoothFormsAddPresheafTopCohomologyExplicitQuotientAddEquiv
-    (M := M) Iℝ n⟩
 
 /--
 %%handwave
@@ -6084,32 +4789,6 @@ theorem topOpen_diffeomorph [NormedSpace ℝ E]
 /--
 %%handwave
 name:
-  Restriction to the whole open subset preserves de Rham cohomology
-statement:
-  Restricting differential forms from a manifold to its terminal open subset
-  induces an additive isomorphism on de Rham cohomology.
-proof:
-  The terminal open subset is canonically homeomorphic, and smoothly
-  diffeomorphic, to the original manifold.  Pulling forms back along the two
-  inverse smooth maps gives mutually inverse cochain maps, hence mutually
-  inverse maps on the quotient of closed forms by exact forms.
--/
-theorem deRhamCohomology_addEquiv_topOpenDeRhamCohomology
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty
-      (DeRhamCohomology (I := Iℝ) (M := M) (A := ℝ) n ≃+
-        DeRhamCohomology (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n) := by
-  rcases topOpen_diffeomorph (M := M) Iℝ with ⟨φ⟩
-  rcases deRhamCohomology_linearEquiv_of_diffeomorphic Iℝ Iℝ φ n with ⟨e⟩
-  exact ⟨e.toAddEquiv⟩
-
-/--
-%%handwave
-name:
   Restriction to the whole open subset preserves scalar multiplication
 statement:
   The additive isomorphism from de Rham cohomology of a manifold to de Rham
@@ -6136,24 +4815,6 @@ theorem exists_deRhamCohomology_addEquiv_topOpenDeRhamCohomology_with_smul
 
 set_option synthInstance.maxHeartbeats 80000
 
-/--
-The algebraic data identifying the de Rham quotient on the terminal open set
-with the cycle-boundary quotient of the evaluated presheaf complex.
--/
-structure TopOpenDeRhamCycleBoundaryIdentification [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H) [IsManifold Iℝ ∞ M] (n : ℕ) where
-  cycles :
-    DeRhamClosedForms (I := Iℝ)
-        (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-        (A := ℝ) n ≃+
-      AddMonoidHom.ker
-        ((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).sc n).g.hom
-  boundaries :
-    (DeRhamExactClosedForms (I := Iℝ)
-        (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-        (A := ℝ) n).toAddSubgroup.map cycles.toAddMonoidHom =
-      AddMonoidHom.range
-        ((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).sc n).abToCycles
 
 /--
 %%handwave
@@ -6552,30 +5213,6 @@ theorem topOpenDeRhamExactClosedForms_map_cycles_eq_boundaries [NormedSpace ℝ 
 /--
 %%handwave
 name:
-  Terminal-open cycles and boundaries are closed and exact forms
-statement:
-  For the additive de Rham complex evaluated on the terminal open subset,
-  cycles are precisely closed forms and boundaries are precisely exact closed
-  forms.
-proof:
-  The outgoing differential of the evaluated presheaf complex is exterior
-  differentiation, so its kernel is the subgroup of closed forms.  In positive
-  degree the incoming differential is the previous exterior derivative, so its
-  image is the subgroup of exact forms; in degree zero the incoming map is
-  zero, matching the convention that exact zero-forms form the zero subgroup.
--/
-theorem topOpenDeRhamCycleBoundaryIdentification [NormedSpace ℝ E]
-    (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty (TopOpenDeRhamCycleBoundaryIdentification (M := M) Iℝ n) := by
-  refine ⟨{ cycles := topOpenDeRhamCyclesAddEquivClosedForms (M := M) Iℝ n
-            boundaries := ?_ }⟩
-  exact topOpenDeRhamExactClosedForms_map_cycles_eq_boundaries (M := M) Iℝ n
-
-/--
-%%handwave
-name:
   Constant multiplication sends a represented terminal-open cycle to the scaled cycle
 statement:
   On the explicit terminal-open cycle-boundary quotient, the endomorphism
@@ -6651,88 +5288,6 @@ theorem smoothFormsAddPresheafTopCochainHomologyQuotientScalarEnd_mk_cycles
         S.abLeftHomologyData S.abLeftHomologyData)
   simpa [smoothFormsAddPresheafTopCochainHomologyQuotientScalarEnd,
     K, S, φ, c, c', hcycle] using hπ
-
-/--
-%%handwave
-name:
-  Top-open de Rham cohomology is the explicit smooth-form quotient
-statement:
-  The de Rham cohomology of the terminal open subset is additively isomorphic
-  to the explicit quotient of terminal-open cycles by terminal-open
-  boundaries in degree \(n\).
-proof:
-  The outgoing differential in the terminal-open complex is exterior
-  differentiation, so its cycles are closed forms.  In positive degree the
-  incoming differential is the previous exterior derivative, so its boundaries
-  are exact forms; in degree \(0\) the incoming differential is zero because
-  the natural-number-indexed cochain complex has no negative predecessor.
--/
-theorem topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty
-      (DeRhamCohomology (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n ≃+
-        smoothFormsAddPresheafTopCochainHomologyQuotient (M := M) Iℝ n) := by
-  rcases topOpenDeRhamCycleBoundaryIdentification (M := M) Iℝ n with
-    ⟨identification⟩
-  let eDeRham :
-      DeRhamCohomology (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n ≃+
-        (DeRhamClosedForms (I := Iℝ)
-            (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-            (A := ℝ) n ⧸
-          (DeRhamExactClosedForms (I := Iℝ)
-            (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-            (A := ℝ) n).toAddSubgroup) :=
-    AddEquiv.refl _
-  let eQuot :
-      (DeRhamClosedForms (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n ⧸
-        (DeRhamExactClosedForms (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n).toAddSubgroup) ≃+
-        smoothFormsAddPresheafTopCochainHomologyQuotient (M := M) Iℝ n :=
-    addQuotientEquivOfMapEq identification.cycles
-      (DeRhamExactClosedForms (I := Iℝ)
-        (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-        (A := ℝ) n).toAddSubgroup
-      (AddMonoidHom.range
-        ((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).sc n).abToCycles)
-      identification.boundaries
-  exact ⟨eDeRham.trans eQuot⟩
-
-/--
-%%handwave
-name:
-  Top-open de Rham cohomology is top-open smooth-form homology
-statement:
-  The de Rham cohomology of the terminal open subset is additively
-  isomorphic to the homology of the terminal-open presheaf de Rham complex.
-proof:
-  Compose [the identification of terminal-open de Rham cohomology with the explicit cycle-boundary quotient](lean:JJMath.Manifold.topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient) with [the explicit quotient model for terminal-open smooth-form homology](lean:JJMath.Manifold.smoothFormsAddPresheafTopCohomology_addEquiv_explicitQuotient).
--/
-theorem topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty
-      (DeRhamCohomology (I := Iℝ)
-          (M := (⊤ : TopologicalSpace.Opens (TopCat.of M : TopCat.{m})))
-          (A := ℝ) n ≃+
-        ↥((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).homology n)) := by
-  rcases
-    topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCochainHomologyQuotient
-      (M := M) Iℝ n with
-    ⟨eDeRhamQuot⟩
-  rcases smoothFormsAddPresheafTopCohomology_addEquiv_explicitQuotient
-      (M := M) Iℝ n with
-    ⟨eHomologyQuot⟩
-  exact ⟨eDeRhamQuot.trans eHomologyQuot.symm⟩
 
 set_option maxHeartbeats 800000
 set_option synthInstance.maxHeartbeats 200000
@@ -6882,32 +5437,6 @@ theorem exists_topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomol
 /--
 %%handwave
 name:
-  Ordinary de Rham cohomology is top-open smooth-form homology
-statement:
-  The usual quotient of closed smooth forms by exact smooth forms is
-  additively isomorphic to the homology of the top-open presheaf de Rham
-  complex.
-proof:
-  Compose [the isomorphism induced by restriction to the terminal open subset](lean:JJMath.Manifold.deRhamCohomology_addEquiv_topOpenDeRhamCohomology) with [the quotient comparison for the terminal-open complex](lean:JJMath.Manifold.topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology).
--/
-theorem deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    (n : ℕ) :
-    Nonempty
-      (DeRhamCohomology (I := Iℝ) (M := M) (A := ℝ) n ≃+
-        ↥((smoothFormsAddPresheafTopCochainComplex (M := M) Iℝ).homology n)) := by
-  rcases deRhamCohomology_addEquiv_topOpenDeRhamCohomology
-      (M := M) Iℝ n with
-    ⟨eTopOpen⟩
-  rcases topOpenDeRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-      (M := M) Iℝ n with
-    ⟨eTopComplex⟩
-  exact ⟨eTopOpen.trans eTopComplex⟩
-
-/--
-%%handwave
-name:
   Ordinary de Rham cohomology is top-open smooth-form homology compatibly with constants
 statement:
   The additive comparison between ordinary real de Rham cohomology and
@@ -6948,35 +5477,6 @@ theorem exists_deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology_wit
           (smoothFormsAddPresheafTopCochainComplexScalarEnd (M := M) Iℝ r) n)
         ((eTopOpen.trans eTopComplex) α) := by
           exact hTopComplex r (eTopOpen α)
-
-/--
-%%handwave
-name:
-  Ordinary de Rham cohomology is the homology of global smooth forms
-statement:
-  The usual quotient of closed smooth forms by exact smooth forms is
-  additively isomorphic to the homology of the global-sections complex of the
-  sheaf de Rham complex.
-proof:
-  Combine [the quotient comparison with top-open smooth-form homology](lean:JJMath.Manifold.deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology) and [the homology equivalence between global sections and top-open sections](lean:JJMath.Manifold.smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology).
--/
-theorem deRhamCohomology_addEquiv_smoothFormsAddSheafGlobalSectionsCohomology
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M]
-    [HasSheafify (Opens.grothendieckTopology (TopCat.of M : TopCat.{m}))
-      AddCommGrpCat.{max v m}]
-    (n : ℕ) :
-    Nonempty
-      (DeRhamCohomology (I := Iℝ) (M := M) (A := ℝ) n ≃+
-        ↥((smoothFormsAddSheafGlobalSectionsCochainComplex (M := M) Iℝ).homology n)) := by
-  rcases deRhamCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-      (M := M) Iℝ n with
-    ⟨eDeRhamTop⟩
-  rcases
-    smoothFormsAddSheafGlobalSectionsCohomology_addEquiv_smoothFormsAddPresheafTopCohomology
-      (M := M) Iℝ n with
-    ⟨eGlobalTop⟩
-  exact ⟨eDeRhamTop.trans eGlobalTop.symm⟩
 
 /--
 %%handwave
@@ -7181,49 +5681,6 @@ theorem opens_addCommGrp_uliftFunctor_preservesSheafification
 /--
 %%handwave
 name:
-  The universe-lifted integer constant sheaf is the larger integer constant sheaf
-statement:
-  The constant sheaf with value \(\mathbb Z\) in the larger coefficient
-  universe is isomorphic to the universe lift of the ordinary integer constant
-  sheaf.
-proof:
-  Use compatibility of universe lift with sheafification and the canonical
-  additive isomorphism between the two universe-lifted copies of \(\mathbb Z\).
--/
-theorem intConstantAddSheafUniverse_iso_sheafCompose_ulift_intConstantAddSheaf
-    (X : TopCat.{m})
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}] :
-    Nonempty
-      ((constantSheaf (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}).obj
-          (AddCommGrpCat.of (ULift.{max v m} ℤ)) ≅
-        (sheafCompose (Opens.grothendieckTopology X)
-          AddCommGrpCat.uliftFunctor.{v, m}).obj
-            ((constantSheaf (Opens.grothendieckTopology X) AddCommGrpCat.{m}).obj
-              (AddCommGrpCat.of (ULift.{m} ℤ)))) := by
-  let J := Opens.grothendieckTopology X
-  let A : AddCommGrpCat.{m} := AddCommGrpCat.of (ULift.{m} ℤ)
-  let U : AddCommGrpCat.{m} ⥤ AddCommGrpCat.{max v m} :=
-    AddCommGrpCat.uliftFunctor.{v, m}
-  let B : AddCommGrpCat.{max v m} := AddCommGrpCat.of (ULift.{max v m} ℤ)
-  haveI : J.PreservesSheafification U := by
-    dsimp [U]
-    exact opens_addCommGrp_uliftFunctor_preservesSheafification X
-  let coeffIso : U.obj A ≅ B :=
-    intULiftULiftAddEquiv.{v, m}.toAddCommGrpIso
-  let hconst :
-      (sheafCompose J U).obj ((constantSheaf J AddCommGrpCat.{m}).obj A) ≅
-      (constantSheaf J AddCommGrpCat.{max v m}).obj (U.obj A) :=
-    (constantCommuteCompose J U).app A
-  let hcoeff :
-      (constantSheaf J AddCommGrpCat.{max v m}).obj (U.obj A) ≅
-      (constantSheaf J AddCommGrpCat.{max v m}).obj B :=
-    (constantSheaf J AddCommGrpCat.{max v m}).mapIso coeffIso
-  exact ⟨(hconst ≪≫ hcoeff).symm⟩
-
-/--
-%%handwave
-name:
   Universe lift preserves finite limits of abelian sheaves
 statement:
   Applying the universe-lift functor for abelian groups to an abelian sheaf
@@ -7284,6 +5741,93 @@ noncomputable instance sheafCompose_uliftFunctor_preservesFiniteColimits
   exact
     CategoryTheory.Sheaf.sheafCompose_preservesColimitsOfShape_of_preservesSheafification
       (J := J) (F := U) (K := K)
+
+/--
+%%handwave
+name:
+  Universe lift preserves flasque abelian sheaves
+statement:
+  If $\mathcal F$ is a flasque sheaf of abelian groups on a space $X$, then
+  the sheaf obtained by applying universe lift to all its values is flasque.
+proof:
+  Every restriction map of $\mathcal F$ is surjective.  Universe lift of
+  abelian groups preserves finite colimits and therefore epimorphisms, so
+  every lifted restriction map is again surjective.
+-/
+theorem sheafCompose_uliftFunctor_isFlasque
+    (X : TopCat.{m})
+    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
+    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}]
+    (F : Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{m})
+    [TopCat.Sheaf.IsFlasque F] :
+    TopCat.Sheaf.IsFlasque
+      ((sheafCompose (Opens.grothendieckTopology X)
+        AddCommGrpCat.uliftFunctor.{v, m}).obj F) := by
+  constructor
+  intro U V i
+  change
+    Epi
+      (AddCommGrpCat.uliftFunctor.{v, m}.map
+        (F.obj.map i))
+  haveI : Epi (F.obj.map i) :=
+    (inferInstance : TopCat.Sheaf.IsFlasque F).epi i
+  infer_instance
+
+/--
+%%handwave
+name:
+  Global sections commute with universe lift
+statement:
+  For every abelian sheaf $\mathcal F$ on a topological space $X$, there is a
+  natural isomorphism
+  \[
+    \Gamma(X,U\mathcal F)\cong U\Gamma(X,\mathcal F),
+  \]
+  where $U$ denotes universe lift of abelian groups.
+proof:
+  On the open-set site, global sections are naturally sections over the
+  terminal open subset $X$.  Universe lift is applied objectwise to a sheaf,
+  so it commutes definitionally with evaluation at that terminal open.
+-/
+noncomputable def sheafCompose_uliftFunctor_comp_globalSectionsIso
+    (X : TopCat.{m})
+    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
+    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}] :
+    sheafCompose (Opens.grothendieckTopology X)
+          AddCommGrpCat.uliftFunctor.{v, m} ⋙
+        Sheaf.Γ (Opens.grothendieckTopology X)
+          AddCommGrpCat.{max v m} ≅
+      Sheaf.Γ (Opens.grothendieckTopology X) AddCommGrpCat.{m} ⋙
+        AddCommGrpCat.uliftFunctor.{v, m} := by
+  let J := Opens.grothendieckTopology X
+  let T : TopologicalSpace.Opens X := ⊤
+  let U :=
+    sheafCompose J AddCommGrpCat.uliftFunctor.{v, m}
+  let sectionsSmall :=
+    (CategoryTheory.sheafSections J AddCommGrpCat.{m}).obj
+      (Opposite.op T)
+  let sectionsBig :=
+    (CategoryTheory.sheafSections J
+      AddCommGrpCat.{max v m}).obj (Opposite.op T)
+  let γSmall :
+      Sheaf.Γ J AddCommGrpCat.{m} ≅ sectionsSmall :=
+    Sheaf.ΓNatIsoSheafSections
+      (J := J) (A := AddCommGrpCat.{m})
+      (T := T) CategoryTheory.Limits.isTerminalTop
+  let γBig :
+      Sheaf.Γ J AddCommGrpCat.{max v m} ≅ sectionsBig :=
+    Sheaf.ΓNatIsoSheafSections
+      (J := J) (A := AddCommGrpCat.{max v m})
+      (T := T) CategoryTheory.Limits.isTerminalTop
+  let middle :
+      U ⋙ sectionsBig ≅
+        sectionsSmall ⋙ AddCommGrpCat.uliftFunctor.{v, m} :=
+    Iso.refl _
+  exact
+    Functor.isoWhiskerLeft U γBig ≪≫
+      middle ≪≫
+        (Functor.isoWhiskerRight γSmall
+          AddCommGrpCat.uliftFunctor.{v, m}).symm
 
 /--
 %%handwave
@@ -7463,6 +6007,13 @@ theorem sheafCompose_uliftFunctor_mapHomotopyCategory_preserves_quasiIso
       (c := ComplexShape.up ℤ)
       ((F.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).2 hmap
 
+/--
+%%handwave
+name:
+  Universe lift as a quasi-isomorphism localizer morphism
+statement:
+  Universe lift of abelian-group-valued sheaves induces a functor on homotopy categories that sends quasi-isomorphisms to quasi-isomorphisms, hence defines a morphism between their quasi-isomorphism localizers.
+-/
 noncomputable def sheafCompose_uliftFunctor_mapHomotopyCategory_quasiIsoLocalizerMorphism
     (X : TopCat.{m})
     [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
@@ -7535,48 +6086,6 @@ noncomputable abbrev sheafCompose_uliftFunctor_mapHomotopyCategory_localizedHomM
 
 
 
-
-/--
-%%handwave
-name:
-  The smooth-form universe constant sheaf is the lifted constant sheaf
-statement:
-  The constant real sheaf in the smooth-form coefficient universe is
-  isomorphic to the universe lift of the ordinary constant real sheaf.
-proof:
-  The universe-lift functor is compatible with sheafification and with
-  constant presheaves.  The two coefficient groups
-  \(\mathrm{ULift}^{\max(v,m)}\mathbb R\) and the universe lift of
-  \(\mathrm{ULift}^{m}\mathbb R\) are canonically additively isomorphic.
--/
-theorem realConstantAddSheafSmoothFormsUniverse_iso_sheafCompose_ulift_realConstantAddSheaf
-    (X : TopCat.{m})
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}] :
-    Nonempty
-      (realConstantAddSheafSmoothFormsUniverse X ≅
-        (sheafCompose (Opens.grothendieckTopology X)
-          AddCommGrpCat.uliftFunctor.{v, m}).obj
-            (JJMath.Cohomology.RealConstantAddSheaf X)) := by
-  let J := Opens.grothendieckTopology X
-  let A : AddCommGrpCat.{m} := AddCommGrpCat.of (ULift.{m} ℝ)
-  let U : AddCommGrpCat.{m} ⥤ AddCommGrpCat.{max v m} :=
-    AddCommGrpCat.uliftFunctor.{v, m}
-  let B : AddCommGrpCat.{max v m} := AddCommGrpCat.of (ULift.{max v m} ℝ)
-  haveI : J.PreservesSheafification U := by
-    dsimp [U]
-    exact opens_addCommGrp_uliftFunctor_preservesSheafification X
-  let coeffIso : U.obj A ≅ B :=
-    realULiftULiftAddEquiv.{v, m}.toAddCommGrpIso
-  let hconst :
-      (sheafCompose J U).obj ((constantSheaf J AddCommGrpCat.{m}).obj A) ≅
-      (constantSheaf J AddCommGrpCat.{max v m}).obj (U.obj A) :=
-    (constantCommuteCompose J U).app A
-  let hcoeff :
-      (constantSheaf J AddCommGrpCat.{max v m}).obj (U.obj A) ≅
-      (constantSheaf J AddCommGrpCat.{max v m}).obj B :=
-    (constantSheaf J AddCommGrpCat.{max v m}).mapIso coeffIso
-  exact ⟨(hconst ≪≫ hcoeff).symm⟩
 
 /--
 %%handwave
@@ -7679,92 +6188,6 @@ theorem exists_realConstantAddSheafSmoothFormsUniverse_iso_sheafCompose_ulift_re
         (sheafCompose J U).map
           (JJMath.Cohomology.realConstantSheafScalarEnd X r) := by
         simp [h_small, J, U, Category.assoc]
-
-/--
-%%handwave
-name:
-  Lifted constant real cohomology is ordinary constant real cohomology
-statement:
-  If universe lift identifies Ext groups of abelian sheaves, then the
-  cohomology of the lifted ordinary constant real sheaf is additively
-  isomorphic to ordinary real constant-sheaf cohomology.
-proof:
-  Sheaf cohomology is an Ext group out of the integer constant sheaf.  Identify
-  the large integer constant sheaf with the universe lift of the ordinary
-  integer constant sheaf, then apply the Ext bijection induced by universe
-  lift.
--/
-theorem sheafCompose_ulift_realConstantAddSheaf_cohomology_addEquiv_realConstantSheafCohomology_of_mapExt
-    (X : TopCat.{m})
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{m}]
-    [HasExt.{m}
-      (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{m})]
-    [HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{max v m}]
-    [HasExt.{max v m}
-      (Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{max v m})]
-    (n : ℕ)
-    (hExt :
-      Function.Bijective
-        ((sheafCompose (Opens.grothendieckTopology X)
-          AddCommGrpCat.uliftFunctor.{v, m}).mapExtAddHom
-            ((constantSheaf (Opens.grothendieckTopology X)
-              AddCommGrpCat.{m}).obj (AddCommGrpCat.of (ULift.{m} ℤ)))
-            (JJMath.Cohomology.RealConstantAddSheaf X) n)) :
-    Nonempty
-      (((sheafCompose (Opens.grothendieckTopology X)
-          AddCommGrpCat.uliftFunctor.{v, m}).obj
-            (JJMath.Cohomology.RealConstantAddSheaf X)).H n ≃+
-        JJMath.Cohomology.RealConstantSheafCohomology X n) := by
-  let J := Opens.grothendieckTopology X
-  let U :=
-    sheafCompose J AddCommGrpCat.uliftFunctor.{v, m}
-  let Zsmall : Sheaf J AddCommGrpCat.{m} :=
-    (constantSheaf J AddCommGrpCat.{m}).obj (AddCommGrpCat.of (ULift.{m} ℤ))
-  let Zbig : Sheaf J AddCommGrpCat.{max v m} :=
-    (constantSheaf J AddCommGrpCat.{max v m}).obj
-      (AddCommGrpCat.of (ULift.{max v m} ℤ))
-  let Rsmall : Sheaf J AddCommGrpCat.{m} :=
-    JJMath.Cohomology.RealConstantAddSheaf X
-  let Rbig : Sheaf J AddCommGrpCat.{max v m} := U.obj Rsmall
-  rcases intConstantAddSheafUniverse_iso_sheafCompose_ulift_intConstantAddSheaf
-      (X := X) with
-    ⟨eZ⟩
-  let eSource :
-      CategoryTheory.Abelian.Ext (U.obj Zsmall) Rbig n ≃+
-        CategoryTheory.Abelian.Ext Zbig Rbig n :=
-    { toFun := fun α =>
-        (CategoryTheory.Abelian.Ext.mk₀ eZ.hom).comp α (zero_add n)
-      invFun := fun α =>
-        (CategoryTheory.Abelian.Ext.mk₀ eZ.inv).comp α (zero_add n)
-      left_inv := by
-        intro α
-        change
-          (CategoryTheory.Abelian.Ext.mk₀ eZ.inv).comp
-              ((CategoryTheory.Abelian.Ext.mk₀ eZ.hom).comp α (zero_add n))
-              (zero_add n) = α
-        rw [← CategoryTheory.Abelian.Ext.comp_assoc_of_second_deg_zero]
-        rw [CategoryTheory.Abelian.Ext.mk₀_comp_mk₀, Iso.inv_hom_id]
-        exact CategoryTheory.Abelian.Ext.mk₀_id_comp α
-      right_inv := by
-        intro α
-        change
-          (CategoryTheory.Abelian.Ext.mk₀ eZ.hom).comp
-              ((CategoryTheory.Abelian.Ext.mk₀ eZ.inv).comp α (zero_add n))
-              (zero_add n) = α
-        rw [← CategoryTheory.Abelian.Ext.comp_assoc_of_second_deg_zero]
-        rw [CategoryTheory.Abelian.Ext.mk₀_comp_mk₀, Iso.hom_inv_id]
-        exact CategoryTheory.Abelian.Ext.mk₀_id_comp α
-      map_add' := by
-        intro α β
-        exact (CategoryTheory.Abelian.Ext.precomp
-          (CategoryTheory.Abelian.Ext.mk₀ eZ.hom) Rbig (zero_add n)).map_add α β }
-  let eLift :
-      JJMath.Cohomology.RealConstantSheafCohomology X n ≃+
-        CategoryTheory.Abelian.Ext (U.obj Zsmall) Rbig n :=
-    AddEquiv.ofBijective (U.mapExtAddHom Zsmall Rsmall n) hExt
-  exact ⟨eSource.symm.trans eLift.symm⟩
-
-
 
 set_option maxHeartbeats 800000
 

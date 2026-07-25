@@ -40,35 +40,22 @@ noncomputable section
 
 namespace LocalConformalFactor
 
-/-- The local conformal curvature formula has constant value `K`. -/
-def HasGaussianCurvature (u : LocalConformalFactor) (K : ℝ) : Prop :=
-  ∀ z, z ∈ u.coordinateDomain → u.gaussianCurvature z = K
-
 /--
 The constant-curvature Liouville equation for `exp (2u) |dz|^2`:
 
 `Δ u = -K * exp (2u)`.
 
 For `K = -1` this is the hyperbolic Liouville equation already used elsewhere.
+
+%%handwave
+name:
+  Constant-curvature equation for a conformal factor
+statement:
+  A logarithmic conformal factor $u$ defines curvature $K$ on $\Omega$ when $\Delta u(z)=-K e^{2u(z)}$ for every $z\in\Omega$.
 -/
 def SolvesConstantCurvatureEquation (u : LocalConformalFactor) (K : ℝ) : Prop :=
   ∀ z, z ∈ u.coordinateDomain →
     Laplacian.laplacian u.logDensity z = -K * Real.exp (2 * u.logDensity z)
-
-/--
-%%handwave
-name:
-  Curvature minus one as constant curvature
-statement:
-  A conformal factor \(u\) has Gaussian curvature \(-1\) in the hyperbolic
-  sense if and only if its Gaussian curvature is the constant \(-1\).
-proof:
-  The two assertions have the same pointwise curvature equation by definition.
--/
-theorem hasGaussianCurvatureMinusOne_iff_hasGaussianCurvature_neg_one
-    (u : LocalConformalFactor) :
-    u.HasGaussianCurvatureMinusOne ↔ u.HasGaussianCurvature (-1) :=
-  Iff.rfl
 
 /--
 %%handwave
@@ -91,94 +78,6 @@ theorem solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one
   · intro h z hz
     simpa [SolvesConstantCurvatureEquation] using h z hz
 
-/--
-%%handwave
-name:
-  Constant Gaussian curvature implies the Liouville equation
-statement:
-  If the metric \(e^{2u}|dz|^2\) has constant Gaussian curvature \(K\), then
-  its logarithmic conformal factor satisfies
-  \[\Delta u=-K e^{2u}\]
-  throughout the coordinate domain.
-proof:
-  Start from \(K=-e^{-2u}\Delta u\). Since \(e^{-2u}\) is everywhere
-  positive, multiply by its inverse \(e^{2u}\) and rearrange.
--/
-theorem solvesConstantCurvatureEquation_of_hasGaussianCurvature
-    (u : LocalConformalFactor) (K : ℝ) (hK : u.HasGaussianCurvature K) :
-    u.SolvesConstantCurvatureEquation K := by
-  intro z hz
-  have hKz :
-      - Real.exp (-(2 * u.logDensity z)) *
-          Laplacian.laplacian u.logDensity z = K := by
-    simpa [HasGaussianCurvature, gaussianCurvature] using hK z hz
-  have hne : Real.exp (-(2 * u.logDensity z)) ≠ 0 :=
-    ne_of_gt (Real.exp_pos _)
-  have hmul :
-      Real.exp (-(2 * u.logDensity z)) *
-          Laplacian.laplacian u.logDensity z = -K := by
-    linarith
-  calc
-    Laplacian.laplacian u.logDensity z
-        = (Real.exp (-(2 * u.logDensity z)))⁻¹ *
-            (Real.exp (-(2 * u.logDensity z)) *
-              Laplacian.laplacian u.logDensity z) := by
-            field_simp [hne]
-    _ = (Real.exp (-(2 * u.logDensity z)))⁻¹ * (-K) := by
-            rw [hmul]
-    _ = -K * Real.exp (2 * u.logDensity z) := by
-            rw [← Real.exp_neg]
-            ring_nf
-
-/--
-%%handwave
-name:
-  The Liouville equation implies constant Gaussian curvature
-statement:
-  If a logarithmic conformal factor \(u\) satisfies
-  \(\Delta u=-K e^{2u}\), then the metric \(e^{2u}|dz|^2\) has Gaussian
-  curvature \(K\) throughout its coordinate domain.
-proof:
-  Substitute the equation into
-  \(K_u=-e^{-2u}\Delta u\). The two exponential factors cancel because
-  \(e^{2u}>0\), leaving \(K_u=K\).
--/
-theorem hasGaussianCurvature_of_solvesConstantCurvatureEquation
-    (u : LocalConformalFactor) (K : ℝ)
-    (hL : u.SolvesConstantCurvatureEquation K) :
-    u.HasGaussianCurvature K := by
-  intro z hz
-  have hpos : 0 < Real.exp (2 * u.logDensity z) := Real.exp_pos _
-  calc
-    u.gaussianCurvature z
-        = - Real.exp (-(2 * u.logDensity z)) *
-            (-K * Real.exp (2 * u.logDensity z)) := by
-            rw [gaussianCurvature, hL z hz]
-    _ = K := by
-            rw [Real.exp_neg]
-            field_simp [ne_of_gt hpos]
-
-/--
-%%handwave
-name:
-  Curvature and the Liouville equation
-statement:
-  Let $u : U \to \mathbb R$ be the logarithmic conformal factor of the metric
-  $e^{2u}|dz|^2$ on a complex coordinate domain $U$. Its Gaussian curvature
-  is identically $K$ if and only if
-  $\Delta u = -K e^{2u}$ throughout $U$. In particular, curvature $-1$ is
-  equivalent to the hyperbolic Liouville equation $\Delta u=e^{2u}$.
-proof:
-  Substitute the curvature formula $K_u=-e^{-2u}\Delta u$ and multiply by
-  the everywhere positive function $e^{2u}$; the converse follows by the same
-  algebra in reverse.
--/
-theorem hasGaussianCurvature_iff_solvesConstantCurvatureEquation
-    (u : LocalConformalFactor) (K : ℝ) :
-    u.HasGaussianCurvature K ↔ u.SolvesConstantCurvatureEquation K :=
-  ⟨u.solvesConstantCurvatureEquation_of_hasGaussianCurvature K,
-    u.hasGaussianCurvature_of_solvesConstantCurvatureEquation K⟩
-
 end LocalConformalFactor
 
 /--
@@ -187,12 +86,24 @@ complex-valued function, expressed through the real Frechet derivative.
 
 Mathlib's complex-differentiability criterion uses exactly this condition:
 the real derivative must commute with multiplication by `I`.
+
+%%handwave
+name:
+  Vanishing antiholomorphic derivative at a point
+statement:
+  A real-differentiable function $f:\mathbb C\to\mathbb C$ satisfies $\partial_{\bar z}f(z)=0$ when its real derivative at $z$ is complex linear, equivalently $Df(z)[i]=iDf(z)[1]$.
 -/
 def HasDBarZeroAt (f : ℂ → ℂ) (z : ℂ) : Prop :=
   DifferentiableAt ℝ f z ∧
     fderiv ℝ f z Complex.I = Complex.I • fderiv ℝ f z (1 : ℂ)
 
-/-- The `∂_{\bar z} = 0` condition at every point of a set. -/
+/-- The `∂_{\bar z} = 0` condition at every point of a set.
+%%handwave
+name:
+  Vanishing antiholomorphic derivative on a set
+statement:
+  A function $f:\mathbb C\to\mathbb C$ has $\partial_{\bar z}f=0$ on $U$ when it is real differentiable and satisfies the Cauchy--Riemann equation at every $z\in U$.
+-/
 def HasDBarZeroOn (f : ℂ → ℂ) (U : Set ℂ) : Prop :=
   ∀ z, z ∈ U → HasDBarZeroAt f z
 
@@ -202,6 +113,12 @@ The Frechet-derivative value of the Wirtinger operator `∂_{\bar z}`.
 For a real-differentiable complex-valued function this is
 `(1 / 2) * (df(1) + I * df(I))`.  Vanishing of this value is exactly the
 Cauchy-Riemann condition used by mathlib's complex differentiability criterion.
+
+%%handwave
+name:
+  Fréchet formula for the antiholomorphic Wirtinger derivative
+statement:
+  For $f:\mathbb C\to\mathbb C$, define $\partial_{\bar z}f(z)=\tfrac12\bigl(Df(z)[1]+iDf(z)[i]\bigr)$ using its real Fréchet derivative.
 -/
 def frechetDBarValue (f : ℂ → ℂ) (z : ℂ) : ℂ :=
   (1 / 2 : ℂ) *
@@ -213,6 +130,12 @@ The Frechet-derivative value of the Wirtinger operator `∂_z`.
 For a real-differentiable complex-valued function this is
 `(1 / 2) * (df(1) - I * df(I))`.  Together with `frechetDBarValue` it gives the
 canonical Frechet-level Wirtinger decomposition of the real derivative.
+
+%%handwave
+name:
+  Fréchet formula for the holomorphic Wirtinger derivative
+statement:
+  For $f:\mathbb C\to\mathbb C$, define $\partial_zf(z)=\tfrac12\bigl(Df(z)[1]-iDf(z)[i]\bigr)$ using its real Fréchet derivative.
 -/
 def frechetDZValue (f : ℂ → ℂ) (z : ℂ) : ℂ :=
   (1 / 2 : ℂ) *
@@ -374,108 +297,6 @@ theorem frechetDBarValue_complex_ofReal_eq_star_frechetDZValue
     simpa [L] using
       (Complex.ofRealCLM.hasFDerivAt.comp z hφ.hasFDerivAt).fderiv
   simp [frechetDBarValue, frechetDZValue, L, hfd]
-
-/--
-%%handwave
-name:
-  A real-valued function with vanishing \(\partial_z\) has zero derivative
-statement:
-  Let \(\varphi:\mathbb C\to\mathbb R\) be real differentiable at \(z\). If
-  its complexified Wirtinger derivative satisfies
-  \(\partial_z\varphi(z)=0\), then the full real Fréchet derivative
-  \(D\varphi(z)\) is zero.
-proof:
-  Taking real and imaginary parts of
-  \(D\varphi(z)[1]-iD\varphi(z)[i]=0\) shows that the derivative vanishes on
-  both \(1\) and \(i\). Real linearity then makes it vanish on every complex
-  direction.
--/
-theorem fderiv_real_eq_zero_of_frechetDZValue_complex_ofReal_eq_zero
-    {φ : ℂ → ℝ} {z : ℂ}
-    (hφ : DifferentiableAt ℝ φ z)
-    (hZ : frechetDZValue (fun w : ℂ ↦ (φ w : ℂ)) z = 0) :
-    fderiv ℝ φ z = 0 := by
-  let L : ℂ →L[ℝ] ℝ := fderiv ℝ φ z
-  have hfd :
-      fderiv ℝ (fun w : ℂ ↦ (φ w : ℂ)) z =
-        Complex.ofRealCLM.comp L := by
-    simpa [L] using
-      (Complex.ofRealCLM.hasFDerivAt.comp z hφ.hasFDerivAt).fderiv
-  have hmain :
-      (1 / 2 : ℂ) * ((L (1 : ℂ) : ℂ) - Complex.I * (L Complex.I : ℂ)) = 0 := by
-    simpa [frechetDZValue, L, hfd] using hZ
-  have hinner :
-      ((L (1 : ℂ) : ℂ) - Complex.I * (L Complex.I : ℂ)) = 0 := by
-    exact (mul_eq_zero.mp hmain).resolve_left (by norm_num)
-  have hL1 : L (1 : ℂ) = 0 := by
-    have hre := congrArg Complex.re hinner
-    simpa using hre
-  have hLI : L Complex.I = 0 := by
-    have him := congrArg Complex.im hinner
-    simpa using him
-  apply ContinuousLinearMap.ext
-  intro w
-  have hw : w = (w.re : ℝ) • (1 : ℂ) + (w.im : ℝ) • Complex.I := by
-    simp [Complex.re_add_im]
-  calc
-    L w = L ((w.re : ℝ) • (1 : ℂ) + (w.im : ℝ) • Complex.I) := by
-      exact congrArg L hw
-    _ = (w.re : ℝ) • L (1 : ℂ) + (w.im : ℝ) • L Complex.I := by
-      rw [map_add, map_smul, map_smul]
-    _ = 0 := by
-      simp [hL1, hLI]
-    _ = (0 : ℂ →L[ℝ] ℝ) w := rfl
-
-/--
-%%handwave
-name:
-  Real-valued functions are determined by one value and their \(\partial_z\) derivative
-statement:
-  Let \(U\subset\mathbb C\) be open and connected, and let
-  \(f,g:U\to\mathbb R\) be real differentiable. If
-  \(\partial_z f=\partial_z g\) throughout \(U\) and \(f(z_0)=g(z_0)\) at
-  one point \(z_0\in U\), then \(f=g\) on \(U\).
-proof:
-  Apply the preceding zero-derivative result to \(f-g\) at each point. Thus
-  \(D(f-g)=0\) on the connected open set, so \(f-g\) is constant; its value at
-  \(z_0\) is zero.
--/
-theorem eqOn_of_frechetDZValue_complex_ofReal_eq
-    {U : Set ℂ} {f g : ℂ → ℝ} {z₀ : ℂ}
-    (hUopen : IsOpen U) (hUpre : IsPreconnected U)
-    (hf : DifferentiableOn ℝ f U) (hg : DifferentiableOn ℝ g U)
-    (hZ : ∀ z, z ∈ U →
-      frechetDZValue (fun w : ℂ ↦ (f w : ℂ)) z =
-        frechetDZValue (fun w : ℂ ↦ (g w : ℂ)) z)
-    (hz₀ : z₀ ∈ U) (hbase : f z₀ = g z₀) :
-    U.EqOn f g := by
-  refine hUopen.eqOn_of_fderiv_eq hUpre hf hg ?_ hz₀ hbase
-  intro z hz
-  have hfz : DifferentiableAt ℝ f z := hf.differentiableAt (hUopen.mem_nhds hz)
-  have hgz : DifferentiableAt ℝ g z := hg.differentiableAt (hUopen.mem_nhds hz)
-  have hdiff : DifferentiableAt ℝ (fun w : ℂ ↦ f w - g w) z := hfz.sub hgz
-  have hfzc : DifferentiableAt ℝ (fun w : ℂ ↦ (f w : ℂ)) z :=
-    Complex.ofRealCLM.differentiableAt.comp z hfz
-  have hgzc : DifferentiableAt ℝ (fun w : ℂ ↦ (g w : ℂ)) z :=
-    Complex.ofRealCLM.differentiableAt.comp z hgz
-  have hZsub :
-      frechetDZValue (fun w : ℂ ↦ ((f w - g w : ℝ) : ℂ)) z = 0 := by
-    calc
-      frechetDZValue (fun w : ℂ ↦ ((f w - g w : ℝ) : ℂ)) z
-          = frechetDZValue (fun w : ℂ ↦ (f w : ℂ) - (g w : ℂ)) z := by
-              congr 1
-              ext w
-              simp
-      _ = frechetDZValue (fun w : ℂ ↦ (f w : ℂ)) z -
-            frechetDZValue (fun w : ℂ ↦ (g w : ℂ)) z :=
-              frechetDZValue_sub_of_differentiableAt hfzc hgzc
-      _ = 0 := by
-            rw [hZ z hz, sub_self]
-  have hFsub : fderiv ℝ (fun w : ℂ ↦ f w - g w) z = 0 :=
-    fderiv_real_eq_zero_of_frechetDZValue_complex_ofReal_eq_zero hdiff hZsub
-  have hFsub' : fderiv ℝ f z - fderiv ℝ g z = 0 := by
-    simpa [fderiv_fun_sub hfz hgz] using hFsub
-  exact sub_eq_zero.mp hFsub'
 
 /--
 %%handwave
@@ -1091,112 +912,6 @@ theorem hasDBarZeroAt_of_frechetDBarValue_eq_zero
       _ = Complex.I * a := by ring
   simpa [a, b, smul_eq_mul] using hb
 
-/--
-%%handwave
-name:
-  Cauchy–Riemann implies vanishing antiholomorphic derivative
-statement:
-  If \(f\) is real differentiable at \(z\) and \(Df_z(i)=iDf_z(1)\), then \(∂_{bar z}f(z)=0\).
-proof:
-  Substitute the Cauchy–Riemann relation into the Wirtinger formula.
--/
-theorem frechetDBarValue_eq_zero_of_hasDBarZeroAt
-    {f : ℂ → ℂ} {z : ℂ} (h : HasDBarZeroAt f z) :
-    frechetDBarValue f z = 0 := by
-  rw [frechetDBarValue, h.2]
-  simp [smul_eq_mul]
-  rw [← mul_assoc, Complex.I_mul_I]
-  ring
-
-/--
-%%handwave
-name:
-  Vanishing antiholomorphic derivative is equivalent to Cauchy–Riemann
-statement:
-  At a real-differentiability point, \(∂_{bar z}f(z)=0\) if and only if \(Df_z(i)=iDf_z(1)\).
-proof:
-  Combine the two pointwise implications.
--/
-theorem frechetDBarValue_eq_zero_iff_hasDBarZeroAt
-    {f : ℂ → ℂ} {z : ℂ} (hdiff : DifferentiableAt ℝ f z) :
-    frechetDBarValue f z = 0 ↔ HasDBarZeroAt f z :=
-  ⟨hasDBarZeroAt_of_frechetDBarValue_eq_zero hdiff,
-    frechetDBarValue_eq_zero_of_hasDBarZeroAt⟩
-
-/--
-Named bridge between the concrete Frechet `∂_z` value and mathlib's
-one-variable complex derivative.
-
-This is intentionally kept as a theorem target for now.  The Cauchy-Riemann
-criterion above proves complex differentiability from `∂_{\bar z}=0`; this
-target additionally identifies the derivative value with the Frechet
-Wirtinger formula.
--/
-def FrechetDZValueIsComplexDerivativeTheorem : Prop :=
-  ∀ {f : ℂ → ℂ} {z : ℂ}, HasDBarZeroAt f z →
-    HasDerivAt f (frechetDZValue f z) z
-
-/--
-%%handwave
-name:
-  The z-Wirtinger value is the complex derivative
-statement:
-  If \(f\) is real differentiable at \(z\) and satisfies Cauchy–Riemann, then \(f\) has complex derivative \(∂_zf(z)\).
-proof:
-  Cauchy–Riemann makes the real derivative complex linear, and the z-Wirtinger formula reduces to its value on \(1\).
--/
-theorem frechetDZValueIsComplexDerivativeTheorem :
-    FrechetDZValueIsComplexDerivativeTheorem := by
-  intro f z h
-  have hI :
-      fderiv ℝ f z Complex.I = Complex.I * fderiv ℝ f z (1 : ℂ) := by
-    simpa [smul_eq_mul] using h.2
-  have hdz : frechetDZValue f z = fderiv ℝ f z (1 : ℂ) := by
-    rw [frechetDZValue, hI]
-    calc
-      (1 / 2 : ℂ) *
-          (fderiv ℝ f z 1 -
-            Complex.I * (Complex.I * fderiv ℝ f z (1 : ℂ)))
-          =
-          (1 / 2 : ℂ) *
-            (fderiv ℝ f z 1 -
-              (Complex.I * Complex.I) * fderiv ℝ f z (1 : ℂ)) := by
-            ring
-      _ = fderiv ℝ f z (1 : ℂ) := by
-            rw [Complex.I_mul_I]
-            ring
-  rw [hdz]
-  exact complexOfReal_hasDerivAt h.1 h.2
-
-/--
-%%handwave
-name:
-  Pointwise complex derivative from Cauchy–Riemann
-statement:
-  At a point where \(f\) is real differentiable and satisfies Cauchy–Riemann, its complex derivative is \(∂_zf\).
-proof:
-  Apply the preceding identification.
--/
-theorem hasDerivAt_frechetDZValue_of_hasDBarZeroAt
-    {f : ℂ → ℂ} {z : ℂ} (h : HasDBarZeroAt f z) :
-    HasDerivAt f (frechetDZValue f z) z :=
-  frechetDZValueIsComplexDerivativeTheorem h
-
-/--
-%%handwave
-name:
-  Complex derivatives on a set from Cauchy–Riemann
-statement:
-  If \(f\) is real differentiable and satisfies Cauchy–Riemann throughout \(U\), then it has complex derivative \(∂_zf(z)\) at every \(z∈U\).
-proof:
-  Apply the pointwise derivative statement throughout the set.
--/
-theorem hasDerivAt_frechetDZValue_of_hasDBarZeroOn
-    {f : ℂ → ℂ} {U : Set ℂ} (h : HasDBarZeroOn f U) :
-    ∀ z, z ∈ U → HasDerivAt f (frechetDZValue f z) z := by
-  intro z hz
-  exact hasDerivAt_frechetDZValue_of_hasDBarZeroAt (h z hz)
-
 namespace HasFrechetDBarOn
 
 /--
@@ -1252,20 +967,6 @@ theorem analyticOnNhd_of_hasDBarZeroOn
 /--
 %%handwave
 name:
-  Analyticity on a set from Cauchy–Riemann
-statement:
-  If \(U⊆ℂ\) is open and \(f\) satisfies Cauchy–Riemann throughout \(U\), then \(f\) is analytic on \(U\).
-proof:
-  Convert Cauchy–Riemann to complex differentiability and apply open-set analyticity.
--/
-theorem analyticOn_of_hasDBarZeroOn
-    {f : ℂ → ℂ} {U : Set ℂ} (hU : IsOpen U) (h : HasDBarZeroOn f U) :
-    AnalyticOn ℂ f U :=
-  (differentiableOn_complex_of_hasDBarZeroOn h).analyticOn hU
-
-/--
-%%handwave
-name:
   Cauchy–Riemann is preserved by scalar multiplication
 statement:
   If \(f\) satisfies Cauchy–Riemann at \(z\), then so does \(cf\) for \(c∈ℂ\).
@@ -1309,63 +1010,105 @@ theorem hasDBarZeroOn_two_mul
 
 namespace LocalConformalFactor
 
-/-- The real log-density, regarded as a complex-valued function. -/
+/-- The real log-density, regarded as a complex-valued function.
+%%handwave
+name:
+  Complexification of a logarithmic density
+statement:
+  A real logarithmic density $u:\mathbb C\to\mathbb R$ is regarded as the complex-valued function $z\mapsto u(z)+0i$.
+-/
 def complexLogDensity (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ (u.logDensity z : ℂ)
 
-/-- The canonical Frechet-level Wirtinger derivative `u_z`. -/
+/-- The canonical Frechet-level Wirtinger derivative `u_z`.
+%%handwave
+name:
+  First holomorphic Wirtinger derivative of a conformal factor
+statement:
+  The field $u_z$ is the holomorphic Wirtinger derivative $\partial_zu$ of the complexified logarithmic density.
+-/
 def wirtingerZ (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDZValue u.complexLogDensity z
 
-/-- The canonical Frechet-level Wirtinger derivative `u_{\bar z}`. -/
-def wirtingerDBar (u : LocalConformalFactor) : ℂ → ℂ :=
-  fun z ↦ frechetDBarValue u.complexLogDensity z
-
-/-- The canonical Frechet-level second Wirtinger derivative `u_{zz}`. -/
+/-- The canonical Frechet-level second Wirtinger derivative `u_{zz}`.
+%%handwave
+name:
+  Second holomorphic Wirtinger derivative of a conformal factor
+statement:
+  The field $u_{zz}$ is $\partial_z(u_z)$, computed through real Fréchet derivatives.
+-/
 def wirtingerZZ (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDZValue u.wirtingerZ z
 
-/-- The canonical Frechet-level mixed Wirtinger derivative `u_{z\bar z}`. -/
+/-- The canonical Frechet-level mixed Wirtinger derivative `u_{z\bar z}`.
+%%handwave
+name:
+  Mixed Wirtinger derivative of a conformal factor
+statement:
+  The field $u_{z\bar z}$ is $\partial_{\bar z}(u_z)$, computed through real Fréchet derivatives.
+-/
 def wirtingerZBar (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDBarValue u.wirtingerZ z
 
-/-- The canonical `z` derivative of the mixed Wirtinger derivative `u_{z\bar z}`. -/
+/-- The canonical `z` derivative of the mixed Wirtinger derivative `u_{z\bar z}`.
+%%handwave
+name:
+  Holomorphic derivative of the mixed Wirtinger field
+statement:
+  This field is $\partial_z(u_{z\bar z})$.
+-/
 def dZWirtingerZBar (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDZValue u.wirtingerZBar z
 
-/-- The canonical `\bar z` derivative of `u_{zz}`. -/
+/-- The canonical `\bar z` derivative of `u_{zz}`.
+%%handwave
+name:
+  Antiholomorphic derivative of the second Wirtinger field
+statement:
+  This field is $\partial_{\bar z}(u_{zz})$.
+-/
 def dbarWirtingerZZ (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDBarValue u.wirtingerZZ z
 
-/-- The complexified conformal factor `exp (2u)`. -/
+/-- The complexified conformal factor `exp (2u)`.
+%%handwave
+name:
+  Complexified squared conformal density
+statement:
+  The complexified squared density of $u$ is the function $z\mapsto \exp(2u(z))\in\mathbb C$.
+-/
 def expTwoUComplex (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ Complex.exp (2 * u.complexLogDensity z)
 
-/-- The canonical `z` derivative of the complexified conformal factor. -/
+/-- The canonical `z` derivative of the complexified conformal factor.
+%%handwave
+name:
+  Holomorphic derivative of the squared conformal density
+statement:
+  This field is $\partial_z(e^{2u})$, evaluated through the Fréchet--Wirtinger formula.
+-/
 def dZExpTwoUComplex (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ frechetDZValue u.expTwoUComplex z
 
-/-- The unscaled metric Schwarzian coefficient `u_zz - u_z ^ 2`. -/
+/-- The unscaled metric Schwarzian coefficient `u_zz - u_z ^ 2`.
+%%handwave
+name:
+  Half metric Schwarzian coefficient
+statement:
+  The unscaled metric Schwarzian of $u$ is $q_u=u_{zz}-u_z^2$.
+-/
 def halfSchwarzianCoefficient (u : LocalConformalFactor) : ℂ → ℂ :=
   fun z ↦ u.wirtingerZZ z - u.wirtingerZ z ^ 2
 
-/-- The canonical `∂_{\bar z}` derivative of the unscaled metric Schwarzian coefficient. -/
-def dbarHalfSchwarzianCoefficient (u : LocalConformalFactor) : ℂ → ℂ :=
-  fun z ↦ frechetDBarValue u.halfSchwarzianCoefficient z
-
-/--
+/-- The canonical `∂_{\bar z}` derivative of the unscaled metric Schwarzian coefficient.
 %%handwave
 name:
-  Formula for the half-Schwarzian coefficient
+  Antiholomorphic derivative of the half Schwarzian
 statement:
-  For a conformal log-density \(u\), its half-Schwarzian coefficient is \(q=u_{zz}-u_z²\).
-proof:
-  This is the defining formula.
+  This field is $\partial_{\bar z}(u_{zz}-u_z^2)$, computed through the real Fréchet derivative.
 -/
-@[simp]
-theorem halfSchwarzianCoefficient_apply (u : LocalConformalFactor) (z : ℂ) :
-    u.halfSchwarzianCoefficient z = u.wirtingerZZ z - u.wirtingerZ z ^ 2 :=
-  rfl
+def dbarHalfSchwarzianCoefficient (u : LocalConformalFactor) : ℂ → ℂ :=
+  fun z ↦ frechetDBarValue u.halfSchwarzianCoefficient z
 
 /--
 %%handwave
@@ -1906,6 +1649,12 @@ theorem dZ_wirtingerZBar_eq_of_solvesConstantCurvatureEquation
 /--
 The concrete Wirtinger derivative package is now constructible from the named
 analytic axioms above.
+
+%%handwave
+name:
+  Canonical Wirtinger package for a constant-curvature factor
+statement:
+  If $\Delta u=-K e^{2u}$, the canonical Fréchet--Wirtinger fields of $u$ form a package recording the Laplacian identity, equality of mixed derivatives, and the derivative formula for $e^{2u}$.
 -/
 def wirtingerDerivativePackage
     (u : LocalConformalFactor) (K : ℝ)
@@ -1918,66 +1667,7 @@ def wirtingerDerivativePackage
 
 end LocalConformalFactor
 
-/--
-The local Wirtinger data needed for the Schwarzian calculation.
 
-The intended meanings are:
-
-* `uZ = u_z`;
-* `uZZ = u_zz`;
-* `expTwoU = exp (2u)`, complexified;
-* `dbarUZZ = ∂_{\bar z}(u_zz)`;
-* `dbarSchwarzian = ∂_{\bar z}(u_zz - u_z ^ 2)`.
-
-The two identities come from differentiating
-`u_{z\bar z} = -(K / 4) exp (2u)` and applying the product rule to
-`u_z ^ 2`.
--/
-structure SchwarzianWirtingerCalculationData (u : LocalConformalFactor) (K : ℝ) where
-  /-- The first Wirtinger derivative `u_z`. -/
-  uZ : ℂ → ℂ
-  /-- The second Wirtinger derivative `u_zz`. -/
-  uZZ : ℂ → ℂ
-  /-- The complexified exponential factor `exp (2u)`. -/
-  expTwoU : ℂ → ℂ
-  /-- The Schwarzian/projective-connection coefficient `u_zz - u_z ^ 2`. -/
-  schwarzianCoefficient : ℂ → ℂ
-  /-- The `∂_{\bar z}` derivative of `u_zz`. -/
-  dbarUZZ : ℂ → ℂ
-  /-- The `∂_{\bar z}` derivative of the Schwarzian coefficient. -/
-  dbarSchwarzian : ℂ → ℂ
-  /-- The coefficient is `u_zz - u_z ^ 2`. -/
-  schwarzianCoefficient_eq : ∀ z,
-    schwarzianCoefficient z = uZZ z - uZ z ^ 2
-  /-- Differentiating the constant-curvature equation gives this identity. -/
-  dbarUZZ_eq : ∀ z,
-    z ∈ u.coordinateDomain → dbarUZZ z = -((K : ℂ) / 2) * uZ z * expTwoU z
-  /-- Product rule for `∂_{\bar z}(u_zz - u_z ^ 2)`. -/
-  dbarSchwarzian_eq : ∀ z,
-    z ∈ u.coordinateDomain →
-    dbarSchwarzian z =
-      dbarUZZ z - 2 * uZ z * (-((K : ℂ) / 4) * expTwoU z)
-
-namespace SchwarzianWirtingerCalculationData
-
-/--
-%%handwave
-name:
-  Schwarzian cancellation from the derivative identities
-statement:
-  If \(∂_{bar z}u_{zz}=-(K/2)u_ze^{2u}\) and \(∂_{bar z}(u_{zz}-u_z²)=∂_{bar z}u_{zz}-2u_z(-(K/4)e^{2u})\), then \(∂_{bar z}(u_{zz}-u_z²)=0\).
-proof:
-  Substitute the first identity into the second and cancel.
--/
-theorem dbarSchwarzian_eq_zero
-    {u : LocalConformalFactor} {K : ℝ}
-    (C : SchwarzianWirtingerCalculationData u K) :
-    ∀ z, z ∈ u.coordinateDomain → C.dbarSchwarzian z = 0 := by
-  intro z hz
-  rw [C.dbarSchwarzian_eq z hz, C.dbarUZZ_eq z hz]
-  ring
-
-end SchwarzianWirtingerCalculationData
 
 /--
 Primitive Wirtinger identities for a constant-curvature conformal factor.
@@ -2162,30 +1852,18 @@ structure LocalSchwarzianData (u : LocalConformalFactor) where
 
 namespace LocalSchwarzianData
 
-/-- The underlying coordinate domain of a local Schwarzian coefficient. -/
-def coordinateDomain {u : LocalConformalFactor} (_S : LocalSchwarzianData u) : Set ℂ :=
-  u.coordinateDomain
-
 /--
 The actual Schwarzian coefficient of a hyperbolic developing map is twice the
 unscaled Liouville expression `u_zz - u_z ^ 2`.
+
+%%handwave
+name:
+  Metric Schwarzian coefficient from a half coefficient
+statement:
+  The full metric Schwarzian associated to an unscaled coefficient $q$ is the function $S=2q$.
 -/
 def metricSchwarzianCoefficient (halfCoefficient : ℂ → ℂ) : ℂ → ℂ :=
   fun z ↦ 2 * halfCoefficient z
-
-/--
-%%handwave
-name:
-  Formula for the metric Schwarzian coefficient
-statement:
-  For every coefficient \(q\) and point \(z\), the metric Schwarzian coefficient is \(2q(z)\).
-proof:
-  This is the defining scaling.
--/
-@[simp]
-theorem metricSchwarzianCoefficient_apply (halfCoefficient : ℂ → ℂ) (z : ℂ) :
-    metricSchwarzianCoefficient halfCoefficient z = 2 * halfCoefficient z :=
-  rfl
 
 /--
 %%handwave
@@ -2205,6 +1883,12 @@ theorem hasDBarZeroOn_metricSchwarzianCoefficient
 /--
 Construct local Schwarzian data for the actual metric Schwarzian coefficient
 `2q` from the unscaled Liouville expression `q`.
+
+%%handwave
+name:
+  Local Schwarzian data from a Cauchy--Riemann half coefficient
+statement:
+  If $q=u_{zz}-u_z^2$ on $\Omega$ and $\partial_{\bar z}q=0$ there, then $2q$ is holomorphic and defines the local metric Schwarzian coefficient.
 -/
 def of_halfCoefficient_hasDBarZeroOn {u : LocalConformalFactor} (q : ℂ → ℂ)
     (hformula :
@@ -2219,23 +1903,6 @@ def of_halfCoefficient_hasDBarZeroOn {u : LocalConformalFactor} (q : ℂ → ℂ
     intro z hz
     simp [metricSchwarzianCoefficient, hformula z hz]
   has_dbar_zero_on := hasDBarZeroOn_metricSchwarzianCoefficient hdbar
-
-/--
-Construct local Schwarzian data once the coefficient has been identified and
-its `∂_{\bar z}` derivative has been shown to vanish in the Cauchy-Riemann
-sense.
--/
-def of_hasDBarZeroOn {u : LocalConformalFactor} (q : ℂ → ℂ)
-    (hformula :
-      ∀ z, z ∈ u.coordinateDomain →
-        q z = metricSchwarzianCoefficient u.halfSchwarzianCoefficient z)
-    (hdbar : HasDBarZeroOn q u.coordinateDomain) :
-    LocalSchwarzianData u where
-  coefficient := q
-  holomorphic_on_domain :=
-    analyticOnNhd_of_hasDBarZeroOn u.isOpen_coordinateDomain hdbar
-  coefficient_eq_metricSchwarzian := hformula
-  has_dbar_zero_on := hdbar
 
 end LocalSchwarzianData
 
@@ -2285,50 +1952,20 @@ structure LocalHalfSchwarzianData (u : LocalConformalFactor) where
 
 namespace LocalHalfSchwarzianData
 
-/-- Scale the unscaled Liouville coefficient to the actual Schwarzian data. -/
+/-- Scale the unscaled Liouville coefficient to the actual Schwarzian data.
+%%handwave
+name:
+  Full Schwarzian data from half-Schwarzian data
+statement:
+  Holomorphic half-Schwarzian data $q=u_{zz}-u_z^2$ determine full Schwarzian data with coefficient $2q$.
+-/
 def toLocalSchwarzianData {u : LocalConformalFactor} (H : LocalHalfSchwarzianData u) :
     LocalSchwarzianData u :=
   LocalSchwarzianData.of_halfCoefficient_hasDBarZeroOn H.halfCoefficient
     H.halfCoefficient_eq_wirtinger_formula H.has_dbar_zero_on
 
-/--
-%%handwave
-name:
-  Coefficient obtained by scaling half-Schwarzian data
-statement:
-  If half-Schwarzian data have coefficient \(q\), the associated Schwarzian data have coefficient \(2q\).
-proof:
-  This is the defining conversion to the metric coefficient.
--/
-@[simp]
-theorem toLocalSchwarzianData_coefficient
-    {u : LocalConformalFactor} (H : LocalHalfSchwarzianData u) :
-    H.toLocalSchwarzianData.coefficient =
-      LocalSchwarzianData.metricSchwarzianCoefficient H.halfCoefficient :=
-  rfl
-
 end LocalHalfSchwarzianData
 
-namespace SchwarzianWirtingerCalculationData
-
-/--
-If the symbolic `∂_{\bar z}` field for `u_zz - u_z ^ 2` has been identified
-with the real Cauchy-Riemann condition, the direct Wirtinger calculation
-produces unscaled local Schwarzian data.
--/
-def toLocalHalfSchwarzianData
-    {u : LocalConformalFactor} {K : ℝ}
-    (C : SchwarzianWirtingerCalculationData u K)
-    (hformula :
-      ∀ z, z ∈ u.coordinateDomain →
-        C.schwarzianCoefficient z = u.halfSchwarzianCoefficient z)
-    (hCR : HasDBarZeroOn C.schwarzianCoefficient u.coordinateDomain) :
-    LocalHalfSchwarzianData u where
-  halfCoefficient := C.schwarzianCoefficient
-  halfCoefficient_eq_wirtinger_formula := hformula
-  has_dbar_zero_on := hCR
-
-end SchwarzianWirtingerCalculationData
 
 namespace SchwarzianProductRuleData
 
@@ -2336,6 +1973,12 @@ namespace SchwarzianProductRuleData
 If the symbolic `∂_{\bar z}` field for `u_zz - u_z ^ 2` has been identified
 with the real Cauchy-Riemann condition, the product-rule calculation produces
 unscaled local Schwarzian data.
+
+%%handwave
+name:
+  Half-Schwarzian data from the product-rule package
+statement:
+  A product-rule package whose coefficient equals $u_{zz}-u_z^2$ and satisfies the Cauchy--Riemann equation determines local half-Schwarzian data.
 -/
 def toLocalHalfSchwarzianData
     {u : LocalConformalFactor} {K : ℝ}
@@ -2356,6 +1999,12 @@ namespace LocalConformalFactor.WirtingerDerivativePackage
 /--
 Concrete Frechet/Wirtinger data instantiate the older symbolic
 constant-curvature identity package.
+
+%%handwave
+name:
+  Constant-curvature identities from canonical Wirtinger fields
+statement:
+  A canonical Wirtinger package supplies the symbolic fields $u_z$, $u_{z\bar z}$, $\partial_z u_{z\bar z}$, $e^{2u}$, and their constant-curvature derivative identities.
 -/
 def toConstantCurvatureWirtingerIdentityData
     {u : LocalConformalFactor} {K : ℝ}
@@ -2378,6 +2027,12 @@ def toConstantCurvatureWirtingerIdentityData
 /--
 Concrete Frechet/Wirtinger data instantiate the symbolic product-rule package
 used by the Schwarzian cancellation theorem.
+
+%%handwave
+name:
+  Schwarzian product-rule data from canonical Wirtinger fields
+statement:
+  A canonical Wirtinger package supplies $u_{zz}$, $q=u_{zz}-u_z^2$, and the product-rule expression for $\partial_{\bar z}q$.
 -/
 def toSchwarzianProductRuleData
     {u : LocalConformalFactor} {K : ℝ}
@@ -2395,6 +2050,12 @@ def toSchwarzianProductRuleData
 
 /--
 The half-Schwarzian data produced by a concrete Frechet/Wirtinger package.
+
+%%handwave
+name:
+  Half-Schwarzian data from constant curvature
+statement:
+  If $u$ satisfies $\Delta u=-K e^{2u}$, its canonical Wirtinger identities show that $q=u_{zz}-u_z^2$ satisfies $\partial_{\bar z}q=0$, producing local half-Schwarzian data.
 -/
 def toLocalHalfSchwarzianData
     {u : LocalConformalFactor} {K : ℝ}
@@ -2431,6 +2092,12 @@ theorem toLocalSchwarzianData_originalMetricIdentification
 /--
 The concrete Frechet-Wirtinger package produces local metric Schwarzian data,
 not merely an anonymous holomorphic coefficient.
+
+%%handwave
+name:
+  Metric Schwarzian data from constant-curvature Wirtinger fields
+statement:
+  A canonical Wirtinger package for a constant-curvature conformal factor determines holomorphic local Schwarzian data with coefficient $2(u_{zz}-u_z^2)$ together with its metric identification.
 -/
 def toLocalMetricSchwarzianData
     {u : LocalConformalFactor} {K : ℝ}

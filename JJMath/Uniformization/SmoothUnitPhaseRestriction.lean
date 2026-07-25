@@ -60,7 +60,13 @@ private theorem contMDiffCodRestrictOpen
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- The nested open subset `V` inside `U` is diffeomorphic to `U ∩ V`. -/
+/--
+%%handwave
+name: Diffeomorphism from a nested open subtype to an intersection
+statement:
+  The copy of $V$ inside $U$ is canonically diffeomorphic to the open
+  intersection $U\cap V$.
+-/
 noncomputable def openInOpenDiffeomorph
     (U V : TopologicalSpace.Opens M) :
     openInOpen U V ≃ₘ⟮I, I⟯ (U ⊓ V : TopologicalSpace.Opens M) := by
@@ -152,7 +158,14 @@ theorem nested_restriction_eq_pullback_intersection
   funext i
   exact congrArg (fun L => L (q i)) (hleft.trans hright.symm)
 
-/-- Restrict a smooth circle primitive to an open submanifold. -/
+/--
+%%handwave
+name: Restrict a smooth circle primitive to an open submanifold
+statement:
+  If $P:M\to S^1$ is a smooth circle primitive of a one-form $\omega$ and
+  $U\subseteq M$ is open, define its restriction on $U$ to have phase
+  $P|_U$ and underlying one-form $\omega|_U$.
+-/
 noncomputable def SmoothCirclePrimitive.restrictToOpen
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -215,13 +228,25 @@ variable {H' : Type*} [TopologicalSpace H']
 variable {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
 variable (J : ModelWithCorners ℝ E' H') [IsManifold J ∞ N]
 
-/-- The inverse image of an open set under a diffeomorphism. -/
+/--
+%%handwave
+name: The inverse image of an open set under a diffeomorphism
+statement:
+  For a diffeomorphism $\varphi:N\to M$ and an open set $U\subseteq M$,
+  define the open subset $\varphi^{-1}(U)\subseteq N$.
+-/
 def diffeomorphPreimageOpen
     (phi : N ≃ₘ⟮J, I⟯ M) (U : TopologicalSpace.Opens M) :
     TopologicalSpace.Opens N :=
   ⟨phi ⁻¹' U, U.isOpen.preimage phi.continuous⟩
 
-/-- A diffeomorphism restricts to a diffeomorphism over an open set. -/
+/--
+%%handwave
+name: A diffeomorphism restricts to a diffeomorphism over an open set
+statement:
+  A diffeomorphism $\varphi:N\to M$ restricts to the diffeomorphism
+  $\varphi:\varphi^{-1}(U)\to U$ over every open set $U\subseteq M$.
+-/
 noncomputable def diffeomorphRestrictPreimageOpen
     (phi : N ≃ₘ⟮J, I⟯ M) (U : TopologicalSpace.Opens M) :
     diffeomorphPreimageOpen I J phi U ≃ₘ⟮J, I⟯ U := by
@@ -309,7 +334,14 @@ theorem restrict_pullbackDiffeomorph_eq_pullback_restrict
   funext i
   exact congrArg (fun L => L (q i)) (hleft.trans hright.symm)
 
-/-- Pull a smooth circle primitive back along a diffeomorphism. -/
+/--
+%%handwave
+name: Pull a smooth circle primitive back along a diffeomorphism
+statement:
+  If $P:M\to S^1$ is a smooth circle primitive of $\omega$ and
+  $\varphi:N\to M$ is a diffeomorphism, define the pulled-back primitive
+  with phase $P\circ\varphi$ and one-form $\varphi^*\omega$.
+-/
 noncomputable def SmoothCirclePrimitive.pullbackDiffeomorph
     {omega : SmoothForms (I := I) (M := M) ℝ 1}
     (P : SmoothCirclePrimitive I omega)
@@ -357,7 +389,13 @@ section NestedOpen
 
 variable {U W : TopologicalSpace.Opens M}
 
-/-- If `W ⊆ U`, the copy of `W` inside `U` is diffeomorphic to `W`. -/
+/--
+%%handwave
+name: Diffeomorphism from an included open subtype to its carrier
+statement:
+  If $W\subseteq U$, the copy of $W$ inside $U$ is canonically
+  diffeomorphic to $W$.
+-/
 noncomputable def openInOpenOfLEDiffeomorph
     (hWU : W ≤ U) : openInOpen U W ≃ₘ⟮I, I⟯ W := by
   let toFun : openInOpen U W → W := fun x => ⟨((x : U) : M), x.2⟩
@@ -435,7 +473,14 @@ theorem pullback_nested_open_restriction_eq_restrictOfLE
   funext i
   exact congrArg (fun L => L (q i)) hcomp
 
-/-- Restrict a smooth circle primitive along an inclusion of ambient open sets. -/
+/--
+%%handwave
+name: Restrict a smooth circle primitive along an inclusion of ambient open sets
+statement:
+  If $W\subseteq U\subseteq M$ are open and $P:U\to S^1$ is a smooth
+  circle primitive of $\omega$, define its restriction to $W$ with phase
+  $P|_W$ and one-form $\omega|_W$.
+-/
 noncomputable def SmoothCirclePrimitive.restrictOfLE
     (hWU : W ≤ U)
     {omega : SmoothForms (I := I) (M := U) ℝ 1}
@@ -496,8 +541,14 @@ theorem SmoothCirclePrimitive.restrictOfLE_phase
 
 end NestedOpen
 
-/-- The exponential of a global smooth real argument is a circle primitive
-of its differential. -/
+/--
+%%handwave
+name: Circle primitive obtained from a global real argument
+statement:
+  For a smooth function $\theta:M\to\mathbb R$, the phase
+  $P(x)=e^{i\theta(x)}$ is a smooth circle-valued primitive of the exact
+  one-form $d\theta$.
+-/
 noncomputable def smoothCirclePrimitiveOfGlobalArgument
     (theta : C^∞⟮I, M; ℝ⟯) :
     SmoothCirclePrimitive I

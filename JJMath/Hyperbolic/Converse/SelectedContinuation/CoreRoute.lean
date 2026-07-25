@@ -21,6 +21,12 @@ variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 /--
 The exact remaining selected PSL continuation theorem for the canonical
 fixed-left-source componentwise local-transition atlas.
+
+%%handwave
+name: The exact remaining selected PSL continuation theorem for the canonical fixed-left-source componentwise local-transition atlas
+statement:
+  The exact remaining selected PSL continuation theorem for the canonical fixed-left-source
+  componentwise local-transition atlas.
 -/
 def SelectedComponentwiseLeftSourcePSLContinuationTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -33,6 +39,12 @@ def SelectedComponentwiseLeftSourcePSLContinuationTheorem
 /--
 The homotopy-grid walk boundary for the canonical fixed-left-source
 componentwise local-transition atlas.
+
+%%handwave
+name: The homotopy-grid walk principle for the canonical fixed-left-source componentwise local-transition atlas
+statement:
+  The homotopy-grid walk principle for the canonical fixed-left-source componentwise
+  local-transition atlas.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrincipleTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -44,6 +56,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyGridWalkPrinciple
 
 /--
 The elementary homotopy-grid move boundary for the componentwise PSL route.
+
+%%handwave
+name: The elementary homotopy-grid move principle for the componentwise PSL route
+statement:
+  The elementary homotopy-grid move principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffElementaryGridMoveWalkPrincipleTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -55,6 +72,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffElementaryGridMoveWalkPri
 
 /--
 The one-column terminal-value witness boundary for the componentwise PSL route.
+
+%%handwave
+name: The one-column terminal-value witness principle for the componentwise PSL route
+statement:
+  The one-column terminal-value witness principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnValueWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -67,6 +89,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnV
 /--
 The decomposed one-column terminal-value witness boundary for the componentwise
 PSL route.
+
+%%handwave
+name: The decomposed one-column terminal-value witness principle for the componentwise PSL route
+statement:
+  The decomposed one-column terminal-value witness principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -79,6 +106,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnD
 /--
 The exact cut-reparameterization transfer boundary for the componentwise PSL
 route.
+
+%%handwave
+name: The exact cut-reparameterization transfer principle for the componentwise PSL route
+statement:
+  The exact cut-reparameterization transfer principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -91,6 +123,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnC
 /--
 The sharp explicit cut-reparameterization witness boundary for the
 componentwise PSL route.
+
+%%handwave
+name: The sharp explicit cut-reparameterization witness principle for the componentwise PSL route
+statement:
+  The sharp explicit cut-reparameterization witness principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -100,7 +137,13 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnC
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/-- The monotone subpath-merge branch-data boundary for the componentwise route. -/
+/-- The monotone subpath-merge branch-data boundary for the componentwise route.
+
+%%handwave
+name: The monotone subpath-merge branch-data principle for the componentwise route
+statement:
+  The monotone subpath-merge branch-data principle for the componentwise route.
+-/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] : Prop :=
@@ -109,7 +152,13 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotoneSubpathMergeBranc
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/-- The normalized unit-split branch-data boundary for the componentwise route. -/
+/-- The normalized unit-split branch-data boundary for the componentwise route.
+
+%%handwave
+name: The normalized unit-split branch-data principle for the componentwise route
+statement:
+  The normalized unit-split branch-data principle for the componentwise route.
+-/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] : Prop :=
@@ -118,7 +167,13 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffUnitSplitBranchDataWitnes
     (metricBoundPartialConverseComponentwiseLocalTransitionModels
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
-/-- The interior normalized unit-split branch-data boundary for the componentwise route. -/
+/-- The interior normalized unit-split branch-data boundary for the componentwise route.
+
+%%handwave
+name: The interior normalized unit-split branch-data principle for the componentwise route
+statement:
+  The interior normalized unit-split branch-data principle for the componentwise route.
+-/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDataWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] : Prop :=
@@ -128,7 +183,13 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffInteriorUnitSplitBranchDa
       pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem)
 
 
-/-- The monotone prefixed subpath-merge value boundary for the componentwise route. -/
+/-- The monotone prefixed subpath-merge value boundary for the componentwise route.
+
+%%handwave
+name: The monotone prefixed subpath-merge value principle for the componentwise route
+statement:
+  The monotone prefixed subpath-merge value principle for the componentwise route.
+-/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] : Prop :=
@@ -140,7 +201,13 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMonotonePrefixedSubpathMe
 
 
 
-/-- The endpoint-normalization boundary for raw-to-public cut paths. -/
+/-- The endpoint-normalization boundary for raw-to-public cut paths.
+
+%%handwave
+name: The endpoint-normalization principle for raw-to-normalized cut paths
+statement:
+  The endpoint-normalization principle for raw-to-normalized cut paths.
+-/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] : Prop :=
@@ -152,6 +219,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyStripCutEndpointN
 
 /--
 The one-column chart-grid replacement boundary for the componentwise PSL route.
+
+%%handwave
+name: The one-column chart-grid replacement principle for the componentwise PSL route
+statement:
+  The one-column chart-grid replacement principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnMovePrincipleTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -163,6 +235,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripColumnM
 
 /--
 The one-strip chart-grid replacement boundary for the componentwise PSL route.
+
+%%handwave
+name: The one-strip chart-grid replacement principle for the componentwise PSL route
+statement:
+  The one-strip chart-grid replacement principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripMovePrincipleTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -174,6 +251,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartStripMovePri
 
 /--
 The chart-grid local replacement boundary for the componentwise PSL route.
+
+%%handwave
+name: The chart-grid local replacement principle for the componentwise PSL route
+statement:
+  The chart-grid local replacement principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartGridMovePrincipleTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -186,6 +268,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffHomotopyChartGridMovePrin
 /--
 The same-path terminal-value uniqueness boundary for the componentwise PSL
 route.
+
+%%handwave
+name: The same-path terminal-value uniqueness principle for the componentwise PSL route
+statement:
+  The same-path terminal-value uniqueness principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffSamePathTerminalValueUniquenessTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -198,6 +285,11 @@ def SelectedComponentwiseLeftSourcePathBasedWeakHandoffSamePathTerminalValueUniq
 /--
 The common aligned mutual vertex-refinement boundary for the componentwise PSL
 route.
+
+%%handwave
+name: The common aligned mutual vertex-refinement principle for the componentwise PSL route
+statement:
+  The common aligned mutual vertex-refinement principle for the componentwise PSL route.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -213,6 +305,14 @@ The own-split parameter-alignment boundary for the componentwise PSL route.
 This is the finite ordered-subdivision statement that remains after the
 length count has been proven: mutual endpoint-chart insertion plus one plain
 split along each side's original vertices should give the same parameter list.
+
+%%handwave
+name: The own-split parameter-alignment principle for the componentwise PSL route
+statement:
+  The own-split parameter-alignment principle for the componentwise PSL route. This is the
+  finite ordered-subdivision statement that remains after the length count has been proven:
+  mutual endpoint-chart insertion plus one plain split along each side's original vertices
+  should give the same parameter list.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -227,6 +327,12 @@ The own-split parameter-permutation boundary for the componentwise PSL route.
 
 Sortedness of skeleton parameter lists turns this multiset statement into the
 own-split alignment theorem.
+
+%%handwave
+name: The own-split parameter-permutation principle for the componentwise PSL route
+statement:
+  The own-split parameter-permutation principle for the componentwise PSL route. Sortedness of
+  skeleton parameter lists turns this multiset statement into the own-split alignment theorem.
 -/
 def SelectedComponentwiseLeftSourcePathBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationTheorem
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -446,7 +552,7 @@ statement:
   $\operatorname{dev}:\widetilde X_{x_0}\to\mathbb H$ for $g$, whose based
   holonomy representation takes values in $\mathrm{PSL}_2(\mathbb R)$.
 proof:
-  [Solve the local Schwarzian problem to obtain metric-recovering upper-half-plane branches with real Möbius transitions](lean:JJMath.solveLocalSchwarzianProblem). Continue a chosen branch along paths from $x_0$ by composing these transitions. A finite homotopy grid shows that the terminal branch depends only on the endpoint-fixed homotopy class, so continuation defines an equivariant map on $\widetilde X_{x_0}$. Projectivizing this map and composing it with local sections of the covering projection produces the projective atlas; real transition maps give the stated holonomy.
+  Apply [there is a projective structure with transition maps in $\mathrm{PSL}_2(\mathbb R)$ whose underlying complex projective structure is induced by $g$](lean:JJMath.HyperbolicMetric.exists_psl2r_projective_structure_induced_by_metric), and forget the restriction on its transition maps. The inducing developing map supplies [a basepoint at which the resulting complex projective structure has holonomy in $\mathrm{PSL}_2(\mathbb R)$](lean:JJMath.ComplexProjectiveStructure.exists_has_psl2r_holonomy_of_isInducedByHyperbolicMetric).
 tags:
   milestone
 -/
@@ -455,29 +561,12 @@ theorem complete_partial_converse_theorem :
       ∃ P : ComplexProjectiveStructure X,
         P.IsInducedByHyperbolicMetric g ∧
           ∃ x₀ : X, HasPSL2RHolonomy x₀ P := by
-  let solveSchwarzian :
-      HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :=
-    hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem
-  let propagateRealMobiusTransitions :
-      PointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem
-        X :=
-    pointedHyperbolicLocalChartRealMobiusTransitionExtendsOnOverlapComponentTheorem
-  let continueAnalytically :
-      SelectedLocalTransitionModelContinuationDerivedRegularityCanonicalCoverMetricFieldTheoremPSL X
-        (metricBoundPartialConverseComponentwiseLocalTransitionModels
-          propagateRealMobiusTransitions) :=
-    selectedComponentwiseLeftSourcePSLContinuation
-  let assembleProjectiveAtlas :
-      ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
-    projectiveAtlasFromProjectivizedDevelopingMapTheorem
+  intro g
+  rcases exists_psl2r_projective_structure_induced_by_metric g with ⟨P, hP⟩
   exact
-    complete_partial_converse_theorem_of_branch_pre_data_selection_pointed_transitions_component_extension_selected_continuation_psl_projective_atlas
-      (canonicalChartedCurvatureBranchPreDataSelectionTheorem_of_localRealBranches
-        solveSchwarzian)
-      hyperbolicLocalChartsAdmitPointedRealMobiusTransitionTheorem
-      propagateRealMobiusTransitions
-      continueAnalytically
-      assembleProjectiveAtlas
+    ⟨P.toComplexProjectiveStructure, hP,
+      ComplexProjectiveStructure.exists_has_psl2r_holonomy_of_isInducedByHyperbolicMetric
+        P.toComplexProjectiveStructure hP⟩
 
 end HyperbolicMetric
 

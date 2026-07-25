@@ -20,6 +20,12 @@ open scoped Manifold Topology
 /--
 The logarithmic conformal factor determined by a squared-density
 representative in a complex chart.
+
+%%handwave
+name:
+  Logarithmic conformal factor of a squared density
+statement:
+  For a squared conformal density $\rho:\mathbb C\to\mathbb R$, its logarithmic conformal factor is the function $u(z)=\tfrac12\log\rho(z)$.
 -/
 noncomputable def logDensityFromDensitySq (ρ : ℂ → ℝ) (z : ℂ) : ℝ :=
   Real.log (ρ z) / 2
@@ -27,6 +33,12 @@ noncomputable def logDensityFromDensitySq (ρ : ℂ → ℝ) (z : ℂ) : ℝ :=
 /--
 The Gaussian-curvature expression computed from a chartwise squared density:
 `K = - exp (-2u) Δu`, where `u = log ρ / 2`.
+
+%%handwave
+name:
+  Gaussian curvature of a squared conformal density
+statement:
+  For a squared density $\rho$ with logarithmic factor $u=\tfrac12\log\rho$, the associated chartwise Gaussian-curvature expression is $K_\rho(z)=-e^{-2u(z)}\Delta u(z)$.
 -/
 noncomputable def gaussianCurvatureOfDensitySq (ρ : ℂ → ℝ) (z : ℂ) : ℝ :=
   - Real.exp (-(2 * logDensityFromDensitySq ρ z)) *
@@ -127,7 +139,13 @@ namespace ConformalMetric
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 
-/-- The squared density in a chosen chart. -/
+/-- The squared density in a chosen chart.
+%%handwave
+name:
+  Squared conformal density in a chart
+statement:
+  Given a conformal metric $g$ and a complex chart $e$, $\rho_{g,e}:\mathbb C\to\mathbb R$ denotes the ambient representative of the squared density of $g$ in the coordinate $e$.
+-/
 def densitySqInChart (g : ConformalMetric X)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) : ℂ → ℝ :=
   g.chartedDensity.densitySqInChart e he
@@ -164,77 +182,55 @@ theorem densitySq_transition (g : ConformalMetric X)
         Complex.normSq (deriv (fun w : ℂ ↦ e' (e.symm w)) z) :=
   g.chartedDensity.densitySq_transition e he e' he' z hz hz'
 
-/-- Gaussian curvature computed from the density in a chosen chart. -/
+/-- Gaussian curvature computed from the density in a chosen chart.
+%%handwave
+name:
+  Gaussian curvature in a complex chart
+statement:
+  For a conformal metric $g$ and a complex chart $e$, the chartwise curvature is the curvature expression $K_{\rho_{g,e}}$ of its squared coordinate density.
+-/
 noncomputable def gaussianCurvatureInChart (g : ConformalMetric X)
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) : ℂ → ℝ :=
   gaussianCurvatureOfDensitySq (g.densitySqInChart e he)
 
-/-- Smoothness of the squared density in complex charts. -/
+/-- Smoothness of the squared density in complex charts.
+%%handwave
+name:
+  Chartwise smoothness of a conformal metric
+statement:
+  A conformal metric is chartwise smooth when every squared density $\rho_{g,e}$ is smooth on the image of its complex chart $e$.
+-/
 def smooth_in_charts (g : ConformalMetric X) : Prop :=
   ∀ e he, ContDiffOn ℝ ⊤ (g.densitySqInChart e he) e.target
 
-/--
-The finite `C^3` regularity used by local Liouville/Schwarzian formulas follows
-from the stored smoothness of the metric.
-
+/-- The Gaussian-curvature predicate.
 %%handwave
 name:
-  Smooth chart densities are $C^3$
+  Constant Gaussian curvature
 statement:
-  If every chartwise squared density of a conformal metric $g$ is smooth on the chart image, then every such density is $C^3$ there.
-proof:
-  Infinite differentiability restricts to differentiability of order three by monotonicity of the differentiability order.
+  A conformal metric $g$ has curvature $K$ when, in every complex chart $e$, its chartwise Gaussian curvature equals $K$ at every point of the chart image.
 -/
-theorem smooth_in_charts_three (g : ConformalMetric X)
-    (h : g.smooth_in_charts) :
-    ∀ e he, ContDiffOn ℝ 3 (g.densitySqInChart e he) e.target :=
-  fun e he ↦ (h e he).of_le le_top
-
-/-- The Gaussian-curvature predicate. -/
 def curvature_eq (g : ConformalMetric X) (K : ℝ) : Prop :=
   ∀ (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X) z,
     z ∈ e.target → g.gaussianCurvatureInChart e he z = K
 
-/--
-For a metric whose computed chartwise curvature is a fixed constant, the
-computed curvature is independent of the chart.  This is the invariant form
-used by the hyperbolic/Liouville route.
-
+/-- Smoothness predicate for the chartwise squared-density metric representation.
 %%handwave
 name:
-  Chart independence of a prescribed constant curvature
+  Smooth conformal metric
 statement:
-  Let $g$ have constant computed curvature $K$. If $e,e'$ are complex charts and $z$ represents the same surface point in both, then $K_{g,e}(z)=K_{g,e'}(e'(e^{-1}z))$.
-proof:
-  The constant-curvature hypothesis identifies each side separately with $K$; the coordinate-domain assumptions justify applying it in both charts.
+  A conformal metric is smooth precisely when its squared conformal densities are smooth in all complex charts.
 -/
-theorem gaussianCurvatureInChart_eq_of_curvature_eq (g : ConformalMetric X)
-    {K : ℝ} (hK : g.curvature_eq K)
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    (e' : OpenPartialHomeomorph X ℂ) (he' : e' ∈ atlas ℂ X) {z : ℂ}
-    (hz : z ∈ e.target) (hz' : e.symm z ∈ e'.source) :
-    g.gaussianCurvatureInChart e he z =
-      g.gaussianCurvatureInChart e' he' (e' (e.symm z)) := by
-  rw [hK e he z hz, hK e' he' (e' (e.symm z)) (e'.map_source hz')]
-
-/-- Smoothness predicate for the chartwise squared-density metric representation. -/
 def IsSmooth (g : ConformalMetric X) : Prop :=
   g.smooth_in_charts
 
-/-- A smooth conformal metric has the finite `C^3` regularity needed downstream.
+/-- The metric has Gaussian curvature `-1`.
 %%handwave
 name:
-  A smooth conformal metric has $C^3$ chart densities
+  Conformal metric of curvature minus one
 statement:
-  For every smooth conformal metric $g$ and every complex chart $e$, the squared density $\rho_{g,e}$ is $C^3$ on the image of $e$.
-proof:
-  Apply [smooth chart densities are $C^3$](lean:JJMath.ConformalMetric.smooth_in_charts_three) to the smoothness assumption.
+  A conformal metric has curvature minus one when its Gaussian curvature is identically $-1$ in every complex chart.
 -/
-theorem IsSmooth.contDiffOn_three (g : ConformalMetric X) (h : g.IsSmooth) :
-    ∀ e he, ContDiffOn ℝ 3 (g.densitySqInChart e he) e.target :=
-  g.smooth_in_charts_three h
-
-/-- The metric has Gaussian curvature `-1`. -/
 def HasCurvatureMinusOne (g : ConformalMetric X) : Prop :=
   g.curvature_eq (-1)
 
@@ -251,6 +247,12 @@ The pullback of a conformal metric to the path-homotopy universal cover.
 For a cover chart, the squared density is the base metric density in the
 extracted base chart.  The transition law follows because cover coordinate
 changes are locally the same as the corresponding base coordinate changes.
+
+%%handwave
+name:
+  Pullback conformal metric on the path universal cover
+statement:
+  If $p:\widetilde X\to X$ is the path-homotopy universal covering and $g$ is a conformal metric on $X$, the pullback metric $p^*g$ has in each covering chart the squared density of $g$ in the corresponding base chart.
 -/
 noncomputable def pullbackConformalMetric (g : ConformalMetric X) :
     ConformalMetric (PathHomotopyUniversalCover X x₀) where
@@ -341,6 +343,12 @@ end HyperbolicMetric
 Chartwise squared-density expression for the statement that `source` is the
 pullback of `target` along `f`, at one point and in one chosen source/target
 chart pair.
+
+%%handwave
+name:
+  Pointwise chart criterion for pulling back a conformal metric
+statement:
+  For $f:X\to Y$, source and target metrics, compatible charts at $x$ and $f(x)$, this predicate asserts that the coordinate map is differentiable near $x$ and that $\rho_X(z)=\rho_Y(f(z))|f'(z)|^2$ at the coordinate of $x$.
 -/
 def PullsBackMetricInChartsAt {X Y : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [TopologicalSpace Y] [ChartedSpace ℂ Y] (f : X → Y)
@@ -552,63 +560,6 @@ theorem comp
         rw [hderiv, Complex.normSq_mul]
         ring
 
-/-- The identity map has the concrete pullback witness between any two charts of one metric.
-%%handwave
-name:
-  The identity map pulls a conformal metric back to itself
-statement:
-  For any conformal metric $g$, two complex charts $e,e'$, and $x\in X$, the identity map has a chartwise pullback witness from $g$ to itself at $x$.
-proof:
-  Use the coordinate transition $e'\circ e^{-1}$ on the overlap of the chart images. Its differentiability follows from the complex-manifold transition law, and the squared-density equality is exactly the conformal coordinate-change formula.
--/
-theorem id_map
-    [ComplexOneManifold X]
-    (g : ConformalMetric X)
-    (sourceChart : OpenPartialHomeomorph X ℂ)
-    (sourceChart_mem_atlas : sourceChart ∈ atlas ℂ X)
-    (targetChart : OpenPartialHomeomorph X ℂ)
-    (targetChart_mem_atlas : targetChart ∈ atlas ℂ X) (x : X) :
-    PullsBackMetricInChartsAt (fun x : X => x) g g
-      sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x := by
-  intro hx htargetx
-  let U : Set ℂ := sourceChart.target ∩ sourceChart.symm ⁻¹' targetChart.source
-  let localMap : ℂ → ℂ := fun z => targetChart (sourceChart.symm z)
-  have hzx_target : sourceChart x ∈ sourceChart.target :=
-    sourceChart.map_source hx
-  have hsymm_x : sourceChart.symm (sourceChart x) = x :=
-    sourceChart.left_inv hx
-  have hzx_targetChart_source :
-      sourceChart.symm (sourceChart x) ∈ targetChart.source := by
-    simpa [hsymm_x] using htargetx
-  refine
-    ⟨U, localMap, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · exact sourceChart.isOpen_inter_preimage_symm targetChart.open_source
-  · exact ⟨hzx_target, hzx_targetChart_source⟩
-  · intro z hz
-    exact hz.1
-  · intro z hz
-    exact sourceChart.map_target hz.1
-  · intro z hz
-    exact hz.2
-  · intro z hz
-    exact targetChart.map_source hz.2
-  · intro z hz
-    rfl
-  · have hsymm_mdiff :
-        MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) sourceChart.symm (sourceChart x) :=
-      mdifferentiableAt_atlas_symm sourceChart_mem_atlas hzx_target
-    have htarget_mdiff :
-        MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ)
-          targetChart (sourceChart.symm (sourceChart x)) := by
-      simpa [hsymm_x] using
-        mdifferentiableAt_atlas targetChart_mem_atlas htargetx
-    exact (htarget_mdiff.comp (sourceChart x) hsymm_mdiff).differentiableAt
-  · have htransition :=
-      g.densitySq_transition sourceChart sourceChart_mem_atlas
-        targetChart targetChart_mem_atlas (z := sourceChart x)
-        hzx_target hzx_targetChart_source
-    simpa [localMap, hsymm_x] using htransition
-
 end PullsBackMetricInChartsAt
 
 /--
@@ -655,25 +606,6 @@ theorem in_charts_at (h : PullsBackMetric f target source)
     PullsBackMetricInChartsAt f target source
       sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x :=
   h.in_charts sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x
-
-/-- Pullback-metric identities are unchanged by replacing the map locally at every point.
-%%handwave
-name:
-  Local equality preserves global metric pullback
-statement:
-  Let $f,f':X\to Y$ agree on a neighborhood of every $x\in X$. If $f^*g_Y=g_X$, then $(f')^*g_Y=g_X$.
-proof:
-  For each pair of charts and each point, apply [local invariance of a chartwise metric pullback](lean:JJMath.PullsBackMetricInChartsAt.congr_of_eventuallyEq_nhds) to the chartwise witness for $f$.
--/
-theorem congr_of_eventuallyEq_nhds {f' : X → Y}
-    (h : PullsBackMetric f target source)
-    (hff' : ∀ x, f =ᶠ[nhds x] f') :
-    PullsBackMetric f' target source where
-  in_charts := by
-    intro sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x
-    exact PullsBackMetricInChartsAt.congr_of_eventuallyEq_nhds
-      (h.in_charts_at sourceChart sourceChart_mem_atlas targetChart targetChart_mem_atlas x)
-      (hff' x)
 
 end PullsBackMetric
 

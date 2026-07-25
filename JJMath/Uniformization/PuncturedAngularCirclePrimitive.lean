@@ -19,8 +19,13 @@ open JJMath.Manifold
 
 noncomputable section
 
-/-- The class obtained by restricting a closed form on a punctured surface to
-the punctured part of a coordinate disk. -/
+/--
+%%handwave
+name: The class obtained by restricting a closed form on a punctured surface to the punctured part of a coordinate disk
+statement:
+  The class obtained by restricting a closed form on a punctured surface to
+  the punctured part of a coordinate disk.
+-/
 noncomputable def puncturedCoordinateDiskDeRhamH1Class
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -42,8 +47,13 @@ noncomputable def puncturedCoordinateDiskDeRhamH1Class
     ((DeRhamExactClosedForms (I := SurfaceRealModel)
       (M := puncturedSurfaceOpen p) (A := ℝ) 1).mkQ eta)
 
-/-- A circle primitive of one global puncture class transfers to every closed
-one-form with the same class on a punctured coordinate disk. -/
+/--
+%%handwave
+name: A circle primitive of one global puncture class transfers to every closed one-form with the same class on a punctured coordinate disk
+statement:
+  A circle primitive of one global puncture class transfers to every closed
+  one-form with the same class on a punctured coordinate disk.
+-/
 noncomputable def puncturedAngularCirclePrimitive_of_local_class
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -87,8 +97,13 @@ noncomputable def puncturedAngularCirclePrimitive_of_local_class
     PtauScaled hscaled
 
 set_option synthInstance.maxHeartbeats 100000 in
-/-- Reversing the orientation of the known puncture phase is harmless: local
-classes that agree up to sign still transfer a circle primitive. -/
+/--
+%%handwave
+name: Reversing the orientation of the known puncture phase is harmless: local classes that agree up to sign still transfer a circle primitive
+statement:
+  Reversing the orientation of the known puncture phase is harmless: local
+  classes that agree up to sign still transfer a circle primitive.
+-/
 noncomputable def puncturedAngularCirclePrimitive_of_local_class_eq_or_neg
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
@@ -130,157 +145,6 @@ noncomputable def puncturedAngularCirclePrimitive_of_local_class_eq_or_neg
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/-- A single normalized period on the punctured coordinate annulus suffices
-to transfer a global circle primitive to the angular form. -/
-noncomputable def puncturedAngularCirclePrimitive_of_local_period_eq_or_neg
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [Subsingleton
-      (DeRhamCohomology (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    (p : X) (D : ClosedCoordinateDisk X)
-    (hp : p ∈ D.expandedOpenDisk D.closedRadius)
-    (eta tau : DeRhamClosedForms (I := SurfaceRealModel)
-      (M := puncturedSurfaceOpen p) (A := ℝ) 1)
-    (phi : (puncturedSurfaceOpen p ⊓
-        ⟨D.expandedOpenDisk D.closedRadius,
-          D.expandedOpenDisk_isOpen D.closedRadius⟩ :
-          TopologicalSpace.Opens X) ≃ₘ⟮SurfaceRealModel,
-            AnnularCylinderModel⟯ Circle × ℝ)
-    (v : Circle)
-    (c : SingularChain (I := SurfaceRealModel)
-      (M := (puncturedSurfaceOpen p ⊓
-        ⟨D.expandedOpenDisk D.closedRadius,
-          D.expandedOpenDisk_isOpen D.closedRadius⟩ :
-            TopologicalSpace.Opens X)) 1 ∞)
-    (hcycle : boundary (I := SurfaceRealModel) c = 0)
-    (hperiod :
-      integrateSmoothChain (I := SurfaceRealModel)
-          (deRhamClosedFormsRestrictionOfLE
-            (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 eta).1 c =
-          integrateSmoothChain (I := SurfaceRealModel)
-            (deRhamClosedFormsRestrictionOfLE
-              (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 tau).1 c ∨
-      integrateSmoothChain (I := SurfaceRealModel)
-          (deRhamClosedFormsRestrictionOfLE
-            (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 eta).1 c =
-          -integrateSmoothChain (I := SurfaceRealModel)
-            (deRhamClosedFormsRestrictionOfLE
-              (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 tau).1 c)
-    (htauPeriod :
-      integrateSmoothChain (I := SurfaceRealModel)
-        (deRhamClosedFormsRestrictionOfLE
-          (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 tau).1 c ≠ 0)
-    (Ptau : SmoothCirclePrimitive SurfaceRealModel
-      ((2 * Real.pi) • tau.1)) :
-    SmoothCirclePrimitive SurfaceRealModel ((2 * Real.pi) • eta.1) := by
-  let W : TopologicalSpace.Opens X := puncturedSurfaceOpen p ⊓
-    ⟨D.expandedOpenDisk D.closedRadius,
-      D.expandedOpenDisk_isOpen D.closedRadius⟩
-  let etaW : DeRhamClosedForms (I := SurfaceRealModel)
-      (M := W) (A := ℝ) 1 :=
-    deRhamClosedFormsRestrictionOfLE
-      (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 eta
-  let tauW : DeRhamClosedForms (I := SurfaceRealModel)
-      (M := W) (A := ℝ) 1 :=
-    deRhamClosedFormsRestrictionOfLE
-      (I := SurfaceRealModel) (A := ℝ) inf_le_left 1 tau
-  have hclassW := deRhamH1_class_eq_or_neg_of_annular_period_eq_or_neg
-    SurfaceRealModel phi v etaW tauW c hcycle hperiod htauPeriod
-  have hlocal :
-      puncturedCoordinateDiskDeRhamH1Class p D eta =
-          puncturedCoordinateDiskDeRhamH1Class p D tau ∨
-        puncturedCoordinateDiskDeRhamH1Class p D eta =
-          -puncturedCoordinateDiskDeRhamH1Class p D tau := by
-    simpa [puncturedCoordinateDiskDeRhamH1Class, W, etaW, tauW,
-      deRhamCohomologyRestrictionOfLE, Submodule.mapQ_apply] using hclassW
-  exact puncturedAngularCirclePrimitive_of_local_class_eq_or_neg
-    p D hp eta tau hlocal Ptau
-
-/-- The coordinate-disk angular construction supplies a normalized smooth
-cycle in the punctured surface.  If that cycle generates all smooth
-one-cycles modulo smooth boundaries, the angular form has a circle-valued
-primitive.
-
-%%handwave
-name: Circle primitive from a generating puncture cycle
-statement:
-  Let $p$ be the center of a coordinate disk and let $\eta$ be its normalized closed angular one-form on $X\setminus\{p\}$. There is a smooth cycle $\gamma$ with $\partial\gamma=0$ and $\int_\gamma 2\pi\eta=2\pi$; if every smooth one-cycle is homologous to an integral multiple of $\gamma$, then $2\pi\eta$ has a smooth circle-valued primitive.
-proof:
-  Include the normalized local angular cycle into the punctured surface and reverse its orientation so its period becomes $1$, hence the period of $2\pi\eta$ becomes $2\pi$. The cycle-generator hypothesis and Stokes' theorem show that every period of $2\pi\eta$ is an integral multiple of $2\pi$, which is exactly the integral-period criterion for a circle primitive.
--/
-theorem ClosedCoordinateDisk.exists_closed_puncturedAngularForm_circlePrimitive_of_cycleGenerator
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    [Subsingleton
-      (DeRhamCohomology
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    (E : SmoothRelativelyCompactExhaustion X)
-    (D : ClosedCoordinateDisk X) (p : X)
-    (hp_source : p ∈ D.openDisk.chart.source)
-    (hcenter : D.openDisk.chart p = D.openDisk.center)
-    (hdouble : 2 * D.closedRadius ≤ D.openDisk.radius)
-    (v : Circle) (x₀ : puncturedSurfaceOpen p) :
-    ∃ eta : DeRhamClosedForms (I := SurfaceRealModel)
-        (M := puncturedSurfaceOpen p) (A := ℝ) 1,
-      ∃ gamma : SingularChain (I := SurfaceRealModel)
-          (M := puncturedSurfaceOpen p) 1 ∞,
-        boundary (I := SurfaceRealModel) gamma = 0 ∧
-          integrateSmoothChain (I := SurfaceRealModel)
-              ((2 * Real.pi) • eta.1) gamma = 2 * Real.pi ∧
-            ((∀ c : SingularChain (I := SurfaceRealModel)
-                  (M := puncturedSurfaceOpen p) 1 ∞,
-                boundary (I := SurfaceRealModel) c = 0 →
-                  ∃ (k : ℤ) (b : SingularChain (I := SurfaceRealModel)
-                      (M := puncturedSurfaceOpen p) 2 ∞),
-                    c = k • gamma + boundary (I := SurfaceRealModel) b) →
-              Nonempty (SmoothCirclePrimitive SurfaceRealModel
-                ((2 * Real.pi) • eta.1))) := by
-  let D₀ : SmoothBoundaryDomain X := D.toSmoothBoundaryDomain
-  let W := D.puncturedExpandedOpenDisk p (2 * D.closedRadius)
-  let Q : TopologicalSpace.Opens X :=
-    W ⊓ ⟨D₀.carrier, D₀.isOpen⟩
-  let U : TopologicalSpace.Opens X := puncturedSurfaceOpen p
-  have hQU : Q ≤ U := inf_le_left.trans inf_le_left
-  rcases D.exists_closed_puncturedAngularForm_normalized
-      E p hp_source hcenter hdouble v with ⟨eta, c, hcycle, hperiod⟩
-  let cU : SingularChain (I := SurfaceRealModel) (M := U) 1 ∞ :=
-    SingularChain.nestedOpenInclusion (I := SurfaceRealModel) hQU c
-  let gamma : SingularChain (I := SurfaceRealModel) (M := U) 1 ∞ := -cU
-  have hcUcycle : boundary (I := SurfaceRealModel) cU = 0 := by
-    rw [← SingularChain.nestedOpenInclusion_boundary, hcycle]
-    simp
-  have hgammaCycle : boundary (I := SurfaceRealModel) gamma = 0 := by
-    change boundary (I := SurfaceRealModel) (-cU) = 0
-    rw [map_neg, hcUcycle, neg_zero]
-  have hcUperiod :
-      integrateSmoothChain (I := SurfaceRealModel) eta.1 cU = -1 := by
-    calc
-      integrateSmoothChain (I := SurfaceRealModel) eta.1 cU =
-          integrateSmoothChain (I := SurfaceRealModel)
-            (restrictSmoothFormsOfLE
-              (I := SurfaceRealModel) (A := ℝ) hQU 1 eta.1) c :=
-        integrateSmoothChain_nestedOpenInclusion
-          (I := SurfaceRealModel) hQU eta.1 c
-      _ = -1 := by
-        simpa [D₀, W, Q, U, hQU] using hperiod
-  have hgammaPeriod :
-      integrateSmoothChain (I := SurfaceRealModel)
-          ((2 * Real.pi) • eta.1) gamma = 2 * Real.pi := by
-    change integrateSmoothChain (I := SurfaceRealModel)
-        ((2 * Real.pi) • eta.1) (-cU) = 2 * Real.pi
-    rw [integrateSmoothChain_neg_one, integrateSmoothChain_smul_form,
-      hcUperiod]
-    ring
-  refine ⟨eta, gamma, hgammaCycle, hgammaPeriod, ?_⟩
-  intro hgenerate
-  let etaScaled : DeRhamClosedForms (I := SurfaceRealModel)
-      (M := U) (A := ℝ) 1 := (2 * Real.pi) • eta
-  let P : SmoothCirclePrimitive SurfaceRealModel etaScaled.1 :=
-    smoothCirclePrimitiveOfNormalizedCycleGenerator
-      etaScaled x₀ gamma (by simpa [etaScaled] using hgammaPeriod) hgenerate
-  exact ⟨SmoothCirclePrimitive.congr SurfaceRealModel P rfl⟩
-
 end
 
 end JJMath.Uniformization

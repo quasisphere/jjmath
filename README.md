@@ -10,16 +10,21 @@ The general philosophy is to move fast and reiterate when needed. LLMs are alrea
 
 Moreover, as Mathlib advances or other better maintained repositories emerge, I'm intending to migrate the library to use those when possible.
 
-A central feature of the repository at the moment is the usage of Handwave metadata in docstrings of theorems and definitions. Handwave is a VS Code extension that can be used to explore the codebase and render previews of theorems and their dependencies. It also allows to create Markdown documents that include theorems from the Lean files to generate coherent stories about the theory. At the moment these documents are mostly LLM generated, but eventually the idea is to also write them by hand for more interesting results and new research.
+A central feature of the repository at the moment is the usage of Handwave metadata in docstrings of theorems and definitions. [Handwave](https://github.com/quasisphere/handwave) is a tool that can be used to explore the codebase and render previews of theorems and their dependencies. It also allows to create Markdown documents that include theorems from the Lean files to generate coherent stories about the theory. At the moment these documents are mostly LLM generated, but eventually the idea is to also write and edit them by hand for higher quality.
 
 ## Highlights
 
-- Uniformization theorem for simply-connected Riemann surfaces
+- Uniformization theorem for Riemann surfaces
+  - Including classification by universal covers
+  - Riemann mapping theorem as a corollary
+- Quasiconformal mappings
+  - Measurable Riemann mapping theorem
 - Constructing harmonic functions using Perron method
 - Rado's theorem that Riemann surfaces are second countable
 - $W^{1,2}$ Sobolev functions on manifolds with basic results such as Rellich and Poincare inequality
 - Stokes theorem for simplicial chains
 - Basics of de Rham cohomology
+  - De Rham's comparison theorem to connect with singular cohomology
 - Solving the Schwarzian differential equation using Frobenius method
 - Correspondence between hyperbolic metrics and complex projective structures with real holonomy
 - Koebe 1/4 theorem

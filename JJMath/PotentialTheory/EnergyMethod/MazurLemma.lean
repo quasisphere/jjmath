@@ -22,69 +22,6 @@ namespace Uniformization
 /--
 %%handwave
 name:
-  Mazur convexification of a weakly convergent sequence
-statement:
-  If a sequence in a real Hilbert space converges weakly to \(u\), then finite
-  convex combinations of arbitrarily far tails converge to \(u\) in norm.
-proof:
-  For every tail, the weak limit belongs to the weak closure of the convex
-  hull of that tail.  The norm closure and weak closure of convex sets agree
-  in locally convex spaces, so the weak limit lies in the norm closure of each
-  tail convex hull.  Choose one element of the \(k\)-th tail convex hull within
-  distance \(1/(k+1)\) of the weak limit.
--/
-theorem mazur_strong_tail_convex_averages_of_weak_tendsto
-    {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    {u : ℕ → H} {uLim : H}
-    (hweak :
-      Tendsto (fun n : ℕ ↦ toWeakSpace ℝ H (u n))
-        atTop (𝓝 (toWeakSpace ℝ H uLim))) :
-    ∃ v : ℕ → H,
-      (∀ k : ℕ, v k ∈ convexHull ℝ (u '' Set.Ici k)) ∧
-        Tendsto v atTop (𝓝 uLim) := by
-  classical
-  have htail_closure :
-      ∀ k : ℕ, uLim ∈ closure (convexHull ℝ (u '' Set.Ici k)) := by
-    intro k
-    let s : Set H := convexHull ℝ (u '' Set.Ici k)
-    have hs_convex : Convex ℝ s := convex_convexHull ℝ (u '' Set.Ici k)
-    have hweak_mem :
-        toWeakSpace ℝ H uLim ∈ closure ((toWeakSpace ℝ H) '' s) := by
-      refine mem_closure_of_tendsto hweak ?_
-      filter_upwards [Filter.eventually_ge_atTop k] with n hn
-      refine ⟨u n, ?_, rfl⟩
-      exact subset_convexHull ℝ (u '' Set.Ici k) ⟨n, hn, rfl⟩
-    rw [← hs_convex.toWeakSpace_closure (𝕜 := ℝ)] at hweak_mem
-    rcases hweak_mem with ⟨x, hx, hx_eq⟩
-    have hx_eq' : x = uLim := (toWeakSpace ℝ H).injective hx_eq
-    simpa [s, hx_eq'] using hx
-  have hchoose :
-      ∀ k : ℕ,
-        ∃ y : H, y ∈ convexHull ℝ (u '' Set.Ici k) ∧
-          dist y uLim < (1 : ℝ) / ((k : ℝ) + 1) := by
-    intro k
-    have hpos : 0 < (1 : ℝ) / ((k : ℝ) + 1) := by
-      positivity
-    rcases
-      Metric.mem_closure_iff.1 (htail_closure k)
-        ((1 : ℝ) / ((k : ℝ) + 1)) hpos with
-      ⟨y, hy, hydist⟩
-    exact ⟨y, hy, by simpa [dist_comm] using hydist⟩
-  choose v hv_mem hv_dist using hchoose
-  refine ⟨v, hv_mem, ?_⟩
-  rw [Metric.tendsto_nhds]
-  intro ε hε
-  have hsmall :
-      ∀ᶠ k : ℕ in atTop, (1 : ℝ) / ((k : ℝ) + 1) < ε := by
-    exact
-      (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ))
-        (Iio_mem_nhds hε)
-  filter_upwards [hsmall] with k hk
-  exact (hv_dist k).trans hk
-
-/--
-%%handwave
-name:
   Bounded sequences in separable Hilbert spaces have weakly convergent subsequences
 statement:
   Every norm-bounded sequence in a separable complete real Hilbert space has a
@@ -230,48 +167,6 @@ theorem hilbert_bounded_sequence_has_weakly_convergent_subsequence
     ((WeakSpace.map (K.subtypeL : K →L[ℝ] H)).continuous.tendsto
       (toWeakSpace ℝ K uLimK)).comp hweakK
   simpa [WeakSpace.map_apply, uK] using hmap
-
-/--
-%%handwave
-name:
-  Hilbert bounded sequence has convergent convexified tails
-statement:
-  Every norm-bounded sequence in a complete real Hilbert space admits finite
-  convex combinations of tails which converge strongly to some Hilbert-space
-  vector.
-proof:
-  Bounded sequences in Hilbert space have weakly convergent subsequences.
-  Apply the convexification theorem to that weakly convergent subsequence.
-  Reindex the resulting convex combinations as convex combinations of tails
-  of the original sequence.
--/
-theorem hilbert_bounded_sequence_has_strongly_convergent_tail_convex_averages
-    {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-    [CompleteSpace H]
-    (u : ℕ → H)
-    (hbounded : ∃ C : ℝ, ∀ n : ℕ, ‖u n‖ ≤ C) :
-    ∃ uLim : H, ∃ v : ℕ → H,
-      (∀ k : ℕ, v k ∈ convexHull ℝ (u '' Set.Ici k)) ∧
-        Tendsto v atTop (𝓝 uLim) := by
-  rcases
-    hilbert_bounded_sequence_has_weakly_convergent_subsequence
-      u hbounded with
-    ⟨uLim, φ, hφ_mono, hweak⟩
-  rcases
-    mazur_strong_tail_convex_averages_of_weak_tendsto
-      (H := H) (u := fun n : ℕ ↦ u (φ n)) (uLim := uLim)
-      hweak with
-    ⟨v, hv_tail_subseq, hv_tendsto⟩
-  refine ⟨uLim, v, ?_, hv_tendsto⟩
-  intro k
-  have htail_subset :
-      (fun n : ℕ ↦ u (φ n)) '' Set.Ici k ⊆
-        u '' Set.Ici k := by
-    intro y hy
-    rcases hy with ⟨n, hn, rfl⟩
-    refine ⟨φ n, ?_, rfl⟩
-    exact le_trans hn (StrictMono.id_le hφ_mono n)
-  exact (convexHull_mono (𝕜 := ℝ) htail_subset) (hv_tail_subseq k)
 
 end Uniformization
 

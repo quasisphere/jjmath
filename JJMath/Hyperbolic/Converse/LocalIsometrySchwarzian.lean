@@ -687,47 +687,6 @@ theorem actualSchwarzian_eq_zero_of_hyperbolic_densitySq_on
 
 /--
 %%handwave
-name: Vanishing Schwarzian on a Poincare-isometric domain
-statement:
-  Let \(U\subseteq\mathbb C\) be open. If \(f\) is sufficiently holomorphic on \(U\), has nonzero derivative and nonzero source and target heights there, and
-  \[
-    \frac{|f'(w)|^2}{\operatorname{Im}f(w)^2}=\frac1{\operatorname{Im}(w)^2}
-    \quad(w\in U),
-  \]
-  then \(S(f)(z)=0\) for every \(z\in U\).
-proof:
-  Fix \(z\in U\) and apply the pointwise vanishing theorem using the derivative hypotheses at that point.
--/
-theorem actualSchwarzian_eq_zero_on_of_hyperbolic_densitySq_on
-    {f : ℂ → ℂ} {U : Set ℂ}
-    (hUopen : IsOpen U)
-    (hf :
-      ∀ w, w ∈ U →
-        HasDerivAt f (deriv f w) w)
-    (hf₁ :
-      ∀ w, w ∈ U →
-        HasDerivAt
-          (fun t : ℂ ↦ deriv f t)
-          (deriv (fun t : ℂ ↦ deriv f t) w) w)
-    (hf₂ :
-      ∀ w, w ∈ U →
-        HasDerivAt
-          (fun t : ℂ ↦ deriv (fun s : ℂ ↦ deriv f s) t)
-          (deriv (fun t : ℂ ↦ deriv (fun s : ℂ ↦ deriv f s) t) w) w)
-    (hf_ne : ∀ w, w ∈ U → deriv f w ≠ 0)
-    (him_ne : ∀ w, w ∈ U → ((((f w).im : ℝ) : ℂ)) ≠ 0)
-    (hz_im_ne : ∀ w, w ∈ U → (((w.im : ℝ) : ℂ)) ≠ 0)
-    (hMetric :
-      ∀ w, w ∈ U →
-        ((Complex.normSq (deriv f w) / (f w).im ^ 2 : ℝ) : ℂ) =
-          ((((w.im ^ 2 : ℝ) : ℂ))⁻¹)) :
-    ∀ z, z ∈ U → actualSchwarzian f z = 0 := by
-  intro z hzU
-  exact actualSchwarzian_eq_zero_of_hyperbolic_densitySq_on
-    hUopen hzU hf hf₁ (hf₂ z hzU) hf_ne him_ne hz_im_ne hMetric
-
-/--
-%%handwave
 name: One-jet rigidity of local Poincare isometries
 statement:
   Let \(U\subseteq\mathbb C\) be open in the upper half-plane, let \(z\in U\), and let \(f:U\to\mathbb H\) be sufficiently holomorphic with \(f'\ne0\) and

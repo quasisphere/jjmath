@@ -38,8 +38,13 @@ variable [ChartedSpace H M] [ChartedSpace H' N] [ChartedSpace H'' P]
 variable {I : ModelWithCorners k E H} {J : ModelWithCorners k F H'}
 variable {K : ModelWithCorners k G H''} {n : WithTop ℕ∞}
 
-/-- An element of the maximal smooth atlas, viewed as a partial
-diffeomorphism from the manifold to its model space. -/
+/--
+%%handwave
+name:
+  Partial diffeomorphism associated with a maximal-atlas chart
+statement:
+  A chart in the maximal $C^n$ atlas of a manifold determines a $C^n$ partial diffeomorphism from its open source in the manifold to its open target in the model space.
+-/
 def partialDiffeomorphOfMemMaximalAtlas
     [IsManifold I n M]
     (e : OpenPartialHomeomorph M H) (he : e ∈ IsManifold.maximalAtlas I n M) :
@@ -50,8 +55,13 @@ def partialDiffeomorphOfMemMaximalAtlas
   contMDiffOn_toFun := contMDiffOn_of_mem_maximalAtlas he
   contMDiffOn_invFun := contMDiffOn_symm_of_mem_maximalAtlas he
 
-/-- Composition of partial diffeomorphisms, on the maximal open set where
-the two maps can be composed. -/
+/--
+%%handwave
+name:
+  Composition of partial diffeomorphisms
+statement:
+  Composable $C^n$ partial diffeomorphisms $\Phi:M\dashrightarrow N$ and $\Psi:N\dashrightarrow P$ define a $C^n$ partial diffeomorphism $\Psi\circ\Phi$ on the maximal open subset where both maps are defined.
+-/
 protected def PartialDiffeomorph.trans
     (Phi : PartialDiffeomorph I J M N n)
     (Psi : PartialDiffeomorph J K N P n) :
@@ -70,7 +80,13 @@ protected def PartialDiffeomorph.trans
     exact Phi.contMDiffOn_invFun.comp
       (Psi.contMDiffOn_invFun.mono inter_subset_left) inter_subset_right
 
-/-- Restrict the source of a partial diffeomorphism to an open set. -/
+/--
+%%handwave
+name:
+  Open restriction of a partial diffeomorphism
+statement:
+  Restricting the source of a $C^n$ partial diffeomorphism to an open subset produces a $C^n$ partial diffeomorphism with the correspondingly restricted target.
+-/
 protected def PartialDiffeomorph.restrOpen
     (Phi : PartialDiffeomorph I J M N n) (s : Set M) (hs : IsOpen s) :
     PartialDiffeomorph I J M N n where
@@ -89,50 +105,15 @@ protected def PartialDiffeomorph.restrOpen
     rw [PartialEquiv.restr_target]
     exact inter_subset_left
 
-/-- Restrict the target of a partial diffeomorphism to an open set. -/
-protected def PartialDiffeomorph.restrTargetOpen
-    (Phi : PartialDiffeomorph I J M N n) (t : Set N) (ht : IsOpen t) :
-    PartialDiffeomorph I J M N n :=
-  (JJMath.Manifold.PartialDiffeomorph.restrOpen Phi.symm t ht).symm
-
-/--
-%%handwave
-name:
-  Evaluation of a composite partial diffeomorphism
-statement:
-  For composable partial diffeomorphisms \(\Phi\) and \(\Psi\),
-  \((\Psi\circ\Phi)(x)=\Psi(\Phi(x))\).
-proof:
-  This is the defining pointwise formula for their composition.
--/
-@[simp]
-theorem PartialDiffeomorph.trans_apply
-    (Phi : PartialDiffeomorph I J M N n)
-    (Psi : PartialDiffeomorph J K N P n) (x : M) :
-    PartialDiffeomorph.trans Phi Psi x = Psi (Phi x) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Restricting a partial diffeomorphism does not change its values
-statement:
-  Restricting the source of a partial diffeomorphism \(\Phi\) to an open set
-  leaves its value at every point equal to \(\Phi(x)\).
-proof:
-  Source restriction changes only the domain of the underlying partial
-  equivalence, not its function.
--/
-@[simp]
-theorem PartialDiffeomorph.restrOpen_apply
-    (Phi : PartialDiffeomorph I J M N n) (s : Set M) (hs : IsOpen s) (x : M) :
-    PartialDiffeomorph.restrOpen Phi s hs x = Phi x :=
-  rfl
-
 end PartialDiffeomorph
 
-/-- The oriented tangential covector associated to a real covector on the
-complex plane. -/
+/--
+%%handwave
+name:
+  Oriented quarter-turn of a surface covector
+statement:
+  For a real covector $\lambda$ on $\mathbb C$, its oriented tangential quarter-turn is $\lambda^\perp(x+iy)=-\lambda(i)x+\lambda(1)y$.
+-/
 def surfaceQuarterTurnCovector (dr : ℂ →L[ℝ] ℝ) : ℂ →L[ℝ] ℝ :=
   (-dr Complex.I) • Complex.reCLM + dr 1 • Complex.imCLM
 
@@ -182,33 +163,10 @@ theorem surfaceQuarterTurnCovector_apply
 /--
 %%handwave
 name:
-  A quarter-turned nonzero covector is nonzero
+  Coordinates determined by a regular surface covector
 statement:
-  If a real covector \(\lambda\) on \(\mathbb C\) is nonzero, then its
-  quarter turn \(\lambda^\perp\) is nonzero.
-proof:
-  If \(\lambda^\perp=0\), evaluating it at \(i\) and \(1\) gives
-  \(\lambda(1)=\lambda(i)=0\).  The coordinate formula for \(\lambda\) then
-  forces \(\lambda=0\), a contradiction.
+  If a real covector $\lambda:\mathbb C\to\mathbb R$ is nonzero, then $z\mapsto(\lambda(z),\lambda^\perp(z))$ is a continuous real-linear equivalence $\mathbb C\cong\mathbb R^2$.
 -/
-theorem surfaceQuarterTurnCovector_ne_zero
-    {dr : ℂ →L[ℝ] ℝ} (hdr : dr ≠ 0) :
-    surfaceQuarterTurnCovector dr ≠ 0 := by
-  intro hzero
-  have hI := congrArg (fun L : ℂ →L[ℝ] ℝ => L Complex.I) hzero
-  have h1 := congrArg (fun L : ℂ →L[ℝ] ℝ => L 1) hzero
-  have hdr1 : dr 1 = 0 := by
-    simpa [surfaceQuarterTurnCovector_apply] using hI
-  have hdrI : dr Complex.I = 0 := by
-    simpa [surfaceQuarterTurnCovector_apply] using h1
-  apply hdr
-  ext z
-  rw [ContinuousLinearMap.zero_apply, realCovector_apply_eq_re_im,
-    hdr1, hdrI]
-  ring
-
-/-- The normal and oriented tangential covectors form an invertible real
-linear coordinate map whenever the normal covector is nonzero. -/
 noncomputable def surfaceRegularCovectorEquiv
     (dr : ℂ →L[ℝ] ℝ) (hdr : dr ≠ 0) :
     ℂ ≃L[ℝ] ℝ × ℝ := by
@@ -292,180 +250,6 @@ noncomputable def surfaceRegularCovectorEquiv
   exact ContinuousLinearEquiv.ofBijective L
     (LinearMap.ker_eq_bot.mpr hinj)
     (LinearMap.range_eq_top.mpr hsurj)
-
-/--
-%%handwave
-name:
-  Smooth product coordinates near a regular level point
-statement:
-  Let \(r:\mathbb C\to\mathbb R\) be smooth at \(z_0\), with nonzero
-  derivative \(dr_{z_0}\).  There is a local homeomorphism
-  \(\Phi\) from a neighborhood of \(z_0\) to \(\mathbb R^2\) such that
-  \(\Phi(z_0)=(r(z_0),0)\), the first coordinate of \(\Phi(z)\) is \(r(z)\),
-  and \(\Phi^{-1}\) is smooth at \((r(z_0),0)\).
-proof:
-  Pair \(r\) with the affine function defined by the quarter-turned covector
-  \(dr_{z_0}^{\perp}\).  Its derivative at \(z_0\) is the invertible map
-  \((dr_{z_0},dr_{z_0}^{\perp})\); the smooth inverse function theorem gives
-  the required local product chart.
--/
-theorem exists_smoothRegularLevelProductChart
-    {r : ℂ → ℝ} {z₀ : ℂ}
-    (hr : ContDiffAt ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) r z₀)
-    {dr : ℂ →L[ℝ] ℝ} (hr' : HasFDerivAt r dr z₀)
-    (hdr : dr ≠ 0) :
-    ∃ Φ : OpenPartialHomeomorph ℂ (ℝ × ℝ),
-      z₀ ∈ Φ.source ∧
-      Φ z₀ = (r z₀, 0) ∧
-      (∀ z ∈ Φ.source, (Φ z).1 = r z) ∧
-      ContDiffAt ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) Φ.symm (r z₀, 0) := by
-  let A : ℂ ≃L[ℝ] ℝ × ℝ := surfaceRegularCovectorEquiv dr hdr
-  let F : ℂ → ℝ × ℝ :=
-    fun z =>
-      (r z,
-        surfaceQuarterTurnCovector dr z - surfaceQuarterTurnCovector dr z₀)
-  have hF : ContDiffAt ℝ ((⊤ : ℕ∞) : WithTop ℕ∞) F z₀ := by
-    apply hr.prodMk
-    exact (surfaceQuarterTurnCovector dr).contDiff.contDiffAt.sub contDiffAt_const
-  have hF' : HasFDerivAt F (A : ℂ →L[ℝ] ℝ × ℝ) z₀ := by
-    change HasFDerivAt F
-      (dr.prod (surfaceQuarterTurnCovector dr)) z₀
-    exact hr'.prodMk
-      ((surfaceQuarterTurnCovector dr).hasFDerivAt.sub_const
-        (surfaceQuarterTurnCovector dr z₀))
-  let Φ : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
-    hF.toOpenPartialHomeomorph F hF' (by simp)
-  refine ⟨Φ, hF.mem_toOpenPartialHomeomorph_source hF' (by simp), ?_, ?_, ?_⟩
-  · change F z₀ = (r z₀, 0)
-    simp [F]
-  · intro z _hz
-    rfl
-  · simpa [Φ, ContDiffAt.localInverse, F] using
-      hF.to_localInverse hF' (by simp)
-
-/--
-%%handwave
-name:
-  Finite-order partial product coordinates near a regular level
-statement:
-  Suppose \(r:\mathbb C\to\mathbb R\) is \(C^n\) at \(z_0\), with
-  \(dr_{z_0}\ne0\).  For every admissible order \(m\le n\), there is a
-  \(C^m\) partial diffeomorphism \(\Psi\) near \(z_0\) with
-  \(\Psi(z_0)=(r(z_0),0)\) and first coordinate \(r\).
-proof:
-  Apply the inverse function theorem to
-  \(z\mapsto(r(z),dr_{z_0}^{\perp}(z-z_0))\).  Localize the source and target
-  so that both the map and its inverse have the requested differentiability
-  order.
--/
-theorem exists_regularLevelPartialDiffeomorph
-    {n m : WithTop ℕ∞} {r : ℂ → ℝ} {z₀ : ℂ}
-    (hr : ContDiffAt ℝ n r z₀)
-    (hmn : m ≤ n) (hlocalize : m = ∞ → n = ω) (hn : n ≠ 0)
-    {dr : ℂ →L[ℝ] ℝ} (hr' : HasFDerivAt r dr z₀)
-    (hdr : dr ≠ 0) :
-    ∃ Ψ : PartialDiffeomorph
-        𝓘(ℝ, ℂ) 𝓘(ℝ, ℝ × ℝ) ℂ (ℝ × ℝ) m,
-      z₀ ∈ Ψ.source ∧
-      Ψ z₀ = (r z₀, 0) ∧
-      ∀ z ∈ Ψ.source, (Ψ z).1 = r z := by
-  let A : ℂ ≃L[ℝ] ℝ × ℝ := surfaceRegularCovectorEquiv dr hdr
-  let F : ℂ → ℝ × ℝ :=
-    fun z =>
-      (r z,
-        surfaceQuarterTurnCovector dr z - surfaceQuarterTurnCovector dr z₀)
-  have hF : ContDiffAt ℝ n F z₀ := by
-    apply hr.prodMk
-    exact (surfaceQuarterTurnCovector dr).contDiff.contDiffAt.sub contDiffAt_const
-  have hF' : HasFDerivAt F (A : ℂ →L[ℝ] ℝ × ℝ) z₀ := by
-    change HasFDerivAt F
-      (dr.prod (surfaceQuarterTurnCovector dr)) z₀
-    exact hr'.prodMk
-      ((surfaceQuarterTurnCovector dr).hasFDerivAt.sub_const
-        (surfaceQuarterTurnCovector dr z₀))
-  let Φ : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
-    hF.toOpenPartialHomeomorph F hF' hn
-  have hzΦ : z₀ ∈ Φ.source :=
-    hF.mem_toOpenPartialHomeomorph_source hF' hn
-  have hΦz : Φ z₀ = (r z₀, 0) := by
-    change F z₀ = (r z₀, 0)
-    simp [F]
-  have hinv : ContDiffAt ℝ n Φ.symm (r z₀, 0) := by
-    simpa [Φ, ContDiffAt.localInverse, F] using
-      hF.to_localInverse hF' hn
-  rcases hF.contDiffOn' hmn hlocalize with
-    ⟨U₀, hU₀_open, hzU₀, hFU₀⟩
-  rcases hinv.contDiffOn' hmn hlocalize with
-    ⟨V₀, hV₀_open, hΦzV₀, hinvV₀⟩
-  let ΦV : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
-    (Φ.symm.restrOpen V₀ hV₀_open).symm
-  let ΦVU : OpenPartialHomeomorph ℂ (ℝ × ℝ) :=
-    ΦV.restrOpen U₀ hU₀_open
-  have hzΦV : z₀ ∈ ΦV.source := by
-    have hy : (r z₀, 0) ∈ (Φ.symm.restrOpen V₀ hV₀_open).source := by
-      rw [OpenPartialHomeomorph.restrOpen_source]
-      exact ⟨by simpa [hΦz] using Φ.map_source hzΦ, hΦzV₀⟩
-    have hmap := (Φ.symm.restrOpen V₀ hV₀_open).map_source hy
-    have hval :
-        (Φ.symm.restrOpen V₀ hV₀_open) (r z₀, 0) = z₀ := by
-      change Φ.symm (r z₀, 0) = z₀
-      rw [← hΦz]
-      exact Φ.left_inv hzΦ
-    change z₀ ∈ (Φ.symm.restrOpen V₀ hV₀_open).target
-    rw [← hval]
-    exact hmap
-  have hzΦVU : z₀ ∈ ΦVU.source := by
-    rw [OpenPartialHomeomorph.restrOpen_source]
-    exact ⟨hzΦV, hzU₀⟩
-  let Ψ : PartialDiffeomorph
-      𝓘(ℝ, ℂ) 𝓘(ℝ, ℝ × ℝ) ℂ (ℝ × ℝ) m :=
-    { toPartialEquiv := ΦVU.toPartialEquiv
-      open_source := ΦVU.open_source
-      open_target := ΦVU.open_target
-      contMDiffOn_toFun := by
-        apply ContDiffOn.contMDiffOn
-        intro z hz
-        have hz' : z ∈ ΦV.source ∧ z ∈ U₀ := by
-          simpa [ΦVU] using hz
-        have hlocal := hFU₀ z ⟨by simp, hz'.2⟩
-        have hmono := hlocal.mono (by
-          intro w hw
-          have hw' : w ∈ ΦV.source ∧ w ∈ U₀ := by
-            simpa [ΦVU] using hw
-          exact ⟨by simp, hw'.2⟩)
-        simpa [ΦVU, ΦV, Φ, F] using hmono
-      contMDiffOn_invFun := by
-        apply ContDiffOn.contMDiffOn
-        intro y hy
-        have hy' : y ∈ ΦV.target := by
-          change y ∈ (ΦV.toPartialEquiv.restr U₀).target at hy
-          rw [PartialEquiv.restr_target] at hy
-          exact hy.1
-        have hyV : y ∈ V₀ := by
-          change y ∈ (Φ.symm.restrOpen V₀ hV₀_open).source at hy'
-          rw [OpenPartialHomeomorph.restrOpen_source] at hy'
-          exact hy'.2
-        have hlocal := hinvV₀ y ⟨by simp, hyV⟩
-        have hmono := hlocal.mono (by
-          intro w hw
-          have hw' : w ∈ ΦV.target := by
-            change w ∈ (ΦV.toPartialEquiv.restr U₀).target at hw
-            rw [PartialEquiv.restr_target] at hw
-            exact hw.1
-          have hwV : w ∈ V₀ := by
-            change w ∈ (Φ.symm.restrOpen V₀ hV₀_open).source at hw'
-            rw [OpenPartialHomeomorph.restrOpen_source] at hw'
-            exact hw'.2
-          exact ⟨by simp, hwV⟩)
-        simpa [ΦVU, ΦV] using hmono }
-  refine ⟨Ψ, ?_, ?_, ?_⟩
-  · exact hzΦVU
-  · change ΦVU z₀ = (r z₀, 0)
-    simpa [ΦVU, ΦV] using hΦz
-  · intro z hz
-    change (ΦVU z).1 = r z
-    change (Φ z).1 = r z
-    rfl
 
 /--
 %%handwave

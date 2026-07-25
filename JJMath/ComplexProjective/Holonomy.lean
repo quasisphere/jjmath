@@ -32,37 +32,6 @@ noncomputable instance : CoeFun (HolonomyRepresentation X x₀)
     (fun _ ↦ FundamentalGroup X x₀ → MobiusGroup) where
   coe ρ := ρ.toMonoidHom
 
-/--
-%%handwave
-name:
-  Holonomy preserves the identity loop
-statement:
-  For every holonomy representation \(\rho:\pi_1(X,x_0)\to
-  \operatorname{PGL}_2(\mathbb C)\), one has \(\rho(1)=1\).
-proof:
-  This is the identity-preservation law for the homomorphism underlying \(\rho\).
--/
-@[simp]
-theorem map_one (ρ : HolonomyRepresentation X x₀) :
-    ρ (1 : FundamentalGroup X x₀) = 1 :=
-  ρ.toMonoidHom.map_one
-
-/--
-%%handwave
-name:
-  Holonomy preserves loop multiplication
-statement:
-  For every holonomy representation \(\rho\) and loops
-  \(\gamma,\delta\in\pi_1(X,x_0)\), one has
-  \(\rho(\gamma\delta)=\rho(\gamma)\rho(\delta)\).
-proof:
-  This is the multiplication-preservation law for the homomorphism underlying \(\rho\).
--/
-@[simp]
-theorem map_mul (ρ : HolonomyRepresentation X x₀) (γ δ : FundamentalGroup X x₀) :
-    ρ (γ * δ) = ρ γ * ρ δ :=
-  ρ.toMonoidHom.map_mul γ δ
-
 end HolonomyRepresentation
 
 /--
@@ -157,21 +126,6 @@ structure ProjectiveHolonomyConstructionData
   transition_mobius :
     ∀ e ∈ P.atlasSet, ∀ e' ∈ P.atlasSet, HasLocalMobiusTransition e e'
 
-/--
-A based Riemann surface equipped with a complex projective structure
-and its holonomy representation.
--/
-structure BasedProjectiveSurface (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- The basepoint used to identify the fundamental group. -/
-  basepoint : X
-  /-- The projective structure. -/
-  projectiveStructure : ComplexProjectiveStructure X
-  /-- The associated holonomy representation. -/
-  holonomy : HolonomyRepresentation X basepoint
-  /-- Concrete atlas data supporting the holonomy construction. -/
-  holonomy_constructed_from_projective_charts :
-    ProjectiveHolonomyConstructionData X basepoint projectiveStructure holonomy
 
 end
 

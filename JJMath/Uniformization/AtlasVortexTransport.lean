@@ -243,7 +243,12 @@ structure AtlasVortexTransportData (X : Type) [TopologicalSpace X]
         terminalPair.globalPhase
           (⟨x, ⟨hxs, hxb⟩⟩ : coordinateVortexPairOpen terminalStart b)
 
-/-- A single atlas vortex pair is the initial finite transport. -/
+/--
+%%handwave
+name: A single atlas vortex pair is the initial finite transport
+statement:
+  A single atlas vortex pair is the initial finite transport.
+-/
 def AtlasVortexTransportData.single {a b : X}
     (D : AtlasVortexPairData X a b) :
     AtlasVortexTransportData X a b where
@@ -384,271 +389,16 @@ theorem AtlasVortexTransportData.exists_append
           simp [R, hxV]] }
   exact ⟨T', hQproduct⟩
 
-/--
-%%handwave
-name:
-  Finite transport along a chain of atlas vortices
-statement:
-  Let \(v_0,v_1,\ldots\) be points with \(v_0\ne v_{n+1}\) for every \(n\),
-  and let an atlas vortex join each \(v_n\) to \(v_{n+1}\).  Every finite
-  initial chain through \(v_{n+1}\) has a smooth unit transport phase on
-  \(X\setminus\{v_0,v_{n+1}\}\).
-proof:
-  Induct on the chain length.  A single pair is a transport.  At the successor
-  step, append the next vortex pair using smooth seam cancellation; the only
-  endpoint condition needed is \(v_0\ne v_{n+2}\).
--/
-theorem exists_atlasVortexTransport_of_finite_chain
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1)) (n : ℕ) :
-    Nonempty (AtlasVortexTransportData X (v 0) (v (n + 1))) := by
-  induction n with
-  | zero =>
-      exact ⟨AtlasVortexTransportData.single (D 0)⟩
-  | succ n ih =>
-      rcases ih with ⟨T⟩
-      rcases T.exists_append (D (n + 1)) (hfirst (n + 1)) with
-        ⟨T', _hphase⟩
-      exact ⟨T'⟩
-
-/-- A coherent choice of finite transport phases along an infinite atlas
-vortex chain.  Stage `n` transports from the initial vertex to vertex
-`n + 1`. -/
-noncomputable def finiteAtlasVortexTransport
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1)) :
-    ∀ n : ℕ, AtlasVortexTransportData X (v 0) (v (n + 1))
-  | 0 => AtlasVortexTransportData.single (D 0)
-  | n + 1 => Classical.choose
-      ((finiteAtlasVortexTransport v D hfirst n).exists_append
-        (D (n + 1)) (hfirst (n + 1)))
-
-/--
-%%handwave
-name:
-  Successor formula for coherent finite vortex transports
-statement:
-  Away from the intermediate point \(v_{n+1}\), the phase of the coherent
-  transport through \(v_{n+2}\) is the product of the phase through
-  \(v_{n+1}\) and the atlas-vortex phase from \(v_{n+1}\) to \(v_{n+2}\).
-proof:
-  This is exactly the phase identity supplied when the recursive construction
-  appends the \((n+1)\)-st vortex pair.
--/
-theorem finiteAtlasVortexTransport_phase_succ
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1)) (n : ℕ)
-    (x : coordinateVortexPairOpen (v 0) (v (n + 1 + 1)))
-    (hxq : (x : X) ≠ v (n + 1)) :
-    (finiteAtlasVortexTransport v D hfirst (n + 1)).phase x =
-      (finiteAtlasVortexTransport v D hfirst n).phase
-          ⟨(x : X), ⟨x.2.1, hxq⟩⟩ *
-        (D (n + 1)).globalPhase
-          ⟨(x : X), ⟨hxq, x.2.2⟩⟩ := by
-  exact (Classical.choose_spec
-    ((finiteAtlasVortexTransport v D hfirst n).exists_append
-      (D (n + 1)) (hfirst (n + 1)))) x hxq
-
 /-! ## The locally stationary infinite telescope -/
 
-/-- The surface with the initial vortex point removed. -/
+/--
+%%handwave
+name: The surface with the initial vortex point removed
+statement:
+  The surface with the initial vortex point removed.
+-/
 def atlasVortexInitialOpen (a : X) : TopologicalSpace.Opens X :=
   ⟨{x | x ≠ a}, isOpen_ne⟩
-
-/-- The finite transport phase at stage `n`, made into a total function on
-the initially punctured surface by assigning an irrelevant value at its
-current terminal point.  Local escape guarantees that this exceptional
-point eventually leaves every fixed neighborhood. -/
-noncomputable def finiteAtlasVortexTransportPartialPhase
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1))
-    (n : ℕ) (x : atlasVortexInitialOpen (v 0)) : ℂ := by
-  classical
-  exact if hxt : (x : X) ≠ v (n + 1) then
-    (finiteAtlasVortexTransport v D hfirst n).phase
-      ⟨(x : X), ⟨x.2, hxt⟩⟩
-  else 1
-
-/--
-%%handwave
-name:
-  Unit norm of a finite partial transport phase
-statement:
-  The totalized stage-\(n\) transport phase on
-  \(X\setminus\{v_0\}\) has complex modulus one at every point.
-proof:
-  Away from the current terminal point it is the unit phase of the finite
-  transport; at the terminal point it was defined to be \(1\).
--/
-theorem norm_finiteAtlasVortexTransportPartialPhase
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1))
-    (n : ℕ) (x : atlasVortexInitialOpen (v 0)) :
-    ‖finiteAtlasVortexTransportPartialPhase v D hfirst n x‖ = 1 := by
-  by_cases hxt : (x : X) ≠ v (n + 1)
-  · rw [show finiteAtlasVortexTransportPartialPhase v D hfirst n x =
-        (finiteAtlasVortexTransport v D hfirst n).phase
-          ⟨(x : X), ⟨x.2, hxt⟩⟩ by
-      simp [finiteAtlasVortexTransportPartialPhase, hxt]]
-    exact (finiteAtlasVortexTransport v D hfirst n).norm_phase _
-  · simp [finiteAtlasVortexTransportPartialPhase, hxt]
-
-/--
-%%handwave
-name:
-  Smoothness of a finite partial transport phase off its terminal point
-statement:
-  At stage \(n\), the totalized transport phase on
-  \(X\setminus\{v_0\}\) is smooth at every point other than its current
-  terminal point \(v_{n+1}\).
-proof:
-  On the open complement of \(v_{n+1}\), the totalized phase is exactly the
-  smooth finite-transport phase composed with the canonical inclusion into
-  the twice-punctured surface.
--/
-theorem contMDiffAt_finiteAtlasVortexTransportPartialPhase_of_ne
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1))
-    (n : ℕ) (x : atlasVortexInitialOpen (v 0))
-    (hxt : (x : X) ≠ v (n + 1)) :
-    ContMDiffAt SurfaceRealModel (modelWithCornersSelf ℝ ℂ) ∞
-      (finiteAtlasVortexTransportPartialPhase v D hfirst n) x := by
-  let B : TopologicalSpace.Opens (atlasVortexInitialOpen (v 0)) :=
-    ⟨{y | (y : X) ≠ v (n + 1)}, isOpen_ne.preimage
-      (continuous_subtype_val : Continuous
-        (fun y : atlasVortexInitialOpen (v 0) ↦ (y : X)))⟩
-  let xB : B := ⟨x, hxt⟩
-  have hval : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-      (fun y : B ↦ (y : X)) :=
-    contMDiff_subtype_val.comp contMDiff_subtype_val
-  have hlift : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-      (fun y : B ↦
-        (⟨(y : X), ⟨y.1.2, y.2⟩⟩ :
-          coordinateVortexPairOpen (v 0) (v (n + 1)))) :=
-    contMDiffCodRestrictOpen_transport hval
-      (coordinateVortexPairOpen (v 0) (v (n + 1)))
-      (fun y ↦ ⟨y.1.2, y.2⟩)
-  have hsmooth : ContMDiff SurfaceRealModel
-      (modelWithCornersSelf ℝ ℂ) ∞
-      (fun y : B ↦ (finiteAtlasVortexTransport v D hfirst n).phase
-        (⟨(y : X), ⟨y.1.2, y.2⟩⟩ :
-          coordinateVortexPairOpen (v 0) (v (n + 1)))) :=
-    (finiteAtlasVortexTransport v D hfirst n).phase.contMDiff.comp hlift
-  rw [← contMDiffAt_subtype_iff (U := B) (x := xB)]
-  have heq :
-      (fun y : B ↦ finiteAtlasVortexTransportPartialPhase
-        v D hfirst n (y : atlasVortexInitialOpen (v 0))) =
-      fun y : B ↦ (finiteAtlasVortexTransport v D hfirst n).phase
-        (⟨(y : X), ⟨y.1.2, y.2⟩⟩ :
-          coordinateVortexPairOpen (v 0) (v (n + 1))) := by
-    funext y
-    have hy : (y : X) ≠ v (n + 1) := y.2
-    simp [finiteAtlasVortexTransportPartialPhase, hy]
-  rw [heq]
-  exact hsmooth.contMDiffAt
-
-/--
-%%handwave
-name:
-  Stability of a partial transport phase outside the next vortex core
-statement:
-  If \(x\) differs from the adjacent vertices \(v_{n+1},v_{n+2}\) and lies
-  outside the compact core of the next atlas vortex, then the stage-\(n+1\)
-  partial phase at \(x\) equals the stage-\(n\) partial phase there.
-proof:
-  Use the successor product formula.  Outside its compact core the appended
-  atlas-vortex phase is \(1\), so the product reduces to the previous phase.
--/
-theorem finiteAtlasVortexTransportPartialPhase_succ_eq
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1))
-    (n : ℕ) (x : atlasVortexInitialOpen (v 0))
-    (hxq : (x : X) ≠ v (n + 1))
-    (hxb : (x : X) ≠ v (n + 1 + 1))
-    (hxcore : (x : X) ∉ (D (n + 1)).ambientCore) :
-    finiteAtlasVortexTransportPartialPhase v D hfirst (n + 1) x =
-      finiteAtlasVortexTransportPartialPhase v D hfirst n x := by
-  rw [show finiteAtlasVortexTransportPartialPhase v D hfirst (n + 1) x =
-      (finiteAtlasVortexTransport v D hfirst (n + 1)).phase
-        ⟨(x : X), ⟨x.2, hxb⟩⟩ by
-      simp [finiteAtlasVortexTransportPartialPhase, hxb],
-    finiteAtlasVortexTransport_phase_succ v D hfirst n
-      ⟨(x : X), ⟨x.2, hxb⟩⟩ hxq]
-  have hDone : (D (n + 1)).globalPhase
-      (⟨(x : X), ⟨hxq, hxb⟩⟩ :
-        coordinateVortexPairOpen (v (n + 1)) (v (n + 1 + 1))) = 1 :=
-    (D (n + 1)).globalPhaseFun_eq_one_of_mem_exterior hxcore
-  rw [hDone, mul_one]
-  simp [finiteAtlasVortexTransportPartialPhase, hxq]
-
-/--
-%%handwave
-name:
-  Circle primitive of a locally escaping atlas-vortex chain
-statement:
-  Suppose that, near every point of \(X\setminus\{v_0\}\), all sufficiently
-  late terminal vertices and compact vortex cores are absent.  Then the finite
-  transport phases stabilize locally to a smooth unit phase \(P\) on
-  \(X\setminus\{v_0\}\), and the canonical logarithmic one-form of \(P\)
-  admits a circle primitive.
-proof:
-  On an escaping neighborhood, a sufficiently late partial phase is smooth,
-  and every subsequent phase agrees with it by the stability theorem.  Thus
-  the sequence is locally eventually constant and always has unit norm.
-  Apply the locally stable unit-phase construction and its circle-primitive
-  theorem.
--/
-theorem exists_circlePrimitive_of_locallyEscaping_atlasVortexChain
-    (v : ℕ → X)
-    (D : ∀ n : ℕ, AtlasVortexPairData X (v n) (v (n + 1)))
-    (hfirst : ∀ n : ℕ, v 0 ≠ v (n + 1))
-    (hescape : ∀ x : atlasVortexInitialOpen (v 0),
-      ∃ N : ℕ, ∃ U : TopologicalSpace.Opens
-          (atlasVortexInitialOpen (v 0)),
-        x ∈ U ∧ ∀ n ≥ N, ∀ y ∈ U,
-          (y : X) ≠ v (n + 1) ∧ (y : X) ∉ (D n).ambientCore) :
-    ∃ (P : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
-          (atlasVortexInitialOpen (v 0)) ℂ ∞)
-        (hP : ∀ x : atlasVortexInitialOpen (v 0), ‖P x‖ = 1),
-      Nonempty (JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-        (smoothUnitPhaseOneForm SurfaceRealModel P hP)) := by
-  let f : ℕ → atlasVortexInitialOpen (v 0) → ℂ :=
-    finiteAtlasVortexTransportPartialPhase v D hfirst
-  have hlocal : ∀ x : atlasVortexInitialOpen (v 0),
-      ∃ N : ℕ, ∃ U : TopologicalSpace.Opens
-          (atlasVortexInitialOpen (v 0)),
-        x ∈ U ∧
-        ContMDiffOn SurfaceRealModel (modelWithCornersSelf ℝ ℂ) ∞ (f N) U ∧
-        ∀ n ≥ N, Set.EqOn (f n) (f N) U := by
-    intro x
-    rcases hescape x with ⟨N, U, hxU, havoid⟩
-    refine ⟨N, U, hxU, ?_, ?_⟩
-    · intro y hy
-      exact (contMDiffAt_finiteAtlasVortexTransportPartialPhase_of_ne
-        v D hfirst N y (havoid N le_rfl y hy).1).contMDiffWithinAt
-    · intro n hn y hy
-      induction n, hn using Nat.le_induction with
-      | base => rfl
-      | succ n hn ih =>
-          exact (finiteAtlasVortexTransportPartialPhase_succ_eq
-            v D hfirst n y
-              (havoid n hn y hy).1
-              (havoid (n + 1) (Nat.le_trans hn (Nat.le_succ n)) y hy).1
-              (havoid (n + 1) (Nat.le_trans hn (Nat.le_succ n)) y hy).2).trans ih
-  have hnorm : ∀ x : atlasVortexInitialOpen (v 0),
-      ∃ N : ℕ, ∀ n ≥ N, ‖f n x‖ = 1 := by
-    intro x
-    exact ⟨0, fun n _ ↦ norm_finiteAtlasVortexTransportPartialPhase
-      v D hfirst n x⟩
-  exact exists_circlePrimitive_of_locally_eventuallyEq_unitPhase
-    SurfaceRealModel f hlocal hnorm
 
 end
 

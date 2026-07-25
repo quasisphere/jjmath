@@ -57,7 +57,13 @@ theorem riemannSphereInv_inv (z : RiemannSphere) :
     riemannSphereInv (riemannSphereInv z) = z :=
   riemannSphereInv_involutive z
 
-/-- Inversion as a self-homeomorphism of the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Spherical inversion homeomorphism
+statement:
+  Inversion is the self-homeomorphism of $\widehat{\mathbb C}$ that exchanges $0$ and $\infty$ and sends each nonzero finite point $z$ to $z^{-1}$.
+-/
 def riemannSphereInvHomeomorph : RiemannSphere ≃ₜ RiemannSphere where
   toFun := riemannSphereInv
   invFun := riemannSphereInv
@@ -81,7 +87,13 @@ theorem riemannSphereInvHomeomorph_apply (z : RiemannSphere) :
     riemannSphereInvHomeomorph z = riemannSphereInv z :=
   rfl
 
-/-- The affine coordinate on the finite part of the Riemann sphere. -/
+/--
+%%handwave
+name:
+  Finite affine chart of the Riemann sphere
+statement:
+  The finite affine chart identifies $\widehat{\mathbb C}\setminus\{\infty\}$ homeomorphically with $\mathbb C$ by sending each finite point to its complex coordinate.
+-/
 def riemannSphereFiniteChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   (OnePoint.isOpenEmbedding_coe.toOpenPartialHomeomorph
     ((↑) : ℂ → RiemannSphere)).symm
@@ -149,7 +161,13 @@ theorem riemannSphereFiniteChart_symm_apply (z : ℂ) :
     riemannSphereFiniteChart.symm z = (z : RiemannSphere) :=
   rfl
 
-/-- The reciprocal coordinate near infinity. -/
+/--
+%%handwave
+name:
+  Reciprocal chart of the Riemann sphere
+statement:
+  The reciprocal chart identifies $\widehat{\mathbb C}\setminus\{0\}$ with $\mathbb C$ by first applying spherical inversion and then the finite affine coordinate.
+-/
 def riemannSphereInfinityChart : OpenPartialHomeomorph RiemannSphere ℂ :=
   riemannSphereInvHomeomorph.toOpenPartialHomeomorph.trans riemannSphereFiniteChart
 
@@ -460,50 +478,6 @@ theorem riemannSphereTranslation_mdifferentiable (a : ℂ) :
 /--
 %%handwave
 name:
-  Nonzero dilations are holomorphic on the Riemann sphere
-statement:
-  If \(a\in\mathbb C^\times\), the map \(z\mapsto az\) on finite points,
-  extended by \(\infty\mapsto\infty\), is holomorphic on \(\widehat{\mathbb C}\).
-proof:
-  In the affine chart the map is \(z\mapsto az\), while in the reciprocal chart
-  at infinity it is \(w\mapsto w/a\); both expressions are holomorphic.
--/
-theorem riemannSphereDilation_mdifferentiable {a : ℂ} (ha : a ≠ 0) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (riemannSphereDilation a) := by
-  intro z
-  induction z using OnePoint.rec with
-  | infty =>
-      rw [mdifferentiableAt_iff_of_mem_source
-        (mem_chart_source ℂ OnePoint.infty)
-        (mem_chart_source ℂ (riemannSphereDilation a OnePoint.infty))]
-      constructor
-      · exact (riemannSphereDilation_continuous ha).continuousAt
-      · simp [extChartAt, Function.comp_def]
-        have heq :
-            (fun x : ℂ ↦ riemannSphereInfinityChart
-              (riemannSphereDilation a (riemannSphereInv (x : RiemannSphere)))) =
-              fun x : ℂ ↦ x / a := by
-          funext x
-          by_cases hx : x = 0
-          · subst x
-            simp
-          · simp [riemannSphereInv_coe_of_ne_zero hx,
-              mul_ne_zero ha (inv_ne_zero hx)]
-            field_simp [ha, hx]
-        rw [heq]
-        fun_prop
-  | coe z =>
-      rw [mdifferentiableAt_iff_of_mem_source
-        (mem_chart_source ℂ (z : RiemannSphere))
-        (mem_chart_source ℂ (riemannSphereDilation a (z : RiemannSphere)))]
-      constructor
-      · exact (riemannSphereDilation_continuous ha).continuousAt
-      · simp [extChartAt, Function.comp_def]
-        fun_prop
-
-/--
-%%handwave
-name:
   Spherical inversion is holomorphic
 statement:
   The involution exchanging (0) and \(\infty\) and sending each
@@ -546,150 +520,6 @@ theorem riemannSphereInv_mdifferentiable :
           refine (differentiableAt_inv hz).congr_of_eventuallyEq ?_
           filter_upwards [eventually_ne_nhds hz] with x hx
           simp [riemannSphereInv_coe_of_ne_zero hx]
-
-/--
-%%handwave
-name:
-  Möbius transformations are holomorphic on the Riemann sphere
-statement:
-  Every matrix \(A\in\operatorname{GL}_2(\mathbb C)\) acts holomorphically on
-  \(\widehat{\mathbb C}\) by its fractional-linear transformation.
-proof:
-  If the lower-left entry vanishes, factor the action into a nonzero dilation
-  and a translation.  Otherwise factor it into two translations, inversion,
-  and a nonzero dilation; the preceding holomorphicity results are stable under composition.
--/
-theorem mobiusRepresentative_smul_mdifferentiable (A : MobiusRepresentative) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun z : RiemannSphere ↦ A • z) := by
-  by_cases hc : A 1 0 = 0
-  · have hdet : A 0 0 * A 1 1 - A 0 1 * A 1 0 ≠ 0 := by
-      simpa [Matrix.det_fin_two] using A.det_ne_zero
-    have ha : A 0 0 ≠ 0 := by
-      intro h
-      exact hdet (by simp [h, hc])
-    have hd : A 1 1 ≠ 0 := by
-      intro h
-      exact hdet (by simp [h, hc])
-    let F : RiemannSphere → RiemannSphere :=
-      riemannSphereTranslation (A 0 1 / A 1 1) ∘
-        riemannSphereDilation (A 0 0 / A 1 1)
-    have hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F := by
-      exact (riemannSphereTranslation_mdifferentiable (A 0 1 / A 1 1)).comp
-        (riemannSphereDilation_mdifferentiable (div_ne_zero ha hd))
-    have hEq : (fun z : RiemannSphere ↦ A • z) = F := by
-      funext z
-      induction z using OnePoint.rec with
-      | infty => simp [F, OnePoint.smul_infty_eq_ite, hc]
-      | coe z =>
-          rw [OnePoint.smul_some_eq_ite]
-          simp [F, hc, hd]
-          field_simp [hd]
-    rw [hEq]
-    exact hF
-  · let Δ : ℂ := A 0 0 * A 1 1 - A 0 1 * A 1 0
-    have hdet : Δ ≠ 0 := by
-      simpa [Δ, Matrix.det_fin_two] using A.det_ne_zero
-    have hk : -Δ / (A 1 0) ^ 2 ≠ 0 :=
-      div_ne_zero (neg_ne_zero.mpr hdet) (pow_ne_zero 2 hc)
-    let F : RiemannSphere → RiemannSphere :=
-      riemannSphereTranslation (A 0 0 / A 1 0) ∘
-        riemannSphereDilation (-Δ / (A 1 0) ^ 2) ∘
-          riemannSphereInv ∘
-            riemannSphereTranslation (A 1 1 / A 1 0)
-    have hF : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) F := by
-      exact (riemannSphereTranslation_mdifferentiable (A 0 0 / A 1 0)).comp
-        ((riemannSphereDilation_mdifferentiable hk).comp
-          (riemannSphereInv_mdifferentiable.comp
-            (riemannSphereTranslation_mdifferentiable (A 1 1 / A 1 0))))
-    have hEq : (fun z : RiemannSphere ↦ A • z) = F := by
-      funext z
-      induction z using OnePoint.rec with
-      | infty => simp [F, OnePoint.smul_infty_eq_ite, hc]
-      | coe z =>
-          rw [OnePoint.smul_some_eq_ite]
-          by_cases hden : A 1 0 * z + A 1 1 = 0
-          · have htrans0 : z + A 1 1 / A 1 0 = 0 := by
-              apply mul_left_cancel₀ hc
-              field_simp [hc]
-              simpa [mul_add, add_comm, add_left_comm, add_assoc] using hden
-            simp [F, hden, htrans0]
-          · have htrans_ne : z + A 1 1 / A 1 0 ≠ 0 := by
-              intro hz
-              apply hden
-              calc
-                A 1 0 * z + A 1 1 = A 1 0 * (z + A 1 1 / A 1 0) := by
-                  field_simp [hc]
-                _ = 0 := by simp [hz]
-            simp [F, hden, htrans_ne]
-            have hden' : z * A 1 0 + A 1 1 ≠ 0 := by
-              simpa [mul_comm] using hden
-            field_simp [hc, hden, hden', htrans_ne, Δ]
-            ring
-    rw [hEq]
-    exact hF
-
-/-- A Möbius representative acts by a homeomorphism of the Riemann sphere. -/
-def mobiusRepresentativeHomeomorph (A : MobiusRepresentative) :
-    RiemannSphere ≃ₜ RiemannSphere where
-  toFun z := A • z
-  invFun z := A⁻¹ • z
-  left_inv z := by simp
-  right_inv z := by simp
-  continuous_toFun := mobiusRepresentative_smul_continuous A
-  continuous_invFun := mobiusRepresentative_smul_continuous A⁻¹
-
-/--
-%%handwave
-name:
-  Evaluation of the Möbius homeomorphism
-statement:
-  For \(A\in\operatorname{GL}_2(\mathbb C)\) and
-  \(z\in\widehat{\mathbb C}\), the homeomorphism associated with \(A\) sends
-  \(z\) to the fractional-linear action \(A\cdot z\).
-proof:
-  This is the defining forward map of the homeomorphism.
--/
-@[simp]
-theorem mobiusRepresentativeHomeomorph_apply
-    (A : MobiusRepresentative) (z : RiemannSphere) :
-    mobiusRepresentativeHomeomorph A z = A • z :=
-  rfl
-
-/--
-%%handwave
-name:
-  Evaluation of the inverse Möbius homeomorphism
-statement:
-  For \(A\in\operatorname{GL}_2(\mathbb C)\) and
-  \(z\in\widehat{\mathbb C}\), the inverse homeomorphism sends \(z\) to
-  \(A^{-1}\cdot z\).
-proof:
-  This is the defining inverse map of the Möbius homeomorphism.
--/
-@[simp]
-theorem mobiusRepresentativeHomeomorph_symm_apply
-    (A : MobiusRepresentative) (z : RiemannSphere) :
-    (mobiusRepresentativeHomeomorph A).symm z = A⁻¹ • z :=
-  rfl
-
-/--
-%%handwave
-name:
-  Möbius transformations are holomorphic local diffeomorphisms
-statement:
-  For every \(A\in\operatorname{GL}_2(\mathbb C)\), both the Möbius
-  homeomorphism of \(\widehat{\mathbb C}\) induced by \(A\) and its inverse are
-  holomorphic on their full domains.
-proof:
-  Apply [Möbius transformations are holomorphic on the Riemann sphere](lean:JJMath.mobiusRepresentative_smul_mdifferentiable) to \(A\) and \(A^{-1}\).
--/
-theorem mobiusRepresentative_openPartialHomeomorph_mdifferentiable
-    (A : MobiusRepresentative) :
-    (mobiusRepresentativeHomeomorph A).toOpenPartialHomeomorph.MDifferentiable
-      𝓘(ℂ) 𝓘(ℂ) := by
-  constructor
-  · simpa using (mobiusRepresentative_smul_mdifferentiable A).mdifferentiableOn
-  · simpa using (mobiusRepresentative_smul_mdifferentiable A⁻¹).mdifferentiableOn
 
 end
 

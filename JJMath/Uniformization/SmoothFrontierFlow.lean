@@ -27,9 +27,14 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
-/-- The fiberwise positive half-space selected by the signed boundary
-coordinate at frontier points.  Away from the frontier there is no
-restriction. -/
+/--
+%%handwave
+name: The fiberwise positive half-space selected by the signed boundary coordinate at frontier points
+statement:
+  At $x\in\partial\Omega$, define the open tangent half-space
+  $\{v:ds_x(v)>0\}$ selected by the global signed boundary coordinate $s$;
+  at points away from the frontier, take the entire tangent space.
+-/
 def smoothFrontierPositiveTangentCone
     (D : SmoothBoundaryDomain X) (x : X) :
     Set (TangentSpace SurfaceRealModel x) :=
@@ -210,7 +215,13 @@ theorem exists_smoothFrontierTransverseVectorField
     ⟨V, hV⟩
   exact ⟨V, V.contMDiff, fun x hx => hV x hx⟩
 
-/-- A fixed choice of smooth vector field transverse to the frontier. -/
+/--
+%%handwave
+name: A fixed choice of smooth vector field transverse to the frontier
+statement:
+  Choose a global smooth vector field $V$ such that $ds_x(V_x)>0$ at every
+  $x\in\partial\Omega$.
+-/
 noncomputable def smoothFrontierTransverseVectorField
     (D : SmoothBoundaryDomain X) (x : X) :
     TangentSpace SurfaceRealModel x :=
@@ -232,8 +243,13 @@ theorem smoothFrontierTransverseVectorField_contMDiff
         TangentBundle SurfaceRealModel X)) :=
   (Classical.choose_spec (exists_smoothFrontierTransverseVectorField D)).1
 
-/-- The chosen transverse vector field written in the fixed tangent
-trivialization and base chart centered at `x`. -/
+/--
+%%handwave
+name: Coordinate expression of the transverse vector field
+statement:
+  The chosen transverse vector field written in the fixed tangent
+  trivialization and base chart centered at $x$.
+-/
 noncomputable def smoothFrontierCoordinateVectorField
     (D : SmoothBoundaryDomain X) (x : X) (z : ℂ) : ℂ :=
   let y := (extChartAt SurfaceRealModel x).symm z
@@ -751,8 +767,13 @@ theorem fderiv_smoothBoundaryGlobalSignedCoordinate_comp_extChartAt_symm_pos
   rw [fderiv_smoothBoundaryGlobalSignedCoordinate_comp_extChartAt_symm]
   exact smoothFrontierTransverseVectorField_mfderiv_pos D x.2
 
-/-- The derivative of the signed boundary coordinate in the direction of the
-chosen smooth transverse field. -/
+/--
+%%handwave
+name: The derivative of the signed boundary coordinate in the direction of the chosen smooth transverse field
+statement:
+  Define the smooth scalar function $a(x)=ds_x(V_x)$ for the chosen
+  transverse field $V$.
+-/
 noncomputable def smoothFrontierTransverseDerivative
     (D : SmoothBoundaryDomain X) (x : X) : ℝ :=
   tangentMap SurfaceRealModel 𝓘(ℝ)

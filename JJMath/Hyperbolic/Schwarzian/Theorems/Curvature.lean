@@ -11,36 +11,18 @@ open UpperHalfPlane
 noncomputable section
 
 /--
-The local analytic theorem target: a constant-curvature conformal factor
-produces a holomorphic Schwarzian coefficient.
-
-The formal calculation of `∂_{\bar z} (u_zz - u_z ^ 2) = 0` is above, and the
-Cauchy-Riemann bridge `∂_{\bar z} q = 0 ⇒ q` holomorphic is now formalized.
-The remaining boundary is to derive the required Wirtinger identities from the
-current smooth conformal factor and express the symbolic `∂_{\bar z}` equation
-as `HasDBarZeroOn`.
--/
-def ConstantCurvatureProducesHolomorphicSchwarzianTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) (K : ℝ),
-    u.SolvesConstantCurvatureEquation K → Nonempty (LocalSchwarzianData u)
-
-/--
 Sharper target: constant curvature produces Schwarzian data together with the
 proof that the stored coefficient is the metric Schwarzian of `u`.
+
+%%handwave
+name:
+  Constant curvature produces metric Schwarzian data
+statement:
+  This proposition asserts that every conformal factor satisfying $\Delta u=-Ke^{2u}$ determines holomorphic local Schwarzian data whose coefficient is $2(u_{zz}-u_z^2)$.
 -/
 def ConstantCurvatureProducesMetricSchwarzianDataTheorem : Prop :=
   ∀ (u : LocalConformalFactor) (K : ℝ),
     u.SolvesConstantCurvatureEquation K → Nonempty (LocalMetricSchwarzianData u)
-
-/--
-Sharper analytic target: constant curvature first produces the unscaled
-Liouville expression `q = u_zz - u_z ^ 2` with `∂_{\bar z} q = 0`.
-
-The actual Schwarzian data then follows by multiplying this coefficient by `2`.
--/
-def ConstantCurvatureProducesHalfSchwarzianDataTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) (K : ℝ),
-    u.SolvesConstantCurvatureEquation K → Nonempty (LocalHalfSchwarzianData u)
 
 /--
 Concrete Frechet/Wirtinger derivative package target.
@@ -49,6 +31,12 @@ This is now the main low-level analytic boundary for producing the
 half-Schwarzian coefficient from a constant-curvature conformal factor.  The
 functions in the package are no longer arbitrary symbolic fields: they are the
 canonical Frechet-level Wirtinger expressions built from `u.logDensity`.
+
+%%handwave
+name:
+  Constant curvature produces canonical Wirtinger data
+statement:
+  This proposition asserts that every conformal factor satisfying $\Delta u=-Ke^{2u}$ has canonical Fréchet--Wirtinger fields satisfying the mixed-derivative, exponential-derivative, and Schwarzian product-rule identities.
 -/
 def ConstantCurvatureProducesWirtingerDerivativePackageTheorem : Prop :=
   ∀ (u : LocalConformalFactor) (K : ℝ),
@@ -115,186 +103,19 @@ theorem constantCurvatureProducesMetricSchwarzianDataTheorem :
     constantCurvatureProducesWirtingerDerivativePackageTheorem
 
 /--
-%%handwave
-name:
-  A metric Schwarzian is a holomorphic Schwarzian coefficient
-statement:
-  If every constant-curvature conformal factor has a holomorphic metric
-  Schwarzian \(S_u=2(u_{zz}-u_z^2)\), then every such factor has a holomorphic
-  Schwarzian coefficient on the same coordinate domain.
-proof:
-  Retain the holomorphic coefficient and forget only its additional
-  identification with the derivatives of \(u\).
--/
-theorem constantCurvatureProducesHolomorphicSchwarzianTheorem_of_metricSchwarzianData
-    (h : ConstantCurvatureProducesMetricSchwarzianDataTheorem) :
-    ConstantCurvatureProducesHolomorphicSchwarzianTheorem := by
-  intro u K hK
-  rcases h u K hK with ⟨M⟩
-  exact ⟨M.toLocalSchwarzianData⟩
-
-/--
-%%handwave
-name:
-  Constant curvature yields a holomorphic Schwarzian coefficient
-statement:
-  For every smooth conformal factor \(u\) satisfying
-  \(\Delta u=-K e^{2u}\), there is a holomorphic Schwarzian coefficient on the
-  coordinate domain of \(u\).
-proof:
-  The constant-curvature calculation makes
-  \(S_u=2(u_{zz}-u_z^2)\) holomorphic; use this metric Schwarzian as the
-  required coefficient.
--/
-theorem constantCurvatureProducesHolomorphicSchwarzianTheorem :
-    ConstantCurvatureProducesHolomorphicSchwarzianTheorem :=
-  constantCurvatureProducesHolomorphicSchwarzianTheorem_of_metricSchwarzianData
-    constantCurvatureProducesMetricSchwarzianDataTheorem
-
-/--
-The next combined local theorem target: constant curvature produces local
-solutions of the Schwarzian equation, hence local projective coordinates.
--/
-def ConstantCurvatureProducesLocalSchwarzianODEChartsTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) (K : ℝ) ⦃z : ℂ⦄,
-    u.SolvesConstantCurvatureEquation K → z ∈ u.coordinateDomain →
-      ∃ (S : LocalSchwarzianData u) (C : LocalSchwarzianODEChart S), z ∈ C.domain
-
-/--
-Constant curvature produces local projective developing maps: in a small
-coordinate ball the developing coordinate is the Riemann-sphere-valued
-projectivization of a ratio of two normalized ODE solutions.
--/
-def ConstantCurvatureProducesLocalProjectiveDevelopingMapsTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) (K : ℝ) ⦃z : ℂ⦄,
-    u.SolvesConstantCurvatureEquation K → z ∈ u.coordinateDomain →
-      ∃ (S : LocalSchwarzianData u) (D : LocalProjectiveDevelopingMap S), z ∈ D.domain
-
-/--
-The holomorphic-Schwarzian theorem plus local projective-developing-map
-solvability gives local projective developing maps.
--/
-def constantCurvatureProducesLocalProjectiveDevelopingMapsTheorem_of_schwarzian
-    (hS : ConstantCurvatureProducesHolomorphicSchwarzianTheorem)
-    (hDev : HolomorphicSchwarzianLocalProjectiveDevelopingMapTheorem) :
-    ConstantCurvatureProducesLocalProjectiveDevelopingMapsTheorem := by
-  intro u K z hK hz
-  rcases hS u K hK with ⟨S⟩
-  rcases hDev S hz with ⟨D, hDz⟩
-  exact ⟨S, D, hDz⟩
-
-/--
-The holomorphic-Schwarzian theorem plus Frobenius-pair existence gives local
-projective developing maps.
--/
-def constantCurvatureProducesLocalProjectiveDevelopingMapsTheorem_of_frobenius
-    (hS : ConstantCurvatureProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem) :
-    ConstantCurvatureProducesLocalProjectiveDevelopingMapsTheorem :=
-  constantCurvatureProducesLocalProjectiveDevelopingMapsTheorem_of_schwarzian hS
-    (holomorphicSchwarzianLocalProjectiveDevelopingMapTheorem_of_frobeniusPairExistence hFrob)
-
-/-- The hyperbolic specialization of the holomorphic-Schwarzian target. -/
-def HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem : Prop :=
-  ∀ (u : LocalConformalFactor),
-    u.SolvesLiouvilleEquation → Nonempty (LocalSchwarzianData u)
-
-/--
 Hyperbolic specialization of the metric-Schwarzian target: the local
 Schwarzian coefficient is not merely holomorphic, but is identified with the
 canonical metric Schwarzian of the Liouville factor.
+
+%%handwave
+name:
+  Hyperbolic Liouville equation produces metric Schwarzian data
+statement:
+  This proposition asserts that every $u$ satisfying $\Delta u=e^{2u}$ determines holomorphic local Schwarzian data with coefficient $2(u_{zz}-u_z^2)$.
 -/
 def HyperbolicLiouvilleProducesMetricSchwarzianDataTheorem : Prop :=
   ∀ (u : LocalConformalFactor),
     u.SolvesLiouvilleEquation → Nonempty (LocalMetricSchwarzianData u)
-
-/-- Hyperbolic specialization of the unscaled Liouville Schwarzian target. -/
-def HyperbolicLiouvilleProducesHalfSchwarzianDataTheorem : Prop :=
-  ∀ (u : LocalConformalFactor),
-    u.SolvesLiouvilleEquation → Nonempty (LocalHalfSchwarzianData u)
-
-/--
-Hyperbolic specialization of the concrete Frechet/Wirtinger derivative package
-target.
--/
-def HyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem : Prop :=
-  ∀ (u : LocalConformalFactor),
-    u.SolvesLiouvilleEquation → Nonempty (u.WirtingerDerivativePackage (-1))
-
-/--
-%%handwave
-name:
-  Scaling the hyperbolic half-Schwarzian
-statement:
-  If \(q=u_{zz}-u_z^2\) is holomorphic for every solution of
-  \(\Delta u=e^{2u}\), then \(S_u=2q\) is a holomorphic Schwarzian coefficient
-  for every such solution.
-proof:
-  Multiply the holomorphic half-Schwarzian by two and retain the same domain.
--/
-theorem hyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem_of_halfSchwarzian
-    (h : HyperbolicLiouvilleProducesHalfSchwarzianDataTheorem) :
-    HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem := by
-  intro u hu
-  rcases h u hu with ⟨H⟩
-  exact ⟨H.toLocalSchwarzianData⟩
-
-/--
-%%handwave
-name:
-  The hyperbolic half-Schwarzian from Wirtinger calculus
-statement:
-  Suppose the canonical Wirtinger derivatives are available for solutions of
-  \(\Delta u=e^{2u}\). Then \(q=u_{zz}-u_z^2\) is holomorphic on the
-  coordinate domain of every solution \(u\).
-proof:
-  Regard the Liouville equation as the constant-curvature equation with
-  \(K=-1\). The mixed-derivative product-rule identity then gives
-  \(\partial_{\bar z}q=0\).
--/
-theorem hyperbolicLiouvilleProducesHalfSchwarzianDataTheorem_of_wirtingerDerivativePackage
-    (hW : HyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem) :
-    HyperbolicLiouvilleProducesHalfSchwarzianDataTheorem := by
-  intro u hu
-  rcases hW u hu with ⟨W⟩
-  exact ⟨W.toLocalHalfSchwarzianData
-    ((u.solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one).mp hu)⟩
-
-/--
-%%handwave
-name:
-  The hyperbolic Schwarzian from Wirtinger calculus
-statement:
-  If canonical Wirtinger calculus is available for every solution of
-  \(\Delta u=e^{2u}\), then \(S_u=2(u_{zz}-u_z^2)\) is holomorphic on the
-  coordinate domain of \(u\).
-proof:
-  First obtain the holomorphic half-Schwarzian
-  \(u_{zz}-u_z^2\), and then multiply it by two.
--/
-theorem hyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem_of_wirtingerDerivativePackage
-    (hW : HyperbolicLiouvilleProducesWirtingerDerivativePackageTheorem) :
-    HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem :=
-  hyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem_of_halfSchwarzian
-    (hyperbolicLiouvilleProducesHalfSchwarzianDataTheorem_of_wirtingerDerivativePackage hW)
-
-/--
-%%handwave
-name:
-  Holomorphic Schwarzian of a hyperbolic conformal factor
-statement:
-  If \(u\) satisfies the hyperbolic Liouville equation
-  \(\Delta u=e^{2u}\), then \(S_u=2(u_{zz}-u_z^2)\) is holomorphic on the
-  coordinate domain of \(u\).
-proof:
-  This is the constant-curvature Schwarzian calculation specialized to
-  \(K=-1\).
--/
-theorem hyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem :
-    HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem :=
-  fun u hu ↦
-    constantCurvatureProducesHolomorphicSchwarzianTheorem u (-1)
-      ((u.solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one).mp hu)
 
 /--
 %%handwave
@@ -319,323 +140,6 @@ theorem hyperbolicLiouvilleProducesMetricSchwarzianDataTheorem :
   fun u hu ↦
     constantCurvatureProducesMetricSchwarzianDataTheorem u (-1)
       ((u.solvesLiouvilleEquation_iff_solvesConstantCurvatureEquation_neg_one).mp hu)
-
-/-- Hyperbolic specialization of the local Schwarzian ODE chart target. -/
-def HyperbolicLiouvilleProducesLocalSchwarzianODEChartsTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) ⦃z : ℂ⦄,
-    u.SolvesLiouvilleEquation → z ∈ u.coordinateDomain →
-      ∃ (S : LocalSchwarzianData u) (C : LocalSchwarzianODEChart S), z ∈ C.domain
-
-/-- Hyperbolic specialization of the local projective developing-map target. -/
-def HyperbolicLiouvilleProducesLocalProjectiveDevelopingMapsTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) ⦃z : ℂ⦄,
-    u.SolvesLiouvilleEquation → z ∈ u.coordinateDomain →
-      ∃ (S : LocalSchwarzianData u) (D : LocalProjectiveDevelopingMap S), z ∈ D.domain
-
-/--
-Pointwise local projective Schwarzian solutions plus precise two-jet
-normalization and metric recovery produce a ball pre-atlas by retaining the
-actual two-jet shrinkings.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_twoJetNormalization
-    (hProj : HyperbolicLiouvilleProducesLocalProjectiveDevelopingMapsTheorem)
-    (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
-    (hRecovery : HyperbolicTwoJetNormalizationRecoversMetricTheorem) :
-    HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem := by
-  classical
-  intro u hu
-  let localProjective :
-      ∀ z : u.coordinateDomain,
-        Σ' S : LocalSchwarzianData u, Σ' D : LocalProjectiveDevelopingMap S,
-          (z : ℂ) ∈ D.domain :=
-    fun z ↦
-      let h :
-          ∃ (S : LocalSchwarzianData u) (D : LocalProjectiveDevelopingMap S),
-            (z : ℂ) ∈ D.domain :=
-        hProj u (z := (z : ℂ)) hu z.property
-      ⟨Classical.choose h,
-        Classical.choose (Classical.choose_spec h),
-        Classical.choose_spec (Classical.choose_spec h)⟩
-  let SAt : u.coordinateDomain → LocalSchwarzianData u :=
-    fun z ↦ (localProjective z).1
-  let DAt : ∀ z : u.coordinateDomain, LocalProjectiveDevelopingMap (SAt z) :=
-    fun z ↦ (localProjective z).2.1
-  have hDAt : ∀ z : u.coordinateDomain, (z : ℂ) ∈ (DAt z).domain := by
-    intro z
-    exact (localProjective z).2.2
-  let localTwoJet :
-      ∀ z : u.coordinateDomain,
-        Σ' N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization (DAt z) (z : ℂ),
-          (z : ℂ) ∈ N.domain :=
-    fun z ↦
-      let h :
-          ∃ N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization (DAt z) (z : ℂ),
-            (z : ℂ) ∈ N.domain :=
-        hJet (SAt z) (DAt z) hu (hDAt z)
-      ⟨Classical.choose h, Classical.choose_spec h⟩
-  let normalizationAt :
-      ∀ z : u.coordinateDomain,
-        LocalMetricRecoveringUpperHalfPlaneNormalization (DAt z) :=
-    fun z ↦
-      LocalMetricRecoveringUpperHalfPlaneNormalization.ofTwoJetNormalization
-        (localTwoJet z).1 (hRecovery (SAt z) (localTwoJet z).1 hu)
-  refine ⟨{
-    schwarzianAt := SAt
-    projectiveAt := DAt
-    normalizationAt := normalizationAt
-    mem_normalized_domain := ?_
-    ball_domain := ?_
-  }⟩
-  · intro z
-    exact (localTwoJet z).2
-  · intro z
-    rcases hyperbolicTwoJetNormalizationHasBallDomainTheorem
-        (SAt z) (localTwoJet z).1 with ⟨c, r, hdomain⟩
-    exact ⟨c, r, by
-      simpa [normalizationAt, LocalMetricRecoveringUpperHalfPlaneNormalization.ofTwoJetNormalization,
-        LocalUpperHalfPlaneDevelopingMap.domain,
-        LocalUpperHalfPlaneProjectiveNormalization.domain,
-        LocalHyperbolicTwoJetUpperHalfPlaneNormalization.domain] using hdomain⟩
-
-/--
-Pointwise local projective Schwarzian solutions plus the two-jet Riccati
-boundary produce a ball pre-atlas by retaining the actual two-jet shrinkings.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_twoJetRiccatiAnalyticBoundary
-    (hProj : HyperbolicLiouvilleProducesLocalProjectiveDevelopingMapsTheorem)
-    (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
-    (B : HyperbolicTwoJetRiccatiAnalyticBoundaryTheorems) :
-    HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_twoJetNormalization
-    hProj hJet B.recoversMetric
-
-/--
-Pointwise local projective Schwarzian solutions plus the
-derivative-identified pullback/corrected-Wirtinger boundary produce a ball
-pre-atlas.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_twoJetDerivIdentifiedMetricWirtingerBoundary
-    (hProj : HyperbolicLiouvilleProducesLocalProjectiveDevelopingMapsTheorem)
-    (hJet : HyperbolicProjectiveDevelopingMapAdmitsTwoJetNormalizationTheorem)
-    (B :
-      HyperbolicTwoJetCanonicalPullbackDerivIdentifiedCanonicalMetricWirtingerRiccatiBoundaryTheorems) :
-    HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_twoJetNormalization
-    hProj hJet B.recoversMetric
-
-/--
-Hyperbolic Liouville data produces genuine local `ℍ`-valued developing maps
-with the Poincare pullback squared-density formula.
--/
-def HyperbolicLiouvilleProducesLocalUpperHalfPlaneDevelopingMapsTheorem : Prop :=
-  ∀ (u : LocalConformalFactor) ⦃z : ℂ⦄,
-    u.SolvesLiouvilleEquation → z ∈ u.coordinateDomain →
-      ∃ (S : LocalSchwarzianData u) (H : LocalUpperHalfPlaneDevelopingMap S),
-        z ∈ H.domain
-
-/--
-%%handwave
-name:
-  Hyperbolic two-jet normalization of Frobenius coordinates
-statement:
-  Assume that hyperbolic conformal factors have holomorphic Schwarzians, the
-  corresponding second-order equation has centered Frobenius bases, Möbius
-  transformations act transitively on nondegenerate two-jets, and the
-  normalized jet lands in \(\mathbb H\). Then every point of the coordinate
-  domain has a centered Frobenius projective coordinate with a local
-  \(\mathbb H\)-valued two-jet normalization.
-proof:
-  Choose the holomorphic Schwarzian and a centered Frobenius pair at the given
-  point. Its ratio has a nondegenerate finite two-jet. Normalize that jet by a
-  Möbius transformation and use the landing hypothesis to obtain the desired
-  upper-half-plane branch.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_mobius
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hMobius : LocalProjectiveFrobeniusMobiusTwoJetTransitivityTheorem)
-    (hUpper : HyperbolicProjectiveTwoJetNormalizationLandsInUpperHalfPlaneTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem := by
-  intro u z hu hz
-  rcases hS u hu with ⟨S⟩
-  rcases hFrob S hz with ⟨a, ⟨P⟩⟩
-  have hzP : z ∈ P.toLocalProjectiveDevelopingMap.domain := by
-    simpa [CenteredNormalizedSchwarzianFrobeniusPair.toLocalProjectiveDevelopingMap,
-      CenteredNormalizedSchwarzianFrobeniusPair.toLocalSchwarzianODEChart,
-      LocalSchwarzianODEChart.toLocalProjectiveDevelopingMap] using
-      mem_centeredBallDomain_center P.radius_pos
-  rcases hyperbolicSchwarzianBaseJetExistenceTheorem hu
-      (P.toLocalProjectiveDevelopingMap.domain_subset hzP) with ⟨J⟩
-  rcases hMobius P hzP J.toNondegenerateFiniteTwoJet with ⟨M, _hMz⟩
-  rcases hUpper S J M hu with ⟨N, _hNM, hNz⟩
-  exact ⟨S, a, P, N, hNz⟩
-
-/--
-%%handwave
-name:
-  Frobenius two-jet normalization from Schwarzian invariance
-statement:
-  Assume centered Frobenius solutions exist, postcomposition by Möbius maps
-  preserves their Schwarzian, and the normalized jet lands in \(\mathbb H\).
-  Then every hyperbolic Liouville solution has a locally normalized
-  upper-half-plane Frobenius coordinate at each point.
-proof:
-  Schwarzian invariance gives Möbius transitivity for the Frobenius ratio.
-  Apply the resulting two-jet normalization and then the upper-half-plane
-  landing assertion.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_schwarzian
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hSchwarzian :
-      LocalProjectiveNormalFormPostcompositionSchwarzianInvariantTheorem)
-    (hUpper : HyperbolicProjectiveTwoJetNormalizationLandsInUpperHalfPlaneTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem :=
-  hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_mobius
-    hS hFrob
-    (localProjectiveFrobeniusMobiusTwoJetTransitivityTheorem_of_schwarzian
-      hSchwarzian)
-    hUpper
-
-/--
-%%handwave
-name:
-  Frobenius normalization from an upper-half-plane normal-form lift
-statement:
-  Suppose hyperbolic conformal factors have holomorphic Schwarzians, centered
-  Frobenius bases exist, and the normal-form postcomposition of each Frobenius
-  ratio lifts locally to \(\mathbb H\). Then every point admits a normalized
-  upper-half-plane Frobenius coordinate.
-proof:
-  Choose the Schwarzian, the centered Frobenius ratio, and its base two-jet.
-  Apply the assumed normal-form lift to this jet; its domain contains the base
-  point and provides the required normalized branch.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_normalFormLift
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hLift : LocalProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem := by
-  intro u z hu hz
-  rcases hS u hu with ⟨S⟩
-  rcases hFrob S hz with ⟨a, ⟨P⟩⟩
-  have hzP : z ∈ P.toLocalProjectiveDevelopingMap.domain := by
-    simpa [CenteredNormalizedSchwarzianFrobeniusPair.toLocalProjectiveDevelopingMap,
-      CenteredNormalizedSchwarzianFrobeniusPair.toLocalSchwarzianODEChart,
-      LocalSchwarzianODEChart.toLocalProjectiveDevelopingMap] using
-      mem_centeredBallDomain_center P.radius_pos
-  rcases hyperbolicSchwarzianBaseJetExistenceTheorem hu
-      (P.toLocalProjectiveDevelopingMap.domain_subset hzP) with ⟨J⟩
-  rcases
-      (localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_lift
-        hLift) P hzP J with
-    ⟨N, _hNJ, hNz⟩
-  exact ⟨S, a, P, N, hNz⟩
-
-/--
-%%handwave
-name:
-  Frobenius normalization from a prescribed two-jet normal form
-statement:
-  Suppose centered Frobenius coordinates exist for the holomorphic Schwarzian
-  of every hyperbolic conformal factor, and every such coordinate admits an
-  upper-half-plane normalization with a prescribed base two-jet. Then every
-  point admits a normalized upper-half-plane Frobenius coordinate.
-proof:
-  At the chosen point, select the Schwarzian and a centered Frobenius ratio.
-  Its base jet is defined and nondegenerate, so the normalization hypothesis
-  gives the desired local branch containing that point.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_normalFormNormalization
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hNorm : LocalProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem := by
-  intro u z hu hz
-  rcases hS u hu with ⟨S⟩
-  rcases hFrob S hz with ⟨a, ⟨P⟩⟩
-  have hzP : z ∈ P.toLocalProjectiveDevelopingMap.domain := by
-    simpa [CenteredNormalizedSchwarzianFrobeniusPair.toLocalProjectiveDevelopingMap,
-      CenteredNormalizedSchwarzianFrobeniusPair.toLocalSchwarzianODEChart,
-      LocalSchwarzianODEChart.toLocalProjectiveDevelopingMap] using
-      mem_centeredBallDomain_center P.radius_pos
-  rcases hyperbolicSchwarzianBaseJetExistenceTheorem hu
-      (P.toLocalProjectiveDevelopingMap.domain_subset hzP) with ⟨J⟩
-  rcases hNorm P hzP J with ⟨N, _hNJ, hNz⟩
-  exact ⟨S, a, P, N, hNz⟩
-
-/--
-%%handwave
-name:
-  Frobenius normalization from derivative identification
-statement:
-  Suppose the derivatives of every normal-form postcomposition of a centered
-  Frobenius ratio are identified with its formal first three derivatives. Then,
-  together with holomorphic Schwarzian and Frobenius existence, every point of
-  a hyperbolic Liouville solution admits a normalized \(\mathbb H\)-valued
-  Frobenius coordinate.
-proof:
-  The derivative identities produce the local upper-half-plane normal-form
-  lift. Apply the preceding normalization construction to that lift.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_derivativeIdentification
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hDeriv : LocalProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem :=
-  hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_normalFormLift
-    hS hFrob
-    (localProjectiveFrobeniusNormalFormUpperHalfPlaneLiftTheorem_of_derivativeIdentification
-      hDeriv)
-
-/--
-%%handwave
-name:
-  Frobenius normalization from the canonical third derivative
-statement:
-  Suppose the canonical normal-form postcomposition of every centered
-  Frobenius ratio has the prescribed third derivative at its base point. Then,
-  assuming holomorphic Schwarzian and Frobenius existence, every point of a
-  hyperbolic Liouville solution admits a normalized upper-half-plane
-  Frobenius coordinate.
-proof:
-  The third-derivative identity yields the full normal-form normalization.
-  Apply that normalization to the Frobenius ratio chosen at the point.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_canonicalThirdDerivativeIdentification
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hThird :
-      LocalProjectiveFrobeniusNormalFormCanonicalThirdDerivativeIdentificationTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem :=
-  hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_normalFormNormalization
-    hS hFrob
-    (localProjectiveFrobeniusNormalFormUpperHalfPlaneNormalizationTheorem_of_canonicalThirdDerivativeIdentification
-      hThird)
-
-/--
-%%handwave
-name:
-  Frobenius normalization from derivatives of the solution ratio
-statement:
-  Suppose the affine ratio of every centered Frobenius pair has its stated
-  complex derivative. Then holomorphic Schwarzian and Frobenius existence imply
-  that every point of a hyperbolic Liouville solution admits a normalized
-  upper-half-plane Frobenius coordinate.
-proof:
-  The derivative of the ratio and the chain rule identify the derivatives of
-  its Möbius normal form. This gives the normal-form lift, to which the
-  Frobenius normalization construction applies.
--/
-theorem hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_affineHasDerivAt
-    (hS : HyperbolicLiouvilleProducesHolomorphicSchwarzianTheorem)
-    (hFrob : HolomorphicSchwarzianFrobeniusPairExistenceTheorem)
-    (hBase : LocalProjectiveFrobeniusDevelopingMapAffineHasDerivAtTheorem) :
-    HyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem :=
-  hyperbolicLiouvilleProducesFrobeniusTwoJetNormalizationsTheorem_of_derivativeIdentification
-    hS hFrob
-    (localProjectiveFrobeniusNormalFormDerivativeIdentificationTheorem_of_affineHasDerivAt
-      hBase)
 
 /--
 %%handwave
@@ -913,6 +417,12 @@ theorem localSchwarzianDataProducesFrobeniusTwoJetNormalizationsDerivativeAlgebr
 /--
 Metric-Schwarzian Frobenius two-jet normalizations with derivative algebra
 for the branch constructed from the actual metric Schwarzian coefficient.
+
+%%handwave
+name:
+  Metric-Schwarzian Frobenius normalizations with derivative algebra
+statement:
+  This proposition asserts that at every point of a hyperbolic Liouville factor, its metric Schwarzian admits a centered normalized Frobenius quotient into $\mathbb H$ whose canonical pullback carries the full affine and Wirtinger derivative algebra.
 -/
 def HyperbolicLiouvilleProducesMetricSchwarzianFrobeniusTwoJetNormalizationsDerivativeAlgebraTheorem :
     Prop :=
@@ -974,118 +484,14 @@ theorem hyperbolicLiouvilleProducesMetricSchwarzianFrobeniusTwoJetNormalizations
     holomorphicSchwarzianFrobeniusPairExistence_of_localAnalytic
 
 /--
-The metric-Schwarzian Frobenius derivative-algebra construction also gives a
-coordinate-domain ball pre-atlas of metric-recovering normalized branches.
-The ball domains are retained from the actual two-jet normalizations.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_metricSchwarzian_frobeniusDerivativeAlgebra
-    (hMetricAlg :
-      HyperbolicLiouvilleProducesMetricSchwarzianFrobeniusTwoJetNormalizationsDerivativeAlgebraTheorem) :
-    HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem := by
-  classical
-  intro u hu
-  let localMetricAlg :
-      ∀ z : u.coordinateDomain,
-        Σ' M : LocalMetricSchwarzianData u,
-        Σ' a : ℕ → ℂ,
-        Σ' P : CenteredNormalizedSchwarzianFrobeniusPair
-          M.toLocalSchwarzianData.coefficient u.coordinateDomain (z : ℂ) a,
-        Σ' N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization
-          P.toLocalProjectiveDevelopingMap (z : ℂ),
-          (z : ℂ) ∈ N.domain ∧
-            Nonempty (LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N) :=
-    fun z ↦
-      let h :
-          ∃ (M : LocalMetricSchwarzianData u) (a : ℕ → ℂ)
-            (P : CenteredNormalizedSchwarzianFrobeniusPair
-              M.toLocalSchwarzianData.coefficient u.coordinateDomain (z : ℂ) a)
-            (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization
-              P.toLocalProjectiveDevelopingMap (z : ℂ)),
-            (z : ℂ) ∈ N.domain ∧
-              Nonempty (LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N) :=
-        hMetricAlg u hu z.property
-      ⟨Classical.choose h,
-        Classical.choose (Classical.choose_spec h),
-        Classical.choose (Classical.choose_spec (Classical.choose_spec h)),
-        Classical.choose
-          (Classical.choose_spec (Classical.choose_spec (Classical.choose_spec h))),
-        Classical.choose_spec
-          (Classical.choose_spec (Classical.choose_spec (Classical.choose_spec h)))⟩
-  let MAt : u.coordinateDomain → LocalMetricSchwarzianData u :=
-    fun z ↦ (localMetricAlg z).1
-  let SAt : u.coordinateDomain → LocalSchwarzianData u :=
-    fun z ↦ (MAt z).toLocalSchwarzianData
-  let PAt :
-      ∀ z : u.coordinateDomain,
-        CenteredNormalizedSchwarzianFrobeniusPair
-          (SAt z).coefficient u.coordinateDomain (z : ℂ)
-            ((localMetricAlg z).2.1) :=
-    fun z ↦ (localMetricAlg z).2.2.1
-  let DAt : ∀ z : u.coordinateDomain, LocalProjectiveDevelopingMap (SAt z) :=
-    fun z ↦ (PAt z).toLocalProjectiveDevelopingMap
-  let NAt :
-      ∀ z : u.coordinateDomain,
-        LocalHyperbolicTwoJetUpperHalfPlaneNormalization (DAt z) (z : ℂ) :=
-    fun z ↦ (localMetricAlg z).2.2.2.1
-  have hNAt : ∀ z : u.coordinateDomain, (z : ℂ) ∈ (NAt z).domain := by
-    intro z
-    exact (localMetricAlg z).2.2.2.2.1
-  have hAlgAt :
-      ∀ z : u.coordinateDomain,
-        Nonempty (LocalHyperbolicCanonicalPullbackDerivativeAlgebraData (NAt z)) := by
-    intro z
-    exact (localMetricAlg z).2.2.2.2.2
-  let normalizationAt :
-      ∀ z : u.coordinateDomain,
-        LocalMetricRecoveringUpperHalfPlaneNormalization (DAt z) :=
-    fun z ↦
-      LocalMetricRecoveringUpperHalfPlaneNormalization.ofTwoJetNormalization
-        (NAt z) (by
-          rcases hAlgAt z with ⟨A⟩
-          exact A.metric_recovery_of_originalMetricSchwarzian
-            hu (MAt z).originalMetricIdentification)
-  refine ⟨{
-    schwarzianAt := SAt
-    projectiveAt := DAt
-    normalizationAt := normalizationAt
-    mem_normalized_domain := ?_
-    ball_domain := ?_
-  }⟩
-  · intro z
-    exact hNAt z
-  · intro z
-    rcases hyperbolicTwoJetNormalizationHasBallDomainTheorem
-        (SAt z) (NAt z) with ⟨c, r, hdomain⟩
-    exact ⟨c, r, by
-      simpa [normalizationAt, LocalMetricRecoveringUpperHalfPlaneNormalization.ofTwoJetNormalization,
-        LocalUpperHalfPlaneDevelopingMap.domain,
-        LocalUpperHalfPlaneProjectiveNormalization.domain,
-        LocalHyperbolicTwoJetUpperHalfPlaneNormalization.domain] using hdomain⟩
-
-/--
-The proved metric-Schwarzian Frobenius derivative-algebra construction gives
-coordinate-domain metric-recovering normalization atlases with preconnected
-overlaps, because the chosen branch domains are balls.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem_of_metricSchwarzian_frobeniusDerivativeAlgebra_proved :
-    HyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianNormalizationAtlasTheorem_of_ballPreAtlas
-    (hyperbolicLiouvilleProducesLocalMetricRecoveringSchwarzianBallPreAtlasTheorem_of_metricSchwarzian_frobeniusDerivativeAlgebra
-      hyperbolicLiouvilleProducesMetricSchwarzianFrobeniusTwoJetNormalizationsDerivativeAlgebraTheorem_proved)
-
-/--
-Strengthened local output retaining the metric-Schwarzian data used to build
-each branch of the normalization atlas.
--/
-def HyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem :
-    Prop :=
-  ∀ u : LocalConformalFactor,
-    u.SolvesLiouvilleEquation →
-      Nonempty (LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas u)
-
-/--
 Strengthened local output retaining both the metric-Schwarzian data and the
 projective derivative algebra for the selected normalized branches.
+
+%%handwave
+name:
+  Derivative-data Schwarzian normalization atlas from Liouville
+statement:
+  This proposition asserts that every hyperbolic Liouville factor has an atlas of normalized upper-half-plane branches which recover the metric Schwarzian and retain their first three projective derivative identities.
 -/
 def HyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem :
     Prop :=
@@ -1097,6 +503,12 @@ def HyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchw
 The same metric-Schwarzian Frobenius construction gives the strengthened atlas
 that remembers the projective derivative algebra of each selected normalized
 branch.
+
+%%handwave
+name:
+  Assemble the derivative-data normalization atlas
+statement:
+  Assuming pointwise metric-Schwarzian Frobenius normalizations with derivative algebra, choose one at every point to form a normalization atlas retaining the metric identification and first three branch derivatives.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem_of_metricSchwarzian_frobeniusDerivativeAlgebra
     (hMetricAlg :
@@ -1222,118 +634,17 @@ noncomputable def hyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeData
         LocalHyperbolicTwoJetUpperHalfPlaneNormalization.domain] using
         B.affineMapSecondDeriv_hasDerivAt x hx
 
-/-- The strengthened derivative-data atlas forgets to the metric-data atlas theorem. -/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem_of_derivativeData
-    (h :
-      HyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem) :
-    HyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem := by
-  intro u hu
-  rcases h u hu with ⟨A⟩
-  exact ⟨A.toMetricDataAtlas⟩
-
-/-- Public closed form of the strengthened derivative-data normalization-atlas theorem. -/
+/-- Public closed form of the strengthened derivative-data normalization-atlas theorem.
+%%handwave
+name:
+  Canonical derivative-data normalization atlas for a Liouville factor
+statement:
+  Every solution of $\Delta u=e^{2u}$ admits an atlas of metric-recovering normalized Frobenius branches with their Schwarzian and projective derivative data.
+-/
 noncomputable def hyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem :
     HyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem :=
   hyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem_of_metricSchwarzian_frobeniusDerivativeAlgebra
     hyperbolicLiouvilleProducesMetricSchwarzianFrobeniusTwoJetNormalizationsDerivativeAlgebraTheorem_proved
-
-/-- Public closed form of the strengthened metric-data normalization-atlas theorem. -/
-noncomputable def hyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem :
-    HyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem_of_derivativeData
-    hyperbolicLiouvilleProducesLocalMetricSchwarzianDerivativeDataRecoveringSchwarzianNormalizationAtlasTheorem
-
-/--
-The strengthened metric-data normalization atlas, branch regularity, and the
-coefficient-aware one-jet uniqueness theorem give real upper-half-plane branch
-atlases.  Empty off-diagonal overlaps are vacuous and diagonal transitions are
-identity transitions.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricData_branchContinuity_affineDerivative_oneJetUniqueness
-    (hMetricData :
-      HyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem)
-    (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
-    (hAffine :
-      LocalUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem)
-    (hUnique :
-      PointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem) :
-    HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem := by
-  intro u hu
-  rcases hMetricData u hu with ⟨A⟩
-  let Aold : LocalMetricRecoveringSchwarzianNormalizationAtlas u :=
-    A.toLocalMetricRecoveringSchwarzianNormalizationAtlas
-  let R : LocalRealSchwarzianNormalizationAtlas u :=
-    { toLocalMetricRecoveringSchwarzianNormalizationAtlas := Aold
-      transition_realMobius := by
-        intro z w
-        by_cases hzw : z = w
-        · subst w
-          change (A.normalizedBranch z).HasRealMobiusTransition (A.normalizedBranch z)
-          exact LocalUpperHalfPlaneDevelopingMap.hasRealMobiusTransition_self
-            (A.normalizedBranch z)
-        · by_cases hne :
-            Set.Nonempty ((A.normalizedBranch z).domain ∩ (A.normalizedBranch w).domain)
-          · change (A.normalizedBranch z).HasRealMobiusTransition (A.normalizedBranch w)
-            exact
-              A.hasOverlappingOffDiagonalRealTransitions_of_branchContinuity_affineDerivative_oneJetUniqueness
-                hBranch hAffine hUnique hu z w hzw hne
-          · refine ⟨1, ?_⟩
-            intro x hxz hxw
-            exfalso
-            exact hne ⟨x, ⟨by simpa [Aold,
-              LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.normalizedBranch,
-              LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.toLocalMetricRecoveringSchwarzianNormalizationAtlas,
-              LocalMetricRecoveringSchwarzianNormalizationAtlas.normalizedBranch] using hxz,
-              by simpa [Aold,
-                LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.normalizedBranch,
-                LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.toLocalMetricRecoveringSchwarzianNormalizationAtlas,
-                LocalMetricRecoveringSchwarzianNormalizationAtlas.normalizedBranch] using hxw⟩⟩ }
-  exact ⟨R.toLocalRealUpperHalfPlaneBranchAtlas⟩
-
-/--
-The strengthened metric-data atlas route with branch regularity and
-coefficient-aware local uniqueness supplied by the symbolic projective
-derivative fields.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricData_projectiveFirstSecondDerivative_scalarClosed
-    (hMetricData :
-      HyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem)
-    (hProjFirst :
-      LocalUpperHalfPlaneDevelopingMapProjectiveFirstDerivativeHasDerivAtTheorem)
-    (hProjSecond :
-      LocalUpperHalfPlaneDevelopingMapProjectiveSecondDerivativeHasDerivAtTheorem) :
-    HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem := by
-  intro u hu
-  rcases hMetricData u hu with ⟨A⟩
-  let Aold : LocalMetricRecoveringSchwarzianNormalizationAtlas u :=
-    A.toLocalMetricRecoveringSchwarzianNormalizationAtlas
-  let R : LocalRealSchwarzianNormalizationAtlas u :=
-    { toLocalMetricRecoveringSchwarzianNormalizationAtlas := Aold
-      transition_realMobius := by
-        intro z w
-        by_cases hzw : z = w
-        · subst w
-          change (A.normalizedBranch z).HasRealMobiusTransition (A.normalizedBranch z)
-          exact LocalUpperHalfPlaneDevelopingMap.hasRealMobiusTransition_self
-            (A.normalizedBranch z)
-        · by_cases hne :
-            Set.Nonempty ((A.normalizedBranch z).domain ∩ (A.normalizedBranch w).domain)
-          · change (A.normalizedBranch z).HasRealMobiusTransition (A.normalizedBranch w)
-            exact
-              A.hasOverlappingOffDiagonalRealTransitions_of_projectiveFirstSecondDerivative_scalarClosed
-                hProjFirst hProjSecond hu z w hzw hne
-          · refine ⟨1, ?_⟩
-            intro x hxz hxw
-            exfalso
-            exact hne ⟨x, ⟨by simpa [Aold,
-              LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.normalizedBranch,
-              LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.toLocalMetricRecoveringSchwarzianNormalizationAtlas,
-              LocalMetricRecoveringSchwarzianNormalizationAtlas.normalizedBranch] using hxz,
-              by simpa [Aold,
-                LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.normalizedBranch,
-                LocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlas.toLocalMetricRecoveringSchwarzianNormalizationAtlas,
-                LocalMetricRecoveringSchwarzianNormalizationAtlas.normalizedBranch] using hxw⟩⟩ }
-  exact ⟨R.toLocalRealUpperHalfPlaneBranchAtlas⟩
 
 /--
 The derivative-data atlas route to real Schwarzian normalization atlases:
@@ -1341,6 +652,12 @@ coefficient agreement, branch derivative regularity, closedness of the one-jet
 equality locus, and connected-overlap propagation are all supplied by the
 atlas.  The remaining input is the pair-shaped local Schwarzian uniqueness
 theorem.
+
+%%handwave
+name:
+  Real Schwarzian atlas from derivative data and one-jet uniqueness
+statement:
+  If a metric-recovering normalization atlas retains coefficient and derivative data, and equal-Schwarzian normalized branches with matching one-jets differ locally by real Möbius transformations, then the atlas has real Möbius transitions.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_derivativeData_pairProjectiveDerivativeUniqueness
     (hDerivativeData :
@@ -1364,6 +681,12 @@ noncomputable def hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtl
 /--
 Closed derivative-data real Schwarzian-normalization route using the proved
 Frobenius metric-Schwarzian derivative-data construction.
+
+%%handwave
+name:
+  Real Schwarzian atlas from metric derivative data
+statement:
+  The canonical metric-Schwarzian derivative-data atlas together with pairwise projective-derivative uniqueness produces a local Schwarzian normalization atlas whose transitions lie in $\mathrm{PSL}_2(\mathbb R)$.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricSchwarzianDerivativeData_pairProjectiveDerivativeUniqueness
     (hUnique :
@@ -1379,6 +702,12 @@ Closed derivative-data real Schwarzian-normalization route.
 The fixed-pair projective-derivative Schwarzian identity principle is now
 proved, so the strengthened Frobenius derivative-data atlas directly produces
 the real Schwarzian-normalized atlas, before any branch-atlas erasure.
+
+%%handwave
+name:
+  Closed derivative-data construction of the real Schwarzian atlas
+statement:
+  The proved equal-Schwarzian one-jet uniqueness principle applied to the canonical derivative-data Frobenius atlas yields real Möbius transitions between all normalized branches.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem_of_metricSchwarzianDerivativeData_pairProjectiveDerivativeClosed :
     HyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem :=
@@ -1390,6 +719,12 @@ Public closed form of the local real Schwarzian-normalization theorem.
 
 This keeps the Schwarzian ODE provenance and the real-transition proof in the
 public chain; the branch-atlas theorem is then just its forgetful consequence.
+
+%%handwave
+name:
+  Local real Schwarzian normalization theorem
+statement:
+  Every solution of $\Delta u=e^{2u}$ admits a metric-recovering atlas of Schwarzian-normalized upper-half-plane branches whose overlap transitions are real Möbius transformations.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem :
     HyperbolicLiouvilleProducesLocalRealSchwarzianNormalizationAtlasTheorem :=
@@ -1401,6 +736,12 @@ Public closed form of the local real upper-half-plane branch-atlas theorem.
 The concrete metric-Schwarzian derivative-data atlas keeps the coefficient
 agreement and projective derivative regularity needed for the real-transition
 argument, so no broad arbitrary-branch transition hypothesis is required.
+
+%%handwave
+name:
+  Local real upper-half-plane branch atlas theorem
+statement:
+  Every hyperbolic Liouville factor admits local holomorphic maps to $\mathbb H$ recovering $e^{2u}|dz|^2$, and branches that overlap differ locally by elements of $\mathrm{PSL}_2(\mathbb R)$.
 -/
 noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :
     HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :=
@@ -1423,41 +764,6 @@ proof:
 theorem solveLocalSchwarzianProblem :
     HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :=
   hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem
-
-/--
-Closed real branch-atlas wrapper using the proved strengthened metric-data
-normalization atlas.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricSchwarzianData_branchContinuity_affineDerivative_oneJetUniqueness
-    (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
-    (hAffine :
-      LocalUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem)
-    (hUnique :
-      PointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem) :
-    HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricData_branchContinuity_affineDerivative_oneJetUniqueness
-    hyperbolicLiouvilleProducesLocalMetricSchwarzianDataRecoveringSchwarzianNormalizationAtlasTheorem
-    hBranch hAffine hUnique
-
-/--
-The same strengthened metric-data atlas route, with the coefficient-aware
-one-jet uniqueness theorem obtained from the two natural analytic inputs:
-metric recovery supplies the missing second jet, and Schwarzian ODE uniqueness
-uses the resulting two-jet.
--/
-noncomputable def hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricSchwarzianData_branchContinuity_affineDerivative_metricSecondJet_twoJetUniqueness
-    (hBranch : LocalUpperHalfPlaneDevelopingMapContinuousOnDomainTheorem)
-    (hAffine :
-      LocalUpperHalfPlaneDevelopingMapAffineDerivativeContinuousOnDomainTheorem)
-    (hSecond :
-      PointedRealMobiusTransitionMetricOneJetDeterminesSecondJetTheorem)
-    (hTwoJet :
-      PointedRealMobiusTransitionTwoJetLocalUniquenessWithCoefficientAgreementTheorem) :
-    HyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem :=
-  hyperbolicLiouvilleProducesLocalRealUpperHalfPlaneBranchAtlasTheorem_of_metricSchwarzianData_branchContinuity_affineDerivative_oneJetUniqueness
-    hBranch hAffine
-    (pointedRealMobiusTransitionOneJetLocalUniquenessWithCoefficientAgreementTheorem_of_metricSecondJet_twoJetUniqueness
-      hSecond hTwoJet)
 
 end
 

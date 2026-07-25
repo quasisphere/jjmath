@@ -12,11 +12,25 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
+/--
+%%handwave
+name: Quarter-turn of a surface vector field
+statement:
+  On a Riemann surface, define the quarter-turn $JV$ of a tangent vector
+  field $V$ by $(JV)(x)=iV(x)$ in the complex tangent line.
+-/
 noncomputable def surfaceTangentQuarterTurn
     (V : (x : X) → TangentSpace SurfaceRealModel x) (x : X) :
     TangentSpace SurfaceRealModel x :=
   show ℂ from Complex.I * (show ℂ from V x)
 
+/--
+%%handwave
+name: Continuous real-linear quarter-turn of the complex plane
+statement:
+  Define $J:\mathbb C\to\mathbb C$ by $J(z)=iz$, regarded as a continuous
+  real-linear map.
+-/
 noncomputable def complexQuarterTurnCLM : ℂ →L[ℝ] ℂ :=
   (ContinuousLinearMap.mulLeftRight ℝ ℂ Complex.I) 1
 
@@ -98,7 +112,13 @@ theorem surfaceTangentQuarterTurn_contMDiff
     complexLinearMap_apply_eq_mul L hI (show ℂ from V y)]
   ring
 
-/-- The transverse field rotated by the complex orientation. -/
+/--
+%%handwave
+name: The transverse field rotated by the complex orientation
+statement:
+  For the chosen transverse field $V$ on the Riemann surface, define its
+  quarter-turn $JV$ by $(JV)_x=iV_x$ in the complex tangent line.
+-/
 noncomputable def smoothFrontierQuarterTurnVectorField
     (D : SmoothBoundaryDomain X) (x : X) :
     TangentSpace SurfaceRealModel x :=
@@ -155,8 +175,13 @@ theorem smoothFrontierTransverseDerivative_contMDiff_top
   exact (contMDiff_snd_tangentBundle_modelSpace ℝ 𝓘(ℝ)).comp
     (htan.comp hsection)
 
-/-- The derivative of the signed boundary coordinate in the rotated
-transverse direction. -/
+/--
+%%handwave
+name: The derivative of the signed boundary coordinate in the rotated transverse direction
+statement:
+  Define the smooth scalar function $b(x)=ds_x(JV_x)$, where $s$ is the
+  global signed boundary coordinate.
+-/
 noncomputable def smoothFrontierAngularDerivative
     (D : SmoothBoundaryDomain X) (x : X) : ℝ :=
   tangentMap SurfaceRealModel 𝓘(ℝ)
@@ -194,9 +219,17 @@ theorem smoothFrontierAngularDerivative_contMDiff
   exact (contMDiff_snd_tangentBundle_modelSpace ℝ 𝓘(ℝ)).comp
     (htan.comp hsection)
 
-/-- A globally smooth field tangent to every level of the signed boundary
-coordinate.  The determinant-like formula avoids dividing by the transverse
-derivative away from the frontier. -/
+/--
+%%handwave
+name: A globally smooth field tangent to every level of the signed boundary coordinate
+statement:
+  Define
+  \[
+    T_x=ds_x(V_x)\,JV_x-ds_x(JV_x)\,V_x.
+  \]
+  Then $ds_x(T_x)=0$, so $T$ is tangent to every level of the signed
+  coordinate; the formula uses no division away from the frontier.
+-/
 noncomputable def smoothFrontierTangentVectorField
     (D : SmoothBoundaryDomain X) (x : X) :
     TangentSpace SurfaceRealModel x :=

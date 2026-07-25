@@ -13,6 +13,12 @@ noncomputable section
 /--
 Build the local conformal factor carried by an explicit pullback logarithmic
 density on a normalized upper-half-plane branch.
+
+%%handwave
+name:
+  Conformal factor from an explicit pullback logarithmic density
+statement:
+  A $C^3$ real function $v$ on the domain of a normalized branch defines the local conformal factor with coordinate domain that branch domain and logarithmic density $v$.
 -/
 def pullbackConformalFactorFromLogDensity
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -84,7 +90,13 @@ structure LocalHyperbolicPullbackLiouvilleFormulaData
 
 namespace LocalHyperbolicPullbackLiouvilleFormulaData
 
-/-- Package the explicit pullback formula as a local conformal factor. -/
+/-- Package the explicit pullback formula as a local conformal factor.
+%%handwave
+name:
+  Conformal factor carried by pullback formula data
+statement:
+  Explicit Poincaré pullback formula data determine the local conformal factor whose logarithmic density is the stored pullback density.
+-/
 def conformalFactor
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -93,40 +105,6 @@ def conformalFactor
     LocalConformalFactor :=
   pullbackConformalFactorFromLogDensity N P.logDensity
     P.logDensity_contDiffOn P.twice_differentiable_on_domain
-
-/--
-%%handwave
-name: Domain of the explicit pullback conformal factor
-statement:
-  The conformal factor assembled from pullback formula data on a normalized branch has coordinate domain equal to the normalization domain.
-proof:
-  This is immediate from the definition of the assembled conformal factor.
--/
-@[simp]
-theorem conformalFactor_coordinateDomain
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (P : LocalHyperbolicPullbackLiouvilleFormulaData N) :
-    P.conformalFactor.coordinateDomain = N.domain :=
-  rfl
-
-/--
-%%handwave
-name: Logarithmic density of the explicit pullback conformal factor
-statement:
-  The conformal factor assembled from explicit pullback formula data has the prescribed logarithmic density.
-proof:
-  This is immediate from the definition of the assembled conformal factor.
--/
-@[simp]
-theorem conformalFactor_logDensity
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (P : LocalHyperbolicPullbackLiouvilleFormulaData N) :
-    P.conformalFactor.logDensity = P.logDensity :=
-  rfl
 
 /--
 %%handwave
@@ -393,29 +371,14 @@ theorem base_uZ_eq
   N.pullbackLogDensity_base_uZ_eq_of_derivativeFormula P.base_derivative_formula
 
 /--
-%%handwave
-name: Canonical pullback and original factors have the same base derivative
-statement:
-  If $v$ is the canonical Poincare pullback logarithmic density determined by a normalized two-jet for $u$ at $z_0$, then $\partial_zv(z_0)=\partial_zu(z_0)$.
-proof:
-  The base derivative of $v$ equals the derivative component of the normalized two-jet, and that component was chosen to equal $\partial_zu(z_0)$.
--/
-theorem base_wirtingerZ_eq
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (P : LocalHyperbolicCanonicalPullbackLiouvilleFormulaData N) :
-    frechetDZValue (fun z : ℂ ↦ (N.pullbackLogDensity z : ℂ)) z₀ =
-      u.wirtingerZ z₀ := by
-  calc
-    frechetDZValue (fun z : ℂ ↦ (N.pullbackLogDensity z : ℂ)) z₀ = N.jet.uZ :=
-      P.base_uZ_eq
-    _ = u.wirtingerZ z₀ :=
-      N.jet_uZ_eq_wirtingerZ
-
-/--
 Forget the canonical choice of logarithmic density, retaining the older
 explicit formula package.
+
+%%handwave
+name:
+  Explicit Liouville formula from the canonical pullback
+statement:
+  Canonical pullback data for $v=\tfrac12\log(|F'|^2/(\operatorname{Im}F)^2)$ yield explicit Liouville formula data with the same density, Schwarzian, and normalized base one-jet.
 -/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -441,26 +404,6 @@ def toFormulaData
   base_densitySq_eq := N.exp_two_pullbackLogDensity_base_eq_densitySq
   base_uZ_eq :=
     P.base_uZ_eq
-
-/--
-%%handwave
-name: Base derivative survives passage to explicit pullback data
-statement:
-  Forgetting the canonical presentation of a Poincare pullback factor does not change its logarithmic density; the resulting conformal factor therefore still satisfies $\partial_zv(z_0)=\partial_zu(z_0)$.
-proof:
-  Expand the forgetful construction and apply the canonical base-derivative equality.
--/
-theorem toFormulaData_conformalFactor_wirtingerZ_base_eq
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (P : LocalHyperbolicCanonicalPullbackLiouvilleFormulaData N) :
-    (P.toFormulaData.conformalFactor).wirtingerZ z₀ = u.wirtingerZ z₀ := by
-  simpa [LocalConformalFactor.wirtingerZ,
-    LocalConformalFactor.complexLogDensity,
-    LocalHyperbolicPullbackLiouvilleFormulaData.conformalFactor,
-    LocalHyperbolicCanonicalPullbackLiouvilleFormulaData.toFormulaData]
-    using P.base_wirtingerZ_eq
 
 /--
 %%handwave
@@ -596,6 +539,12 @@ namespace LocalHyperbolicCanonicalPullbackCoreData
 
 /--
 Core pullback data imply the canonical pullback Liouville formula package.
+
+%%handwave
+name:
+  Canonical formula data from core pullback identities
+statement:
+  Smoothness, the Poincaré Laplacian identity, metric-Schwarzian compatibility, and the normalized base derivatives together form the canonical pullback Liouville formula package.
 -/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -660,6 +609,12 @@ namespace LocalHyperbolicCanonicalPullbackMixedWirtingerLaplacianData
 
 /--
 The mixed-Wirtinger Laplacian package implies the canonical core package.
+
+%%handwave
+name:
+  Core pullback data from the mixed Wirtinger Laplacian
+statement:
+  The identity $\partial_{\bar z}\partial_zv=\tfrac14\rho$ for the canonical pullback factor converts to $\Delta v=\rho$, yielding the core pullback package while retaining Schwarzian and base-derivative data.
 -/
 def toCoreData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -676,15 +631,6 @@ def toCoreData
   metricSchwarzian_eq_branchSchwarzian := M.metricSchwarzian_eq_branchSchwarzian
   affineMapDeriv_hasDerivAt_base := M.affineMapDeriv_hasDerivAt_base
   upperHalfPlaneMap_hasDerivAt_base := M.upperHalfPlaneMap_hasDerivAt_base
-
-/-- The mixed-Wirtinger Laplacian package forgets to the canonical formula package. -/
-def toFormulaData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (M : LocalHyperbolicCanonicalPullbackMixedWirtingerLaplacianData N) :
-    LocalHyperbolicCanonicalPullbackLiouvilleFormulaData N :=
-  M.toCoreData.toFormulaData
 
 end LocalHyperbolicCanonicalPullbackMixedWirtingerLaplacianData
 
@@ -734,6 +680,12 @@ namespace LocalHyperbolicCanonicalPullbackMixedExpressionData
 /--
 The explicit mixed-expression package implies the mixed-Wirtinger Laplacian
 package.
+
+%%handwave
+name:
+  Mixed-Wirtinger Laplacian data from the explicit first expression
+statement:
+  The first Wirtinger formula for the pullback density and the antiholomorphic derivative of that expression combine to give the mixed-Wirtinger Laplacian identity.
 -/
 def toMixedWirtingerLaplacianData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -751,7 +703,13 @@ def toMixedWirtingerLaplacianData
   affineMapDeriv_hasDerivAt_base := M.affineMapDeriv_hasDerivAt_base
   upperHalfPlaneMap_hasDerivAt_base := M.upperHalfPlaneMap_hasDerivAt_base
 
-/-- The explicit mixed-expression package implies the canonical core package. -/
+/-- The explicit mixed-expression package implies the canonical core package.
+%%handwave
+name:
+  Core pullback data from an explicit mixed expression
+statement:
+  The explicit first Wirtinger formula and its mixed derivative yield the Laplacian identity and hence the canonical core pullback data.
+-/
 def toCoreData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -759,15 +717,6 @@ def toCoreData
     (M : LocalHyperbolicCanonicalPullbackMixedExpressionData N) :
     LocalHyperbolicCanonicalPullbackCoreData N :=
   M.toMixedWirtingerLaplacianData.toCoreData
-
-/-- The explicit mixed-expression package forgets to the canonical formula package. -/
-def toFormulaData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (M : LocalHyperbolicCanonicalPullbackMixedExpressionData N) :
-    LocalHyperbolicCanonicalPullbackLiouvilleFormulaData N :=
-  M.toCoreData.toFormulaData
 
 end LocalHyperbolicCanonicalPullbackMixedExpressionData
 
@@ -821,6 +770,12 @@ namespace LocalHyperbolicCanonicalPullbackWirtingerFormulaData
 /--
 The two explicit Wirtinger formulas imply the previous canonical pullback core
 package.
+
+%%handwave
+name:
+  Core pullback data from two Wirtinger formulas
+statement:
+  The explicit formulas for $v_z$ and $v_{zz}$ identify $2(v_{zz}-v_z^2)$ with the branch Schwarzian; together with the Laplacian and regularity data they yield the core package.
 -/
 def toCoreData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -838,7 +793,13 @@ def toCoreData
   affineMapDeriv_hasDerivAt_base := W.affineMapDeriv_hasDerivAt_base
   upperHalfPlaneMap_hasDerivAt_base := W.upperHalfPlaneMap_hasDerivAt_base
 
-/-- The explicit Wirtinger-formula package forgets to the canonical formula package. -/
+/-- The explicit Wirtinger-formula package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from Wirtinger pullback data
+statement:
+  Forgetting the intermediate Wirtinger calculations retains the canonical pullback Liouville formula, its Laplacian equation, Schwarzian identity, and base one-jet.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -900,6 +861,12 @@ namespace LocalHyperbolicCanonicalPullbackDensityDerivativeData
 /--
 The squared-density derivative package gives the explicit Wirtinger-formula
 package.
+
+%%handwave
+name:
+  Wirtinger pullback data from the squared-density derivative
+statement:
+  Differentiating $\rho=|F'|^2/(\operatorname{Im}F)^2$ and applying the logarithmic chain rule gives the first Wirtinger formula; together with the stored second formula this yields the Wirtinger package.
 -/
 def toWirtingerFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -918,16 +885,13 @@ def toWirtingerFormulaData
   affineMapDeriv_hasDerivAt_base := P.affineMapDeriv_hasDerivAt_base
   upperHalfPlaneMap_hasDerivAt_base := P.upperHalfPlaneMap_hasDerivAt_base
 
-/-- The squared-density derivative package forgets to the canonical core package. -/
-def toCoreData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (P : LocalHyperbolicCanonicalPullbackDensityDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackCoreData N :=
-  P.toWirtingerFormulaData.toCoreData
-
-/-- The squared-density derivative package forgets to the canonical formula package. -/
+/-- The squared-density derivative package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from density-derivative data
+statement:
+  The derivative formula for the Poincaré pullback density yields the canonical logarithmic Wirtinger formula and hence the canonical Liouville formula package.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -985,6 +949,12 @@ namespace LocalHyperbolicCanonicalPullbackBranchDerivativeData
 
 /--
 Actual branch derivative data imply the squared-density derivative package.
+
+%%handwave
+name:
+  Density-derivative data from actual branch derivatives
+statement:
+  The identities $F'=F_1$ and $F_1'=F_2$ differentiate the Poincaré pullback density explicitly, producing its differentiability and derivative formula together with the remaining pullback data.
 -/
 def toDensityDerivativeData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1007,16 +977,13 @@ def toDensityDerivativeData
   affineMapDeriv_hasDerivAt_base := B.affineMapDeriv_hasDerivAt z₀ N.base_mem
   upperHalfPlaneMap_hasDerivAt_base := B.upperHalfPlaneMap_hasDerivAt z₀ N.base_mem
 
-/-- Actual branch derivative data forget to the explicit Wirtinger-formula package. -/
-def toWirtingerFormulaData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (B : LocalHyperbolicCanonicalPullbackBranchDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackWirtingerFormulaData N :=
-  B.toDensityDerivativeData.toWirtingerFormulaData
-
-/-- Actual branch derivative data forget to the canonical formula package. -/
+/-- Actual branch derivative data forget to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from branch derivative data
+statement:
+  Actual first and second branch derivatives imply the density derivative formula and therefore the canonical pullback Liouville formula.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1076,6 +1043,12 @@ namespace LocalHyperbolicCanonicalPullbackSecondExpressionData
 /--
 The explicit first-expression derivative package gives the actual branch
 derivative package by the local-congruence bridge for Frechet derivatives.
+
+%%handwave
+name:
+  Branch derivative data from the second Wirtinger expression
+statement:
+  The explicit derivative of the first pullback Wirtinger expression supplies the second Wirtinger formula, completing the package of actual branch derivatives and pullback identities.
 -/
 def toBranchDerivativeData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1106,7 +1079,13 @@ def toBranchDerivativeData
       N.pullbackSecondWirtingerFormula_of_firstWirtingerFormula_and_expressionDerivative
         hZ E.second_expression_derivative
 
-/-- The explicit first-expression derivative package forgets to the canonical formula package. -/
+/-- The explicit first-expression derivative package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from the second-expression derivative
+statement:
+  The derivative formula for the explicit first Wirtinger expression implies the branch-derivative package and hence the canonical pullback Liouville formula.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1165,6 +1144,12 @@ namespace LocalHyperbolicCanonicalPullbackThirdDerivativeData
 /--
 Ordinary branch derivatives through `F''` imply the explicit
 second-expression derivative package.
+
+%%handwave
+name:
+  Second-expression data from derivatives through third order
+statement:
+  The actual identities $F'=F_1$, $F_1'=F_2$, and $F_2'=F_3$ differentiate the explicit first Wirtinger expression and supply its prescribed second derivative formula.
 -/
 def toSecondExpressionData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1183,7 +1168,13 @@ def toSecondExpressionData
       T.upperHalfPlaneMap_hasDerivAt T.affineMapDeriv_hasDerivAt
       T.affineMapSecondDeriv_hasDerivAt
 
-/-- The third-derivative package forgets to the canonical formula package. -/
+/-- The third-derivative package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from third-order branch data
+statement:
+  Actual branch derivatives through third order imply the explicit pullback Wirtinger identities and thus the canonical Liouville formula.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1242,6 +1233,12 @@ namespace LocalHyperbolicCanonicalPullbackAffineDerivativeData
 /--
 Affine projective derivative data imply the third-derivative package for the
 upper-half-plane branch.
+
+%%handwave
+name:
+  Third-order upper-half-plane data from affine derivatives
+statement:
+  Because the normalized $\mathbb H$-valued branch agrees locally with its affine projective coordinate, actual affine derivatives through third order yield the corresponding upper-half-plane branch derivative package.
 -/
 def toThirdDerivativeData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1259,7 +1256,13 @@ def toThirdDerivativeData
   affineMapSecondDeriv_hasDerivAt := A.affineMapSecondDeriv_hasDerivAt
   laplacian_eq_pullbackDensitySq := A.laplacian_eq_pullbackDensitySq
 
-/-- The affine-derivative package forgets to the canonical formula package. -/
+/-- The affine-derivative package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from affine derivative data
+statement:
+  Actual affine projective derivatives through third order, together with the pullback Laplacian identity, determine the canonical pullback Liouville formula.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1313,6 +1316,12 @@ namespace LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData
 /--
 Actual affine derivative algebra gives the explicit mixed-expression pullback
 package, including the Poincare mixed derivative calculation.
+
+%%handwave
+name:
+  Mixed pullback expressions from affine derivative algebra
+statement:
+  Actual affine derivatives through third order imply the first pullback Wirtinger formula, its mixed derivative, the Poincaré mixed-Laplacian identity, and the metric-Schwarzian identity.
 -/
 def toMixedExpressionData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1378,7 +1387,13 @@ def toMixedExpressionData
     (N.upperHalfPlaneMap_hasDerivAt_of_affineMap_hasDerivAt_on
       A.affineMap_hasDerivAt) z₀ N.base_mem
 
-/-- Actual affine derivative algebra gives the canonical core pullback package. -/
+/-- Actual affine derivative algebra gives the canonical core pullback package.
+%%handwave
+name:
+  Core pullback data from affine derivative algebra
+statement:
+  The derivative algebra of the normalized affine branch yields both the Poincaré pullback Laplacian calculation and the metric-Schwarzian compatibility required by the core package.
+-/
 def toCoreData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1387,7 +1402,13 @@ def toCoreData
     LocalHyperbolicCanonicalPullbackCoreData N :=
   A.toMixedExpressionData.toCoreData
 
-/-- Add the geometric Poincare Laplacian identity to the affine derivative algebra package. -/
+/-- Add the geometric Poincare Laplacian identity to the affine derivative algebra package.
+%%handwave
+name:
+  Affine derivative data with the Poincaré Laplacian identity
+statement:
+  Adjoin $\Delta v=|F'|^2/(\operatorname{Im}F)^2$ to the regular affine derivative algebra to obtain the full affine pullback data.
+-/
 def withLaplacian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1409,20 +1430,6 @@ def withLaplacian
 end LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData
 
 namespace LocalHyperbolicCanonicalPullbackAffineDerivativeData
-
-/-- Forget the geometric Laplacian field, retaining actual affine derivative algebra. -/
-def toAffineDerivativeAlgebraData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N where
-  upperHalfPlaneMap_contDiffOn := A.upperHalfPlaneMap_contDiffOn
-  affineMapDeriv_contDiffOn := A.affineMapDeriv_contDiffOn
-  twice_differentiable_on_domain := A.twice_differentiable_on_domain
-  affineMap_hasDerivAt := A.affineMap_hasDerivAt
-  affineMapDeriv_hasDerivAt := A.affineMapDeriv_hasDerivAt
-  affineMapSecondDeriv_hasDerivAt := A.affineMapSecondDeriv_hasDerivAt
 
 end LocalHyperbolicCanonicalPullbackAffineDerivativeData
 
@@ -1447,64 +1454,8 @@ structure LocalHyperbolicCanonicalPullbackRegularityData
   /-- The canonical pullback logarithmic density has enough regularity for curvature. -/
   twice_differentiable_on_domain : N.PullbackLogDensityTwiceDifferentiable
 
-/--
-Derivative-identification part of the canonical pullback derivative-algebra
-package.
 
-These fields say that the symbolic branches carried by the local projective
-map are the actual complex derivatives seen by mathlib.
--/
-structure LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) where
-  /-- The affine projective branch is complex differentiable on the domain. -/
-  affineMap_differentiableAt :
-    ∀ z, z ∈ N.domain →
-      DifferentiableAt ℂ N.normalized.projective.affineMap z
-  /-- The symbolic first derivative is mathlib's complex derivative. -/
-  affineMap_deriv_eq :
-    ∀ z, z ∈ N.domain →
-      deriv N.normalized.projective.affineMap z =
-        N.normalized.projective.affineMapDeriv z
 
-/--
-Derivative identification for the stored first-derivative branch of the
-canonical pullback affine map.
--/
-structure LocalHyperbolicCanonicalPullbackSecondDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) where
-  /-- The symbolic first-derivative branch is complex differentiable on the domain. -/
-  affineMapDeriv_differentiableAt :
-    ∀ z, z ∈ N.domain →
-      DifferentiableAt ℂ
-        (fun w : ℂ ↦ N.normalized.projective.affineMapDeriv w) z
-  /-- The symbolic second derivative is mathlib's derivative of the first derivative. -/
-  affineMapDeriv_deriv_eq :
-    ∀ z, z ∈ N.domain →
-      deriv (fun w : ℂ ↦ N.normalized.projective.affineMapDeriv w) z =
-        N.normalized.projective.affineMapSecondDeriv z
-
-/--
-Derivative identification for the stored second-derivative branch of the
-canonical pullback affine map.
--/
-structure LocalHyperbolicCanonicalPullbackThirdDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    (N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀) where
-  /-- The symbolic second-derivative branch is complex differentiable on the domain. -/
-  affineMapSecondDeriv_differentiableAt :
-    ∀ z, z ∈ N.domain →
-      DifferentiableAt ℂ
-        (fun w : ℂ ↦ N.normalized.projective.affineMapSecondDeriv w) z
-  /-- The symbolic third derivative is mathlib's derivative of the second derivative. -/
-  affineMapSecondDeriv_deriv_eq :
-    ∀ z, z ∈ N.domain →
-      deriv (fun w : ℂ ↦ N.normalized.projective.affineMapSecondDeriv w) z =
-        N.normalized.projective.affineMapThirdDeriv z
 
 /--
 Derivative-identification part of the canonical pullback derivative-algebra
@@ -1547,57 +1498,8 @@ structure LocalHyperbolicCanonicalPullbackDerivativeIdentificationData
       deriv (fun w : ℂ ↦ N.normalized.projective.affineMapSecondDeriv w) z =
         N.normalized.projective.affineMapThirdDeriv z
 
-namespace LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData
-
-/-- Combine first-, second-, and third-derivative identifications. -/
-def withSecondAndThird
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (I₁ : LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData N)
-    (I₂ : LocalHyperbolicCanonicalPullbackSecondDerivativeIdentificationData N)
-    (I₃ : LocalHyperbolicCanonicalPullbackThirdDerivativeIdentificationData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N where
-  affineMap_differentiableAt := I₁.affineMap_differentiableAt
-  affineMap_deriv_eq := I₁.affineMap_deriv_eq
-  affineMapDeriv_differentiableAt := I₂.affineMapDeriv_differentiableAt
-  affineMapDeriv_deriv_eq := I₂.affineMapDeriv_deriv_eq
-  affineMapSecondDeriv_differentiableAt := I₃.affineMapSecondDeriv_differentiableAt
-  affineMapSecondDeriv_deriv_eq := I₃.affineMapSecondDeriv_deriv_eq
-
-end LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData
 
 namespace LocalHyperbolicCanonicalPullbackDerivativeIdentificationData
-
-/-- Forget to the first-derivative identification. -/
-def toFirstDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (I : LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N) :
-    LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData N where
-  affineMap_differentiableAt := I.affineMap_differentiableAt
-  affineMap_deriv_eq := I.affineMap_deriv_eq
-
-/-- Forget to the second-derivative identification. -/
-def toSecondDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (I : LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N) :
-    LocalHyperbolicCanonicalPullbackSecondDerivativeIdentificationData N where
-  affineMapDeriv_differentiableAt := I.affineMapDeriv_differentiableAt
-  affineMapDeriv_deriv_eq := I.affineMapDeriv_deriv_eq
-
-/-- Forget to the third-derivative identification. -/
-def toThirdDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (I : LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N) :
-    LocalHyperbolicCanonicalPullbackThirdDerivativeIdentificationData N where
-  affineMapSecondDeriv_differentiableAt := I.affineMapSecondDeriv_differentiableAt
-  affineMapSecondDeriv_deriv_eq := I.affineMapSecondDeriv_deriv_eq
 
 end LocalHyperbolicCanonicalPullbackDerivativeIdentificationData
 
@@ -1655,7 +1557,13 @@ structure LocalHyperbolicCanonicalPullbackDerivativeAlgebraData
 
 namespace LocalHyperbolicCanonicalPullbackRegularityData
 
-/-- Combine regularity data with derivative identifications. -/
+/-- Combine regularity data with derivative identifications.
+%%handwave
+name:
+  Pullback derivative algebra from regularity and identifications
+statement:
+  Smoothness of the normalized branch and pullback density, combined with identifications of the first three symbolic derivatives as actual derivatives, forms the canonical derivative-algebra package.
+-/
 def withDerivativeIdentification
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1730,32 +1638,13 @@ structure LocalHyperbolicCanonicalPullbackDerivIdentifiedData
 
 namespace LocalHyperbolicCanonicalPullbackDerivativeAlgebraData
 
-/-- Forget the derivative-identification fields, retaining the regularity data. -/
-def toRegularityData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackRegularityData N where
-  upperHalfPlaneMap_contDiffOn := A.upperHalfPlaneMap_contDiffOn
-  affineMapDeriv_contDiffOn := A.affineMapDeriv_contDiffOn
-  twice_differentiable_on_domain := A.twice_differentiable_on_domain
-
-/-- Forget the regularity fields, retaining the derivative identifications. -/
-def toDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N where
-  affineMap_differentiableAt := A.affineMap_differentiableAt
-  affineMap_deriv_eq := A.affineMap_deriv_eq
-  affineMapDeriv_differentiableAt := A.affineMapDeriv_differentiableAt
-  affineMapDeriv_deriv_eq := A.affineMapDeriv_deriv_eq
-  affineMapSecondDeriv_differentiableAt := A.affineMapSecondDeriv_differentiableAt
-  affineMapSecondDeriv_deriv_eq := A.affineMapSecondDeriv_deriv_eq
-
-/-- Add the geometric Laplacian calculation to the derivative algebra package. -/
+/-- Add the geometric Laplacian calculation to the derivative algebra package.
+%%handwave
+name:
+  Derivative-identified pullback data with the Laplacian
+statement:
+  Adjoining the Poincaré identity $\Delta v=\rho$ to canonical derivative algebra yields pullback data containing both derivative identifications and curvature.
+-/
 def withLaplacian
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1781,6 +1670,12 @@ def withLaplacian
 Derivative algebra also gives actual affine `HasDerivAt` algebra: mathlib
 turns differentiability plus the stored `deriv` equality into the expected
 complex derivative statements.
+
+%%handwave
+name:
+  Actual affine derivatives from derivative identifications
+statement:
+  Complex differentiability together with the identities $f'=f_1$, $f_1'=f_2$, and $f_2'=f_3$ yields the corresponding actual derivative statements for the affine branch.
 -/
 def toAffineDerivativeAlgebraData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1814,44 +1709,15 @@ end LocalHyperbolicCanonicalPullbackDerivativeAlgebraData
 
 namespace LocalHyperbolicCanonicalPullbackDerivIdentifiedData
 
-/-- Forget the geometric Laplacian identity, retaining the derivative algebra. -/
-def toDerivativeAlgebraData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackDerivIdentifiedData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N where
-  upperHalfPlaneMap_contDiffOn := A.upperHalfPlaneMap_contDiffOn
-  affineMapDeriv_contDiffOn := A.affineMapDeriv_contDiffOn
-  twice_differentiable_on_domain := A.twice_differentiable_on_domain
-  affineMap_differentiableAt := A.affineMap_differentiableAt
-  affineMap_deriv_eq := A.affineMap_deriv_eq
-  affineMapDeriv_differentiableAt := A.affineMapDeriv_differentiableAt
-  affineMapDeriv_deriv_eq := A.affineMapDeriv_deriv_eq
-  affineMapSecondDeriv_differentiableAt := A.affineMapSecondDeriv_differentiableAt
-  affineMapSecondDeriv_deriv_eq := A.affineMapSecondDeriv_deriv_eq
-
-/-- Forget to the regularity part of the derivative-algebra package. -/
-def toRegularityData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackDerivIdentifiedData N) :
-    LocalHyperbolicCanonicalPullbackRegularityData N :=
-  A.toDerivativeAlgebraData.toRegularityData
-
-/-- Forget to the derivative-identification part of the derivative-algebra package. -/
-def toDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackDerivIdentifiedData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N :=
-  A.toDerivativeAlgebraData.toDerivativeIdentificationData
-
 /--
 Derivative identifications through mathlib's `deriv` imply the affine
 `HasDerivAt` package.
+
+%%handwave
+name:
+  Affine derivative data from identified symbolic derivatives
+statement:
+  The canonical differentiability and derivative equalities through third order convert to actual affine derivative statements, while retaining the Poincaré Laplacian identity.
 -/
 def toAffineDerivativeData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -1881,7 +1747,13 @@ def toAffineDerivativeData
       (A.affineMapSecondDeriv_deriv_eq z hz)
   laplacian_eq_pullbackDensitySq := A.laplacian_eq_pullbackDensitySq
 
-/-- The deriv-identified package forgets to the canonical formula package. -/
+/-- The deriv-identified package forgets to the canonical formula package.
+%%handwave
+name:
+  Canonical Liouville formula from identified derivatives
+statement:
+  Identified first three derivatives and the pullback Laplacian identity imply the affine package and therefore the canonical Liouville formula.
+-/
 def toFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -1894,82 +1766,6 @@ end LocalHyperbolicCanonicalPullbackDerivIdentifiedData
 
 namespace LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData
 
-/--
-Actual affine `HasDerivAt` algebra implies the derivative-identification
-package phrased with mathlib's `deriv`.
--/
-def toDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeIdentificationData N where
-  affineMap_differentiableAt := by
-    intro z hz
-    exact (A.affineMap_hasDerivAt z hz).differentiableAt
-  affineMap_deriv_eq := by
-    intro z hz
-    exact (A.affineMap_hasDerivAt z hz).deriv
-  affineMapDeriv_differentiableAt := by
-    intro z hz
-    exact (A.affineMapDeriv_hasDerivAt z hz).differentiableAt
-  affineMapDeriv_deriv_eq := by
-    intro z hz
-    exact (A.affineMapDeriv_hasDerivAt z hz).deriv
-  affineMapSecondDeriv_differentiableAt := by
-    intro z hz
-    exact (A.affineMapSecondDeriv_hasDerivAt z hz).differentiableAt
-  affineMapSecondDeriv_deriv_eq := by
-    intro z hz
-    exact (A.affineMapSecondDeriv_hasDerivAt z hz).deriv
-
-/-- Actual affine derivative algebra gives the first derivative-identification data. -/
-def toFirstDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toFirstDerivativeIdentificationData
-
-/-- Actual affine derivative algebra gives the second derivative-identification data. -/
-def toSecondDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackSecondDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toSecondDerivativeIdentificationData
-
-/-- Actual affine derivative algebra gives the third derivative-identification data. -/
-def toThirdDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackThirdDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toThirdDerivativeIdentificationData
-
-/-- Actual affine derivative algebra forgets to the regularity package. -/
-def toRegularityData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackRegularityData N where
-  upperHalfPlaneMap_contDiffOn := A.upperHalfPlaneMap_contDiffOn
-  affineMapDeriv_contDiffOn := A.affineMapDeriv_contDiffOn
-  twice_differentiable_on_domain := A.twice_differentiable_on_domain
-
-/-- Actual affine derivative algebra gives the derivative-algebra package. -/
-def toDerivativeAlgebraData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData N) :
-    LocalHyperbolicCanonicalPullbackDerivativeAlgebraData N :=
-  A.toRegularityData.withDerivativeIdentification A.toDerivativeIdentificationData
-
 end LocalHyperbolicCanonicalPullbackAffineDerivativeAlgebraData
 
 namespace LocalHyperbolicCanonicalPullbackAffineDerivativeData
@@ -1977,6 +1773,12 @@ namespace LocalHyperbolicCanonicalPullbackAffineDerivativeData
 /--
 Actual affine `HasDerivAt` statements imply the derivative-identification
 package phrased with mathlib's `deriv`.
+
+%%handwave
+name:
+  Derivative identifications from actual affine derivatives
+statement:
+  Actual derivative statements for the affine branch and its first two derivatives imply complex differentiability and the equalities of the symbolic derivative fields with ordinary complex derivatives.
 -/
 def toDerivativeIdentificationData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2003,34 +1805,13 @@ def toDerivativeIdentificationData
     intro z hz
     exact (A.affineMapSecondDeriv_hasDerivAt z hz).deriv
 
-/-- Actual affine derivative data give the first derivative-identification data. -/
-def toFirstDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackFirstDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toFirstDerivativeIdentificationData
-
-/-- Actual affine derivative data give the second derivative-identification data. -/
-def toSecondDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackSecondDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toSecondDerivativeIdentificationData
-
-/-- Actual affine derivative data give the third derivative-identification data. -/
-def toThirdDerivativeIdentificationData
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
-    {N : LocalHyperbolicTwoJetUpperHalfPlaneNormalization D z₀}
-    (A : LocalHyperbolicCanonicalPullbackAffineDerivativeData N) :
-    LocalHyperbolicCanonicalPullbackThirdDerivativeIdentificationData N :=
-  A.toDerivativeIdentificationData.toThirdDerivativeIdentificationData
-
-/-- Actual affine derivative data forget to the regularity package. -/
+/-- Actual affine derivative data forget to the regularity package.
+%%handwave
+name:
+  Pullback regularity underlying affine derivative data
+statement:
+  Forgetting derivative identities from the full affine package retains $C^3$ branch regularity and the curvature regularity of the pullback logarithmic density.
+-/
 def toRegularityData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2041,7 +1822,13 @@ def toRegularityData
   affineMapDeriv_contDiffOn := A.affineMapDeriv_contDiffOn
   twice_differentiable_on_domain := A.twice_differentiable_on_domain
 
-/-- Actual affine derivative data give the derivative-algebra package. -/
+/-- Actual affine derivative data give the derivative-algebra package.
+%%handwave
+name:
+  Canonical derivative algebra from actual affine derivatives
+statement:
+  Combine the regularity of the pullback construction with the derivative identifications obtained from actual affine derivatives through third order.
+-/
 def toDerivativeAlgebraData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2053,6 +1840,12 @@ def toDerivativeAlgebraData
 /--
 Actual affine derivative data also give the derivative-identified package,
 because this older package already includes the Poincare Laplacian field.
+
+%%handwave
+name:
+  Derivative-identified pullback package from affine data
+statement:
+  Actual affine derivatives yield canonical derivative algebra, and adjoining the stored Poincaré Laplacian identity gives the derivative-identified pullback package.
 -/
 def toDerivIdentifiedData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2114,7 +1907,13 @@ structure LocalHyperbolicPullbackLiouvilleCandidate
 
 namespace LocalHyperbolicPullbackLiouvilleCandidate
 
-/-- Package explicit pullback formula data as a pullback Liouville candidate. -/
+/-- Package explicit pullback formula data as a pullback Liouville candidate.
+%%handwave
+name:
+  Pullback Liouville candidate from explicit formula data
+statement:
+  Explicit pullback formula data define a competing Liouville factor on the normalized branch domain with the same pullback density, Schwarzian coefficient, base density, and base Wirtinger derivative as the original factor.
+-/
 def ofFormulaData
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
     {D : LocalProjectiveDevelopingMap S} {z₀ : ℂ}
@@ -2286,6 +2085,12 @@ namespace LocalMetricRecoveringUpperHalfPlaneNormalization
 /--
 Build a metric-recovering normalization from a 2-jet normalized
 upper-half-plane candidate once the metric-recovery formula has been proved.
+
+%%handwave
+name:
+  Metric-recovering branch from a two-jet normalization
+statement:
+  If a two-jet-normalized branch $F$ satisfies $e^{2u}=|F'|^2/(\operatorname{Im}F)^2$ on its domain, package it as a metric-recovering upper-half-plane normalization of the original projective branch.
 -/
 def ofTwoJetNormalization
     {u : LocalConformalFactor} {S : LocalSchwarzianData u}
@@ -2301,62 +2106,6 @@ def ofTwoJetNormalization
   postcomposition := N.normalized.postcomposition
   domain_subset_original := N.normalized.domain_subset_original
   projective_eq_postcompose_original := N.normalized.projective_eq_postcompose_original
-
-/-- The normalized upper-half-plane map still gives a local projective developing map. -/
-def toLocalProjectiveDevelopingMap
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S}
-    (N : LocalMetricRecoveringUpperHalfPlaneNormalization D) :
-    LocalProjectiveDevelopingMap S :=
-  N.normalized.toLocalProjectiveDevelopingMap
-
-/--
-%%handwave
-name: Density formula for a metric-recovering normalization
-statement:
-  If $F:\Omega\to\mathbb H$ is a metric-recovering normalized branch for a conformal factor $u$, then $e^{2u(z)}=|F'(z)|^2/(\operatorname{Im}F(z))^2$ for every $z\in\Omega$.
-proof:
-  This is the Poincare pullback identity stored by the normalized metric-recovering branch.
--/
-theorem densitySq_eq_pullback
-    {u : LocalConformalFactor} {S : LocalSchwarzianData u}
-    {D : LocalProjectiveDevelopingMap S}
-    (N : LocalMetricRecoveringUpperHalfPlaneNormalization D) {z : ℂ}
-    (hz : z ∈ N.normalized.domain) :
-    u.densitySq z =
-      Complex.normSq (N.normalized.projective.affineMapDeriv z) /
-        ((N.normalized.upperHalfPlaneMap z : ℂ).im ^ 2) :=
-  N.normalized.densitySq_eq_pullback z hz
-
-/--
-Two metric-recovering normalizations have a real Mobius transition when their
-normalized upper-half-plane branches do.
--/
-def HasRealMobiusTransition
-    {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
-    {D₁ : LocalProjectiveDevelopingMap S₁} {D₂ : LocalProjectiveDevelopingMap S₂}
-    (N₁ : LocalMetricRecoveringUpperHalfPlaneNormalization D₁)
-    (N₂ : LocalMetricRecoveringUpperHalfPlaneNormalization D₂) : Prop :=
-  N₁.normalized.HasRealMobiusTransition N₂.normalized
-
-/--
-%%handwave
-name: Real Mobius transition between metric-recovering normalizations
-statement:
-  Let $u$ solve the Liouville equation, and let $F_1,F_2$ be two metric-recovering normalized upper-half-plane branches whose domains have preconnected intersection. If metric-recovering branches are unique up to real Mobius postcomposition on such overlaps, then $F_1$ and $F_2$ differ by a real Mobius transformation there.
-proof:
-  Apply the branch-level uniqueness theorem directly to the two normalized branches and their preconnected overlap.
--/
-theorem hasRealMobiusTransition_of_branches
-    (h : MetricRecoveringUpperHalfPlaneBranchesHaveRealMobiusTransitionsTheorem)
-    {u : LocalConformalFactor} {S₁ S₂ : LocalSchwarzianData u}
-    {D₁ : LocalProjectiveDevelopingMap S₁} {D₂ : LocalProjectiveDevelopingMap S₂}
-    (N₁ : LocalMetricRecoveringUpperHalfPlaneNormalization D₁)
-    (N₂ : LocalMetricRecoveringUpperHalfPlaneNormalization D₂)
-    (hu : u.SolvesLiouvilleEquation)
-    (hconn : IsPreconnected (N₁.normalized.domain ∩ N₂.normalized.domain)) :
-    N₁.HasRealMobiusTransition N₂ :=
-  h N₁.normalized N₂.normalized hu hconn
 
 end LocalMetricRecoveringUpperHalfPlaneNormalization
 

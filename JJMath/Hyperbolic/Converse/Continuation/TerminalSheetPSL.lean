@@ -15,261 +15,15 @@ namespace HyperbolicMetric
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
 
-namespace PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
 
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/-- Coherent terminal-sheet homotopy data fill the agreement record. -/
-noncomputable def toCanonicalSheetAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  terminalValue_eq_on_terminalSheet := by
-    intro x p y' p' hy' hclass
-    exact
-      D.terminalSheetHomotopyPrinciple p y' hy' p'
-        (PathLocalTransitionModelBasedWeakHandoffSkeleton.homotopic_to_path_trans_terminalSheetPathInSet_of_mk_eq_pathClass
-          (D.basedWeakHandoffAlong p) hy' hclass)
 
-end PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
 
-/--
-Coherent finite-grid/local-extension data for based weak handoff continuation.
-
-This is the more construction-oriented boundary: choose the skeletons, prove
-finite grid walks for endpoint-fixed homotopies, and prove compatibility with
-local extension inside terminal sheets.
--/
-structure PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- Chosen based weak handoff skeletons along representative paths. -/
-  basedWeakHandoffAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- Finite homotopy-grid walks for the chosen skeletons. -/
-  homotopyGridWalk :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-  /-- Local-extension compatibility for terminal sheets. -/
-  terminalSheetLocalExtension :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-
-namespace PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-
-/--
-Finite-grid/local-extension data give coherent terminal-sheet homotopy data.
--/
-def toTerminalSheetHomotopyData
-    (D :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  terminalSheetHomotopyPrinciple :=
-    pathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyPrinciple_of_homotopyGridWalk_and_localExtension
-      D.basedWeakHandoffAlong D.homotopyGridWalk D.terminalSheetLocalExtension
-
-/-- Finite-grid/local-extension data fill the agreement record. -/
-noncomputable def toCanonicalSheetAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels :=
-  D.toTerminalSheetHomotopyData.toCanonicalSheetAgreementData
-
-end PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-
-/--
-Coherent elementary-grid/local-extension data for based weak handoff
-continuation.
-
-This is a sharper construction boundary than `HomotopyGridLocalExtensionData`:
-the finite grid walk is required to be built from explicit elementary grid
-moves.
--/
-structure PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- Chosen based weak handoff skeletons along representative paths. -/
-  basedWeakHandoffAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- Finite elementary-grid walks for endpoint-fixed homotopies. -/
-  elementaryGridMoveWalk :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-  /-- Local-extension compatibility for terminal sheets. -/
-  terminalSheetLocalExtension :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-
-namespace PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-
-/--
-Elementary-grid/local-extension data give the coarser finite-grid/local-extension
-data.
--/
-def toHomotopyGridLocalExtensionData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  homotopyGridWalk :=
-    pathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple_of_elementaryGridMoveWalkPrinciple
-      D.elementaryGridMoveWalk
-  terminalSheetLocalExtension := D.terminalSheetLocalExtension
-
-/--
-Elementary-grid/local-extension data give coherent terminal-sheet homotopy
-data.
--/
-def toTerminalSheetHomotopyData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-      x₀ g localModels :=
-  D.toHomotopyGridLocalExtensionData.toTerminalSheetHomotopyData
-
-/-- Elementary-grid/local-extension data fill the agreement record. -/
-noncomputable def toCanonicalSheetAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels :=
-  D.toHomotopyGridLocalExtensionData.toCanonicalSheetAgreementData
-
-end PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-
-/--
-Coherent elementary-grid/terminal-extension-agreement data.
-
-This is a sharper form of `ElementaryGridLocalExtensionData`: instead of
-asking directly for terminal branch equality after local extension, it asks
-for the concrete terminal-center and terminal-Mobius agreement that produces
-that equality.
--/
-structure PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- Chosen based weak handoff skeletons along representative paths. -/
-  basedWeakHandoffAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- Finite elementary-grid walks for endpoint-fixed homotopies. -/
-  elementaryGridMoveWalk :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-  /-- Terminal-sheet extension keeps terminal chart and terminal Mobius data. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-
-/--
-Coherent elementary-grid/PSL-terminal-extension-agreement data.
-
-This is the projective-strength analogue of
-`PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData`: the
-terminal chart is fixed under terminal-sheet extension, and the accumulated
-Mobius representative is fixed only after projection to PSL.
--/
-structure PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- Chosen based weak handoff skeletons along representative paths. -/
-  basedWeakHandoffAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- Finite elementary-grid walks for endpoint-fixed homotopies. -/
-  elementaryGridMoveWalk :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
-      x₀ g localModels basedWeakHandoffAlong
-  /-- Terminal-sheet extension keeps terminal chart and terminal Mobius PSL class. -/
-  terminalSheetExtensionProjectionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple
-      x₀ g localModels basedWeakHandoffAlong
 
 namespace PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
 
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-
-/-- Exact terminal-extension agreement data forget to PSL-level agreement data. -/
-def toElementaryGridExtensionProjectionAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  elementaryGridMoveWalk := D.elementaryGridMoveWalk
-  terminalSheetExtensionProjectionAgreement :=
-    pathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple_of_extensionAgreement
-      D.terminalSheetExtensionAgreement
-
-/--
-Terminal-extension agreement gives coherent elementary-grid/local-extension
-data.
--/
-def toElementaryGridLocalExtensionData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  elementaryGridMoveWalk := D.elementaryGridMoveWalk
-  terminalSheetLocalExtension :=
-    pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_terminalSheetExtensionAgreement
-      D.terminalSheetExtensionAgreement
-
-/--
-Terminal-extension agreement gives coherent finite-grid/local-extension data.
--/
-def toHomotopyGridLocalExtensionData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toHomotopyGridLocalExtensionData
-
-/--
-Terminal-extension agreement gives coherent terminal-sheet homotopy data.
--/
-def toTerminalSheetHomotopyData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toTerminalSheetHomotopyData
-
-/-- Terminal-extension agreement data fill the agreement record. -/
-noncomputable def toCanonicalSheetAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toCanonicalSheetAgreementData
 
 end PathLocalTransitionBasedWeakHandoffElementaryGridExtensionAgreementData
 
@@ -278,60 +32,19 @@ namespace PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAg
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/--
-PSL terminal-extension agreement gives coherent elementary-grid/local-extension
-data.
--/
-def toElementaryGridLocalExtensionData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridLocalExtensionData
-      x₀ g localModels where
-  basedWeakHandoffAlong := D.basedWeakHandoffAlong
-  elementaryGridMoveWalk := D.elementaryGridMoveWalk
-  terminalSheetLocalExtension :=
-    pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_terminalSheetExtensionProjectionAgreement
-      D.terminalSheetExtensionProjectionAgreement
-
-/--
-PSL terminal-extension agreement gives coherent finite-grid/local-extension
-data.
--/
-def toHomotopyGridLocalExtensionData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridLocalExtensionData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toHomotopyGridLocalExtensionData
-
-/--
-PSL terminal-extension agreement gives coherent terminal-sheet homotopy data.
--/
-def toTerminalSheetHomotopyData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toTerminalSheetHomotopyData
-
-/-- PSL terminal-extension agreement data fill the agreement record. -/
-noncomputable def toCanonicalSheetAgreementData
-    (D :
-      PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels :=
-  D.toElementaryGridLocalExtensionData.toCanonicalSheetAgreementData
-
 end PathLocalTransitionBasedWeakHandoffElementaryGridExtensionProjectionAgreementData
 
 /--
 The terminal-sheet homotopy principle fills the agreement record.  The only
 cover-theoretic input is that a point in a terminal sheet is represented by
 the continued path followed by the canonical local path in that sheet.
+
+%%handwave
+name: The terminal-sheet homotopy principle fills the agreement data
+statement:
+  The terminal-sheet homotopy principle fills the agreement data. The only cover-theoretic input
+  is that a point in a terminal sheet is represented by the continued path followed by the
+  canonical local path in that sheet.
 -/
 noncomputable def pathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData_of_terminalSheetHomotopyPrinciple
     {x₀ : X} {g : HyperbolicMetric X}
@@ -356,19 +69,6 @@ namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationV
 
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-
-/--
-Canonical-terminal-sheet value continuation forgets to terminal-sheet
-agreement; homotopy descent is no longer an input on the weaker side.
--/
-noncomputable def toCanonicalSheetAgreementData
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels where
-  basedWeakHandoffAlong := C.basedWeakHandoffAlong
-  terminalValue_eq_on_terminalSheet := C.terminalValue_eq_on_terminalSheet
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData
 
@@ -499,6 +199,11 @@ theorem terminalValue_eq_on_terminalSheet
 /--
 Cover-level PSL continuation gives canonical-terminal-sheet value
 continuation.
+
+%%handwave
+name: Cover-level PSL continuation gives canonical-terminal-sheet value continuation
+statement:
+  Cover-level PSL continuation gives canonical-terminal-sheet value continuation.
 -/
 noncomputable def toCanonicalSheetAnalyticContinuationValueData
     (C :
@@ -510,22 +215,6 @@ noncomputable def toCanonicalSheetAnalyticContinuationValueData
   terminalValue_homotopic := by
     intro x p q hpq
     exact C.terminalValue_homotopic hpq
-  terminalValue_eq_on_terminalSheet := by
-    intro x p y' p' hy' hclass
-    exact C.terminalValue_eq_on_terminalSheet p y' p' hy' hclass
-
-/--
-Cover-level PSL continuation forgets to canonical terminal-sheet agreement
-data.  The homotopy descent field of value-continuation data is not needed
-here; terminal-sheet agreement is exactly the local formula compatibility.
--/
-noncomputable def toCanonicalSheetAgreementData
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalCoverAnalyticContinuationDataPSL
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-      x₀ g localModels where
-  basedWeakHandoffAlong := C.basedWeakHandoffAlong
   terminalValue_eq_on_terminalSheet := by
     intro x p y' p' hy' hclass
     exact C.terminalValue_eq_on_terminalSheet p y' p' hy' hclass
@@ -556,38 +245,6 @@ structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivar
         holonomy.upperHalfPlaneAction γ
           (agreementContinuation.terminalValue p)
 
-/--
-Terminal-Mobius PSL covariance data for canonical-terminal-sheet agreement.
-
-This is a more concrete monodromy boundary than value equivariance: it records
-that loop precomposition preserves the terminal chart and multiplies the
-terminal PSL class by the loop holonomy.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalProjectionEquivarianceDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- PSL-valued real holonomy obtained from loop monodromy. -/
-  holonomy : RealHolonomyRepresentation X x₀
-  /-- Loop-precomposition preserves the terminal chart used by the branch. -/
-  terminalCenter_equivariant :
-    ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-      {x : X} (p : Path x₀ x),
-      Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹ →
-      (agreementContinuation.basedWeakHandoffAlong (loop.trans p)).terminalCenter =
-        (agreementContinuation.basedWeakHandoffAlong p).terminalCenter
-  /-- Loop-precomposition multiplies terminal Mobius classes by PSL holonomy. -/
-  terminalProjection_equivariant :
-    ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-      {x : X} (p : Path x₀ x),
-      Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹ →
-      realMobiusProjection
-          ((agreementContinuation.basedWeakHandoffAlong (loop.trans p)).terminalMobius) =
-        holonomy γ *
-          realMobiusProjection
-            ((agreementContinuation.basedWeakHandoffAlong p).terminalMobius)
 
 /--
 Transition-adjusted terminal-Mobius PSL covariance data for
@@ -674,6 +331,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 The canonical representative loop used to read off loop monodromy from
 terminal continuation.  The convention matches deck actions in this file:
 loop-prepending represents `γ⁻¹` at the path-class level.
+
+%%handwave
+name: The canonical representative loop used to read off loop monodromy from terminal continuation
+statement:
+  The canonical representative loop used to read off loop monodromy from terminal continuation.
+  The convention matches deck actions in this file: loop-prepending represents γ⁻¹ at the
+  path-class level.
 -/
 noncomputable def canonicalLoopFor
     (_C :
@@ -698,62 +362,26 @@ theorem canonicalLoopFor_spec
       FundamentalGroup.toPath γ⁻¹ :=
   Quot.out_eq (FundamentalGroup.toPath γ⁻¹)
 
-/--
-For the canonical loop representative, deck action sends the terminal cover
-point of `p` to the terminal cover point of the loop-prepended path.
+/-- The base path used to normalize terminal Mobius products.
 
 %%handwave
-name: Canonical loop prepending realizes deck action on terminal lifts
-statement: If $L_\gamma$ represents $\gamma^{-1}$ and $p:x_0\rightsquigarrow x$, then $\gamma\cdot(x,[p])=(x,[L_\gamma*p])$.
-proof: Prepending a loop representing $\gamma^{-1}$ is the defining action of the deck transformation $\gamma$ on the path-homotopy cover.
+name: The base path used to normalize terminal Möbius products
+statement:
+  The base path used to normalize terminal Möbius products.
 -/
-theorem deckAction_terminalCoverPoint_canonicalLoopFor
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x) :
-    PathHomotopyUniversalCover.deckAction γ
-        ((C.basedWeakHandoffAlong p).terminalCoverPoint) =
-      (C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)).terminalCoverPoint := by
-  let S := C.basedWeakHandoffAlong p
-  let T := C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)
-  have h :
-      T.terminalCoverPoint =
-        (canonicalContinuationCover x₀).deckAction γ S.terminalCoverPoint :=
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalCoverPoint_loopTrans_eq_deckAction
-      γ (C.canonicalLoopFor γ) S T (C.canonicalLoopFor_spec γ)
-  simpa [S, T, canonicalContinuationCover, SimplyConnectedCover.deckAction,
-    PathHomotopyUniversalCover.deckHomeomorphism_apply] using h.symm
-
-/--
-The source terminal cover point lies in the deck-preimage of the canonical
-loop-prepended terminal sheet.
-
-%%handwave
-name: The source terminal lift lies over the loop-prepended terminal sheet
-statement: The terminal lift $(x,[p])$ belongs to the inverse image under deck action by $\gamma$ of the terminal sheet selected for $L_\gamma*p$.
-proof: Deck action sends $(x,[p])$ to the terminal lift of $L_\gamma*p$, and every terminal lift belongs to its own terminal sheet.
--/
-theorem terminalCoverPoint_mem_deck_preimage_canonicalLoop_terminalSheet
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x) :
-    (C.basedWeakHandoffAlong p).terminalCoverPoint ∈
-      (PathHomotopyUniversalCover.deckAction γ) ⁻¹'
-        (C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)).terminalSheet := by
-  simpa [C.deckAction_terminalCoverPoint_canonicalLoopFor γ p] using
-    (C.basedWeakHandoffAlong
-      ((C.canonicalLoopFor γ).trans p)).terminalCoverPoint_mem_terminalSheet
-
-/-- The base path used to normalize terminal Mobius products. -/
 def baseNormalizationPath
     (_C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels) : Path x₀ x₀ :=
   Path.refl x₀
 
-/-- The terminal PSL class of the normalized base path. -/
+/-- The terminal PSL class of the normalized base path.
+
+%%handwave
+name: The terminal PSL class of the normalized base path
+statement:
+  The terminal PSL class of the normalized base path.
+-/
 noncomputable def baseTerminalProjection
     (C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
@@ -764,6 +392,12 @@ noncomputable def baseTerminalProjection
 /--
 The adjusted terminal PSL class obtained by continuing around the canonical
 representative of `γ⁻¹` and then back along the base normalization path.
+
+%%handwave
+name: The adjusted terminal PSL class obtained by continuing around the canonical representative of γ⁻¹ and then back along the base normalization path
+statement:
+  The adjusted terminal PSL class obtained by continuing around the canonical representative of
+  γ⁻¹ and then back along the base normalization path.
 -/
 noncomputable def loopAdjustedTerminalProjection
     (C :
@@ -779,6 +413,12 @@ noncomputable def loopAdjustedTerminalProjection
 /--
 The PSL holonomy candidate read off from loop terminal continuation, normalized
 by the base terminal class.
+
+%%handwave
+name: The PSL holonomy candidate read off from loop terminal continuation, normalized by the base terminal class
+statement:
+  The PSL holonomy candidate read off from loop terminal continuation, normalized by the base
+  terminal class.
 -/
 noncomputable def derivedHolonomyProjection
     (C :
@@ -873,6 +513,13 @@ The normalized canonical-loop terminal PSL class at a terminal path `p`.
 This quotient removes the terminal Mobius class of `p`; the monodromy theorem
 says that the resulting class is independent of `p` and hence equals its base
 value.
+
+%%handwave
+name: The normalized canonical-loop terminal PSL class at a terminal path p
+statement:
+  The normalized canonical-loop terminal PSL class at a terminal path p. This quotient removes
+  the terminal Möbius class of p; the monodromy theorem says that the resulting class is
+  independent of p and hence equals its base value.
 -/
 noncomputable def canonicalLoopNormalizedTerminalProjection
     (C :
@@ -1028,6 +675,12 @@ theorem canonicalLoopNormalizedTerminalProjection_homotopic
 /--
 The normalized canonical-loop terminal class as a function on the canonical
 path-homotopy cover.
+
+%%handwave
+name: The normalized canonical-loop terminal class as a function on the canonical path-homotopy cover
+statement:
+  The normalized canonical-loop terminal class as a function on the canonical path-homotopy
+  cover.
 -/
 noncomputable def canonicalLoopNormalizedProjectionAt
     (C :
@@ -1061,28 +714,6 @@ theorem canonicalLoopNormalizedProjectionAt_mk
   exact
     C.canonicalLoopNormalizedTerminalProjection_homotopic γ
       (PathLocalTransitionChainTerminalBranchAnalyticContinuationValueData.out_homotopic_mk p)
-
-/--
-At the distinguished base lift, the cover-valued normalized projection is the
-derived holonomy.
-
-%%handwave
-name: Normalized loop transport at the base lift
-statement: At the distinguished lift $\widetilde x_0$, one has $N_\gamma(\widetilde x_0)=H_\gamma$.
-proof: Represent the base lift by the constant normalization path and use that its normalized loop transport is the derived holonomy.
--/
-theorem canonicalLoopNormalizedProjectionAt_baseLift
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (γ : FundamentalGroup X x₀) :
-    C.canonicalLoopNormalizedProjectionAt γ
-        (PathHomotopyUniversalCover.baseLift x₀) =
-      C.derivedHolonomyProjection γ := by
-  simpa [PathHomotopyUniversalCover.baseLift,
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.baseNormalizationPath]
-    using C.canonicalLoopNormalizedProjectionAt_mk γ C.baseNormalizationPath
-      |>.trans (C.canonicalLoopNormalizedTerminalProjection_baseNormalizationPath γ)
 
 /--
 Constancy of the cover-valued normalized projection implies propagation of the
@@ -1300,6 +931,12 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 Canonical-terminal-sheet based weak handoff continuation plus PSL loop
 equivariance gives PSL path-class monodromy.
+
+%%handwave
+name: Canonical-terminal-sheet based weak handoff continuation plus PSL loop equivariance gives PSL path-class monodromy
+statement:
+  Canonical-terminal-sheet based weak handoff continuation plus PSL loop equivariance gives PSL
+  path-class monodromy.
 -/
 noncomputable def toPathClassLocalTransitionAnalyticContinuationMonodromyDataPSL
     (E :
@@ -1340,90 +977,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-Terminal-center equality plus PSL terminal-Mobius covariance gives path-level
-PSL loop equivariance of terminal values.
--/
-noncomputable def ofTerminalProjectionEquivariance
-    (holonomy : RealHolonomyRepresentation X x₀)
-    (hCenter :
-      ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-        {x : X} (p : Path x₀ x),
-        Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹ →
-        (C.basedWeakHandoffAlong (loop.trans p)).terminalCenter =
-          (C.basedWeakHandoffAlong p).terminalCenter)
-    (hProjection :
-      ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-        {x : X} (p : Path x₀ x),
-        Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹ →
-        realMobiusProjection
-            ((C.basedWeakHandoffAlong (loop.trans p)).terminalMobius) =
-          holonomy γ *
-            realMobiusProjection ((C.basedWeakHandoffAlong p).terminalMobius)) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      C where
-  holonomy := holonomy
-  terminal_path_equivariant := by
-    intro γ loop x p hloop
-    simpa [
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalValue]
-      using
-        (C.basedWeakHandoffAlong p).terminalValue_eq_holonomy_action_of_terminalProjection_eq
-          (C.basedWeakHandoffAlong (loop.trans p)) holonomy γ
-          (hCenter γ loop p hloop) (hProjection γ loop p hloop)
-
-/--
-Terminal-Mobius PSL covariance data imply path-level PSL value equivariance.
--/
-noncomputable def ofTerminalProjectionEquivarianceData
-    (E :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalProjectionEquivarianceDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      C :=
-  ofTerminalProjectionEquivariance E.holonomy
-    E.terminalCenter_equivariant E.terminalProjection_equivariant
-
-/--
-Value-level PSL loop equivariance for the derived canonical-sheet value data
-forgets to path-level PSL loop equivariance for agreement data.
--/
-noncomputable def ofCanonicalSheetValueEquivarianceDataPSL
-    (E :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueEquivarianceDataPSL
-        C.toCanonicalSheetAnalyticContinuationValueData) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      C where
-  holonomy := E.holonomy
-  terminal_path_equivariant := by
-    intro γ loop x p hloop
-    simpa [
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalValue,
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAnalyticContinuationValueData.terminalValue]
-      using E.terminal_path_equivariant γ loop p hloop
-
-/--
-Terminal-sheet agreement plus PSL value equivariance gives the single-valued
-canonical-cover PSL continuation record.
--/
-noncomputable def toCanonicalCoverAnalyticContinuationDataPSL
-    (E :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalCoverAnalyticContinuationDataPSL
-      x₀ g localModels where
-  basedWeakHandoffAlong := C.basedWeakHandoffAlong
-  dev := C.dev
-  holonomy := E.holonomy
-  dev_eq_on_terminalSheet := by
-    intro x p y' hy'
-    exact C.dev_eq_on_terminalSheet p y' hy'
-  dev_equivariant := by
-    intro γ y
-    exact
-      C.dev_deckAction_eq_of_terminal_path_equivariant
-        E.holonomy E.terminal_path_equivariant γ y
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
@@ -1431,333 +984,13 @@ namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
 variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
 
-/--
-Deck equivariance of the constructed upstairs map gives path-level PSL
-loop equivariance of terminal values.
-
-This is the reverse direction to
-`dev_deckAction_eq_of_terminal_path_equivariant` at the level needed for
-monodromy: loop-prepending moves the terminal cover point by the deck action,
-and terminal-sheet agreement identifies terminal values with the upstairs map
-at those terminal cover points.
--/
-noncomputable def toValueEquivarianceDataPSL_of_dev_equivariant
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (holonomy : RealHolonomyRepresentation X x₀)
-    (hdev :
-      ∀ (γ : FundamentalGroup X x₀)
-        (y : (canonicalContinuationCover x₀).total),
-        C.dev ((canonicalContinuationCover x₀).deckAction γ y) =
-          holonomy.upperHalfPlaneAction γ (C.dev y)) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      C where
-  holonomy := holonomy
-  terminal_path_equivariant := by
-    intro γ loop x p hloop
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (loop.trans p)
-    have hT :
-        T.terminalCoverPoint =
-          (canonicalContinuationCover x₀).deckAction γ S.terminalCoverPoint :=
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalCoverPoint_loopTrans_eq_deckAction
-        γ loop S T hloop
-    calc
-      C.terminalValue (loop.trans p) =
-          C.dev T.terminalCoverPoint := by
-            simpa [PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalValue,
-              T] using (C.dev_terminalCoverPoint (loop.trans p)).symm
-      _ = C.dev ((canonicalContinuationCover x₀).deckAction γ S.terminalCoverPoint) := by
-            rw [hT]
-      _ = holonomy.upperHalfPlaneAction γ (C.dev S.terminalCoverPoint) := by
-            exact hdev γ S.terminalCoverPoint
-      _ = holonomy.upperHalfPlaneAction γ (C.terminalValue p) := by
-            simpa [PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalValue,
-              S] using
-              congrArg (holonomy.upperHalfPlaneAction γ)
-                (C.dev_terminalCoverPoint p)
-
-/--
-For canonical-terminal-sheet agreement data, deck equivariance of the
-constructed upstairs map is equivalent to path-level PSL loop equivariance of
-terminal values.
-
-%%handwave
-name: Deck equivariance is equivalent to pathwise loop equivariance
-statement: For a projective holonomy $\rho$, the developing map satisfies $\mathrm{dev}(\gamma y)=\rho(\gamma)\cdot\mathrm{dev}(y)$ for all cover points if and only if every loop $L$ representing $\gamma^{-1}$ satisfies $v(L*p)=\rho(\gamma)\cdot v(p)$ for all based paths $p$.
-proof: Deck equivariance evaluated at the terminal lift of $p$ gives pathwise loop equivariance because prepending $L$ realizes deck action. Conversely, represent an arbitrary cover point by a path and use terminal-sheet descent to express both developing-map values as terminal values before applying the pathwise formula.
--/
-theorem dev_deckAction_equivariant_iff_terminal_path_equivariant
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels)
-    (holonomy : RealHolonomyRepresentation X x₀) :
-    (∀ (γ : FundamentalGroup X x₀)
-        (y : (canonicalContinuationCover x₀).total),
-        C.dev ((canonicalContinuationCover x₀).deckAction γ y) =
-          holonomy.upperHalfPlaneAction γ (C.dev y)) ↔
-      (∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-        {x : X} (p : Path x₀ x),
-        Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹ →
-        C.terminalValue (loop.trans p) =
-          holonomy.upperHalfPlaneAction γ (C.terminalValue p)) := by
-  constructor
-  · intro hdev γ loop x p hloop
-    exact
-      (C.toValueEquivarianceDataPSL_of_dev_equivariant holonomy hdev).terminal_path_equivariant
-        γ loop p hloop
-  · intro hpath γ y
-    exact C.dev_deckAction_eq_of_terminal_path_equivariant
-      holonomy hpath γ y
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
 
-/--
-Value-equivariance plus terminal-Mobius projection rigidity identifies the
-derived loop-terminal PSL class with a genuine holonomy representation.
 
-This is a smaller mathematical boundary than raw derived-holonomy data:
-the monoid laws are inherited from the stored PSL representation, while the
-remaining content is the identification of that representation with the
-loop-terminal class and the rigidity step converting value equivariance into
-transition-adjusted terminal-Mobius covariance.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- PSL value-equivariance for terminal-sheet agreement. -/
-  valueEquivariance :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      agreementContinuation
-  /-- The value-equivariance holonomy is the loop-terminal derived PSL class. -/
-  valueHolonomy_eq_derivedHolonomy :
-    ∀ γ : FundamentalGroup X x₀,
-      valueEquivariance.holonomy γ =
-        agreementContinuation.derivedHolonomyProjection γ
-  /--
-  Rigidity of the local terminal formulas: value equivariance forces the
-  transition-adjusted terminal-Mobius projection equality.
-  -/
-  automaticTerminalTransitionProjection_eq_of_valueEquivariance :
-    ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-      {x : X} (p : Path x₀ x)
-      (hloop : Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹),
-      realMobiusProjection
-          (((agreementContinuation.basedWeakHandoffAlong (loop.trans p)).terminalMobius) *
-            agreementContinuation.terminalTransitionRepresentative γ loop p hloop) =
-        valueEquivariance.holonomy γ *
-          realMobiusProjection
-            ((agreementContinuation.basedWeakHandoffAlong p).terminalMobius)
 
-namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL
 
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels}
 
-/--
-Value-projection data fill the derived-holonomy/cocycle record by inheriting
-the identity and multiplication laws from the PSL representation.
--/
-noncomputable def toAutomaticTerminalTransitionProjectionDerivedHolonomyDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementAutomaticTerminalTransitionProjectionDerivedHolonomyDataPSL
-      C where
-  derivedHolonomy_one := by
-    rw [← D.valueHolonomy_eq_derivedHolonomy 1]
-    exact RealHolonomyRepresentation.map_one D.valueEquivariance.holonomy
-  derivedHolonomy_mul := by
-    intro γ δ
-    rw [← D.valueHolonomy_eq_derivedHolonomy (γ * δ),
-      ← D.valueHolonomy_eq_derivedHolonomy γ,
-      ← D.valueHolonomy_eq_derivedHolonomy δ]
-    exact RealHolonomyRepresentation.map_mul D.valueEquivariance.holonomy γ δ
-  automaticTerminalTransitionProjection_equivariant := by
-    intro γ loop x p hloop
-    rw [← D.valueHolonomy_eq_derivedHolonomy γ]
-    exact
-      D.automaticTerminalTransitionProjection_eq_of_valueEquivariance
-        γ loop p hloop
 
-end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL
-
-/--
-Value-equivariance plus terminal-Mobius projection rigidity.
-
-This is sharper than
-`PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL`:
-it does not separately assume that the value holonomy is the derived
-loop-terminal holonomy.  That identification follows formally by applying the
-projection-rigidity equality to the canonical representative loop and the base
-normalization path.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- PSL value-equivariance for terminal-sheet agreement. -/
-  valueEquivariance :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-      agreementContinuation
-  /--
-  Rigidity of the local terminal formulas: value equivariance forces the
-  transition-adjusted terminal-Mobius projection equality.
-  -/
-  automaticTerminalTransitionProjection_eq_of_valueEquivariance :
-    ∀ (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-      {x : X} (p : Path x₀ x)
-      (hloop : Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹),
-      realMobiusProjection
-          (((agreementContinuation.basedWeakHandoffAlong (loop.trans p)).terminalMobius) *
-            agreementContinuation.terminalTransitionRepresentative γ loop p hloop) =
-        valueEquivariance.holonomy γ *
-          realMobiusProjection
-            ((agreementContinuation.basedWeakHandoffAlong p).terminalMobius)
-
-namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels}
-
-/--
-The holonomy appearing in value equivariance is forced to be the derived
-loop-terminal PSL class.
-
-%%handwave
-name: Value holonomy equals terminally derived holonomy
-statement: If terminal values transform by a projective holonomy $\rho$ and equality of the local branch action forces equality of the adjusted terminal projective classes, then $\rho(\gamma)=H_\gamma$ for every $\gamma$.
-proof: Apply projection rigidity to the canonical loop $L_\gamma$ and the base normalization path. The resulting equality identifies the adjusted loop-terminal class with $\rho(\gamma)$ times the base class; multiply by the inverse base class to obtain the defining $H_\gamma$.
--/
-theorem valueHolonomy_eq_derivedHolonomy
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-        C)
-    (γ : FundamentalGroup X x₀) :
-    D.valueEquivariance.holonomy γ =
-      C.derivedHolonomyProjection γ := by
-  have hbase :=
-    D.automaticTerminalTransitionProjection_eq_of_valueEquivariance
-      γ (C.canonicalLoopFor γ) (x := x₀) C.baseNormalizationPath
-      (C.canonicalLoopFor_spec γ)
-  rw [PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.derivedHolonomyProjection,
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.loopAdjustedTerminalProjection,
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.baseTerminalProjection,
-    hbase]
-  simp [mul_assoc]
-
-/--
-Value-projection rigidity fills the older derived-holonomy value-projection
-record; the holonomy-identification field is generated automatically.
--/
-noncomputable def toDerivedHolonomyValueProjectionDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementDerivedHolonomyValueProjectionDataPSL
-      C where
-  valueEquivariance := D.valueEquivariance
-  valueHolonomy_eq_derivedHolonomy := D.valueHolonomy_eq_derivedHolonomy
-  automaticTerminalTransitionProjection_eq_of_valueEquivariance :=
-    D.automaticTerminalTransitionProjection_eq_of_valueEquivariance
-
-/--
-Value-projection rigidity directly gives the derived-holonomy/cocycle record.
--/
-noncomputable def toAutomaticTerminalTransitionProjectionDerivedHolonomyDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementAutomaticTerminalTransitionProjectionDerivedHolonomyDataPSL
-      C :=
-  D.toDerivedHolonomyValueProjectionDataPSL
-    |>.toAutomaticTerminalTransitionProjectionDerivedHolonomyDataPSL
-
-end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-
-/--
-Terminal-formula PSL projection rigidity from deck equivariance of the
-canonical-cover map.
-
-This separates the last local analytic/contentful step from value
-equivariance.  Once the upstairs developing map is deck-equivariant, the two
-terminal local formulae representing the same sheet should determine the same
-transition-adjusted PSL class.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /--
-  Deck equivariance of the canonical-cover map forces the adjusted terminal
-  Mobius class covariance.
-  -/
-  automaticTerminalTransitionProjection_eq_of_dev_equivariant :
-    ∀ (holonomy : RealHolonomyRepresentation X x₀)
-      (_hdev :
-        ∀ (γ : FundamentalGroup X x₀)
-          (y : (canonicalContinuationCover x₀).total),
-          agreementContinuation.dev
-              ((canonicalContinuationCover x₀).deckAction γ y) =
-            holonomy.upperHalfPlaneAction γ
-              (agreementContinuation.dev y))
-      (γ : FundamentalGroup X x₀) (loop : Path x₀ x₀)
-      {x : X} (p : Path x₀ x)
-      (hloop : Path.Homotopic.Quotient.mk loop = FundamentalGroup.toPath γ⁻¹),
-      realMobiusProjection
-          (((agreementContinuation.basedWeakHandoffAlong (loop.trans p)).terminalMobius) *
-            agreementContinuation.terminalTransitionRepresentative γ loop p hloop) =
-        holonomy γ *
-          realMobiusProjection
-            ((agreementContinuation.basedWeakHandoffAlong p).terminalMobius)
-
-namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels}
-
-/--
-Terminal-formula projection rigidity plus value equivariance gives the
-value-projection rigidity package.
--/
-noncomputable def toValueProjectionRigidityDataPSL
-    (R :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
-        C)
-    (E :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueEquivarianceDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementValueProjectionRigidityDataPSL
-      C where
-  valueEquivariance := E
-  automaticTerminalTransitionProjection_eq_of_valueEquivariance := by
-    intro γ loop x p hloop
-    exact
-      R.automaticTerminalTransitionProjection_eq_of_dev_equivariant
-        E.holonomy
-        (fun δ y =>
-          C.dev_deckAction_eq_of_terminal_path_equivariant
-            E.holonomy E.terminal_path_equivariant δ y)
-        γ loop p hloop
-
-end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
 
 /--
 PSL action faithfulness on the actual terminal coordinate agreement set.
@@ -1839,6 +1072,12 @@ structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalForm
 /--
 Terminal-sheet agreement data automatically has nonempty-open terminal
 coordinate agreement sets.
+
+%%handwave
+name: Terminal-sheet agreement data automatically has nonempty-open terminal coordinate agreement sets
+statement:
+  Terminal-sheet agreement data automatically has nonempty-open terminal coordinate agreement
+  sets.
 -/
 def PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.toTerminalFormulaNonemptyOpenAgreementDataPSL
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1899,25 +1138,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-Terminal-formula faithfulness plus the formal deck-equivariant formula
-comparison gives terminal-formula projection rigidity.
--/
-noncomputable def toTerminalFormulaProjectionRigidityDataPSL
-    (F :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionFaithfulnessDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
-      C where
-  automaticTerminalTransitionProjection_eq_of_dev_equivariant := by
-    intro holonomy hdev γ loop x p hloop
-    exact
-      F.automaticTerminalTransitionProjection_eq_of_formula_agreement
-        holonomy γ loop p hloop
-        (fun y hySource hyTarget hyTransition =>
-          C.terminalTransitionAdjustedFormula_eq_holonomy_action_of_dev_equivariant
-            holonomy hdev γ loop p hloop y hySource hyTarget hyTransition)
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionFaithfulnessDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaNonemptyOpenAgreementDataPSL
@@ -1930,6 +1150,11 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 
 /--
 Nonempty open agreement sets give three-point richness.
+
+%%handwave
+name: Nonempty open agreement sets give three-point richness
+statement:
+  Nonempty open agreement sets give three-point richness.
 -/
 noncomputable def toTerminalFormulaThreePointRichnessDataPSL
     (O :
@@ -1955,7 +1180,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/-- Three-point richness gives terminal-coordinate action faithfulness. -/
+/-- Three-point richness gives terminal-coordinate action faithfulness.
+
+%%handwave
+name: Three-point richness gives terminal-coordinate action faithfulness
+statement:
+  Three-point richness gives terminal-coordinate action faithfulness.
+-/
 noncomputable def toTerminalFormulaActionFaithfulnessDataPSL
     (T :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaThreePointRichnessDataPSL
@@ -1983,6 +1214,12 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 Action faithfulness on the coordinate agreement set gives terminal-formula
 projection faithfulness.
+
+%%handwave
+name: Action faithfulness on the coordinate agreement set gives terminal-formula projection faithfulness
+statement:
+  Action faithfulness on the coordinate agreement set gives terminal-formula projection
+  faithfulness.
 -/
 noncomputable def toTerminalFormulaProjectionFaithfulnessDataPSL
     (F :
@@ -2013,6 +1250,12 @@ variable {x₀ : X} {g : HyperbolicMetric X}
 /--
 Terminal-sheet agreement data automatically has three-point-rich terminal
 coordinate agreement sets.
+
+%%handwave
+name: Terminal-sheet agreement data automatically has three-point-rich terminal coordinate agreement sets
+statement:
+  Terminal-sheet agreement data automatically has three-point-rich terminal coordinate agreement
+  sets.
 -/
 noncomputable def toTerminalFormulaThreePointRichnessDataPSL
     (C :
@@ -2026,6 +1269,12 @@ noncomputable def toTerminalFormulaThreePointRichnessDataPSL
 /--
 Terminal-sheet agreement data automatically has PSL action faithfulness on the
 terminal coordinate agreement sets.
+
+%%handwave
+name: Terminal-sheet agreement data automatically has PSL action faithfulness on the terminal coordinate agreement sets
+statement:
+  Terminal-sheet agreement data automatically has PSL action faithfulness on the terminal
+  coordinate agreement sets.
 -/
 noncomputable def toTerminalFormulaActionFaithfulnessDataPSL
     (C :
@@ -2039,6 +1288,12 @@ noncomputable def toTerminalFormulaActionFaithfulnessDataPSL
 /--
 Terminal-sheet agreement data automatically has PSL projection faithfulness for
 the transition-adjusted terminal formulae.
+
+%%handwave
+name: Terminal-sheet agreement data automatically has PSL projection faithfulness for the transition-adjusted terminal formulae
+statement:
+  Terminal-sheet agreement data automatically has PSL projection faithfulness for the
+  transition-adjusted terminal formulae.
 -/
 noncomputable def toTerminalFormulaProjectionFaithfulnessDataPSL
     (C :
@@ -2048,19 +1303,6 @@ noncomputable def toTerminalFormulaProjectionFaithfulnessDataPSL
       C :=
   C.toTerminalFormulaActionFaithfulnessDataPSL
     |>.toTerminalFormulaProjectionFaithfulnessDataPSL
-
-/--
-Terminal-sheet agreement data automatically has terminal-formula PSL
-projection rigidity.
--/
-noncomputable def toTerminalFormulaProjectionRigidityDataPSL
-    (C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementTerminalFormulaProjectionRigidityDataPSL
-      C :=
-  C.toTerminalFormulaProjectionFaithfulnessDataPSL
-    |>.toTerminalFormulaProjectionRigidityDataPSL
 
 /--
 Null-homotopic loop-prepending has trivial adjusted terminal PSL effect.
@@ -2644,517 +1886,8 @@ structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoo
       IsLocallyConstant
         (agreementContinuation.canonicalLoopNormalizedProjectionAt γ)
 
-/--
-Local sheet constancy of the normalized canonical-loop projection.
 
-For a path `p`, compare its terminal sheet with the terminal sheet obtained
-after prepending the canonical loop for `γ`.  On the neighborhood where a cover
-point lies in the first sheet and its `γ`-deck translate lies in the second,
-the normalized canonical-loop class is unchanged.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionLocalSheetConstancyDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /--
-  The normalized canonical-loop terminal projection is constant on the
-  deck-compatible pair of terminal sheets attached to `p` and to
-  `(canonicalLoopFor γ).trans p`.
-  -/
-  canonicalLoopNormalizedProjectionAt_eq_on_deck_terminalSheets :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀),
-      y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet →
-      (canonicalContinuationCover x₀).deckAction γ y ∈
-        (agreementContinuation.basedWeakHandoffAlong
-          ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet →
-      agreementContinuation.canonicalLoopNormalizedProjectionAt γ y =
-        agreementContinuation.canonicalLoopNormalizedProjectionAt γ
-          (agreementContinuation.basedWeakHandoffAlong p).terminalCoverPoint
 
-/--
-Pure terminal-transition transport for the normalized canonical-loop
-projection.
-
-This is the remaining transition-class assertion after terminal-sheet
-extension agreement has been split off: the PSL class of the terminal chart
-transition between `p` and `(canonicalLoopFor γ).trans p` is unchanged after
-the deck-compatible terminal-sheet extensions.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionTransportDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /--
-  The terminal transition class between the source and loop-prepended terminal
-  charts is transported unchanged along deck-compatible terminal-sheet
-  extensions.
-  -/
-  terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      realMobiusProjection
-          (agreementContinuation.terminalTransitionRepresentativeBetween
-            (p.trans
-              ((agreementContinuation.basedWeakHandoffAlong p).terminalSheetPathInSet hy))
-            (((agreementContinuation.canonicalLoopFor γ).trans p).trans
-              ((agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheetPathInSet
-                  (y' := PathHomotopyUniversalCover.deckAction γ y) hdeck))) =
-        realMobiusProjection
-          (agreementContinuation.terminalTransitionRepresentativeBetween p
-            ((agreementContinuation.canonicalLoopFor γ).trans p))
-
-/--
-Terminal-sheet transport data for the normalized canonical-loop projection.
-
-This is the geometric transition-transport form of the local-sheet monodromy
-boundary.  It separates two pieces:
-
-* extending a selected path inside its terminal sheet does not change the
-  terminal chart/Mobius branch; and
-* the PSL class of the terminal chart transition between `p` and
-  `(canonicalLoopFor γ).trans p` is unchanged after making the compatible
-  terminal-sheet extensions on both sides.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalSheetTransportDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  The terminal transition class between the source and loop-prepended terminal
-  charts is transported unchanged along deck-compatible terminal-sheet
-  extensions.
-  -/
-  terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      realMobiusProjection
-          (agreementContinuation.terminalTransitionRepresentativeBetween
-            (p.trans
-              ((agreementContinuation.basedWeakHandoffAlong p).terminalSheetPathInSet hy))
-            (((agreementContinuation.canonicalLoopFor γ).trans p).trans
-              ((agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheetPathInSet
-                  (y' := PathHomotopyUniversalCover.deckAction γ y) hdeck))) =
-      realMobiusProjection
-          (agreementContinuation.terminalTransitionRepresentativeBetween p
-            ((agreementContinuation.canonicalLoopFor γ).trans p))
-
-/--
-Preconnected-overlap data for terminal-transition transport.
-
-This is a more geometric form of the remaining terminal-transition monodromy
-boundary.  After terminal-sheet extension agreement fixes the terminal charts,
-it asks only that the original endpoint and the deck-compatible terminal-sheet
-endpoint lie in one preconnected piece of the overlap of those two fixed
-terminal charts.  The PSL transition class is then forced to be constant on
-that piece.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  The original terminal endpoint and a deck-compatible terminal-sheet endpoint
-  can be compared inside one preconnected overlap of the fixed source and
-  loop-prepended terminal charts.
-  -/
-  terminalTransitionPreconnectedOverlap :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      ∃ W : Set X,
-        IsPreconnected W ∧
-        x ∈ W ∧
-        PathHomotopyUniversalCover.endpoint y ∈ W ∧
-        W ⊆
-          (localModels.chartAt
-              ((agreementContinuation.basedWeakHandoffAlong p).terminalCenter)).domain ∩
-            (localModels.chartAt
-              ((agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalCenter)).domain
-
-/--
-Same-overlap-component data for terminal-transition transport.
-
-This is the sharp topological form of the terminal-transition boundary:
-after terminal-sheet extension agreement fixes the terminal charts, the
-deck-compatible endpoint must lie in the same connected component of the
-overlap of those fixed terminal charts as the original endpoint.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionSameOverlapComponentDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  The deck-compatible endpoint stays in the connected component of the fixed
-  source/loop-prepended terminal-chart overlap containing the original
-  endpoint.
-  -/
-  terminalTransitionEndpoint_mem_sameOverlapComponent :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      PathHomotopyUniversalCover.endpoint y ∈
-        connectedComponentIn
-          ((localModels.chartAt
-              ((agreementContinuation.basedWeakHandoffAlong p).terminalCenter)).domain ∩
-            (localModels.chartAt
-              ((agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalCenter)).domain)
-          x
-
-/--
-Terminal-sheet path overlap data for terminal-transition transport.
-
-This is a path-level sufficient condition for the same-overlap-component
-boundary: the canonical path inside the source terminal sheet from the
-original endpoint to the transported endpoint stays inside the target
-terminal chart as well.  Since it already stays inside the source terminal
-chart, its image is a path in the fixed terminal-chart overlap.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapPathDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  The source terminal-sheet path from the original endpoint to the transported
-  endpoint stays in the loop-prepended terminal chart.
-  -/
-  terminalSheetPath_mem_targetTerminalDomain :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet)
-      (t : unitInterval),
-      (agreementContinuation.basedWeakHandoffAlong p).terminalSheetPathInSet hy t ∈
-        (localModels.chartAt
-          ((agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalCenter)).domain
-
-/--
-Existence of an overlap path for terminal-transition transport.
-
-This is the intrinsic path-component form of the topological boundary: for the
-fixed source and loop-prepended terminal charts, there is some path in their
-overlap from the original endpoint to the transported endpoint.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  There is a path in the fixed terminal-chart overlap from the original
-  endpoint to the transported endpoint.
-  -/
-  terminalTransitionOverlapConnectingPath :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      ∃ ρ : Path x (PathHomotopyUniversalCover.endpoint y),
-        ∀ t : unitInterval,
-          ρ t ∈
-            (localModels.chartAt
-                ((agreementContinuation.basedWeakHandoffAlong p).terminalCenter)).domain ∩
-              (localModels.chartAt
-                ((agreementContinuation.basedWeakHandoffAlong
-                  ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalCenter)).domain
-
-/--
-Upstairs overlap-path data for terminal-transition transport.
-
-This is the cover-geometric version of the connecting-path boundary: from the
-source terminal cover point to `y`, there is a path that stays in the source
-terminal sheet and whose deck translate stays in the loop-prepended terminal
-sheet.  Projecting this path gives a path in the fixed terminal-chart overlap.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  There is an upstairs path from the source terminal cover point to `y` whose
-  projection stays in the fixed terminal-chart overlap.
-  -/
-  terminalTransitionCoverOverlapPath :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      ∃ κ : Path (agreementContinuation.basedWeakHandoffAlong p).terminalCoverPoint y,
-        ∀ t : unitInterval,
-          κ t ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet ∧
-            PathHomotopyUniversalCover.deckAction γ (κ t) ∈
-              (agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet
-
-/--
-Upstairs same-component data for terminal-transition transport.
-
-This is the intrinsic cover-geometric monodromy boundary: inside the source
-terminal sheet and the deck-preimage of the loop-prepended terminal sheet,
-`y` must lie in the same connected component as the source terminal cover
-point.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  `y` is in the connected component of the deck-compatible overlap containing
-  the source terminal cover point.
-  -/
-  terminalTransitionEndpoint_mem_sameCoverComponent :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      let S := agreementContinuation.basedWeakHandoffAlong p
-      let T :=
-        agreementContinuation.basedWeakHandoffAlong
-          ((agreementContinuation.canonicalLoopFor γ).trans p)
-      y ∈
-        connectedComponentIn
-          (S.terminalSheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet)
-          S.terminalCoverPoint
-
-/--
-Downstairs same-component data for terminal-transition transport.
-
-This asks only that the terminal endpoint lie in the same connected component
-of the base overlap of the two terminal sheet charts. The corresponding
-upstairs cover-same-component statement follows from local constancy of sheet
-labels on connected components of a base overlap.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseSameComponentDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  The endpoint of `y`, seen in the source terminal sheet chart, lies in the
-  same connected component of the two terminal-chart bases as the source
-  terminal cover point.
-  -/
-  terminalTransitionEndpoint_mem_sameBaseComponent :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      let S := agreementContinuation.basedWeakHandoffAlong p
-      let T :=
-        agreementContinuation.basedWeakHandoffAlong
-          ((agreementContinuation.canonicalLoopFor γ).trans p)
-      (⟨PathHomotopyUniversalCover.endpoint y,
-        by
-          simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-            PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-              (x₀ := x₀) hy⟩ : S.terminalSheetChart.base) ∈
-        connectedComponentIn
-          {z : S.terminalSheetChart.base |
-            (z : X) ∈ T.terminalSheetChart.base}
-          (⟨PathHomotopyUniversalCover.endpoint S.terminalCoverPoint,
-            by
-              simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-                PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-                  (x₀ := x₀) S.terminalCoverPoint_mem_terminalSheet⟩ :
-            S.terminalSheetChart.base)
-
-/--
-Downstairs path data in the terminal sheet-chart base overlap.
-
-This is the path-level version of `BaseSameComponentDataPSL`: for every
-deck-compatible terminal endpoint, it provides an actual path in the overlap
-of the two selected terminal sheet-chart bases.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseOverlapConnectingPathDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  There is a path in the overlap of the selected terminal sheet-chart bases
-  from the source terminal endpoint to the transported endpoint.
-  -/
-  terminalTransitionBaseOverlapConnectingPath :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      let S := agreementContinuation.basedWeakHandoffAlong p
-      let T :=
-        agreementContinuation.basedWeakHandoffAlong
-          ((agreementContinuation.canonicalLoopFor γ).trans p)
-      ∃ ρ : Path
-          (PathHomotopyUniversalCover.endpoint S.terminalCoverPoint)
-          (PathHomotopyUniversalCover.endpoint y),
-        ∀ t : unitInterval,
-          ρ t ∈ S.terminalSheetChart.base ∧
-            ρ t ∈ T.terminalSheetChart.base
-
-/--
-Upstairs preconnected-overlap data for terminal-transition transport.
-
-This is the weakest cover-geometric version currently exposed: the source
-terminal cover point and `y` lie in one preconnected subset of the source
-terminal sheet whose deck translate lies in the loop-prepended terminal sheet.
-Projecting this subset gives the downstairs preconnected terminal-chart
-overlap.
--/
-structure PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverPreconnectedOverlapDataPSL
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (agreementContinuation :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels) where
-  /-- Coherent terminal-sheet extension keeps terminal branch data unchanged. -/
-  terminalSheetExtensionAgreement :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-      x₀ g localModels agreementContinuation.basedWeakHandoffAlong
-  /--
-  A preconnected upstairs subset containing the source terminal cover point
-  and `y`, inside the source terminal sheet and the deck-preimage of the target
-  terminal sheet.
-  -/
-  terminalTransitionCoverPreconnectedOverlap :
-    ∀ (γ : FundamentalGroup X x₀) {x : X} (p : Path x₀ x)
-      (y : PathHomotopyUniversalCover X x₀)
-      (_hy : y ∈ (agreementContinuation.basedWeakHandoffAlong p).terminalSheet)
-      (_hdeck :
-        PathHomotopyUniversalCover.deckAction γ y ∈
-          (agreementContinuation.basedWeakHandoffAlong
-            ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet),
-      ∃ Ω : Set (PathHomotopyUniversalCover X x₀),
-        IsPreconnected Ω ∧
-        (agreementContinuation.basedWeakHandoffAlong p).terminalCoverPoint ∈ Ω ∧
-        y ∈ Ω ∧
-        Ω ⊆
-          (agreementContinuation.basedWeakHandoffAlong p).terminalSheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹'
-              (agreementContinuation.basedWeakHandoffAlong
-                ((agreementContinuation.canonicalLoopFor γ).trans p)).terminalSheet
-
-namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionTransportDataPSL
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {C :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
-        x₀ g localModels}
-
-/--
-Pure terminal-transition transport plus terminal-sheet extension agreement
-give the combined terminal-sheet transport package.
--/
-def toTerminalSheetTransportDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionTransportDataPSL
-        C)
-    (hExtension :
-      PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-        x₀ g localModels C.basedWeakHandoffAlong) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalSheetTransportDataPSL
-      C where
-  terminalSheetExtensionAgreement := hExtension
-  terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq :=
-    D.terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq
-
-end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionTransportDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
 
@@ -3163,46 +1896,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
-
-/--
-Same-component cover-overlap data provide the weaker cover-preconnected
-overlap package by taking the connected component of the deck-compatible
-terminal-sheet overlap.
--/
-noncomputable def toCoverPreconnectedOverlapDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverPreconnectedOverlapDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionCoverPreconnectedOverlap := by
-    intro γ x p y hy hdeck
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)
-    let Ω : Set (PathHomotopyUniversalCover X x₀) :=
-      connectedComponentIn
-        (S.terminalSheet ∩
-          (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet)
-        S.terminalCoverPoint
-    have hSource :
-        S.terminalCoverPoint ∈
-          S.terminalSheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet := by
-      refine ⟨S.terminalCoverPoint_mem_terminalSheet, ?_⟩
-      simpa [S, T] using
-        C.terminalCoverPoint_mem_deck_preimage_canonicalLoop_terminalSheet γ p
-    refine
-      ⟨Ω, isPreconnected_connectedComponentIn,
-        mem_connectedComponentIn hSource, ?_, ?_⟩
-    · simpa [Ω, S, T] using
-        D.terminalTransitionEndpoint_mem_sameCoverComponent γ p y hy hdeck
-    · intro z hz
-      simpa [Ω, S, T] using
-        connectedComponentIn_subset
-          (S.terminalSheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet)
-          S.terminalCoverPoint hz
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
 
@@ -3214,50 +1907,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-Downstairs base-component terminal-transition data imply the intrinsic
-upstairs cover-component data.
--/
-noncomputable def toCoverSameComponentDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseSameComponentDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionEndpoint_mem_sameCoverComponent := by
-    intro γ x p y hy hdeck
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)
-    have hbase :=
-      D.terminalTransitionEndpoint_mem_sameBaseComponent γ p y hy hdeck
-    have hsourceDeck :
-        PathHomotopyUniversalCover.deckAction γ S.terminalCoverPoint ∈
-          T.terminalSheet := by
-      simpa [S, T] using
-        C.terminalCoverPoint_mem_deck_preimage_canonicalLoop_terminalSheet γ p
-    have hcover :
-        y ∈ connectedComponentIn
-          (S.terminalSheetChart.sheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹'
-              T.terminalSheetChart.sheet)
-          S.terminalCoverPoint := by
-      exact
-        PathHomotopyUniversalCover.mem_connectedComponentIn_localSheetChart_inter_deck_preimage_of_endpoint_mem_base_inter
-          (x₀ := x₀) γ S.terminalSheetChart T.terminalSheetChart
-          (by
-            simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-              S.terminalCoverPoint_mem_terminalSheet)
-          (by
-            simpa [T, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-              hsourceDeck)
-          (by
-            simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-              hy)
-          (by
-            simpa [S, T] using hbase)
-    simpa [S, T, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using hcover
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseSameComponentDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseOverlapConnectingPathDataPSL
@@ -3267,55 +1916,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
-
-/--
-An explicit path in the overlap of the two selected terminal sheet-chart bases
-implies the base-same-component boundary.
--/
-noncomputable def toBaseSameComponentDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseOverlapConnectingPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseSameComponentDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionEndpoint_mem_sameBaseComponent := by
-    intro γ x p y hy hdeck
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)
-    rcases D.terminalTransitionBaseOverlapConnectingPath γ p y hy hdeck with
-      ⟨ρ, hρ⟩
-    let a : S.terminalSheetChart.base :=
-      ⟨PathHomotopyUniversalCover.endpoint S.terminalCoverPoint,
-        by
-          simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-            PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-              (x₀ := x₀) S.terminalCoverPoint_mem_terminalSheet⟩
-    let b : S.terminalSheetChart.base :=
-      ⟨PathHomotopyUniversalCover.endpoint y,
-        by
-          simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-            PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-              (x₀ := x₀) hy⟩
-    let ρS : Path a b :=
-      { toFun := fun t => ⟨ρ t, (hρ t).1⟩
-        continuous_toFun := by
-          exact Continuous.subtype_mk ρ.continuous (fun t => (hρ t).1)
-        source' := by
-          apply Subtype.ext
-          exact ρ.source
-        target' := by
-          apply Subtype.ext
-          exact ρ.target }
-    have hρS :
-        ∀ t : unitInterval,
-          ρS t ∈ {z : S.terminalSheetChart.base |
-            (z : X) ∈ T.terminalSheetChart.base} := by
-      intro t
-      exact (hρ t).2
-    simpa [S, T, a, b, ρS] using
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.path_target_mem_connectedComponentIn_of_forall_mem
-        (X := S.terminalSheetChart.base) ρS hρS
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseOverlapConnectingPathDataPSL
 
@@ -3327,57 +1927,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-An upstairs preconnected deck-compatible terminal-sheet overlap projects to a
-downstairs preconnected terminal-chart overlap.
--/
-noncomputable def toPreconnectedOverlapDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverPreconnectedOverlapDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionPreconnectedOverlap := by
-    intro γ x p y hy hdeck
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    rcases D.terminalTransitionCoverPreconnectedOverlap γ p y hy hdeck with
-      ⟨Ω, hΩpre, hSΩ, hyΩ, hΩsub⟩
-    let W : Set X :=
-      PathHomotopyUniversalCover.endpoint '' Ω
-    have hWpre : IsPreconnected W :=
-      hΩpre.image PathHomotopyUniversalCover.endpoint
-        (PathHomotopyUniversalCover.continuous_endpoint (x₀ := x₀)).continuousOn
-    have hxW : x ∈ W := by
-      refine ⟨S.terminalCoverPoint, hSΩ, ?_⟩
-      simp [S]
-    have hyW : PathHomotopyUniversalCover.endpoint y ∈ W :=
-      ⟨y, hyΩ, rfl⟩
-    have hWsub :
-        W ⊆
-          (localModels.chartAt S.terminalCenter).domain ∩
-            (localModels.chartAt T.terminalCenter).domain := by
-      intro z hz
-      rcases hz with ⟨η, hηΩ, rfl⟩
-      have hη := hΩsub hηΩ
-      have hSdomain :
-          PathHomotopyUniversalCover.endpoint η ∈
-            (localModels.chartAt S.terminalCenter).domain :=
-        S.endpoint_mem_terminal_domain_of_mem_terminalSheet hη.1
-      have hTdeck :
-          PathHomotopyUniversalCover.endpoint
-              (PathHomotopyUniversalCover.deckAction γ η) ∈
-            (localModels.chartAt T.terminalCenter).domain :=
-        T.endpoint_mem_terminal_domain_of_mem_terminalSheet hη.2
-      have hTdomain :
-          PathHomotopyUniversalCover.endpoint η ∈
-            (localModels.chartAt T.terminalCenter).domain := by
-        simpa [PathHomotopyUniversalCover.endpoint_deckAction] using hTdeck
-      exact ⟨hSdomain, hTdomain⟩
-    exact ⟨W, hWpre, hxW, hyW, by simpa [W, S, T, L] using hWsub⟩
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverPreconnectedOverlapDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
@@ -3387,25 +1936,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
-
-/--
-An explicit path in the terminal-chart overlap implies the same-component
-boundary.
--/
-noncomputable def toSameOverlapComponentDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionSameOverlapComponentDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionEndpoint_mem_sameOverlapComponent := by
-    intro γ x p y hy hdeck
-    rcases D.terminalTransitionOverlapConnectingPath γ p y hy hdeck with
-      ⟨ρ, hρ⟩
-    simpa using
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.path_target_mem_connectedComponentIn_of_forall_mem
-        (X := X) ρ hρ
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
 
@@ -3417,138 +1947,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-An upstairs path in the deck-compatible terminal-sheet overlap projects to a
-path in the fixed terminal-chart overlap downstairs.
--/
-noncomputable def toOverlapConnectingPathDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionOverlapConnectingPath := by
-    intro γ x p y hy hdeck
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    rcases D.terminalTransitionCoverOverlapPath γ p y hy hdeck with
-      ⟨κ, hκ⟩
-    let ρ : Path x (PathHomotopyUniversalCover.endpoint y) :=
-      (κ.map (PathHomotopyUniversalCover.continuous_endpoint (x₀ := x₀))).cast
-        S.endpoint_terminalCoverPoint rfl
-    refine ⟨ρ, ?_⟩
-    intro t
-    have hS :
-        PathHomotopyUniversalCover.endpoint (κ t) ∈
-          (localModels.chartAt S.terminalCenter).domain :=
-      S.endpoint_mem_terminal_domain_of_mem_terminalSheet (hκ t).1
-    have hTdeck :
-        PathHomotopyUniversalCover.endpoint
-            (PathHomotopyUniversalCover.deckAction γ (κ t)) ∈
-          (localModels.chartAt T.terminalCenter).domain :=
-      T.endpoint_mem_terminal_domain_of_mem_terminalSheet (hκ t).2
-    have hT :
-        PathHomotopyUniversalCover.endpoint (κ t) ∈
-          (localModels.chartAt T.terminalCenter).domain := by
-      simpa [PathHomotopyUniversalCover.endpoint_deckAction] using hTdeck
-    exact ⟨by simpa [ρ], by simpa [ρ] using hT⟩
-
-/--
-An upstairs path in the deck-compatible terminal-sheet overlap projects to a
-path in the overlap of the two selected terminal sheet-chart bases.
--/
-noncomputable def toBaseOverlapConnectingPathDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionBaseOverlapConnectingPathDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionBaseOverlapConnectingPath := by
-    intro γ x p y hy hdeck
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    rcases D.terminalTransitionCoverOverlapPath γ p y hy hdeck with
-      ⟨κ, hκ⟩
-    let ρ : Path
-        (PathHomotopyUniversalCover.endpoint S.terminalCoverPoint)
-        (PathHomotopyUniversalCover.endpoint y) :=
-      κ.map (PathHomotopyUniversalCover.continuous_endpoint (x₀ := x₀))
-    refine ⟨ρ, ?_⟩
-    intro t
-    refine ⟨?_, ?_⟩
-    · simpa [ρ, S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-        PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-          (x₀ := x₀) (hκ t).1
-    · have hTbase :
-          PathHomotopyUniversalCover.endpoint
-              (PathHomotopyUniversalCover.deckAction γ (κ t)) ∈
-            T.terminalSheetChart.base := by
-        simpa [T, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalSheet] using
-          PathHomotopyUniversalCover.endpoint_mem_of_mem_localSheet
-            (x₀ := x₀) (hκ t).2
-      simpa [ρ, PathHomotopyUniversalCover.endpoint_deckAction] using hTbase
-
-/--
-An upstairs path in the deck-compatible terminal-sheet overlap puts the
-endpoint in the same connected component of that overlap.
--/
-noncomputable def toCoverSameComponentDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverSameComponentDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionEndpoint_mem_sameCoverComponent := by
-    intro γ x p y hy hdeck
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong ((C.canonicalLoopFor γ).trans p)
-    rcases D.terminalTransitionCoverOverlapPath γ p y hy hdeck with
-      ⟨κ, hκ⟩
-    have hRangePre : IsPreconnected (Set.range κ) :=
-      isPreconnected_range κ.continuous
-    have hRangeSub :
-        Set.range κ ⊆
-          S.terminalSheet ∩
-            (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet := by
-      intro z hz
-      rcases hz with ⟨t, rfl⟩
-      exact hκ t
-    have hSub :
-        Set.range κ ⊆
-          connectedComponentIn
-            (S.terminalSheet ∩
-              (PathHomotopyUniversalCover.deckAction γ) ⁻¹' T.terminalSheet)
-            S.terminalCoverPoint :=
-      hRangePre.subset_connectedComponentIn (Path.source_mem_range κ) hRangeSub
-    simpa [S, T] using hSub (Path.target_mem_range κ)
-
-/--
-An upstairs path in the deck-compatible terminal-sheet overlap gives the
-weaker upstairs preconnected-overlap package by taking the range of the path.
--/
-noncomputable def toCoverPreconnectedOverlapDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverPreconnectedOverlapDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionCoverPreconnectedOverlap := by
-    intro γ x p y hy hdeck
-    rcases D.terminalTransitionCoverOverlapPath γ p y hy hdeck with
-      ⟨κ, hκ⟩
-    refine
-      ⟨Set.range κ, isPreconnected_range κ.continuous,
-        Path.source_mem_range κ, Path.target_mem_range κ, ?_⟩
-    intro z hz
-    rcases hz with ⟨t, rfl⟩
-    exact hκ t
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionCoverOverlapPathDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapPathDataPSL
@@ -3558,40 +1956,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
-
-/--
-If the chosen source terminal-sheet path stays in the target terminal chart,
-then it is an explicit path in the fixed terminal-chart overlap.
--/
-noncomputable def toOverlapConnectingPathDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapConnectingPathDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionOverlapConnectingPath := by
-    intro γ x p y hy hdeck
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    refine ⟨S.terminalSheetPathInSet hy, ?_⟩
-    intro t
-    refine ⟨?_, ?_⟩
-    · simpa [S] using S.terminalSheetPathInSet_mem_terminal_domain hy t
-    · simpa [S, T, L] using
-        D.terminalSheetPath_mem_targetTerminalDomain γ p y hy hdeck t
-
-/--
-Terminal-sheet overlap-path data imply the same-overlap-component boundary.
--/
-noncomputable def toSameOverlapComponentDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapPathDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionSameOverlapComponentDataPSL
-      C :=
-  D.toOverlapConnectingPathDataPSL.toSameOverlapComponentDataPSL
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionOverlapPathDataPSL
 
@@ -3603,40 +1967,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
 
-/--
-Same-component overlap data provide the preconnected-overlap package by taking
-the connected component of the fixed terminal-chart overlap.
--/
-noncomputable def toPreconnectedOverlapDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionSameOverlapComponentDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionPreconnectedOverlap := by
-    intro γ x p y hy hdeck
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    let overlap : Set X :=
-      (localModels.chartAt S.terminalCenter).domain ∩
-        (localModels.chartAt T.terminalCenter).domain
-    have hxOverlap : x ∈ overlap := by
-      refine ⟨?_, ?_⟩
-      · simpa [S, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalCenter]
-          using S.terminal_endpoint_mem_domain
-      · simpa [T, L, PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalCenter]
-          using T.terminal_endpoint_mem_domain
-    refine
-      ⟨connectedComponentIn overlap x, isPreconnected_connectedComponentIn,
-        mem_connectedComponentIn hxOverlap, ?_, ?_⟩
-    · simpa [overlap, S, T, L] using
-        D.terminalTransitionEndpoint_mem_sameOverlapComponent γ p y hy hdeck
-    · intro z hz
-      simpa [overlap, S, T, L] using
-        connectedComponentIn_subset overlap x hz
-
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionSameOverlapComponentDataPSL
 
 namespace PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
@@ -3646,68 +1976,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {C :
       PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData
         x₀ g localModels}
-
-/--
-Preconnected terminal-chart overlap data imply terminal-sheet transport of the
-normalized canonical-loop transition class.
--/
-noncomputable def toTerminalSheetTransportDataPSL
-    (D :
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
-        C) :
-    PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalSheetTransportDataPSL
-      C where
-  terminalSheetExtensionAgreement := D.terminalSheetExtensionAgreement
-  terminalTransitionRepresentativeBetween_terminalSheetExtension_projection_eq := by
-    intro γ x p y hy hdeck
-    classical
-    let L := C.canonicalLoopFor γ
-    let S := C.basedWeakHandoffAlong p
-    let T := C.basedWeakHandoffAlong (L.trans p)
-    let σ := S.terminalSheetPathInSet hy
-    let q : Path x₀ (PathHomotopyUniversalCover.endpoint y) := p.trans σ
-    let τ := T.terminalSheetPathInSet
-      (y' := PathHomotopyUniversalCover.deckAction γ y) hdeck
-    let r : Path x₀ (PathHomotopyUniversalCover.endpoint y) := (L.trans p).trans τ
-    rcases D.terminalSheetExtensionAgreement p hy with ⟨hSourceExt⟩
-    rcases D.terminalSheetExtensionAgreement (L.trans p) hdeck with ⟨hTargetExt⟩
-    rcases
-        D.terminalTransitionPreconnectedOverlap γ p y hy hdeck with
-      ⟨W, hWpre, hxW, hyW, hWsub⟩
-    let Tx := C.terminalTransitionDataBetween p (L.trans p)
-    let Ty₀ := C.terminalTransitionDataBetween q r
-    let Ty :
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt S.terminalCenter)
-          (localModels.chartAt T.terminalCenter)
-          (PathHomotopyUniversalCover.endpoint y) :=
-      localRealMobiusTransitionData_congr
-        (congrArg localModels.chartAt hSourceExt.terminalCenter_eq).symm
-        (congrArg localModels.chartAt hTargetExt.terminalCenter_eq).symm
-        rfl Ty₀
-    have hWexists :
-        ∀ ⦃z : X⦄, z ∈ W →
-          Nonempty
-            (HyperbolicLocalChart.LocalRealMobiusTransitionData
-              (localModels.chartAt S.terminalCenter)
-              (localModels.chartAt T.terminalCenter) z) := by
-      intro z hz
-      have hzOverlap :
-          z ∈
-            (localModels.chartAt S.terminalCenter).domain ∩
-              (localModels.chartAt T.terminalCenter).domain := by
-        simpa [S, T, L] using hWsub hz
-      exact
-        localModels.transition_localRealMobius S.terminalCenter
-          T.terminalCenter z hzOverlap
-    have hConst :
-        realMobiusProjection Ty.representative =
-          realMobiusProjection Tx.representative :=
-      localRealMobiusTransitionData_projection_eq_of_preconnected
-        hWpre hWexists hxW hyW Tx Ty
-    simpa [Tx, Ty, Ty₀, q, r, L, S, T,
-      PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementData.terminalTransitionRepresentativeBetween]
-      using hConst
 
 end PathLocalTransitionBasedWeakHandoffCanonicalSheetAgreementCanonicalLoopNormalizedProjectionTerminalTransitionPreconnectedOverlapDataPSL
 

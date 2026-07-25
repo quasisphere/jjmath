@@ -26,14 +26,26 @@ variable [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
 
 /-! ## Reassociating nested open submanifolds -/
 
-/-- An ambient open set, regarded as an open set inside a larger ambient
-open set. -/
+/--
+%%handwave
+name: Relative open submanifold inside an ambient open set
+statement:
+  For open sets $R,A\subseteq X$, define
+  $A|_R=\{x\in R:\iota_R(x)\in A\}$ as an open submanifold of $R$.
+-/
 def openWithinOpen
     (R A : TopologicalSpace.Opens X) : TopologicalSpace.Opens R :=
   ⟨{x : R | (x : X) ∈ A},
     A.isOpen.preimage continuous_subtype_val⟩
 
-/-- Reassociating two nested open-submanifold subtypes is a diffeomorphism. -/
+/--
+%%handwave
+name: Diffeomorphism between a relative open and its ambient carrier
+statement:
+  If $A\subseteq R$, define the canonical diffeomorphism
+  $A|_R\to A$ by forgetting the intermediate subtype; its inverse regards a
+  point of $A$ as a point of $R$.
+-/
 noncomputable def openWithinOpenDiffeomorph
     (R A : TopologicalSpace.Opens X) (hAR : A ≤ R) :
     openWithinOpen R A ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ A := by
@@ -467,8 +479,14 @@ theorem complementComponentCollarData_nonempty
 
 /-! ## A cutoff representative of the angular class -/
 
-/-- Connecting data for the locally constant step on the overlap of the two
-punctured-cylinder charts. -/
+/--
+%%handwave
+name: Mayer--Vietoris connecting data for the annular step
+statement:
+  For a cut direction $v\in S^1$, choose Mayer--Vietoris connecting data for
+  the closed zero-form given by the locally constant component step on the
+  overlap of the cylinder charts slit at $v$ and $-v$.
+-/
 noncomputable def annularAngularConnectingData (v : Circle) :
     DeRhamMayerVietorisConnectingData (I := AnnularCylinderModel) (A := ℝ)
       (annularPunctureOpen v) (annularPunctureOpen (annularOpposite v))
@@ -479,8 +497,13 @@ noncomputable def annularAngularConnectingData (v : Circle) :
       (annularPunctureOpen v) (annularPunctureOpen (annularOpposite v))
       (annularPunctures_cover v) 0 (annularOverlapStepClosedForm v))
 
-/-- Use the glued form in the connecting data as the angular representative.
-This retains the local primitives needed for the period calculation. -/
+/--
+%%handwave
+name: Closed angular form from annular connecting data
+statement:
+  Define the annular angular one-form to be the closed global form obtained
+  by gluing the two local primitives in the chosen connecting data.
+-/
 noncomputable def annularAngularClosedForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := Circle × ℝ) (A := ℝ) 1 :=
@@ -511,7 +534,14 @@ theorem annularAngularClosedForm_class (v : Circle) :
 
 /-! ## A negative-half cycle detecting the angular class -/
 
-/-- The punctured cylinder in its global stereographic product chart. -/
+/--
+%%handwave
+name: Global planar chart of a punctured annular cylinder
+statement:
+  For $v\in S^1$, combine stereographic coordinates on
+  $S^1\setminus\{v\}$ with the radial coordinate to define a diffeomorphism
+  from the cylinder slit at $v$ onto $\mathbb R\times\mathbb R$.
+-/
 noncomputable def annularPuncturePlaneDiffeomorph (v : Circle) :
     annularPunctureOpen v ≃ₘ⟮AnnularCylinderModel,
       modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin 1) × ℝ)⟯
@@ -531,8 +561,14 @@ noncomputable def annularPuncturePlaneDiffeomorph (v : Circle) :
       simp [annularPunctureChart, AnnularCylinderModel]
       exact Set.mem_univ y)
 
-/-- The affine smooth path between two points of a punctured cylinder, made
-in the global stereographic product chart. -/
+/--
+%%handwave
+name: Affine simplex in a punctured annular cylinder
+statement:
+  For $a,b$ in the cylinder slit at $v$, define the smooth one-simplex whose
+  global product coordinate is the barycentric affine segment
+  $q_0\psi(a)+q_1\psi(b)$.
+-/
 noncomputable def annularPunctureAffineSimplex (v : Circle)
     (a b : annularPunctureOpen v) :
     ContMDiffSingularSimplex
@@ -621,8 +657,13 @@ theorem annularPunctureAffineSimplex_face_one_apply (v : Circle)
       exact simplexAmbientMap_succAbove_apply_succAbove 1 q 0]
   simp [hq]
 
-/-- Squeeze the normal coordinate of a punctured cylinder into the negative
-half-line without changing its circle coordinate. -/
+/--
+%%handwave
+name: Negative-end squeeze of a punctured cylinder
+statement:
+  On the cylinder slit at $v$, define the smooth self-map
+  $(q,t)\mapsto(q,-e^t)$.
+-/
 noncomputable def annularPunctureNegativeSqueezeMap (v : Circle) :
     C^∞⟮AnnularCylinderModel, annularPunctureOpen v;
       AnnularCylinderModel, annularPunctureOpen v⟯ := by
@@ -640,7 +681,13 @@ noncomputable def annularPunctureNegativeSqueezeMap (v : Circle) :
   exact ⟨fun y ↦ ⟨raw y, hmem y⟩,
     ContMDiff.codRestrict_open hraw (annularPunctureOpen v) hmem⟩
 
-/-- The same squeeze, with codomain the negative half-cylinder. -/
+/--
+%%handwave
+name: Negative-end squeeze into the negative half-cylinder
+statement:
+  Regard $(q,t)\mapsto(q,-e^t)$ as a smooth map from the cylinder slit at
+  $v$ into $S^1\times(-\infty,0)$.
+-/
 noncomputable def annularPunctureToNegativeMap (v : Circle) :
     C^∞⟮AnnularCylinderModel, annularPunctureOpen v;
       AnnularCylinderModel, negativeAnnularCylinderOpen⟯ := by
@@ -657,8 +704,14 @@ noncomputable def annularPunctureToNegativeMap (v : Circle) :
   exact ⟨fun y ↦ ⟨raw y, hmem y⟩,
     ContMDiff.codRestrict_open hraw negativeAnnularCylinderOpen hmem⟩
 
-/-- A punctured-cylinder simplex squeezed toward the negative end, still
-viewed in its punctured cylinder. -/
+/--
+%%handwave
+name: Negatively squeezed simplex in a punctured cylinder
+statement:
+  For a smooth simplex $\sigma$ in the cylinder slit at $v$, define the
+  squeezed simplex by $q\mapsto(\theta(\sigma(q)),-e^{t(\sigma(q))})$, still
+  viewed in the slit cylinder.
+-/
 noncomputable def annularPunctureSqueezedSimplex (v : Circle)
     (sigma : ContMDiffSingularSimplex
       (I := AnnularCylinderModel) (M := annularPunctureOpen v) 1 ∞) :
@@ -667,8 +720,14 @@ noncomputable def annularPunctureSqueezedSimplex (v : Circle)
   sigma.postcompose (I := AnnularCylinderModel)
     (annularPunctureNegativeSqueezeMap v)
 
-/-- A punctured-cylinder simplex squeezed toward the negative end and viewed
-as a simplex of the negative half-cylinder. -/
+/--
+%%handwave
+name: Negatively squeezed simplex in the negative half-cylinder
+statement:
+  Postcompose a smooth simplex in the cylinder slit at $v$ with
+  $(q,t)\mapsto(q,-e^t)$ and regard the result as a simplex of the negative
+  half-cylinder.
+-/
 noncomputable def annularNegativeSimplexOfPuncture (v : Circle)
     (sigma : ContMDiffSingularSimplex
       (I := AnnularCylinderModel) (M := annularPunctureOpen v) 1 ∞) :
@@ -676,48 +735,6 @@ noncomputable def annularNegativeSimplexOfPuncture (v : Circle)
       (I := AnnularCylinderModel) (M := negativeAnnularCylinderOpen) 1 ∞ :=
   sigma.postcompose (I := AnnularCylinderModel)
     (annularPunctureToNegativeMap v)
-
-/--
-%%handwave
-name:
-  Value of a squeezed punctured-cylinder simplex
-statement:
-  Squeezing a simplex \(\sigma\) toward the negative end sends
-  \(\sigma(q)=(z,t)\) to \((z,-e^t)\).
-proof:
-  This is the pointwise definition of postcomposition by the negative
-  squeeze map.
--/
-@[simp]
-theorem annularPunctureSqueezedSimplex_apply (v : Circle)
-    (sigma : ContMDiffSingularSimplex
-      (I := AnnularCylinderModel) (M := annularPunctureOpen v) 1 ∞)
-    (q : StandardSimplex 1) :
-    ((annularPunctureSqueezedSimplex v sigma q :
-        annularPunctureOpen v) : Circle × ℝ) =
-      ((sigma q : Circle × ℝ).1, -Real.exp (sigma q : Circle × ℝ).2) :=
-  rfl
-
-/--
-%%handwave
-name:
-  Value of the negative-half simplex associated to a punctured simplex
-statement:
-  Viewing the negatively squeezed simplex in the negative half-cylinder
-  sends \(\sigma(q)=(z,t)\) to \((z,-e^t)\).
-proof:
-  This is the definition of the postcomposition map into the negative
-  half-cylinder.
--/
-@[simp]
-theorem annularNegativeSimplexOfPuncture_apply (v : Circle)
-    (sigma : ContMDiffSingularSimplex
-      (I := AnnularCylinderModel) (M := annularPunctureOpen v) 1 ∞)
-    (q : StandardSimplex 1) :
-    ((annularNegativeSimplexOfPuncture v sigma q :
-        negativeAnnularCylinderOpen) : Circle × ℝ) =
-      ((sigma q : Circle × ℝ).1, -Real.exp (sigma q : Circle × ℝ).2) :=
-  rfl
 
 /--
 %%handwave
@@ -886,8 +903,14 @@ theorem integrate_annularAngularClosedForm_right_squeezed (v : Circle)
     (I := AnnularCylinderModel) (annularAngularConnectingData v).lift.2
       (annularPunctureSqueezedSimplex (annularOpposite v) sigma)
 
-/-- Squeeze a point of the double-puncture overlap into the negative
-half-cylinder. -/
+/--
+%%handwave
+name: Negative-end squeeze on the double-slit overlap
+statement:
+  On the cylinder with the directions $v$ and $-v$ removed, define
+  $(q,t)\mapsto(q,-e^t)$; the circle coordinate remains in the same
+  double-slit overlap.
+-/
 noncomputable def annularOverlapNegativeSqueeze (v : Circle)
     (x : annularDoublePunctureOpen v) : annularDoublePunctureOpen v := by
   refine ⟨((x : Circle × ℝ).1, -Real.exp (x : Circle × ℝ).2), ?_⟩
@@ -1255,8 +1278,13 @@ theorem annularAngularClosedForm_negative_class_ne_zero (v : Circle) :
   rw [hperiod]
   norm_num
 
-/-- A smooth cutoff which is one on the nonpositive half-line and zero from
-one onward. -/
+/--
+%%handwave
+name: Exterior radial cutoff
+statement:
+  Define $\rho(t)=1-S(2t-1)$ from the standard smooth transition $S$; then
+  $\rho=1$ on $(-\infty,\tfrac12]$ and $\rho=0$ on $[1,\infty)$.
+-/
 def annularExteriorCutoff (t : ℝ) : ℝ :=
   1 - Real.smoothTransition (2 * t - 1)
 
@@ -1328,7 +1356,13 @@ theorem annularExteriorCutoff_eq_zero_of_one_le {t : ℝ} (ht : 1 ≤ t) :
   apply Real.smoothTransition.one_of_one_le
   linarith
 
-/-- The exterior-side cutoff as a smooth function on the standard cylinder. -/
+/--
+%%handwave
+name: Exterior cutoff on the annular cylinder
+statement:
+  Pull the radial cutoff back along the second projection, defining the
+  smooth function $(q,t)\mapsto\rho(t)$ on $S^1\times\mathbb R$.
+-/
 noncomputable def annularExteriorCutoffFunction :
     C^∞⟮AnnularCylinderModel, Circle × ℝ; ℝ⟯ where
   val := fun p ↦ annularExteriorCutoff p.2
@@ -1350,14 +1384,26 @@ theorem annularExteriorCutoffFunction_apply (p : Circle × ℝ) :
     annularExteriorCutoffFunction p = annularExteriorCutoff p.2 :=
   rfl
 
-/-- Cut off the angular representative only toward the positive end. -/
+/--
+%%handwave
+name: Positively truncated annular angular form
+statement:
+  For the closed angular form $\alpha_v$ and exterior cutoff $\rho$, define
+  the one-form $\rho(t)\alpha_v$ on the annular cylinder.
+-/
 noncomputable def annularCutoffAngularOneForm (v : Circle) :
     SmoothForms (I := AnnularCylinderModel) (M := Circle × ℝ) ℝ 1 :=
   smoothFormsPointwiseSMul (I := AnnularCylinderModel) (A := ℝ)
     annularExteriorCutoffFunction (annularAngularClosedForm v).1
 
-/-- The compact cylinder band containing the derivative defect of the cutoff
-angular form. -/
+/--
+%%handwave
+name: Defect core of the cutoff angular form
+statement:
+  Define the compact cylinder band
+  $S^1\times[\tfrac12,1]$, which contains the support of $d\rho$ and hence
+  the failure of $\rho\alpha_v$ to be closed.
+-/
 def annularCutoffAngularCore : Set (Circle × ℝ) :=
   (univ : Set Circle) ×ˢ Icc (1 / 2 : ℝ) 1
 
@@ -1446,7 +1492,13 @@ theorem annularCutoffAngularOneForm_eq_angular_of_nonpos
 
 /-! ## Transport to a side-preserving collar -/
 
-/-- The cutoff angular form transported to a full annular collar. -/
+/--
+%%handwave
+name: Cutoff angular form on a surface collar
+statement:
+  For an annular collar chart $\varphi:W\to S^1\times\mathbb R$, define the
+  collar one-form $\varphi^*(\rho\alpha_v)$.
+-/
 noncomputable def exteriorCutoffAngularCollarOneForm
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -1455,8 +1507,13 @@ noncomputable def exteriorCutoffAngularCollarOneForm
   smoothFormsPullbackDiffeomorph SurfaceRealModel AnnularCylinderModel phi 1
     (annularCutoffAngularOneForm v)
 
-/-- The ambient compact band which contains the derivative defect after
-transport to a collar. -/
+/--
+%%handwave
+name: Transported defect core of a cutoff angular form
+statement:
+  Define the ambient defect core as the image in $X$ of
+  $S^1\times[\tfrac12,1]$ under the inverse collar chart.
+-/
 def exteriorCutoffAngularDefectCore
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1571,9 +1628,14 @@ theorem exteriorCutoffAngularCollarOneForm_derivative_eq_zero_outside
 
 /-! ## Extension across the exterior component -/
 
-/-- A slightly wider compact band containing the part of the cutoff form on
-the nonnegative half-cylinder.  Unlike the derivative core, this includes the
-zero slice; that is what makes zero-gluing across the exterior side possible. -/
+/--
+%%handwave
+name: Support core of the cutoff angular form
+statement:
+  Define the compact band $S^1\times[0,1]$, containing the support of the
+  cutoff angular form on the nonnegative half-cylinder and including the
+  zero slice needed for exterior zero-gluing.
+-/
 def annularCutoffAngularSupportCore : Set (Circle × ℝ) :=
   (univ : Set Circle) ×ˢ Icc (0 : ℝ) 1
 
@@ -1591,7 +1653,13 @@ theorem annularCutoffAngularSupportCore_isCompact :
     IsCompact annularCutoffAngularSupportCore := by
   exact isCompact_univ.prod isCompact_Icc
 
-/-- The ambient image of the nonnegative support band. -/
+/--
+%%handwave
+name: Transported support core of a cutoff angular form
+statement:
+  Define the ambient support core as the image in $X$ of
+  $S^1\times[0,1]$ under the inverse collar chart.
+-/
 def exteriorCutoffAngularSupportCore
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1617,7 +1685,13 @@ theorem exteriorCutoffAngularSupportCore_isCompact
   exact annularCutoffAngularSupportCore_isCompact.image
     (continuous_subtype_val.comp phi.symm.continuous)
 
-/-- The open complement of the wider support band. -/
+/--
+%%handwave
+name: Exterior open set complementary to the cutoff support core
+statement:
+  Define the ambient open set
+  $X\setminus\varphi^{-1}(S^1\times[0,1])$.
+-/
 def exteriorCutoffAngularSupportExteriorOpen
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ) :
@@ -1702,6 +1776,14 @@ private theorem iSup_twoOpenUnionFamily
     · exact TopologicalSpace.Opens.mem_iSup.mpr ⟨false, hxU⟩
     · exact TopologicalSpace.Opens.mem_iSup.mpr ⟨true, hxV⟩
 
+/--
+%%handwave
+name: Canonical diffeomorphism between equal open submanifolds
+statement:
+  If open submanifolds $U,V\subseteq X$ satisfy $U\subseteq V$ and
+  $V\subseteq U$, define their canonical diffeomorphism by the mutually
+  inverse inclusion maps.
+-/
 def opensDiffeomorphOfMutualLE
     (U V : TopologicalSpace.Opens X) (hUV : U ≤ V) (hVU : V ≤ U) :
     U ≃ₘ⟮SurfaceRealModel, SurfaceRealModel⟯ V where
@@ -2002,6 +2084,14 @@ theorem exists_sidePreservingAnnularCollarDomainCycle_angular_period_eq_neg_one
     rw [hpullback] at htransport
     simpa [cQ, beta] using htransport.trans hperiodNeg
 
+/--
+%%handwave
+name: Transport of a differential form between equal open submanifolds
+statement:
+  If $U,V\subseteq X$ are mutually contained open submanifolds, transport a
+  smooth $n$-form on $U$ to $V$ by pulling it back along the canonical
+  diffeomorphism $V\to U$.
+-/
 noncomputable def smoothFormsTransportOpenMutualLE
     (U V : TopologicalSpace.Opens X) (hUV : U ≤ V) (hVU : V ≤ U)
     {n : ℕ} (alpha : SmoothForms (I := SurfaceRealModel) (M := U) ℝ n) :
@@ -2140,7 +2230,13 @@ theorem exteriorCutoffAngularSupportCore_subset_collar
   rintro _ ⟨q, _hq, rfl⟩
   exact (phi.symm q).2
 
-/-- The part of the exterior component lying beyond the wider cutoff band. -/
+/--
+%%handwave
+name: Far exterior beyond the angular cutoff band
+statement:
+  For an open exterior component $V\subseteq X$, define its far part by
+  $V\cap\bigl(X\setminus\varphi^{-1}(S^1\times[0,1])\bigr)$.
+-/
 def exteriorCutoffAngularFarExteriorOpen
     (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ)
@@ -2741,103 +2837,8 @@ theorem IsExteriorComponent.not_subsingleton_deRhamH1_exteriorComponentCollarUni
 
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/--
-%%handwave
-name:
-  Removing one exterior component preserves vanishing first cohomology
-statement:
-  Let \(X\) be a noncompact Riemann surface with
-  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  If \(D\subseteq X\) is a
-  preconnected smooth relatively compact domain and \(V\) is an exterior
-  component of \(X\setminus\overline D\), then
-  \[
-    H^1_{\mathrm{dR}}(X\setminus\overline V;\mathbb R)=0.
-  \]
-proof:
-  Choose an annular collar of the boundary component incident to \(V\).
-  The collar together with \(V\) has nonzero first cohomology, while its
-  overlap with \(X\setminus\overline V\) is an annulus.  The annular
-  Mayer--Vietoris criterion and the vanishing on \(X\) give the result.
--/
-theorem IsExteriorComponent.subsingleton_deRhamH1_complementComponentClosureOpen
-    [Subsingleton
-      (DeRhamCohomology
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    (hnoncompact : ¬ CompactSpace X)
-    (E : SmoothRelativelyCompactExhaustion X)
-    (D : SmoothBoundaryDomain X)
-    (hDpre : IsPreconnected D.carrier)
-    (V : Set X) (hVext : IsExteriorComponent (closure D.carrier) V) :
-    Subsingleton
-      (DeRhamCohomology (I := SurfaceRealModel)
-        (M := complementComponentClosureOpen V) (A := ℝ) 1) := by
-  letI : SecondCountableTopology X :=
-    rado_secondCountableTopology_riemannSurface X
-  letI : SigmaCompactSpace X := by infer_instance
-  let hV : IsComponentOf V (closure D.carrier)ᶜ := hVext.isComponentOf
-  rcases exists_sidePreservingAnnularCollar_of_complementComponent
-      hnoncompact D D.nonempty hDpre V hV with
-    ⟨p, W, phi, hpV, hpW, hfrontierW, hside, hexteriorSide⟩
-  let hVopen : IsOpen V :=
-    hV.isOpen_of_isOpen isClosed_closure.isOpen_compl
-  let U : TopologicalSpace.Opens X :=
-    exteriorComponentCollarUnion W V hVopen
-  let R : TopologicalSpace.Opens X := complementComponentClosureOpen V
-  have hcover : U ⊔ R = ⊤ := by
-    exact exteriorComponentCollarUnion_sup_complementComponentClosureOpen
-      W V hVopen hfrontierW
-  let psi : (U ⊓ R : TopologicalSpace.Opens X) ≃ₘ⟮
-      SurfaceRealModel, AnnularCylinderModel⟯ Circle × ℝ :=
-    exteriorComponentCollarMayerVietorisOverlapDiffeomorph
-      D W phi hside hexteriorSide V hV p hpW hpV
-  have hleft : ¬ Subsingleton
-      (DeRhamCohomology (I := SurfaceRealModel)
-        (M := U) (A := ℝ) 1) := by
-    simpa [U, hVopen] using
-      hVext.not_subsingleton_deRhamH1_exteriorComponentCollarUnion
-        E D W phi hside hexteriorSide V p hpW hpV
-          (annularOpposite 1)
-  simpa [R] using
-    deRhamH1_subsingleton_of_mayerVietoris_annular_and_left_nontrivial
-      SurfaceRealModel U R hcover psi (annularOpposite 1) hleft
-
 set_option synthInstance.maxHeartbeats 100000 in
 set_option maxHeartbeats 800000 in
-/--
-%%handwave
-name:
-  Vanishing first cohomology for the complement of an exterior component
-statement:
-  Let \(D\) be a preconnected smooth relatively compact domain in a
-  noncompact Riemann surface \(X\) with
-  \(H^1_{\mathrm{dR}}(X;\mathbb R)=0\).  If \(V\) is an exterior component
-  of \(X\setminus\overline D\) and \(D=X\setminus\overline V\), then
-  \(H^1_{\mathrm{dR}}(D;\mathbb R)=0\).
-proof:
-  Identify \(D\) with the open complement of \(\overline V\) and apply the
-  preceding exterior-component removal theorem.
--/
-theorem SmoothBoundaryDomain.deRhamH1Zero_of_exteriorComponent_complement
-    [Subsingleton
-      (DeRhamCohomology
-        (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    (hnoncompact : ¬ CompactSpace X)
-    (E : SmoothRelativelyCompactExhaustion X)
-    (D : SmoothBoundaryDomain X)
-    (hDpre : IsPreconnected D.carrier)
-    (V : Set X) (hVext : IsExteriorComponent (closure D.carrier) V)
-    (hcarrier : D.carrier = (closure V)ᶜ) :
-    D.deRhamH1Zero := by
-  let DU : TopologicalSpace.Opens X := ⟨D.carrier, D.isOpen⟩
-  have hDU : DU = complementComponentClosureOpen V := by
-    ext x
-    exact Set.ext_iff.mp hcarrier x
-  change Subsingleton
-    (DeRhamCohomology (I := SurfaceRealModel) (M := DU) (A := ℝ) 1)
-  rw [hDU]
-  exact hVext.subsingleton_deRhamH1_complementComponentClosureOpen
-    hnoncompact E D hDpre V
-
 set_option synthInstance.maxHeartbeats 200000 in
 set_option maxHeartbeats 1600000 in
 /--

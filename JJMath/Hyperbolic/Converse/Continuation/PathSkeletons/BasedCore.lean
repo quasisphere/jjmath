@@ -51,51 +51,17 @@ theorem ofFn_fin_insertNth_perm {α : Type*} :
               (ofFn_fin_insertNth_perm i x (Fin.tail f))).trans
               (List.Perm.swap (f 0) x (List.ofFn (Fin.tail f))).symm
 
-omit [RiemannSurface X] in
-/-- The initial transition is valid at the basepoint.
-
-%%handwave
-name:
-  The basepoint lies in the initial transition neighborhood
-statement:
-  The neighborhood on which the initial transition from the first selected chart to the basepoint chart is valid contains $x_0$.
-proof:
-  This membership is part of the chosen initial transition data.
--/
-theorem initialTransition_mem_neighborhood
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    x₀ ∈ S.initialTransition.neighborhood :=
-  S.initialTransition.mem_neighborhood
-
-omit [RiemannSurface X] in
-/--
-The initial transition representative turns the first segment chart value at
-the basepoint into the basepoint chart value.
-
-%%handwave
-name:
-  Initial normalization matches the base chart value
-statement:
-  If $T_0$ is the initial transition from the first selected chart to the chart centered at $x_0$, then $T_0^{-1}\cdot\phi_{c_0}(x_0)=\phi_{x_0}(x_0)$.
-proof:
-  Apply the local transition identity at $x_0$ and then cancel the transition by acting with its inverse.
--/
-theorem initialTransition_base_value
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    realMobiusRepresentativeAction S.initialTransition.representative⁻¹
-        ((localModels.chartAt (S.centerAt 0)).toUpperHalfPlane x₀) =
-      (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
-  simpa [realMobiusRepresentativeAction_one] using
-    localRealMobiusTransitionData_accumulated_handoff
-      (x := x₀) (y := x₀) S.initialTransition
-      S.initialTransition.mem_neighborhood (1 : RealMobiusRepresentative)
-
 /--
 The accumulated Mobius representative after `n` handoffs of a based weak
 handoff skeleton.  Past the actual length it stays constant; on the finite
 range `0, …, length` it satisfies the expected recurrence.
+
+%%handwave
+name: The accumulated Möbius representative after n handoffs of a based weak handoff skeleton
+statement:
+  The accumulated Möbius representative after n handoffs of a based weak handoff skeleton. Past
+  the actual length it stays constant; on the finite range 0, …, length it satisfies the
+  expected recurrence.
 -/
 noncomputable def accumulatedMobiusNat
     (S :
@@ -145,7 +111,13 @@ theorem accumulatedMobiusNat_succ_of_lt
         (S.transitionAt ⟨n, hn⟩).representative⁻¹ := by
   simp [accumulatedMobiusNat, hn]
 
-/-- The accumulated representative at a subdivision vertex. -/
+/-- The accumulated representative at a subdivision vertex.
+
+%%handwave
+name: The accumulated representative at a subdivision vertex
+statement:
+  The accumulated representative at a subdivision vertex.
+-/
 noncomputable def accumulatedMobiusAt
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
@@ -169,61 +141,39 @@ theorem accumulatedMobiusAt_zero
     S.accumulatedMobiusAt 0 = S.initialTransition.representative⁻¹ :=
   rfl
 
-omit [RiemannSurface X] in
-/-- The accumulated representative updates at each subdivision handoff.
+/-- The terminal center of a based weak handoff skeleton.
 
 %%handwave
-name:
-  Vertex recurrence for accumulated Möbius representatives
+name: The terminal center of a based weak handoff skeleton
 statement:
-  For every segment index $k$, the representatives at consecutive vertices satisfy $M_{k+1}=M_kT_k^{-1}$.
-proof:
-  Rewrite the finite vertex indices as natural numbers and apply the accumulated-product recurrence at $k$.
+  The terminal center of a based weak handoff skeleton.
 -/
-theorem accumulatedMobiusAt_succ
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.accumulatedMobiusAt k.succ =
-      S.accumulatedMobiusAt k.castSucc *
-        (S.transitionAt k).representative⁻¹ := by
-  change S.accumulatedMobiusNat ((k : ℕ) + 1) =
-    S.accumulatedMobiusNat (k : ℕ) *
-      (S.transitionAt ⟨(k : ℕ), k.isLt⟩).representative⁻¹
-  exact S.accumulatedMobiusNat_succ_of_lt k.isLt
-
-/-- The normalized branch value at a subdivision vertex. -/
-noncomputable def branchValueAt
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (i : Fin (S.length + 1)) : ℍ :=
-  realMobiusRepresentativeAction (S.accumulatedMobiusAt i)
-    ((localModels.chartAt (S.centerAt i)).toUpperHalfPlane
-      (p (S.parameterAt i)))
-
-/-- The normalized branch value along a subdivision segment. -/
-noncomputable def segmentBranchValue
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (t : unitInterval) : ℍ :=
-  realMobiusRepresentativeAction (S.accumulatedMobiusAt k.castSucc)
-    ((localModels.chartAt (S.centerAt k.castSucc)).toUpperHalfPlane (p t))
-
-/-- The terminal center of a based weak handoff skeleton. -/
 def terminalCenter
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
     X :=
   S.centerAt (Fin.last S.length)
 
-/-- The terminal accumulated Mobius representative. -/
+/-- The terminal accumulated Mobius representative.
+
+%%handwave
+name: The terminal accumulated Möbius representative
+statement:
+  The terminal accumulated Möbius representative.
+-/
 noncomputable def terminalMobius
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
     RealMobiusRepresentative :=
   S.accumulatedMobiusAt (Fin.last S.length)
 
-/-- The terminal value of the based weak handoff skeleton. -/
+/-- The terminal value of the based weak handoff skeleton.
+
+%%handwave
+name: The terminal value of the based weak handoff skeleton
+statement:
+  The terminal value of the based weak handoff skeleton.
+-/
 noncomputable def terminalValue
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -231,7 +181,13 @@ noncomputable def terminalValue
   realMobiusRepresentativeAction S.terminalMobius
     ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x)
 
-/-- The terminal branch formula of a based weak handoff skeleton at a point. -/
+/-- The terminal branch formula of a based weak handoff skeleton at a point.
+
+%%handwave
+name: The terminal branch formula of a based weak handoff skeleton at a point
+statement:
+  The terminal branch formula of a based weak handoff skeleton at a point.
+-/
 noncomputable def terminalFormulaAt
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
@@ -258,51 +214,20 @@ theorem terminalFormulaAt_endpoint
 
 omit [RiemannSurface X] in
 /--
-Retarget a based weak handoff skeleton along an endpoint cast of its
-underlying path.
-
-The path function is unchanged by `Path.cast`; only the endpoint type is
-adjusted.  This small API isolates the dependent bookkeeping needed when
-subpath-concatenation or endpoint-normalization lemmas produce paths whose
-endpoints are definitionally equal only after a cast.
--/
-def castTarget
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {x' : X} (hx : x' = x) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-      (p.cast rfl hx) where
-  length := S.length
-  length_pos := S.length_pos
-  parameterAt := S.parameterAt
-  parameterAt_zero := S.parameterAt_zero
-  parameterAt_last := S.parameterAt_last
-  parameterAt_mono := S.parameterAt_mono
-  centerAt := S.centerAt
-  sample_mem_model_domain := by
-    intro i
-    simpa [Path.cast_coe] using S.sample_mem_model_domain i
-  path_segment_mem_model_domain := by
-    intro k t ht_left ht_right
-    simpa [Path.cast_coe] using
-      S.path_segment_mem_model_domain k t ht_left ht_right
-  terminal_endpoint_mem_domain := by
-    simpa [hx] using S.terminal_endpoint_mem_domain
-  transitionAt := by
-    intro k
-    exact
-      localRealMobiusTransitionData_congr rfl rfl
-        (by simp [Path.cast_coe]) (S.transitionAt k)
-  initialTransition := S.initialTransition
-
-omit [RiemannSurface X] in
-/--
 Retarget a based weak handoff skeleton along source and target endpoint casts
 of its underlying path.
 
 This is the source-changing companion to `castTarget`; it is useful when a
 path expression has endpoints that are propositionally, rather than
 definitionally, the fixed endpoints of the public cut path.
+
+%%handwave
+name: Retarget a based weak handoff skeleton along source and target endpoint casts of its underlying path
+statement:
+  Retarget a based weak handoff skeleton along source and target endpoint casts of its
+  underlying path. This is the source-changing companion to the endpoint-cast construction; it
+  is useful when a path expression has endpoints that are propositionally, rather than
+  definitionally, the fixed endpoints of the normalized cut path.
 -/
 def castEndpoints
     (S :
@@ -337,7 +262,13 @@ def castEndpoints
         (by rw [hx₀]) rfl hx₀ S.initialTransition
 
 omit [RiemannSurface X] in
-/-- Cast a based weak handoff skeleton across an equality of its path. -/
+/-- Cast a based weak handoff skeleton across an equality of its path.
+
+%%handwave
+name: Cast a based weak handoff skeleton across an equality of its path
+statement:
+  Cast a based weak handoff skeleton across an equality of its path.
+-/
 def castPath
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
@@ -345,24 +276,6 @@ def castPath
     PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels q := by
   subst hpq
   exact S
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Retargeting a path preserves the terminal center
-statement:
-  Replacing the target endpoint of a path by an equal point, without changing the path as a function, leaves the terminal chart center of its continuation skeleton unchanged.
-proof:
-  Retargeting copies the center sequence verbatim.
--/
-@[simp]
-theorem castTarget_terminalCenter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {x' : X} (hx : x' = x) :
-    (S.castTarget hx).terminalCenter = S.terminalCenter :=
-  rfl
 
 omit [RiemannSurface X] in
 /--
@@ -405,36 +318,6 @@ omit [RiemannSurface X] in
 /--
 %%handwave
 name:
-  Retargeting preserves every accumulated representative
-statement:
-  Replacing the target endpoint of a path by an equal point leaves every accumulated Möbius representative unchanged: $M_j(S')=M_j(S)$ for all $j\ge0$.
-proof:
-  Induct on $j$. The initial representative is unchanged, and each handoff representative is transported without alteration, so the same recurrence produces the same product; beyond the skeleton length both sequences remain constant.
--/
-theorem castTarget_accumulatedMobiusNat
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {x' : X} (hx : x' = x) :
-    ∀ n : ℕ,
-      (S.castTarget hx).accumulatedMobiusNat n =
-        S.accumulatedMobiusNat n := by
-  intro n
-  induction n with
-  | zero =>
-      rfl
-  | succ n ih =>
-      by_cases hn : n < S.length
-      · have hnCast : n < (S.castTarget hx).length := hn
-        rw [(S.castTarget hx).accumulatedMobiusNat_succ_of_lt hnCast,
-          S.accumulatedMobiusNat_succ_of_lt hn, ih]
-        simp [castTarget]
-      · have hnCast : ¬ n < (S.castTarget hx).length := hn
-        simp [accumulatedMobiusNat, hn, hnCast, ih]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
   Recasting endpoints preserves every accumulated representative
 statement:
   Replacing both path endpoints by equal points leaves every accumulated Möbius representative unchanged.
@@ -460,28 +343,6 @@ theorem castEndpoints_accumulatedMobiusNat
         simp [castEndpoints]
       · have hnCast : ¬ n < (S.castEndpoints hx₀ hx).length := hn
         simp [accumulatedMobiusNat, hn, hnCast, ih]
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Retargeting preserves the terminal Möbius representative
-statement:
-  Replacing the endpoint of a path by an equal point leaves the terminal accumulated representative unchanged.
-proof:
-  Evaluate the equality of all accumulated representatives at the common subdivision length.
--/
-@[simp]
-theorem castTarget_terminalMobius
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {x' : X} (hx : x' = x) :
-    (S.castTarget hx).terminalMobius = S.terminalMobius := by
-  change
-    (S.castTarget hx).accumulatedMobiusNat (S.castTarget hx).length =
-      S.accumulatedMobiusNat S.length
-  simpa [castTarget] using
-    S.castTarget_accumulatedMobiusNat hx S.length
 
 omit [RiemannSurface X] in
 /--
@@ -552,368 +413,6 @@ theorem castEndpoints_terminalValue
 
 omit [RiemannSurface X] in
 /--
-If two based handoff skeletons over the same path have the same length, the
-same initial representative, and matching handoff representatives, then their
-accumulated Mobius products agree at every old vertex.
-
-%%handwave
-name:
-  Accumulated products are determined by the transition representatives
-statement:
-  Let two continuation skeletons along the same path have equal lengths, equal initial representatives, and equal representatives $T_j$ at corresponding handoffs. Then $M_j(S)=M_j(T)$ for every $j$ not exceeding their common length.
-proof:
-  Induct on $j$. Equality at $0$ follows from the initial representatives. For the successor step, use $M_{j+1}=M_jT_j^{-1}$ for both skeletons together with the induction hypothesis and equality of the handoff representatives.
--/
-theorem accumulatedMobiusNat_eq_of_representatives
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      S.initialTransition.representative = T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        (S.transitionAt ⟨n, hnS⟩).representative =
-          (T.transitionAt ⟨n, hnT⟩).representative) :
-    ∀ n : ℕ, n ≤ S.length →
-      S.accumulatedMobiusNat n = T.accumulatedMobiusNat n := by
-  intro n hn
-  induction n with
-  | zero =>
-      simp [accumulatedMobiusNat, hInitial]
-  | succ n ih =>
-      have hnS : n < S.length := Nat.succ_le_iff.mp hn
-      have hnT : n < T.length := by
-        rwa [← hLength]
-      have hnle : n ≤ S.length := Nat.le_of_lt hnS
-      rw [S.accumulatedMobiusNat_succ_of_lt hnS,
-        T.accumulatedMobiusNat_succ_of_lt hnT,
-        ih hnle, hTransition n hnS hnT]
-
-omit [RiemannSurface X] in
-/--
-Matching initial and handoff representatives identify terminal Mobius products.
-
-%%handwave
-name:
-  Terminal products are determined by the transition representatives
-statement:
-  Two continuation skeletons along the same path with the same length, the same initial representative, and the same representative at each handoff have equal terminal accumulated representatives.
-proof:
-  Apply equality of accumulated products at the terminal index and transport that index across the equality of lengths.
--/
-theorem terminalMobius_eq_of_representatives
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      S.initialTransition.representative = T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        (S.transitionAt ⟨n, hnS⟩).representative =
-          (T.transitionAt ⟨n, hnT⟩).representative) :
-    S.terminalMobius = T.terminalMobius := by
-  have hacc :
-      S.accumulatedMobiusNat S.length =
-        T.accumulatedMobiusNat S.length :=
-    S.accumulatedMobiusNat_eq_of_representatives T hLength hInitial
-      hTransition S.length le_rfl
-  change S.accumulatedMobiusNat S.length =
-    T.accumulatedMobiusNat T.length
-  exact hacc.trans (congrArg T.accumulatedMobiusNat hLength)
-
-omit [RiemannSurface X] in
-/--
-Matching terminal Mobius representatives and terminal charts identify the
-terminal branch formulae.
-
-%%handwave
-name:
-  Equal terminal representative and chart give equal terminal formulas
-statement:
-  If two continuation skeletons have the same terminal Möbius representative $M$ and the same terminal chart center $c$, then their terminal formulas agree at every $z\in X$: $M\cdot\phi_c(z)=M\cdot\phi_c(z)$.
-proof:
-  Substitute the two assumed equalities in the definitions of the terminal formulas.
--/
-theorem terminalFormulaAt_eq_of_terminalMobius_eq_terminalCenter_eq
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hMobius : S.terminalMobius = T.terminalMobius)
-    (hCenter : S.terminalCenter = T.terminalCenter)
-    (z : X) :
-    S.terminalFormulaAt z = T.terminalFormulaAt z := by
-  change
-    realMobiusRepresentativeAction S.terminalMobius
-        ((localModels.chartAt S.terminalCenter).toUpperHalfPlane z) =
-      realMobiusRepresentativeAction T.terminalMobius
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane z)
-  rw [hMobius, hCenter]
-
-omit [RiemannSurface X] in
-/--
-Same representatives and the same terminal chart identify the whole terminal
-branch formula.
-
-%%handwave
-name:
-  Matching transition representatives determine the terminal formula
-statement:
-  Suppose two skeletons along the same path have equal lengths, equal initial representatives, equal representatives at corresponding handoffs, and the same terminal chart center. Then their terminal formulas agree at every $z\in X$.
-proof:
-  Matching transition representatives give equal terminal accumulated representatives; combine this with equality of terminal centers in the terminal formula.
--/
-theorem terminalFormulaAt_eq_of_representatives
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      S.initialTransition.representative = T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        (S.transitionAt ⟨n, hnS⟩).representative =
-          (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter)
-    (z : X) :
-    S.terminalFormulaAt z = T.terminalFormulaAt z :=
-  S.terminalFormulaAt_eq_of_terminalMobius_eq_terminalCenter_eq T
-    (S.terminalMobius_eq_of_representatives T hLength hInitial hTransition)
-    hCenter z
-
-omit [RiemannSurface X] in
-/--
-Same representatives and the same terminal chart identify terminal values.
-
-%%handwave
-name:
-  Matching transition representatives determine the terminal value
-statement:
-  Two skeletons along the same path with equal lengths, identical initial and handoff representatives, and the same terminal chart center have equal terminal values.
-proof:
-  Apply equality of their terminal formulas at the common endpoint $x$.
--/
-theorem terminalValue_eq_of_representatives
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      S.initialTransition.representative = T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        (S.transitionAt ⟨n, hnS⟩).representative =
-          (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    S.terminalValue = T.terminalValue := by
-  simpa using
-    S.terminalFormulaAt_eq_of_representatives T hLength hInitial hTransition
-      hCenter x
-
-omit [RiemannSurface X] in
-/--
-If two based handoff skeletons over the same path have the same length and the
-same inverse actions for their initial and handoff representatives, then their
-accumulated Mobius actions agree at every old vertex.
-
-This is the PSL-shaped version of `accumulatedMobiusNat_eq_of_representatives`:
-it only remembers the induced upper-half-plane transformations, not the
-particular `SL(2, ℝ)` representatives.
-
-%%handwave
-name:
-  Accumulated actions are determined by the inverse handoff actions
-statement:
-  Let two skeletons along the same path have the same length. If their inverse initial representatives act identically on $\mathbb H$, and the inverse representatives at every corresponding handoff act identically, then for every $j$ up to the common length and every $z\in\mathbb H$, one has $M_j(S)\cdot z=M_j(T)\cdot z$.
-proof:
-  Induct on $j$. The zero case is the assumed equality of initial inverse actions. In the successor case, expand the product action for $M_jT_j^{-1}$, replace the handoff action by its counterpart, and apply the induction hypothesis to the resulting point.
--/
-theorem accumulatedMobiusNat_action_eq_of_transition_inverse_actions
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      ∀ z : ℍ,
-        realMobiusRepresentativeAction S.initialTransition.representative⁻¹ z =
-          realMobiusRepresentativeAction T.initialTransition.representative⁻¹ z)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length) (z : ℍ),
-        realMobiusRepresentativeAction
-            (S.transitionAt ⟨n, hnS⟩).representative⁻¹ z =
-          realMobiusRepresentativeAction
-            (T.transitionAt ⟨n, hnT⟩).representative⁻¹ z) :
-    ∀ n : ℕ, n ≤ S.length → ∀ z : ℍ,
-      realMobiusRepresentativeAction (S.accumulatedMobiusNat n) z =
-        realMobiusRepresentativeAction (T.accumulatedMobiusNat n) z := by
-  intro n hn
-  induction n with
-  | zero =>
-      intro z
-      simpa [accumulatedMobiusNat] using hInitial z
-  | succ n ih =>
-      intro z
-      have hnS : n < S.length := Nat.succ_le_iff.mp hn
-      have hnT : n < T.length := by
-        rwa [← hLength]
-      have hnle : n ≤ S.length := Nat.le_of_lt hnS
-      rw [S.accumulatedMobiusNat_succ_of_lt hnS,
-        T.accumulatedMobiusNat_succ_of_lt hnT,
-        realMobiusRepresentativeAction_mul,
-        realMobiusRepresentativeAction_mul]
-      rw [hTransition n hnS hnT z]
-      exact ih hnle _
-
-omit [RiemannSurface X] in
-/--
-Matching accumulated actions and terminal charts identify the whole terminal
-branch formula.
-
-%%handwave
-name:
-  Matching inverse transition actions determine the terminal formula
-statement:
-  If two equal-length skeletons have identical inverse actions for their initial and corresponding handoff representatives, and have the same terminal chart center, then their terminal branch formulas agree at every $z\in X$.
-proof:
-  Equality of the inverse transition actions gives equality of the two accumulated actions at the terminal index. After identifying the terminal indices and chart centers, apply that action equality to the common terminal-chart coordinate of $z$.
--/
-theorem terminalFormulaAt_eq_of_transition_inverse_actions
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      ∀ z : ℍ,
-        realMobiusRepresentativeAction S.initialTransition.representative⁻¹ z =
-          realMobiusRepresentativeAction T.initialTransition.representative⁻¹ z)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length) (z : ℍ),
-        realMobiusRepresentativeAction
-            (S.transitionAt ⟨n, hnS⟩).representative⁻¹ z =
-          realMobiusRepresentativeAction
-            (T.transitionAt ⟨n, hnT⟩).representative⁻¹ z)
-    (hCenter : S.terminalCenter = T.terminalCenter)
-    (z : X) :
-    S.terminalFormulaAt z = T.terminalFormulaAt z := by
-  have hacc :
-      ∀ w : ℍ,
-        realMobiusRepresentativeAction
-            (S.accumulatedMobiusNat S.length) w =
-          realMobiusRepresentativeAction
-            (T.accumulatedMobiusNat S.length) w :=
-    S.accumulatedMobiusNat_action_eq_of_transition_inverse_actions T
-      hLength hInitial hTransition S.length le_rfl
-  have hindex :
-      T.accumulatedMobiusNat S.length =
-        T.accumulatedMobiusNat T.length :=
-    congrArg T.accumulatedMobiusNat hLength
-  change
-    realMobiusRepresentativeAction (S.accumulatedMobiusNat S.length)
-        ((localModels.chartAt S.terminalCenter).toUpperHalfPlane z) =
-      realMobiusRepresentativeAction (T.accumulatedMobiusNat T.length)
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane z)
-  rw [hCenter, ← hindex]
-  exact hacc ((localModels.chartAt T.terminalCenter).toUpperHalfPlane z)
-
-omit [RiemannSurface X] in
-/--
-Matching PSL classes of the initial and handoff representatives identify the
-whole terminal branch formula.
-
-%%handwave
-name:
-  Matching projective transition classes determine the terminal formula
-statement:
-  Let two equal-length skeletons along the same path have equal projective classes for their initial representatives and every corresponding handoff representative, and let their terminal chart centers agree. Then their terminal formulas are equal at every point of $X$.
-proof:
-  Equal classes in $\mathrm{PSL}_2(\mathbb R)$ give equal actions of the inverse representatives on $\mathbb H$. Apply the comparison theorem for matching inverse transition actions.
--/
-theorem terminalFormulaAt_eq_of_transition_projections
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter)
-    (z : X) :
-    S.terminalFormulaAt z = T.terminalFormulaAt z :=
-  S.terminalFormulaAt_eq_of_transition_inverse_actions T hLength
-    (fun w =>
-      realMobiusRepresentativeAction_inv_eq_of_projection_eq hInitial w)
-    (fun n hnS hnT w =>
-      realMobiusRepresentativeAction_inv_eq_of_projection_eq
-        (hTransition n hnS hnT) w)
-    hCenter z
-
-omit [RiemannSurface X] in
-/--
-Matching accumulated actions and terminal charts identify terminal values.
-
-%%handwave
-name:
-  Matching inverse transition actions determine the terminal value
-statement:
-  Two equal-length skeletons with identical inverse initial and handoff actions and the same terminal chart center have the same terminal value.
-proof:
-  Their terminal formulas agree everywhere; evaluate at the common endpoint.
--/
-theorem terminalValue_eq_of_transition_inverse_actions
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      ∀ z : ℍ,
-        realMobiusRepresentativeAction S.initialTransition.representative⁻¹ z =
-          realMobiusRepresentativeAction T.initialTransition.representative⁻¹ z)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length) (z : ℍ),
-        realMobiusRepresentativeAction
-            (S.transitionAt ⟨n, hnS⟩).representative⁻¹ z =
-          realMobiusRepresentativeAction
-            (T.transitionAt ⟨n, hnT⟩).representative⁻¹ z)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    S.terminalValue = T.terminalValue := by
-  simpa using
-    S.terminalFormulaAt_eq_of_transition_inverse_actions T hLength hInitial
-      hTransition hCenter x
-
-omit [RiemannSurface X] in
-/--
-Matching PSL classes of the initial and handoff representatives identify
-terminal values.  This is the projective form of the replacement lemma: the
-chosen `SL(2, ℝ)` representatives may differ by the central sign.
-
-%%handwave
-name:
-  Matching projective transition classes determine the terminal value
-statement:
-  Two equal-length skeletons along the same path have equal terminal values whenever their initial and corresponding handoff representatives define the same elements of $\mathrm{PSL}_2(\mathbb R)$ and their terminal chart centers agree.
-proof:
-  Matching projective classes imply equality of the complete terminal formulas; evaluate that equality at the endpoint $x$.
--/
-theorem terminalValue_eq_of_transition_projections
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    S.terminalValue = T.terminalValue :=
-  by
-    simpa using
-      S.terminalFormulaAt_eq_of_transition_projections T hLength hInitial
-        hTransition hCenter x
-
-omit [RiemannSurface X] in
-/--
 Matching terminal Mobius PSL classes and terminal charts identify the whole
 terminal branch formula.  This is the comparison form needed by refinement
 moves whose accumulated representatives agree only projectively.
@@ -942,114 +441,6 @@ theorem terminalFormulaAt_eq_of_terminalMobius_projection_eq_terminalCenter_eq
         ((localModels.chartAt T.terminalCenter).toUpperHalfPlane z)
   rw [hCenter]
   exact realMobiusRepresentativeAction_eq_of_projection_eq hProjection _
-
-omit [RiemannSurface X] in
-/--
-Matching terminal Mobius PSL classes and terminal charts identify terminal
-values.
-
-%%handwave
-name:
-  Equal terminal projective class and chart give equal terminal values
-statement:
-  If two skeletons have the same terminal center and equal projective classes of terminal accumulated representatives, then their terminal values coincide.
-proof:
-  Apply equality of the terminal formulas at the common endpoint.
--/
-theorem terminalValue_eq_of_terminalMobius_projection_eq_terminalCenter_eq
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hProjection :
-      realMobiusProjection S.terminalMobius =
-        realMobiusProjection T.terminalMobius)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    S.terminalValue = T.terminalValue := by
-  simpa using
-    S.terminalFormulaAt_eq_of_terminalMobius_projection_eq_terminalCenter_eq
-      T hProjection hCenter x
-
-omit [RiemannSurface X] in
-/--
-Matching PSL classes of the initial and handoff representatives identify the
-accumulated PSL class at every subdivision vertex.
-
-%%handwave
-name:
-  Accumulated projective products are determined by transition classes
-statement:
-  Let two equal-length skeletons along the same path have equal projective classes for the initial representative and every corresponding handoff representative. Then $[M_j(S)]=[M_j(T)]$ for every $j$ up to the common length.
-proof:
-  Induct on $j$. At zero, invert the equality of initial classes. At a successor, project the recurrence $M_{j+1}=M_jT_j^{-1}$ to $\mathrm{PSL}_2(\mathbb R)$ and use the induction hypothesis and equality of the handoff classes.
--/
-theorem accumulatedMobiusNat_projection_eq_of_transition_projections
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative) :
-    ∀ n : ℕ, n ≤ S.length →
-      realMobiusProjection (S.accumulatedMobiusNat n) =
-        realMobiusProjection (T.accumulatedMobiusNat n) := by
-  intro n hn
-  induction n with
-  | zero =>
-      simpa [accumulatedMobiusNat] using congrArg Inv.inv hInitial
-  | succ n ih =>
-      have hnS : n < S.length := Nat.succ_le_iff.mp hn
-      have hnT : n < T.length := by
-        rwa [← hLength]
-      have hnle : n ≤ S.length := Nat.le_of_lt hnS
-      rw [S.accumulatedMobiusNat_succ_of_lt hnS,
-        T.accumulatedMobiusNat_succ_of_lt hnT]
-      simp [ih hnle, hTransition n hnS hnT]
-
-omit [RiemannSurface X] in
-/--
-Matching PSL classes of the initial and handoff representatives identify the
-terminal accumulated PSL class.
-
-%%handwave
-name:
-  Terminal projective products are determined by transition classes
-statement:
-  Two equal-length skeletons whose initial and corresponding handoff representatives have equal projective classes also have equal projective classes of their terminal accumulated representatives.
-proof:
-  Apply equality of accumulated projective products at the final index and identify the two final indices using equality of lengths.
--/
-theorem terminalMobius_projection_eq_of_transition_projections
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative) :
-    realMobiusProjection S.terminalMobius =
-      realMobiusProjection T.terminalMobius := by
-  have hacc :
-      realMobiusProjection (S.accumulatedMobiusNat S.length) =
-        realMobiusProjection (T.accumulatedMobiusNat S.length) :=
-    S.accumulatedMobiusNat_projection_eq_of_transition_projections T
-      hLength hInitial hTransition S.length le_rfl
-  have hindex :
-      T.accumulatedMobiusNat S.length =
-        T.accumulatedMobiusNat T.length :=
-    congrArg T.accumulatedMobiusNat hLength
-  change realMobiusProjection (S.accumulatedMobiusNat S.length) =
-    realMobiusProjection (T.accumulatedMobiusNat T.length)
-  rwa [← hindex]
 
 omit [RiemannSurface X] in
 /--
@@ -1117,46 +508,6 @@ theorem terminalValue_eq_of_terminalTransitionDataProjection_eq
 
 omit [RiemannSurface X] in
 /--
-If two terminal branches over paths with the same endpoint have matching
-terminal charts and their terminal Mobius classes differ by a PSL holonomy
-element, then their terminal values differ by the corresponding holonomy
-action.
-
-%%handwave
-name:
-  Holonomy comparison for terminal values in one chart
-statement:
-  Let skeletons $S$ and $T$ end at the same point and use the same terminal chart. If $[M_T]=\rho(\gamma)[M_S]$ for a real holonomy representation $\rho$, then $v_T=\rho(\gamma)\cdot v_S$.
-proof:
-  Rewrite both representative actions through their projective classes. After identifying the terminal chart coordinates, the product formula for the $\mathrm{PSL}_2(\mathbb R)$ action turns $\rho(\gamma)[M_S]$ into the stated holonomy action.
--/
-theorem terminalValue_eq_holonomy_action_of_terminalProjection_eq
-    {q : Path x₀ x}
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels q)
-    (holonomy : RealHolonomyRepresentation X x₀)
-    (γ : FundamentalGroup X x₀)
-    (hCenter : T.terminalCenter = S.terminalCenter)
-    (hProjection :
-      realMobiusProjection T.terminalMobius =
-        holonomy γ * realMobiusProjection S.terminalMobius) :
-    T.terminalValue =
-      holonomy.upperHalfPlaneAction γ S.terminalValue := by
-  change
-    realMobiusRepresentativeAction T.terminalMobius
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane x) =
-      holonomy.upperHalfPlaneAction γ
-        (realMobiusRepresentativeAction S.terminalMobius
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x))
-  rw [← realMobiusAction_realMobiusProjection T.terminalMobius,
-    ← realMobiusAction_realMobiusProjection S.terminalMobius,
-    hCenter, hProjection]
-  simp [RealHolonomyRepresentation.upperHalfPlaneAction, realMobiusAction_mul]
-
-omit [RiemannSurface X] in
-/--
 If the two terminal charts are related at the endpoint by a local real-Mobius
 transition, then the terminal Mobius class must be compared after composing
 with that terminal chart transition.
@@ -1203,108 +554,6 @@ theorem terminalValue_eq_holonomy_action_of_terminalTransitionProjection_eq
   rw [hProjection]
   simp [RealHolonomyRepresentation.upperHalfPlaneAction, realMobiusAction_mul,
     realMobiusAction_realMobiusProjection]
-
-omit [RiemannSurface X] in
-/-- The first normalized branch value is the basepoint local model value.
-
-%%handwave
-name:
-  The initial normalized branch equals the base chart value
-statement:
-  At the first subdivision vertex, the normalized branch value is $\phi_{x_0}(x_0)$.
-proof:
-  The first parameter is $0$, so the path value is $x_0$; the initial normalization identity sends the first selected chart coordinate there to the base chart coordinate.
--/
-theorem branchValueAt_zero_eq_baseModel
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.branchValueAt 0 = (localModels.chartAt x₀).toUpperHalfPlane x₀ := by
-  simpa [branchValueAt, S.parameterAt_zero, p.source] using
-    S.initialTransition_base_value
-
-omit [RiemannSurface X] in
-/-- At the left endpoint, a segment branch gives the sampled branch value.
-
-%%handwave
-name:
-  A segment branch matches its left vertex value
-statement:
-  On segment $k$, the normalized branch evaluated at its left parameter $t_k$ equals the sampled branch value $b_k$.
-proof:
-  Both expressions use the accumulated representative $M_k$, the chart centered at $c_k$, and the point $p(t_k)$.
--/
-theorem segmentBranchValue_leftEndpoint
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.segmentBranchValue k (S.parameterAt k.castSucc) =
-      S.branchValueAt k.castSucc :=
-  rfl
-
-omit [RiemannSurface X] in
-/--
-The next sampled value is the previous branch evaluated at the transition
-point.
-
-%%handwave
-name:
-  A handoff preserves the normalized value at the next vertex
-statement:
-  At the handoff point $p(t_{k+1})$, the next sampled value satisfies $b_{k+1}=M_k\cdot\phi_{c_k}(p(t_{k+1}))$.
-proof:
-  Expand $M_{k+1}=M_kT_k^{-1}$ and use the local transition identity $\phi_{c_{k+1}}=T_k\cdot\phi_{c_k}$ at the handoff point; the factors $T_k^{-1}T_k$ cancel.
--/
-theorem branchValueAt_succ_eq_leftTransitionValue
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.branchValueAt k.succ =
-      realMobiusRepresentativeAction (S.accumulatedMobiusAt k.castSucc)
-        ((localModels.chartAt (S.centerAt k.castSucc)).toUpperHalfPlane
-          (p (S.parameterAt k.succ))) := by
-  rw [branchValueAt, S.accumulatedMobiusAt_succ k]
-  exact
-    localRealMobiusTransitionData_accumulated_handoff
-      (S.transitionAt k) (S.transitionAt k).mem_neighborhood
-      (S.accumulatedMobiusAt k.castSucc)
-
-omit [RiemannSurface X] in
-/-- At the right endpoint, a segment branch gives the next sampled value.
-
-%%handwave
-name:
-  A segment branch matches the next vertex value
-statement:
-  On segment $k$, evaluation at its right parameter $t_{k+1}$ equals the sampled branch value $b_{k+1}$.
-proof:
-  The handoff identity expresses $b_{k+1}$ as the old normalized branch evaluated at $p(t_{k+1})$, which is the segment branch at its right endpoint.
--/
-theorem segmentBranchValue_rightEndpoint
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.segmentBranchValue k (S.parameterAt k.succ) =
-      S.branchValueAt k.succ := by
-  simpa [segmentBranchValue] using
-    (S.branchValueAt_succ_eq_leftTransitionValue k).symm
-
-omit [RiemannSurface X] in
-/-- The terminal value is the last sampled branch value.
-
-%%handwave
-name:
-  The terminal value is the value at the final subdivision vertex
-statement:
-  For a skeleton of length $n$, its terminal value equals the sampled normalized branch value $b_n$ at the last vertex.
-proof:
-  The last parameter is $1$, so $p(t_n)=x$; the last center and accumulated representative are exactly the terminal center and terminal representative.
--/
-theorem terminalValue_eq_branchValueAt_last
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalValue = S.branchValueAt (Fin.last S.length) := by
-  simp [terminalValue, branchValueAt, terminalCenter, terminalMobius,
-    S.parameterAt_last]
 
 omit [RiemannSurface X] in
 /--
@@ -1384,7 +633,13 @@ theorem exists_segment_contains_parameter
     · simpa [hsucc, iCur]
         using hnτ
 
-/-- The canonical-cover point represented by the terminal endpoint and path. -/
+/-- The canonical-cover point represented by the terminal endpoint and path.
+
+%%handwave
+name: The canonical-cover point represented by the terminal endpoint and path
+statement:
+  The canonical-cover point represented by the terminal endpoint and path.
+-/
 def terminalCoverPoint
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -1435,6 +690,13 @@ The canonical terminal sheet over the terminal local-model domain.
 
 This is the local sheet on the canonical cover that will carry the terminal
 branch formula attached to the representative path.
+
+%%handwave
+name: The canonical terminal sheet over the terminal local-model domain
+statement:
+  The canonical terminal sheet over the terminal local-model domain. This is the local sheet on
+  the canonical cover that will carry the terminal branch formula attached to the representative
+  path.
 -/
 noncomputable def terminalSheetChart
     (S :
@@ -1445,7 +707,13 @@ noncomputable def terminalSheetChart
     S.terminalCoverPoint_endpoint_mem_terminal_domain
     (localModels.chartAt S.terminalCenter).isOpen_domain
 
-/-- The terminal sheet neighborhood determined by the terminal model domain. -/
+/-- The terminal sheet neighborhood determined by the terminal model domain.
+
+%%handwave
+name: The terminal sheet neighborhood determined by the terminal model domain
+statement:
+  The terminal sheet neighborhood determined by the terminal model domain.
+-/
 noncomputable def terminalSheet
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -1537,6 +805,12 @@ theorem terminalSheetChart_base_subset_terminal_domain
 /--
 The canonical local path in the base of the terminal sheet from the endpoint
 of the continued path to the endpoint of a lift in that sheet.
+
+%%handwave
+name: The canonical local path in the base of the terminal sheet from the endpoint of the continued path to the endpoint of a lift in that sheet
+statement:
+  The canonical local path in the base of the terminal sheet from the endpoint of the continued
+  path to the endpoint of a lift in that sheet.
 -/
 noncomputable def terminalSheetPathInSet
     (S :
@@ -1594,91 +868,17 @@ theorem terminalSheetPathInSet_mem_terminal_domain
         (localModels.chartAt S.terminalCenter).isOpen_domain
   exact hsubset hbase
 
-/--
-If the terminal-sheet path for `S` also stays inside the terminal chart of
-another skeleton `T` over the same endpoint, then its endpoint lies in the
-connected component of the fixed terminal-chart overlap containing that
-endpoint.
-
-%%handwave
-name:
-  A terminal-sheet path locates its endpoint in the terminal-chart overlap component
-statement:
-  Let two continuation skeletons end at the same point $x$. If $y$ lies in the first terminal sheet and the canonical path $\sigma:x\rightsquigarrow\pi(y)$ in that sheet also remains in the second terminal chart, then $\pi(y)$ lies in the connected component of the intersection of the two terminal chart domains that contains $x$.
-proof:
-  The image of $\sigma$ is preconnected, contains $x$ and $\pi(y)$, and lies in the intersection because the first inclusion follows from terminal-sheet membership and the second is assumed. Hence its image is contained in the required connected component.
--/
-theorem terminalSheetPathInSet_endpoint_mem_terminalOverlap_connectedComponentIn
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {q : Path x₀ x}
-    (T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels q)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ S.terminalSheet)
-    (hTarget :
-      ∀ t : unitInterval,
-        S.terminalSheetPathInSet hy' t ∈
-          (localModels.chartAt T.terminalCenter).domain) :
-    PathHomotopyUniversalCover.endpoint y' ∈
-      connectedComponentIn
-        ((localModels.chartAt S.terminalCenter).domain ∩
-          (localModels.chartAt T.terminalCenter).domain)
-        x := by
-  let σ := S.terminalSheetPathInSet hy'
-  let overlap : Set X :=
-    (localModels.chartAt S.terminalCenter).domain ∩
-      (localModels.chartAt T.terminalCenter).domain
-  have hRangePre : IsPreconnected (Set.range σ) :=
-    isPreconnected_range σ.continuous
-  have hSourceRange : x ∈ Set.range σ :=
-    Path.source_mem_range σ
-  have hRangeSub : Set.range σ ⊆ overlap := by
-    intro z hz
-    rcases hz with ⟨t, rfl⟩
-    exact ⟨S.terminalSheetPathInSet_mem_terminal_domain hy' t, hTarget t⟩
-  have hSub :
-      Set.range σ ⊆ connectedComponentIn overlap x :=
-    hRangePre.subset_connectedComponentIn hSourceRange hRangeSub
-  have hTargetRange : PathHomotopyUniversalCover.endpoint y' ∈ Set.range σ :=
-    Path.target_mem_range σ
-  simpa [σ, overlap] using hSub hTargetRange
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Any path whose image stays in a set puts its target in the connected component
-of that set containing its source.
-
-%%handwave
-name:
-  A path contained in a set joins points in one connected component
-statement:
-  If a path $\rho:x\rightsquigarrow y$ satisfies $\rho([0,1])\subseteq F$, then $y$ belongs to the connected component of $F$ containing $x$.
-proof:
-  The continuous image of $[0,1]$ under $\rho$ is preconnected, contains both endpoints, and is contained in $F$; therefore it lies in the connected component of $F$ containing $x$.
--/
-theorem path_target_mem_connectedComponentIn_of_forall_mem
-    {F : Set X} {x y : X} (ρ : Path x y)
-    (hρ : ∀ t : unitInterval, ρ t ∈ F) :
-    y ∈ connectedComponentIn F x := by
-  have hRangePre : IsPreconnected (Set.range ρ) :=
-    isPreconnected_range ρ.continuous
-  have hSourceRange : x ∈ Set.range ρ :=
-    Path.source_mem_range ρ
-  have hRangeSub : Set.range ρ ⊆ F := by
-    intro z hz
-    rcases hz with ⟨t, rfl⟩
-    exact hρ t
-  have hSub :
-      Set.range ρ ⊆ connectedComponentIn F x :=
-    hRangePre.subset_connectedComponentIn hSourceRange hRangeSub
-  exact hSub (Path.target_mem_range ρ)
-
 omit [RiemannSurface X] in
 /--
 Subdivision parameters for the terminal-extension skeleton: the old
 subdivision is compressed into the first half and one final endpoint is added
 at `1`.
+
+%%handwave
+name: Subdivision parameters for the terminal-extension skeleton: the old subdivision is compressed into the first half and one final endpoint is added at 1
+statement:
+  Subdivision parameters for the terminal-extension skeleton: the old subdivision is compressed
+  into the first half and one final endpoint is added at 1.
 -/
 noncomputable def terminalExtensionParameterAt
     (S :
@@ -1694,6 +894,12 @@ omit [RiemannSurface X] in
 /--
 Centers for the terminal-extension skeleton: the old centers are reused on
 the compressed first half and the added endpoint uses the old terminal center.
+
+%%handwave
+name: Centers for the terminal-extension skeleton: the old centers are reused on the compressed first half and the added endpoint uses the old terminal center
+statement:
+  Centers for the terminal-extension skeleton: the old centers are reused on the compressed
+  first half and the added endpoint uses the old terminal center.
 -/
 noncomputable def terminalExtensionCenterAt
     (S :
@@ -1855,64 +1061,6 @@ omit [RiemannSurface X] in
 /--
 %%handwave
 name:
-  Left parameter of an old extended segment
-statement:
-  For every original segment $k$, the left endpoint parameter in the terminal extension is $t_k/2$.
-proof:
-  The left vertex is an old vertex, so apply the old-vertex parameter formula.
--/
-@[simp]
-theorem terminalExtensionParameterAt_old_left
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.terminalExtensionParameterAt (k.castSucc.castSucc) =
-      unitInterval.firstHalf (S.parameterAt k.castSucc) := by
-  simp
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Left center of an old extended segment
-statement:
-  For every original segment $k$, the chart center at its left vertex in the terminal extension is $c_k$.
-proof:
-  The left vertex is inherited from the original subdivision, so the old-vertex center formula applies.
--/
-@[simp]
-theorem terminalExtensionCenterAt_old_left
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.terminalExtensionCenterAt (k.castSucc.castSucc) =
-      S.centerAt k.castSucc := by
-  simp
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  Right parameter of an old extended segment
-statement:
-  For every original segment $k$, the right endpoint parameter in the terminal extension is $t_{k+1}/2$.
-proof:
-  Commute successor with inclusion of finite indices, then apply the old-vertex parameter formula at $k+1$.
--/
-@[simp]
-theorem terminalExtensionParameterAt_old_right
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) :
-    S.terminalExtensionParameterAt ((k.castSucc : Fin (S.length + 1)).succ) =
-      unitInterval.firstHalf (S.parameterAt k.succ) := by
-  rw [PathLocalTransitionModelBasedWeakHandoffSkeleton.fin_castSucc_succ_eq_succ_castSucc k]
-  simpa using S.terminalExtensionParameterAt_castSucc k.succ
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
   Right center of an old extended segment
 statement:
   For every original segment $k$, the chart center at its right vertex in the terminal extension is $c_{k+1}$.
@@ -1985,71 +1133,6 @@ theorem terminalExtensionParameterAt_final_right
         ((Fin.last S.length : Fin (S.length + 1)).succ) = 1 := by
   rw [fin_last_succ_eq_last]
   exact S.terminalExtensionParameterAt_last
-
-omit [RiemannSurface X] in
-/--
-%%handwave
-name:
-  The added terminal segment ends in the terminal chart
-statement:
-  The chart center at the right endpoint of the new final segment is the original terminal center.
-proof:
-  The successor of the old last index is the new last index, where the extended center is defined to be the old terminal center.
--/
-@[simp]
-theorem terminalExtensionCenterAt_final_right
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    S.terminalExtensionCenterAt
-        ((Fin.last S.length : Fin (S.length + 1)).succ) =
-      S.terminalCenter := by
-  rw [fin_last_succ_eq_last]
-  exact S.terminalExtensionCenterAt_last
-
-/--
-On the compressed old part of the terminal-extension path, evaluating
-`p.trans q` at the extended subdivision vertex recovers the old path
-evaluation.
-
-%%handwave
-name:
-  Concatenation at an inherited terminal-extension vertex recovers the old path
-statement:
-  Let $\sigma$ be the path appended inside the terminal sheet. At every original vertex $i$, the concatenated path satisfies $(p*\sigma)(t_i/2)=p(t_i)$.
-proof:
-  On the first half of a concatenated path, $(p*\sigma)(s/2)=p(s)$; substitute $s=t_i$.
--/
-theorem path_trans_terminalExtensionParameterAt_castSucc
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ S.terminalSheet) (i : Fin (S.length + 1)) :
-    (p.trans (S.terminalSheetPathInSet hy'))
-        (S.terminalExtensionParameterAt i.castSucc) =
-      p (S.parameterAt i) := by
-  rw [S.terminalExtensionParameterAt_castSucc i]
-  exact path_trans_firstHalf_apply p (S.terminalSheetPathInSet hy')
-    (S.parameterAt i)
-
-/-- The added endpoint of a terminal-extension path is the endpoint of the target lift.
-
-%%handwave
-name:
-  Endpoint of the terminally extended path
-statement:
-  If $\sigma$ is the canonical path from $x$ to $\pi(y)$ inside the terminal sheet, then the new last vertex of $p*\sigma$ has value $\pi(y)$.
-proof:
-  The new last parameter is $1$, and the target of the concatenated path is the target $\pi(y)$ of $\sigma$.
--/
-theorem path_trans_terminalExtensionParameterAt_last
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ S.terminalSheet) :
-    (p.trans (S.terminalSheetPathInSet hy'))
-        (S.terminalExtensionParameterAt (Fin.last (S.length + 1))) =
-      PathHomotopyUniversalCover.endpoint y' := by
-  simp [S.terminalExtensionParameterAt_last]
 
 omit [RiemannSurface X] in
 /-- The terminal-extension subdivision parameters are weakly increasing.
@@ -2229,6 +1312,13 @@ handoff skeleton.
 The old subdivision is compressed into the first half; the final subinterval
 stays inside the terminal chart, so its handoff is the identity local
 transition from that chart to itself.
+
+%%handwave
+name: Append the canonical local path inside the terminal sheet to a based weak handoff skeleton
+statement:
+  Append the canonical local path inside the terminal sheet to a based weak handoff skeleton.
+  The old subdivision is compressed into the first half; the final subinterval stays inside the
+  terminal chart, so its handoff is the identity local transition from that chart to itself.
 -/
 noncomputable def terminalExtensionSkeleton
     (S :

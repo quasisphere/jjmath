@@ -119,7 +119,14 @@ theorem exists_smoothBoundaryProductChart
     rw [hfirst]
     exact (hWsub hx'.2).2.2
 
-/-- A fixed choice of product chart at each boundary point. -/
+/--
+%%handwave
+name: A fixed choice of product chart at each boundary point
+statement:
+  For every $p\in\partial\Omega$, choose a centered smooth product chart in
+  which $\Omega$ is the negative first-coordinate side and the frontier is
+  the zero slice.
+-/
 noncomputable def smoothBoundaryProductChartAt
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     SmoothBoundaryProductChart D p :=
@@ -139,21 +146,6 @@ theorem smoothBoundaryProductChartAt_point_mem
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     (p : X) ∈ (smoothBoundaryProductChartAt D p).coordinate.source :=
   (smoothBoundaryProductChartAt D p).point_mem
-
-/--
-%%handwave
-name:
-  Openness of a chosen boundary coordinate neighborhood
-statement:
-  For \(p\in\partial D\), the source of the chosen boundary product
-  coordinate map \(\Phi_p\) is open in the surface.
-proof:
-  The source of every partial diffeomorphism is open.
--/
-theorem smoothBoundaryProductChartAt_source_isOpen
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    IsOpen (smoothBoundaryProductChartAt D p).coordinate.source :=
-  (smoothBoundaryProductChartAt D p).coordinate.open_source
 
 omit [IsManifold 𝓘(ℝ, ℂ) ∞ X] in
 /--
@@ -180,8 +172,13 @@ theorem SmoothBoundaryProductChart.exists_target_ball
     simpa only [C.point_coord] using C.coordinate.map_source C.point_mem
   exact Metric.isOpen_iff.mp C.coordinate.open_target 0 hzero_target
 
-/-- A fixed positive radius whose target ball lies in the chosen product
-chart. -/
+/--
+%%handwave
+name: A fixed positive radius whose target ball lies in the chosen product chart
+statement:
+  For each chosen centered boundary product chart, choose
+  $r_p>0$ such that the Euclidean ball $B(0,r_p)$ lies in its target.
+-/
 noncomputable def smoothBoundaryProductChartRadius
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) : ℝ :=
   Classical.choose (smoothBoundaryProductChartAt D p).exists_target_ball
@@ -222,8 +219,14 @@ theorem smoothBoundaryProductChart_ball_subset_target
   (Classical.choose_spec
     (smoothBoundaryProductChartAt D p).exists_target_ball).2
 
-/-- The part of a chosen boundary chart mapping into its centered target
-ball. -/
+/--
+%%handwave
+name: The part of a chosen boundary chart mapping into its centered target ball
+statement:
+  Define
+  $U_p=\operatorname{source}(\Phi_p)\cap\Phi_p^{-1}(B(0,r_p))$, the
+  centered product-ball neighborhood of $p$.
+-/
 def smoothBoundaryProductBallSource
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) : Set X :=
   (smoothBoundaryProductChartAt D p).coordinate.source ∩
@@ -272,99 +275,14 @@ theorem smoothBoundaryProductBallSource_point_mem
   rw [(smoothBoundaryProductChartAt D p).point_coord]
   exact Metric.mem_ball_self (smoothBoundaryProductChartRadius_pos D p)
 
-/-- The upper half of the frontier diameter in a centered product-ball chart. -/
-def smoothBoundaryProductBallUpperFrontierArc
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) : Set X :=
-  {x | x ∈ frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-    0 < ((smoothBoundaryProductChartAt D p).coordinate x).2}
-
-/-- The lower half of the frontier diameter in a centered product-ball chart. -/
-def smoothBoundaryProductBallLowerFrontierArc
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) : Set X :=
-  {x | x ∈ frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-    ((smoothBoundaryProductChartAt D p).coordinate x).2 < 0}
-
 /--
 %%handwave
-name:
-  A smooth domain is a negative half-ball in boundary coordinates
+name: A centered product-ball arc of a smooth frontier is explicitly an open real interval
 statement:
-  Let \(p\in\partial D\), let \(\Phi_p\) be a centered boundary product
-  chart, and choose \(r_p>0\) with \(B(0,r_p)\) in its target.  Then
-  \[
-    \Phi_p\bigl(D\cap\Phi_p^{-1}(B(0,r_p))\bigr)
-      =B(0,r_p)\cap\{(s,t):s<0\}.
-  \]
-proof:
-  The boundary-chart sign condition identifies membership in \(D\) with
-  negativity of the first coordinate.  The chart and inverse-chart identities
-  give the two set inclusions inside the chosen target ball.
+  The second product coordinate gives a homeomorphism
+  $\partial\Omega\cap U_p\to(-r_p,r_p)$ for every centered boundary
+  product-ball neighborhood.
 -/
-theorem smoothBoundaryProductChart_image_domain_inter_ballSource
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    (smoothBoundaryProductChartAt D p).coordinate ''
-        (D.carrier ∩ smoothBoundaryProductBallSource D p) =
-      Metric.ball (0 : ℝ × ℝ) (smoothBoundaryProductChartRadius D p) ∩
-        {q | q.1 < 0} := by
-  let C := smoothBoundaryProductChartAt D p
-  let radius := smoothBoundaryProductChartRadius D p
-  apply Set.Subset.antisymm
-  · rintro q ⟨x, ⟨hxD, hxsource, hxball⟩, rfl⟩
-    exact ⟨hxball, (C.domain_iff_negative x hxsource).mp hxD⟩
-  · rintro q ⟨hqball, hqneg⟩
-    have hqtarget : q ∈ C.coordinate.target :=
-      smoothBoundaryProductChart_ball_subset_target D p hqball
-    let x : X := C.coordinate.symm q
-    have hxsource : x ∈ C.coordinate.source :=
-      C.coordinate.symm.map_source hqtarget
-    have hcoordx : C.coordinate x = q := C.coordinate.right_inv hqtarget
-    refine ⟨x, ⟨?_, hxsource, ?_⟩, hcoordx⟩
-    · exact (C.domain_iff_negative x hxsource).mpr (hcoordx.symm ▸ hqneg)
-    · change C.coordinate x ∈ Metric.ball (0 : ℝ × ℝ) radius
-      rw [hcoordx]
-      exact hqball
-
-/--
-%%handwave
-name:
-  The frontier is the central diameter in boundary coordinates
-statement:
-  With the same centered chart and radius,
-  \[
-    \Phi_p\bigl(\partial D\cap\Phi_p^{-1}(B(0,r_p))\bigr)
-      =B(0,r_p)\cap\{(s,t):s=0\}.
-  \]
-proof:
-  The boundary-chart equation identifies frontier points with the zero set of
-  the first coordinate.  Applying the chart inverse to every point of the
-  central diameter proves the reverse inclusion.
--/
-theorem smoothBoundaryProductChart_image_frontier_inter_ballSource
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    (smoothBoundaryProductChartAt D p).coordinate ''
-        (frontier D.carrier ∩ smoothBoundaryProductBallSource D p) =
-      Metric.ball (0 : ℝ × ℝ) (smoothBoundaryProductChartRadius D p) ∩
-        {q | q.1 = 0} := by
-  let C := smoothBoundaryProductChartAt D p
-  let radius := smoothBoundaryProductChartRadius D p
-  apply Set.Subset.antisymm
-  · rintro q ⟨x, ⟨hxfrontier, hxsource, hxball⟩, rfl⟩
-    exact ⟨hxball, (C.frontier_iff_zero x hxsource).mp hxfrontier⟩
-  · rintro q ⟨hqball, hqzero⟩
-    have hqtarget : q ∈ C.coordinate.target :=
-      smoothBoundaryProductChart_ball_subset_target D p hqball
-    let x : X := C.coordinate.symm q
-    have hxsource : x ∈ C.coordinate.source :=
-      C.coordinate.symm.map_source hqtarget
-    have hcoordx : C.coordinate x = q := C.coordinate.right_inv hqtarget
-    refine ⟨x, ⟨?_, hxsource, ?_⟩, hcoordx⟩
-    · exact (C.frontier_iff_zero x hxsource).mpr (hcoordx.symm ▸ hqzero)
-    · change C.coordinate x ∈ Metric.ball (0 : ℝ × ℝ) radius
-      rw [hcoordx]
-      exact hqball
-
-/-- A centered product-ball arc of a smooth frontier is explicitly an open
-real interval. -/
 noncomputable def smoothBoundaryProductBall_frontierHomeomorph
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     ↑(frontier D.carrier ∩ smoothBoundaryProductBallSource D p) ≃ₜ
@@ -441,342 +359,6 @@ noncomputable def smoothBoundaryProductBall_frontierHomeomorph
       exact ⟨hzeroBall, t.2⟩
     exact hsymm
 
-/--
-%%handwave
-name:
-  Connectedness of a boundary product-ball arc
-statement:
-  For every \(p\in\partial D\), the local frontier arc
-  \[
-    \partial D\cap\Phi_p^{-1}(B(0,r_p))
-  \]
-  is nonempty and connected.
-proof:
-  The chart identifies this set with the vertical diameter
-  \(\{0\}\times(-r_p,r_p)\), which is the continuous image of a real
-  interval and is therefore connected.  It contains the center \(p\).
--/
-theorem smoothBoundaryProductBall_frontier_isConnected
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    IsConnected (frontier D.carrier ∩ smoothBoundaryProductBallSource D p) := by
-  let C := smoothBoundaryProductChartAt D p
-  let radius := smoothBoundaryProductChartRadius D p
-  let S : Set X := frontier D.carrier ∩ smoothBoundaryProductBallSource D p
-  let T : Set (ℝ × ℝ) :=
-    Metric.ball (0 : ℝ × ℝ) radius ∩ {q | q.1 = 0}
-  let J : Set ℝ := Metric.ball 0 radius
-  have hT_image : (fun t : ℝ => (0, t)) '' J = T := by
-    apply Set.Subset.antisymm
-    · rintro q ⟨t, ht, rfl⟩
-      refine ⟨?_, rfl⟩
-      rw [← ball_prod_same]
-      exact ⟨Metric.mem_ball_self (smoothBoundaryProductChartRadius_pos D p), ht⟩
-    · rintro q ⟨hqball, hqzero⟩
-      refine ⟨q.2, ?_, ?_⟩
-      · rw [← ball_prod_same] at hqball
-        exact hqball.2
-      · exact Prod.ext hqzero.symm rfl
-  have hTpre : IsPreconnected T := by
-    rw [← hT_image]
-    exact (convex_ball (0 : ℝ) radius).isPreconnected.image _
-      (continuous_const.prodMk continuous_id).continuousOn
-  have hsymm_image : C.coordinate.symm '' T = S := by
-    apply Set.Subset.antisymm
-    · rintro x ⟨q, ⟨hqball, hqzero⟩, rfl⟩
-      have hqtarget : q ∈ C.coordinate.target :=
-        smoothBoundaryProductChart_ball_subset_target D p hqball
-      have hxsource : C.coordinate.symm q ∈ C.coordinate.source :=
-        C.coordinate.symm.map_source hqtarget
-      have hcoordx : C.coordinate (C.coordinate.symm q) = q :=
-        C.coordinate.right_inv hqtarget
-      refine ⟨(C.frontier_iff_zero _ hxsource).mpr ?_, hxsource, ?_⟩
-      · simpa only [hcoordx] using hqzero
-      · change C.coordinate (C.coordinate.symm q) ∈
-          Metric.ball (0 : ℝ × ℝ) radius
-        rw [hcoordx]
-        exact hqball
-    · rintro x ⟨hxfrontier, hxsource, hxball⟩
-      have hcoord_target : C.coordinate x ∈ C.coordinate.target :=
-        C.coordinate.map_source hxsource
-      refine ⟨C.coordinate x, ⟨hxball,
-        (C.frontier_iff_zero x hxsource).mp hxfrontier⟩, ?_⟩
-      exact C.coordinate.left_inv hxsource
-  have hTtarget : T ⊆ C.coordinate.target := by
-    intro q hq
-    exact smoothBoundaryProductChart_ball_subset_target D p hq.1
-  have hSpre : IsPreconnected S := by
-    rw [← hsymm_image]
-    exact hTpre.image C.coordinate.symm
-      (C.coordinate.toOpenPartialHomeomorph.continuousOn_symm.mono hTtarget)
-  have hpS : (p : X) ∈ S :=
-    ⟨p.2, smoothBoundaryProductBallSource_point_mem D p⟩
-  exact ⟨⟨p, hpS⟩, hSpre⟩
-
-/--
-%%handwave
-name:
-  Connected vertical intervals pull back to connected frontier arcs
-statement:
-  Let \(p\in\partial D\), and let \(J\subseteq(-r_p,r_p)\) be nonempty
-  and connected.  Then
-  \[
-    \{x\in\partial D\cap U_p:(\Phi_p(x))_2\in J\}
-  \]
-  is nonempty and connected.
-proof:
-  The set is the image of the connected vertical segment
-  \(\{0\}\times J\) under the inverse chart.  The ball containment makes
-  the inverse chart defined there, and continuity preserves connectedness.
--/
-theorem smoothBoundaryProductBall_verticalInterval_isConnected
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier)
-    (J : Set ℝ) (hJ : IsConnected J)
-    (hJball : J ⊆
-      Metric.ball (0 : ℝ) (smoothBoundaryProductChartRadius D p)) :
-    IsConnected {x | x ∈
-        frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-      ((smoothBoundaryProductChartAt D p).coordinate x).2 ∈ J} := by
-  let C := smoothBoundaryProductChartAt D p
-  let radius := smoothBoundaryProductChartRadius D p
-  let A : Set X := {x | x ∈
-      frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-    (C.coordinate x).2 ∈ J}
-  let T : Set (ℝ × ℝ) := (fun t : ℝ => (0, t)) '' J
-  have hTconnected : IsConnected T := by
-    exact hJ.image _ (continuous_const.prodMk continuous_id).continuousOn
-  have hTtarget : T ⊆ C.coordinate.target := by
-    rintro q ⟨t, htJ, rfl⟩
-    apply smoothBoundaryProductChart_ball_subset_target D p
-    rw [← ball_prod_same]
-    exact ⟨Metric.mem_ball_self (smoothBoundaryProductChartRadius_pos D p),
-      hJball htJ⟩
-  have hsymm_image : C.coordinate.symm '' T = A := by
-    apply Set.Subset.antisymm
-    · rintro x ⟨q, ⟨t, htJ, rfl⟩, rfl⟩
-      have hqtarget : (0, t) ∈ C.coordinate.target :=
-        hTtarget ⟨t, htJ, rfl⟩
-      have hxsource : C.coordinate.symm (0, t) ∈ C.coordinate.source :=
-        C.coordinate.symm.map_source hqtarget
-      have hcoordx : C.coordinate (C.coordinate.symm (0, t)) = (0, t) :=
-        C.coordinate.right_inv hqtarget
-      refine ⟨⟨(C.frontier_iff_zero _ hxsource).mpr ?_, hxsource, ?_⟩, ?_⟩
-      · simp only [hcoordx]
-      · change C.coordinate (C.coordinate.symm (0, t)) ∈
-          Metric.ball (0 : ℝ × ℝ) radius
-        rw [hcoordx, ← ball_prod_same]
-        exact ⟨Metric.mem_ball_self
-          (smoothBoundaryProductChartRadius_pos D p), hJball htJ⟩
-      · simpa only [hcoordx] using htJ
-    · rintro x ⟨⟨hxfrontier, hxsource, hxball⟩, hxJ⟩
-      have hcoord_zero : (C.coordinate x).1 = 0 :=
-        (C.frontier_iff_zero x hxsource).mp hxfrontier
-      refine ⟨C.coordinate x, ⟨(C.coordinate x).2, hxJ, ?_⟩, ?_⟩
-      · exact Prod.ext hcoord_zero.symm rfl
-      · exact C.coordinate.left_inv hxsource
-  change IsConnected A
-  rw [← hsymm_image]
-  exact hTconnected.image C.coordinate.symm
-    (C.coordinate.toOpenPartialHomeomorph.continuousOn_symm.mono hTtarget)
-
-/--
-%%handwave
-name:
-  Connectedness of the upper half of a boundary arc
-statement:
-  For \(p\in\partial D\), the set
-  \[
-    \{x\in\partial D\cap U_p:0<(\Phi_p(x))_2\}
-  \]
-  is nonempty and connected.
-proof:
-  This is the inverse-chart image of the nonempty connected interval
-  \((0,r_p)\) on the vertical coordinate axis.
--/
-theorem smoothBoundaryProductBall_upperFrontierArc_isConnected
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    IsConnected (smoothBoundaryProductBallUpperFrontierArc D p) := by
-  let radius := smoothBoundaryProductChartRadius D p
-  have hinterval : IsConnected (Set.Ioo (0 : ℝ) radius) :=
-    isConnected_Ioo (smoothBoundaryProductChartRadius_pos D p)
-  have hinterval_ball : Set.Ioo (0 : ℝ) radius ⊆
-      Metric.ball (0 : ℝ) (smoothBoundaryProductChartRadius D p) := by
-    intro t ht
-    rw [Metric.mem_ball, Real.dist_eq, sub_zero, abs_of_pos ht.1]
-    exact ht.2
-  have hset : smoothBoundaryProductBallUpperFrontierArc D p =
-      {x | x ∈ frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-        ((smoothBoundaryProductChartAt D p).coordinate x).2 ∈
-          Set.Ioo (0 : ℝ) radius} := by
-    ext x
-    constructor
-    · rintro ⟨hx, hpos⟩
-      have hxball := hx.2.2
-      rw [← ball_prod_same] at hxball
-      have habs :
-          |((smoothBoundaryProductChartAt D p).coordinate x).2| < radius := by
-        simpa [Metric.mem_ball, Real.dist_eq] using hxball.2
-      exact ⟨hx, hpos, (abs_lt.mp habs).2⟩
-    · rintro ⟨hx, hpos, _hlt⟩
-      exact ⟨hx, hpos⟩
-  rw [hset]
-  exact smoothBoundaryProductBall_verticalInterval_isConnected
-    D p (Set.Ioo (0 : ℝ) radius) hinterval hinterval_ball
-
-/--
-%%handwave
-name:
-  Connectedness of the lower half of a boundary arc
-statement:
-  For \(p\in\partial D\), the set
-  \[
-    \{x\in\partial D\cap U_p:(\Phi_p(x))_2<0\}
-  \]
-  is nonempty and connected.
-proof:
-  This is the inverse-chart image of the nonempty connected interval
-  \((-r_p,0)\) on the vertical coordinate axis.
--/
-theorem smoothBoundaryProductBall_lowerFrontierArc_isConnected
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    IsConnected (smoothBoundaryProductBallLowerFrontierArc D p) := by
-  let radius := smoothBoundaryProductChartRadius D p
-  have hneg : -radius < (0 : ℝ) := neg_lt_zero.mpr
-    (smoothBoundaryProductChartRadius_pos D p)
-  have hinterval : IsConnected (Set.Ioo (-radius) (0 : ℝ)) :=
-    isConnected_Ioo hneg
-  have hinterval_ball : Set.Ioo (-radius) (0 : ℝ) ⊆
-      Metric.ball (0 : ℝ) (smoothBoundaryProductChartRadius D p) := by
-    intro t ht
-    dsimp [radius] at ht
-    have htleft := ht.1
-    rw [Metric.mem_ball, Real.dist_eq, sub_zero, abs_of_nonpos ht.2.le]
-    linarith only [htleft]
-  have hset : smoothBoundaryProductBallLowerFrontierArc D p =
-      {x | x ∈ frontier D.carrier ∩ smoothBoundaryProductBallSource D p ∧
-        ((smoothBoundaryProductChartAt D p).coordinate x).2 ∈
-          Set.Ioo (-radius) (0 : ℝ)} := by
-    ext x
-    constructor
-    · rintro ⟨hx, hnegx⟩
-      have hxball := hx.2.2
-      rw [← ball_prod_same] at hxball
-      have habs :
-          |((smoothBoundaryProductChartAt D p).coordinate x).2| < radius := by
-        simpa [Metric.mem_ball, Real.dist_eq] using hxball.2
-      exact ⟨hx, (abs_lt.mp habs).1, hnegx⟩
-    · rintro ⟨hx, _hlt, hnegx⟩
-      exact ⟨hx, hnegx⟩
-  rw [hset]
-  exact smoothBoundaryProductBall_verticalInterval_isConnected
-    D p (Set.Ioo (-radius) (0 : ℝ)) hinterval hinterval_ball
-
-/--
-%%handwave
-name:
-  A punctured boundary arc has two coordinate halves
-statement:
-  If \(A_p=\partial D\cap\Phi_p^{-1}(B(0,r_p))\), then
-  \[
-    A_p\setminus\{p\}
-      =\{x\in A_p:(\Phi_p x)_2>0\}
-       \cup\{x\in A_p:(\Phi_p x)_2<0\}.
-  \]
-proof:
-  Every point of \(A_p\) has first coordinate zero, and the center has both
-  coordinates zero.  Injectivity of the chart shows that a noncentral point
-  has nonzero second coordinate, which is either positive or negative.
--/
-theorem smoothBoundaryProductBall_frontier_diff_center
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    (frontier D.carrier ∩ smoothBoundaryProductBallSource D p) \ {(p : X)} =
-      smoothBoundaryProductBallUpperFrontierArc D p ∪
-        smoothBoundaryProductBallLowerFrontierArc D p := by
-  let C := smoothBoundaryProductChartAt D p
-  ext x
-  constructor
-  · rintro ⟨hx, hxp⟩
-    have hxsource : x ∈ C.coordinate.source := hx.2.1
-    have hfirst : (C.coordinate x).1 = 0 :=
-      (C.frontier_iff_zero x hxsource).mp hx.1
-    have hsecond : (C.coordinate x).2 ≠ 0 := by
-      intro hzero
-      have hcoord : C.coordinate x = C.coordinate p := by
-        rw [C.point_coord]
-        exact Prod.ext hfirst hzero
-      have hxeq : x = (p : X) := by
-        calc
-          x = C.coordinate.symm (C.coordinate x) :=
-            (C.coordinate.left_inv hxsource).symm
-          _ = C.coordinate.symm (C.coordinate p) := congrArg _ hcoord
-          _ = (p : X) := C.coordinate.left_inv C.point_mem
-      apply hxp
-      rw [hxeq]
-      simp
-    rcases lt_or_gt_of_ne hsecond with hnegative | hpositive
-    · exact Or.inr ⟨hx, hnegative⟩
-    · exact Or.inl ⟨hx, hpositive⟩
-  · intro hx
-    rcases hx with hupper | hlower
-    · refine ⟨hupper.1, ?_⟩
-      intro hxp
-      have hxeq : x = (p : X) := by simpa using hxp
-      subst x
-      have hpositive := hupper.2
-      rw [(smoothBoundaryProductChartAt D p).point_coord] at hpositive
-      exact (lt_irrefl 0) hpositive
-    · refine ⟨hlower.1, ?_⟩
-      intro hxp
-      have hxeq : x = (p : X) := by simpa using hxp
-      subst x
-      have hnegative := hlower.2
-      rw [(smoothBoundaryProductChartAt D p).point_coord] at hnegative
-      exact (lt_irrefl 0) hnegative
-
-/--
-%%handwave
-name:
-  Disjointness of the two halves of a punctured boundary arc
-statement:
-  The subsets of a boundary product-ball arc on which the second coordinate
-  is respectively positive and negative are disjoint.
-proof:
-  No real number can be both strictly positive and strictly negative.
--/
-theorem smoothBoundaryProductBall_frontier_halves_disjoint
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    Disjoint (smoothBoundaryProductBallUpperFrontierArc D p)
-      (smoothBoundaryProductBallLowerFrontierArc D p) := by
-  rw [Set.disjoint_left]
-  intro x hupper hlower
-  exact (not_lt_of_ge hupper.2.le) hlower.2
-
-/--
-%%handwave
-name:
-  A boundary product-ball arc lies in one frontier component
-statement:
-  If \(p\in\partial D\), then
-  \[
-    \partial D\cap U_p
-      \subseteq \operatorname{Comp}_{\partial D}(p),
-  \]
-  where the right-hand side is the connected component of \(p\) in
-  \(\partial D\).
-proof:
-  The local frontier arc is connected, contains \(p\), and is contained in
-  \(\partial D\).  Hence it lies in the maximal connected subset of
-  \(\partial D\) containing \(p\).
--/
-theorem smoothBoundaryProductBall_frontier_subset_connectedComponentIn
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    frontier D.carrier ∩ smoothBoundaryProductBallSource D p ⊆
-      connectedComponentIn (frontier D.carrier) (p : X) := by
-  exact
-    (smoothBoundaryProductBall_frontier_isConnected D p).isPreconnected
-      |>.subset_connectedComponentIn
-        ⟨p.2, smoothBoundaryProductBallSource_point_mem D p⟩
-        inter_subset_left
-
 omit [IsManifold 𝓘(ℝ, ℂ) ∞ X] in
 /--
 %%handwave
@@ -803,154 +385,6 @@ theorem smoothBoundaryDomain_frontier_connectedComponentIn_isCompact
     isClosed_connectedComponent.isCompact
   rw [connectedComponentIn_eq_image p.2]
   exact hcompact.image continuous_subtype_val
-
-/--
-%%handwave
-name:
-  Finite product-ball cover of one frontier component
-statement:
-  Every connected component \(C\) of the frontier of a smooth relatively
-  compact domain admits points \(p_1,\ldots,p_N\in C\) such that
-  \[
-    C\subseteq\bigcup_{j=1}^N\Phi_{p_j}^{-1}(B(0,r_{p_j})).
-  \]
-proof:
-  The frontier component is compact, and the product-ball sources centered at
-  its points form an open cover.  Extract a finite subcover.
--/
-theorem exists_finite_smoothBoundaryProductBall_cover_frontierComponent
-    (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
-    ∃ centers : Finset
-        {x // x ∈ connectedComponentIn (frontier D.carrier) (p : X)},
-      connectedComponentIn (frontier D.carrier) (p : X) ⊆
-        ⋃ q ∈ centers,
-          smoothBoundaryProductBallSource D
-            ⟨(q : X), connectedComponentIn_subset
-              (frontier D.carrier) (p : X) q.2⟩ := by
-  classical
-  let C : Set X := connectedComponentIn (frontier D.carrier) (p : X)
-  let pointOf (q : C) : frontier D.carrier :=
-    ⟨(q : X), connectedComponentIn_subset
-      (frontier D.carrier) (p : X) q.2⟩
-  let U : C → Set X := fun q =>
-    smoothBoundaryProductBallSource D (pointOf q)
-  have hCcompact : IsCompact C :=
-    smoothBoundaryDomain_frontier_connectedComponentIn_isCompact D p
-  have hUopen : ∀ q, IsOpen (U q) := fun q =>
-    smoothBoundaryProductBallSource_isOpen D (pointOf q)
-  have hcover : C ⊆ ⋃ q, U q := by
-    intro x hx
-    let q : C := ⟨x, hx⟩
-    exact mem_iUnion.mpr
-      ⟨q, smoothBoundaryProductBallSource_point_mem D (pointOf q)⟩
-  rcases hCcompact.elim_finite_subcover U hUopen hcover with
-    ⟨centers, hcenters⟩
-  exact ⟨centers, by simpa [C, U, pointOf] using hcenters⟩
-
-/--
-%%handwave
-name:
-  Finite boundary product-chart cover of the frontier
-statement:
-  If \(D\) is a relatively compact smoothly bounded domain, there are
-  finitely many points \(p_1,\ldots,p_N\in\partial D\) such that
-  \[
-    \partial D\subseteq
-      \bigcup_{j=1}^{N}\operatorname{source}(\Phi_{p_j}).
-  \]
-proof:
-  The frontier is compact, and the open sources of the product charts
-  centered at its points cover it.  Compactness supplies a finite subcover.
--/
-theorem exists_finite_smoothBoundaryProductChart_cover_frontier
-    (D : SmoothBoundaryDomain X) :
-    ∃ centers : Finset (frontier D.carrier),
-      frontier D.carrier ⊆
-        ⋃ p ∈ centers, (smoothBoundaryProductChartAt D p).coordinate.source := by
-  classical
-  let U : frontier D.carrier → Set X := fun p =>
-    (smoothBoundaryProductChartAt D p).coordinate.source
-  have hfrontier_compact : IsCompact (frontier D.carrier) :=
-    D.compact_closure.of_isClosed_subset isClosed_frontier frontier_subset_closure
-  have hUopen : ∀ p, IsOpen (U p) := fun p =>
-    smoothBoundaryProductChartAt_source_isOpen D p
-  have hcover : frontier D.carrier ⊆ ⋃ p, U p := by
-    intro x hx
-    let p : frontier D.carrier := ⟨x, hx⟩
-    exact mem_iUnion.mpr
-      ⟨p, smoothBoundaryProductChartAt_point_mem D p⟩
-  rcases hfrontier_compact.elim_finite_subcover U hUopen hcover with
-    ⟨centers, hcenters⟩
-  exact ⟨centers, by simpa [U] using hcenters⟩
-
-/--
-%%handwave
-name:
-  Finite product-ball cover of the frontier
-statement:
-  For a smooth relatively compact domain \(D\), there are finitely many
-  \(p_1,\ldots,p_N\in\partial D\) such that
-  \[
-    \partial D\subseteq\bigcup_{j=1}^N
-      \Phi_{p_j}^{-1}(B(0,r_{p_j})).
-  \]
-proof:
-  The frontier is a closed subset of the compact closure of \(D\), hence is
-  compact.  The centered product-ball sources form an open cover, so a finite
-  subcover exists.
--/
-theorem exists_finite_smoothBoundaryProductBall_cover_frontier
-    (D : SmoothBoundaryDomain X) :
-    ∃ centers : Finset (frontier D.carrier),
-      frontier D.carrier ⊆
-        ⋃ p ∈ centers, smoothBoundaryProductBallSource D p := by
-  classical
-  let U : frontier D.carrier → Set X := fun p =>
-    smoothBoundaryProductBallSource D p
-  have hfrontier_compact : IsCompact (frontier D.carrier) :=
-    D.compact_closure.of_isClosed_subset isClosed_frontier frontier_subset_closure
-  have hUopen : ∀ p, IsOpen (U p) := fun p =>
-    smoothBoundaryProductBallSource_isOpen D p
-  have hcover : frontier D.carrier ⊆ ⋃ p, U p := by
-    intro x hx
-    let p : frontier D.carrier := ⟨x, hx⟩
-    exact mem_iUnion.mpr
-      ⟨p, smoothBoundaryProductBallSource_point_mem D p⟩
-  rcases hfrontier_compact.elim_finite_subcover U hUopen hcover with
-    ⟨centers, hcenters⟩
-  exact ⟨centers, by simpa [U] using hcenters⟩
-
-/--
-%%handwave
-name:
-  Finite cover of the frontier by connected open arcs
-statement:
-  The frontier of a smooth relatively compact domain has a finite cover by
-  product-ball sources \(U_{p_j}\) such that every
-  \(\partial D\cap U_{p_j}\) is connected and relatively open in
-  \(\partial D\).
-proof:
-  Take a finite product-ball cover.  Each intersection with the frontier is a
-  connected central-diameter arc, and relative openness follows because each
-  product-ball source is open in the ambient surface.
--/
-theorem exists_finite_connected_smoothBoundaryProductBall_cover_frontier
-    (D : SmoothBoundaryDomain X) :
-    ∃ centers : Finset (frontier D.carrier),
-      frontier D.carrier ⊆
-          ⋃ p ∈ centers, smoothBoundaryProductBallSource D p ∧
-        ∀ p ∈ centers,
-          IsConnected
-              (frontier D.carrier ∩ smoothBoundaryProductBallSource D p) ∧
-            IsOpen ((fun x : frontier D.carrier => (x : X)) ⁻¹'
-              smoothBoundaryProductBallSource D p) := by
-  rcases exists_finite_smoothBoundaryProductBall_cover_frontier D with
-    ⟨centers, hcover⟩
-  refine ⟨centers, hcover, ?_⟩
-  intro p _hp
-  exact ⟨smoothBoundaryProductBall_frontier_isConnected D p,
-    (smoothBoundaryProductBallSource_isOpen D p).preimage
-      continuous_subtype_val⟩
 
 end
 

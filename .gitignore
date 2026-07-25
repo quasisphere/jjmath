@@ -1,6 +1,7 @@
 .DS_Store
 .codex/
 /external/
+/outputs/
 
 # Lean / Lake
 .lake/

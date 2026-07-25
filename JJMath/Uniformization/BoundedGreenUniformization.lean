@@ -20,8 +20,13 @@ open JJMath.Manifold
 
 noncomputable section
 
-/-- A bijective pointed holomorphic disk map, retained as an actual
-biholomorphic equivalence with the same forward map. -/
+/--
+%%handwave
+name: Biholomorphism associated with a bijective pointed disk map
+statement:
+  If a pointed holomorphic map $F:X\to\mathbb D$ is bijective, bundle $F$
+  and its inverse as a biholomorphism whose forward map is exactly $F$.
+-/
 noncomputable def PointedHolomorphicMap.biholomorphicOfBijective
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -122,80 +127,6 @@ theorem compactSuperlevelGreenFunction_exists_bijective_pointedDiskMap_of_deRham
   · intro z
     exact (hdegree z).exists
 
-/--
-%%handwave
-name:
-  Zero-cohomology compact-superlevel Green uniformization
-statement:
-  A connected noncompact Riemann surface with vanishing first real de Rham
-  cohomology and a positive Green function with compact positive superlevel
-  sets is biholomorphic to the unit disk.
-proof:
-  Choose a smooth exhaustion and use the transported-vortex construction to
-  exponentiate the Green conjugate differential.  Positivity puts the map in
-  the disk, compact superlevels make it proper, and its unique simple zero
-  makes its degree one.  A proper degree-one holomorphic disk map is a
-  biholomorphism.
--/
-theorem compactSuperlevelGreenFunction_biholomorphic_unitDisc_of_deRhamH1Zero
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    [Subsingleton
-      (DeRhamCohomology (I := SurfaceRealModel) (M := X) (A := ℝ) 1)]
-    {p : X} (G : CompactSuperlevelGreenFunctionWithPole X p) :
-    BiholomorphicSurfaces X Complex.UnitDisc := by
-  rcases
-      compactSuperlevelGreenFunction_exists_bijective_pointedDiskMap_of_deRhamH1Zero
-        X G with ⟨F, hbij⟩
-  have hdegree : ∀ z : Complex.UnitDisc, ∃! x : X, F.toFun x = z := by
-    intro z
-    rcases hbij.2 z with ⟨x, hx⟩
-    exact ⟨x, hx, fun y hy ↦ hbij.1 (hy.trans hx.symm)⟩
-  exact degree_one_pointedDiskMap_biholomorphic X F hdegree
-
-/--
-%%handwave
-name:
-  Zero-cohomology bounded Green domains are disks
-statement:
-  Let Ω be a path-connected relatively compact smooth domain in a connected
-  noncompact Riemann surface.  If the first real de Rham cohomology of Ω
-  vanishes and Ω carries a negative Dirichlet Green potential, then Ω is
-  biholomorphic to the unit disk.
-proof:
-  Regard Ω as a connected noncompact open Riemann surface and change the
-  sign of its Dirichlet Green potential.  The resulting positive Green
-  function has compact positive superlevels, so zero-cohomology
-  compact-superlevel Green uniformization applies.
--/
-theorem BoundedNegativeGreenPotential.openCarrier_biholomorphic_unitDisc_of_deRhamH1Zero
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    {Ω : SmoothBoundaryDomain X} {p : X}
-    [PathConnectedSpace Ω.carrier]
-    (hX : ¬ CompactSpace X)
-    (G : BoundedNegativeGreenPotential X Ω p)
-    (hp : p ∈ Ω.carrier) (hH1 : Ω.deRhamH1Zero) :
-    BiholomorphicSurfaces Ω.openCarrier Complex.UnitDisc := by
-  letI : IsManifold SurfaceRealModel ∞ X :=
-    complexOneManifold_has_real_smooth_structure X
-  letI : Nonempty Ω.carrier := ⟨⟨p, hp⟩⟩
-  let U : TopologicalSpace.Opens X := Ω.openCarrier
-  letI : RiemannSurface U :=
-    Ω.openCarrier_riemannSurface
-  letI : NoncompactSpace U :=
-    not_compactSpace_iff.mp (Ω.not_compactSpace_openCarrier hX)
-  letI : Subsingleton
-      (DeRhamCohomology (I := SurfaceRealModel) (M := U) (A := ℝ) 1) :=
-    hH1
-  let pU : U := ⟨p, hp⟩
-  let Gplus : CompactSuperlevelGreenFunctionWithPole U pU :=
-    G.toCompactSuperlevelOpenCarrier hp
-  exact
-    compactSuperlevelGreenFunction_biholomorphic_unitDisc_of_deRhamH1Zero
-      U Gplus
-
 /-- The Green maps on all exhaustion members can be chosen simultaneously,
 with the common exhaustion base point sent to the center of the disk.
 
@@ -242,87 +173,6 @@ theorem PointedH1ZeroSmoothRelativelyCompactExhaustion.has_bijective_pointedDisk
           U (G n) with ⟨F, hF⟩
     exact ⟨⟨F, hF⟩⟩
   exact Classical.choice hne
-
-/--
-%%handwave
-name:
-  A bounded Green potential gives a proper disk map
-statement:
-  Let \(\Omega\) be a path-connected smooth domain, let \(p\in\Omega\), and
-  suppose the open surface \(\Omega\) is simply connected.  A negative
-  Dirichlet Green potential with pole \(p\) exponentiates to a proper
-  holomorphic map \(F:\Omega\to\mathbb D\).  Its logarithmic modulus is the
-  Green potential, its only zero is \(p\), and that zero is simple.
-proof:
-  Change sign to obtain intrinsic positive Green data with compact
-  superlevels.  Exponentiating a harmonic conjugate gives the disk map;
-  compact superlevels give properness and the logarithmic pole gives the
-  unique simple zero.
--/
-theorem BoundedNegativeGreenPotential.exists_proper_pointedDiskMap_openCarrier
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    {Ω : SmoothBoundaryDomain X} {p : X}
-    [PathConnectedSpace Ω.carrier]
-    (G : BoundedNegativeGreenPotential X Ω p)
-    (hp : p ∈ Ω.carrier)
-    [SimplyConnectedSpace Ω.openCarrier] :
-    ∃ F : PointedHolomorphicMap Ω.openCarrier Complex.UnitDisc ⟨p, hp⟩ 0,
-      (∀ x : Ω.openCarrier, x ≠ ⟨p, hp⟩ →
-        Real.log ‖((F.toFun x : Complex.UnitDisc) : ℂ)‖ =
-          G.toFun (x : X)) ∧
-      (∀ x : Ω.openCarrier,
-        (((F.toFun x : Complex.UnitDisc) : ℂ) = 0) ↔ x = ⟨p, hp⟩) ∧
-      (∀ χ : PointedSurfaceCoordinate Ω.openCarrier ⟨p, hp⟩,
-        surfaceComplexDerivativeInCoordinate χ
-          (fun x : Ω.openCarrier ↦ ((F.toFun x : Complex.UnitDisc) : ℂ)) ≠ 0) ∧
-      IsProperMap F.toFun := by
-  letI : Nonempty Ω.carrier := ⟨⟨p, hp⟩⟩
-  let U : TopologicalSpace.Opens X := Ω.openCarrier
-  letI : RiemannSurface U :=
-    Ω.openCarrier_riemannSurface
-  let pU : U := ⟨p, hp⟩
-  let Gplus : CompactSuperlevelGreenFunctionWithPole U pU :=
-    G.toCompactSuperlevelOpenCarrier hp
-  rcases compactSuperlevelGreenFunction_exponential_proper_pointedDiskMap
-      U Gplus with
-    ⟨F, hlog, hzero, hsimple, hproper⟩
-  refine ⟨F, ?_, hzero, hsimple, hproper⟩
-  intro x hxp
-  simpa [Gplus, BoundedNegativeGreenPotential.toCompactSuperlevelOpenCarrier]
-    using hlog x hxp
-
-/--
-%%handwave
-name:
-  A bounded Green domain is a disk
-statement:
-  A path-connected simply connected smooth domain carrying a negative
-  Dirichlet Green potential is biholomorphic to the unit disk.
-proof:
-  The Green potential gives a proper holomorphic disk map with one simple
-  zero.  A proper holomorphic map has constant finite degree, and the fiber
-  over zero shows that this degree is one.  Hence the map is biholomorphic.
--/
-theorem BoundedNegativeGreenPotential.openCarrier_biholomorphic_unitDisc
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X]
-    {Ω : SmoothBoundaryDomain X} {p : X}
-    [PathConnectedSpace Ω.carrier]
-    (G : BoundedNegativeGreenPotential X Ω p)
-    (hp : p ∈ Ω.carrier)
-    [SimplyConnectedSpace Ω.openCarrier] :
-    BiholomorphicSurfaces Ω.openCarrier Complex.UnitDisc := by
-  letI : Nonempty Ω.carrier := ⟨⟨p, hp⟩⟩
-  let U : TopologicalSpace.Opens X := Ω.openCarrier
-  letI : RiemannSurface U :=
-    Ω.openCarrier_riemannSurface
-  rcases G.exists_proper_pointedDiskMap_openCarrier hp with
-    ⟨F, _hlog, hzero, hsimple, hproper⟩
-  have hdegree : ∀ z : Complex.UnitDisc, ∃! x : U, F.toFun x = z :=
-    proper_pointedDiskMap_degree_one_of_simple_single_zero
-      U F hproper hzero hsimple
-  exact degree_one_pointedDiskMap_biholomorphic U F hdegree
 
 end
 

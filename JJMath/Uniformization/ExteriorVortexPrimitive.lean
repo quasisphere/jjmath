@@ -22,103 +22,6 @@ noncomputable section
 /--
 %%handwave
 name:
-  A circle primitive on a punctured surface from an exterior component
-statement:
-  Let \(E\) be a smooth relatively compact exhaustion of a Riemann surface,
-  let \(K\) be compact, let \(V\) be an exterior component of \(X\setminus K\),
-  and let \(p\in K\).  There is a smooth map \(P:X\setminus\{p\}\to S^1\)
-  whose canonical logarithmic one-form admits \(P\) as a circle primitive.
-proof:
-  Choose a nested sequence of exterior components along the exhaustion and a
-  point in each one.  Connect consecutive points by controlled atlas-vortex
-  paths inside the corresponding component, and connect \(p\) to the first
-  point.  Every compact part of the punctured surface eventually misses these
-  components, so the vortex telescope stabilizes locally.  Apply the locally
-  escaping telescope theorem to obtain the smooth unit phase and its circle
-  primitive.
--/
-theorem IsExteriorComponent.exists_circlePrimitive_on_puncturedSurface
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    (E : SmoothRelativelyCompactExhaustion X)
-    {K V : Set X} (hKcompact : IsCompact K)
-    (hV : IsExteriorComponent K V) {p : X} (hpK : p ∈ K) :
-    ∃ (P : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
-          (atlasVortexInitialOpen p) ℂ ∞)
-        (hP : ∀ z : atlasVortexInitialOpen p, ‖P z‖ = 1),
-      Nonempty (JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-        (smoothUnitPhaseOneForm SurfaceRealModel P hP)) := by
-  classical
-  rcases hV.exists_nested_sequence_along_smoothExhaustion E hKcompact with
-    ⟨N, U, hK, hUexterior, _hU0V, hUsucc⟩
-  have hUanti : Antitone U := antitone_nat_of_succ_le hUsucc
-  let W : ℕ → TopologicalSpace.Opens X := fun n =>
-    ⟨U n, (hUexterior n).isComponentOf.isOpen_of_isOpen
-      isClosed_closure.isOpen_compl⟩
-  let v : ℕ → X := fun n => Classical.choose (hUexterior n).nonempty
-  have hv : ∀ n, v n ∈ U n := fun n =>
-    Classical.choose_spec (hUexterior n).nonempty
-  have hchain : ∀ n,
-      AtlasVortexChainJoinedIn (W n) (v n) (v (n + 1)) := by
-    intro n
-    letI : ConnectedSpace (W n) := isConnected_iff_connectedSpace.mp (by
-      simpa [W] using (hUexterior n).isComponentOf.isConnected)
-    exact atlasVortexChainJoinedIn_all (W n)
-      ⟨v n, by simpa [W] using hv n⟩
-      ⟨v (n + 1), by
-        simpa [W] using hUanti (Nat.le_succ n) (hv (n + 1))⟩
-  let path : ∀ n,
-      ControlledAtlasVortexPath (W n) (v n) (v (n + 1)) := fun n =>
-    Classical.choice
-      (ControlledAtlasVortexPath.nonempty_of_joined
-        (by simpa [W] using hv n) (hchain n))
-  have hpU0 : p ∉ U 0 := by
-    intro hpU
-    exact (hUexterior 0).subset_compl hpU (hK hpK)
-  have hpv0 : p ≠ v 0 := by
-    intro hpv
-    apply hpU0
-    rw [hpv]
-    exact hv 0
-  let A : TopologicalSpace.Opens X := ⊤
-  letI : ConnectedSpace A := isConnected_iff_connectedSpace.mp (by
-    simpa [A] using (isConnected_univ : IsConnected (Set.univ : Set X)))
-  have hinitialJoined : AtlasVortexChainJoinedIn A p (v 0) :=
-    atlasVortexChainJoinedIn_all A
-      ⟨p, by simp [A]⟩ ⟨v 0, by simp [A]⟩
-  let initialPath : ControlledAtlasVortexPath A p (v 0) :=
-    Classical.choice
-      (ControlledAtlasVortexPath.nonempty_of_joined (by simp [A]) hinitialJoined)
-  let T₀ : AtlasVortexTransportData X p (v 0) :=
-    Classical.choice (initialPath.nonempty_transport hpv0)
-  have hpW : ∀ n, p ∉ W n := by
-    intro n hpUn
-    apply hpU0
-    exact hUanti (Nat.zero_le n) (by simpa [W] using hpUn)
-  have hescape : ∀ z : atlasVortexInitialOpen p,
-      ∃ n₀ : ℕ, ∃ O : TopologicalSpace.Opens (atlasVortexInitialOpen p),
-        z ∈ O ∧ ∀ n ≥ n₀, ∀ y ∈ O, (y : X) ∉ W n := by
-    intro z
-    rcases E.exhausts (z : X) with ⟨k, hzk⟩
-    let O : TopologicalSpace.Opens (atlasVortexInitialOpen p) :=
-      ⟨{y | (y : X) ∈ (E.domain k).carrier},
-        (E.domain k).isOpen.preimage
-          (continuous_subtype_val : Continuous
-            (fun y : atlasVortexInitialOpen p ↦ (y : X)))⟩
-    refine ⟨k, O, hzk, ?_⟩
-    intro n hkn y hyO hyW
-    have hindex : k ≤ N + n := hkn.trans (Nat.le_add_left n N)
-    have hyLate : (y : X) ∈ (E.domain (N + n)).carrier :=
-      smoothRelativelyCompactExhaustion_carrier_mono E hindex hyO
-    have hyClosure : (y : X) ∈ closure (E.domain (N + n)).carrier :=
-      subset_closure hyLate
-    exact (hUexterior n).subset_compl (by simpa [W] using hyW) hyClosure
-  exact exists_circlePrimitive_of_locallyEscaping_controlledAtlasVortexPaths
-    p W v path T₀ hpW hescape
-
-/--
-%%handwave
-name:
   Escaping circle primitive preserving an initial vortex transport
 statement:
   In the preceding setting, let \(q\in V\) and let \(T\) be an atlas-vortex
@@ -360,51 +263,6 @@ structure PuncturedAtlasVortexCirclePrimitiveData
 
 namespace PuncturedAtlasVortexCirclePrimitiveData
 
-/-- Choose the canonical circle primitive carried in the data. -/
-noncomputable def chosenPrimitive
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-      (smoothUnitPhaseOneForm SurfaceRealModel D.phase D.norm_phase) :=
-  Classical.choice D.primitive
-
-/-- The logarithmic form of the transported vortex phase, as a closed
-one-form. -/
-noncomputable def closedOneForm
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    JJMath.Manifold.DeRhamClosedForms (I := SurfaceRealModel)
-      (M := atlasVortexInitialOpen p) (A := ℝ) 1 :=
-  D.chosenPrimitive.toClosedForm SurfaceRealModel
-
-/-- Normalize the transported vortex form so that multiplying it by
-`2 * pi` recovers the form represented by the unit phase. -/
-noncomputable def normalizedClosedOneForm
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    JJMath.Manifold.DeRhamClosedForms (I := SurfaceRealModel)
-      (M := atlasVortexInitialOpen p) (A := ℝ) 1 :=
-  (2 * Real.pi)⁻¹ • D.closedOneForm
-
-/-- The normalized vortex class has the required `2 * pi` circle
-primitive. -/
-noncomputable def normalizedCirclePrimitive
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [ComplexOneManifold X] [IsManifold SurfaceRealModel ∞ X] [T2Space X]
-    {p : X} (D : PuncturedAtlasVortexCirclePrimitiveData X p) :
-    JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-      ((2 * Real.pi) • D.normalizedClosedOneForm.1) := by
-  apply JJMath.Manifold.SmoothCirclePrimitive.congr SurfaceRealModel
-    D.chosenPrimitive
-  have htwoPi : (2 * Real.pi : ℝ) ≠ 0 := by positivity
-  change smoothUnitPhaseOneForm SurfaceRealModel D.phase D.norm_phase =
-    (2 * Real.pi) • ((2 * Real.pi)⁻¹ •
-      smoothUnitPhaseOneForm SurfaceRealModel D.phase D.norm_phase)
-  rw [smul_smul, mul_inv_cancel₀ htwoPi, one_smul]
-
 end PuncturedAtlasVortexCirclePrimitiveData
 
 /--
@@ -445,27 +303,6 @@ theorem AtlasVortexPairData.exists_puncturedCirclePrimitiveData
 /--
 %%handwave
 name:
-  Nonemptiness of punctured circle-primitive data for a prescribed vortex
-statement:
-  Every prescribed atlas vortex on a connected noncompact Riemann surface,
-  together with a smooth exhaustion, determines at least one punctured
-  circle-primitive package at its pole.
-proof:
-  Forget the chart-equality conclusion from the packaged existence theorem.
--/
-theorem AtlasVortexPairData.puncturedCirclePrimitiveData_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    (E : SmoothRelativelyCompactExhaustion X) {p q : X}
-    (D : AtlasVortexPairData X p q) :
-    Nonempty (PuncturedAtlasVortexCirclePrimitiveData X p) := by
-  rcases D.exists_puncturedCirclePrimitiveData E with ⟨A, _⟩
-  exact ⟨A⟩
-
-/--
-%%handwave
-name:
   Punctured vortex data based in a prescribed coordinate chart
 statement:
   Let \(e\) be a surface coordinate chart containing \(p\).  For any smooth
@@ -489,28 +326,6 @@ theorem exists_puncturedAtlasVortexCirclePrimitiveData_from_chart
   rcases D.exists_puncturedCirclePrimitiveData E with ⟨A, hAchart⟩
   refine ⟨A, ?_⟩
   exact hAchart.trans hDchart
-
-/--
-%%handwave
-name:
-  Existence of punctured atlas-vortex circle-primitive data
-statement:
-  For every point \(p\) of a connected noncompact Riemann surface equipped
-  with a smooth exhaustion, there exists punctured circle-primitive data: a
-  smooth unit phase on \(X\setminus\{p\}\) with a circle primitive and an
-  unchanged compact atlas-vortex germ at \(p\).
-proof:
-  Choose an atlas vortex with pole at \(p\), then apply the nonemptiness theorem
-  for the transported punctured circle-primitive package.
--/
-theorem puncturedAtlasVortexCirclePrimitiveData_nonempty
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] [IsManifold SurfaceRealModel ∞ X]
-    [NoncompactSpace X]
-    (E : SmoothRelativelyCompactExhaustion X) (p : X) :
-    Nonempty (PuncturedAtlasVortexCirclePrimitiveData X p) := by
-  rcases exists_atlasVortexPairData_from p with ⟨q, ⟨D⟩⟩
-  exact D.puncturedCirclePrimitiveData_nonempty E
 
 end
 

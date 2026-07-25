@@ -22,7 +22,12 @@ noncomputable section
 
 variable {X : Type} [TopologicalSpace X]
 
-/-- The ambient carrier of the connected frontier component through a point. -/
+/--
+%%handwave
+name: The ambient carrier of the connected frontier component through a point
+statement:
+  The ambient carrier of the connected frontier component through a point.
+-/
 def frontierComponentCarrier (U : Set X) (x₀ : frontier U) : Set X :=
   Subtype.val '' connectedComponent x₀
 
@@ -68,23 +73,6 @@ theorem frontierComponentCarrier_isCompact
 /--
 %%handwave
 name:
-  Closedness of a connected boundary component
-statement:
-  If \(X\) is Hausdorff and \(\partial U\) is compact, then each connected
-  component of \(\partial U\), regarded as a subset of \(X\), is closed.
-proof:
-  The component is compact by compactness of connected boundary components,
-  and compact subsets of a Hausdorff space are closed.
--/
-theorem frontierComponentCarrier_isClosed
-    [T2Space X] {U : Set X} (hfrontier : IsCompact (frontier U))
-    (x₀ : frontier U) :
-    IsClosed (frontierComponentCarrier U x₀) :=
-  (frontierComponentCarrier_isCompact hfrontier x₀).isClosed
-
-/--
-%%handwave
-name:
   Ambient open isolation of a locally connected boundary component
 statement:
   If \(X\) is Hausdorff and \(\partial U\) is locally connected, then for each
@@ -125,8 +113,21 @@ structure SignedDefiningChart [ChartedSpace ℂ X]
   neighborhood : Set X
   neighborhood_isOpen : IsOpen neighborhood
   point_mem : (p : X) ∈ neighborhood
-  definingFunction : X → ℝ
-  definingFunction_continuous : ContinuousOn definingFunction neighborhood
+  «definingFunction» : X → ℝ
+  /--
+  %%handwave
+  name: Continuity of a signed local defining function
+  statement:
+    The signed defining function is continuous on its chosen neighborhood.
+  -/
+  «definingFunction_continuous» : ContinuousOn definingFunction neighborhood
+  /--
+  %%handwave
+  name: Negative side of a signed local defining function
+  statement:
+    Within the chosen neighborhood, a point lies in the domain exactly when
+    its signed defining-function value is negative.
+  -/
   domain_iff_neg : ∀ x ∈ neighborhood,
     x ∈ D.carrier ↔ definingFunction x < 0
   frontier_iff_zero : ∀ x ∈ neighborhood,
@@ -192,8 +193,8 @@ theorem exists_signedDefiningChart_within
     neighborhood := W
     neighborhood_isOpen := hWopen
     point_mem := hpW
-    definingFunction := f
-    definingFunction_continuous := hf_continuous
+    «definingFunction» := f
+    «definingFunction_continuous» := hf_continuous
     domain_iff_neg := ?_
     frontier_iff_zero := ?_ }, ?_⟩
   · intro x hxW
@@ -216,6 +217,13 @@ structure SignedFrontierComponentNeighborhood [ChartedSpace ℂ X]
     neighborhood ∩ frontier D.carrier = frontierComponentCarrier D.carrier p
   coordinate : X → ℝ
   coordinate_continuous : ContinuousOn coordinate neighborhood
+  /--
+  %%handwave
+  name: Negative side of a signed boundary-component coordinate
+  statement:
+    Within the component neighborhood, a point lies in the domain exactly
+    when its signed coordinate is negative.
+  -/
   domain_iff_neg : ∀ x ∈ neighborhood,
     x ∈ D.carrier ↔ coordinate x < 0
   frontier_iff_zero : ∀ x ∈ neighborhood,

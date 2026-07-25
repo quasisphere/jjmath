@@ -93,18 +93,36 @@ namespace HyperbolicLocalChart
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
 
-/-- The local map is holomorphic on its domain. -/
+/-- The local map is holomorphic on its domain.
+%%handwave
+name:
+  Holomorphicity of a hyperbolic local chart
+statement:
+  A local chart $U$ is holomorphic on its domain when its complex coordinate expression is differentiable at every point of its coordinate domain.
+-/
 def holomorphic_on_domain (U : HyperbolicLocalChart X g) : Prop :=
   ∀ z, z ∈ U.local_isometry.coordinateDomain →
     DifferentiableAt ℂ (fun w : ℂ ↦ (U.local_isometry.localMap w : ℂ)) z
 
-/-- The local map is a local diffeomorphism/local biholomorphism on its domain. -/
+/-- The local map is a local diffeomorphism/local biholomorphism on its domain.
+%%handwave
+name:
+  Local biholomorphism property of a hyperbolic chart
+statement:
+  A local chart $U$ is locally biholomorphic when the derivative of its coordinate expression is nonzero at the coordinate of every point in its surface domain.
+-/
 def local_biholomorph_on_domain (U : HyperbolicLocalChart X g) : Prop :=
   ∀ x, x ∈ U.domain →
     deriv (fun z : ℂ ↦ (U.local_isometry.localMap z : ℂ))
       (U.local_isometry.coordinate x) ≠ 0
 
-/-- The local map pulls back the Poincare metric to `g` on its domain. -/
+/-- The local map pulls back the Poincare metric to `g` on its domain.
+%%handwave
+name:
+  Metric pullback property of a hyperbolic chart
+statement:
+  A local map $f$ pulls back the Poincaré metric to $g$ when the squared density of $g$ in the chosen coordinate is $|f'|^2/(\operatorname{Im}f)^2$ throughout the chart domain.
+-/
 def pulls_back_metric_on_domain (U : HyperbolicLocalChart X g) : Prop :=
   ∀ x, x ∈ U.domain →
     g.toConformalMetric.densitySqInChart U.local_isometry.chart
@@ -114,7 +132,13 @@ def pulls_back_metric_on_domain (U : HyperbolicLocalChart X g) : Prop :=
             (U.local_isometry.coordinate x)) /
         ((U.toUpperHalfPlane x : ℂ).im ^ 2)
 
-/-- The coordinate expression for a local hyperbolic chart. -/
+/-- The coordinate expression for a local hyperbolic chart.
+%%handwave
+name:
+  Coordinate map of a hyperbolic local chart
+statement:
+  The coordinate map of a hyperbolic local chart is its stored holomorphic function from the complex coordinate domain to $\mathbb H$.
+-/
 def coordinateLocalMap (U : HyperbolicLocalChart X g) : ℂ → ℍ :=
   U.local_isometry.localMap
 
@@ -451,6 +475,12 @@ Two local hyperbolic charts have real-Mobius transition on their overlap.
 
 For now we use an `SL(2, ℝ)` representative because mathlib has its action on
 `ℍ`; quotienting gives the corresponding `PSL(2, ℝ)` transition.
+
+%%handwave
+name:
+  Real Möbius transition between hyperbolic charts
+statement:
+  Two local hyperbolic charts have a real Möbius transition when there is one $A\in\mathrm{PSL}_2(\mathbb R)$ such that $V(x)=A\cdot U(x)$ at every point of their overlap.
 -/
 def HasRealMobiusTransition (U V : HyperbolicLocalChart X g) : Prop :=
   ∃ A : RealMobiusRepresentative,
@@ -486,6 +516,12 @@ structure LocalRealMobiusTransitionData (U V : HyperbolicLocalChart X g) (x : X)
 Two hyperbolic local charts have local real-Mobius transitions if every point
 of their overlap has a neighborhood on which the transition is represented by
 some real Mobius transformation.
+
+%%handwave
+name:
+  Locally real Möbius transition between hyperbolic charts
+statement:
+  Two local hyperbolic charts have locally real Möbius transition when every point of their overlap has an open neighborhood on which $V=A\cdot U$ for some $A\in\mathrm{PSL}_2(\mathbb R)$.
 -/
 def HasLocalRealMobiusTransition (U V : HyperbolicLocalChart X g) : Prop :=
   ∀ x, x ∈ U.domain ∩ V.domain →
@@ -558,61 +594,6 @@ theorem hasLocalRealMobiusTransition_self (U : HyperbolicLocalChart X g) :
 
 end HyperbolicLocalChart
 
-/--
-An atlas of local upper-half-plane models for a hyperbolic metric.
-
-This is the formal home for the local theorem that curvature `-1` conformal
-metrics are locally isometric to the Poincare half-plane.
--/
-structure HyperbolicLocalModelAtlas (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    (g : HyperbolicMetric X) where
-  /-- A chosen local hyperbolic chart near each point. -/
-  chartAt : X → HyperbolicLocalChart X g
-  /-- The chosen chart at `x` is defined at `x`. -/
-  mem_chartAt_domain : ∀ x, x ∈ (chartAt x).domain
-  /-- Any two chosen charts differ by a real Mobius transformation on overlaps. -/
-  transition_realMobius :
-    ∀ x y, (chartAt x).HasRealMobiusTransition (chartAt y)
-
-namespace HyperbolicLocalModelAtlas
-
-variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-
-/-- The local model chart centered at a point. -/
-def chartNear (A : HyperbolicLocalModelAtlas X g) (x : X) : HyperbolicLocalChart X g :=
-  A.chartAt x
-
-/--
-%%handwave
-name:
-  The center belongs to its selected local-model chart
-statement:
-  For every $x\in X$, the local upper-half-plane chart selected near $x$ by a
-  hyperbolic local-model atlas is defined at $x$.
-proof:
-  This membership is part of the defining covering property of the atlas.
--/
-theorem mem_chartNear_domain (A : HyperbolicLocalModelAtlas X g) (x : X) :
-    x ∈ (A.chartNear x).domain :=
-  A.mem_chartAt_domain x
-
-/--
-%%handwave
-name:
-  Selected local-model charts have real Möbius transitions
-statement:
-  For any $x,y\in X$, the two upper-half-plane charts selected near $x$ and
-  $y$ by a hyperbolic local-model atlas differ on their overlap by a single
-  element of $\mathrm{PSL}_2(\mathbb R)$.
-proof:
-  This is the transition property required in the definition of the atlas,
-  applied to the selected charts at $x$ and $y$.
--/
-theorem chartNear_transition_realMobius (A : HyperbolicLocalModelAtlas X g) (x y : X) :
-    (A.chartNear x).HasRealMobiusTransition (A.chartNear y) :=
-  A.transition_realMobius x y
-
-end HyperbolicLocalModelAtlas
 
 /--
 An atlas of local upper-half-plane models whose overlaps are represented
@@ -637,283 +618,19 @@ namespace HyperbolicLocalModelLocalTransitionAtlas
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
 
-/-- The local model chart centered at a point. -/
-def chartNear (A : HyperbolicLocalModelLocalTransitionAtlas X g) (x : X) :
-    HyperbolicLocalChart X g :=
-  A.chartAt x
-
-/--
-%%handwave
-name:
-  The center belongs to its selected chart with local transitions
-statement:
-  For every $x\in X$, the local upper-half-plane chart selected near $x$ by
-  an atlas with local real Möbius transitions is defined at $x$.
-proof:
-  This is the defining covering condition for the selected chart at $x$.
--/
-theorem mem_chartNear_domain (A : HyperbolicLocalModelLocalTransitionAtlas X g) (x : X) :
-    x ∈ (A.chartNear x).domain :=
-  A.mem_chartAt_domain x
-
-/--
-%%handwave
-name:
-  Selected charts have locally real Möbius transitions
-statement:
-  For any $x,y\in X$ and every point $p$ in the overlap of the local
-  upper-half-plane charts selected near $x$ and $y$, some neighborhood of $p$
-  carries an element $A\in\mathrm{PSL}_2(\mathbb R)$ for which
-  $U_y=A\cdot U_x$.
-proof:
-  Apply the local transition property of the atlas to its selected charts at
-  $x$ and $y$.
--/
-theorem chartNear_transition_localRealMobius
-    (A : HyperbolicLocalModelLocalTransitionAtlas X g) (x y : X) :
-    (A.chartNear x).HasLocalRealMobiusTransition (A.chartNear y) :=
-  A.transition_localRealMobius x y
-
 end HyperbolicLocalModelLocalTransitionAtlas
-
-namespace HyperbolicLocalModelAtlas
-
-variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] {g : HyperbolicMetric X}
-
-/--
-Forget a global overlap representative to the local transition data it
-induces at each point of the overlap.
--/
-def toLocalTransitionAtlas (A : HyperbolicLocalModelAtlas X g) :
-    HyperbolicLocalModelLocalTransitionAtlas X g where
-  chartAt := A.chartAt
-  mem_chartAt_domain := A.mem_chartAt_domain
-  transition_localRealMobius := fun x y ↦
-    HyperbolicLocalChart.hasLocalRealMobiusTransition_of_hasRealMobiusTransition
-      (A.transition_realMobius x y)
-
-end HyperbolicLocalModelAtlas
-
-/--
-Concrete local agreement boundary for a continued developing map and a chosen
-local upper-half-plane atlas.
-
-Around every point of the cover, the continued map agrees on a neighborhood
-with one local model after postcomposition by a real Mobius representative.
--/
-def HyperbolicDevelopingAgreesWithLocalModels
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {x₀ : X} {g : HyperbolicMetric X}
-    (localModels : HyperbolicLocalModelAtlas X g)
-    (cover : SimplyConnectedCover X x₀) (dev : cover.total → ℍ) : Prop :=
-  ∀ y, ∃ U : Set cover.total,
-    IsOpen U ∧ y ∈ U ∧
-      ∃ (x : X) (A : RealMobiusRepresentative),
-        (∀ y', y' ∈ U → cover.projection y' ∈ (localModels.chartAt x).domain) ∧
-          ∀ y', y' ∈ U →
-            dev y' =
-              realMobiusRepresentativeAction A
-                ((localModels.chartAt x).toUpperHalfPlane (cover.projection y'))
-
-namespace HyperbolicDevelopingAgreesWithLocalModels
-
-variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelAtlas X g}
-    {cover : SimplyConnectedCover X x₀} {dev : cover.total → ℍ}
-
-/-- Local agreement with local hyperbolic models forces pointwise continuity of `dev`.
-
-%%handwave
-name:
-  Local model agreement implies continuity at each cover point
-statement:
-  Let $\pi:\widetilde X\to X$ be a simply connected cover. Suppose a map
-  $D:\widetilde X\to\mathbb H$ agrees near every $y\in\widetilde X$ with
-  $A\cdot U\circ\pi$ for some local hyperbolic chart $U$ and some
-  $A\in\mathrm{PSL}_2(\mathbb R)$. Then $D$ is continuous at $y$.
-proof:
-  The projection $\pi$ is continuous, $U$ is continuous at $\pi(y)$, and real
-  Möbius postcomposition is continuous. Thus the local comparison map
-  $A\cdot U\circ\pi$ is continuous at $y$; agreement with $D$ on a
-  neighborhood transfers this continuity to $D$.
--/
-theorem continuousAt
-    (h : HyperbolicDevelopingAgreesWithLocalModels localModels cover dev)
-    (y : cover.total) :
-    ContinuousAt dev y := by
-  rcases h y with ⟨U, hUopen, hyU, x, A, hdomain, hagree⟩
-  let localModelFun : cover.total → ℍ := fun y' =>
-    realMobiusRepresentativeAction A
-      ((localModels.chartAt x).toUpperHalfPlane (cover.projection y'))
-  have hy_domain : cover.projection y ∈ (localModels.chartAt x).domain :=
-    hdomain y hyU
-  have hpost :
-      ContinuousAt
-        (fun x' : X =>
-          realMobiusRepresentativeAction A
-            ((localModels.chartAt x).toUpperHalfPlane x'))
-        (cover.projection y) :=
-    (localModels.chartAt x).realMobius_postcomp_continuousAt A hy_domain
-  have hlocal : ContinuousAt localModelFun y := by
-    exact hpost.comp (cover.projection_continuousAt y)
-  have heq : dev =ᶠ[nhds y] localModelFun := by
-    filter_upwards [hUopen.mem_nhds hyU] with y' hy'
-    exact hagree y' hy'
-  exact hlocal.congr_of_eventuallyEq heq
-
-/-- Local agreement with local hyperbolic models forces continuity of `dev`.
-
-%%handwave
-name:
-  Local model agreement implies continuity of the developing map
-statement:
-  Under the preceding local agreement hypothesis, the map
-  $D:\widetilde X\to\mathbb H$ is continuous on the whole simply connected
-  cover.
-proof:
-  [The map is continuous at every point of the cover](lean:JJMath.HyperbolicDevelopingAgreesWithLocalModels.continuousAt), and pointwise continuity is equivalent to continuity.
--/
-theorem continuous
-    (h : HyperbolicDevelopingAgreesWithLocalModels localModels cover dev) :
-    Continuous dev := by
-  rw [continuous_iff_continuousAt]
-  intro y
-  exact h.continuousAt y
-
-end HyperbolicDevelopingAgreesWithLocalModels
-
-/--
-The analytic-continuation package that turns local hyperbolic charts into a
-single-valued developing map on a simply connected cover.
--/
-structure HyperbolicDevelopingContinuationData (X : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [RiemannSurface X] (x₀ : X)
-    (g : HyperbolicMetric X) where
-  /-- Local upper-half-plane models for the metric. -/
-  localModels : HyperbolicLocalModelAtlas X g
-  /-- The simply connected cover on which analytic continuation is single-valued. -/
-  cover : SimplyConnectedCover X x₀
-  /-- The analytically continued developing map. -/
-  dev : cover.total → ℍ
-  /-- The pullback of `g` to the cover. -/
-  coverMetric : ConformalMetric cover.total
-  /-- The cover metric is the pullback of the base metric along the projection. -/
-  coverMetric_pullback :
-    PullsBackMetric cover.projection g.toConformalMetric coverMetric
-  /-- The developing map has holomorphic local-biholomorphic regularity on the cover. -/
-  dev_regular : HyperbolicDevelopingMapRegularity cover dev
-  /-- Lifted real holonomy obtained by monodromy of the local models. -/
-  holonomyLift : RealHolonomyLift X x₀
-  /-- Pullback identity: `dev^* g_ℍ = projection^* g`. -/
-  pullback_metric :
-    PullsBackMetric dev upperHalfPlaneConformalMetric coverMetric
-  /-- Equivariance with respect to deck transformations and lifted holonomy. -/
-  equivariant :
-    ∀ γ y, dev (cover.deckAction γ y) = holonomyLift.upperHalfPlaneAction γ (dev y)
-  /-- The developing map locally agrees with analytic continuation of the local models. -/
-  agrees_with_local_models :
-    HyperbolicDevelopingAgreesWithLocalModels localModels cover dev
 
 namespace HyperbolicDevelopingContinuationData
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {x₀ : X} {g : HyperbolicMetric X}
 
-/-- Continuation data supplies continuity of the continued developing map.
-
-%%handwave
-name:
-  Continuity of an analytically continued hyperbolic developing map
-statement:
-  The map $D:\widetilde X\to\mathbb H$ obtained by analytic continuation of
-  local hyperbolic charts on a simply connected cover is continuous.
-proof:
-  The continuation data records that $D$ is holomorphic and locally
-  biholomorphic; its regularity condition therefore includes continuity.
--/
-theorem dev_continuous (D : HyperbolicDevelopingContinuationData X x₀ g) :
-    Continuous D.dev :=
-  D.dev_regular.continuous
-
-/-- Continuation data supplies chartwise holomorphicity of the continued developing map.
-
-%%handwave
-name:
-  Holomorphicity of an analytically continued hyperbolic developing map
-statement:
-  If $D:\widetilde X\to\mathbb H$ is obtained by analytic continuation of
-  local hyperbolic charts, then in every complex chart on $\widetilde X$ its
-  coordinate expression is holomorphic.
-proof:
-  This is the holomorphic component of the recorded regularity of the
-  continued developing map.
--/
-theorem dev_holomorphic (D : HyperbolicDevelopingContinuationData X x₀ g) :
-    HyperbolicDevelopingMapHolomorphic D.cover D.dev :=
-  D.dev_regular.holomorphic
-
-/-- Forget continuation provenance and keep the lifted developing map. -/
-def toLiftedHyperbolicDevelopingMap
-    (D : HyperbolicDevelopingContinuationData X x₀ g) :
-    LiftedHyperbolicDevelopingMap X x₀ g where
-  cover := D.cover
-  dev := D.dev
-  coverMetric := D.coverMetric
-  coverMetric_pullback := D.coverMetric_pullback
-  dev_regular := D.dev_regular
-  holonomyLift := D.holonomyLift
-  pullback_metric := D.pullback_metric
-  equivariant := D.equivariant
-
 end HyperbolicDevelopingContinuationData
-
-/--
-The analytic-continuation step for a fixed local-model atlas.
-
-This isolates the global monodromy theorem from the local PDE/formula work:
-given local maps to `ℍ` with real-Mobius overlaps, analytic continuation on the
-simply connected cover produces continuation data.
--/
-structure HyperbolicLocalModelContinuationPipeline (X : Type) [TopologicalSpace X]
-    [ChartedSpace ℂ X] [RiemannSurface X] (x₀ : X)
-    (g : HyperbolicMetric X) where
-  /-- The local upper-half-plane models to be analytically continued. -/
-  localModels : HyperbolicLocalModelAtlas X g
-  /-- The resulting continuation data on the simply connected cover. -/
-  continuationData : HyperbolicDevelopingContinuationData X x₀ g
-  /-- The continuation data is built from this local-model atlas. -/
-  continuation_uses_localModels :
-    continuationData.localModels = localModels
 
 namespace HyperbolicLocalModelContinuationPipeline
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {x₀ : X} {g : HyperbolicMetric X}
-
-/-- Forget the continuation package and keep only the local models. -/
-def toHyperbolicLocalModelAtlas
-    (P : HyperbolicLocalModelContinuationPipeline X x₀ g) :
-    HyperbolicLocalModelAtlas X g :=
-  P.localModels
-
-/-- Forget the local provenance and keep the continuation data. -/
-def toHyperbolicDevelopingContinuationData
-    (P : HyperbolicLocalModelContinuationPipeline X x₀ g) :
-    HyperbolicDevelopingContinuationData X x₀ g :=
-  P.continuationData
-
-/-- The lifted developing map produced by analytic continuation of local models. -/
-def toLiftedHyperbolicDevelopingMap
-    (P : HyperbolicLocalModelContinuationPipeline X x₀ g) :
-    LiftedHyperbolicDevelopingMap X x₀ g :=
-  P.continuationData.toLiftedHyperbolicDevelopingMap
-
-/-- The ordinary `PSL(2, ℝ)` developing map produced by analytic continuation. -/
-def toHyperbolicDevelopingMap
-    (P : HyperbolicLocalModelContinuationPipeline X x₀ g) :
-    HyperbolicDevelopingMap X x₀ g :=
-  P.toLiftedHyperbolicDevelopingMap.toHyperbolicDevelopingMap
 
 end HyperbolicLocalModelContinuationPipeline
 
@@ -921,166 +638,6 @@ namespace HyperbolicMetric
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
-
-/--
-Target local theorem: a hyperbolic metric admits an atlas of local isometries to
-the upper half-plane.
--/
-def HasUpperHalfPlaneLocalModels (g : HyperbolicMetric X) : Prop :=
-  Nonempty (HyperbolicLocalModelAtlas X g)
-
-/--
-Target local theorem with the natural componentwise overlap condition: a
-hyperbolic metric admits local isometries to `ℍ` whose transition maps are
-locally real Mobius.
--/
-def HasUpperHalfPlaneLocalTransitionModels (g : HyperbolicMetric X) : Prop :=
-  Nonempty (HyperbolicLocalModelLocalTransitionAtlas X g)
-
-omit [RiemannSurface X] in
-/-- Global real-Mobius overlap data implies the local-transition version.
-
-%%handwave
-name:
-  Global real Möbius overlaps imply locally real Möbius overlaps
-statement:
-  If a hyperbolic metric $g$ has local upper-half-plane charts such that every
-  pair differs on its entire overlap by one element of
-  $\mathrm{PSL}_2(\mathbb R)$, then $g$ also has local upper-half-plane charts
-  whose transition is real Möbius on a neighborhood of each overlap point.
-proof:
-  Keep the same local charts and [restrict each global real Möbius transition to a neighborhood of the chosen overlap point](lean:JJMath.HyperbolicLocalChart.hasLocalRealMobiusTransition_of_hasRealMobiusTransition).
--/
-theorem hasUpperHalfPlaneLocalTransitionModels_of_hasUpperHalfPlaneLocalModels
-    {g : HyperbolicMetric X}
-    (h : g.HasUpperHalfPlaneLocalModels) :
-    g.HasUpperHalfPlaneLocalTransitionModels :=
-  h.elim fun A ↦ ⟨A.toLocalTransitionAtlas⟩
-
-/--
-Target continuation theorem: the local upper-half-plane models analytically
-continue on the universal cover and produce lifted holonomy.
--/
-def HasDevelopingContinuationData (x₀ : X) (g : HyperbolicMetric X) : Prop :=
-  Nonempty (HyperbolicDevelopingContinuationData X x₀ g)
-
-/--
-Target analytic-continuation theorem: local upper-half-plane models continue on
-the simply connected cover and produce monodromy.
--/
-def HasLocalModelContinuationPipeline (x₀ : X) (g : HyperbolicMetric X) : Prop :=
-  Nonempty (HyperbolicLocalModelContinuationPipeline X x₀ g)
-
-/--
-%%handwave
-name:
-  Analytic continuation begins with local upper-half-plane models
-statement:
-  If a hyperbolic metric $g$ admits analytic continuation of a chosen atlas of
-  local upper-half-plane isometries, then $g$ admits an atlas of local
-  upper-half-plane isometries with real Möbius transition maps.
-proof:
-  Retain the local-model atlas used as the input to the continuation.
--/
-theorem hasUpperHalfPlaneLocalModels_of_hasLocalModelContinuationPipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasLocalModelContinuationPipeline x₀) :
-    g.HasUpperHalfPlaneLocalModels :=
-  h.elim fun P ↦ ⟨P.toHyperbolicLocalModelAtlas⟩
-
-/--
-%%handwave
-name:
-  A local-model continuation yields a continued developing map
-statement:
-  If the local upper-half-plane models of $g$ analytically continue from a
-  basepoint $x_0$, then there exist a simply connected cover
-  $\pi:\widetilde X\to X$, a continued map $D:\widetilde X\to\mathbb H$, real
-  lifted holonomy, the pullback identities for $g$, and equivariance of $D$.
-proof:
-  Take the continuation data produced by the assumed analytic continuation.
--/
-theorem hasDevelopingContinuationData_of_hasLocalModelContinuationPipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasLocalModelContinuationPipeline x₀) :
-    g.HasDevelopingContinuationData x₀ :=
-  h.elim fun P ↦ ⟨P.toHyperbolicDevelopingContinuationData⟩
-
-/--
-%%handwave
-name:
-  Analytic continuation produces a lifted hyperbolic developing map
-statement:
-  If continuation from $x_0$ produces a map
-  $D:\widetilde X\to\mathbb H$ with lifted real holonomy, equivariance, and
-  $D^*g_{\mathbb H}=\pi^*g$, then $g$ admits a lifted hyperbolic developing map
-  based at $x_0$.
-proof:
-  Retain the cover, map, pulled-back metric, regularity, lifted holonomy,
-  pullback identity, and equivariance supplied by the continuation.
--/
-theorem admitsLiftedDevelopingMap_of_hasDevelopingContinuationData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasDevelopingContinuationData x₀) :
-    g.AdmitsLiftedDevelopingMap x₀ :=
-  h.elim fun D ↦ ⟨D.toLiftedHyperbolicDevelopingMap⟩
-
-/--
-%%handwave
-name:
-  Analytic continuation produces a real-projective developing map
-statement:
-  If the local hyperbolic charts of $g$ analytically continue from $x_0$ with
-  lifted real holonomy, then $g$ admits an equivariant developing map
-  $D:\widetilde X\to\mathbb H$ with holonomy in
-  $\mathrm{PSL}_2(\mathbb R)$ and $D^*g_{\mathbb H}=\pi^*g$.
-proof:
-  [The continuation gives a developing map with lifted real holonomy](lean:JJMath.HyperbolicMetric.admitsLiftedDevelopingMap_of_hasDevelopingContinuationData); project that holonomy to $\mathrm{PSL}_2(\mathbb R)$ and forget the lift.
--/
-theorem admitsDevelopingMap_of_hasDevelopingContinuationData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasDevelopingContinuationData x₀) :
-    g.AdmitsDevelopingMap x₀ :=
-  admitsDevelopingMap_of_admitsLiftedDevelopingMap
-    (admitsLiftedDevelopingMap_of_hasDevelopingContinuationData h)
-
-/--
-%%handwave
-name:
-  Continued local models yield a developing map with lifted holonomy
-statement:
-  If an atlas of local upper-half-plane isometries for $g$ analytically
-  continues from $x_0$, then $g$ admits a developing map on a simply connected
-  cover with lifted $\mathrm{SL}_2(\mathbb R)$ holonomy, equivariance, and the
-  Poincaré pullback identity.
-proof:
-  [The continuation supplies a cover, continued map, lifted real holonomy, equivariance, and pullback identities](lean:JJMath.HyperbolicMetric.hasDevelopingContinuationData_of_hasLocalModelContinuationPipeline), and [such data defines a lifted hyperbolic developing map](lean:JJMath.HyperbolicMetric.admitsLiftedDevelopingMap_of_hasDevelopingContinuationData).
--/
-theorem admitsLiftedDevelopingMap_of_hasLocalModelContinuationPipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasLocalModelContinuationPipeline x₀) :
-    g.AdmitsLiftedDevelopingMap x₀ :=
-  admitsLiftedDevelopingMap_of_hasDevelopingContinuationData
-    (hasDevelopingContinuationData_of_hasLocalModelContinuationPipeline h)
-
-/--
-%%handwave
-name:
-  Continued local models yield a hyperbolic developing map
-statement:
-  If an atlas of local upper-half-plane isometries for $g$ analytically
-  continues from $x_0$, then $g$ admits an equivariant map
-  $D:\widetilde X\to\mathbb H$ with holonomy in
-  $\mathrm{PSL}_2(\mathbb R)$ and $D^*g_{\mathbb H}=\pi^*g$.
-proof:
-  [The continuation supplies a cover, continued map, lifted real holonomy, equivariance, and pullback identities](lean:JJMath.HyperbolicMetric.hasDevelopingContinuationData_of_hasLocalModelContinuationPipeline), and [forgetting the lift gives a hyperbolic developing map](lean:JJMath.HyperbolicMetric.admitsDevelopingMap_of_hasDevelopingContinuationData).
--/
-theorem admitsDevelopingMap_of_hasLocalModelContinuationPipeline
-    {x₀ : X} {g : HyperbolicMetric X}
-    (h : g.HasLocalModelContinuationPipeline x₀) :
-    g.AdmitsDevelopingMap x₀ :=
-  admitsDevelopingMap_of_hasDevelopingContinuationData
-    (hasDevelopingContinuationData_of_hasLocalModelContinuationPipeline h)
 
 end HyperbolicMetric
 

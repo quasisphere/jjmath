@@ -16,7 +16,15 @@ namespace HyperbolicMetric
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X]
 
-/-- The finite affine inclusion `ℂ ↪ ℂP¹` as an open partial homeomorphism. -/
+/-- The finite affine inclusion `ℂ ↪ ℂP¹` as an open partial homeomorphism.
+
+%%handwave
+name: The finite affine inclusion ℂ ↪ ℂP¹ as an open partial homeomorphism
+statement:
+  The inclusion $\mathbb C\hookrightarrow\mathbb{CP}^1$ identifies the
+  complex plane homeomorphically with the open finite locus
+  $\mathbb{CP}^1\setminus\{\infty\}$.
+-/
 def finiteRiemannSphereOpenPartialHomeomorph :
     OpenPartialHomeomorph ℂ RiemannSphere :=
   Topology.IsOpenEmbedding.toOpenPartialHomeomorph
@@ -40,7 +48,15 @@ namespace ProjectiveBranchConstruction
 variable {x₀ : X} {g : HyperbolicMetric X}
     (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
 
-/-- The selected finite local biholomorphic branch of the developing map at a lift. -/
+/-- The selected finite local biholomorphic branch of the developing map at a lift.
+
+%%handwave
+name: The selected finite local biholomorphic branch of the developing map at a lift
+statement:
+  At a lift $y\in\widetilde X$, choose a finite local biholomorphic branch
+  $f_y$ of the projectivized developing map in the complex coordinate
+  centered at $y$.
+-/
 def finiteBranchAt (y : D.hyperbolicDevelopingMap.cover.total) :
     OpenPartialHomeomorph ℂ ℂ :=
   Classical.choose (D.projective_regular.finite_local_biholomorphism_data y)
@@ -81,6 +97,13 @@ theorem finiteBranchAt_eq_coordinateExpression
 /--
 The base coordinate source where a cover-local section and the selected
 developing finite branch are simultaneously valid.
+
+%%handwave
+name: The base coordinate source where a cover-local section and the selected developing finite branch are simultaneously valid
+statement:
+  For the local section at $y$, define
+  $\Omega_y$ as the intersection of its coordinate source with the inverse
+  image of the domain of the selected finite branch $f_y$.
 -/
 def fixedCoordinateSource (y : D.hyperbolicDevelopingMap.cover.total) :
     Set ℂ :=
@@ -132,6 +155,12 @@ theorem projection_mem_fixedCoordinateSource
 /--
 The base-space source where the eventual projective branch chart is expressed
 in the fixed base coordinate source.
+
+%%handwave
+name: The base-space source where the eventual projective branch chart is expressed in the fixed base coordinate source
+statement:
+  Define $U_y$ as the points in the source of the selected base chart whose
+  base coordinates lie in $\Omega_y$.
 -/
 def baseChartDomain (y : D.hyperbolicDevelopingMap.cover.total) :
     Set X :=
@@ -171,7 +200,15 @@ theorem projection_mem_baseChartDomain
     S.baseComplexChart.source ∩ S.baseComplexChart ⁻¹' fixedCoordinateSource D y
   exact ⟨S.basepoint_mem_baseChart_source, projection_mem_fixedCoordinateSource D y⟩
 
-/-- The unshrunk projective branch chart associated to a lift. -/
+/-- The unshrunk projective branch chart associated to a lift.
+
+%%handwave
+name: The unshrunk projective branch chart associated to a lift
+statement:
+  The raw projective branch at $y$ is the composition of the inverse local
+  projection, the ambient complex chart at $y$, the finite developing branch
+  $f_y$, and the affine inclusion $\mathbb C\hookrightarrow\mathbb{CP}^1$.
+-/
 def rawProjectiveBranchChart
     (y : D.hyperbolicDevelopingMap.cover.total) :
     ProjectiveChart X :=
@@ -209,6 +246,12 @@ theorem projection_mem_rawProjectiveBranchChart_source
 /--
 The projective branch chart restricted to the fixed base-coordinate domain
 where its finite-coordinate expression is controlled.
+
+%%handwave
+name: The projective branch chart restricted to the fixed base-coordinate domain where its finite-coordinate expression is controlled
+statement:
+  Restrict the raw projective branch at $y$ to the open base domain $U_y$ on
+  which its finite-coordinate expression is valid.
 -/
 def projectiveBranchChart
     (y : D.hyperbolicDevelopingMap.cover.total) :
@@ -329,7 +372,15 @@ theorem projectiveBranchChart_source_mem_baseChart_source
     simpa [projectiveBranchChart, OpenPartialHomeomorph.restrOpen_source] using hx.2
   simpa [baseChartDomain] using hxDomain.1
 
-/-- The local lift attached to the restricted projective branch chart. -/
+/-- The local lift attached to the restricted projective branch chart.
+
+%%handwave
+name: The local lift attached to the restricted projective branch chart
+statement:
+  For $x$ in the restricted projective branch source at $y$, define its
+  local lift as the inverse image of $x$ under the local projection chart
+  centered at $y$.
+-/
 def projectiveBranchLift
     (y : D.hyperbolicDevelopingMap.cover.total) :
     (projectiveBranchChart D y).source →
@@ -439,7 +490,15 @@ theorem projectiveBranch_projectiveDev_continuous
   exact (projectiveBranchChart D y).continuousOn.comp_continuous
     continuous_subtype_val (fun x ↦ x.2)
 
-/-- Finite coordinate expression of the descended projective branch. -/
+/-- Finite coordinate expression of the descended projective branch.
+
+%%handwave
+name: Finite coordinate expression of the descended projective branch
+statement:
+  In the fixed base coordinate, define the finite branch by
+  $z\mapsto f_y(s_y(z))$, where $s_y$ is the coordinate expression of the
+  local cover section.
+-/
 def branchFiniteCoordinate
     (y : D.hyperbolicDevelopingMap.cover.total) : ℂ → ℂ :=
   let S := D.hyperbolicDevelopingMap.cover.localHolomorphicSection y
@@ -585,7 +644,16 @@ theorem branchFiniteCoordinate_deriv_ne_zero
   rw [hderiv]
   exact mul_ne_zero hbranchData.2.2 hsection_deriv
 
-/-- The constructed projective branch carries the required local-homeomorphism data. -/
+/-- The constructed projective branch carries the required local-homeomorphism data.
+
+%%handwave
+name: The constructed projective branch carries the required local-homeomorphism data
+statement:
+  The restricted projective branch at $y$ is represented in a compatible
+  source chart by a holomorphic function with nonzero derivative, agrees
+  with the projectivized developing map along its local lift, and is therefore
+  a local projective homeomorphism.
+-/
 def projectiveBranchLocalHomeomorphismData
     (y : D.hyperbolicDevelopingMap.cover.total) :
     ProjectiveDevelopingBranchLocalHomeomorphismData X D
@@ -610,7 +678,15 @@ def projectiveBranchLocalHomeomorphismData
     (fun _z hz ↦ branchFiniteCoordinate_holomorphic D y hz)
     (fun _z hz ↦ branchFiniteCoordinate_deriv_ne_zero D y hz)
 
-/-- The local projective chart obtained from the projectivized developing map at a lift. -/
+/-- The local projective chart obtained from the projectivized developing map at a lift.
+
+%%handwave
+name: The local projective chart obtained from the projectivized developing map at a lift
+statement:
+  A lift $y\in\widetilde X$ determines a local projective chart on $X$,
+  together with a continuous local lift back to $\widetilde X$, on which the
+  chart equals the projectivized developing map.
+-/
 def projectiveLocalChartFromLift
     (y : D.hyperbolicDevelopingMap.cover.total) :
     ProjectiveLocalChartFromDevelopingMap X D where
@@ -768,69 +844,8 @@ theorem projectiveBranchChart_hasLocalMobiusTransition
 
 end ProjectiveBranchConstruction
 
-structure ProjectiveAtlasAssemblyFromDevelopingAtlas
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D) where
-  /-- The complex projective structure obtained from the developing atlas. -/
-  projectiveStructure : ComplexProjectiveStructure X
-  /-- The holonomy representation attached to the constructed atlas. -/
-  projectiveHolonomy : HolonomyRepresentation X x₀
-  /-- The atlas holonomy agrees with the holonomy of the projectivized developing map. -/
-  projectiveHolonomy_eq : projectiveHolonomy = D.projectiveHolonomy
-  /-- Projective charts are locally obtained from branches of the developing map. -/
-  charts_are_local_inverse_branches : ∀ x,
-    (developingAtlas.chartAt x).chart ∈ projectiveStructure.atlasSet
-  /-- Local Mobius transition maps come from projective equivariance. -/
-  transition_mobius_from_equivariance :
-    ∀ x y, HasLocalMobiusTransition (developingAtlas.chartAt x).chart
-      (developingAtlas.chartAt y).chart
-  /--
-  Every chart of the stored projective structure is locally Mobius-equivalent
-  to one of the selected developing branches.
-  -/
-  atlas_charts_locally_mobius_equiv_to_developing_branches :
-    ∀ e ∈ projectiveStructure.atlasSet, ∀ x ∈ e.source,
-      ∃ y, x ∈ (developingAtlas.chartAt y).chart.source ∧
-        HasLocalMobiusTransition e (developingAtlas.chartAt y).chart
-  /-- The constructed projective atlas induces the original Riemann surface structure. -/
-  compatible_with_riemann_surface_from_developing_map :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-      developingAtlas.chartAt
 
-namespace ProjectiveAtlasAssemblyFromDevelopingAtlas
 
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
-    {developingAtlas : ProjectiveDevelopingAtlasData X D}
-
-/-- Fold the assembly data into the existing projective-atlas package. -/
-def toProjectiveAtlasFromDevelopingMap
-    (A : ProjectiveAtlasAssemblyFromDevelopingAtlas D developingAtlas) :
-    ProjectiveAtlasFromDevelopingMap X D where
-  developingAtlas := developingAtlas
-  projectiveStructure := A.projectiveStructure
-  projectiveHolonomy := A.projectiveHolonomy
-  projectiveHolonomy_eq := A.projectiveHolonomy_eq
-  charts_are_local_inverse_branches := A.charts_are_local_inverse_branches
-  transition_mobius_from_equivariance := A.transition_mobius_from_equivariance
-  atlas_charts_locally_mobius_equiv_to_developing_branches :=
-    A.atlas_charts_locally_mobius_equiv_to_developing_branches
-  compatible_with_riemann_surface_from_developing_map :=
-    A.compatible_with_riemann_surface_from_developing_map
-
-end ProjectiveAtlasAssemblyFromDevelopingAtlas
-
-/--
-Raw local branch data for a projectivized developing map.
-
-This is the first half of constructing a projective developing atlas: choose a
-local branch chart near each point.
--/
-structure ProjectiveLocalBranchData {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g) where
-  /-- A projective developing chart near each point of `X`. -/
-  chartAt : X → ProjectiveLocalChartFromDevelopingMap X D
 
 /--
 Pointed local branch data: a selected projective branch near each point,
@@ -849,12 +864,6 @@ namespace ProjectivePointedLocalBranchData
 variable {x₀ : X} {g : HyperbolicMetric X}
     {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
 
-/-- Forget pointed branch data to raw branch data. -/
-def toProjectiveLocalBranchData
-    (B : ProjectivePointedLocalBranchData D) :
-    ProjectiveLocalBranchData D where
-  chartAt := B.chartAt
-
 end ProjectivePointedLocalBranchData
 
 namespace ProjectiveBranchConstruction
@@ -862,7 +871,14 @@ namespace ProjectiveBranchConstruction
 variable {x₀ : X} {g : HyperbolicMetric X}
     (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
 
-/-- A selected lift of a base point to the simply connected cover. -/
+/-- A selected lift of a base point to the simply connected cover.
+
+%%handwave
+name: A selected lift of a base point to the simply connected cover
+statement:
+  For each $x\in X$, choose a point $\widetilde x\in\widetilde X$ satisfying
+  $\pi(\widetilde x)=x$.
+-/
 def selectedLift (x : X) : D.hyperbolicDevelopingMap.cover.total :=
   Classical.choose (D.hyperbolicDevelopingMap.cover.exists_lift x)
 
@@ -878,7 +894,14 @@ theorem selectedLift_projects (x : X) :
     D.hyperbolicDevelopingMap.cover.projection (selectedLift D x) = x :=
   Classical.choose_spec (D.hyperbolicDevelopingMap.cover.exists_lift x)
 
-/-- The selected local projective branch chart near a base point. -/
+/-- The selected local projective branch chart near a base point.
+
+%%handwave
+name: The selected local projective branch chart near a base point
+statement:
+  The selected projective chart at $x\in X$ is the descended developing
+  branch associated with the chosen lift $\widetilde x$.
+-/
 def projectiveLocalChartAtBasePoint (x : X) :
     ProjectiveLocalChartFromDevelopingMap X D :=
   projectiveLocalChartFromLift D (selectedLift D x)
@@ -897,7 +920,15 @@ theorem mem_projectiveLocalChartAtBasePoint_source (x : X) :
     projection_mem_projectiveBranchChart_source D (selectedLift D x)
   simpa [projectiveLocalChartAtBasePoint, selectedLift_projects D x] using hmem
 
-/-- Pointed local projective branch data from the constructed local branches. -/
+/-- Pointed local projective branch data from the constructed local branches.
+
+%%handwave
+name: Pointed local projective branch data from the constructed local branches
+statement:
+  Assigning to every $x\in X$ the projective branch associated with its
+  chosen lift gives pointed local branch data, and each selected chart
+  contains its center.
+-/
 def projectivePointedLocalBranchData :
     ProjectivePointedLocalBranchData D where
   chartAt := projectiveLocalChartAtBasePoint D
@@ -905,41 +936,7 @@ def projectivePointedLocalBranchData :
 
 end ProjectiveBranchConstruction
 
-/--
-Assembly data turning raw local branch choices into projective developing
-atlas data.
--/
-structure ProjectiveDevelopingAtlasAssemblyFromBranches
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D) where
-  /-- The chosen chart near `x` contains `x`. -/
-  mem_chartAt_source : ∀ x, x ∈ (branchData.chartAt x).chart.source
-  /-- Coordinate changes between these local charts are locally Mobius. -/
-  transition_mobius :
-    ∀ x y, HasLocalMobiusTransition (branchData.chartAt x).chart
-      (branchData.chartAt y).chart
-  /-- These charts are compatible with the original Riemann surface structure. -/
-  compatible_with_riemann_surface :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-      branchData.chartAt
 
-namespace ProjectiveDevelopingAtlasAssemblyFromBranches
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
-    {branchData : ProjectiveLocalBranchData D}
-
-/-- Fold branch assembly data into projective developing atlas data. -/
-def toProjectiveDevelopingAtlasData
-    (A : ProjectiveDevelopingAtlasAssemblyFromBranches D branchData) :
-    ProjectiveDevelopingAtlasData X D where
-  chartAt := branchData.chartAt
-  mem_chartAt_source := A.mem_chartAt_source
-  transition_mobius := A.transition_mobius
-  compatible_with_riemann_surface := A.compatible_with_riemann_surface
-
-end ProjectiveDevelopingAtlasAssemblyFromBranches
 
 /--
 Pointed projective branch atlas data with only genuinely overlapping
@@ -964,65 +961,22 @@ structure ProjectivePointedOverlappingBranchAtlasData
     ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
       branchData.chartAt
 
-/--
-Pointed projective branch atlas data with the local/componentwise transition
-condition supplied by deck equivariance.
-
-This is the mathematically natural overlap condition for projective atlases:
-near each point of a chart overlap the coordinate change is represented by a
-single Mobius transformation.
--/
-structure ProjectivePointedLocallyOverlappingBranchAtlasData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g) where
-  /-- Pointed local branches of the projectivized developing map. -/
-  branchData : ProjectivePointedLocalBranchData D
-  /-- Distinct selected branches with nonempty chart-source overlap have local Mobius transitions. -/
-  overlapping_transition_mobius :
-    ∀ x y, x ≠ y →
-      Set.Nonempty ((branchData.chartAt x).chart.source ∩ (branchData.chartAt y).chart.source) →
-      HasLocalMobiusTransition (branchData.chartAt x).chart (branchData.chartAt y).chart
-  /--
-  The selected branches are compatible with the Riemann-surface structure in
-  their selected source complex charts.
-  -/
-  selected_compatible_with_riemann_surface :
-    ProjectiveDevelopingAtlasSelectedRiemannSurfaceCompatibilityData X
-      branchData.chartAt
 
 namespace ProjectivePointedOverlappingBranchAtlasData
 
 variable {x₀ : X} {g : HyperbolicMetric X}
     {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
 
-/-- Forget bundled pointed overlap-only branch atlas data to raw branch data. -/
-def toProjectiveLocalBranchData
-    (A : ProjectivePointedOverlappingBranchAtlasData D) :
-    ProjectiveLocalBranchData D :=
-  A.branchData.toProjectiveLocalBranchData
+/-- Fold bundled pointed overlap-only branch data into developing atlas data.
 
-/--
-Fold bundled pointed overlap-only branch atlas data into branch assembly data
-for its underlying raw branch choices.
+%%handwave
+name: Fold bundled pointed overlap-only branch data into developing atlas data
+statement:
+  Pointed projective branches that cover $X$, have Möbius transitions on
+  every nonempty off-diagonal overlap, and are compatible with the Riemann
+  surface determine a projective developing atlas; equal-chart and empty
+  overlaps supply the remaining transition cases.
 -/
-def toProjectiveDevelopingAtlasAssemblyFromBranches
-    (A : ProjectivePointedOverlappingBranchAtlasData D) :
-    ProjectiveDevelopingAtlasAssemblyFromBranches D A.toProjectiveLocalBranchData where
-  mem_chartAt_source := A.branchData.mem_chartAt_source
-  transition_mobius := by
-    intro x y
-    by_cases hxy : x = y
-    · subst y
-      exact hasLocalMobiusTransition_self (A.branchData.chartAt x).chart
-    · let e := (A.branchData.chartAt x).chart
-      let e' := (A.branchData.chartAt y).chart
-      change HasLocalMobiusTransition e e'
-      by_cases hOverlap : Set.Nonempty (e.source ∩ e'.source)
-      · exact A.overlapping_transition_mobius x y hxy hOverlap
-      · exact hasLocalMobiusTransition_of_not_nonempty_source_inter e e' hOverlap
-  compatible_with_riemann_surface := A.compatible_with_riemann_surface
-
-/-- Fold bundled pointed overlap-only branch data into developing atlas data. -/
 def toProjectiveDevelopingAtlasData
     (A : ProjectivePointedOverlappingBranchAtlasData D) :
     ProjectiveDevelopingAtlasData X D where
@@ -1043,96 +997,17 @@ def toProjectiveDevelopingAtlasData
 
 end ProjectivePointedOverlappingBranchAtlasData
 
-namespace ProjectivePointedLocallyOverlappingBranchAtlasData
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
-
-/-- Forget bundled local-overlap branch atlas data to raw branch data. -/
-def toProjectiveLocalBranchData
-    (A : ProjectivePointedLocallyOverlappingBranchAtlasData D) :
-    ProjectiveLocalBranchData D :=
-  A.branchData.toProjectiveLocalBranchData
-
-end ProjectivePointedLocallyOverlappingBranchAtlasData
-
-/--
-Global theorem target for choosing local projective branch charts from any
-projectivized hyperbolic developing map.
--/
-def ProjectiveLocalBranchDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectiveLocalBranchData D)
-
-/--
-Global theorem target for choosing pointed local projective branch charts from
-any projectivized hyperbolic developing map.
--/
-def ProjectivePointedLocalBranchDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectivePointedLocalBranchData D)
-
-/-- Every projectivized developing map has pointed local projective branch data. -/
-def projectivePointedLocalBranchDataTheorem :
-    ProjectivePointedLocalBranchDataTheorem X :=
-  fun _x₀ _g D ↦ ⟨ProjectiveBranchConstruction.projectivePointedLocalBranchData D⟩
-
-/--
-Global theorem target for constructing bundled pointed overlap-only
-projective branch atlas data from any projectivized hyperbolic developing map.
--/
-def ProjectivePointedOverlappingBranchAtlasDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectivePointedOverlappingBranchAtlasData D)
-
-/--
-Global theorem target for constructing pointed local-overlap projective branch
-atlas data from any projectivized hyperbolic developing map.
--/
-def ProjectivePointedLocallyOverlappingBranchAtlasDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectivePointedLocallyOverlappingBranchAtlasData D)
-
-/--
-The constructed branches form a pointed local-overlap branch atlas.  The local
-transition representatives are obtained from deck transformations and
-projective equivariance.
--/
-def projectivePointedLocallyOverlappingBranchAtlasData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g) :
-    ProjectivePointedLocallyOverlappingBranchAtlasData D where
-  branchData := ProjectiveBranchConstruction.projectivePointedLocalBranchData D
-  overlapping_transition_mobius := by
-    intro x y _hxy _hOverlap
-    simpa [ProjectiveBranchConstruction.projectiveLocalChartAtBasePoint] using
-      ProjectiveBranchConstruction.projectiveBranchChart_hasLocalMobiusTransition D
-        (ProjectiveBranchConstruction.selectedLift D x)
-        (ProjectiveBranchConstruction.selectedLift D y)
-  selected_compatible_with_riemann_surface :=
-    ProjectiveDevelopingAtlasSelectedRiemannSurfaceCompatibilityData.ofChartAt
-      (ProjectiveBranchConstruction.projectivePointedLocalBranchData D).chartAt
-
-/-- Every projectivized developing map has pointed local-overlap branch atlas data. -/
-def projectivePointedLocallyOverlappingBranchAtlasDataTheorem :
-    ProjectivePointedLocallyOverlappingBranchAtlasDataTheorem X :=
-  fun _x₀ _g D ↦ ⟨projectivePointedLocallyOverlappingBranchAtlasData D⟩
 
 /--
 The constructed branches form the pointed overlap branch atlas used by the
 split assembly path.
+
+%%handwave
+name: The constructed branches form the pointed overlap branch atlas used by the split assembly path
+statement:
+  The local branches descended from a projectivized developing map cover
+  $X$, have real Möbius transition germs on every nonempty overlap, and are
+  compatible with the original Riemann-surface charts.
 -/
 def projectivePointedOverlappingBranchAtlasData
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1149,522 +1024,20 @@ def projectivePointedOverlappingBranchAtlasData
     ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData.ofChartAt
       (ProjectiveBranchConstruction.projectivePointedLocalBranchData D).chartAt
 
-/-- Every projectivized developing map has pointed overlap branch atlas data. -/
-def projectivePointedOverlappingBranchAtlasDataTheorem :
-    ProjectivePointedOverlappingBranchAtlasDataTheorem X :=
-  fun _x₀ _g D ↦ ⟨projectivePointedOverlappingBranchAtlasData D⟩
 
-def projectiveLocalBranchDataTheorem_of_pointed
-    (h : ProjectivePointedLocalBranchDataTheorem X) :
-    ProjectiveLocalBranchDataTheorem X :=
-  fun x₀ g D ↦
-    (h x₀ g D).map ProjectivePointedLocalBranchData.toProjectiveLocalBranchData
 
-def projectivePointedLocalBranchDataTheorem_of_pointedOverlappingBranchAtlasData
-    (h : ProjectivePointedOverlappingBranchAtlasDataTheorem X) :
-    ProjectivePointedLocalBranchDataTheorem X :=
-  fun x₀ g D ↦
-    (h x₀ g D).map ProjectivePointedOverlappingBranchAtlasData.branchData
-
-def projectiveLocalBranchDataTheorem_of_pointedOverlappingBranchAtlasData
-    (h : ProjectivePointedOverlappingBranchAtlasDataTheorem X) :
-    ProjectiveLocalBranchDataTheorem X :=
-  fun x₀ g D ↦
-    (h x₀ g D).map ProjectivePointedOverlappingBranchAtlasData.toProjectiveLocalBranchData
-
-/--
-Global theorem target for proving the selected local branch charts form
-projective developing atlas data.
--/
-def ProjectiveDevelopingAtlasAssemblyFromBranchesTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D),
-    Nonempty (ProjectiveDevelopingAtlasAssemblyFromBranches D branchData)
-
-/--
-Pointwise source condition for selected projective branches: the branch chosen
-at `x` is defined at `x`.
--/
-def ProjectiveBranchSourceCoverageTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D),
-    ∀ x, x ∈ (branchData.chartAt x).chart.source
-
-/--
-Transition condition for selected projective branches: every selected pair has
-local Mobius transitions.
--/
-def ProjectiveBranchTransitionMobiusTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D),
-    ∀ x y, HasLocalMobiusTransition (branchData.chartAt x).chart
-      (branchData.chartAt y).chart
-
-/--
-Off-diagonal transition condition for selected projective branches.  The
-diagonal case is discharged by the identity Mobius transformation.
--/
-def ProjectiveBranchOffDiagonalTransitionMobiusTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D),
-    ∀ x y, x ≠ y →
-      HasLocalMobiusTransition (branchData.chartAt x).chart (branchData.chartAt y).chart
-
-def projectiveBranchTransitionMobiusTheorem_of_offDiagonal
-    (h : ProjectiveBranchOffDiagonalTransitionMobiusTheorem X) :
-    ProjectiveBranchTransitionMobiusTheorem X := by
-  intro x₀ g D branchData x y
-  by_cases hxy : x = y
-  · subst y
-    exact hasLocalMobiusTransition_self (branchData.chartAt x).chart
-  · exact h x₀ g D branchData x y hxy
-
-/--
-Off-diagonal transition condition for pointed selected projective branches.
--/
-def ProjectivePointedBranchOffDiagonalTransitionMobiusTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectivePointedLocalBranchData D),
-    ∀ x y, x ≠ y →
-      HasLocalMobiusTransition (branchData.chartAt x).chart (branchData.chartAt y).chart
-
-/--
-Overlapping off-diagonal transition condition for pointed selected projective
-branches.  Only distinct branches whose projective chart sources have nonempty
-intersection require a local Mobius transition proof.
--/
-def ProjectivePointedBranchOverlappingOffDiagonalTransitionMobiusTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectivePointedLocalBranchData D),
-    ∀ x y, x ≠ y →
-      Set.Nonempty ((branchData.chartAt x).chart.source ∩ (branchData.chartAt y).chart.source) →
-      HasLocalMobiusTransition (branchData.chartAt x).chart (branchData.chartAt y).chart
-
-/--
-Overlap-only projective branch transitions imply the off-diagonal target:
-disjoint chart-source intersections make the transition condition vacuous.
--/
-def projectivePointedBranchOffDiagonalTransitionMobiusTheorem_of_overlappingOffDiagonal
-    (h : ProjectivePointedBranchOverlappingOffDiagonalTransitionMobiusTheorem X) :
-    ProjectivePointedBranchOffDiagonalTransitionMobiusTheorem X := by
-  intro x₀ g D branchData x y hxy
-  let e := (branchData.chartAt x).chart
-  let e' := (branchData.chartAt y).chart
-  change HasLocalMobiusTransition e e'
-  by_cases hOverlap : Set.Nonempty (e.source ∩ e'.source)
-  · exact h x₀ g D branchData x y hxy hOverlap
-  · exact hasLocalMobiusTransition_of_not_nonempty_source_inter e e' hOverlap
-
-/--
-Riemann-surface compatibility proposition attached to selected projective
-branches.
-
-The target is the explicit boundary predicate used by
-`ProjectiveDevelopingAtlasData`, rather than an arbitrary proposition.
--/
-def ProjectiveBranchRiemannSurfaceCompatibilityTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectiveLocalBranchData D),
-      Nonempty (ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-        branchData.chartAt)
-
-/--
-Riemann-surface compatibility proposition attached to pointed selected
-projective branches.
--/
-def ProjectivePointedBranchRiemannSurfaceCompatibilityTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (branchData : ProjectivePointedLocalBranchData D),
-      Nonempty (ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-        branchData.chartAt)
-
-/--
-Split theorem package for verifying that selected local projective branches
-form developing-atlas data.
--/
-structure ProjectiveDevelopingAtlasAssemblyFromBranchesSplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Every selected branch contains its base point. -/
-  sourceCoverage : ProjectiveBranchSourceCoverageTheorem X
-  /-- Selected branches have Mobius coordinate changes. -/
-  transitionMobius : ProjectiveBranchTransitionMobiusTheorem X
-  /-- The selected branches are compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface : ProjectiveBranchRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for the split projective branch-assembly package. -/
-def HasProjectiveDevelopingAtlasAssemblyFromBranchesSplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasAssemblyFromBranchesSplitTheorems X)
-
-/--
-Split theorem package for selected branches where only off-diagonal projective
-transition maps are assumed.
--/
-structure ProjectiveDevelopingAtlasAssemblyFromBranchesOffDiagonalSplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Every selected branch contains its base point. -/
-  sourceCoverage : ProjectiveBranchSourceCoverageTheorem X
-  /-- Distinct selected branches have Mobius coordinate changes. -/
-  offDiagonalTransitionMobius : ProjectiveBranchOffDiagonalTransitionMobiusTheorem X
-  /-- The selected branches are compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface : ProjectiveBranchRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for the off-diagonal split projective branch package. -/
-def HasProjectiveDevelopingAtlasAssemblyFromBranchesOffDiagonalSplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasAssemblyFromBranchesOffDiagonalSplitTheorems X)
-
-/--
-Global theorem target for constructing local projective branch atlas data from
-any projectivized hyperbolic developing map.
--/
-def ProjectiveDevelopingAtlasDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectiveDevelopingAtlasData X D)
-
-def projectiveDevelopingAtlasDataTheorem_of_pointedOverlappingBranchAtlasData
-    (h : ProjectivePointedOverlappingBranchAtlasDataTheorem X) :
-    ProjectiveDevelopingAtlasDataTheorem X :=
-  fun x₀ g D ↦
-    (h x₀ g D).map ProjectivePointedOverlappingBranchAtlasData.toProjectiveDevelopingAtlasData
-
-/--
-Two-step theorem package for producing projective developing atlas data:
-choose local branches, then prove the atlas axioms for those branches.
--/
-structure ProjectiveDevelopingAtlasDataModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose local projective branches of the developing map. -/
-  localBranches : ProjectiveLocalBranchDataTheorem X
-  /-- Prove the selected branches form a projective developing atlas. -/
-  assembleBranches : ProjectiveDevelopingAtlasAssemblyFromBranchesTheorem X
-
-/-- Prop-level wrapper for the modular developing-atlas-data theorem package. -/
-def HasProjectiveDevelopingAtlasDataModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataModularTheorems X)
-
-/--
-Branch-data package whose assembly step is split into source coverage, Mobius
-transitions, and Riemann-surface compatibility.
--/
-structure ProjectiveDevelopingAtlasDataSplitAssemblyModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose local projective branches of the developing map. -/
-  localBranches : ProjectiveLocalBranchDataTheorem X
-  /-- Verify the selected branches by split theorem targets. -/
-  assembleBranches : ProjectiveDevelopingAtlasAssemblyFromBranchesSplitTheorems X
-
-/-- Prop-level wrapper for the split-assembly developing-atlas-data package. -/
-def HasProjectiveDevelopingAtlasDataSplitAssemblyModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataSplitAssemblyModularTheorems X)
-
-/--
-Branch-data package whose branch-transition verification is off-diagonal only.
--/
-structure ProjectiveDevelopingAtlasDataOffDiagonalSplitAssemblyModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose local projective branches of the developing map. -/
-  localBranches : ProjectiveLocalBranchDataTheorem X
-  /-- Verify selected branches with diagonal transitions supplied by identity. -/
-  assembleBranches : ProjectiveDevelopingAtlasAssemblyFromBranchesOffDiagonalSplitTheorems X
-
-/-- Prop-level wrapper for the off-diagonal split developing-atlas-data package. -/
-def HasProjectiveDevelopingAtlasDataOffDiagonalSplitAssemblyModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataOffDiagonalSplitAssemblyModularTheorems X)
-
-/--
-Developing-atlas package where branch choice is pointed from the start and
-only off-diagonal projective transitions remain as transition input.
--/
-structure ProjectiveDevelopingAtlasDataPointedOffDiagonalModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose local projective branches which contain their indexing points. -/
-  pointedLocalBranches : ProjectivePointedLocalBranchDataTheorem X
-  /-- Distinct selected pointed branches have Mobius coordinate changes. -/
-  offDiagonalTransitionMobius :
-    ProjectivePointedBranchOffDiagonalTransitionMobiusTheorem X
-  /-- The selected pointed branches are compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface :
-    ProjectivePointedBranchRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for the pointed, off-diagonal developing-atlas package. -/
-def HasProjectiveDevelopingAtlasDataPointedOffDiagonalModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataPointedOffDiagonalModularTheorems X)
-
-/--
-Developing-atlas package where branch choice is pointed and only overlapping
-off-diagonal projective transitions remain as transition input.
--/
-structure ProjectiveDevelopingAtlasDataPointedOverlappingOffDiagonalModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose local projective branches which contain their indexing points. -/
-  pointedLocalBranches : ProjectivePointedLocalBranchDataTheorem X
-  /-- Distinct selected pointed branches with nonempty overlap have Mobius coordinate changes. -/
-  overlappingOffDiagonalTransitionMobius :
-    ProjectivePointedBranchOverlappingOffDiagonalTransitionMobiusTheorem X
-  /-- The selected pointed branches are compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface :
-    ProjectivePointedBranchRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for the pointed, overlapping off-diagonal developing-atlas package. -/
-def HasProjectiveDevelopingAtlasDataPointedOverlappingOffDiagonalModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataPointedOverlappingOffDiagonalModularTheorems X)
-
-/--
-Developing-atlas package where pointed branch choice, overlap-only projective
-transitions, and Riemann-surface compatibility are bundled into one branch
-atlas datum.
--/
-structure ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct bundled pointed overlap-only projective branch atlas data. -/
-  branchAtlasData : ProjectivePointedOverlappingBranchAtlasDataTheorem X
-
-/-- Prop-level wrapper for the bundled pointed overlap-only developing-atlas package. -/
-def HasProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X)
-
-/-- The bundled pointed-overlap developing-atlas package is unconditional. -/
-def projectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems :
-    ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X where
-  branchAtlasData := projectivePointedOverlappingBranchAtlasDataTheorem
-
-/-- Existence wrapper for the unconditional bundled pointed-overlap package. -/
-def projectiveDevelopingAtlasDataTheorem_of_bundledPointedOverlappingModularTheorems
-    (h : ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    ProjectiveDevelopingAtlasDataTheorem X :=
-  projectiveDevelopingAtlasDataTheorem_of_pointedOverlappingBranchAtlasData h.branchAtlasData
-
-/--
-Global theorem target for assembling local projective branch atlas data into a
-full projective-atlas package.
--/
-def ProjectiveAtlasAssemblyTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D),
-    Nonempty (ProjectiveAtlasAssemblyFromDevelopingAtlas D developingAtlas)
-
-/--
-Choose the complex projective structure generated by projective developing
-atlas data.
--/
-def ProjectiveStructureFromDevelopingAtlasTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (_developingAtlas : ProjectiveDevelopingAtlasData X D),
-    Nonempty (ComplexProjectiveStructure X)
-
-/--
-Legacy split target: after separately choosing a projective structure, prove
-that the selected developing charts belong to it.
-
-The final route should prefer `ProjectiveStructureWithDevelopingChartsTheorem`
-or `ProjectiveStructureWithCompatibleDevelopingChartsTheorem`, which bundle the
-generated structure with its selected developing charts and avoid applying this
-membership statement to an arbitrary unrelated projective structure.
--/
-def ProjectiveDevelopingChartsInStructureTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D)
-    (projectiveStructure : ComplexProjectiveStructure X),
-    ∀ x, (developingAtlas.chartAt x).chart ∈ projectiveStructure.atlasSet
-
-/--
-The projective developing atlas data is compatible with the Riemann-surface
-structure.
--/
-def ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D),
-    Nonempty (ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-      developingAtlas.chartAt)
-
-/--
-Generated projective structure together with membership of the selected
-developing charts.
--/
-structure ProjectiveStructureWithDevelopingCharts
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D) where
-  /-- The generated complex projective structure. -/
-  projectiveStructure : ComplexProjectiveStructure X
-  /-- The selected developing charts lie in the generated projective atlas. -/
-  chartsInStructure :
-    ∀ x, (developingAtlas.chartAt x).chart ∈ projectiveStructure.atlasSet
-
-/--
-Theorem target for constructing the generated projective structure already
-equipped with the selected developing charts.
--/
-def ProjectiveStructureWithDevelopingChartsTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D),
-    Nonempty (ProjectiveStructureWithDevelopingCharts D developingAtlas)
-
-/--
-Generated projective structure with the selected developing charts and the
-Riemann-surface compatibility of the developing atlas bundled together.
--/
-structure ProjectiveStructureWithCompatibleDevelopingCharts
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D) where
-  /-- The generated complex projective structure. -/
-  projectiveStructure : ComplexProjectiveStructure X
-  /-- The selected developing charts lie in the generated projective atlas. -/
-  chartsInStructure :
-    ∀ x, (developingAtlas.chartAt x).chart ∈ projectiveStructure.atlasSet
-  /-- The developing atlas is compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityData X
-      developingAtlas.chartAt
-
-namespace ProjectiveStructureWithCompatibleDevelopingCharts
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
-    {developingAtlas : ProjectiveDevelopingAtlasData X D}
-
-/-- Forget the bundled Riemann-surface compatibility. -/
-def toProjectiveStructureWithDevelopingCharts
-    (A : ProjectiveStructureWithCompatibleDevelopingCharts D developingAtlas) :
-    ProjectiveStructureWithDevelopingCharts D developingAtlas where
-  projectiveStructure := A.projectiveStructure
-  chartsInStructure := A.chartsInStructure
-
-end ProjectiveStructureWithCompatibleDevelopingCharts
-
-/--
-Theorem target for constructing the generated projective structure already
-equipped with selected developing charts and Riemann-surface compatibility.
--/
-def ProjectiveStructureWithCompatibleDevelopingChartsTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g)
-    (developingAtlas : ProjectiveDevelopingAtlasData X D),
-    Nonempty (ProjectiveStructureWithCompatibleDevelopingCharts D developingAtlas)
-
-def projectiveStructureWithCompatibleDevelopingChartsTheorem_from_developingAtlas
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] :
-    ProjectiveStructureWithCompatibleDevelopingChartsTheorem X := by
-  intro x₀ g D developingAtlas
-  let projectiveChartedSpace : ChartedSpace RiemannSphere X :=
-    { atlas := Set.range fun x ↦ (developingAtlas.chartAt x).chart
-      chartAt := fun x ↦ (developingAtlas.chartAt x).chart
-      mem_chart_source := developingAtlas.mem_chartAt_source
-      chart_mem_atlas := fun x ↦ ⟨x, rfl⟩ }
-  let projectiveStructure : ComplexProjectiveStructure X :=
-    { projectiveChartedSpace := projectiveChartedSpace
-      transition_mobius := by
-        intro e he e' he'
-        rcases he with ⟨x, rfl⟩
-        rcases he' with ⟨y, rfl⟩
-        exact developingAtlas.transition_mobius x y
-      compatible_with_riemann_surface :=
-        { projective_source_open := by
-            intro e he
-            rcases he with ⟨x, rfl⟩
-            exact developingAtlas.compatible_with_riemann_surface.projective_source_open x
-          complex_source_open :=
-            developingAtlas.compatible_with_riemann_surface.complex_source_open
-          projective_complex_compatible := by
-            intro e he
-            let x := Classical.choose he
-            have hx : (developingAtlas.chartAt x).chart = e :=
-              Classical.choose_spec he
-            refine
-              { complexChart :=
-                  (developingAtlas.chartAt x).branch_local_homeomorphism.sourceComplexChart
-                complexChart_mem_atlas :=
-                  (developingAtlas.chartAt x).branch_local_homeomorphism.sourceComplexChart_mem_atlas
-                projective_source_subset_complex_source := ?_
-                compatibility := ?_ }
-            · simpa [hx] using
-                (developingAtlas.chartAt x).source_subset_sourceComplexChart_source
-            · simpa [hx] using
-                developingAtlas.compatible_with_riemann_surface.projective_complex_compatible
-                  x } }
-  exact ⟨
-    { projectiveStructure := projectiveStructure
-      chartsInStructure := by
-        intro x
-        change
-          (developingAtlas.chartAt x).chart ∈
-            Set.range (fun x ↦ (developingAtlas.chartAt x).chart)
-        exact ⟨x, rfl⟩
-      compatibleWithRiemannSurface :=
-        developingAtlas.compatible_with_riemann_surface }⟩
 
 /--
 The `PSL(2, ℝ)`-projective structure generated by a developing atlas whose
 selected chart transitions lie in the complexified real Mobius subgroup.
+
+%%handwave
+name: The PSL(2, ℝ)-projective structure generated by a developing atlas whose selected chart transitions lie in the complexified real Möbius subgroup
+statement:
+  A projective developing atlas whose every chart transition lies in
+  $\mathrm{PSL}_2(\mathbb R)$ determines a
+  $\mathrm{PSL}_2(\mathbb R)$-projective structure with the same charts and
+  underlying Riemann-surface compatibility.
 -/
 def psl2rProjectiveStructureOfDevelopingAtlas
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1720,6 +1093,14 @@ def psl2rProjectiveStructureOfDevelopingAtlas
 /--
 The same generated `PSL(2, ℝ)` atlas, packaged as the ordinary projective
 atlas-from-developing-map data used by the existing induced-metric API.
+
+%%handwave
+name: The same generated PSL(2, ℝ) atlas, packaged as the ordinary projective atlas-from-developing-map data used by the existing induced-metric API
+statement:
+  From a developing atlas with transitions in
+  $\mathrm{PSL}_2(\mathbb R)$, retain the same charts, projectivized
+  developing map, and projective holonomy as a complex projective developing
+  atlas.
 -/
 def projectiveAtlasFromPsl2rDevelopingAtlas
     {x₀ : X} {g : HyperbolicMetric X}
@@ -1833,418 +1214,7 @@ theorem psl2rProjectiveStructureOfProjectivizedDevelopingMap_isInducedByHyperbol
     transition_in_group, ?_⟩
   rfl
 
-def projectiveStructureWithDevelopingChartsTheorem_of_compatible
-    (h : ProjectiveStructureWithCompatibleDevelopingChartsTheorem X) :
-    ProjectiveStructureWithDevelopingChartsTheorem X :=
-  fun x₀ g D developingAtlas ↦
-    (h x₀ g D developingAtlas).map
-      ProjectiveStructureWithCompatibleDevelopingCharts.toProjectiveStructureWithDevelopingCharts
 
-def projectiveStructureFromDevelopingAtlasTheorem_of_withDevelopingCharts
-    (h : ProjectiveStructureWithDevelopingChartsTheorem X) :
-    ProjectiveStructureFromDevelopingAtlasTheorem X :=
-  fun x₀ g D developingAtlas ↦
-    (h x₀ g D developingAtlas).map ProjectiveStructureWithDevelopingCharts.projectiveStructure
-
-def projectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem_of_compatible
-    (h : ProjectiveStructureWithCompatibleDevelopingChartsTheorem X) :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem X := by
-  intro x₀ g D developingAtlas
-  rcases h x₀ g D developingAtlas with ⟨A⟩
-  exact ⟨A.compatibleWithRiemannSurface⟩
-
-/--
-Legacy split final projective-atlas assembly: choose the projective structure
-and separately prove that the selected developing charts are charts of it.
-
-The remaining fields of `ProjectiveAtlasAssemblyFromDevelopingAtlas` are then
-filled from the projectivized developing map and the developing-atlas data.
-New code should use `ProjectiveAtlasAssemblyGeneratedStructureTheorems` or
-`ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems`.
--/
-structure ProjectiveAtlasAssemblySplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Choose the generated projective structure. -/
-  projectiveStructure : ProjectiveStructureFromDevelopingAtlasTheorem X
-  /-- The selected developing charts lie in the generated projective atlas. -/
-  chartsInStructure : ProjectiveDevelopingChartsInStructureTheorem X
-  /-- The developing atlas is compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for the split final projective-atlas assembly package. -/
-def HasProjectiveAtlasAssemblySplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveAtlasAssemblySplitTheorems X)
-
-/--
-Final projective-atlas assembly package using a generated projective structure
-that already contains the selected developing charts.
--/
-structure ProjectiveAtlasAssemblyGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct the generated projective structure with selected charts included. -/
-  generatedStructure : ProjectiveStructureWithDevelopingChartsTheorem X
-  /-- The developing atlas is compatible with the Riemann-surface structure. -/
-  compatibleWithRiemannSurface :
-    ProjectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem X
-
-/-- Prop-level wrapper for generated-structure final projective-atlas assembly. -/
-def HasProjectiveAtlasAssemblyGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveAtlasAssemblyGeneratedStructureTheorems X)
-
-/--
-Final projective-atlas assembly package using a generated projective structure
-that already contains the selected developing charts and carries the
-Riemann-surface compatibility of the developing atlas.
--/
-structure ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct the compatible generated projective structure with selected charts included. -/
-  compatibleGeneratedStructure :
-    ProjectiveStructureWithCompatibleDevelopingChartsTheorem X
-
-/-- Prop-level wrapper for compatible generated-structure final assembly. -/
-def HasProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X)
-
-def projectiveAtlasAssemblyCompatibleGeneratedStructureTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] :
-    ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X where
-  compatibleGeneratedStructure :=
-    projectiveStructureWithCompatibleDevelopingChartsTheorem_from_developingAtlas X
-
-def projectiveAtlasAssemblyGeneratedStructureTheorems_of_compatibleGeneratedStructureTheorems
-    (h : ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
-    ProjectiveAtlasAssemblyGeneratedStructureTheorems X where
-  generatedStructure :=
-    projectiveStructureWithDevelopingChartsTheorem_of_compatible
-      h.compatibleGeneratedStructure
-  compatibleWithRiemannSurface :=
-    projectiveDevelopingAtlasRiemannSurfaceCompatibilityTheorem_of_compatible
-      h.compatibleGeneratedStructure
-
-def projectiveAtlasAssemblyTheorem_of_generatedStructureTheorems
-    (h : ProjectiveAtlasAssemblyGeneratedStructureTheorems X) :
-    ProjectiveAtlasAssemblyTheorem X := by
-  intro x₀ g D developingAtlas
-  refine (h.generatedStructure x₀ g D developingAtlas).map ?_
-  intro A
-  exact
-    { projectiveStructure := A.projectiveStructure
-      projectiveHolonomy := D.projectiveHolonomy
-      projectiveHolonomy_eq := rfl
-      charts_are_local_inverse_branches := A.chartsInStructure
-      transition_mobius_from_equivariance := developingAtlas.transition_mobius
-      atlas_charts_locally_mobius_equiv_to_developing_branches := by
-        intro e he x _hx
-        refine ⟨x, developingAtlas.mem_chartAt_source x, ?_⟩
-        exact A.projectiveStructure.transition_mobius_of_mem he
-          (A.chartsInStructure x)
-      compatible_with_riemann_surface_from_developing_map :=
-        Classical.choice (h.compatibleWithRiemannSurface x₀ g D developingAtlas) }
-
-def projectiveAtlasAssemblyTheorem_of_compatibleGeneratedStructureTheorems
-    (h : ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X) :
-    ProjectiveAtlasAssemblyTheorem X := by
-  intro x₀ g D developingAtlas
-  refine (h.compatibleGeneratedStructure x₀ g D developingAtlas).map ?_
-  intro A
-  exact
-    { projectiveStructure := A.projectiveStructure
-      projectiveHolonomy := D.projectiveHolonomy
-      projectiveHolonomy_eq := rfl
-      charts_are_local_inverse_branches := A.chartsInStructure
-      transition_mobius_from_equivariance := developingAtlas.transition_mobius
-      atlas_charts_locally_mobius_equiv_to_developing_branches := by
-        intro e he x _hx
-        refine ⟨x, developingAtlas.mem_chartAt_source x, ?_⟩
-        exact A.projectiveStructure.transition_mobius_of_mem he
-          (A.chartsInStructure x)
-      compatible_with_riemann_surface_from_developing_map :=
-        A.compatibleWithRiemannSurface }
-
-/--
-Global theorem target for constructing the projective atlas from any
-projectivized hyperbolic developing map.
--/
-def ProjectiveAtlasFromProjectivizedDevelopingMapTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectiveAtlasFromDevelopingMap X D)
-
-/--
-Concrete projective assembly data for one projectivized developing map.
-
-This bundles the actual pointed overlap-only projective branch atlas and the
-compatible generated projective structure for the developing atlas determined
-by those branches.
--/
-structure ProjectiveAtlasConcreteAssemblyData
-    {x₀ : X} {g : HyperbolicMetric X}
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g) where
-  /-- The selected pointed projective branches with overlap-only Mobius transitions. -/
-  branchAtlasData : ProjectivePointedOverlappingBranchAtlasData D
-  /-- The generated projective structure containing these selected developing charts. -/
-  compatibleGeneratedStructure :
-    ProjectiveStructureWithCompatibleDevelopingCharts D
-      branchAtlasData.toProjectiveDevelopingAtlasData
-
-namespace ProjectiveAtlasConcreteAssemblyData
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {D : ProjectivizedHyperbolicDevelopingMap X x₀ g}
-
-/-- The developing atlas determined by concrete projective assembly data. -/
-def toProjectiveDevelopingAtlasData
-    (A : ProjectiveAtlasConcreteAssemblyData D) :
-    ProjectiveDevelopingAtlasData X D :=
-  A.branchAtlasData.toProjectiveDevelopingAtlasData
-
-/-- Fold concrete projective assembly data into the ordinary projective-atlas package. -/
-def toProjectiveAtlasFromDevelopingMap
-    (A : ProjectiveAtlasConcreteAssemblyData D) :
-    ProjectiveAtlasFromDevelopingMap X D where
-  developingAtlas := A.toProjectiveDevelopingAtlasData
-  projectiveStructure := A.compatibleGeneratedStructure.projectiveStructure
-  projectiveHolonomy := D.projectiveHolonomy
-  projectiveHolonomy_eq := rfl
-  charts_are_local_inverse_branches :=
-    A.compatibleGeneratedStructure.chartsInStructure
-  transition_mobius_from_equivariance :=
-    A.toProjectiveDevelopingAtlasData.transition_mobius
-  atlas_charts_locally_mobius_equiv_to_developing_branches := by
-    intro e he x _hx
-    refine ⟨x, A.toProjectiveDevelopingAtlasData.mem_chartAt_source x, ?_⟩
-    exact A.compatibleGeneratedStructure.projectiveStructure.transition_mobius_of_mem he
-      (A.compatibleGeneratedStructure.chartsInStructure x)
-  compatible_with_riemann_surface_from_developing_map :=
-    A.compatibleGeneratedStructure.compatibleWithRiemannSurface
-
-end ProjectiveAtlasConcreteAssemblyData
-
-/--
-Theorem target for constructing concrete projective assembly data from any
-projectivized developing map.
--/
-def ProjectiveAtlasConcreteAssemblyDataTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (D : ProjectivizedHyperbolicDevelopingMap X x₀ g),
-    Nonempty (ProjectiveAtlasConcreteAssemblyData D)
-
-/--
-Split theorem package for concrete projective assembly data.
-
-It separates the two genuine construction steps: first choose the pointed
-overlap-only developing branch atlas, then build the compatible generated
-projective structure containing that selected atlas.
--/
-structure ProjectiveAtlasConcreteAssemblySplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct the selected pointed overlap-only projective branch atlas. -/
-  branchAtlasData : ProjectivePointedOverlappingBranchAtlasDataTheorem X
-  /-- Construct the compatible generated projective structure containing any developing atlas. -/
-  compatibleGeneratedStructure :
-    ProjectiveStructureWithCompatibleDevelopingChartsTheorem X
-
-/-- Prop-level wrapper for the split concrete-projective-assembly package. -/
-def HasProjectiveAtlasConcreteAssemblySplitTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveAtlasConcreteAssemblySplitTheorems X)
-
-/--
-Once the pointed overlap-only projective branch atlas has been constructed,
-the compatible generated projective structure is canonical: use exactly the
-selected developing charts as the projective charted-space atlas.
--/
-def projectiveAtlasConcreteAssemblySplitTheorems_of_branchAtlasDataTheorem
-    (h : ProjectivePointedOverlappingBranchAtlasDataTheorem X) :
-    ProjectiveAtlasConcreteAssemblySplitTheorems X where
-  branchAtlasData := h
-  compatibleGeneratedStructure :=
-    projectiveStructureWithCompatibleDevelopingChartsTheorem_from_developingAtlas X
-
-/-- Concrete split projective assembly is unconditional on the final local-overlap path. -/
-def projectiveAtlasConcreteAssemblySplitTheorems :
-    ProjectiveAtlasConcreteAssemblySplitTheorems X :=
-  projectiveAtlasConcreteAssemblySplitTheorems_of_branchAtlasDataTheorem
-    projectivePointedOverlappingBranchAtlasDataTheorem
-
-/-- Existence wrapper for the unconditional split projective assembly constructor. -/
-def projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlapping
-    (h : ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    ProjectiveAtlasConcreteAssemblySplitTheorems X :=
-  projectiveAtlasConcreteAssemblySplitTheorems_of_branchAtlasDataTheorem
-    h.branchAtlasData
-
-/-- Split projective assembly theorems construct concrete projective assembly data. -/
-def projectiveAtlasConcreteAssemblyDataTheorem_of_splitTheorems
-    (h : ProjectiveAtlasConcreteAssemblySplitTheorems X) :
-    ProjectiveAtlasConcreteAssemblyDataTheorem X := by
-  intro x₀ g D
-  rcases h.branchAtlasData x₀ g D with ⟨branchAtlasData⟩
-  rcases h.compatibleGeneratedStructure
-      x₀ g D branchAtlasData.toProjectiveDevelopingAtlasData with
-    ⟨compatibleGeneratedStructure⟩
-  exact ⟨
-    { branchAtlasData := branchAtlasData
-      compatibleGeneratedStructure := compatibleGeneratedStructure }⟩
-
-/-- Concrete projective assembly data is now available unconditionally. -/
-def projectiveAtlasConcreteAssemblyDataTheorem :
-    ProjectiveAtlasConcreteAssemblyDataTheorem X :=
-  projectiveAtlasConcreteAssemblyDataTheorem_of_splitTheorems
-    projectiveAtlasConcreteAssemblySplitTheorems
-
-/-- Concrete projective assembly data gives the ordinary projective-atlas theorem. -/
-def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_concreteAssemblyData
-    (h : ProjectiveAtlasConcreteAssemblyDataTheorem X) :
-    ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
-  fun x₀ g D ↦
-    (h x₀ g D).map
-      ProjectiveAtlasConcreteAssemblyData.toProjectiveAtlasFromDevelopingMap
-
-/--
-Every projectivized hyperbolic developing map now has its projective atlas
-constructed without extra projective-atlas boundary inputs.
--/
-def projectiveAtlasFromProjectivizedDevelopingMapTheorem :
-    ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
-  projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_concreteAssemblyData
-    projectiveAtlasConcreteAssemblyDataTheorem
-
-/--
-Two-step projective-atlas theorem package: build local branch atlas data, then
-assemble it into the projective structure and holonomy package.
--/
-structure ProjectiveAtlasFromDevelopingMapModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct local projective branch atlas data. -/
-  developingAtlasData : ProjectiveDevelopingAtlasDataTheorem X
-  /-- Assemble local branch data into a projective atlas with holonomy. -/
-  assembleAtlas : ProjectiveAtlasAssemblyTheorem X
-
-/-- Prop-level wrapper for the modular projective-atlas theorem package. -/
-def HasProjectiveAtlasFromDevelopingMapModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty (ProjectiveAtlasFromDevelopingMapModularTheorems X)
-
-/--
-Projective-atlas theorem package whose two remaining inputs are the bundled
-pointed overlap-only branch atlas construction and compatible generated
-projective structure assembly.
--/
-structure ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] where
-  /-- Construct bundled pointed overlap-only projective branch atlas data. -/
-  developingAtlasData :
-    ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X
-  /-- Assemble via a compatible generated projective structure. -/
-  assembleAtlas : ProjectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X
-
-/-- Prop-level wrapper for the bundled-overlap compatible-generated projective package. -/
-def HasProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  Nonempty
-    (ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X)
-
-def projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems_of_bundledPointedOverlapping
-    (h : ProjectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems X) :
-    ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X where
-  developingAtlasData := h
-  assembleAtlas := projectiveAtlasAssemblyCompatibleGeneratedStructureTheorems X
-
-/-- The bundled pointed-overlap compatible-generated projective package is unconditional. -/
-def projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems :
-    ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-      X :=
-  projectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems_of_bundledPointedOverlapping
-    projectiveDevelopingAtlasDataBundledPointedOverlappingModularTheorems
-
-/-- Existence wrapper for the unconditional bundled compatible-generated package. -/
-def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems
-    (h : ProjectiveAtlasFromDevelopingMapModularTheorems X) :
-    ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X := by
-  intro x₀ g D
-  rcases h.developingAtlasData x₀ g D with ⟨developingAtlas⟩
-  exact
-    (h.assembleAtlas x₀ g D developingAtlas).map
-      (fun A ↦ A.toProjectiveAtlasFromDevelopingMap)
-
-def projectiveAtlasFromDevelopingMapModularTheorems_of_bundledPointedOverlappingCompatibleGenerated
-    (h :
-      ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
-    ProjectiveAtlasFromDevelopingMapModularTheorems X where
-  developingAtlasData :=
-    projectiveDevelopingAtlasDataTheorem_of_bundledPointedOverlappingModularTheorems
-      h.developingAtlasData
-  assembleAtlas :=
-    projectiveAtlasAssemblyTheorem_of_compatibleGeneratedStructureTheorems
-      h.assembleAtlas
-
-/--
-Bundled pointed branch data and compatible generated structure produce
-concrete projective assembly data.
--/
-def projectiveAtlasConcreteAssemblyDataTheorem_of_bundledPointedOverlappingCompatibleGenerated
-    (h :
-      ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-        X) :
-    ProjectiveAtlasConcreteAssemblyDataTheorem X := by
-  intro x₀ g D
-  rcases h.developingAtlasData.branchAtlasData x₀ g D with ⟨branchAtlasData⟩
-  rcases h.assembleAtlas.compatibleGeneratedStructure
-      x₀ g D branchAtlasData.toProjectiveDevelopingAtlasData with
-    ⟨compatibleGeneratedStructure⟩
-  exact ⟨
-    { branchAtlasData := branchAtlasData
-      compatibleGeneratedStructure := compatibleGeneratedStructure }⟩
-
-/-- The bundled compatible-generated package is a split concrete-assembly package. -/
-def projectiveAtlasConcreteAssemblySplitTheorems_of_bundledPointedOverlappingCompatibleGenerated
-    (h :
-      ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems
-        X) :
-    ProjectiveAtlasConcreteAssemblySplitTheorems X where
-  branchAtlasData := h.developingAtlasData.branchAtlasData
-  compatibleGeneratedStructure := h.assembleAtlas.compatibleGeneratedStructure
-
-def projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_bundledPointedOverlappingCompatibleGenerated
-    (h :
-      ProjectiveAtlasFromDevelopingMapBundledPointedOverlappingCompatibleGeneratedModularTheorems X) :
-    ProjectiveAtlasFromProjectivizedDevelopingMapTheorem X :=
-  projectiveAtlasFromProjectivizedDevelopingMapTheorem_of_modularTheorems
-    (projectiveAtlasFromDevelopingMapModularTheorems_of_bundledPointedOverlappingCompatibleGenerated h)
-
-/--
-Global theorem target for constructing the projective atlas from any
-curvature-aware developing pipeline.
--/
-def ProjectiveAtlasFromCurvaturePipelineTheorem
-    (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]
-    [RiemannSurface X] : Prop :=
-  ∀ (x₀ : X) (g : HyperbolicMetric X)
-    (P : HyperbolicDevelopingCurvaturePipeline X x₀ g),
-    Nonempty (ProjectiveAtlasFromDevelopingMap X P.toProjectivizedDevelopingMap)
 
 end HyperbolicMetric
 

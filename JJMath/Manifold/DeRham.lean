@@ -1290,6 +1290,13 @@ theorem smoothRealFunctionToZeroForm_toFun
 end SmoothRealFunctionToZeroForm
 
 omit [IsRCLikeNormedField 𝕜] in
+/--
+%%handwave
+name:
+  Pointwise scalar multiplication of a smooth form
+statement:
+  A smooth scalar function $f$ and smooth $A$-valued $n$-form $\omega$ define the smooth form $f\omega$ by $(f\omega)_x=f(x)\omega_x$.
+-/
 def smoothFormsPointwiseSMul {n : ℕ}
     (f : C^∞⟮I, M; 𝕜⟯)
     (omega : SmoothForms (I := I) (M := M) A n) :
@@ -1400,30 +1407,26 @@ theorem smoothFormsPointwiseSMul_finset_sum_eq_self_of_sum_eq_one
       rw [hsum x, one_smul]
 
 omit [IsRCLikeNormedField 𝕜] in
+/--
+%%handwave
+name:
+  Restriction of a smooth function to an open subset
+statement:
+  A smooth scalar function on $M$ restricts along an open inclusion $U\hookrightarrow M$ to a smooth function on $U$.
+-/
 def smoothFunctionRestrictToOpen
     (U : TopologicalSpace.Opens M) (f : C^∞⟮I, M; 𝕜⟯) :
     C^∞⟮I, U; 𝕜⟯ where
   val := fun x ↦ f (x : M)
   property := f.contMDiff.comp (contMDiff_subtype_val (I := I) (n := ∞) (U := U))
 
-omit [IsRCLikeNormedField 𝕜] [IsManifold I ∞ M] in
 /--
 %%handwave
 name:
-  Restricting a smooth function evaluates by inclusion
+  Smooth function associated with a locally constant function
 statement:
-  The restriction of a smooth function to an open subset evaluates at a point
-  as the original function evaluated at the underlying point.
-proof:
-  The equality is part of the definition of the restricted smooth function.
+  Every locally constant real-valued function on a smooth manifold canonically defines a smooth real function.
 -/
-@[simp]
-theorem smoothFunctionRestrictToOpen_apply
-    (U : TopologicalSpace.Opens M) (f : C^∞⟮I, M; 𝕜⟯) (x : U) :
-    smoothFunctionRestrictToOpen (I := I) U f x = f (x : M) :=
-  rfl
-
-/-- A locally constant real function is smooth on a smooth manifold. -/
 noncomputable def smoothRealFunctionOfIsLocallyConstant
     {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -1648,8 +1651,6 @@ statement:
   For every smooth \(n\)-form \(\omega\), one has \(d(d\omega)=0\).
 proof:
   This is [the identity that applying the exterior derivative twice gives zero](lean:JJMath.Manifold.exteriorDerivative_exteriorDerivative_eq_zero).
-tags:
-  milestone
 -/
 theorem deRhamDifferential_comp_eq_zero {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) A n) :
@@ -1793,7 +1794,7 @@ theorem deRhamDifferential_locallyConstant_zeroForm_eq_zero
       (smoothRealFunctionToZeroForm (I0 := I0)
         (smoothRealConstantFunction (I0 := I0) (f x))).toFun y := by
     filter_upwards [hf.eventually_eq x] with y hy
-    simp [smoothRealFunctionOfIsLocallyConstant, hy]
+    simp [smoothRealFunctionOfIsLocallyConstant, smoothRealConstantFunction, hy]
   rw [deRhamDifferential_toFun_eq_of_eventuallyEq
     (I := I0)
     (smoothRealFunctionToZeroForm (I0 := I0)
@@ -1805,7 +1806,11 @@ theorem deRhamDifferential_locallyConstant_zeroForm_eq_zero
 end SmoothRealFunctionToZeroFormDifferential
 
 /--
-Closed smooth \(n\)-forms.
+%%handwave
+name:
+  Module of closed differential forms
+statement:
+  The closed smooth $n$-forms are the kernel of $d:\Omega^n(M;A)\to\Omega^{n+1}(M;A)$.
 -/
 def DeRhamClosedForms (n : ℕ) :
     Submodule 𝕜 (SmoothForms (I := I) (M := M) A n) :=
@@ -1818,7 +1823,13 @@ variable {H0 : Type w} [TopologicalSpace H0]
 variable {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
 variable {I0 : ModelWithCorners ℝ E0 H0} [IsManifold I0 ∞ M0]
 
-/-- A real constant, regarded as a closed smooth zero-form. -/
+/--
+%%handwave
+name:
+  Constant closed zero-form
+statement:
+  A real constant $c$ determines the closed smooth $0$-form with value $c$ at every point.
+-/
 noncomputable def deRhamConstantZeroClosedForm (c : ℝ) :
     DeRhamClosedForms (I := I0) (M := M0) (A := ℝ) 0 :=
   ⟨smoothRealFunctionToZeroForm (I0 := I0)
@@ -1828,7 +1839,11 @@ noncomputable def deRhamConstantZeroClosedForm (c : ℝ) :
 end ConstantDegreeZeroClass
 
 /--
-Exact smooth \(n\)-forms.  In degree zero this is the zero submodule.
+%%handwave
+name:
+  Module of exact differential forms
+statement:
+  In positive degree, the exact smooth $n$-forms are the image of $d:\Omega^{n-1}(M;A)\to\Omega^n(M;A)$; in degree zero this module is zero.
 -/
 def DeRhamExactForms : (n : ℕ) →
     Submodule 𝕜 (SmoothForms (I := I) (M := M) A n)
@@ -1838,30 +1853,9 @@ def DeRhamExactForms : (n : ℕ) →
 /--
 %%handwave
 name:
-  Exact forms are closed
+  Exact forms as a submodule of closed forms
 statement:
-  Every exact smooth form is closed.
-proof:
-  In degree zero, exactness means the form is zero.  In positive degree, write
-  the form as \(d\eta\) and use \(d^2=0\).
--/
-theorem deRhamExactForms_le_closedForms (n : ℕ) :
-    DeRhamExactForms (I := I) (M := M) (A := A) n ≤
-      DeRhamClosedForms (I := I) (M := M) (A := A) n := by
-  cases n with
-  | zero =>
-      intro omega homega
-      simp [DeRhamExactForms] at homega
-      rw [homega]
-      simp [DeRhamClosedForms]
-  | succ n =>
-      rw [DeRhamExactForms, DeRhamClosedForms]
-      intro omega homega
-      rcases homega with ⟨eta, rfl⟩
-      exact deRhamDifferential_comp_eq_zero (I := I) (A := A) eta
-
-/--
-Exact forms considered as a submodule of the closed forms.
+  Since exact forms are closed, the exact smooth $n$-forms form a submodule of the module of closed $n$-forms.
 -/
 def DeRhamExactClosedForms (n : ℕ) :
     Submodule 𝕜 (DeRhamClosedForms (I := I) (M := M) (A := A) n) :=
@@ -1887,42 +1881,17 @@ variable {H0 : Type w} [TopologicalSpace H0]
 variable {M0 : Type m} [TopologicalSpace M0] [ChartedSpace H0 M0]
 variable {I0 : ModelWithCorners ℝ E0 H0} [IsManifold I0 ∞ M0]
 
-/-- The degree-zero de Rham cohomology class represented by a real constant. -/
+/--
+%%handwave
+name:
+  Constant degree-zero de Rham class
+statement:
+  A real constant $c$ determines the class of its constant closed $0$-form in $H^0_{\mathrm{dR}}(M;\mathbb R)$.
+-/
 noncomputable def deRhamConstantH0Class (c : ℝ) :
     DeRhamCohomology (I := I0) (M := M0) (A := ℝ) 0 :=
   (DeRhamExactClosedForms (I := I0) (M := M0) (A := ℝ) 0).mkQ
     (deRhamConstantZeroClosedForm (I0 := I0) (M0 := M0) c)
-
-/--
-%%handwave
-name:
-  Distinct constants give distinct degree-zero classes
-statement:
-  On a nonempty smooth real manifold, the map from real constants to
-  degree-zero de Rham cohomology is injective.
-proof:
-  Exact zero-forms vanish.  Thus equality of two constant cohomology classes
-  makes the constant zero-forms equal; evaluation at any point recovers the
-  two real constants.
--/
-theorem deRhamConstantH0Class_injective [Nonempty M0] :
-    Function.Injective (deRhamConstantH0Class (I0 := I0) (M0 := M0)) := by
-  intro c d h
-  simp only [deRhamConstantH0Class, Submodule.mkQ_apply] at h
-  rw [Submodule.Quotient.eq] at h
-  have hzero :
-      deRhamConstantZeroClosedForm (I0 := I0) (M0 := M0) c -
-          deRhamConstantZeroClosedForm (I0 := I0) (M0 := M0) d = 0 := by
-    simpa [DeRhamExactClosedForms, DeRhamExactForms] using h
-  have heq :
-      deRhamConstantZeroClosedForm (I0 := I0) (M0 := M0) c =
-        deRhamConstantZeroClosedForm (I0 := I0) (M0 := M0) d :=
-    sub_eq_zero.mp hzero
-  let x : M0 := Classical.choice (inferInstance : Nonempty M0)
-  have hx := congrArg
-    (fun omega : DeRhamClosedForms (I := I0) (M := M0) (A := ℝ) 0 =>
-      omega.1.toFun x (fun i : Fin 0 => nomatch i)) heq
-  simpa [deRhamConstantZeroClosedForm] using hx
 
 end ConstantDegreeZeroClass
 
@@ -1984,7 +1953,13 @@ theorem isContMDiffForm_restrictSmoothFormToOpen {n : ℕ}
     coordinateExpression_restrictSmoothFormToOpen_subtypeRestr
       (I := I) eM U hU heM heU omega.toFun hy
 
-/-- Restriction of a smooth form on a manifold to an open subset. -/
+/--
+%%handwave
+name:
+  Restriction of a smooth form to an open subset
+statement:
+  For an open subset $U\subseteq M$, a smooth form $\omega$ on $M$ restricts to $U$ by pulling each pointwise covector back along the inclusion $U\hookrightarrow M$.
+-/
 def restrictSmoothFormToOpen {n : ℕ}
     (omega : SmoothForms (I := I) (M := M) A n) :
     SmoothForms (I := I) (M := U) A n where
@@ -1994,7 +1969,13 @@ def restrictSmoothFormToOpen {n : ℕ}
   isContMDiff :=
     isContMDiffForm_restrictSmoothFormToOpen (I := I) (A := A) U omega
 
-/-- Restriction of smooth forms to an open subset, as a linear map. -/
+/--
+%%handwave
+name:
+  Linear restriction of smooth forms
+statement:
+  Restriction to an open subset $U\subseteq M$ defines a linear map $\Omega^n(M;A)\to\Omega^n(U;A)$.
+-/
 def restrictSmoothFormsToOpen (n : ℕ) :
     SmoothForms (I := I) (M := M) A n →ₗ[𝕜]
       SmoothForms (I := I) (M := U) A n where
@@ -2117,7 +2098,13 @@ theorem deRhamDifferential_restrictSmoothFormsToOpen {n : ℕ}
   rw [← hself_left, ← hself_right]
   simpa [eU, eM, y, extChartAt] using hcoords
 
-/-- Restriction sends closed forms on a manifold to closed forms on an open subset. -/
+/--
+%%handwave
+name:
+  Restriction of closed forms to an open subset
+statement:
+  Since exterior differentiation commutes with restriction, restriction to $U\subseteq M$ defines a linear map from closed $n$-forms on $M$ to closed $n$-forms on $U$.
+-/
 def deRhamClosedFormsRestrictionToOpen (n : ℕ) :
     DeRhamClosedForms (I := I) (M := M) (A := A) n →ₗ[𝕜]
       DeRhamClosedForms (I := I) (M := U) (A := A) n where
@@ -2172,7 +2159,13 @@ theorem deRhamClosedFormsRestrictionToOpen_exact (n : ℕ) :
       rw [heta]
       rfl
 
-/-- The induced restriction map on de Rham cohomology. -/
+/--
+%%handwave
+name:
+  Restriction on de Rham cohomology
+statement:
+  Restriction to an open subset preserves exact forms and therefore induces a linear map $H^n_{\mathrm{dR}}(M;A)\to H^n_{\mathrm{dR}}(U;A)$.
+-/
 def deRhamCohomologyRestrictionToOpen (n : ℕ) :
     DeRhamCohomology (I := I) (M := M) (A := A) n →ₗ[𝕜]
       DeRhamCohomology (I := I) (M := U) (A := A) n :=
@@ -2233,7 +2226,13 @@ theorem isContMDiffForm_restrictSmoothFormOfLE (hWV : W ≤ V) {n : ℕ}
     coordinateExpression_restrictSmoothFormOfLE_subtypeRestr
       (I := I) eM hW hV hWV heW heV omega.toFun hy
 
-/-- Restriction of smooth forms along an inclusion of open subsets. -/
+/--
+%%handwave
+name:
+  Restriction between nested open subsets
+statement:
+  For open subsets $W\subseteq V$ of $M$, a smooth form on $V$ restricts to $W$ by pullback along the inclusion $W\hookrightarrow V$.
+-/
 def restrictSmoothFormOfLE (hWV : W ≤ V) {n : ℕ}
     (omega : SmoothForms (I := I) (M := V) A n) :
     SmoothForms (I := I) (M := W) A n where
@@ -2243,7 +2242,13 @@ def restrictSmoothFormOfLE (hWV : W ≤ V) {n : ℕ}
   isContMDiff :=
     isContMDiffForm_restrictSmoothFormOfLE (I := I) (A := A) hWV omega
 
-/-- Restriction of smooth forms along an inclusion of open subsets, as a linear map. -/
+/--
+%%handwave
+name:
+  Linear restriction between nested open subsets
+statement:
+  For $W\subseteq V$, restriction defines a linear map $\Omega^n(V;A)\to\Omega^n(W;A)$.
+-/
 def restrictSmoothFormsOfLE (hWV : W ≤ V) (n : ℕ) :
     SmoothForms (I := I) (M := V) A n →ₗ[𝕜]
       SmoothForms (I := I) (M := W) A n where
@@ -2513,7 +2518,13 @@ theorem deRhamDifferential_restrictSmoothFormsOfLE (hWV : W ≤ V) {n : ℕ}
   rw [← hself_left, ← hself_right]
   simpa [eW, eM, y, extChartAt] using hcoords
 
-/-- Restriction along an inclusion of open subsets sends closed forms to closed forms. -/
+/--
+%%handwave
+name:
+  Restriction of closed forms between nested opens
+statement:
+  For $W\subseteq V$, restriction commutes with the exterior derivative and hence maps closed $n$-forms on $V$ linearly to closed $n$-forms on $W$.
+-/
 def deRhamClosedFormsRestrictionOfLE (hWV : W ≤ V) (n : ℕ) :
     DeRhamClosedForms (I := I) (M := V) (A := A) n →ₗ[𝕜]
       DeRhamClosedForms (I := I) (M := W) (A := A) n where
@@ -2567,7 +2578,13 @@ theorem deRhamClosedFormsRestrictionOfLE_exact (hWV : W ≤ V) (n : ℕ) :
       rw [heta]
       rfl
 
-/-- The induced restriction map on de Rham cohomology for an inclusion of opens. -/
+/--
+%%handwave
+name:
+  Cohomological restriction between nested opens
+statement:
+  For $W\subseteq V$, restriction preserves exact forms and induces a linear map $H^n_{\mathrm{dR}}(V;A)\to H^n_{\mathrm{dR}}(W;A)$.
+-/
 def deRhamCohomologyRestrictionOfLE (hWV : W ≤ V) (n : ℕ) :
     DeRhamCohomology (I := I) (M := V) (A := A) n →ₗ[𝕜]
       DeRhamCohomology (I := I) (M := W) (A := A) n :=
@@ -2791,6 +2808,13 @@ theorem mfderiv_opens_inclusion_isInvertible
   rw [hL_eq]
   exact hLV.inverse.comp hLW
 
+/--
+%%handwave
+name:
+  Ambient value extending a form from an open subset
+statement:
+  At $x\in U\subseteq M$, a form on $U$ determines an ambient covector at $x$ by transporting its value along the inverse derivative of the open inclusion.
+-/
 def smoothFormOpenExtensionValue
     (U : TopologicalSpace.Opens M) {n : ℕ}
     (alpha : SmoothForms (I := I) (M := U) A n)
@@ -3071,6 +3095,13 @@ theorem mem_right_of_not_mem_left_of_sup_eq_top
     simpa using hx
   exact hxUV.resolve_left hxU
 
+/--
+%%handwave
+name:
+  Pointwise gluing of forms over a two-open cover
+statement:
+  For a cover $M=U\cup V$ and forms $\alpha$ on $U$ and $\beta$ on $V$, choose the ambient extension of $\alpha$ at points of $U$ and otherwise that of $\beta$; when the forms agree on $U\cap V$, this is their common pointwise glued form.
+-/
 def smoothFormsTwoOpenGlueFun
     (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
     (alpha : SmoothForms (I := I) (M := U) A n)
@@ -3136,253 +3167,6 @@ theorem smoothFormsTwoOpenGlueFun_eq_right
         (I := I) (A := A) U V alpha beta hoverlap xW
     simpa [smoothFormsTwoOpenGlueFun, hxU, xW] using hbranch
   · simp [smoothFormsTwoOpenGlueFun, hxU]
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Coordinate expression of the glued form on \(U\)
-statement:
-  On a chart restricted to \(U\), the coordinate representative of the glued
-  form agrees with the coordinate representative of the left local form.
-proof:
-  Use the left-branch formula for the glued form and cancel the inverse tangent
-  map of the open inclusion.
--/
-theorem coordinateExpression_smoothFormsTwoOpenGlueFun_left
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
-    (alpha : SmoothForms (I := I) (M := U) A n)
-    (beta : SmoothForms (I := I) (M := V) A n)
-    (e : OpenPartialHomeomorph M H) (hU : Nonempty U)
-    (he : e ∈ atlas H M) (heU : e.subtypeRestr hU ∈ atlas H U)
-    {y : E} (hy : y ∈ ((e.subtypeRestr hU).extend I).target) :
-    coordinateExpression (I := I) (F := A) (n := n)
-        (smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta) e y =
-      coordinateExpression (I := I) (F := A) (n := n)
-        alpha.toFun (e.subtypeRestr hU) y := by
-  let eU : OpenPartialHomeomorph U H := e.subtypeRestr hU
-  let xU : U := (eU.extend I).symm y
-  let L : TangentSpace I xU →L[𝕜] TangentSpace I (xU : M) :=
-    mfderiv I I (fun z : U => (z : M)) xU
-  let DU : E →L[𝕜] TangentSpace I xU :=
-    mfderivWithin 𝓘(𝕜, E) I (eU.extend I).symm (eU.extend I).target y
-  let DM : E →L[𝕜] TangentSpace I (xU : M) :=
-    mfderivWithin 𝓘(𝕜, E) I (e.extend I).symm (e.extend I).target y
-  have hpoint : (xU : M) = (e.extend I).symm y := by
-    simpa [xU, eU] using subtypeRestr_extend_symm_coe (I := I) e U hU hy
-  have hxU : (e.extend I).symm y ∈ U := by
-    rw [← hpoint]
-    exact xU.2
-  have hpointU : (⟨(e.extend I).symm y, hxU⟩ : U) = xU := by
-    apply Subtype.ext
-    exact hpoint.symm
-  have hglue :
-      smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta
-          ((e.extend I).symm y) =
-        smoothFormOpenExtensionValue (I := I) (A := A) U alpha ((e.extend I).symm y) hxU :=
-    smoothFormsTwoOpenGlueFun_eq_left (I := I) (A := A) U V hcover alpha beta hxU
-  have hfactor : L.comp DU = DM := by
-    simpa [L, DU, DM, eU, xU, hpoint] using
-      mfderiv_subtypeVal_comp_subtypeRestr_extend_symm (I := I) e U hU he heU hy
-  have hL : L.IsInvertible := by
-    simpa [L, xU] using mfderiv_subtypeVal_isInvertible (I := I) U xU
-  rw [coordinateExpression, coordinateExpression, hglue, smoothFormOpenExtensionValue]
-  rw [hpointU]
-  change
-    ((alpha.toFun xU).compContinuousLinearMap L.inverse).compContinuousLinearMap DM =
-      (alpha.toFun xU).compContinuousLinearMap DU
-  ext v
-  simp only [ContinuousAlternatingMap.compContinuousLinearMap_apply]
-  apply congrArg (alpha.toFun xU)
-  funext i
-  calc
-    L.inverse (DM (v i)) = L.inverse ((L.comp DU) (v i)) := by
-      rw [hfactor]
-    _ = L.inverse (L (DU (v i))) := rfl
-    _ = DU (v i) := hL.inverse_apply_self (DU (v i))
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Smoothness of the glued coordinate expression on \(U\)
-statement:
-  On the part of a chart lying over \(U\), the coordinate representative of the
-  glued form is smooth.
-proof:
-  Replace it with the coordinate representative of the left local form, which
-  is smooth.
--/
-theorem contDiffOn_coordinateExpression_smoothFormsTwoOpenGlueFun_left
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
-    (alpha : SmoothForms (I := I) (M := U) A n)
-    (beta : SmoothForms (I := I) (M := V) A n)
-    (e : OpenPartialHomeomorph M H) (hU : Nonempty U)
-    (he : e ∈ atlas H M) (heU : e.subtypeRestr hU ∈ atlas H U) :
-    ContDiffOn 𝕜 ∞
-      (coordinateExpression (I := I) (F := A) (n := n)
-        (smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta) e)
-      ((e.subtypeRestr hU).extend I).target := by
-  exact (alpha.isContMDiff (e.subtypeRestr hU) heU).congr
-    (fun y hy =>
-      (coordinateExpression_smoothFormsTwoOpenGlueFun_left
-        (I := I) (A := A) U V hcover alpha beta e hU he heU hy))
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Coordinate expression of the glued form on \(V\)
-statement:
-  On a chart restricted to \(V\), the coordinate representative of the glued
-  form agrees with the coordinate representative of the right local form.
-proof:
-  Use the right-branch formula for the glued form and cancel the inverse
-  tangent map of the open inclusion.
--/
-theorem coordinateExpression_smoothFormsTwoOpenGlueFun_right
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
-    (alpha : SmoothForms (I := I) (M := U) A n)
-    (beta : SmoothForms (I := I) (M := V) A n)
-    (hoverlap :
-      deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n (alpha, beta) = 0)
-    (e : OpenPartialHomeomorph M H) (hV : Nonempty V)
-    (he : e ∈ atlas H M) (heV : e.subtypeRestr hV ∈ atlas H V)
-    {y : E} (hy : y ∈ ((e.subtypeRestr hV).extend I).target) :
-    coordinateExpression (I := I) (F := A) (n := n)
-        (smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta) e y =
-      coordinateExpression (I := I) (F := A) (n := n)
-        beta.toFun (e.subtypeRestr hV) y := by
-  let eV : OpenPartialHomeomorph V H := e.subtypeRestr hV
-  let xV : V := (eV.extend I).symm y
-  let L : TangentSpace I xV →L[𝕜] TangentSpace I (xV : M) :=
-    mfderiv I I (fun z : V => (z : M)) xV
-  let DV : E →L[𝕜] TangentSpace I xV :=
-    mfderivWithin 𝓘(𝕜, E) I (eV.extend I).symm (eV.extend I).target y
-  let DM : E →L[𝕜] TangentSpace I (xV : M) :=
-    mfderivWithin 𝓘(𝕜, E) I (e.extend I).symm (e.extend I).target y
-  have hpoint : (xV : M) = (e.extend I).symm y := by
-    simpa [xV, eV] using subtypeRestr_extend_symm_coe (I := I) e V hV hy
-  have hxV : (e.extend I).symm y ∈ V := by
-    rw [← hpoint]
-    exact xV.2
-  have hpointV : (⟨(e.extend I).symm y, hxV⟩ : V) = xV := by
-    apply Subtype.ext
-    exact hpoint.symm
-  have hglue :
-      smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta
-          ((e.extend I).symm y) =
-        smoothFormOpenExtensionValue (I := I) (A := A) V beta ((e.extend I).symm y) hxV :=
-    smoothFormsTwoOpenGlueFun_eq_right
-      (I := I) (A := A) U V hcover alpha beta hoverlap hxV
-  have hfactor : L.comp DV = DM := by
-    simpa [L, DV, DM, eV, xV, hpoint] using
-      mfderiv_subtypeVal_comp_subtypeRestr_extend_symm (I := I) e V hV he heV hy
-  have hL : L.IsInvertible := by
-    simpa [L, xV] using mfderiv_subtypeVal_isInvertible (I := I) V xV
-  rw [coordinateExpression, coordinateExpression, hglue, smoothFormOpenExtensionValue]
-  rw [hpointV]
-  change
-    ((beta.toFun xV).compContinuousLinearMap L.inverse).compContinuousLinearMap DM =
-      (beta.toFun xV).compContinuousLinearMap DV
-  ext v
-  simp only [ContinuousAlternatingMap.compContinuousLinearMap_apply]
-  apply congrArg (beta.toFun xV)
-  funext i
-  calc
-    L.inverse (DM (v i)) = L.inverse ((L.comp DV) (v i)) := by
-      rw [hfactor]
-    _ = L.inverse (L (DV (v i))) := rfl
-    _ = DV (v i) := hL.inverse_apply_self (DV (v i))
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Smoothness of the glued coordinate expression on \(V\)
-statement:
-  On the part of a chart lying over \(V\), the coordinate representative of the
-  glued form is smooth.
-proof:
-  Replace it with the coordinate representative of the right local form, which
-  is smooth.
--/
-theorem contDiffOn_coordinateExpression_smoothFormsTwoOpenGlueFun_right
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
-    (alpha : SmoothForms (I := I) (M := U) A n)
-    (beta : SmoothForms (I := I) (M := V) A n)
-    (hoverlap :
-      deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n (alpha, beta) = 0)
-    (e : OpenPartialHomeomorph M H) (hV : Nonempty V)
-    (he : e ∈ atlas H M) (heV : e.subtypeRestr hV ∈ atlas H V) :
-    ContDiffOn 𝕜 ∞
-      (coordinateExpression (I := I) (F := A) (n := n)
-        (smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta) e)
-      ((e.subtypeRestr hV).extend I).target := by
-  exact (beta.isContMDiff (e.subtypeRestr hV) heV).congr
-    (fun y hy =>
-      (coordinateExpression_smoothFormsTwoOpenGlueFun_right
-        (I := I) (A := A) U V hcover alpha beta hoverlap e hV he heV hy))
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Smoothness of glued coordinate expressions from local restrictions
-statement:
-  If two local forms agree on the overlap, the coordinate representative of
-  their glued pointwise form is smooth on every ambient chart.
-proof:
-  Around each coordinate point, use the cover to choose either the \(U\)-side or
-  the \(V\)-side and apply the corresponding local smoothness statement.
--/
-theorem contDiffOn_coordinateExpression_smoothFormsTwoOpenGlueFun_of_restrictions
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
-    (alpha : SmoothForms (I := I) (M := U) A n)
-    (beta : SmoothForms (I := I) (M := V) A n)
-    (hoverlap :
-      deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n (alpha, beta) = 0)
-    (e : OpenPartialHomeomorph M H) (hU : Nonempty U) (hV : Nonempty V)
-    (he : e ∈ atlas H M)
-    (heU : e.subtypeRestr hU ∈ atlas H U)
-    (heV : e.subtypeRestr hV ∈ atlas H V) :
-    ContDiffOn 𝕜 ∞
-      (coordinateExpression (I := I) (F := A) (n := n)
-        (smoothFormsTwoOpenGlueFun (I := I) (A := A) U V hcover alpha beta) e)
-      (e.extend I).target := by
-  refine contDiffOn_of_locally_contDiffOn ?_
-  intro y hy
-  let x : M := (e.extend I).symm y
-  have hxUV : x ∈ U ∨ x ∈ V := by
-    have hx : x ∈ (U ⊔ V : TopologicalSpace.Opens M) := by
-      rw [hcover]
-      trivial
-    simpa [x] using hx
-  rcases hxUV with hxU | hxV
-  · have hyUtarget : y ∈ ((e.subtypeRestr hU).extend I).target :=
-      subtypeRestr_extend_target_of_mem (I := I) e U hU hy (by simpa [x] using hxU)
-    rcases mem_nhdsWithin.mp
-        (subtypeRestr_extend_target_mem_nhdsWithin (I := I) e U hU hyUtarget) with
-      ⟨u, hu_open, hyu, hutarget⟩
-    refine ⟨u, hu_open, hyu, ?_⟩
-    exact
-      (contDiffOn_coordinateExpression_smoothFormsTwoOpenGlueFun_left
-        (I := I) (A := A) U V hcover alpha beta e hU he heU).mono
-        (by
-          intro z hz
-          exact hutarget ⟨hz.2, hz.1⟩)
-  · have hyVtarget : y ∈ ((e.subtypeRestr hV).extend I).target :=
-      subtypeRestr_extend_target_of_mem (I := I) e V hV hy (by simpa [x] using hxV)
-    rcases mem_nhdsWithin.mp
-        (subtypeRestr_extend_target_mem_nhdsWithin (I := I) e V hV hyVtarget) with
-      ⟨u, hu_open, hyu, hutarget⟩
-    refine ⟨u, hu_open, hyu, ?_⟩
-    exact
-      (contDiffOn_coordinateExpression_smoothFormsTwoOpenGlueFun_right
-        (I := I) (A := A) U V hcover alpha beta hoverlap e hV he heV).mono
-        (by
-          intro z hz
-          exact hutarget ⟨hz.2, hz.1⟩)
 
 omit [IsRCLikeNormedField 𝕜] in
 /--
@@ -3804,6 +3588,13 @@ theorem isContMDiffForm_smoothFormsTwoOpenGlueFun
       (fun {x} hx => smoothFormsTwoOpenGlueFun_eq_right
         (I := I) (A := A) U V hcover alpha beta hoverlap (x := x) hx)
 
+/--
+%%handwave
+name:
+  Gluing smooth forms over a two-open cover
+statement:
+  If smooth forms $\alpha$ on $U$ and $\beta$ on $V$ agree on $U\cap V$ and $U\cup V=M$, their pointwise gluing is a smooth form on $M$ restricting to each.
+-/
 def smoothFormsTwoOpenGlue
     [CharZero 𝕜]
     (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) {n : ℕ}
@@ -4179,27 +3970,13 @@ theorem deRham_mayerVietoris_difference_restriction_eq_zero
   exact sub_eq_zero.mpr
     (deRham_mayerVietoris_overlap_restrictions_eq (I := I) (A := A) U V n omega)
 
-omit [IsRCLikeNormedField 𝕜] in
 /--
 %%handwave
 name:
-  Restriction has zero overlap difference
+  One open subset viewed inside another
 statement:
-  If a smooth form on \(M\) is restricted to \(U\) and \(V\), then the two
-  resulting restrictions agree on \(U\cap V\), so their difference there is zero.
-proof:
-  Expand the smooth restriction and difference maps, then use equality of the two
-  iterated restrictions to the overlap.
+  For open subsets $U,V\subseteq M$, the open subset of $U$ cut out by $V$ is $\{x\in U:x\in V\}$.
 -/
-theorem deRham_mayerVietoris_smooth_difference_restriction_eq_zero
-    (U V : TopologicalSpace.Opens M) (n : ℕ)
-    (omega : SmoothForms (I := I) (M := M) A n) :
-    deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n
-      (deRhamMayerVietorisSmoothRestriction (I := I) (A := A) U V n omega) = 0 := by
-  rw [deRhamMayerVietorisSmoothDifference, deRhamMayerVietorisSmoothRestriction]
-  exact sub_eq_zero.mpr
-    (restrictSmoothForms_overlap_restrictions_eq (I := I) (A := A) U V n omega)
-
 def openInOpen (U V : TopologicalSpace.Opens M) : TopologicalSpace.Opens U where
   carrier := {x : U | (x : M) ∈ V}
   is_open' := by
@@ -4209,19 +3986,10 @@ def openInOpen (U V : TopologicalSpace.Opens M) : TopologicalSpace.Opens U where
 /--
 %%handwave
 name:
-  Membership in an open subset inside an open subset
+  Identification of an iterated open subset with an intersection
 statement:
-  A point of \(U\) lies in the open subset cut out by \(V\) exactly when its
-  underlying point of \(M\) lies in \(V\).
-proof:
-  This is the defining membership condition for the induced open subset.
+  The open subset of $U$ cut out by $V$ is canonically equivalent to the intersection $U\cap V$ as a subtype of $M$.
 -/
-@[simp]
-theorem mem_openInOpen
-    (U V : TopologicalSpace.Opens M) (x : U) :
-    x ∈ openInOpen U V ↔ (x : M) ∈ V :=
-  Iff.rfl
-
 def openInOpenEquivInf (U V : TopologicalSpace.Opens M) :
     openInOpen U V ≃ (U ⊓ V : TopologicalSpace.Opens M) where
   toFun x := ⟨((x : U) : M), ⟨x.1.2, x.2⟩⟩
@@ -4237,38 +4005,10 @@ def openInOpenEquivInf (U V : TopologicalSpace.Opens M) :
 /--
 %%handwave
 name:
-  The overlap equivalence preserves the underlying point
+  Pointwise transport of a form from an intersection
 statement:
-  The canonical equivalence between \(V\) inside \(U\) and \(U\cap V\) does not
-  change the underlying point of \(M\).
-proof:
-  The equivalence is defined by repackaging the same point with the two
-  membership proofs.
+  A smooth form on $U\cap V$ determines pointwise covectors on the corresponding open subset of $U$ by transporting its ambient extension along the nested inclusions.
 -/
-@[simp]
-theorem openInOpenEquivInf_apply_coe
-    (U V : TopologicalSpace.Opens M) (x : openInOpen U V) :
-    ((openInOpenEquivInf U V x : (U ⊓ V : TopologicalSpace.Opens M)) : M) =
-      ((x : U) : M) :=
-  rfl
-
-/--
-%%handwave
-name:
-  The inverse overlap equivalence preserves the underlying point
-statement:
-  The inverse of the canonical equivalence from \(V\) inside \(U\) to
-  \(U\cap V\) does not change the underlying point of \(M\).
-proof:
-  The inverse equivalence is also only a repackaging of the same point with its
-  membership proofs.
--/
-@[simp]
-theorem openInOpenEquivInf_symm_apply_coe
-    (U V : TopologicalSpace.Opens M) (x : (U ⊓ V : TopologicalSpace.Opens M)) :
-    (((openInOpenEquivInf U V).symm x : U) : M) = (x : M) :=
-  rfl
-
 def openInOpenInfFormFun
     (U V : TopologicalSpace.Opens M) {n : ℕ}
     (omega : SmoothForms (I := I) (M := (U ⊓ V : TopologicalSpace.Opens M)) A n) :
@@ -4458,6 +4198,13 @@ theorem coordinateExpression_openInOpenInfForm_subtypeRestr
         change LW.IsInvertible at hL
         exact hL.inverse_apply_self (DW (v i)))
 
+/--
+%%handwave
+name:
+  Form on an iterated open subset induced from an intersection
+statement:
+  A smooth form on $U\cap V$ pulls back to the canonically corresponding smooth form on the open subset of $U$ cut out by $V$.
+-/
 def openInOpenInfForm
     (U V : TopologicalSpace.Opens M) {n : ℕ}
     (omega : SmoothForms (I := I) (M := (U ⊓ V : TopologicalSpace.Opens M)) A n) :
@@ -4508,6 +4255,13 @@ def openInOpenInfForm
       coordinateExpression_openInOpenInfForm_subtypeRestr
         (I := I) (A := A) U V omega eM hU hWU hW heM heU heWU heW hy
 
+/--
+%%handwave
+name:
+  Complement of a support inside an open subset
+statement:
+  For an open subset $U\subseteq M$ and smooth function $\chi$, the points of $U$ outside the closed support of $\chi$ form an open subset of $U$.
+-/
 def supportComplInOpen
     (U : TopologicalSpace.Opens M) (χ : C^∞⟮I, M; 𝕜⟯) :
     TopologicalSpace.Opens U where
@@ -4515,24 +4269,6 @@ def supportComplInOpen
   is_open' := by
     change IsOpen ((fun x : U => (x : M)) ⁻¹' ((tsupport χ)ᶜ : Set M))
     exact (isClosed_tsupport χ).isOpen_compl.preimage continuous_subtype_val
-
-omit [IsRCLikeNormedField 𝕜] [IsManifold I ∞ M] in
-/--
-%%handwave
-name:
-  Membership in the support-complement open subset
-statement:
-  A point of \(U\) lies in the open subset complementary to the support of
-  \(\chi\) exactly when its underlying point is outside the support of \(\chi\).
-proof:
-  This is the defining membership condition for the support-complement open
-  subset.
--/
-@[simp]
-theorem mem_supportComplInOpen
-    (U : TopologicalSpace.Opens M) (χ : C^∞⟮I, M; 𝕜⟯) (x : U) :
-    x ∈ supportComplInOpen (I := I) U χ ↔ (x : M) ∉ tsupport χ :=
-  Iff.rfl
 
 omit [IsRCLikeNormedField 𝕜] [IsManifold I ∞ M] in
 /--
@@ -5179,120 +4915,6 @@ theorem deRham_mayerVietoris_smooth_glue_of_zero_difference
     (restrictSmoothFormsToOpen_smoothFormsTwoOpenGlue_right
       (I := I) (A := A) U V hcover alpha beta hoverlap)
 
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  Exactness of the two-open sequence of smooth forms
-statement:
-  For an open cover \(M=U\cup V\), a pair of smooth forms on \(U\) and \(V\)
-  has zero overlap difference exactly when it is the pair of restrictions of a
-  smooth form on \(M\).
-proof:
-  One direction is that restricting a global form twice gives the same form on
-  the overlap.  The other direction is smooth gluing for pairs whose overlap
-  difference is zero.
--/
-theorem deRham_mayerVietoris_smooth_exact_restriction_difference
-    [CharZero 𝕜]
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) (n : ℕ) :
-    Function.Exact
-      (deRhamMayerVietorisSmoothRestriction (I := I) (A := A) U V n)
-      (deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n) := by
-  refine Function.Exact.of_comp_of_mem_range ?_ ?_
-  · funext omega
-    exact deRham_mayerVietoris_smooth_difference_restriction_eq_zero
-      (I := I) (A := A) U V n omega
-  · intro omega hzero
-    rcases omega with ⟨alpha, beta⟩
-    rcases deRham_mayerVietoris_smooth_glue_of_zero_difference
-        (I := I) (A := A) U V hcover n alpha beta hzero with
-      ⟨eta, heta⟩
-    exact ⟨eta, heta⟩
-
-omit [IsRCLikeNormedField 𝕜] in
-/--
-%%handwave
-name:
-  The smooth restriction map is injective for a two-open cover
-statement:
-  A smooth form on \(M\) is determined by its restrictions to \(U\) and \(V\)
-  when \(U\cup V=M\).
-proof:
-  If two forms have the same two restrictions, their difference restricts to
-  zero on both opens; separatedness then makes the difference zero.
--/
-theorem deRham_mayerVietoris_smooth_restriction_injective
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) (n : ℕ) :
-    Function.Injective
-      (deRhamMayerVietorisSmoothRestriction (I := I) (A := A) U V n) := by
-  intro omega eta homega_eta
-  have hU :
-      restrictSmoothFormsToOpen (I := I) (A := A) U n omega =
-        restrictSmoothFormsToOpen (I := I) (A := A) U n eta := by
-    simpa [deRhamMayerVietorisSmoothRestriction] using congrArg Prod.fst homega_eta
-  have hV :
-      restrictSmoothFormsToOpen (I := I) (A := A) V n omega =
-        restrictSmoothFormsToOpen (I := I) (A := A) V n eta := by
-    simpa [deRhamMayerVietorisSmoothRestriction] using congrArg Prod.snd homega_eta
-  have hUzero :
-      restrictSmoothFormsToOpen (I := I) (A := A) U n (omega - eta) = 0 := by
-    rw [map_sub, hU, sub_self]
-  have hVzero :
-      restrictSmoothFormsToOpen (I := I) (A := A) V n (omega - eta) = 0 := by
-    rw [map_sub, hV, sub_self]
-  have hzero : omega - eta = 0 :=
-    smoothForms_eq_zero_of_restrictions_eq_zero
-      (I := I) (A := A) U V hcover n (omega - eta) hUzero hVzero
-  exact sub_eq_zero.mp hzero
-
-/--
-The short exact sequence of smooth forms attached to a two-open cover.
--/
-structure DeRhamMayerVietorisSmoothShortExact
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) (n : ℕ) where
-  injective_restriction :
-    Function.Injective
-      (deRhamMayerVietorisSmoothRestriction (I := I) (A := A) U V n)
-  exact_restriction_difference :
-    Function.Exact
-      (deRhamMayerVietorisSmoothRestriction (I := I) (A := A) U V n)
-      (deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n)
-  surjective_difference :
-    Function.Surjective
-      (deRhamMayerVietorisSmoothDifference (I := I) (A := A) U V n)
-
-omit [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [IsRCLikeNormedField 𝕜]
-  [IsManifold I ∞ M] [NormedSpace 𝕜 A] in
-/--
-%%handwave
-name:
-  The short exact sequence of smooth forms from a partition of unity
-statement:
-  In the standard finite-dimensional real smooth setting, the two-open sequence
-  of smooth forms has injective restriction, exact middle term, and surjective
-  overlap-difference map.
-proof:
-  Package the injectivity, exactness, and partition-of-unity surjectivity
-  theorems into the short-exact-sequence record.
--/
-theorem deRham_mayerVietoris_smooth_shortExact_of_partitionOfUnity
-    [NormedSpace ℝ E] (Iℝ : ModelWithCorners ℝ E H)
-    [IsManifold Iℝ ∞ M] [FiniteDimensional ℝ E] [T2Space M] [SigmaCompactSpace M]
-    [NormedSpace ℝ A]
-    (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) (n : ℕ) :
-    Nonempty (DeRhamMayerVietorisSmoothShortExact (I := Iℝ) (A := A) U V hcover n) := by
-  exact ⟨
-    { injective_restriction :=
-        deRham_mayerVietoris_smooth_restriction_injective
-          (I := Iℝ) (A := A) U V hcover n
-      exact_restriction_difference :=
-        deRham_mayerVietoris_smooth_exact_restriction_difference
-          (I := Iℝ) (A := A) U V hcover n
-      surjective_difference := by
-        intro omega
-        exact deRham_mayerVietoris_smooth_difference_surjective_of_partitionOfUnity
-          (A := A) Iℝ U V hcover n omega }⟩
 
 /--
 %%handwave
@@ -5913,7 +5535,11 @@ theorem deRham_mayerVietoris_connectingData_nonempty_of_partitionOfUnity
     omega
 
 /--
-Formula characterizing the Mayer-Vietoris connecting map.
+%%handwave
+name:
+  Characterizing formula for a de Rham Mayer–Vietoris connecting map
+statement:
+  A map $\delta:H^n_{\mathrm{dR}}(U\cap V;A)\to H^{n+1}_{\mathrm{dR}}(M;A)$ satisfies the Mayer–Vietoris connecting formula when, for every closed overlap form and every compatible choice of local lifts, $\delta$ sends its class to the class of the resulting globally glued differential.
 -/
 def DeRhamMayerVietorisConnectingFormula
     (U V : TopologicalSpace.Opens M) (hcover : U ⊔ V = ⊤) (n : ℕ)

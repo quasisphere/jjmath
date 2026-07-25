@@ -26,197 +26,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {x : X} {p q : Path x₀ x}
 
 omit [RiemannSurface X] in
-/-- The constant homotopy-grid walk at a representative path. -/
-def refl
-    (p : Path x₀ x) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-      basedWeakHandoffAlong p p where
-  length := 0
-  pathAt := fun _ => p
-  pathAt_zero := rfl
-  pathAt_length := rfl
-  step_terminalFormula_eq := by
-    intro n hn
-    omega
-
-omit [RiemannSurface X] in
-/-- Append one formula-preserving grid step to a homotopy-grid walk. -/
-def snoc
-    {r : Path x₀ x}
-    (W :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-        basedWeakHandoffAlong p q)
-    (hstep :
-      (basedWeakHandoffAlong q).terminalFormulaAt x =
-        (basedWeakHandoffAlong r).terminalFormulaAt x) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-      basedWeakHandoffAlong p r where
-  length := W.length + 1
-  pathAt := fun n =>
-    if h : n ≤ W.length then
-      W.pathAt n
-    else
-      r
-  pathAt_zero := by
-    simp [W.pathAt_zero]
-  pathAt_length := by
-    simp
-  step_terminalFormula_eq := by
-    intro n hn
-    by_cases hnlt : n < W.length
-    · have hnle : n ≤ W.length := Nat.le_of_lt hnlt
-      have hsuccle : n + 1 ≤ W.length := Nat.succ_le_of_lt hnlt
-      have hpath₀ :
-          (if h : n ≤ W.length then W.pathAt n else r) = W.pathAt n := by
-        simp [hnle]
-      have hpath₁ :
-          (if h : n + 1 ≤ W.length then W.pathAt (n + 1) else r) =
-            W.pathAt (n + 1) := by
-        simp [hsuccle]
-      rw [hpath₀, hpath₁]
-      exact W.step_terminalFormula_eq n hnlt
-    · have hn_eq : n = W.length := by omega
-      subst n
-      have hle : W.length ≤ W.length := le_rfl
-      have hnot : ¬ W.length + 1 ≤ W.length := by omega
-      have hpath₀ :
-          (if h : W.length ≤ W.length then W.pathAt W.length else r) =
-            W.pathAt W.length := by
-        simp
-      have hpath₁ :
-          (if h : W.length + 1 ≤ W.length then W.pathAt (W.length + 1) else r) =
-            r := by
-        simp [hnot]
-      rw [hpath₀, hpath₁, W.pathAt_length]
-      exact hstep
-
-omit [RiemannSurface X] in
-/-- A single formula-preserving step as a homotopy-grid walk. -/
-def ofStep
-    (hstep :
-      (basedWeakHandoffAlong p).terminalFormulaAt x =
-        (basedWeakHandoffAlong q).terminalFormulaAt x) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-      basedWeakHandoffAlong p q :=
-  (refl p).snoc hstep
-
-omit [RiemannSurface X] in
-/-- Reverse a homotopy-grid walk. -/
-def symm
-    (W :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-        basedWeakHandoffAlong p q) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-      basedWeakHandoffAlong q p where
-  length := W.length
-  pathAt := fun n => W.pathAt (W.length - n)
-  pathAt_zero := by
-    simpa using W.pathAt_length
-  pathAt_length := by
-    simpa using W.pathAt_zero
-  step_terminalFormula_eq := by
-    intro n hn
-    let m := W.length - (n + 1)
-    have hm : m < W.length := by omega
-    have hnext : W.length - n = m + 1 := by
-      omega
-    have hcur : W.length - (n + 1) = m := rfl
-    rw [hnext, hcur]
-    exact (W.step_terminalFormula_eq m hm).symm
-
-omit [RiemannSurface X] in
-/-- Concatenate two homotopy-grid walks. -/
-def trans
-    {r : Path x₀ x}
-    (W₁ :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-        basedWeakHandoffAlong p q)
-    (W₂ :
-      PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-        basedWeakHandoffAlong q r) :
-    PathLocalTransitionBasedWeakHandoffHomotopyGridWalk
-      basedWeakHandoffAlong p r where
-  length := W₁.length + W₂.length
-  pathAt := fun n =>
-    if h : n ≤ W₁.length then
-      W₁.pathAt n
-    else
-      W₂.pathAt (n - W₁.length)
-  pathAt_zero := by
-    simp [W₁.pathAt_zero]
-  pathAt_length := by
-    by_cases hW₂zero : W₂.length = 0
-    · have hqr : q = r := by
-        have hlen := W₂.pathAt_length
-        rw [hW₂zero] at hlen
-        exact W₂.pathAt_zero.symm.trans hlen
-      simp [hW₂zero, W₁.pathAt_length, hqr]
-    · have hnot : ¬ W₁.length + W₂.length ≤ W₁.length := by
-        have hpos : 0 < W₂.length := Nat.pos_of_ne_zero hW₂zero
-        omega
-      have hidx : W₁.length + W₂.length - W₁.length = W₂.length := by
-        omega
-      simp [hnot, hidx, W₂.pathAt_length]
-  step_terminalFormula_eq := by
-    intro n hn
-    by_cases hnlt : n < W₁.length
-    · have hnle : n ≤ W₁.length := Nat.le_of_lt hnlt
-      have hsuccle : n + 1 ≤ W₁.length := Nat.succ_le_of_lt hnlt
-      have hpath₀ :
-          (if h : n ≤ W₁.length then W₁.pathAt n
-            else W₂.pathAt (n - W₁.length)) = W₁.pathAt n := by
-        simp [hnle]
-      have hpath₁ :
-          (if h : n + 1 ≤ W₁.length then W₁.pathAt (n + 1)
-            else W₂.pathAt (n + 1 - W₁.length)) =
-            W₁.pathAt (n + 1) := by
-        simp [hsuccle]
-      rw [hpath₀, hpath₁]
-      exact W₁.step_terminalFormula_eq n hnlt
-    · by_cases hn_eq : n = W₁.length
-      · subst n
-        have hW₂pos : 0 < W₂.length := by omega
-        have hnot : ¬ W₁.length + 1 ≤ W₁.length := by omega
-        have hidx : W₁.length + 1 - W₁.length = 1 := by omega
-        have hidx0 : W₁.length - W₁.length = 0 := by omega
-        have hle : W₁.length ≤ W₁.length := le_rfl
-        have hpath₀ :
-            (if h : W₁.length ≤ W₁.length then W₁.pathAt W₁.length
-              else W₂.pathAt (W₁.length - W₁.length)) =
-              W₁.pathAt W₁.length := by
-          simp
-        have hpath₁ :
-            (if h : W₁.length + 1 ≤ W₁.length then W₁.pathAt (W₁.length + 1)
-              else W₂.pathAt (W₁.length + 1 - W₁.length)) =
-              W₂.pathAt 1 := by
-          simp [hnot, hidx]
-        rw [hpath₀, hpath₁, W₁.pathAt_length]
-        exact
-          (congrArg
-              (fun s : Path x₀ x =>
-                (basedWeakHandoffAlong s).terminalFormulaAt x)
-              W₂.pathAt_zero).symm.trans
-            (W₂.step_terminalFormula_eq 0 hW₂pos)
-      · have hn_after : W₁.length < n := by omega
-        have hn₂ : n - W₁.length < W₂.length := by omega
-        have hnot_n : ¬ n ≤ W₁.length := by omega
-        have hnot_succ : ¬ n + 1 ≤ W₁.length := by omega
-        have hidx_succ : n + 1 - W₁.length = (n - W₁.length) + 1 := by
-          omega
-        have hpath₀ :
-            (if h : n ≤ W₁.length then W₁.pathAt n
-              else W₂.pathAt (n - W₁.length)) =
-              W₂.pathAt (n - W₁.length) := by
-          simp [hnot_n]
-        have hpath₁ :
-            (if h : n + 1 ≤ W₁.length then W₁.pathAt (n + 1)
-              else W₂.pathAt (n + 1 - W₁.length)) =
-              W₂.pathAt ((n - W₁.length) + 1) := by
-          simp [hnot_succ, hidx_succ]
-        rw [hpath₀, hpath₁]
-        exact W₂.step_terminalFormula_eq (n - W₁.length) hn₂
-
-omit [RiemannSurface X] in
 /-- A finite grid walk preserves the terminal branch formula from its first path
 to its last path.
 
@@ -279,41 +88,6 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {x : X} {p q : Path x₀ x}
 
 omit [RiemannSurface X] in
-/-- The identity elementary grid move. -/
-def refl
-    (p : Path x₀ x) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMove
-      basedWeakHandoffAlong p p where
-  terminalFormula_eq := rfl
-
-/--
-Two representative paths with the same endpoints give an elementary grid move
-when both path images lie in one fixed comparison chart.
--/
-def of_common_fixedChart
-    (p q : Path x₀ x) (c : X)
-    (hcp : ∀ t : unitInterval, p t ∈ (localModels.chartAt c).domain)
-    (hcq : ∀ t : unitInterval, q t ∈ (localModels.chartAt c).domain)
-    (Tbase :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt c)
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMove
-      basedWeakHandoffAlong p q where
-  terminalFormula_eq := by
-    let S := basedWeakHandoffAlong p
-    let T := basedWeakHandoffAlong q
-    change S.terminalValue = T.terminalValue
-    calc
-      S.terminalValue =
-          realMobiusRepresentativeAction Tbase.representative⁻¹
-            ((localModels.chartAt c).toUpperHalfPlane x) := by
-            exact S.terminalValue_eq_fixedChartBranch c hcp Tbase
-      _ = T.terminalValue := by
-            exact (T.terminalValue_eq_fixedChartBranch c hcq Tbase).symm
-
-omit [RiemannSurface X] in
 /-- The terminal formula equality carried by an elementary grid move.
 
 %%handwave
@@ -328,16 +102,6 @@ theorem terminalFormulaAt_eq
     (basedWeakHandoffAlong p).terminalFormulaAt x =
       (basedWeakHandoffAlong q).terminalFormulaAt x :=
   M.terminalFormula_eq
-
-omit [RiemannSurface X] in
-/-- Reverse an elementary grid move. -/
-def symm
-    (M :
-      PathLocalTransitionBasedWeakHandoffElementaryGridMove
-        basedWeakHandoffAlong p q) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMove
-      basedWeakHandoffAlong q p where
-  terminalFormula_eq := M.terminalFormula_eq.symm
 
 end PathLocalTransitionBasedWeakHandoffElementaryGridMove
 
@@ -378,7 +142,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {x : X} {p q : Path x₀ x}
 
 omit [RiemannSurface X] in
-/-- The constant elementary grid-move walk at a representative path. -/
+/-- The constant elementary grid-move walk at a representative path.
+
+%%handwave
+name: The constant elementary grid-move walk at a representative path
+statement:
+  The constant elementary grid-move walk at a representative path.
+-/
 def refl
     (p : Path x₀ x) :
     PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
@@ -392,7 +162,13 @@ def refl
     omega
 
 omit [RiemannSurface X] in
-/-- Change only the named endpoint paths of an elementary grid-move walk. -/
+/-- Change only the named endpoint paths of an elementary grid-move walk.
+
+%%handwave
+name: Change only the named endpoint paths of an elementary grid-move walk
+statement:
+  Change only the named endpoint paths of an elementary grid-move walk.
+-/
 def cast
     (W :
       PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
@@ -409,6 +185,12 @@ def cast
 /--
 An elementary-move walk is a homotopy-grid walk after forgetting the
 individual move witnesses.
+
+%%handwave
+name: An elementary-move walk is a homotopy-grid walk after forgetting the individual move witnesses
+statement:
+  An elementary-move walk is a homotopy-grid walk after forgetting the individual move
+  witnesses.
 -/
 def toHomotopyGridWalk
     (W :
@@ -425,7 +207,13 @@ def toHomotopyGridWalk
     exact (W.moveAt n hn).terminalFormulaAt_eq
 
 omit [RiemannSurface X] in
-/-- Append one elementary grid move to the end of an elementary grid-move walk. -/
+/-- Append one elementary grid move to the end of an elementary grid-move walk.
+
+%%handwave
+name: Append one elementary grid move to the end of an elementary grid-move walk
+statement:
+  Append one elementary grid move to the end of an elementary grid-move walk.
+-/
 def snoc
     {r : Path x₀ x}
     (W :
@@ -458,7 +246,13 @@ def snoc
       simpa [hnot, W.pathAt_length] using M
 
 omit [RiemannSurface X] in
-/-- A single elementary grid move as an elementary grid-move walk. -/
+/-- A single elementary grid move as an elementary grid-move walk.
+
+%%handwave
+name: A single elementary grid move as an elementary grid-move walk
+statement:
+  A single elementary grid move as an elementary grid-move walk.
+-/
 def ofMove
     (M :
       PathLocalTransitionBasedWeakHandoffElementaryGridMove
@@ -468,31 +262,13 @@ def ofMove
   (refl p).snoc M
 
 omit [RiemannSurface X] in
-/-- Reverse a finite elementary grid-move walk. -/
-def symm
-    (W :
-      PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
-        basedWeakHandoffAlong p q) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
-      basedWeakHandoffAlong q p where
-  length := W.length
-  pathAt := fun n => W.pathAt (W.length - n)
-  pathAt_zero := by
-    simpa using W.pathAt_length
-  pathAt_length := by
-    simpa using W.pathAt_zero
-  moveAt := by
-    intro n hn
-    let m := W.length - (n + 1)
-    have hm : m < W.length := by omega
-    have hnext : W.length - n = m + 1 := by
-      omega
-    have hcur : W.length - (n + 1) = m := rfl
-    simpa [m, hnext] using
-      (W.moveAt m hm).symm
+/-- Concatenate two finite elementary grid-move walks.
 
-omit [RiemannSurface X] in
-/-- Concatenate two finite elementary grid-move walks. -/
+%%handwave
+name: Concatenate two finite elementary grid-move walks
+statement:
+  Concatenate two finite elementary grid-move walks.
+-/
 def trans
     {r : Path x₀ x}
     (W₁ :
@@ -547,104 +323,18 @@ def trans
         simpa [hnot_n, hnot_succ, hidx_succ] using
           W₂.moveAt (n - W₁.length) hn₂
 
-omit [RiemannSurface X] in
-/-- An elementary-move walk preserves the terminal branch formula.
-
-%%handwave
-name: A finite elementary-move walk preserves the terminal formula
-statement: If a finite walk of elementary grid moves joins paths $p,q:x_0⇝x$, then the chosen continuation formulas satisfy $F_p(x)=F_q(x)$.
-proof: Induct along the move walk and compose the terminal-formula equality of each elementary move.
--/
-theorem terminalFormulaAt_start_eq_end
-    (W :
-      PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
-        basedWeakHandoffAlong p q) :
-    (basedWeakHandoffAlong p).terminalFormulaAt x =
-      (basedWeakHandoffAlong q).terminalFormulaAt x :=
-  W.toHomotopyGridWalk.terminalFormulaAt_start_eq_end
-
 end PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
 
-/--
-A finite grid walk whose every step is controlled by one fixed comparison
-chart containing both whole representative paths of that step.
 
-This is a deliberately strong global-chart special case of the homotopy-grid
-boundary.  It is useful as an analytic test for the fixed-chart propagation
-lemma, but the genuine topological homotopy-grid theorem for long paths must
-use local square moves with common prefix/suffix data instead of asking a
-single chart to contain an entire representative path.
--/
-structure PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalk
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {x : X} (p q : Path x₀ x) where
-  /-- Number of chart-controlled grid steps. -/
-  length : ℕ
-  /-- The representative path after `n` chart-controlled steps. -/
-  pathAt : ℕ → Path x₀ x
-  /-- The walk starts at `p`. -/
-  pathAt_zero : pathAt 0 = p
-  /-- The walk ends at `q`. -/
-  pathAt_length : pathAt length = q
-  /-- A chart controlling each elementary step. -/
-  stepChart : ∀ n, n < length → X
-  /-- The left path of each step stays in its controlling chart. -/
-  left_mem_stepChart :
-    ∀ n (hn : n < length) (t : unitInterval),
-      pathAt n t ∈ (localModels.chartAt (stepChart n hn)).domain
-  /-- The right path of each step stays in its controlling chart. -/
-  right_mem_stepChart :
-    ∀ n (hn : n < length) (t : unitInterval),
-      pathAt (n + 1) t ∈ (localModels.chartAt (stepChart n hn)).domain
-  /-- The basepoint transition into the controlling chart of each step. -/
-  baseTransition :
-    ∀ n (hn : n < length),
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (stepChart n hn))
-        x₀
-
-namespace PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalk
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    {x : X} {p q : Path x₀ x}
-
-/--
-A chart-controlled grid walk gives an elementary grid-move walk.
--/
-def toElementaryGridMoveWalk
-    (W :
-      PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalk
-        basedWeakHandoffAlong p q) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
-      basedWeakHandoffAlong p q where
-  length := W.length
-  pathAt := W.pathAt
-  pathAt_zero := W.pathAt_zero
-  pathAt_length := W.pathAt_length
-  moveAt := by
-    intro n hn
-    exact
-      PathLocalTransitionBasedWeakHandoffElementaryGridMove.of_common_fixedChart
-        (W.pathAt n) (W.pathAt (n + 1))
-        (W.stepChart n hn)
-        (W.left_mem_stepChart n hn)
-        (W.right_mem_stepChart n hn)
-        (W.baseTransition n hn)
-
-end PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalk
 
 /--
 Every endpoint-fixed path homotopy admits a finite walk by elementary grid
 moves.
+
+%%handwave
+name: Every endpoint-fixed path homotopy admits a finite walk by elementary grid moves
+statement:
+  Every endpoint-fixed path homotopy admits a finite walk by elementary grid moves.
 -/
 def PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -658,26 +348,16 @@ def PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
       (PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalk
         basedWeakHandoffAlong p q)
 
-/--
-Every endpoint-fixed path homotopy admits a finite walk by chart-controlled
-grid moves.
--/
-def PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalkPrinciple
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g)
-    (basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    Prop :=
-  ∀ {x : X} {p q : Path x₀ x}, Path.Homotopic p q →
-    Nonempty
-      (PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalk
-        basedWeakHandoffAlong p q)
-
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The raw cut path through one homotopy strip: follow the lower row up to the
 cut, cross vertically through the homotopy, then follow the upper row.
+
+%%handwave
+name: The raw cut path through one homotopy strip: follow the lower row up to the cut, cross vertically through the homotopy, then follow the upper row
+statement:
+  The raw cut path through one homotopy strip: follow the lower row up to the cut, cross
+  vertically through the homotopy, then follow the upper row.
 -/
 def homotopyStripCutPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -689,6 +369,11 @@ def homotopyStripCutPathRawCore
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The raw cut path through one homotopy strip, cast back to the fixed endpoints.
+
+%%handwave
+name: The raw cut path through one homotopy strip, cast back to the fixed endpoints
+statement:
+  The raw cut path through one homotopy strip, cast back to the fixed endpoints.
 -/
 def homotopyStripCutPathRaw
     {x₀ x : X} {p q : Path x₀ x}
@@ -700,6 +385,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The cut path through one homotopy strip, normalized at the two endpoint cuts
 so that `r = 1` is exactly the lower row and `r = 0` is exactly the upper row.
+
+%%handwave
+name: The cut path through one homotopy strip, normalized at the two endpoint cuts so that r = 1 is exactly the lower row and r = 0 is exactly the upper row
+statement:
+  The cut path through one homotopy strip, normalized at the two endpoint cuts so that r = 1 is
+  exactly the lower row and r = 0 is exactly the upper row.
 -/
 noncomputable def homotopyStripCutPath
     {x₀ x : X} {p q : Path x₀ x}
@@ -745,6 +436,11 @@ theorem homotopyStripCutPath_zero
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The lower-then-right path across one homotopy rectangle.
+
+%%handwave
+name: The lower-then-right path across one homotopy rectangle
+statement:
+  The lower-then-right path across one homotopy rectangle.
 -/
 def homotopyRectangleBottomRightPath
     {x₀ x : X} {p q : Path x₀ x}
@@ -755,6 +451,11 @@ def homotopyRectangleBottomRightPath
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The left-then-upper path across one homotopy rectangle.
+
+%%handwave
+name: The left-then-upper path across one homotopy rectangle
+statement:
+  The left-then-upper path across one homotopy rectangle.
 -/
 def homotopyRectangleLeftTopPath
     {x₀ x : X} {p q : Path x₀ x}
@@ -766,6 +467,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The explicitly decomposed upper cut path for one column: common prefix, then
 the lower-then-right rectangle edge, then the common upper suffix.
+
+%%handwave
+name: The explicitly decomposed upper cut path for one column: common prefix, then the lower-then-right rectangle edge, then the common upper suffix
+statement:
+  The explicitly decomposed upper cut path for one column: common prefix, then the
+  lower-then-right rectangle edge, then the common upper suffix.
 -/
 def homotopyStripColumnTopPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -779,6 +486,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The explicitly decomposed lower cut path for one column: common prefix, then
 the left-then-upper rectangle edge, then the common upper suffix.
+
+%%handwave
+name: The explicitly decomposed lower cut path for one column: common prefix, then the left-then-upper rectangle edge, then the common upper suffix
+statement:
+  The explicitly decomposed lower cut path for one column: common prefix, then the
+  left-then-upper rectangle edge, then the common upper suffix.
 -/
 def homotopyStripColumnBottomPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -791,6 +504,11 @@ def homotopyStripColumnBottomPathRawCore
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The common lower-row prefix in a column move, cast to the fixed basepoint.
+
+%%handwave
+name: The common lower-row prefix in a column move, cast to the fixed basepoint
+statement:
+  The common lower-row prefix in a column move, cast to the fixed basepoint.
 -/
 def homotopyStripColumnPrefix
     {x₀ x : X} {p q : Path x₀ x}
@@ -801,6 +519,11 @@ def homotopyStripColumnPrefix
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The common upper-row suffix in a column move, cast to the fixed endpoint.
+
+%%handwave
+name: The common upper-row suffix in a column move, cast to the fixed endpoint
+statement:
+  The common upper-row suffix in a column move, cast to the fixed endpoint.
 -/
 def homotopyStripColumnSuffix
     {x₀ x : X} {p q : Path x₀ x}
@@ -811,6 +534,11 @@ def homotopyStripColumnSuffix
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The decomposed upper cut path, cast back to the fixed endpoints.
+
+%%handwave
+name: The decomposed upper cut path, cast back to the fixed endpoints
+statement:
+  The decomposed upper cut path, cast back to the fixed endpoints.
 -/
 def homotopyStripColumnTopPath
     {x₀ x : X} {p q : Path x₀ x}
@@ -821,6 +549,11 @@ def homotopyStripColumnTopPath
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The decomposed lower cut path, cast back to the fixed endpoints.
+
+%%handwave
+name: The decomposed lower cut path, cast back to the fixed endpoints
+statement:
+  The decomposed lower cut path, cast back to the fixed endpoints.
 -/
 def homotopyStripColumnBottomPath
     {x₀ x : X} {p q : Path x₀ x}
@@ -832,6 +565,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The top-column path after reassociating concatenations, but before merging
 the two consecutive lower-row subpaths.
+
+%%handwave
+name: The top-column path after reassociating concatenations, but before merging the two consecutive lower-row subpaths
+statement:
+  The top-column path after reassociating concatenations, but before merging the two consecutive
+  lower-row subpaths.
 -/
 def homotopyStripColumnTopAssocPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -846,6 +585,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The bottom-column path after reassociating concatenations, but before merging
 the two consecutive upper-row subpaths.
+
+%%handwave
+name: The bottom-column path after reassociating concatenations, but before merging the two consecutive upper-row subpaths
+statement:
+  The bottom-column path after reassociating concatenations, but before merging the two
+  consecutive upper-row subpaths.
 -/
 def homotopyStripColumnBottomAssocPathRawCore
     {x₀ x : X} {p q : Path x₀ x}
@@ -855,28 +600,6 @@ def homotopyStripColumnBottomAssocPathRawCore
     ((F.evalAt r₀).subpath a b)).trans
     (((F.eval b).subpath r₀ r₁).trans
       ((F.eval b).subpath r₁ 1))
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Casted endpoint form of `homotopyStripColumnTopAssocPathRawCore`.
--/
-def homotopyStripColumnTopAssocPath
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    Path x₀ x :=
-  (homotopyStripColumnTopAssocPathRawCore F a b r₀ r₁).cast
-    (by simp) (by simp)
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Casted endpoint form of `homotopyStripColumnBottomAssocPathRawCore`.
--/
-def homotopyStripColumnBottomAssocPath
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    Path x₀ x :=
-  (homotopyStripColumnBottomAssocPathRawCore F a b r₀ r₁).cast
-    (by simp) (by simp)
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /-- The decomposed top route is the common prefix, the lower-then-right rectangle edge, and the common suffix.
@@ -916,157 +639,14 @@ theorem homotopyStripColumnBottomPath_eq_prefix_rectangle_suffix
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
-The decomposed upper cut path is endpoint-fixed homotopic to the raw upper
-cut path.  This is only reparameterization/parenthesization bookkeeping:
-first merge the two lower-row subpaths, then reassociate concatenations.
-
-%%handwave
-name: The decomposed top route is homotopic to the raw upper cut
-statement: For every endpoint-fixed homotopy $F$ and parameters $a,b,r_0,r_1$, the raw-core top column route is endpoint-fixed homotopic to the raw strip cut at height $r_1$.
-proof: Merge the two adjacent subpaths of the row at $a$, whisker that homotopy by the common horizontal and suffix paths, and reassociate the concatenations.
--/
-theorem homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnTopPathRawCore F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRawCore F a b r₁) := by
-  let γ := F.eval a
-  let δ := (F.evalAt r₁).subpath a b
-  let σ := (F.eval b).subpath r₁ 1
-  have hAssoc :
-      ((γ.subpath 0 r₀).trans ((γ.subpath r₀ r₁).trans δ)).Homotopic
-        (((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).trans δ) :=
-    (Path.Homotopic.trans_assoc
-      (γ.subpath 0 r₀) (γ.subpath r₀ r₁) δ).symm
-  have hSplit :
-      (((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).trans δ).Homotopic
-        ((γ.subpath 0 r₁).trans δ) := by
-    exact
-      Path.Homotopic.hcomp
-        (⟨Path.Homotopy.subpathTransSubpath γ 0 r₀ r₁⟩ :
-          ((γ.subpath 0 r₀).trans (γ.subpath r₀ r₁)).Homotopic
-            (γ.subpath 0 r₁))
-        (Path.Homotopic.refl δ)
-  have hPrefix :
-      ((γ.subpath 0 r₀).trans ((γ.subpath r₀ r₁).trans δ)).Homotopic
-        ((γ.subpath 0 r₁).trans δ) :=
-    hAssoc.trans hSplit
-  simpa [homotopyStripColumnTopPathRawCore,
-    homotopyStripCutPathRawCore, homotopyRectangleBottomRightPath,
-    γ, δ, σ] using
-    Path.Homotopic.hcomp hPrefix (Path.Homotopic.refl σ)
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-The decomposed lower cut path is endpoint-fixed homotopic to the raw lower
-cut path.  This is the analogous upper-row subpath merge for the bottom edge.
-
-%%handwave
-name: The decomposed bottom route is homotopic to the raw lower cut
-statement: For every endpoint-fixed homotopy $F$ and parameters $a,b,r_0,r_1$, the raw-core bottom column route is endpoint-fixed homotopic to the raw strip cut at height $r_0$.
-proof: Merge the two adjacent subpaths of the row at $b$ after the common prefix and horizontal route, then reassociate the concatenations.
--/
-theorem homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnBottomPathRawCore F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRawCore F a b r₀) := by
-  let γ := F.eval a
-  let υ := F.eval b
-  let δ := (F.evalAt r₀).subpath a b
-  let ρ := υ.subpath r₀ r₁
-  let σ := υ.subpath r₁ 1
-  have hAssocLeft :
-      ((γ.subpath 0 r₀).trans (δ.trans ρ)).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans ρ) :=
-    (Path.Homotopic.trans_assoc (γ.subpath 0 r₀) δ ρ).symm
-  have hWithSuffix :
-      (((γ.subpath 0 r₀).trans (δ.trans ρ)).trans σ).Homotopic
-        ((((γ.subpath 0 r₀).trans δ).trans ρ).trans σ) :=
-    Path.Homotopic.hcomp hAssocLeft (Path.Homotopic.refl σ)
-  have hAssocRight :
-      ((((γ.subpath 0 r₀).trans δ).trans ρ).trans σ).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans (ρ.trans σ)) :=
-    Path.Homotopic.trans_assoc ((γ.subpath 0 r₀).trans δ) ρ σ
-  have hSplit :
-      (((γ.subpath 0 r₀).trans δ).trans (ρ.trans σ)).Homotopic
-        (((γ.subpath 0 r₀).trans δ).trans (υ.subpath r₀ 1)) := by
-    exact
-      Path.Homotopic.hcomp
-        (Path.Homotopic.refl ((γ.subpath 0 r₀).trans δ))
-        (⟨Path.Homotopy.subpathTransSubpath υ r₀ r₁ 1⟩ :
-          (ρ.trans σ).Homotopic (υ.subpath r₀ 1))
-  simpa [homotopyStripColumnBottomPathRawCore,
-    homotopyStripCutPathRawCore, homotopyRectangleLeftTopPath,
-    γ, υ, δ, ρ, σ] using
-    (hWithSuffix.trans hAssocRight).trans hSplit
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Casted endpoint form of
-`homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore`.
-
-%%handwave
-name: The based top column route is homotopic to the based raw cut
-statement: For paths based at $x_0$ and ending at $x$, the decomposed top column path over $[a,b]×[r_0,r_1]$ is endpoint-fixed homotopic to the raw cut at $r_1$.
-proof: Transport the raw-core homotopy through the endpoint casts identifying its source with $x_0$ and target with $x$.
--/
-theorem homotopyStripColumnTopPath_homotopic_cutPathRaw
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnTopPath F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRaw F a b r₁) :=
-  (homotopyStripColumnTopPathRawCore_homotopic_cutPathRawCore
-    F a b r₀ r₁).pathCast (by simp) (by simp)
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Casted endpoint form of
-`homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore`.
-
-%%handwave
-name: The based bottom column route is homotopic to the based raw cut
-statement: For paths based at $x_0$ and ending at $x$, the decomposed bottom column path over $[a,b]×[r_0,r_1]$ is endpoint-fixed homotopic to the raw cut at $r_0$.
-proof: Transport the raw-core bottom homotopy through the common endpoint casts.
--/
-theorem homotopyStripColumnBottomPath_homotopic_cutPathRaw
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval) :
-    (homotopyStripColumnBottomPath F a b r₀ r₁).Homotopic
-      (homotopyStripCutPathRaw F a b r₀) :=
-  (homotopyStripColumnBottomPathRawCore_homotopic_cutPathRawCore
-    F a b r₀ r₁).pathCast (by simp) (by simp)
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
-Taking a subpath of a subpath is the same as taking the corresponding
-subpath of the original path.
-
-%%handwave
-name: A subpath of a subpath is an affine subpath
-statement: For a path $γ$ and $a,b,s,t∈[0,1]$, $(γ|_{[a,b]})|_{[s,t]}=γ|_{[(1-s)a+sb,(1-t)a+tb]}$.
-proof: Extensionality reduces the claim to associativity of affine interpolation on the unit interval.
--/
-theorem path_subpath_subpath
-    {x y : X} (γ : Path x y)
-    (a b s t : unitInterval) :
-    (γ.subpath a b).subpath s t =
-      γ.subpath (Set.Icc.convexComb a b s) (Set.Icc.convexComb a b t) := by
-  ext u
-  simp only [Path.subpath]
-  change
-    γ (Set.Icc.convexComb a b (Set.Icc.convexComb s t u)) =
-      γ (Set.Icc.convexComb (Set.Icc.convexComb a b s)
-          (Set.Icc.convexComb a b t) u)
-  apply congrArg γ
-  ext
-  simp [Set.Icc.convexComb]
-  ring_nf
-
-omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/--
 If `b` lies between `a` and `c`, it is the convex-combination breakpoint for
 the subpath from `a` to `c`.
+
+%%handwave
+name: If b lies between a and c, it is the convex-combination breakpoint for the subpath from a to c
+statement:
+  If b lies between a and c, it is the convex-combination breakpoint for the subpath from a to
+  c.
 -/
 def unitInterval.middleParameter
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) : unitInterval :=
@@ -1102,7 +682,13 @@ theorem unitInterval.middleParameter_spec
   Set.Icc.eq_convexComb hab hbc
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- Rescale a parameter `u ∈ [0,r]` back to the unit interval. -/
+/-- Rescale a parameter `u ∈ [0,r]` back to the unit interval.
+
+%%handwave
+name: Rescale a parameter u ∈ [0,r] back to the unit interval
+statement:
+  Rescale a parameter u ∈ [0,r] back to the unit interval.
+-/
 def unitInterval.rescaleLeft
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
     unitInterval :=
@@ -1126,7 +712,13 @@ theorem unitInterval.convexCombo_zero_right_rescaleLeft
   field_simp [ne_of_gt hr0]
 
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
-/-- Rescale a parameter `u ∈ [r,1]` back to the unit interval. -/
+/-- Rescale a parameter `u ∈ [r,1]` back to the unit interval.
+
+%%handwave
+name: Rescale a parameter u ∈ [r,1] back to the unit interval
+statement:
+  Rescale a parameter u ∈ [r,1] back to the unit interval.
+-/
 def unitInterval.rescaleRight
     (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
     unitInterval :=
@@ -1201,6 +793,12 @@ omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The split-path parameter corresponding to an original parameter `u`, for an
 interior breakpoint `r`.
+
+%%handwave
+name: The split-path parameter corresponding to an original parameter u, for an interior breakpoint r
+statement:
+  The split-path parameter corresponding to an original parameter u, for an interior breakpoint
+  r.
 -/
 noncomputable def unitInterval.unitSplitReparam
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -1360,6 +958,11 @@ theorem path_unitSplit_unitSplitReparam
 omit [ChartedSpace ℂ X] [RiemannSurface X] in
 /--
 The original-path parameter corresponding to a parameter on the split path.
+
+%%handwave
+name: The original-path parameter corresponding to a parameter on the split path
+statement:
+  The original-path parameter corresponding to a parameter on the split path.
 -/
 noncomputable def unitInterval.unitSplitOriginalParameter
     (r t : unitInterval) (_hr0 : (0 : ℝ) < r) (_hr1 : (r : ℝ) < 1) :
@@ -1536,6 +1139,13 @@ omit [RiemannSurface X] in
 Transport a weak handoff skeleton along the inverse of the normalized unit
 split reparameterization.  The charts and local transition representatives are
 unchanged; only the subdivision parameters are pushed through the split path.
+
+%%handwave
+name: Transport a weak handoff skeleton along the inverse of the normalized unit split reparameterization
+statement:
+  Transport a weak handoff skeleton along the inverse of the normalized unit split
+  reparameterization. The charts and local transition representatives are unchanged; only the
+  subdivision parameters are pushed through the split path.
 -/
 noncomputable def unitSplitReparamSkeleton
     {x y : X} (γ : Path x y) (r : unitInterval)
@@ -1654,6 +1264,13 @@ then from `r` to `1` has the same terminal branch data as following `γ`.
 
 The general ordered subpath-merge boundary below reduces to this form by
 affine bookkeeping.
+
+%%handwave
+name: Normalized unit-interval split principle: following γ from 0 to r and then from r to 1 has the same terminal branch data as following γ
+statement:
+  Normalized unit-interval split principle: following γ from 0 to r and then from r to 1 has the
+  same terminal branch data as following γ. The general ordered subpath-merge principle below
+  reduces to this form by affine bookkeeping.
 -/
 def PathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple
     (g : HyperbolicMetric X)
@@ -1673,6 +1290,12 @@ def PathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple
 Interior normalized unit-interval split boundary: the same statement as
 `PathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple`, but
 only for genuine breakpoints `0 < r < 1`.
+
+%%handwave
+name: Interior normalized unit-interval split principle: the same statement as the normalized unit-split principle, but only for genuine breakpoints 0 < r < 1
+statement:
+  Interior normalized unit-interval split principle: the same statement as the normalized
+  unit-split principle, but only for genuine breakpoints 0 < r < 1.
 -/
 def PathLocalTransitionBasedWeakHandoffInteriorUnitSplitBranchDataWitnessPrinciple
     (g : HyperbolicMetric X)
@@ -1814,33 +1437,20 @@ theorem pathLocalTransitionBasedWeakHandoffUnitSplitBranchDataWitnessPrinciple_o
   exact hInterior γ r hr0 hr1
 
 /--
-Generic one-dimensional subpath-merge witness principle.
-
-This is a strong compatibility form retained for older routes.  The sharp
-mathematical boundary for the grid proof is the monotone version below; without
-order hypotheses this generic statement can include extra loop monodromy.
--/
-def PathLocalTransitionBasedWeakHandoffSubpathMergeBranchDataWitnessPrinciple
-    (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) :
-    Prop :=
-  ∀ {x y : X} (γ : Path x y) (t₀ t₁ t₂ : unitInterval),
-    ∃ (Ssplit :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton (γ t₀) g localModels
-          ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂)))
-      (Smerged :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton (γ t₀) g localModels
-          (γ.subpath t₀ t₂)),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq
-        Ssplit Smerged
-
-/--
 Monotone one-dimensional subpath-merge witness principle.
 
 This is the mathematically correct form used by the homotopy-grid route:
 continuing along `γ|[t₀,t₁]` and then `γ|[t₁,t₂]` agrees with continuing
 along `γ|[t₀,t₂]` when `t₀ ≤ t₁ ≤ t₂`.  Without these order hypotheses the
 statement can include extra loop monodromy and is too strong.
+
+%%handwave
+name: Monotone one-dimensional subpath-merge witness principle
+statement:
+  Monotone one-dimensional subpath-merge witness principle. This is the mathematically correct
+  form used by the homotopy-grid route: continuing along γ|[t₀,t₁] and then γ|[t₁,t₂] agrees
+  with continuing along γ|[t₀,t₂] when t₀ ≤ t₁ ≤ t₂. Without these order hypotheses the
+  statement can include extra loop monodromy and is too strong.
 -/
 def PathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrinciple
     (g : HyperbolicMetric X)
@@ -1858,33 +1468,18 @@ def PathLocalTransitionBasedWeakHandoffMonotoneSubpathMergeBranchDataWitnessPrin
         Ssplit Smerged
 
 /--
-Generic prefixed one-dimensional subpath-merge witness principle.
-
-This is the form needed when the two adjacent subpaths occur after some
-already-continued prefix.  It is still purely one-dimensional: the only
-geometric change is replacing two consecutive subpaths of the same path by
-their merged subpath.
--/
-def PathLocalTransitionBasedWeakHandoffPrefixedSubpathMergeValueWitnessPrinciple
-    (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) :
-  Prop :=
-  ∀ {x₀ y z : X} (γ : Path y z) (t₀ t₁ t₂ : unitInterval)
-    (pref : Path x₀ (γ t₀)),
-    ∃ (Ssplit :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-          (pref.trans ((γ.subpath t₀ t₁).trans (γ.subpath t₁ t₂))))
-      (Smerged :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-          (pref.trans (γ.subpath t₀ t₂))),
-      Ssplit.terminalValue = Smerged.terminalValue
-
-/--
 Monotone prefixed one-dimensional subpath-merge witness principle.
 
 This is the ordered version actually needed by chart-grid continuation.  The
 prefix may be arbitrary, but the two adjacent subpaths being merged must be an
 ordered subdivision of a single interval.
+
+%%handwave
+name: Monotone prefixed one-dimensional subpath-merge witness principle
+statement:
+  Monotone prefixed one-dimensional subpath-merge witness principle. This is the ordered version
+  actually needed by chart-grid continuation. The prefix may be arbitrary, but the two adjacent
+  subpaths being merged must be an ordered subdivision of a single interval.
 -/
 def PathLocalTransitionBasedWeakHandoffMonotonePrefixedSubpathMergeValueWitnessPrinciple
     (g : HyperbolicMetric X)
@@ -2168,80 +1763,6 @@ theorem exists_terminalBranchDataEq_homotopyStripColumnTop_assocPathRawCore
 
 omit [RiemannSurface X] in
 /--
-Top-column raw cut transfer from the generic subpath-merge boundary.
-
-Reassociation has already been proved exactly; this theorem uses the remaining
-one-dimensional merge for `(F.eval a).subpath 0 r₀` followed by
-`(F.eval a).subpath r₀ r₁`, then appends the common horizontal piece and
-upper suffix.
-
-%%handwave
-name: Top-column subpath merging preserves the raw-cut terminal value
-statement: Assume arbitrary adjacent subpaths can be merged with equal terminal branch data and fixed-path terminal values are unique. Then for every homotopy rectangle there are skeletons over the decomposed top raw-core route and the raw cut at $r_1$ with equal terminal values.
-proof: Reassociate the top route, merge the two adjacent row subpaths at $a$, append the common horizontal and suffix pieces, and use fixed-path uniqueness to identify the independently chosen intermediate skeletons.
--/
-theorem exists_terminalValue_eq_homotopyStripColumnTop_rawCutPathRawCore_of_subpathMerge
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffSubpathMergeBranchDataWitnessPrinciple
-        g localModels)
-    (hSamePath :
-      ∀ {y : X} {path : Path (F (a, 0)) y}
-        (S T :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton
-            (F (a, 0)) g localModels path),
-        S.terminalValue = T.terminalValue) :
-    ∃ (Scol :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          (F (a, 0)) g localModels
-          (homotopyStripColumnTopPathRawCore F a b r₀ r₁))
-      (Sraw :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          (F (a, 0)) g localModels
-          (homotopyStripCutPathRawCore F a b r₁)),
-      Sraw.terminalValue = Scol.terminalValue := by
-  classical
-  let γ := F.eval a
-  let α := γ.subpath 0 r₀
-  let β := γ.subpath r₀ r₁
-  let η := γ.subpath 0 r₁
-  let δ := (F.evalAt r₁).subpath a b
-  let σ := (F.eval b).subpath r₁ 1
-  rcases hMerge γ 0 r₀ r₁ with ⟨Ssplit₀, Smerged₀, Hmerge₀⟩
-  rcases exists_pathLocalTransitionModelBasedWeakHandoffSkeleton
-      localModels δ with ⟨Sδ⟩
-  rcases exists_pathLocalTransitionModelBasedWeakHandoffSkeleton
-      localModels σ with ⟨Sσ⟩
-  rcases
-    Hmerge₀.exists_terminalBranchDataEq_after_suffixSkeleton_exactAppend
-      Sδ with
-    ⟨Ssplit₁, Smerged₁, Hmerge₁⟩
-  rcases
-    Hmerge₁.exists_terminalBranchDataEq_after_suffixSkeleton_exactAppend
-      Sσ with
-    ⟨Sassoc, Sraw, Hraw⟩
-  rcases
-    (by
-      simpa [homotopyStripColumnTopAssocPathRawCore,
-        homotopyStripColumnTopPathRawCore, homotopyRectangleBottomRightPath,
-        γ, α, β, δ, σ] using
-        (exists_terminalBranchDataEq_homotopyStripColumnTop_assocPathRawCore
-          F a b r₀ r₁
-          (g := g) (localModels := localModels))) with
-    ⟨Sassoc₀, Scol, Hassoc⟩
-  have hSameAssoc :
-      Sassoc.terminalValue = Sassoc₀.terminalValue :=
-    hSamePath Sassoc Sassoc₀
-  exact
-    ⟨Scol, Sraw,
-      Hraw.terminalValue_eq.symm.trans
-        (hSameAssoc.trans Hassoc.terminalValue_eq)⟩
-
-omit [RiemannSurface X] in
-/--
 Top-column raw cut transfer from the monotone subpath-merge boundary.
 
 This is the form used in the actual grid route, where `r₀ ≤ r₁` comes from
@@ -2447,67 +1968,6 @@ theorem exists_terminalBranchDataEq_homotopyStripColumnBottom_assocPathRawCore
         simpa [homotopyStripColumnBottomAssocPathRawCore,
           homotopyStripColumnBottomPathRawCore, homotopyRectangleLeftTopPath,
           Sαδ, α, δ, ρ, σ] using H⟩
-
-omit [RiemannSurface X] in
-/--
-Bottom-column raw cut transfer from the generic prefixed subpath-merge
-boundary.
-
-The merge is applied to the two upper-row subpaths after the common lower-left
-prefix and horizontal piece have already been continued.
-
-%%handwave
-name: Prefixed bottom-column merging preserves the raw-cut terminal value
-statement: Assume adjacent subpaths can be merged after an arbitrary prefix without changing terminal value, and fixed-path terminal values are unique. Then the decomposed bottom raw-core route and the raw cut at $r_0$ admit skeletons with equal terminal values.
-proof: After the common lower-left and horizontal prefix, merge the two upper-row subpaths from $r_0$ through $r_1$ to $1$, then use reassociation and fixed-path uniqueness to match the constructed skeletons.
--/
-theorem exists_terminalValue_eq_homotopyStripColumnBottom_rawCutPathRawCore_of_prefixedSubpathMerge
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffPrefixedSubpathMergeValueWitnessPrinciple
-        g localModels)
-    (hSamePath :
-      ∀ {y : X} {path : Path (F (a, 0)) y}
-        (S T :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton
-            (F (a, 0)) g localModels path),
-        S.terminalValue = T.terminalValue) :
-    ∃ (Scol :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          (F (a, 0)) g localModels
-          (homotopyStripColumnBottomPathRawCore F a b r₀ r₁))
-      (Sraw :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          (F (a, 0)) g localModels
-          (homotopyStripCutPathRawCore F a b r₀)),
-      Sraw.terminalValue = Scol.terminalValue := by
-  classical
-  let γ := F.eval b
-  let α := (F.eval a).subpath 0 r₀
-  let δ := (F.evalAt r₀).subpath a b
-  let ρ := γ.subpath r₀ r₁
-  let σ := γ.subpath r₁ 1
-  let υ := γ.subpath r₀ 1
-  let pref := α.trans δ
-  rcases hMerge γ r₀ r₁ 1 pref with ⟨Ssplit, Sraw, Hmerge⟩
-  rcases
-    (by
-      simpa [homotopyStripColumnBottomAssocPathRawCore,
-        homotopyStripColumnBottomPathRawCore, homotopyRectangleLeftTopPath,
-        γ, α, δ, ρ, σ, pref] using
-        (exists_terminalBranchDataEq_homotopyStripColumnBottom_assocPathRawCore
-          F a b r₀ r₁
-          (g := g) (localModels := localModels))) with
-    ⟨Sassoc, Scol, Hassoc⟩
-  have hSameAssoc :
-      Ssplit.terminalValue = Sassoc.terminalValue :=
-    hSamePath Ssplit Sassoc
-  exact
-    ⟨Scol, Sraw,
-      Hmerge.symm.trans (hSameAssoc.trans Hassoc.terminalValue_eq)⟩
 
 omit [RiemannSurface X] in
 /--
@@ -2732,62 +2192,6 @@ theorem homotopyRectangle_paths_mem_chart_of_rect_subset
 omit [RiemannSurface X] in
 /--
 The two elementary paths across a chart-contained rectangle give the same
-terminal value when appended to the same prefix skeleton whose terminal chart
-is that rectangle chart.
-
-%%handwave
-name: Two routes across one chart rectangle have the same terminal value
-statement: Suppose a prefix skeleton ends in the chart containing $F([a,b]×[r_0,r_1])$. Extending it along the lower-right and left-upper boundary routes yields skeletons whose terminal values are equal.
-proof: Both routes remain in the terminal chart. Their extensions keep the same accumulated Möbius transformation and evaluate that same branch formula at their common endpoint $F(b,r_1)$.
--/
-theorem exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalValue_eq
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels (homotopyStripColumnPrefix F a r₀))
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain}) :
-    ∃ (hBR : ∀ u,
-        homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-          (localModels.chartAt S.terminalCenter).domain)
-      (hLT : ∀ u,
-        homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-          (localModels.chartAt S.terminalCenter).domain),
-      (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR).terminalValue =
-        (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT).terminalValue := by
-  rcases
-    homotopyRectangle_paths_mem_chart_of_rect_subset
-      F a b r₀ r₁ hab hr g localModels c hRect with
-    ⟨hBRc, hLTc⟩
-  let hBR : ∀ u,
-      homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain := by
-    intro u
-    rw [hcenter]
-    exact hBRc u
-  let hLT : ∀ u,
-      homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain := by
-    intro u
-    rw [hcenter]
-    exact hLTc u
-  exact
-    ⟨hBR, hLT,
-      S.terminalExtensionAlongSkeleton_terminalValue_eq_of_same_endpoint
-        (homotopyRectangleBottomRightPath F a b r₀ r₁)
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hBR hLT⟩
-
-omit [RiemannSurface X] in
-/--
-The two elementary paths across a chart-contained rectangle give the same
 terminal branch data when appended to the same prefix skeleton whose terminal
 chart is that rectangle chart.
 
@@ -2845,205 +2249,6 @@ theorem exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalBranchDa
 
 omit [RiemannSurface X] in
 /--
-The rectangle terminal branch-data equality survives appending one further
-common suffix path, provided the suffix is valid in the two terminal charts
-obtained after the two rectangle-edge extensions.
-
-%%handwave
-name: A common in-chart suffix preserves rectangle branch-data equality
-statement: After extending one prefix skeleton along the two boundary routes of a chart-contained rectangle, suppose a common suffix lies in both resulting terminal charts. Extending both skeletons along that suffix preserves equality of their terminal charts and accumulated transformations.
-proof: The middle extensions already have identical terminal branch data. The suffix extension leaves each terminal transformation unchanged and preserves the equal terminal centers.
--/
-theorem terminalExtensionAlongSkeleton_homotopyRectangle_suffix_terminalBranchDataEq
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (hBR : ∀ u,
-      homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain)
-    (hLT : ∀ u,
-      homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain)
-    {y : X} (suffix : Path (F (b, r₁)) y)
-    (hSuffixBR : ∀ u, suffix u ∈
-      (localModels.chartAt
-        ((S.terminalExtensionAlongSkeleton
-          (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR).terminalCenter)).domain)
-    (hSuffixLT : ∀ u, suffix u ∈
-      (localModels.chartAt
-        ((S.terminalExtensionAlongSkeleton
-          (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT).terminalCenter)).domain) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq
-      ((S.terminalExtensionAlongSkeleton
-        (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR).terminalExtensionAlongSkeleton
-          suffix hSuffixBR)
-      ((S.terminalExtensionAlongSkeleton
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT).terminalExtensionAlongSkeleton
-          suffix hSuffixLT) := by
-  have Hmiddle :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq
-        (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR)
-        (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT) :=
-    S.terminalExtensionAlongSkeleton_terminalBranchDataEq_of_same_endpoint
-      (homotopyRectangleBottomRightPath F a b r₀ r₁)
-      (homotopyRectangleLeftTopPath F a b r₀ r₁) hBR hLT
-  exact
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq.terminalExtensionAlong
-      Hmiddle suffix hSuffixBR hSuffixLT
-
-omit [RiemannSurface X] in
-/--
-The rectangle terminal formula equality survives appending one further common
-suffix path, provided the suffix is valid in the two terminal charts obtained
-after the two rectangle-edge extensions.
-
-This is the flat one-chart suffix step used by the full suffix transport
-argument.  The actual upper suffix will be handled by subdividing it into
-finitely many such local pieces.
-
-%%handwave
-name: A common in-chart suffix preserves the rectangle terminal value
-statement: Under the same rectangle and suffix hypotheses, extending the two rectangle-edge skeletons along the common suffix gives equal terminal values.
-proof: First obtain equality of the two final terminal branch data, then evaluate the resulting identical branch formulas at their common endpoint.
--/
-theorem terminalExtensionAlongSkeleton_homotopyRectangle_suffix_terminalValue_eq
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (hBR : ∀ u,
-      homotopyRectangleBottomRightPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain)
-    (hLT : ∀ u,
-      homotopyRectangleLeftTopPath F a b r₀ r₁ u ∈
-        (localModels.chartAt S.terminalCenter).domain)
-    {y : X} (suffix : Path (F (b, r₁)) y)
-    (hSuffixBR : ∀ u, suffix u ∈
-      (localModels.chartAt
-        ((S.terminalExtensionAlongSkeleton
-          (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR).terminalCenter)).domain)
-    (hSuffixLT : ∀ u, suffix u ∈
-      (localModels.chartAt
-        ((S.terminalExtensionAlongSkeleton
-          (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT).terminalCenter)).domain) :
-    ((S.terminalExtensionAlongSkeleton
-        (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR).terminalExtensionAlongSkeleton
-          suffix hSuffixBR).terminalValue =
-      ((S.terminalExtensionAlongSkeleton
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT).terminalExtensionAlongSkeleton
-          suffix hSuffixLT).terminalValue := by
-  let SBR :=
-    S.terminalExtensionAlongSkeleton
-      (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR
-  let SLT :=
-    S.terminalExtensionAlongSkeleton
-      (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT
-  have hFormula : SBR.terminalFormulaAt y = SLT.terminalFormulaAt y := by
-    dsimp [SBR, SLT]
-    exact
-      S.terminalExtensionAlongSkeleton_terminalFormulaAt_eq_of_same_endpoint
-        (homotopyRectangleBottomRightPath F a b r₀ r₁)
-        (homotopyRectangleLeftTopPath F a b r₀ r₁) hBR hLT y
-  dsimp [SBR, SLT] at hSuffixBR hSuffixLT hFormula ⊢
-  exact
-    PathLocalTransitionModelBasedWeakHandoffSkeleton.terminalExtensionAlongSkeleton_terminalValue_eq_of_terminalFormulaAt_eq
-        (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR)
-        (S.terminalExtensionAlongSkeleton
-          (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT)
-        suffix hSuffixBR hSuffixLT hFormula
-
-omit [RiemannSurface X] in
-/--
-Exact decomposed-column terminal-value witness when the common upper suffix
-also stays in the rectangle chart.
-
-This is the fully exact one-chart version of the rectangle move: the output
-skeletons live over `homotopyStripColumnTopPath` and
-`homotopyStripColumnBottomPath` themselves, using the prefix/suffix cast
-normal forms above.
-
-%%handwave
-name: A one-chart column with a one-chart suffix has equal route values
-statement: Let a prefix skeleton end in chart $c$. If a homotopy rectangle and the common suffix from its upper-right corner lie in chart $c$, then the exact decomposed top and bottom column paths admit continuation skeletons with equal terminal values.
-proof: Extend the prefix along the two rectangle boundary routes, append the common suffix inside chart $c$, use equality of the final values, and rewrite the concatenated paths as the exact decomposed column paths.
--/
-theorem exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels (homotopyStripColumnPrefix F a r₀))
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    (hSuffix :
-      ∀ u, homotopyStripColumnSuffix F b r₁ u ∈
-        (localModels.chartAt c).domain) :
-    ∃ (STop :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnTopPath F a b r₀ r₁))
-      (SBottom :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnBottomPath F a b r₀ r₁)),
-      STop.terminalValue = SBottom.terminalValue := by
-  rcases
-    exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalBranchDataEq
-      (S := S) F a b r₀ r₁ hab hr c hcenter hRect with
-    ⟨hBR, hLT, Hmiddle⟩
-  let suffix := homotopyStripColumnSuffix F b r₁
-  let SBR :=
-    S.terminalExtensionAlongSkeleton
-      (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR
-  let SLT :=
-    S.terminalExtensionAlongSkeleton
-      (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT
-  have hSuffixBR : ∀ u, suffix u ∈
-      (localModels.chartAt SBR.terminalCenter).domain := by
-    intro u
-    dsimp [SBR]
-    rw [S.terminalExtensionAlongSkeleton_terminalCenter
-      (homotopyRectangleBottomRightPath F a b r₀ r₁) hBR, hcenter]
-    exact hSuffix u
-  have hSuffixLT : ∀ u, suffix u ∈
-      (localModels.chartAt SLT.terminalCenter).domain := by
-    intro u
-    dsimp [SLT]
-    rw [S.terminalExtensionAlongSkeleton_terminalCenter
-      (homotopyRectangleLeftTopPath F a b r₀ r₁) hLT, hcenter]
-    exact hSuffix u
-  let STop : PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-      (((homotopyStripColumnPrefix F a r₀).trans
-          (homotopyRectangleBottomRightPath F a b r₀ r₁)).trans suffix) :=
-    SBR.terminalExtensionAlongSkeleton suffix hSuffixBR
-  let SBottom : PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-      (((homotopyStripColumnPrefix F a r₀).trans
-          (homotopyRectangleLeftTopPath F a b r₀ r₁)).trans suffix) :=
-    SLT.terminalExtensionAlongSkeleton suffix hSuffixLT
-  have hValue : STop.terminalValue = SBottom.terminalValue := by
-    dsimp [STop, SBottom, SBR, SLT]
-    exact
-      (PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq.terminalExtensionAlong
-        Hmiddle suffix hSuffixBR hSuffixLT).terminalValue_eq
-  rw [homotopyStripColumnTopPath_eq_prefix_rectangle_suffix,
-    homotopyStripColumnBottomPath_eq_prefix_rectangle_suffix]
-  exact ⟨STop, SBottom, hValue⟩
-
-omit [RiemannSurface X] in
-/--
 Exact decomposed-column terminal-value witness with a componentwise suffix
 skeleton.
 
@@ -3091,310 +2296,15 @@ theorem exists_terminalValue_eq_homotopyStripColumn_suffixSkeleton
     homotopyStripColumnBottomPath_eq_prefix_rectangle_suffix]
   exact ⟨STop, SBottom, hValue⟩
 
-omit [RiemannSurface X] in
-/--
-Exact decomposed-column terminal-value witness in the one-chart case, with
-the prefix skeleton chosen automatically.
-
-The prefix continuation may end in any selected chart.  We first perform a
-terminal chart change to the rectangle chart, then apply
-`exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix`.
-
-%%handwave
-name: A one-chart column and suffix admit equal-valued continuations
-statement: If a homotopy rectangle and its common suffix lie in one selected chart $c$, then the decomposed top and bottom column paths admit continuation skeletons with equal terminal values, without a prescribed prefix skeleton.
-proof: Choose a continuation skeleton along the common prefix, change its terminal chart to $c$ at the rectangle’s initial corner, and apply the one-chart rectangle-and-suffix comparison.
--/
-theorem exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix_unconditional
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (c : X)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    (hSuffix :
-      ∀ u, homotopyStripColumnSuffix F b r₁ u ∈
-        (localModels.chartAt c).domain) :
-    ∃ (STop :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnTopPath F a b r₀ r₁))
-      (SBottom :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnBottomPath F a b r₀ r₁)),
-      STop.terminalValue = SBottom.terminalValue := by
-  classical
-  let pref := homotopyStripColumnPrefix F a r₀
-  rcases exists_pathLocalTransitionModelBasedWeakHandoffSkeleton
-      localModels pref with
-    ⟨S₀⟩
-  have hc : F (a, r₀) ∈ (localModels.chartAt c).domain :=
-    hRect ⟨⟨le_rfl, hab⟩, ⟨le_rfl, hr⟩⟩
-  let A :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S₀.terminalCenter)
-        (localModels.chartAt c)
-        (F (a, r₀)) :=
-    Classical.choice
-      (localModels.transition_localRealMobius S₀.terminalCenter c
-        (F (a, r₀)) ⟨S₀.terminal_endpoint_mem_domain, hc⟩)
-  let S := S₀.terminalChartChangeSkeleton c hc A
-  have hcenter : S.terminalCenter = c := by
-    exact S₀.terminalChartChangeSkeleton_terminalCenter c hc A
-  exact
-    exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix
-      F a b r₀ r₁ hab hr S c hcenter hRect hSuffix
-
-omit [RiemannSurface X] in
-/--
-Exact decomposed-column terminal-value witness for the terminal column
-`r₁ = 1`.
-
-Here the common suffix is constant at the endpoint, so it is controlled by
-the same chart as the rectangle.
-
-%%handwave
-name: The final column has equal-valued top and bottom continuations
-statement: If $r_1=1$ and the homotopy rectangle $[a,b]×[r_0,1]$ lies in one selected chart, then the decomposed top and bottom routes admit continuation skeletons with equal terminal values.
-proof: At $r_1=1$ the common suffix is constant at the homotopy endpoint, hence lies in the rectangle chart. Apply the unconditional one-chart suffix comparison.
--/
-theorem exists_terminalValue_eq_homotopyStripColumn_lastSuffix_unconditional
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁) (hr₁ : r₁ = 1)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (c : X)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain}) :
-    ∃ (STop :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnTopPath F a b r₀ r₁))
-      (SBottom :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-            (homotopyStripColumnBottomPath F a b r₀ r₁)),
-      STop.terminalValue = SBottom.terminalValue := by
-  have hx : x ∈ (localModels.chartAt c).domain := by
-    have hpoint : F (b, (1 : unitInterval)) ∈
-        (localModels.chartAt c).domain := by
-      have hmem : (b, (1 : unitInterval)) ∈
-          Set.Icc a b ×ˢ Set.Icc r₀ r₁ := by
-        constructor
-        · exact ⟨hab, le_rfl⟩
-        · rw [hr₁]
-          exact ⟨unitInterval.le_one r₀, le_rfl⟩
-      exact hRect hmem
-    simpa using hpoint
-  have hSuffix :
-      ∀ u, homotopyStripColumnSuffix F b r₁ u ∈
-        (localModels.chartAt c).domain := by
-    intro u
-    subst r₁
-    simpa [homotopyStripColumnSuffix, Path.subpath] using hx
-  exact
-    exists_terminalValue_eq_homotopyStripColumn_oneChartSuffix_unconditional
-      F a b r₀ r₁ hab hr c hRect hSuffix
-
-omit [RiemannSurface X] in
-/--
-The rectangle branch-data equality survives an arbitrary finitely
-subdivided common suffix.
-
-The suffix is represented by its own based weak handoff skeleton.  This is
-the componentwise version of the one-chart suffix lemma above: after the two
-rectangle edge extensions have the same terminal branch data, finite suffix
-transport moves that equality across every suffix segment.
-
-%%handwave
-name: Rectangle branch equality transports through a finite suffix skeleton
-statement: Let a prefix skeleton end in chart $c$, let the rectangle lie in $c$, and let a finite continuation skeleton cover a common suffix from $F(b,r_1)$ to $y$. Then there exist based paths to $y$ and skeletons along them with identical terminal chart and accumulated Möbius transformation.
-proof: Construct the two in-chart rectangle-edge extensions with equal branch data, then transport that equality through every component of the given suffix skeleton, including the necessary endpoint casts.
--/
-theorem exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    {y : X} {suffix : Path (F (b, r₁)) y}
-    (C :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton
-        (F (b, r₁)) g localModels suffix) :
-    ∃ (pBR pLT : Path x₀ y)
-      (SBR :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pBR)
-      (SLT :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pLT),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq
-        SBR SLT := by
-  rcases
-    exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalBranchDataEq
-      (S := S) F a b r₀ r₁ hab hr c hcenter hRect with
-    ⟨hBR, hLT, Hmiddle⟩
-  exact
-    Hmiddle.exists_terminalBranchDataEq_after_suffixSkeleton_castEndpoints C
-
-omit [RiemannSurface X] in
-/--
-The rectangle branch-data equality survives an arbitrary finitely
-subdivided common suffix, with path homotopy bookkeeping.
-
-The transported upper and lower paths are homotopic to the corresponding
-rectangle-edge concatenations followed by the whole suffix.
-
-%%handwave
-name: Finite suffix transport retains the intended path homotopy classes
-statement: Under the rectangle and suffix hypotheses, there are equal-branch-data skeletons on paths $p_{BR},p_{LT}:x_0⇝y$ such that $p_{BR}$ is homotopic to the prefix followed by the lower-right edge and suffix, while $p_{LT}$ is homotopic to the prefix followed by the left-upper edge and suffix.
-proof: Start with equal branch data after the two rectangle edges and apply componentwise suffix transport with its concatenation and endpoint-cast homotopies recorded.
--/
-theorem exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton_with_homotopy
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    {y : X} {suffix : Path (F (b, r₁)) y}
-    (C :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton
-        (F (b, r₁)) g localModels suffix) :
-    ∃ (pBR pLT : Path x₀ y)
-      (SBR :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pBR)
-      (SLT :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pLT),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.TerminalBranchDataEq
-        SBR SLT ∧
-        pBR.Homotopic
-          ((prefPath.trans
-              (homotopyRectangleBottomRightPath F a b r₀ r₁)).trans suffix) ∧
-        pLT.Homotopic
-          ((prefPath.trans
-              (homotopyRectangleLeftTopPath F a b r₀ r₁)).trans suffix) := by
-  rcases
-    exists_terminalExtensionAlongSkeleton_homotopyRectangle_terminalBranchDataEq
-      (S := S) F a b r₀ r₁ hab hr c hcenter hRect with
-    ⟨hBR, hLT, Hmiddle⟩
-  exact
-    Hmiddle.exists_terminalBranchDataEq_after_suffixSkeleton_castEndpoints_with_homotopy C
-
-omit [RiemannSurface X] in
-/--
-Terminal-value form of
-`exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton_with_homotopy`.
-
-%%handwave
-name: Finite suffix transport gives equal values in the intended path classes
-statement: Under the rectangle and suffix hypotheses, there are skeletons with equal terminal values on paths homotopic respectively to the prefix–lower-right–suffix and prefix–left-upper–suffix routes.
-proof: Use the branch-data form with path-homotopy bookkeeping and forget the equal terminal center and transformation after extracting the implied terminal-value equality.
--/
-theorem exists_terminalValue_eq_after_homotopyRectangle_suffixSkeleton_with_homotopy
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    {y : X} {suffix : Path (F (b, r₁)) y}
-    (C :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton
-        (F (b, r₁)) g localModels suffix) :
-    ∃ (pBR pLT : Path x₀ y)
-      (SBR :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pBR)
-      (SLT :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pLT),
-      SBR.terminalValue = SLT.terminalValue ∧
-        pBR.Homotopic
-          ((prefPath.trans
-              (homotopyRectangleBottomRightPath F a b r₀ r₁)).trans suffix) ∧
-        pLT.Homotopic
-          ((prefPath.trans
-              (homotopyRectangleLeftTopPath F a b r₀ r₁)).trans suffix) := by
-  rcases
-    exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton_with_homotopy
-      F a b r₀ r₁ hab hr S c hcenter hRect C with
-    ⟨pBR, pLT, SBR, SLT, H, hpBR, hpLT⟩
-  exact ⟨pBR, pLT, SBR, SLT, H.terminalValue_eq, hpBR, hpLT⟩
-
-omit [RiemannSurface X] in
-/--
-Terminal-value form of
-`exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton`.
-
-%%handwave
-name: Finite suffix transport gives equal terminal values
-statement: Under the rectangle and suffix hypotheses, there exist two based paths to the suffix endpoint and continuation skeletons along them whose terminal values are equal.
-proof: Apply componentwise suffix transport to obtain equal terminal branch data and retain only the resulting equality of terminal values.
--/
-theorem exists_terminalValue_eq_after_homotopyRectangle_suffixSkeleton
-    {x₀ x : X} {p q : Path x₀ x}
-    (F : Path.Homotopy p q) (a b r₀ r₁ : unitInterval)
-    (hab : a ≤ b) (hr : r₀ ≤ r₁)
-    {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {prefPath : Path x₀ (F (a, r₀))}
-    (S : PathLocalTransitionModelBasedWeakHandoffSkeleton
-      x₀ g localModels prefPath)
-    (c : X) (hcenter : S.terminalCenter = c)
-    (hRect :
-      Set.Icc a b ×ˢ Set.Icc r₀ r₁ ⊆
-        {z : unitInterval × unitInterval |
-          F z ∈ (localModels.chartAt c).domain})
-    {y : X} {suffix : Path (F (b, r₁)) y}
-    (C :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton
-        (F (b, r₁)) g localModels suffix) :
-    ∃ (pBR pLT : Path x₀ y)
-      (SBR :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pBR)
-      (SLT :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton
-          x₀ g localModels pLT),
-      SBR.terminalValue = SLT.terminalValue := by
-  rcases
-    exists_terminalBranchDataEq_after_homotopyRectangle_suffixSkeleton
-      F a b r₀ r₁ hab hr S c hcenter hRect C with
-    ⟨pBR, pLT, SBR, SLT, H⟩
-  exact ⟨pBR, pLT, SBR, SLT, H.terminalValue_eq⟩
-
 /--
 One rectangle column in a homotopy strip can be replaced by an elementary
 grid-move walk between adjacent cut paths.
+
+%%handwave
+name: One rectangle column in a homotopy strip can be replaced by an elementary grid-move walk between adjacent cut paths
+statement:
+  One rectangle column in a homotopy strip can be replaced by an elementary grid-move walk
+  between adjacent cut paths.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnMovePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3428,6 +2338,15 @@ This is the local sweep form of the remaining monodromy boundary: after
 fixing a homotopy-time strip `[t i, t (i+1)]`, the path-parameter direction is
 already covered by chart rectangles, and the output is the finite walk from
 the lower row `F.eval (t i)` to the upper row `F.eval (t (i+1))`.
+
+%%handwave
+name: One horizontal strip of a chart-subdivided path homotopy can be replaced by an elementary grid-move walk
+statement:
+  One horizontal strip of a chart-subdivided path homotopy can be replaced by an elementary
+  grid-move walk. This is the local sweep form of the remaining monodromy principle: after
+  fixing a homotopy-time strip [t i, t (i+1)], the path-parameter direction is already covered
+  by chart rectangles, and the output is the finite walk from the lower row F.eval (t i) to the
+  upper row F.eval (t (i+1)).
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripMovePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3535,6 +2454,15 @@ homotopy square has been discharged: given an endpoint-fixed homotopy already
 subdivided so that each rectangle lies in a selected local-model domain, build
 the finite elementary move walk by replacing one small rectangle at a time
 while keeping the common prefix and suffix fixed.
+
+%%handwave
+name: Chart-grid local replacement principle for based weak handoff continuation
+statement:
+  Chart-grid local replacement principle for based weak handoff continuation. This is the
+  sharpened remaining monodromy principle after compactness of the homotopy square has been
+  discharged: given an endpoint-fixed homotopy already subdivided so that each rectangle lies in
+  a selected local-model domain, build the finite elementary move walk by replacing one small
+  rectangle at a time while keeping the common prefix and suffix fixed.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3733,6 +2661,12 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartGridMovePrinciple_of_str
 /--
 The chart-grid local replacement principle implies the existing elementary
 homotopy-grid boundary.
+
+%%handwave
+name: The chart-grid local replacement principle implies the existing elementary homotopy-grid principle
+statement:
+  The chart-grid local replacement principle implies the existing elementary homotopy-grid
+  principle.
 -/
 def pathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple_of_homotopyChartGridMovePrinciple
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3750,24 +2684,6 @@ def pathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple_of_homoto
       hpq g localModels with
     ⟨t, ht0, htmono, htEventually, htRect⟩
   exact hChartGrid hpq.some t ht0 htmono htEventually htRect
-
-/--
-Chart-controlled grid walks imply elementary grid-move walks.
--/
-def pathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple_of_fixedChartGridMoveWalkPrinciple
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (hFixed :
-      PathLocalTransitionBasedWeakHandoffFixedChartGridMoveWalkPrinciple
-        x₀ g localModels basedWeakHandoffAlong) :
-    PathLocalTransitionBasedWeakHandoffElementaryGridMoveWalkPrinciple
-      x₀ g localModels basedWeakHandoffAlong := by
-  intro x p q hpq
-  rcases hFixed hpq with ⟨W⟩
-  exact ⟨W.toElementaryGridMoveWalk⟩
 
 /--
 %%handwave
@@ -3795,6 +2711,11 @@ def PathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple
 /--
 Elementary grid-move walks imply the coarser finite homotopy-grid walk
 principle.
+
+%%handwave
+name: Elementary grid-move walks imply the coarser finite homotopy-grid walk principle
+statement:
+  Elementary grid-move walks imply the coarser finite homotopy-grid walk principle.
 -/
 def pathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple_of_elementaryGridMoveWalkPrinciple
     {x₀ : X} {g : HyperbolicMetric X}
@@ -3815,6 +2736,12 @@ def pathLocalTransitionBasedWeakHandoffHomotopyGridWalkPrinciple_of_elementaryGr
 The terminal branch obtained by choosing a fresh handoff skeleton along the
 local terminal-sheet extension agrees with the old terminal branch extended
 inside that sheet.
+
+%%handwave
+name: The terminal branch obtained by choosing a fresh handoff skeleton along the local terminal-sheet extension agrees with the old terminal branch extended inside that sheet
+statement:
+  The terminal branch obtained by choosing a fresh handoff skeleton along the local
+  terminal-sheet extension agrees with the old terminal branch extended inside that sheet.
 -/
 def PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3857,31 +2784,6 @@ structure PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement
   /-- The extended skeleton has the same accumulated terminal Mobius representative. -/
   terminalMobius_eq : T.terminalMobius = S.terminalMobius
 
-/--
-PSL-level terminal-extension agreement data.
-
-For the PSL-valued continuation route, exact equality of the chosen
-`SL(2, ℝ)` representative is stronger than needed.  The monodromy calculation
-only uses that the selected terminal chart is unchanged and that the terminal
-Mobius class agrees after projecting to PSL.
--/
-structure PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ S.terminalSheet)
-    (T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-        (p.trans (S.terminalSheetPathInSet hy'))) where
-  /-- The extended skeleton ends in the same terminal chart. -/
-  terminalCenter_eq : T.terminalCenter = S.terminalCenter
-  /-- The extended skeleton has the same accumulated terminal Mobius PSL class. -/
-  terminalMobius_projection_eq :
-    realMobiusProjection T.terminalMobius =
-      realMobiusProjection S.terminalMobius
 
 end HyperbolicMetric
 

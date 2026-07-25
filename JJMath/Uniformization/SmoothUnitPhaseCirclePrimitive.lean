@@ -27,14 +27,28 @@ variable {H : Type w} [TopologicalSpace H]
 variable {M : Type m} [TopologicalSpace M] [ChartedSpace H M]
 variable (I : ModelWithCorners ℝ E H) [IsManifold I ∞ M]
 
-/-- The principal-logarithm cut of a smooth unit phase. -/
+/--
+%%handwave
+name: The principal-logarithm cut of a smooth unit phase
+statement:
+  For a smooth unit phase $P:M\to S^1$, define
+  $U_L=\{x\in M:P(x)\in\mathbb C_{\mathrm{slit}}\}$, where
+  $\mathbb C_{\mathrm{slit}}$ is the domain of the principal logarithm.
+-/
 def smoothUnitPhaseLeftOpen
   (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     TopologicalSpace.Opens M :=
   ⟨P ⁻¹' Complex.slitPlane,
     Complex.isOpen_slitPlane.preimage P.contMDiff.continuous⟩
 
-/-- The opposite principal-logarithm cut of a smooth unit phase. -/
+/--
+%%handwave
+name: The opposite principal-logarithm cut of a smooth unit phase
+statement:
+  For a smooth unit phase $P:M\to S^1$, define
+  $U_R=\{x\in M:-P(x)\in\mathbb C_{\mathrm{slit}}\}$, the logarithm
+  domain obtained by placing the branch cut on the opposite ray.
+-/
 def smoothUnitPhaseRightOpen
   (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     TopologicalSpace.Opens M :=
@@ -108,7 +122,13 @@ theorem contMDiff_complexLog_comp_of_mem_slitPlane
     intro x _hx
     exact hf x)
 
-/-- The principal real argument on the first logarithm cut. -/
+/--
+%%handwave
+name: The principal real argument on the first logarithm cut
+statement:
+  On $U_L=\{x:P(x)\in\mathbb C_{\mathrm{slit}}\}$, define the smooth real
+  argument $\theta_L(x)=\operatorname{Im}\log P(x)$.
+-/
 def smoothUnitPhaseLeftArgument
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     C^∞⟮I, smoothUnitPhaseLeftOpen I P; ℝ⟯ where
@@ -122,8 +142,13 @@ def smoothUnitPhaseLeftArgument
     have hlog := contMDiff_complexLog_comp_of_mem_slitPlane I f (fun x ↦ x.2)
     exact Complex.imCLM.contDiff.contMDiff.comp hlog
 
-/-- The principal real argument on the opposite logarithm cut, shifted by
-`pi` so that it exponentiates to the original phase rather than its negative.
+/--
+%%handwave
+name: Argument on the opposite logarithm cut
+statement:
+  The principal real argument on the opposite logarithm cut, shifted by
+  $\pi$ so that it exponentiates to the original phase rather than its
+  negative.
 -/
 def smoothUnitPhaseRightArgument
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
@@ -234,7 +259,14 @@ theorem smoothUnitPhase_im_ne_zero_on_overlap
   have hright' : (P (x : M)).re < 0 := by simpa using hright
   linarith
 
-/-- Difference of the two logarithmic arguments on their overlap. -/
+/--
+%%handwave
+name: Difference of the two logarithmic arguments on their overlap
+statement:
+  On $U_L\cap U_R$, define the transition function
+  $\tau(x)=\theta_L(x)-\theta_R(x)$ between the two logarithmic arguments
+  of the same unit phase.
+-/
 def smoothUnitPhaseArgumentTransition
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (x : smoothUnitPhaseOverlap I P) : ℝ :=
@@ -285,7 +317,20 @@ theorem smoothUnitPhaseArgumentTransition_eq
       Complex.arg_neg_eq_arg_add_pi_of_im_neg hneg]
     ring
 
-/-- Which component of the two-cut overlap contains a point. -/
+/--
+%%handwave
+name: Which component of the two-cut overlap contains a point
+statement:
+  On $U_L\cap U_R$, define
+  \[
+    \varepsilon(x)=
+    \begin{cases}
+      1,&\operatorname{Im}P(x)>0,\\
+      0,&\operatorname{Im}P(x)<0,
+    \end{cases}
+  \]
+  recording whether the phase lies in the upper component of the overlap.
+-/
 def smoothUnitPhaseUpperIndicator
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (x : smoothUnitPhaseOverlap I P) : ℝ :=
@@ -349,21 +394,40 @@ theorem smoothUnitPhaseArgumentTransition_isLocallyConstant
   rw [heq]
   simpa only [Function.comp_def] using h
 
-/-- The zero-form of the first logarithmic argument. -/
+/--
+%%handwave
+name: The zero-form of the first logarithmic argument
+statement:
+  Regard $\theta_L=\operatorname{Im}\log P$ on $U_L$ as a smooth
+  real-valued differential form of degree zero.
+-/
 def smoothUnitPhaseLeftZeroForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     SmoothForms (I := I) (M := smoothUnitPhaseLeftOpen I P) ℝ 0 :=
   smoothRealFunctionToZeroForm (I0 := I)
     (smoothUnitPhaseLeftArgument I P)
 
-/-- The zero-form of the second logarithmic argument. -/
+/--
+%%handwave
+name: The zero-form of the second logarithmic argument
+statement:
+  Regard $\theta_R=\operatorname{Im}\log(-P)+\pi$ on $U_R$ as a smooth
+  real-valued differential form of degree zero.
+-/
 def smoothUnitPhaseRightZeroForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     SmoothForms (I := I) (M := smoothUnitPhaseRightOpen I P) ℝ 0 :=
   smoothRealFunctionToZeroForm (I0 := I)
     (smoothUnitPhaseRightArgument I P)
 
-/-- The locally constant overlap difference as a smooth zero-form. -/
+/--
+%%handwave
+name: The locally constant overlap difference as a smooth zero-form
+statement:
+  Regard the locally constant transition
+  $\tau=\theta_L-\theta_R$ on $U_L\cap U_R$ as a smooth real-valued
+  differential form of degree zero.
+-/
 def smoothUnitPhaseTransitionZeroForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     SmoothForms (I := I) (M := smoothUnitPhaseOverlap I P) ℝ 0 :=
@@ -464,14 +528,26 @@ theorem smoothUnitPhase_zeroForm_difference
   rw [hleft, hright]
   rfl
 
-/-- The differential of the first logarithmic argument. -/
+/--
+%%handwave
+name: The differential of the first logarithmic argument
+statement:
+  On the first logarithm cut $U_L$, define the real one-form
+  $\omega_L=d\theta_L$.
+-/
 def smoothUnitPhaseLeftOneForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     SmoothForms (I := I) (M := smoothUnitPhaseLeftOpen I P) ℝ 1 :=
   deRhamDifferential (I := I) (M := smoothUnitPhaseLeftOpen I P)
     (A := ℝ) 0 (smoothUnitPhaseLeftZeroForm I P)
 
-/-- The differential of the second logarithmic argument. -/
+/--
+%%handwave
+name: The differential of the second logarithmic argument
+statement:
+  On the opposite logarithm cut $U_R$, define the real one-form
+  $\omega_R=d\theta_R$.
+-/
 def smoothUnitPhaseRightOneForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞) :
     SmoothForms (I := I) (M := smoothUnitPhaseRightOpen I P) ℝ 1 :=
@@ -524,8 +600,14 @@ theorem smoothUnitPhase_oneForm_difference_eq_zero
       (smoothUnitPhaseArgumentTransition I P)
       (smoothUnitPhaseArgumentTransition_isLocallyConstant I P)
 
-/-- The global logarithmic one-form of a smooth unit phase, obtained by
-gluing the differentials of the two principal arguments. -/
+/--
+%%handwave
+name: The logarithmic one-form determined by a smooth unit phase
+statement:
+  For a smooth phase $P:M\to S^1$, define the real one-form $\omega_P$ by
+  gluing $d\theta_L$ on $U_L$ to $d\theta_R$ on $U_R$; these local forms
+  agree because $\theta_L-\theta_R$ is locally constant on the overlap.
+-/
 def smoothUnitPhaseOneForm
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1) :
@@ -592,8 +674,14 @@ theorem smoothUnitPhaseOneForm_restrict_right
     (smoothUnitPhaseLeftOneForm I P) (smoothUnitPhaseRightOneForm I P)
     (smoothUnitPhase_oneForm_difference_eq_zero I P)
 
-/-- Every smooth unit complex phase canonically represents a real one-form
-with a smooth circle-valued primitive. -/
+/--
+%%handwave
+name: The circle primitive canonically carried by a unit phase
+statement:
+  A smooth map $P:M\to S^1$ is a smooth circle-valued primitive of its
+  logarithmic one-form $\omega_P$: locally $P=e^{i\theta}$ and
+  $\omega_P=d\theta$.
+-/
 def smoothUnitPhaseCirclePrimitive
     (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
     (hnorm : ∀ x : M, ‖P x‖ = 1) :

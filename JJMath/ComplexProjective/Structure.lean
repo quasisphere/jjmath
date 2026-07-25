@@ -62,8 +62,11 @@ structure MobiusTransitionData {X : Type} [TopologicalSpace X]
       (e.symm.trans e') z = (representative • z : RiemannSphere)
 
 /--
-Two projective charts have a Mobius transition if there is concrete
-representative data for their coordinate change.
+%%handwave
+name:
+  Global Möbius transition
+statement:
+  Two projective charts have a global Möbius transition when their coordinate change on its entire source is represented by one element of $\operatorname{PGL}_2(\mathbb C)$.
 -/
 def HasMobiusTransition {X : Type} [TopologicalSpace X]
     (e e' : ProjectiveChart X) : Prop :=
@@ -125,9 +128,11 @@ def HasLocalMobiusTransition {X : Type} [TopologicalSpace X]
   ∀ x ∈ e.source ∩ e'.source, Nonempty (LocalMobiusTransitionData e e' x)
 
 /--
-Two projective charts have transitions in a subgroup if every point of their
-source overlap has local transition data represented by an element of that
-subgroup of `PGL(2, ℂ)`.
+%%handwave
+name:
+  Projective transitions in a prescribed subgroup
+statement:
+  Two projective charts have transitions in $G\le\operatorname{PGL}_2(\mathbb C)$ when, near every point of their source overlap, their coordinate change is represented by an element of $G$.
 -/
 def HasTransitionInGroup
     (G : Subgroup MobiusGroup) {X : Type} [TopologicalSpace X]
@@ -279,7 +284,13 @@ namespace ComplexProjectiveStructure
 
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X] [ComplexOneManifold X]
 
-/-- The atlas of projective charts belonging to a complex projective structure. -/
+/--
+%%handwave
+name:
+  Atlas of a complex projective structure
+statement:
+  The projective atlas of a complex projective structure $P$ is the set of all charts in its distinguished atlas modeled on $\widehat{\mathbb C}$.
+-/
 def atlasSet (P : ComplexProjectiveStructure X) : Set (ProjectiveChart X) :=
   letI := P.projectiveChartedSpace
   atlas RiemannSphere X
@@ -302,152 +313,17 @@ theorem transition_mobius_of_mem (P : ComplexProjectiveStructure X)
   simpa [atlasSet] using P.transition_mobius e he e' he'
 
 /--
-Choose concrete local transition data for two charts in a projective structure.
-
-This is a derived choice, not extra structure on `ComplexProjectiveStructure`;
-it exposes the Mobius representative when constructing holonomy or checking
-overlap calculations near a chosen overlap point.
--/
-noncomputable def localTransitionData (P : ComplexProjectiveStructure X)
-    {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet)
-    {x : X} (hx : x ∈ e.source ∩ e'.source) :
-    LocalMobiusTransitionData e e' x :=
-  Classical.choice (P.transition_mobius_of_mem he he' x hx)
-
-/- The chosen Mobius representative for a local projective transition. -/
-noncomputable def localTransitionRepresentative (P : ComplexProjectiveStructure X)
-    {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet) :
-    {x : X} → x ∈ e.source ∩ e'.source → MobiusRepresentative :=
-  fun hx ↦ (P.localTransitionData he he' hx).representative
-
-/--
 %%handwave
 name:
-  Formula for a chosen local projective transition
+  Compatible complex coordinate for a projective chart
 statement:
-  Let \(e,e'\) be charts of \(P\), let \(x\) lie in their source overlap, and
-  let \(z\) lie in the coordinate-change domain.  If \(e^{-1}(z)\) lies in the
-  chosen neighborhood of \(x\), then
-  \((e^{-1}\circ e')(z)=A_x\cdot z\), where \(A_x\) is the selected Möbius representative.
-proof:
-  This is exactly the transition equation in the selected local transition data.
+  Every chart $e$ in the atlas of a complex projective structure has a selected ambient complex chart covering its source, together with a normalized finite holomorphic coordinate of nonzero derivative.
 -/
-theorem transition_eq_localTransitionRepresentative (P : ComplexProjectiveStructure X)
-    {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet)
-    {x : X} (hx : x ∈ e.source ∩ e'.source)
-    {z : RiemannSphere} (hz : z ∈ (e.symm.trans e').source)
-    (hzx : e.symm z ∈ (P.localTransitionData he he' hx).neighborhood) :
-    (e.symm.trans e') z =
-      (P.localTransitionRepresentative he he' hx • z : RiemannSphere) :=
-  (P.localTransitionData he he' hx).transition_eq z hz hzx
-
-/--
-%%handwave
-name:
-  Sources of projective-atlas charts are open
-statement:
-  If \(e\) belongs to the projective atlas of \(P\), then \(e.source\) is open in \(X\).
-proof:
-  Apply the projective-source openness field of the compatibility data stored in \(P\).
--/
-theorem chart_source_open_of_mem (P : ComplexProjectiveStructure X)
-    {e : ProjectiveChart X} (he : e ∈ P.atlasSet) :
-    IsOpen e.source := by
-  simpa [atlasSet] using
-    P.compatible_with_riemann_surface.projective_source_open e he
-
-/--
-%%handwave
-name:
-  Sources of ambient complex charts are open
-statement:
-  If \(e\) belongs to the complex atlas of \(X\), then \(e.source\) is open in \(X\).
-proof:
-  Apply the complex-source openness field of the compatibility data stored in \(P\).
--/
-theorem complex_chart_source_open_of_mem (P : ComplexProjectiveStructure X)
-    {e : OpenPartialHomeomorph X ℂ} (he : e ∈ atlas ℂ X) :
-    IsOpen e.source := by
-  simpa using P.compatible_with_riemann_surface.complex_source_open e he
-
-/-- Each projective chart has a selected compatible complex chart. -/
 def chart_complex_compatible_of_mem (P : ComplexProjectiveStructure X)
     {e : ProjectiveChart X} (he : e ∈ P.atlasSet) :
     ProjectiveCompatibleComplexChartData e := by
   simpa [atlasSet] using
     P.compatible_with_riemann_surface.projective_complex_compatible e he
-
-/--
-%%handwave
-name:
-  Projective charts are holomorphic into the standard sphere
-statement:
-  Every chart \(e:U\to\widehat{\mathbb C}\) of a complex projective structure
-  is holomorphic as a map from the given Riemann surface to the standard
-  Riemann sphere at every point \(x\in U\).
-proof:
-  Choose the stored complex coordinate and Möbius normalization.  In that
-  coordinate the normalized chart is a holomorphic finite-valued function.
-  The affine inclusion into the sphere and the inverse normalizing Möbius
-  transformation are holomorphic, so their composition is the original
-  projective chart near \(x\).
--/
-theorem chart_mdifferentiableAt_of_mem (P : ComplexProjectiveStructure X)
-    {e : ProjectiveChart X} (he : e ∈ P.atlasSet)
-    {x : X} (hx : x ∈ e.source) :
-    MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) e x := by
-  let Cdata := P.chart_complex_compatible_of_mem he
-  let C : OpenPartialHomeomorph X ℂ := Cdata.complexChart
-  let D : ProjectiveComplexChartCompatibilityData e C := Cdata.compatibility
-  have hxC : x ∈ C.source := Cdata.projective_source_subset_complex_source hx
-  have hztrans : C x ∈ (C.symm.trans e).source := by
-    rw [OpenPartialHomeomorph.trans_source]
-    exact ⟨C.map_source hxC, by simpa [C.left_inv hxC] using hx⟩
-  have hC : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) C x :=
-    (mdifferentiableOn_atlas (I := 𝓘(ℂ)) Cdata.complexChart_mem_atlas x hxC).mdifferentiableAt
-      (C.open_source.mem_nhds hxC)
-  have hfinite : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) D.finiteCoordinate (C x) := by
-    rw [mdifferentiableAt_iff_differentiableAt]
-    exact D.finiteCoordinate_holomorphic (C x) hztrans
-  have hnormalized : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ)
-      (fun y : X ↦ (D.finiteCoordinate (C y) : RiemannSphere)) x :=
-    (riemannSphereCoe_mdifferentiable (D.finiteCoordinate (C x))).comp x
-      (hfinite.comp x hC)
-  have hdenormalized : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ)
-      (fun y : X ↦ D.representative⁻¹ •
-        (D.finiteCoordinate (C y) : RiemannSphere)) x :=
-    (mobiusRepresentative_smul_mdifferentiable D.representative⁻¹
-      (D.finiteCoordinate (C x) : RiemannSphere)).comp x hnormalized
-  apply hdenormalized.congr_of_eventuallyEq
-  filter_upwards [(C.open_source.inter e.open_source).mem_nhds ⟨hxC, hx⟩]
-    with y hy
-  have hytrans : C y ∈ (C.symm.trans e).source := by
-    rw [OpenPartialHomeomorph.trans_source]
-    exact ⟨C.map_source hy.1, by simpa [C.left_inv hy.1] using hy.2⟩
-  have hEq := D.finiteCoordinate_eq (C y) hytrans
-  have hEq' : D.representative • e y =
-      (D.finiteCoordinate (C y) : RiemannSphere) := by
-    simpa [OpenPartialHomeomorph.trans_apply, C.left_inv hy.1] using hEq
-  calc
-    e y = D.representative⁻¹ • (D.representative • e y) := by simp
-    _ = D.representative⁻¹ •
-        (D.finiteCoordinate (C y) : RiemannSphere) := congrArg _ hEq'
-
-/--
-%%handwave
-name:
-  Projective charts are holomorphic on their sources
-statement:
-  If \(e\) is a chart of a complex projective structure \(P\), then
-  \(e:e.source\to\widehat{\mathbb C}\) is holomorphic at every point of \(e.source\).
-proof:
-  At each \(x\in e.source\), apply [the projective chart is holomorphic at \(x\)](lean:JJMath.ComplexProjectiveStructure.chart_mdifferentiableAt_of_mem) and restrict the resulting pointwise differentiability to the source.
--/
-theorem chart_mdifferentiableOn_of_mem (P : ComplexProjectiveStructure X)
-    {e : ProjectiveChart X} (he : e ∈ P.atlasSet) :
-    MDifferentiableOn 𝓘(ℂ) 𝓘(ℂ) e e.source := by
-  intro x hx
-  exact (P.chart_mdifferentiableAt_of_mem he hx).mdifferentiableWithinAt
 
 end ComplexProjectiveStructure
 
@@ -456,52 +332,7 @@ namespace ProjectiveStructureWithGroup
 variable {G : Subgroup MobiusGroup} {X : Type} [TopologicalSpace X]
     [ChartedSpace ℂ X] [ComplexOneManifold X]
 
-/-- The atlas of projective charts belonging to a grouped projective structure. -/
-def atlasSet (P : ProjectiveStructureWithGroup G X) : Set (ProjectiveChart X) :=
-  P.toComplexProjectiveStructure.atlasSet
-
-/--
-%%handwave
-name:
-  Projective transitions lie in the prescribed structure group
-statement:
-  Let \(P\) be a projective structure with group
-  \(G\le\operatorname{PGL}_2(\mathbb C)\).  If \(e,e'\) belong to its atlas,
-  then every local transition representative between them has projective class in \(G\).
-proof:
-  Apply the transition-in-group field of \(P\) to the two atlas-membership hypotheses.
--/
-theorem transition_in_group_of_mem (P : ProjectiveStructureWithGroup G X)
-    {e e' : ProjectiveChart X} (he : e ∈ P.atlasSet) (he' : e' ∈ P.atlasSet) :
-    HasTransitionInGroup G e e' := by
-  letI := P.projectiveChartedSpace
-  simpa [atlasSet, ComplexProjectiveStructure.atlasSet] using
-    P.transition_in_group e he e' he'
-
 end ProjectiveStructureWithGroup
-
-/--
-%%handwave
-name:
-  Disjoint projective charts have a vacuous global Möbius transition
-statement:
-  If \(e.source\cap e'.source=\varnothing\), then the transition from \(e\) to
-  \(e'\) is represented on its empty domain by the identity Möbius transformation.
-proof:
-  Choose the identity representative.  Any point in the transition domain would
-  pull back to a point of \(e.source\cap e'.source\), contradicting disjointness.
--/
-theorem hasMobiusTransition_of_not_nonempty_source_inter {X : Type} [TopologicalSpace X]
-    (e e' : ProjectiveChart X)
-    (h : ¬ Set.Nonempty (e.source ∩ e'.source)) :
-    HasMobiusTransition e e' := by
-  refine ⟨{ representative := 1, transition_eq := ?_ }⟩
-  intro z hz
-  exfalso
-  rw [OpenPartialHomeomorph.trans_source] at hz
-  have hx_source : e.symm z ∈ e.source := by
-    simpa using e.symm_mapsTo hz.1
-  exact h ⟨e.symm z, hx_source, hz.2⟩
 
 /--
 %%handwave

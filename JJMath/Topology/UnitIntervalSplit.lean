@@ -15,8 +15,11 @@ noncomputable section
 namespace unitInterval
 
 /--
-If `b` lies between `a` and `c`, this is the parameter at which the subpath
-from `a` to `c` reaches `b`.
+%%handwave
+name:
+  Relative parameter of an ordered middle point
+statement:
+  For $a\le b\le c$ in $[0,1]$, the relative parameter of $b$ between $a$ and $c$ is $(b-a)/(c-a)\in[0,1]$, with value $0$ in the degenerate case $a=b=c$.
 -/
 def orderedMiddleParameter
     (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) : unitInterval :=
@@ -36,23 +39,6 @@ def orderedMiddleParameter
           linarith [show (b : ℝ) ≤ c from hbc]
         have hca : 0 ≤ ((c : ℝ) - (a : ℝ)) := sub_nonneg.mpr (hab.trans hbc)
         exact div_le_one_of_le₀ hba_ca hca⟩
-
-/--
-%%handwave
-name:
-  Coordinate of the ordered middle parameter
-statement:
-  If \(a\le b\le c\) in \([0,1]\), the parameter locating \(b\) on the affine
-  segment from \(a\) to \(c\) is \((b-a)/(c-a)\).
-proof:
-  This is the defining coordinate of the ordered middle parameter.
--/
-@[simp]
-theorem coe_orderedMiddleParameter
-    (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
-    (orderedMiddleParameter a b c hab hbc : ℝ) =
-      ((b : ℝ) - (a : ℝ)) / ((c : ℝ) - (a : ℝ)) :=
-  rfl
 
 /--
 %%handwave
@@ -113,14 +99,26 @@ theorem orderedMiddleParameter_lt_one_of_lt
     _ = 1 := by
       field_simp [ne_of_gt hden]
 
-/-- The first-half reparametrization `t ↦ t / 2` of the unit interval. -/
+/--
+%%handwave
+name:
+  First-half embedding of the unit interval
+statement:
+  The first-half reparametrization embeds $[0,1]$ into $[0,\tfrac12]$ by $t\mapsto t/2$.
+-/
 def firstHalf (t : unitInterval) : unitInterval :=
   ⟨(t : ℝ) / 2, by
     constructor
     · nlinarith [unitInterval.nonneg t]
     · nlinarith [unitInterval.le_one t]⟩
 
-/-- The second-half reparametrization `t ↦ (1 + t) / 2` of the unit interval. -/
+/--
+%%handwave
+name:
+  Second-half embedding of the unit interval
+statement:
+  The second-half reparametrization embeds $[0,1]$ into $[\tfrac12,1]$ by $t\mapsto(1+t)/2$.
+-/
 def secondHalf (t : unitInterval) : unitInterval :=
   ⟨(1 + (t : ℝ)) / 2, by
     constructor
@@ -139,21 +137,6 @@ proof:
 @[simp]
 theorem coe_firstHalf (t : unitInterval) :
     (firstHalf t : ℝ) = (t : ℝ) / 2 :=
-  rfl
-
-/--
-%%handwave
-name:
-  Formula for the second-half embedding
-statement:
-  For \(t\in[0,1]\), the second-half embedding has real coordinate
-  \((1+t)/2\).
-proof:
-  This is its defining coordinate.
--/
-@[simp]
-theorem coe_secondHalf (t : unitInterval) :
-    (secondHalf t : ℝ) = (1 + (t : ℝ)) / 2 :=
   rfl
 
 /--
@@ -240,7 +223,13 @@ theorem half_le_secondHalf (t : unitInterval) :
   change (1 / 2 : ℝ) ≤ (1 + (t : ℝ)) / 2
   nlinarith [unitInterval.nonneg t]
 
-/-- Double a unit-interval point known to lie in the first half. -/
+/--
+%%handwave
+name:
+  Rescaling the first half to the unit interval
+statement:
+  A parameter $t\in[0,\tfrac12]$ is rescaled to $[0,1]$ by the map $t\mapsto2t$.
+-/
 def doubleOfLeHalf (t : unitInterval) (ht : (t : ℝ) ≤ 1 / 2) :
     unitInterval :=
   ⟨2 * (t : ℝ), by
@@ -249,8 +238,11 @@ def doubleOfLeHalf (t : unitInterval) (ht : (t : ℝ) ≤ 1 / 2) :
     · nlinarith⟩
 
 /--
-Convert a unit-interval point known to lie in the second half to the
-corresponding parameter on the second path.
+%%handwave
+name:
+  Rescaling the second half to the unit interval
+statement:
+  A parameter $t\in[\tfrac12,1]$ is rescaled to $[0,1]$ by the map $t\mapsto2t-1$.
 -/
 def doubleSubOneOfHalfLe (t : unitInterval) (ht : (1 / 2 : ℝ) ≤ t) :
     unitInterval :=
@@ -359,29 +351,19 @@ theorem secondHalf_doubleSubOneOfHalfLe (t : unitInterval)
   change (1 + (2 * (t : ℝ) - 1)) / 2 = (t : ℝ)
   ring
 
-/-- Rescale a parameter `u ∈ [0,r]` back to the unit interval. -/
+/--
+%%handwave
+name:
+  Rescaling a left subinterval
+statement:
+  For $0<r\le1$ and $u\in[0,r]$, the affine coordinate of $u$ in the subinterval $[0,r]$ is $u/r\in[0,1]$.
+-/
 def splitAtRescaleLeft
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
     unitInterval :=
   ⟨(u : ℝ) / r,
     div_nonneg (unitInterval.nonneg u) hr0.le,
     div_le_one_of_le₀ hu hr0.le⟩
-
-/--
-%%handwave
-name:
-  Formula for left-subinterval rescaling
-statement:
-  If \(0<r\le1\) and \(0\le u\le r\), rescaling \([0,r]\) to \([0,1]\)
-  sends \(u\) to \(u/r\).
-proof:
-  This is the defining coordinate of the left rescaling.
--/
-@[simp]
-theorem coe_splitAtRescaleLeft
-    (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hu : u ≤ r) :
-    (splitAtRescaleLeft r u hr0 hu : ℝ) = (u : ℝ) / r :=
-  rfl
 
 /--
 %%handwave
@@ -400,7 +382,13 @@ theorem convexCombo_zero_right_splitAtRescaleLeft
   simp [splitAtRescaleLeft, Set.Icc.convexComb]
   field_simp [ne_of_gt hr0]
 
-/-- Rescale a parameter `u ∈ [r,1]` back to the unit interval. -/
+/--
+%%handwave
+name:
+  Rescaling a right subinterval
+statement:
+  For $0\le r<1$ and $u\in[r,1]$, the affine coordinate of $u$ in the subinterval $[r,1]$ is $(u-r)/(1-r)\in[0,1]$.
+-/
 def splitAtRescaleRight
     (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
     unitInterval :=
@@ -410,23 +398,6 @@ def splitAtRescaleRight
       have hur : ((u : ℝ) - r) ≤ 1 - (r : ℝ) := by
         linarith [unitInterval.le_one u]
       exact div_le_one_of_le₀ hur (sub_nonneg.mpr hr1.le)⟩
-
-/--
-%%handwave
-name:
-  Formula for right-subinterval rescaling
-statement:
-  If \(r<1\) and \(r\le u\le1\), rescaling \([r,1]\) to \([0,1]\)
-  sends \(u\) to \((u-r)/(1-r)\).
-proof:
-  This is the defining coordinate of the right rescaling.
--/
-@[simp]
-theorem coe_splitAtRescaleRight
-    (r u : unitInterval) (hr1 : (r : ℝ) < 1) (hu : r ≤ u) :
-    (splitAtRescaleRight r u hr1 hu : ℝ) =
-      ((u : ℝ) - r) / (1 - r) :=
-  rfl
 
 /--
 %%handwave
@@ -448,8 +419,11 @@ theorem convexCombo_left_one_splitAtRescaleRight
   ring
 
 /--
-The split-path parameter corresponding to an original parameter `u`, for an
-interior breakpoint `r`.
+%%handwave
+name:
+  Parameter on a path split at an interior time
+statement:
+  For $0<r<1$, an original parameter $u\in[0,1]$ is sent to $u/(2r)$ when $u\le r$ and to $\tfrac12(1+(u-r)/(1-r))$ when $u\ge r$, locating the same point on the path split into two equal parameter halves.
 -/
 noncomputable def splitAtReparam
     (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
@@ -556,46 +530,9 @@ theorem splitAtReparam_mono
 /--
 %%handwave
 name:
-  Split reparametrization at zero
+  Original parameter of a split path
 statement:
-  For every interior breakpoint \(r\), the split reparametrization sends
-  \(0\) to \(0\).
-proof:
-  Use the left formula and substitute \(u=0\).
--/
-@[simp]
-theorem splitAtReparam_zero
-    (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
-    splitAtReparam r 0 hr0 hr1 = 0 := by
-  rw [splitAtReparam_of_le r 0 hr0 hr1
-    (show (0 : unitInterval) ≤ r from hr0.le)]
-  ext
-  simp [firstHalf, splitAtRescaleLeft]
-
-/--
-%%handwave
-name:
-  Split reparametrization at one
-statement:
-  For every interior breakpoint \(r\), the split reparametrization sends
-  \(1\) to \(1\).
-proof:
-  Use the right formula and simplify \((1-r)/(1-r)=1\).
--/
-@[simp]
-theorem splitAtReparam_one
-    (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
-    splitAtReparam r 1 hr0 hr1 = 1 := by
-  rw [splitAtReparam_of_ge r 1 hr0 hr1
-    (show r ≤ (1 : unitInterval) from hr1.le)]
-  ext
-  have hne : (1 - (r : ℝ)) ≠ 0 := by linarith
-  simp [secondHalf, splitAtRescaleRight]
-  field_simp [hne]
-  norm_num
-
-/--
-The original-path parameter corresponding to a parameter on the split path.
+  For $0<r<1$, a split-path parameter $t$ corresponds to the original parameter $2rt$ for $t\le\tfrac12$ and $r+(2t-1)(1-r)$ for $t\ge\tfrac12$.
 -/
 noncomputable def splitAtOriginalParameter
     (r t : unitInterval) (_hr0 : (0 : ℝ) < r) (_hr1 : (r : ℝ) < 1) :
@@ -697,33 +634,6 @@ theorem splitAtOriginalParameter_mono
 /--
 %%handwave
 name:
-  The original-parameter map is a left inverse
-statement:
-  For \(0<r<1\) and \(u\in[0,1]\), converting \(u\) to a split-path parameter
-  and back recovers \(u\).
-proof:
-  Split at \(u\le r\).  On each branch, half-interval rescaling is inverted
-  and the corresponding affine subinterval interpolation recovers \(u\).
--/
-theorem splitAtOriginalParameter_splitAtReparam
-    (r u : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1) :
-    splitAtOriginalParameter r (splitAtReparam r u hr0 hr1) hr0 hr1 = u := by
-  by_cases hu : u ≤ r
-  · rw [splitAtReparam_of_le r u hr0 hr1 hu]
-    rw [splitAtOriginalParameter_of_le_half]
-    · rw [doubleOfLeHalf_firstHalf]
-      exact convexCombo_zero_right_splitAtRescaleLeft r u hr0 hu
-    · exact firstHalf_le_half _
-  · have hru : r ≤ u := le_of_lt (lt_of_not_ge hu)
-    rw [splitAtReparam_of_ge r u hr0 hr1 hru]
-    rw [splitAtOriginalParameter_of_half_le]
-    · rw [doubleSubOneOfHalfLe_secondHalf]
-      exact convexCombo_left_one_splitAtRescaleRight r u hr1 hru
-    · exact half_le_secondHalf _
-
-/--
-%%handwave
-name:
   The split reparametrization is a left inverse
 statement:
   For \(0<r<1\) and \(t\in[0,1]\), converting \(t\) to its original parameter
@@ -763,30 +673,6 @@ theorem splitAtReparam_splitAtOriginalParameter
 /--
 %%handwave
 name:
-  Pulling split-parameter bounds back to original parameters
-statement:
-  Let \(F\) be the split reparametrization for \(0<r<1\), with inverse
-  \(G\).  If \(F(a)\le t\le F(b)\), then \(a\le G(t)\le b\).
-proof:
-  Apply monotonicity of \(G\) to both inequalities and use
-  \(G(F(u))=u\).
--/
-theorem splitAtOriginalParameter_mem_interval_of_reparam_bounds
-    (r : unitInterval) (hr0 : (0 : ℝ) < r) (hr1 : (r : ℝ) < 1)
-    {a b t : unitInterval}
-    (hleft : splitAtReparam r a hr0 hr1 ≤ t)
-    (hright : t ≤ splitAtReparam r b hr0 hr1) :
-    a ≤ splitAtOriginalParameter r t hr0 hr1 ∧
-      splitAtOriginalParameter r t hr0 hr1 ≤ b := by
-  constructor
-  · have hmono := splitAtOriginalParameter_mono r hr0 hr1 hleft
-    simpa [splitAtOriginalParameter_splitAtReparam] using hmono
-  · have hmono := splitAtOriginalParameter_mono r hr0 hr1 hright
-    simpa [splitAtOriginalParameter_splitAtReparam] using hmono
-
-/--
-%%handwave
-name:
   Pulling original-parameter bounds back to split parameters
 statement:
   Let \(G\) send split-path parameters to original parameters for
@@ -810,7 +696,11 @@ theorem splitAtReparam_mem_interval_of_originalParameter_bounds
     simpa [splitAtReparam_splitAtOriginalParameter] using hmono
 
 /--
-The parameter change from `p.trans (q.trans r)` to `(p.trans q).trans r`.
+%%handwave
+name:
+  Reparametrization from right- to left-associated concatenation
+statement:
+  The piecewise-affine map from the parameter of $p*(q*r)$ to that of $(p*q)*r$ is $t/2$ on $[0,\tfrac12]$, $t-\tfrac14$ on $[\tfrac12,\tfrac34]$, and $2t-1$ on $[\tfrac34,1]$.
 -/
 def reassocRightToLeft (t : unitInterval) : unitInterval :=
   if ht₁ : (t : ℝ) ≤ 1 / 2 then
@@ -830,8 +720,11 @@ def reassocRightToLeft (t : unitInterval) : unitInterval :=
       · nlinarith [unitInterval.le_one t]⟩
 
 /--
-The inverse parameter change from `(p.trans q).trans r` to
-`p.trans (q.trans r)`.
+%%handwave
+name:
+  Reparametrization from left- to right-associated concatenation
+statement:
+  The inverse piecewise-affine map from the parameter of $(p*q)*r$ to that of $p*(q*r)$ is $2t$ on $[0,\tfrac14]$, $t+\tfrac14$ on $[\tfrac14,\tfrac12]$, and $(t+1)/2$ on $[\tfrac12,1]$.
 -/
 def reassocLeftToRight (t : unitInterval) : unitInterval :=
   if ht₁ : (t : ℝ) ≤ 1 / 4 then
@@ -1349,40 +1242,6 @@ theorem path_trans_apply_of_half_le
     simp
   · rw [dif_neg h]
     congr 1
-
-/--
-%%handwave
-name:
-  Subpath of a subpath
-statement:
-  For a path \(\gamma\) and \(a,b,s,t\in[0,1]\),
-  \[
-    (\gamma|_{[a,b]})|_{[s,t]}
-    =\gamma|_{[(1-s)a+sb,\,(1-t)a+tb]}.
-  \]
-proof:
-  Evaluate both paths at \(u\) and use associativity of affine interpolation:
-  interpolating from \(a\) to \(b\) at the interpolation from \(s\) to \(t\)
-  gives the same affine polynomial as interpolating between the two displayed
-  endpoints at \(u\).
--/
-theorem path_subpath_subpath
-    {X : Type*} [TopologicalSpace X]
-    {x y : X} (γ : Path x y)
-    (a b s t : unitInterval) :
-    (γ.subpath a b).subpath s t =
-      γ.subpath (Set.Icc.convexComb a b s)
-        (Set.Icc.convexComb a b t) := by
-  ext u
-  simp only [Path.subpath]
-  change
-    γ (Set.Icc.convexComb a b (Set.Icc.convexComb s t u)) =
-      γ (Set.Icc.convexComb (Set.Icc.convexComb a b s)
-          (Set.Icc.convexComb a b t) u)
-  apply congrArg γ
-  ext
-  simp [Set.Icc.convexComb]
-  ring_nf
 
 /--
 %%handwave

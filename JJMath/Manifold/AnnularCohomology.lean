@@ -20,13 +20,25 @@ noncomputable section
 
 attribute [local instance] finrank_real_complex_fact'
 
-/-- The product of stereographic projection away from `v` with the real identity chart. -/
+/--
+%%handwave
+name:
+  Punctured-cylinder stereographic chart
+statement:
+  For $v\in S^1$, stereographic projection away from $v$, product with the identity on $\mathbb R$, gives a chart from $(S^1\setminus\{v\})\times\mathbb R$ to $\mathbb R^2$.
+-/
 def annularPunctureChart (v : Circle) :
     OpenPartialHomeomorph (Circle × ℝ)
       (ModelProd (EuclideanSpace ℝ (Fin 1)) ℝ) :=
   (stereographic' 1 v).prod (OpenPartialHomeomorph.refl ℝ)
 
-/-- The standard cylinder with the vertical line through `v` removed. -/
+/--
+%%handwave
+name:
+  Once-punctured annular cylinder
+statement:
+  For $v\in S^1$, the punctured annular cylinder is the open set $(S^1\setminus\{v\})\times\mathbb R$.
+-/
 def annularPunctureOpen (v : Circle) :
     TopologicalSpace.Opens (Circle × ℝ) :=
   ⟨(annularPunctureChart v).source, (annularPunctureChart v).open_source⟩

@@ -20,8 +20,14 @@ noncomputable section
 variable {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
 variable [IsManifold 𝓘(ℝ, ℂ) ∞ X]
 
-/-- The interval coordinate on a product-ball frontier arc, with its source
-written as an open subset of the frontier subtype. -/
+/--
+%%handwave
+name: The interval coordinate on a product-ball frontier arc, with its source written as an open subset of the frontier subtype
+statement:
+  Re-express the second-coordinate homeomorphism
+  $\partial\Omega\cap U_p\to(-r_p,r_p)$ with its source as the corresponding
+  open subtype of $\partial\Omega$.
+-/
 noncomputable def smoothBoundaryProductBall_frontierNestedHomeomorph
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     {x : frontier D.carrier |
@@ -41,8 +47,14 @@ noncomputable def smoothBoundaryProductBall_frontierNestedHomeomorph
       ↑(frontier D.carrier ∩ smoothBoundaryProductBallSource D p)).trans
     (smoothBoundaryProductBall_frontierHomeomorph D p)
 
-/-- The one-dimensional partial chart obtained by restricting a centered
-surface product chart to the frontier. -/
+/--
+%%handwave
+name: The one-dimensional partial chart obtained by restricting a centered surface product chart to the frontier
+statement:
+  Restrict a centered surface product chart at $p\in\partial\Omega$ to its
+  frontier arc and retain the tangential coordinate, producing a partial
+  chart $\partial\Omega\dashrightarrow\mathbb R$ centered at $p$.
+-/
 noncomputable def smoothBoundaryFrontierChart
     (D : SmoothBoundaryDomain X) (p : frontier D.carrier) :
     OpenPartialHomeomorph (frontier D.carrier) ℝ := by
@@ -212,8 +224,13 @@ theorem smoothBoundaryFrontierChart_point_mem
     p ∈ (smoothBoundaryFrontierChart D p).source := by
   exact smoothBoundaryProductBallSource_point_mem D p
 
-/-- The atlas on a smooth frontier obtained by restricting its centered
-surface product charts. -/
+/--
+%%handwave
+name: The atlas on a smooth frontier obtained by restricting its centered surface product charts
+statement:
+  Equip $\partial\Omega$ with the one-dimensional atlas consisting of the
+  restricted centered product charts at all frontier points.
+-/
 @[reducible] noncomputable def smoothBoundaryFrontierChartedSpace
     (D : SmoothBoundaryDomain X) :
     ChartedSpace ℝ (frontier D.carrier) where
@@ -221,25 +238,6 @@ surface product charts. -/
   chartAt := smoothBoundaryFrontierChart D
   mem_chart_source := smoothBoundaryFrontierChart_point_mem D
   chart_mem_atlas := fun x => ⟨x, rfl⟩
-
-/--
-%%handwave
-name:
-  A smooth surface boundary is a topological one-manifold
-statement:
-  The atlas obtained by restricting centered boundary product charts makes
-  the boundary of a smooth surface domain a topological one-manifold without
-  boundary.
-proof:
-  Each restricted product chart is a homeomorphism from an open boundary arc
-  to an open interval, and every boundary point lies in its centered chart.
--/
-theorem smoothBoundaryDomain_frontier_isTopologicalOneManifold
-    (D : SmoothBoundaryDomain X) :
-    letI := smoothBoundaryFrontierChartedSpace D
-    IsManifold 𝓘(ℝ, ℝ) 0 (frontier D.carrier) := by
-  letI := smoothBoundaryFrontierChartedSpace D
-  infer_instance
 
 /--
 %%handwave
@@ -342,49 +340,6 @@ theorem smoothBoundaryDomain_frontier_isSmoothOneManifold
         simpa only [ep, Cp] using
           smoothBoundaryFrontierChart_symm_apply_of_mem_target D p t
           (htargetP t ht)]
-
-/--
-%%handwave
-name:
-  A smooth surface boundary is a twice differentiable one-manifold
-statement:
-  With the restricted product-chart atlas, the boundary of a smooth surface
-  domain is a one-dimensional \(C^2\) manifold without boundary.
-proof:
-  The boundary is a smooth one-manifold, and smooth transition maps are in
-  particular twice continuously differentiable.
--/
-theorem smoothBoundaryDomain_frontier_isC2OneManifold
-    (D : SmoothBoundaryDomain X) :
-    letI := smoothBoundaryFrontierChartedSpace D
-    IsManifold 𝓘(ℝ, ℝ) 2 (frontier D.carrier) := by
-  letI := smoothBoundaryFrontierChartedSpace D
-  letI : IsManifold 𝓘(ℝ, ℝ) ∞ (frontier D.carrier) :=
-    smoothBoundaryDomain_frontier_isSmoothOneManifold D
-  exact IsManifold.of_le (I := 𝓘(ℝ, ℝ))
-    (M := frontier D.carrier) (m := 2) (n := ∞)
-      (WithTop.coe_le_coe.mpr le_top)
-
-/--
-%%handwave
-name:
-  A smooth surface boundary is a continuously differentiable one-manifold
-statement:
-  With the restricted product-chart atlas, the boundary of a smooth surface
-  domain is a one-dimensional \(C^1\) manifold without boundary.
-proof:
-  The boundary has already been shown to be a \(C^2\) one-manifold, and
-  \(C^2\) regularity implies \(C^1\) regularity.
--/
-theorem smoothBoundaryDomain_frontier_isC1OneManifold
-    (D : SmoothBoundaryDomain X) :
-    letI := smoothBoundaryFrontierChartedSpace D
-    IsManifold 𝓘(ℝ, ℝ) 1 (frontier D.carrier) := by
-  letI := smoothBoundaryFrontierChartedSpace D
-  letI : IsManifold 𝓘(ℝ, ℝ) 2 (frontier D.carrier) :=
-    smoothBoundaryDomain_frontier_isC2OneManifold D
-  exact IsManifold.of_le (I := 𝓘(ℝ, ℝ))
-    (M := frontier D.carrier) (m := 1) (n := 2) (by norm_num)
 
 end
 

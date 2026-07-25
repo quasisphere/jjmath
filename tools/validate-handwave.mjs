@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(SCRIPT_DIR, "..");
 const REQUIRED_THEOREM_FIELDS = ["name", "statement", "proof"];
+const REQUIRED_DEFINITION_FIELDS = ["name", "statement"];
 
 function usage() {
   return `Usage: node tools/validate-handwave.mjs [options]
@@ -27,6 +28,9 @@ Options:
                          relative, relative to handwave/, or absolute.
   --prefix PREFIX        Check articles whose repository-relative paths begin
                          with PREFIX (repeatable).
+  --metadata-prefix PATH Audit metadata on every public theorem, lemma, and
+                         definition in Lean source files whose repository-
+                         relative paths begin with PATH (repeatable).
   --strict-external      Report targets absent from JJMath/**/*.lean even when
                          they do not begin with JJMath. By default such targets
                          are listed as unchecked external references.
@@ -40,6 +44,7 @@ function parseArgs(argv) {
     strictExternal: false,
     articles: [],
     prefixes: [],
+    metadataPrefixes: [],
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -50,17 +55,20 @@ function parseArgs(argv) {
       options.strictExternal = true;
     } else if (arg === "-h" || arg === "--help") {
       options.help = true;
-    } else if (arg === "--article" || arg === "--prefix") {
+    } else if (arg === "--article" || arg === "--prefix" || arg === "--metadata-prefix") {
       if (i + 1 >= argv.length) {
         throw new Error(`${arg} requires a value`);
       }
       const value = argv[++i];
       if (arg === "--article") options.articles.push(value);
-      else options.prefixes.push(value);
+      else if (arg === "--prefix") options.prefixes.push(value);
+      else options.metadataPrefixes.push(value);
     } else if (arg.startsWith("--article=")) {
       options.articles.push(arg.slice("--article=".length));
     } else if (arg.startsWith("--prefix=")) {
       options.prefixes.push(arg.slice("--prefix=".length));
+    } else if (arg.startsWith("--metadata-prefix=")) {
+      options.metadataPrefixes.push(arg.slice("--metadata-prefix=".length));
     } else {
       throw new Error(`unknown option: ${arg}`);
     }
@@ -314,6 +322,11 @@ function normalizeArticleSelector(value) {
   return relative.replace(/\/$/, "");
 }
 
+function normalizeSourcePrefix(value) {
+  const absolute = path.isAbsolute(value) ? value : path.resolve(REPO_ROOT, value);
+  return repoRelative(absolute).replace(/\/$/, "");
+}
+
 function filterArticles(articleFiles, options) {
   if (options.articles.length === 0 && options.prefixes.length === 0) return articleFiles;
   const exact = new Set(options.articles.map(normalizeArticleSelector));
@@ -437,6 +450,35 @@ async function validate(options) {
     }
   }
 
+  const metadataPrefixes = options.metadataPrefixes.map(normalizeSourcePrefix);
+  const metadataDeclarations = metadataPrefixes.length === 0
+    ? []
+    : declarations.filter((declaration) =>
+      metadataPrefixes.some((prefix) => declaration.file.startsWith(prefix))
+      && ["theorem", "lemma", "def"].includes(declaration.kind));
+  for (const declaration of metadataDeclarations) {
+    const requiredFields = declaration.kind === "def"
+      ? REQUIRED_DEFINITION_FIELDS
+      : REQUIRED_THEOREM_FIELDS;
+    const missingFields = requiredFields.filter(
+      (field) => declaration.handwave?.[field]?.trim() === undefined
+        || declaration.handwave[field].trim() === "",
+    );
+    if (missingFields.length > 0) {
+      issues.push({
+        kind: "missing-declaration-handwave-fields",
+        declaration: {
+          name: declaration.name,
+          file: declaration.file,
+          line: declaration.line,
+          column: declaration.column,
+          kind: declaration.kind,
+        },
+        missingFields,
+      });
+    }
+  }
+
   return {
     ok: issues.length === 0,
     repository: REPO_ROOT,
@@ -445,6 +487,7 @@ async function validate(options) {
       declarations: declarations.length,
       articles: articles.length,
       includes: includeCount,
+      metadataDeclarations: metadataDeclarations.length,
       issues: issues.length,
       uncheckedExternal: uncheckedExternal.length,
     },
@@ -461,22 +504,37 @@ function humanOutput(result) {
     `Scanned ${result.stats.articles} article(s), ${result.stats.includes} include(s), `
       + `${result.stats.declarations} public declaration(s) in ${result.stats.leanFiles} Lean file(s).`,
   );
+  if (result.stats.metadataDeclarations > 0) {
+    lines.push(
+      `Audited Handwave metadata on ${result.stats.metadataDeclarations} theorem(s), lemma(s), `
+        + "and definition(s) selected by source prefix.",
+    );
+  }
 
   for (const issue of result.issues) {
-    const articleLocation = `${issue.article.file}:${issue.article.line}:${issue.article.column}`;
     if (issue.kind === "unresolved-include") {
+      const articleLocation = `${issue.article.file}:${issue.article.line}:${issue.article.column}`;
       lines.push(`\n[unresolved include] ${articleLocation}`);
       lines.push(`  ${issue.target} was not found in JJMath/**/*.lean`);
     } else if (issue.kind === "malformed-include") {
+      const articleLocation = `${issue.article.file}:${issue.article.line}:${issue.article.column}`;
       lines.push(`\n[malformed include] ${articleLocation}`);
       lines.push(`  ${issue.text || "@include"}`);
     } else if (issue.kind === "missing-handwave-fields") {
+      const articleLocation = `${issue.article.file}:${issue.article.line}:${issue.article.column}`;
       lines.push(`\n[missing Handwave metadata] ${articleLocation}`);
       lines.push(`  ${issue.target}`);
       lines.push(
         `  declared at ${issue.declaration.file}:${issue.declaration.line}:${issue.declaration.column}; `
           + `missing ${issue.missingFields.join(", ")}`,
       );
+    } else if (issue.kind === "missing-declaration-handwave-fields") {
+      lines.push(
+        `\n[missing declaration Handwave metadata] `
+          + `${issue.declaration.file}:${issue.declaration.line}:${issue.declaration.column}`,
+      );
+      lines.push(`  ${issue.declaration.name} (${issue.declaration.kind})`);
+      lines.push(`  missing ${issue.missingFields.join(", ")}`);
     }
   }
 

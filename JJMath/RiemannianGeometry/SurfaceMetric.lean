@@ -113,69 +113,6 @@ theorem positiveDefiniteSymmetricBilinearForm_complex_isCoercive
 /--
 %%handwave
 name:
-  Conformal tangent forms are positive definite
-statement:
-  A conformal tangent form is positive definite and symmetric.
-proof:
-  A positive multiple of the Euclidean inner product is symmetric and is
-  positive on every nonzero tangent vector.
--/
-theorem conformalTangentForm_positiveDefinite
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold SurfaceRealModel ∞ X]
-    {x : X} {b : TangentBilinearFormAt X x}
-    (hb : IsConformalTangentForm x b) :
-    IsPositiveDefiniteSymmetricTangentForm x b := by
-  rcases hb with ⟨c, hcpos, hc⟩
-  constructor
-  · intro v w
-    rw [hc v w, hc w v]
-    simp [real_inner_comm]
-  · intro v hv
-    rw [hc v v]
-    have hv_complex : (show ℂ from v) ≠ 0 := hv
-    exact mul_pos hcpos (real_inner_self_pos.mpr hv_complex)
-
-/--
-%%handwave
-name:
-  Conformal tangent forms form a convex cone
-statement:
-  At each point of a Riemann surface, the conformal tangent forms form a
-  convex subset of the vector space of tangent-bilinear forms.
-proof:
-  A convex combination of positive scalar multiples of the Euclidean inner
-  product is again a positive scalar multiple of the Euclidean inner product.
--/
-theorem conformalTangentForm_convex
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold SurfaceRealModel ∞ X] (x : X) :
-    Convex ℝ {b : TangentBilinearFormAt X x | IsConformalTangentForm x b} := by
-  rw [convex_iff_add_mem]
-  intro b₁ hb₁ b₂ hb₂ a c ha hc hac
-  rcases hb₁ with ⟨r₁, hr₁pos, hb₁⟩
-  rcases hb₂ with ⟨r₂, hr₂pos, hb₂⟩
-  refine ⟨a * r₁ + c * r₂, ?_, ?_⟩
-  · have hcoeff : 0 < a ∨ 0 < c := by
-      by_contra h
-      push Not at h
-      nlinarith
-    rcases hcoeff with ha_pos | hc_pos
-    · have hterm : 0 < a * r₁ := mul_pos ha_pos hr₁pos
-      have hterm₂ : 0 ≤ c * r₂ := mul_nonneg hc hr₂pos.le
-      nlinarith
-    · have hterm : 0 < c * r₂ := mul_pos hc_pos hr₂pos
-      have hterm₁ : 0 ≤ a * r₁ := mul_nonneg ha hr₁pos.le
-      nlinarith
-  · intro v w
-    change a * ((b₁ v) w) + c * ((b₂ v) w) =
-      (a * r₁ + c * r₂) * inner ℝ (show ℂ from v) (show ℂ from w)
-    rw [hb₁ v w, hb₂ v w]
-    ring
-
-/--
-%%handwave
-name:
   Positive definite tangent forms have bounded unit balls
 statement:
   The sublevel set of a positive definite symmetric tangent form is von
@@ -253,38 +190,6 @@ theorem euclideanTangentBilinearForm_positiveDefinite :
 /--
 %%handwave
 name:
-  Pullbacks preserve positive definite symmetric forms
-statement:
-  Pulling back a positive definite symmetric bilinear form along an injective
-  linear map again gives a positive definite symmetric bilinear form.
-proof:
-  Symmetry is immediate by applying symmetry of the original form to the
-  images of the two vectors.  Positivity follows because injectivity sends a
-  nonzero vector to a nonzero vector.
--/
-theorem positiveDefiniteSymmetricBilinearForm_pullback
-    {E F : Type} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (L : E →L[ℝ] F) (hL : Function.Injective L)
-    (b : F →L[ℝ] F →L[ℝ] ℝ)
-    (hb : (∀ v w : F, b v w = b w v) ∧
-      ∀ v : F, v ≠ 0 → 0 < b v v) :
-    (∀ v w : E, b (L v) (L w) = b (L w) (L v)) ∧
-      ∀ v : E, v ≠ 0 → 0 < b (L v) (L v) := by
-  constructor
-  · intro v w
-    exact hb.1 (L v) (L w)
-  · intro v hv
-    have hLv : L v ≠ 0 := by
-      intro hzero
-      apply hv
-      apply hL
-      simpa using hzero
-    exact hb.2 (L v) hLv
-
-/--
-%%handwave
-name:
   Positive tangent forms form a convex cone
 statement:
   At each point of a surface, the positive definite symmetric tangent-bilinear
@@ -321,61 +226,6 @@ theorem positiveDefiniteSymmetricTangentForm_convex
       nlinarith
 
 set_option maxHeartbeats 1000000
-
-/--
-%%handwave
-name:
-  Coordinates of tangent-bilinear-form trivializations
-statement:
-  The coordinate expression of a tangent-bilinear form under the
-  tangent-bilinear-form bundle trivialization is the form obtained by reading
-  the bilinear form in tangent-coordinate trivializations.
-proof:
-  The tangent-bilinear-form bundle is the hom-bundle built from the tangent
-  bundle and the trivial real line bundle.  Mathlib's hom-bundle
-  trivialization formula identifies its coordinate map with the usual
-  coordinate expression for continuous linear maps.
--/
-theorem tangentBilinearForm_trivializationAt_continuousLinearMapAt
-    {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
-    [IsManifold SurfaceRealModel ∞ X] (x₀ y : X)
-    (hy : y ∈
-      (trivializationAt TangentBilinearFormModel
-        (fun x : X ↦ TangentBilinearFormAt X x) x₀).baseSet)
-    (b : TangentBilinearFormAt X y) :
-    (trivializationAt TangentBilinearFormModel
-      (fun x : X ↦ TangentBilinearFormAt X x) x₀).continuousLinearMapAt ℝ y b =
-      ContinuousLinearMap.inCoordinates ℂ
-        (TangentSpace SurfaceRealModel : X → Type)
-        (ℂ →L[ℝ] ℝ)
-        (fun x : X ↦ TangentSpace SurfaceRealModel x →L[ℝ] ℝ)
-        x₀ y x₀ y b := by
-  let e :=
-    trivializationAt TangentBilinearFormModel
-      (fun x : X ↦ TangentBilinearFormAt X x) x₀
-  have hye : y ∈ e.baseSet := by
-    simpa [e] using hy
-  have h :=
-    hom_trivializationAt_apply (RingHom.id ℝ)
-      (F₁ := ℂ)
-      (E₁ := (TangentSpace SurfaceRealModel : X → Type))
-      (F₂ := ℂ →L[ℝ] ℝ)
-      (E₂ := fun x : X ↦ TangentSpace SurfaceRealModel x →L[ℝ] ℝ)
-      x₀ (Bundle.TotalSpace.mk' TangentBilinearFormModel y b)
-  have hlin :
-      e.continuousLinearMapAt ℝ y b =
-        (e (Bundle.TotalSpace.mk' TangentBilinearFormModel y b)).2 := by
-    rw [Bundle.Trivialization.continuousLinearMapAt_apply,
-      Bundle.Trivialization.linearMapAt_apply]
-    simp [hye]
-  change e.continuousLinearMapAt ℝ y b =
-    ContinuousLinearMap.inCoordinates ℂ
-      (TangentSpace SurfaceRealModel : X → Type)
-      (ℂ →L[ℝ] ℝ)
-      (fun x : X ↦ TangentSpace SurfaceRealModel x →L[ℝ] ℝ)
-      x₀ y x₀ y b
-  rw [hlin]
-  simpa [e, TangentBilinearFormAt, TangentBilinearFormModel] using congrArg Prod.snd h
 
 /--
 %%handwave
@@ -618,8 +468,6 @@ proof:
   forgetting complex linearity, the real smooth surface has
   [a smooth Riemannian metric](lean:JJMath.Uniformization.exists_smoothRiemannianMetricOnSurface_via_partitionOfUnity)
   by a partition of unity.
-tags:
-  milestone
 -/
 theorem riemannSurface_has_smoothRiemannianMetric
     (X : Type) [TopologicalSpace X] [ChartedSpace ℂ X]

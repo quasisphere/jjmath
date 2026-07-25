@@ -52,59 +52,8 @@ theorem terminalFormulaAt_eq
           (PathHomotopyUniversalCover.endpoint y'))
   rw [A.terminalCenter_eq, A.terminalMobius_eq]
 
-/-- Exact terminal-extension agreement forgets to PSL-level agreement. -/
-def toProjectionAgreement
-    (A :
-      PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement
-        S hy' T) :
-    PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
-      S hy' T where
-  terminalCenter_eq := A.terminalCenter_eq
-  terminalMobius_projection_eq := by
-    exact congrArg realMobiusProjection A.terminalMobius_eq
-
 end PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement
 
-namespace PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-    {S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    {y' : PathHomotopyUniversalCover X x₀}
-    {hy' : y' ∈ S.terminalSheet}
-    {T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels
-        (p.trans (S.terminalSheetPathInSet hy'))}
-
-/--
-PSL-level terminal-extension agreement still identifies the terminal branch
-formula at the extended endpoint.
-
-%%handwave
-name: Terminal formulas agree under projective terminal extension data
-statement: Let $y$ lie in the terminal sheet of $S$, and let $T$ continue $S$ to $\pi(y)$. If the terminal chart centers agree and the two accumulated real Möbius transformations have the same class in $\mathrm{PSL}_2(\mathbb R)$, then $F_T(\pi(y))=F_S(\pi(y))$.
-proof: After identifying the terminal chart coordinates, use that real Möbius transformations with the same projective class induce the same action on the upper half-plane.
--/
-theorem terminalFormulaAt_eq
-    (A :
-      PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
-        S hy' T) :
-    T.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') =
-      S.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') := by
-  change
-    realMobiusRepresentativeAction T.terminalMobius
-        ((localModels.chartAt T.terminalCenter).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y')) =
-      realMobiusRepresentativeAction S.terminalMobius
-        ((localModels.chartAt S.terminalCenter).toUpperHalfPlane
-          (PathHomotopyUniversalCover.endpoint y'))
-  rw [A.terminalCenter_eq]
-  exact realMobiusRepresentativeAction_eq_of_projection_eq
-    A.terminalMobius_projection_eq _
-
-end PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
 
 namespace PathLocalTransitionModelBasedWeakHandoffSkeleton
 
@@ -112,7 +61,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
     {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
     {x : X} {p : Path x₀ x}
 
-/-- The explicit terminal-extension skeleton carries terminal-extension agreement data. -/
+/-- The explicit terminal-extension skeleton carries terminal-extension agreement data.
+
+%%handwave
+name: The explicit terminal-extension skeleton carries terminal-extension agreement data
+statement:
+  The explicit terminal-extension skeleton carries terminal-extension agreement data.
+-/
 def terminalExtensionSkeletonAgreement
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
@@ -122,16 +77,6 @@ def terminalExtensionSkeletonAgreement
       (S.terminalExtensionSkeleton hy') where
   terminalCenter_eq := S.terminalExtensionSkeleton_terminalCenter hy'
   terminalMobius_eq := S.terminalExtensionSkeleton_terminalMobius_eq hy'
-
-/-- The explicit terminal-extension skeleton also carries PSL-level agreement. -/
-def terminalExtensionSkeletonProjectionAgreement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ S.terminalSheet) :
-    PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement S hy'
-      (S.terminalExtensionSkeleton hy') :=
-  (S.terminalExtensionSkeletonAgreement hy').toProjectionAgreement
 
 /--
 The explicit terminal-extension skeleton gives the same terminal formula at
@@ -161,6 +106,13 @@ Unconditional existential terminal-sheet local extension.
 This avoids imposing coherence on an arbitrary global choice of path
 skeletons: given any terminal sheet point, there exists an appended skeleton
 whose terminal branch formula is the same at the new endpoint.
+
+%%handwave
+name: Unconditional existential terminal-sheet local extension
+statement:
+  Unconditional existential terminal-sheet local extension. This avoids imposing coherence on an
+  arbitrary global choice of path skeletons: given any terminal sheet point, there exists an
+  appended skeleton whose terminal branch formula is the same at the new endpoint.
 -/
 def PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionExistencePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -199,6 +151,14 @@ This is the remaining choice-independence needed to turn explicit
 terminal-sheet extensions into compatibility for an arbitrary global choice of
 skeletons: two skeletons carried by the same representative path have the
 same terminal value.
+
+%%handwave
+name: Same-path uniqueness for based weak handoff skeletons
+statement:
+  Same-path uniqueness for based weak handoff skeletons. This is the remaining
+  choice-independence needed to turn explicit terminal-sheet extensions into compatibility for
+  an arbitrary global choice of skeletons: two skeletons carried by the same representative path
+  have the same terminal value.
 -/
 def PathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -222,6 +182,13 @@ omit [RiemannSurface X] in
 If explicit handoff skeletons over the two paths have the same terminal value,
 then any globally chosen handoff skeletons over those paths give an elementary
 grid move.  Same-path uniqueness removes dependence on arbitrary choices.
+
+%%handwave
+name: If explicit handoff skeletons over the two paths have the same terminal value, then any globally chosen handoff skeletons over those paths give an elementary grid move
+statement:
+  If explicit handoff skeletons over the two paths have the same terminal value, then any
+  globally chosen handoff skeletons over those paths give an elementary grid move. Same-path
+  uniqueness removes dependence on arbitrary choices.
 -/
 def of_terminalValueWitness
     (hSamePath :
@@ -249,6 +216,14 @@ For each chart-contained homotopy rectangle, it asks only for explicit
 handoff skeletons over the two adjacent cut paths whose terminal values
 agree.  A separate same-path uniqueness theorem then transfers this equality
 to any globally chosen skeletons.
+
+%%handwave
+name: Value-witness form of the one-column rectangle replacement principle
+statement:
+  Value-witness form of the one-column rectangle replacement principle. For each chart-contained
+  homotopy rectangle, it asks only for explicit handoff skeletons over the two adjacent cut
+  paths whose terminal values agree. A separate same-path uniqueness theorem then transfers this
+  equality to any globally chosen skeletons.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnValueWitnessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -280,6 +255,14 @@ This is the geometric rectangle part of the one-column boundary, stated on
 the path expressions with an explicit common prefix, an elementary rectangle
 edge, and a common suffix.  The separate cut-reparameterization transfer below
 is responsible for moving these witnesses to the public raw cut paths.
+
+%%handwave
+name: Decomposed-column value witnesses
+statement:
+  Decomposed-column value witnesses. This is the geometric rectangle part of the one-column
+  principle, stated on the path expressions with an explicit common prefix, an elementary
+  rectangle edge, and a common suffix. The separate cut-reparameterization transfer below is
+  responsible for moving these witnesses to the normalized raw cut paths.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnDecomposedValueWitnessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -362,6 +345,15 @@ The path-level homotopies
 `homotopyStripColumnBottomPath_homotopic_cutPathRaw` show that this is only
 controlled reparameterization/parenthesization of subpath concatenations,
 plus the endpoint normalizations in `homotopyStripCutPath`.
+
+%%handwave
+name: Exact transfer from decomposed column paths to the normalized cut paths
+statement:
+  Exact transfer from decomposed column paths to the normalized cut paths. The path-level
+  homotopies the homotopy from the top column path to the raw cut path and the homotopy from the
+  bottom column path to the raw cut path show that this is only controlled
+  reparameterization/parenthesization of subpath concatenations, plus the endpoint
+  normalizations in the endpoint-normalized strip-cut path.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -403,6 +395,15 @@ possible skeleton over the decomposed path.  The remaining mathematical
 content is just to build one decomposed skeleton and one public-cut skeleton
 with the same terminal value, separately for the top and bottom edge of the
 column.
+
+%%handwave
+name: Explicit witness form of the cut-reparameterization transfer
+statement:
+  Explicit witness form of the cut-reparameterization transfer. Same-path terminal-value
+  uniqueness removes the need to compare against every possible skeleton over the decomposed
+  path. The remaining mathematical content is just to build one decomposed skeleton and one
+  normalized-cut skeleton with the same terminal value, separately for the top and bottom edge
+  of the column.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamExplicitValueWitnessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -443,6 +444,14 @@ This stops before the public endpoint normalizations in `homotopyStripCutPath`;
 it compares decomposed column paths to `homotopyStripCutPathRaw`.  The
 remaining passage from raw cut paths to public cut paths is exactly the
 endpoint-normalization boundary at `r = 0` and `r = 1`.
+
+%%handwave
+name: Raw-cut witness form of cut reparameterization
+statement:
+  Raw-cut witness form of cut reparameterization. This stops before the normalized endpoint
+  normalizations in the endpoint-normalized strip-cut path; it compares decomposed column paths
+  to the raw strip-cut path. The remaining passage from raw cut paths to normalized cut paths is
+  exactly the endpoint-normalization principle at r = 0 and r = 1.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -483,6 +492,14 @@ Away from `r = 0, 1`, `homotopyStripCutPath` is definitionally the raw cut
 path.  The remaining mathematical content is the two endpoint cases, where
 the raw cut path contains constant endpoint pieces and the public path is
 normalized to the corresponding vertical side.
+
+%%handwave
+name: Endpoint-normalization witness from raw cut paths to normalized cut paths
+statement:
+  Endpoint-normalization witness from raw cut paths to normalized cut paths. Away from r = 0, 1,
+  the endpoint-normalized strip-cut path is definitionally the raw cut path. The remaining
+  mathematical content is the two endpoint cases, where the raw cut path contains constant
+  endpoint pieces and the normalized path is normalized to the corresponding vertical side.
 -/
 def PathLocalTransitionBasedWeakHandoffHomotopyStripCutEndpointNormalizationValueWitnessPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -774,69 +791,13 @@ theorem terminalValue_eq_of_move
   M.terminalValue_eq
 
 omit [RiemannSurface X] in
-/-- The identity comparison move. -/
-def refl
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S S where
-  terminalValue_eq := rfl
-
-omit [RiemannSurface X] in
-/-- Reverse a same-path comparison move. -/
-def symm
-    (M :
-      PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove T S where
-  terminalValue_eq := M.terminalValue_eq.symm
-
-omit [RiemannSurface X] in
-/--
-Appending a duplicate terminal vertex with the identity transition is an
-elementary same-path refinement move.
--/
-noncomputable def terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-      PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
-      S S.terminalStutterSkeleton where
-  terminalValue_eq := by
-    simp
-
-omit [RiemannSurface X] in
-/--
-Changing only the duplicated terminal chart by a valid endpoint local
-real-Mobius transition is an elementary same-path move.
--/
-noncomputable def terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
-      S (S.terminalChartChangeSkeleton c hc T) where
-  terminalValue_eq := by
-    simp
-
-omit [RiemannSurface X] in
-/--
-Changing the terminal chart of `S` to the terminal chart of `T` is an
-elementary same-path move.
--/
-noncomputable def terminalChartChangeTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
-      S (S.terminalChartChangeSkeletonTo T) where
-  terminalValue_eq := by
-    simp
-
-omit [RiemannSurface X] in
 /--
 Splitting one segment is an elementary same-path refinement move.
+
+%%handwave
+name: Splitting one segment is an elementary same-path refinement move
+statement:
+  Splitting one segment is an elementary same-path refinement move.
 -/
 noncomputable def segmentSplit
     (S :
@@ -853,6 +814,12 @@ omit [RiemannSurface X] in
 /--
 Splitting at an arbitrary parameter is an elementary same-path move, with the
 containing segment chosen by `exists_segment_contains_parameter`.
+
+%%handwave
+name: Splitting at an arbitrary parameter is an elementary same-path move, with the containing segment chosen by exists_segment_contains_parameter
+statement:
+  Splitting at an arbitrary parameter is an elementary same-path move, with the containing
+  segment chosen by exists_segment_contains_parameter.
 -/
 noncomputable def segmentSplitAtParameter
     (S :
@@ -869,6 +836,13 @@ Inserting a zero-length endpoint chart handoff is an elementary same-path move.
 
 This is the componentwise refinement move that changes the chart used at an
 existing subdivision vertex without changing the path or the terminal branch.
+
+%%handwave
+name: Inserting a zero-length endpoint chart handoff is an elementary same-path move
+statement:
+  Inserting a zero-length endpoint chart handoff is an elementary same-path move. This is the
+  componentwise refinement move that changes the chart used at an existing subdivision vertex
+  without changing the path or the terminal branch.
 -/
 noncomputable def segmentEndpointChartInsert
     (S :
@@ -891,192 +865,6 @@ noncomputable def segmentEndpointChartInsert
   terminalValue_eq :=
     (S.segmentEndpointChartInsertSkeleton_terminalValue_eq_of_localTransitions
       k c hc Tleft Tright).symm
-
-omit [RiemannSurface X] in
-/--
-Replacing handoff witnesses without changing the initial representative, the
-handoff representatives, or the terminal chart is an elementary same-path
-move.
--/
-def representativeReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      S.initialTransition.representative = T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        (S.transitionAt ⟨n, hnS⟩).representative =
-          (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T where
-  terminalValue_eq :=
-    S.terminalValue_eq_of_representatives T hLength hInitial hTransition hCenter
-
-omit [RiemannSurface X] in
-/--
-Replacing handoff witnesses without changing the induced inverse
-upper-half-plane actions or the terminal chart is an elementary same-path
-move.
-
-This is the PSL-level replacement move: the chosen `SL(2, ℝ)` lifts may differ,
-but their actions on `ℍ` agree at every step.
--/
-def actionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      ∀ z : ℍ,
-        realMobiusRepresentativeAction S.initialTransition.representative⁻¹ z =
-          realMobiusRepresentativeAction T.initialTransition.representative⁻¹ z)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length) (z : ℍ),
-        realMobiusRepresentativeAction
-            (S.transitionAt ⟨n, hnS⟩).representative⁻¹ z =
-          realMobiusRepresentativeAction
-            (T.transitionAt ⟨n, hnT⟩).representative⁻¹ z)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T where
-  terminalValue_eq :=
-    S.terminalValue_eq_of_transition_inverse_actions T hLength hInitial
-      hTransition hCenter
-
-omit [RiemannSurface X] in
-/--
-Replacing handoff witnesses without changing the induced PSL classes or the
-terminal chart is an elementary same-path move.
--/
-def projectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T where
-  terminalValue_eq :=
-    S.terminalValue_eq_of_transition_projections T hLength hInitial
-      hTransition hCenter
-
-omit [RiemannSurface X] in
-/--
-Replacing terminal data up to an explicit endpoint chart transition and PSL
-class equality is an elementary same-path move.
--/
-def terminalTransitionProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A : RealMobiusRepresentative)
-    (hTransitionAtEndpoint :
-      (localModels.chartAt T.terminalCenter).toUpperHalfPlane x =
-        realMobiusRepresentativeAction A
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x))
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T where
-  terminalValue_eq :=
-    (S.terminalValue_eq_of_terminalTransitionProjection_eq T A
-      hTransitionAtEndpoint hProjection).symm
-
-omit [RiemannSurface X] in
-/--
-The terminal-transition replacement move using an actual local transition
-datum at the endpoint.
--/
-def terminalTransitionDataProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt T.terminalCenter)
-        x)
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A.representative) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T :=
-  terminalTransitionProjectionReplacement S T A.representative
-    (A.transition_eq x A.mem_neighborhood) hProjection
-
-/--
-Replacing the basepoint-normalization transition by another valid local
-transition record preserves the terminal value.
--/
-def initialTransitionReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.centerAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            S.toPathLocalTransitionModelWeakHandoffSkeleton
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) := by
-  exact
-    projectionReplacement S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            S.toPathLocalTransitionModelWeakHandoffSkeleton
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-      rfl
-      (localRealMobiusTransitionData_projection_eq
-        S.initialTransition initialTransition')
-      (fun n hnS hnT =>
-        localRealMobiusTransitionData_projection_eq
-          (S.transitionAt ⟨n, hnS⟩)
-          (S.transitionAt ⟨n, hnT⟩))
-      rfl
-
-/--
-Replacing the handoff local-transition witnesses over a fixed subdivision and
-fixed selected chart centers preserves the terminal value.
--/
-def transitionWitnessReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ k : Fin S.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt k.castSucc))
-          (localModels.chartAt (S.centerAt k.succ))
-          (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := S.initialTransition } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) := by
-  exact
-    projectionReplacement S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := S.initialTransition } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-      rfl
-      (localRealMobiusTransitionData_projection_eq
-        S.initialTransition S.initialTransition)
-      (fun n hnS hnT =>
-        localRealMobiusTransitionData_projection_eq
-          (S.transitionAt ⟨n, hnS⟩)
-          (transitionAt' ⟨n, hnT⟩))
-      rfl
 
 end PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove
 
@@ -1117,7 +905,13 @@ variable {x₀ : X} {g : HyperbolicMetric X}
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
 
 omit [RiemannSurface X] in
-/-- The empty same-path skeleton move walk. -/
+/-- The empty same-path skeleton move walk.
+
+%%handwave
+name: The empty same-path skeleton move walk
+statement:
+  The empty same-path skeleton move walk.
+-/
 def refl
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
@@ -1131,7 +925,13 @@ def refl
     exact False.elim ((Nat.not_lt_zero n) hn)
 
 omit [RiemannSurface X] in
-/-- A single same-path skeleton move as a finite walk. -/
+/-- A single same-path skeleton move as a finite walk.
+
+%%handwave
+name: A single same-path skeleton move as a finite walk
+statement:
+  A single same-path skeleton move as a finite walk.
+-/
 def ofMove
     (M :
       PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove S T) :
@@ -1150,57 +950,13 @@ def ofMove
           ((Nat.not_lt_zero n) (Nat.lt_of_succ_lt_succ hn))
 
 omit [RiemannSurface X] in
-/-- Append one elementary same-path move to the end of a finite move walk. -/
-def snoc
-    {R :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (W : PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T)
-    (M : PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove T R) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S R where
-  length := W.length + 1
-  skeletonAt := fun n =>
-    if h : n ≤ W.length then
-      W.skeletonAt n
-    else
-      R
-  skeletonAt_zero := by
-    simp [W.skeletonAt_zero]
-  skeletonAt_length := by
-    simp
-  moveAt := by
-    intro n hn
-    by_cases hnlt : n < W.length
-    · have hnle : n ≤ W.length := Nat.le_of_lt hnlt
-      have hsuccle : n + 1 ≤ W.length := Nat.succ_le_of_lt hnlt
-      simpa [hnle, hsuccle] using W.moveAt n hnlt
-    · have hn_eq : n = W.length := by omega
-      subst n
-      have hnot : ¬ W.length + 1 ≤ W.length := by omega
-      simpa [hnot, W.skeletonAt_length] using M
+/-- Concatenate two finite same-path skeleton move walks.
 
-omit [RiemannSurface X] in
-/-- Reverse a finite same-path skeleton move walk. -/
-def symm
-    (W : PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk T S where
-  length := W.length
-  skeletonAt := fun n => W.skeletonAt (W.length - n)
-  skeletonAt_zero := by
-    simpa using W.skeletonAt_length
-  skeletonAt_length := by
-    simpa using W.skeletonAt_zero
-  moveAt := by
-    intro n hn
-    let m := W.length - (n + 1)
-    have hm : m < W.length := by omega
-    have hnext : W.length - n = m + 1 := by
-      omega
-    have hcur : W.length - (n + 1) = m := rfl
-    simpa [m, hnext] using
-      (W.moveAt m hm).symm
-
-omit [RiemannSurface X] in
-/-- Concatenate two finite same-path skeleton move walks. -/
+%%handwave
+name: Concatenate two finite same-path skeleton move walks
+statement:
+  Concatenate two finite same-path skeleton move walks.
+-/
 def trans
     {R :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
@@ -1252,45 +1008,13 @@ def trans
           W₂.moveAt (n - W₁.length) hn₂
 
 omit [RiemannSurface X] in
-/-- The terminal-stutter refinement as a one-step same-path move walk. -/
-noncomputable def terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S S.terminalStutterSkeleton :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalStutter S)
+/-- Splitting one segment as a one-step same-path move walk.
 
-omit [RiemannSurface X] in
-/-- Terminal chart-change as a one-step same-path move walk. -/
-noncomputable def terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S (S.terminalChartChangeSkeleton c hc T) :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalChartChange
-      S c hc T)
-
-omit [RiemannSurface X] in
-/-- Automatic terminal chart-change-to as a one-step same-path move walk. -/
-noncomputable def terminalChartChangeTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S (S.terminalChartChangeSkeletonTo T) :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalChartChangeTo
-      S T)
-
-omit [RiemannSurface X] in
-/-- Splitting one segment as a one-step same-path move walk. -/
+%%handwave
+name: Splitting one segment as a one-step same-path move walk
+statement:
+  Splitting one segment as a one-step same-path move walk.
+-/
 noncomputable def segmentSplit
     (S :
       PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
@@ -1306,6 +1030,11 @@ noncomputable def segmentSplit
 omit [RiemannSurface X] in
 /--
 Splitting at an arbitrary parameter as a one-step same-path move walk.
+
+%%handwave
+name: Splitting at an arbitrary parameter as a one-step same-path move walk
+statement:
+  Splitting at an arbitrary parameter as a one-step same-path move walk.
 -/
 noncomputable def segmentSplitAtParameter
     (S :
@@ -1320,6 +1049,11 @@ noncomputable def segmentSplitAtParameter
 omit [RiemannSurface X] in
 /--
 Finite move walk splitting at the first `m` sampled parameters of `T`.
+
+%%handwave
+name: Finite move walk splitting at the first m sampled parameters of T
+statement:
+  Finite move walk splitting at the first m sampled parameters of T.
 -/
 noncomputable def splitFirstVerticesOf
     (S T :
@@ -1343,6 +1077,11 @@ noncomputable def splitFirstVerticesOf
 omit [RiemannSurface X] in
 /--
 Finite move walk splitting at every sampled parameter of `T`.
+
+%%handwave
+name: Finite move walk splitting at every sampled parameter of T
+statement:
+  Finite move walk splitting at every sampled parameter of T.
 -/
 noncomputable def splitAllVerticesOf
     (S T :
@@ -1355,6 +1094,11 @@ noncomputable def splitAllVerticesOf
 omit [RiemannSurface X] in
 /--
 Endpoint chart-insertion as a one-step same-path move walk.
+
+%%handwave
+name: Endpoint chart-insertion as a one-step same-path move walk
+statement:
+  Endpoint chart-insertion as a one-step same-path move walk.
 -/
 noncomputable def segmentEndpointChartInsert
     (S :
@@ -1382,6 +1126,12 @@ omit [RiemannSurface X] in
 /--
 Split a segment and then insert a chosen chart at the newly-created vertex,
 as a finite same-path move walk.
+
+%%handwave
+name: Split a segment and then insert a chosen chart at the newly-created vertex, as a finite same-path move walk
+statement:
+  Split a segment and then insert a chosen chart at the newly-created vertex, as a finite
+  same-path move walk.
 -/
 noncomputable def segmentSplitEndpointChartInsert
     (S :
@@ -1442,6 +1192,12 @@ omit [RiemannSurface X] in
 /--
 Split at an arbitrary parameter and insert a chosen chart there, as a finite
 same-path move walk.
+
+%%handwave
+name: Split at an arbitrary parameter and insert a chosen chart there, as a finite same-path move walk
+statement:
+  Split at an arbitrary parameter and insert a chosen chart there, as a finite same-path move
+  walk.
 -/
 noncomputable def splitAtParameterEndpointChartInsert
     (S :
@@ -1464,6 +1220,11 @@ noncomputable def splitAtParameterEndpointChartInsert
 omit [RiemannSurface X] in
 /--
 Finite move walk inserting the first `m` sampled vertices of `T` into `S`.
+
+%%handwave
+name: Finite move walk inserting the first m sampled vertices of T into S
+statement:
+  Finite move walk inserting the first m sampled vertices of T into S.
 -/
 noncomputable def insertFirstVerticesOf
     (S T :
@@ -1491,6 +1252,11 @@ noncomputable def insertFirstVerticesOf
 omit [RiemannSurface X] in
 /--
 Finite move walk inserting every sampled vertex of `T` into `S`.
+
+%%handwave
+name: Finite move walk inserting every sampled vertex of T into S
+statement:
+  Finite move walk inserting every sampled vertex of T into S.
 -/
 noncomputable def insertAllVerticesOf
     (S T :
@@ -1499,233 +1265,6 @@ noncomputable def insertAllVerticesOf
       S (S.insertAllVerticesOfSkeleton T) := by
   simpa [PathLocalTransitionModelBasedWeakHandoffSkeleton.insertAllVerticesOfSkeleton]
     using insertFirstVerticesOf S T (T.length + 1)
-
-omit [RiemannSurface X] in
-/--
-Replacing handoff witnesses with the same induced PSL classes as a one-step
-same-path move walk.
--/
-def projectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.projectionReplacement
-      S T hLength hInitial hTransition hCenter)
-
-omit [RiemannSurface X] in
-/--
-Terminal-transition PSL replacement as a one-step same-path move walk.
--/
-def terminalTransitionProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A : RealMobiusRepresentative)
-    (hTransitionAtEndpoint :
-      (localModels.chartAt T.terminalCenter).toUpperHalfPlane x =
-        realMobiusRepresentativeAction A
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x))
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalTransitionProjectionReplacement
-      S T A hTransitionAtEndpoint hProjection)
-
-omit [RiemannSurface X] in
-/--
-Terminal-transition PSL replacement from an actual local transition datum as a
-one-step same-path move walk.
--/
-def terminalTransitionDataProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt T.terminalCenter)
-        x)
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A.representative) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalTransitionDataProjectionReplacement
-      S T A hProjection)
-
-/-- Replacing the initial transition as a one-step same-path move walk. -/
-def initialTransitionReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.centerAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            S.toPathLocalTransitionModelWeakHandoffSkeleton
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.initialTransitionReplacement
-      S initialTransition')
-
-/-- Replacing handoff witnesses as a one-step same-path move walk. -/
-def transitionWitnessReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ k : Fin S.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt k.castSucc))
-          (localModels.chartAt (S.centerAt k.succ))
-          (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := S.initialTransition } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMove
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.transitionWitnessReplacement
-      S transitionAt')
-
-/--
-Replacing both the initial transition and all handoff witnesses over a fixed
-subdivision as a finite same-path move walk.
--/
-def witnessReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.centerAt 0))
-        x₀)
-    (transitionAt' :
-      ∀ k : Fin S.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt k.castSucc))
-          (localModels.chartAt (S.centerAt k.succ))
-          (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) := by
-  let S₁ :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton :=
-            S.toPathLocalTransitionModelWeakContinuationSkeleton
-          transitionAt := transitionAt' }
-      initialTransition := S.initialTransition }
-  exact
-    (transitionWitnessReplacement S transitionAt').trans
-      (initialTransitionReplacement S₁ initialTransition')
-
-/--
-Any based weak handoff skeleton is connected by witness-replacement moves to
-the canonical based handoff skeleton obtained from the same weak subdivision
-by `Classical.choice`.
--/
-def toCanonicalChoiceForSameWeakContinuation
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S
-      (PathLocalTransitionModelWeakHandoffSkeleton.toBasedWeakHandoffSkeleton
-        (PathLocalTransitionModelWeakContinuationSkeleton.toWeakHandoffSkeleton
-          S.toPathLocalTransitionModelWeakContinuationSkeleton)) := by
-  let T :=
-    PathLocalTransitionModelWeakHandoffSkeleton.toBasedWeakHandoffSkeleton
-      (PathLocalTransitionModelWeakContinuationSkeleton.toWeakHandoffSkeleton
-        S.toPathLocalTransitionModelWeakContinuationSkeleton)
-  exact witnessReplacement S T.initialTransition T.transitionAt
-
-/--
-Two based handoff skeletons built over the same weak subdivision, but with
-arbitrary local-transition witnesses, are connected by witness-replacement
-moves.
--/
-def witnessReplacement_of_fixedWeakContinuation
-    (W :
-      PathLocalTransitionModelWeakContinuationSkeleton x₀ g localModels p)
-    (transitionAt₁ transitionAt₂ :
-      ∀ k : Fin W.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (W.centerAt k.castSucc))
-          (localModels.chartAt (W.centerAt k.succ))
-          (p (W.parameterAt k.succ)))
-    (initialTransition₁ initialTransition₂ :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (W.centerAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₁ }
-         initialTransition := initialTransition₁ } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₂ }
-         initialTransition := initialTransition₂ } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) := by
-  let S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton := W
-          transitionAt := transitionAt₁ }
-      initialTransition := initialTransition₁ }
-  exact witnessReplacement S initialTransition₂ transitionAt₂
-
-omit [RiemannSurface X] in
-/--
-Iterating terminal-stutter refinements gives a finite same-path move walk of
-the corresponding length.
--/
-noncomputable def terminalStutterIterate
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (n : ℕ) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S (S.terminalStutterIterateSkeleton n) where
-  length := n
-  skeletonAt := fun k => S.terminalStutterIterateSkeleton (min k n)
-  skeletonAt_zero := by simp
-  skeletonAt_length := by simp
-  moveAt := by
-    intro k hk
-    have hk_le : k ≤ n := Nat.le_of_lt hk
-    have hks_le : k + 1 ≤ n := Nat.succ_le_of_lt hk
-    have hmin_k : min k n = k := Nat.min_eq_left hk_le
-    have hmin_succ : min (k + 1) n = k + 1 :=
-      Nat.min_eq_left hks_le
-    rw [hmin_k, hmin_succ]
-    exact
-      PathLocalTransitionBasedWeakHandoffSamePathSkeletonMove.terminalStutter
-        (S.terminalStutterIterateSkeleton k)
 
 omit [RiemannSurface X] in
 /-- A finite same-path skeleton move walk preserves terminal value.
@@ -1754,1332 +1293,9 @@ theorem terminalValue_start_eq_end
   rw [W.skeletonAt_zero, W.skeletonAt_length] at h
   exact h
 
-/--
-Over a fixed weak subdivision, changing all local-transition witnesses does
-not change the terminal Mobius PSL class.
-
-%%handwave
-name: Transition witnesses do not change the terminal projective Möbius class
-statement: Fix a weak continuation subdivision $W$ of a path. For any two choices of the initial and successive local-transition witnesses on $W$, the resulting accumulated terminal transformations $M_1,M_2$ satisfy $[M_1]=[M_2]$ in $\mathrm{PSL}_2(\mathbb R)$.
-proof: The two skeletons have identical subdivision data. Each pair of transition witnesses has the same projective class, so inductive accumulation preserves equality of the terminal projective classes.
--/
-theorem terminalMobius_projection_eq_of_fixedWeakContinuation
-    (W :
-      PathLocalTransitionModelWeakContinuationSkeleton x₀ g localModels p)
-    (transitionAt₁ transitionAt₂ :
-      ∀ k : Fin W.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (W.centerAt k.castSucc))
-          (localModels.chartAt (W.centerAt k.succ))
-          (p (W.parameterAt k.succ)))
-    (initialTransition₁ initialTransition₂ :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (W.centerAt 0))
-        x₀) :
-    (let S :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-        { toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₁ }
-          initialTransition := initialTransition₁ }
-      let T :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-        { toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₂ }
-          initialTransition := initialTransition₂ }
-      realMobiusProjection S.terminalMobius =
-        realMobiusProjection T.terminalMobius) := by
-  let S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton := W
-          transitionAt := transitionAt₁ }
-      initialTransition := initialTransition₁ }
-  let T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton := W
-          transitionAt := transitionAt₂ }
-      initialTransition := initialTransition₂ }
-  exact
-    S.terminalMobius_projection_eq_of_transition_projections T rfl
-      (localRealMobiusTransitionData_projection_eq
-        initialTransition₁ initialTransition₂)
-      (fun n hnS hnT =>
-        localRealMobiusTransitionData_projection_eq
-          (transitionAt₁ ⟨n, hnS⟩)
-          (transitionAt₂ ⟨n, hnT⟩))
-
-/--
-Over a fixed weak subdivision, changing all local-transition witnesses does
-not change the terminal branch formula.
-
-%%handwave
-name: Transition witnesses do not change the terminal branch formula
-statement: Fix a weak continuation subdivision $W$ and choose its initial and successive local-transition witnesses in two ways. If $F_1,F_2$ are the resulting terminal branch formulas, then $F_1(z)=F_2(z)$ for every $z\in X$.
-proof: The terminal chart data agree, while corresponding transition witnesses have equal projective classes; the accumulated branch-comparison formula therefore identifies $F_1(z)$ and $F_2(z)$.
--/
-theorem terminalFormulaAt_eq_of_fixedWeakContinuation
-    (W :
-      PathLocalTransitionModelWeakContinuationSkeleton x₀ g localModels p)
-    (transitionAt₁ transitionAt₂ :
-      ∀ k : Fin W.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (W.centerAt k.castSucc))
-          (localModels.chartAt (W.centerAt k.succ))
-          (p (W.parameterAt k.succ)))
-    (initialTransition₁ initialTransition₂ :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (W.centerAt 0))
-        x₀)
-    (z : X) :
-    (let S :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-        { toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₁ }
-          initialTransition := initialTransition₁ }
-      let T :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-        { toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₂ }
-          initialTransition := initialTransition₂ }
-      S.terminalFormulaAt z = T.terminalFormulaAt z) := by
-  let S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton := W
-          transitionAt := transitionAt₁ }
-      initialTransition := initialTransition₁ }
-  let T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-    { toPathLocalTransitionModelWeakHandoffSkeleton :=
-        { toPathLocalTransitionModelWeakContinuationSkeleton := W
-          transitionAt := transitionAt₂ }
-      initialTransition := initialTransition₂ }
-  exact
-    S.terminalFormulaAt_eq_of_transition_projections T rfl
-      (localRealMobiusTransitionData_projection_eq
-        initialTransition₁ initialTransition₂)
-      (fun n hnS hnT =>
-        localRealMobiusTransitionData_projection_eq
-          (transitionAt₁ ⟨n, hnS⟩)
-          (transitionAt₂ ⟨n, hnT⟩))
-      rfl z
-
-/--
-An arbitrary choice of local-transition witnesses on a one-segment refinement
-obtained by splitting an existing segment gives the same terminal branch
-formula as the original skeleton.
--/
-noncomputable def segmentSplitSkeletonWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.segmentSplitCenterAt k j.castSucc))
-          (localModels.chartAt (S.segmentSplitCenterAt k j.succ))
-          (p (S.segmentSplitParameterAt k τ j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentSplitCenterAt k 0))
-        x₀) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-  { toPathLocalTransitionModelWeakHandoffSkeleton :=
-      { toPathLocalTransitionModelWeakContinuationSkeleton :=
-          (S.segmentSplitSkeleton k τ hτ_left hτ_right).toPathLocalTransitionModelWeakContinuationSkeleton
-        transitionAt := transitionAt' }
-    initialTransition := initialTransition' }
-
-/--
-An arbitrary choice of local-transition witnesses on a one-segment refinement
-obtained by splitting an existing segment gives the same terminal branch
-formula as the original skeleton.
-
-%%handwave
-name: Splitting a segment preserves the terminal formula for arbitrary witnesses
-statement: Let $S$ be a continuation skeleton and split its $k$th segment at $\tau$ between its endpoints. For any transition witnesses on the refined subdivision, the resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
-proof: Compare $T$ with the canonical split skeleton using witness independence, then use preservation of the terminal formula by the canonical segment split.
--/
-theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentSplit
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.segmentSplitCenterAt k j.castSucc))
-          (localModels.chartAt (S.segmentSplitCenterAt k j.succ))
-          (p (S.segmentSplitParameterAt k τ j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentSplitCenterAt k 0))
-        x₀)
-    (z : X) :
-    (segmentSplitSkeletonWithWitnesses
-      S k τ hτ_left hτ_right transitionAt' initialTransition').terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  let R := S.segmentSplitSkeleton k τ hτ_left hτ_right
-  let T :=
-    segmentSplitSkeletonWithWitnesses
-      S k τ hτ_left hτ_right transitionAt' initialTransition'
-  have hRT :
-      R.terminalFormulaAt z = T.terminalFormulaAt z := by
-    simpa only [T, segmentSplitSkeletonWithWitnesses] using
-      terminalFormulaAt_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-        z
-  have hRS :
-      R.terminalFormulaAt z = S.terminalFormulaAt z := by
-    exact S.segmentSplitSkeleton_terminalFormulaAt_eq k τ hτ_left hτ_right z
-  exact hRT.symm.trans hRS
-
-/--
-Insert a zero-length endpoint chart handoff, but allow arbitrary
-local-transition witnesses on the refined weak subdivision.
--/
-noncomputable def segmentEndpointChartInsertSkeletonWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-  { toPathLocalTransitionModelWeakHandoffSkeleton :=
-      { toPathLocalTransitionModelWeakContinuationSkeleton :=
-          (S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright).toPathLocalTransitionModelWeakContinuationSkeleton
-        transitionAt := transitionAt' }
-    initialTransition := initialTransition' }
-
-/--
-Arbitrary local-transition witnesses on an endpoint chart-insertion refinement
-give the same terminal branch formula as the original skeleton.
-
-%%handwave
-name: Inserting an endpoint chart preserves the terminal formula for arbitrary witnesses
-statement: Let $S$ be a continuation skeleton, and insert at the end of its $k$th segment a chart containing that endpoint, with transition data into and out of the chart. For any witnesses on the refined subdivision, the resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
-proof: First compare $T$ with the canonical endpoint-chart insertion using fixed-subdivision witness independence, then apply invariance of the canonical insertion.
--/
-theorem terminalFormulaAt_eq_of_arbitraryWitnesses_segmentEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀)
-    (z : X) :
-    (segmentEndpointChartInsertSkeletonWithWitnesses
-      S k c hc Tleft Tright transitionAt' initialTransition').terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  let R := S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright
-  let T :=
-    segmentEndpointChartInsertSkeletonWithWitnesses
-      S k c hc Tleft Tright transitionAt' initialTransition'
-  have hRT :
-      R.terminalFormulaAt z = T.terminalFormulaAt z := by
-    simpa only [T, segmentEndpointChartInsertSkeletonWithWitnesses] using
-      terminalFormulaAt_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-        z
-  have hRS :
-      R.terminalFormulaAt z = S.terminalFormulaAt z := by
-    exact
-      S.segmentEndpointChartInsertSkeleton_terminalFormulaAt_eq_of_localTransitions
-        k c hc Tleft Tright z
-  exact hRT.symm.trans hRS
-
-/--
-Append a terminal-stutter vertex, but allow arbitrary local-transition witnesses
-on the stuttered weak subdivision.
--/
-noncomputable def terminalStutterSkeletonWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.terminalStutterCenterAt j.castSucc))
-          (localModels.chartAt (S.terminalStutterCenterAt j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalStutterCenterAt 0))
-        x₀) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-  { toPathLocalTransitionModelWeakHandoffSkeleton :=
-      { toPathLocalTransitionModelWeakContinuationSkeleton :=
-          S.terminalStutterSkeleton.toPathLocalTransitionModelWeakContinuationSkeleton
-        transitionAt := transitionAt' }
-    initialTransition := initialTransition' }
-
-/--
-Arbitrary local-transition witnesses on a terminal-stutter refinement give the
-same terminal branch formula as the original skeleton.
-
-%%handwave
-name: A terminal stutter preserves the terminal formula for arbitrary witnesses
-statement: Append a repeated terminal vertex to a continuation skeleton $S$ and choose arbitrary transition witnesses on the enlarged subdivision. The resulting skeleton $T$ satisfies $F_T(z)=F_S(z)$ for every $z\in X$.
-proof: Compare $T$ with the canonical terminal-stutter skeleton by fixed-subdivision witness independence, and then remove the canonical stutter.
--/
-theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.terminalStutterCenterAt j.castSucc))
-          (localModels.chartAt (S.terminalStutterCenterAt j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalStutterCenterAt 0))
-        x₀)
-    (z : X) :
-    (terminalStutterSkeletonWithWitnesses
-      S transitionAt' initialTransition').terminalFormulaAt z =
-      S.terminalFormulaAt z := by
-  let R := S.terminalStutterSkeleton
-  let T :=
-    terminalStutterSkeletonWithWitnesses S transitionAt' initialTransition'
-  have hRT :
-      R.terminalFormulaAt z = T.terminalFormulaAt z := by
-    simpa only [T, terminalStutterSkeletonWithWitnesses] using
-      terminalFormulaAt_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-        z
-  have hRS :
-      R.terminalFormulaAt z = S.terminalFormulaAt z := by
-    exact S.terminalStutterSkeleton_terminalFormulaAt_eq z
-  exact hRT.symm.trans hRS
-
-omit [RiemannSurface X] in
-/--
-Append a terminal chart-change vertex, but allow arbitrary local-transition
-witnesses on the chart-changed weak subdivision.
--/
-noncomputable def terminalChartChangeSkeletonWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.castSucc))
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalChartChangeCenterAt c 0))
-        x₀) :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p :=
-  { toPathLocalTransitionModelWeakHandoffSkeleton :=
-      { toPathLocalTransitionModelWeakContinuationSkeleton :=
-          (S.terminalChartChangeSkeleton c hc T).toPathLocalTransitionModelWeakContinuationSkeleton
-        transitionAt := transitionAt' }
-    initialTransition := initialTransition' }
-
-/--
-Arbitrary local-transition witnesses on a terminal chart-change refinement
-give the same terminal branch formula as the canonical chart-change skeleton.
-
-%%handwave
-name: Arbitrary witnesses agree with the canonical terminal chart change
-statement: Let $R$ be obtained from a continuation skeleton $S$ by changing its terminal chart to a chart containing the endpoint. If $T$ uses the same enlarged subdivision but arbitrary transition witnesses, then $F_T(z)=F_R(z)$ for every $z\in X$.
-proof: Apply fixed-subdivision witness independence to the canonical chart-change skeleton $R$ and the arbitrary-witness skeleton $T$, then reverse the resulting equality.
--/
-theorem terminalFormulaAt_eq_of_arbitraryWitnesses_terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.castSucc))
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalChartChangeCenterAt c 0))
-        x₀)
-    (z : X) :
-    (terminalChartChangeSkeletonWithWitnesses
-      S c hc T transitionAt' initialTransition').terminalFormulaAt z =
-      (S.terminalChartChangeSkeleton c hc T).terminalFormulaAt z := by
-  let R := S.terminalChartChangeSkeleton c hc T
-  let U :=
-    terminalChartChangeSkeletonWithWitnesses
-      S c hc T transitionAt' initialTransition'
-  have hRU :
-      R.terminalFormulaAt z = U.terminalFormulaAt z := by
-    simpa only [U, terminalChartChangeSkeletonWithWitnesses] using
-      terminalFormulaAt_eq_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition'
-        z
-  exact hRU.symm
-
 end PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
 
-/--
-A common-refinement comparison for two based weak handoff skeletons over the
-same representative path.
 
-This is the fixed-path subdivision/refinement boundary: both skeletons are
-connected by terminal-value-preserving elementary moves to one common refined
-skeleton.
--/
-structure PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) where
-  /-- A common refined skeleton over the same path. -/
-  refinement :
-    PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- A terminal-value-preserving refinement walk from `S`. -/
-  leftWalk :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      S refinement
-  /-- A terminal-value-preserving refinement walk from `T`. -/
-  rightWalk :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk
-      T refinement
-
-namespace PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-
-variable {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {x : X} {p : Path x₀ x}
-    {S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-
-omit [RiemannSurface X] in
-/-- The left skeleton has the same terminal value as the common refinement.
-
-%%handwave
-name: The left skeleton and its common refinement have equal terminal values
-statement: If continuation skeletons $S$ and $T$ admit a common-refinement comparison with refinement $R$, then $v(S)=v(R)$.
-proof: Apply terminal-value preservation to the finite comparison walk from $S$ to $R$.
--/
-theorem left_terminalValue_eq_refinement
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    S.terminalValue = C.refinement.terminalValue :=
-  C.leftWalk.terminalValue_start_eq_end
-
-omit [RiemannSurface X] in
-/-- The right skeleton has the same terminal value as the common refinement.
-
-%%handwave
-name: The right skeleton and its common refinement have equal terminal values
-statement: If continuation skeletons $S$ and $T$ admit a common-refinement comparison with refinement $R$, then $v(T)=v(R)$.
-proof: Apply terminal-value preservation to the finite comparison walk from $T$ to $R$.
--/
-theorem right_terminalValue_eq_refinement
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    T.terminalValue = C.refinement.terminalValue :=
-  C.rightWalk.terminalValue_start_eq_end
-
-omit [RiemannSurface X] in
-/-- A common-refinement comparison identifies terminal values.
-
-%%handwave
-name: A common refinement identifies terminal continuation values
-statement: If two continuation skeletons $S,T$ over the same path admit terminal-value-preserving walks to a common refinement $R$, then $v(S)=v(T)$.
-proof: Compose $v(S)=v(R)$ with the reverse of $v(T)=v(R)$.
--/
-theorem terminalValue_eq
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    S.terminalValue = T.terminalValue :=
-  C.left_terminalValue_eq_refinement.trans
-    C.right_terminalValue_eq_refinement.symm
-
-omit [RiemannSurface X] in
-/--
-A common-refinement comparison gives a directed same-path move walk by moving
-from the left skeleton to the refinement and then back down to the right
-skeleton.
--/
-def toMoveWalk
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T :=
-  C.leftWalk.trans C.rightWalk.symm
-
-omit [RiemannSurface X] in
-/-- Swap the two sides of a common-refinement comparison. -/
-def symm
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison T S where
-  refinement := C.refinement
-  leftWalk := C.rightWalk
-  rightWalk := C.leftWalk
-
-omit [RiemannSurface X] in
-/-- Compose two same-path common-refinement comparisons. -/
-def trans
-    {R :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (C :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T)
-    (D :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparison T R) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S R where
-  refinement := D.refinement
-  leftWalk := C.toMoveWalk.trans D.leftWalk
-  rightWalk := D.rightWalk
-
-omit [RiemannSurface X] in
-/--
-A finite directed same-path move walk is itself a common-refinement
-comparison, with the target as the common refinement.
--/
-def ofMoveWalk
-    (W : PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T where
-  refinement := T
-  leftWalk := W
-  rightWalk := PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.refl T
-
-omit [RiemannSurface X] in
-/--
-The terminal-stutter refinement gives a concrete common-refinement comparison
-between a skeleton and its terminal-stutter refinement.
--/
-noncomputable def terminalStutter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S S.terminalStutterSkeleton :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalStutter S)
-
-omit [RiemannSurface X] in
-/--
-Terminal chart-change gives a concrete common-refinement comparison with the
-original skeleton.
--/
-noncomputable def terminalChartChange
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.terminalChartChangeSkeleton c hc T) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalChartChange
-      S c hc T)
-
-omit [RiemannSurface X] in
-/--
-Changing the terminal chart of `S` to the terminal chart of `T` gives a
-concrete common-refinement comparison.
--/
-noncomputable def terminalChartChangeTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.terminalChartChangeSkeletonTo T) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalChartChangeTo
-      S T)
-
-/--
-One segment split gives a concrete common-refinement comparison between a
-skeleton and its split refinement.
--/
-noncomputable def segmentSplit
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.segmentSplitSkeleton k τ hτ_left hτ_right) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentSplit
-      S k τ hτ_left hτ_right)
-
-omit [RiemannSurface X] in
-/--
-Splitting at an arbitrary parameter gives a concrete common-refinement
-comparison between a skeleton and the corresponding split refinement.
--/
-noncomputable def segmentSplitAtParameter
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (τ : unitInterval) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.splitAtParameterSkeleton τ) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentSplitAtParameter
-      S τ)
-
-omit [RiemannSurface X] in
-/--
-Splitting at the first `m` sampled parameters of `T` gives a concrete
-common-refinement comparison.
--/
-noncomputable def splitFirstVerticesOf
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (m : ℕ) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.splitFirstVerticesOfSkeleton T m) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.splitFirstVerticesOf
-      S T m)
-
-omit [RiemannSurface X] in
-/--
-Splitting at every sampled parameter of `T` gives a concrete
-common-refinement comparison.
--/
-noncomputable def splitAllVerticesOf
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.splitAllVerticesOfSkeleton T) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.splitAllVerticesOf
-      S T)
-
-omit [RiemannSurface X] in
-/--
-Endpoint chart-insertion gives a concrete common-refinement comparison.
--/
-noncomputable def segmentEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentEndpointChartInsert
-      S k c hc Tleft Tright)
-
-omit [RiemannSurface X] in
-/--
-Split a segment and insert a chosen chart at the new vertex as a concrete
-same-path common-refinement comparison.
--/
-noncomputable def segmentSplitEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (c : X)
-    (hc : p τ ∈ (localModels.chartAt c).domain) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.segmentSplitEndpointChartInsertSkeleton
-        k τ hτ_left hτ_right c hc) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentSplitEndpointChartInsert
-      S k τ hτ_left hτ_right c hc)
-
-omit [RiemannSurface X] in
-/--
-Split at an arbitrary parameter and insert a chosen chart there as a concrete
-same-path common-refinement comparison.
--/
-noncomputable def splitAtParameterEndpointChartInsert
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (τ : unitInterval) (c : X)
-    (hc : p τ ∈ (localModels.chartAt c).domain) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.splitAtParameterEndpointChartInsertSkeleton τ c hc) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.splitAtParameterEndpointChartInsert
-      S τ c hc)
-
-omit [RiemannSurface X] in
-/--
-Two chart insertions at the same parameter admit a concrete common-refinement
-comparison by forgetting both back to the original skeleton.
--/
-noncomputable def splitAtParameterEndpointChartInsertionChoice
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (τ : unitInterval)
-    (c d : X)
-    (hc : p τ ∈ (localModels.chartAt c).domain)
-    (hd : p τ ∈ (localModels.chartAt d).domain) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      (S.splitAtParameterEndpointChartInsertSkeleton τ c hc)
-      (S.splitAtParameterEndpointChartInsertSkeleton τ d hd) :=
-  (splitAtParameterEndpointChartInsert S τ c hc).symm.trans
-    (splitAtParameterEndpointChartInsert S τ d hd)
-
-omit [RiemannSurface X] in
-/--
-Insert the first `m` sampled vertices of `T` into `S` as a concrete
-same-path common-refinement comparison.
--/
-noncomputable def insertFirstVerticesOf
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (m : ℕ) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.insertFirstVerticesOfSkeleton T m) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.insertFirstVerticesOf
-      S T m)
-
-omit [RiemannSurface X] in
-/--
-Insert every sampled vertex of `T` into `S` as a concrete same-path
-common-refinement comparison.
--/
-noncomputable def insertAllVerticesOf
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.insertAllVerticesOfSkeleton T) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.insertAllVerticesOf
-      S T)
-
-omit [RiemannSurface X] in
-/--
-Two different zero-length endpoint chart insertions at the same handoff admit
-a common-refinement comparison.  Mathematically, both are just refinements of
-the same original handoff, so terminal continuation is independent of the
-inserted intermediate chart.
--/
-noncomputable def segmentEndpointChartInsertionChoice
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length)
-    (c d : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (hd :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt d).domain)
-    (TleftC :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (TrightC :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (TleftD :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt d)
-        (p (S.parameterAt k.succ)))
-    (TrightD :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt d)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      (S.segmentEndpointChartInsertSkeleton k c hc TleftC TrightC)
-      (S.segmentEndpointChartInsertSkeleton k d hd TleftD TrightD) :=
-  (segmentEndpointChartInsert S k c hc TleftC TrightC).symm.trans
-    (segmentEndpointChartInsert S k d hd TleftD TrightD)
-
-omit [RiemannSurface X] in
-/--
-Replacing handoff witnesses with the same induced PSL classes gives a concrete
-common-refinement comparison.
--/
-def projectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : S.length = T.length)
-    (hInitial :
-      realMobiusProjection S.initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < S.length) (hnT : n < T.length),
-        realMobiusProjection
-            (S.transitionAt ⟨n, hnS⟩).representative =
-          realMobiusProjection
-            (T.transitionAt ⟨n, hnT⟩).representative)
-    (hCenter : S.terminalCenter = T.terminalCenter) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.projectionReplacement
-      S T hLength hInitial hTransition hCenter)
-
-omit [RiemannSurface X] in
-/--
-After changing `S` to the terminal chart of `T`, matching PSL transition data
-with `T` gives a same-path common-refinement comparison from `S` to `T`.
--/
-def projectionReplacementAfterTerminalChartChangeTo
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (hLength : (S.terminalChartChangeSkeletonTo T).length = T.length)
-    (hInitial :
-      realMobiusProjection
-          (S.terminalChartChangeSkeletonTo T).initialTransition.representative =
-        realMobiusProjection T.initialTransition.representative)
-    (hTransition :
-      ∀ n (hnS : n < (S.terminalChartChangeSkeletonTo T).length)
-        (hnT : n < T.length),
-        realMobiusProjection
-            ((S.terminalChartChangeSkeletonTo T).transitionAt
-              ⟨n, hnS⟩).representative =
-          realMobiusProjection (T.transitionAt ⟨n, hnT⟩).representative) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T :=
-  (terminalChartChangeTo S T).trans
-    (projectionReplacement (S.terminalChartChangeSkeletonTo T) T
-      hLength hInitial hTransition
-      (S.terminalChartChangeSkeletonTo_terminalCenter T))
-
-omit [RiemannSurface X] in
-/--
-Terminal-transition PSL replacement gives a concrete common-refinement
-comparison.
--/
-def terminalTransitionProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A : RealMobiusRepresentative)
-    (hTransitionAtEndpoint :
-      (localModels.chartAt T.terminalCenter).toUpperHalfPlane x =
-        realMobiusRepresentativeAction A
-          ((localModels.chartAt S.terminalCenter).toUpperHalfPlane x))
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalTransitionProjectionReplacement
-      S T A hTransitionAtEndpoint hProjection)
-
-omit [RiemannSurface X] in
-/--
-Terminal-transition PSL replacement from an actual local transition datum gives
-a concrete common-refinement comparison.
--/
-def terminalTransitionDataProjectionReplacement
-    (S T :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (A :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt T.terminalCenter)
-        x)
-    (hProjection :
-      realMobiusProjection (T.terminalMobius * A.representative) =
-        realMobiusProjection S.terminalMobius) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalTransitionDataProjectionReplacement
-      S T A hProjection)
-
-/-- Replacing the initial transition gives a concrete common-refinement comparison. -/
-def initialTransitionReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.centerAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            S.toPathLocalTransitionModelWeakHandoffSkeleton
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.initialTransitionReplacement
-      S initialTransition')
-
-/-- Replacing handoff witnesses gives a concrete common-refinement comparison. -/
-def transitionWitnessReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ k : Fin S.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt k.castSucc))
-          (localModels.chartAt (S.centerAt k.succ))
-          (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := S.initialTransition } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.transitionWitnessReplacement
-      S transitionAt')
-
-/--
-Replacing both the initial transition and all handoff witnesses over a fixed
-subdivision gives a concrete common-refinement comparison.
--/
-def witnessReplacement
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.centerAt 0))
-        x₀)
-    (transitionAt' :
-      ∀ k : Fin S.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.centerAt k.castSucc))
-          (localModels.chartAt (S.centerAt k.succ))
-          (p (S.parameterAt k.succ))) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton :=
-                S.toPathLocalTransitionModelWeakContinuationSkeleton
-              transitionAt := transitionAt' }
-         initialTransition := initialTransition' } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.witnessReplacement
-      S initialTransition' transitionAt')
-
-/--
-Any based weak handoff skeleton admits a common-refinement comparison with the
-canonical `Classical.choice` handoff skeleton over the same weak subdivision.
--/
-def toCanonicalChoiceForSameWeakContinuation
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      (PathLocalTransitionModelWeakHandoffSkeleton.toBasedWeakHandoffSkeleton
-        (PathLocalTransitionModelWeakContinuationSkeleton.toWeakHandoffSkeleton
-          S.toPathLocalTransitionModelWeakContinuationSkeleton)) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.toCanonicalChoiceForSameWeakContinuation
-      S)
-
-/--
-Two based handoff skeletons built over the same weak subdivision, but with
-arbitrary local-transition witnesses, admit a concrete common-refinement
-comparison.
--/
-def witnessReplacement_of_fixedWeakContinuation
-    (W :
-      PathLocalTransitionModelWeakContinuationSkeleton x₀ g localModels p)
-    (transitionAt₁ transitionAt₂ :
-      ∀ k : Fin W.length,
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (W.centerAt k.castSucc))
-          (localModels.chartAt (W.centerAt k.succ))
-          (p (W.parameterAt k.succ)))
-    (initialTransition₁ initialTransition₂ :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (W.centerAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₁ }
-         initialTransition := initialTransition₁ } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-      ({ toPathLocalTransitionModelWeakHandoffSkeleton :=
-            { toPathLocalTransitionModelWeakContinuationSkeleton := W
-              transitionAt := transitionAt₂ }
-         initialTransition := initialTransition₂ } :
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :=
-  ofMoveWalk
-    (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.witnessReplacement_of_fixedWeakContinuation
-      W transitionAt₁ transitionAt₂ initialTransition₁ initialTransition₂)
-
-omit [RiemannSurface X] in
-/--
-Terminal stutter with arbitrary local-transition witnesses gives a concrete
-common-refinement comparison with the original skeleton.
--/
-noncomputable def terminalStutterWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.terminalStutterCenterAt j.castSucc))
-          (localModels.chartAt (S.terminalStutterCenterAt j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalStutterCenterAt 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalStutterSkeletonWithWitnesses
-        S transitionAt' initialTransition') := by
-  let R := S.terminalStutterSkeleton
-  exact
-    (terminalStutter S).trans
-      (witnessReplacement_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition')
-
-omit [RiemannSurface X] in
-/--
-Terminal chart-change with arbitrary local-transition witnesses gives a
-concrete common-refinement comparison with the original skeleton.
--/
-noncomputable def terminalChartChangeWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (c : X) (hc : x ∈ (localModels.chartAt c).domain)
-    (T :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt S.terminalCenter)
-        (localModels.chartAt c)
-        x)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.castSucc))
-          (localModels.chartAt
-            (S.terminalChartChangeCenterAt c j.succ))
-          (p (S.terminalStutterParameterAt j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.terminalChartChangeCenterAt c 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalChartChangeSkeletonWithWitnesses
-        S c hc T transitionAt' initialTransition') := by
-  let R := S.terminalChartChangeSkeleton c hc T
-  exact
-    (terminalChartChange S c hc T).trans
-      (witnessReplacement_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition')
-
-omit [RiemannSurface X] in
-/--
-One segment split with arbitrary local-transition witnesses gives a concrete
-common-refinement comparison with the original skeleton.
--/
-noncomputable def segmentSplitWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (τ : unitInterval)
-    (hτ_left : (S.parameterAt k.castSucc : ℝ) ≤ τ)
-    (hτ_right : (τ : ℝ) ≤ S.parameterAt k.succ)
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt (S.segmentSplitCenterAt k j.castSucc))
-          (localModels.chartAt (S.segmentSplitCenterAt k j.succ))
-          (p (S.segmentSplitParameterAt k τ j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentSplitCenterAt k 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentSplitSkeletonWithWitnesses
-        S k τ hτ_left hτ_right transitionAt' initialTransition') := by
-  let R := S.segmentSplitSkeleton k τ hτ_left hτ_right
-  exact
-    (segmentSplit S k τ hτ_left hτ_right).trans
-      (witnessReplacement_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition')
-
-omit [RiemannSurface X] in
-/--
-Endpoint chart-insertion with arbitrary local-transition witnesses gives a
-concrete common-refinement comparison with the original skeleton.
--/
-noncomputable def segmentEndpointChartInsertWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length) (c : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (Tleft :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (Tright :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAt' :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransition' :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentEndpointChartInsertSkeletonWithWitnesses
-        S k c hc Tleft Tright transitionAt' initialTransition') := by
-  let R := S.segmentEndpointChartInsertSkeleton k c hc Tleft Tright
-  exact
-    (segmentEndpointChartInsert S k c hc Tleft Tright).trans
-      (witnessReplacement_of_fixedWeakContinuation
-        R.toPathLocalTransitionModelWeakContinuationSkeleton
-        R.transitionAt
-        transitionAt'
-        R.initialTransition
-        initialTransition')
-
-omit [RiemannSurface X] in
-/--
-Two arbitrary-witness zero-length endpoint chart insertions at the same handoff
-admit a common-refinement comparison.
--/
-noncomputable def segmentEndpointChartInsertionChoiceWithWitnesses
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (k : Fin S.length)
-    (c d : X)
-    (hc :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt c).domain)
-    (hd :
-      p (S.parameterAt k.succ) ∈ (localModels.chartAt d).domain)
-    (TleftC :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt c)
-        (p (S.parameterAt k.succ)))
-    (TrightC :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt c)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (TleftD :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt (S.centerAt k.castSucc))
-        (localModels.chartAt d)
-        (p (S.parameterAt k.succ)))
-    (TrightD :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt d)
-        (localModels.chartAt (S.centerAt k.succ))
-        (p (S.parameterAt k.succ)))
-    (transitionAtC :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k c j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransitionC :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k c 0))
-        x₀)
-    (transitionAtD :
-      ∀ j : Fin (S.length + 1),
-        HyperbolicLocalChart.LocalRealMobiusTransitionData
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k d j.castSucc))
-          (localModels.chartAt
-            (S.segmentEndpointChartInsertCenterAt k d j.succ))
-          (p (S.segmentSplitParameterAt k (S.parameterAt k.succ) j.succ)))
-    (initialTransitionD :
-      HyperbolicLocalChart.LocalRealMobiusTransitionData
-        (localModels.chartAt x₀)
-        (localModels.chartAt (S.segmentEndpointChartInsertCenterAt k d 0))
-        x₀) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentEndpointChartInsertSkeletonWithWitnesses
-        S k c hc TleftC TrightC transitionAtC initialTransitionC)
-      (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.segmentEndpointChartInsertSkeletonWithWitnesses
-        S k d hd TleftD TrightD transitionAtD initialTransitionD) :=
-  (segmentEndpointChartInsertWithWitnesses
-      S k c hc TleftC TrightC transitionAtC initialTransitionC).symm.trans
-    (segmentEndpointChartInsertWithWitnesses
-      S k d hd TleftD TrightD transitionAtD initialTransitionD)
-
-omit [RiemannSurface X] in
-/--
-Any finite terminal-stutter padding gives a concrete common-refinement
-comparison.
--/
-noncomputable def terminalStutterIterate
-    (S :
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p)
-    (n : ℕ) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-      S (S.terminalStutterIterateSkeleton n) where
-  refinement := S.terminalStutterIterateSkeleton n
-  leftWalk :=
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.terminalStutterIterate
-      S n
-  rightWalk :=
-    PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.refl
-      (S.terminalStutterIterateSkeleton n)
-
-end PathLocalTransitionBasedWeakHandoffSamePathCommonComparison
-
-/--
-Every pair of based weak handoff skeletons over the same path is connected by
-a finite walk of terminal-value-preserving same-path moves.
--/
-def PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalkPrinciple
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) :
-    Prop :=
-  ∀ {x : X} {p : Path x₀ x}
-    (S T : PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p),
-      Nonempty
-        (PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk S T)
-
-/--
-Every pair of based weak handoff skeletons over the same path admits a common
-refinement connected to both by terminal-value-preserving same-path moves.
--/
-def PathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) :
-    Prop :=
-  ∀ {x : X} {p : Path x₀ x}
-    (S T : PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p),
-      Nonempty
-        (PathLocalTransitionBasedWeakHandoffSamePathCommonComparison S T)
 
 /--
 Mutual vertex-refinement terminal-value comparison.
@@ -3087,6 +1303,13 @@ Mutual vertex-refinement terminal-value comparison.
 This is a sharper one-dimensional boundary than arbitrary same-path
 uniqueness: before comparing two handoff skeletons, insert all sampled
 vertices of each skeleton into the other.
+
+%%handwave
+name: Mutual vertex-refinement terminal-value comparison
+statement:
+  Mutual vertex-refinement terminal-value comparison. This is a sharper one-dimensional
+  principle than arbitrary same-path uniqueness: before comparing two handoff skeletons, insert
+  all sampled vertices of each skeleton into the other.
 -/
 def PathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3105,6 +1328,15 @@ boundary: after inserting all sampled vertices of each skeleton into the
 other, allow terminal-value-preserving same-path moves to a pair of refinements
 with the same subdivision parameters.  The local PSL branch comparison for
 that aligned pair is then supplied by the componentwise transition atlas.
+
+%%handwave
+name: Mutual vertex-refinement common aligned-subdivision comparison
+statement:
+  Mutual vertex-refinement common aligned-subdivision comparison. This is the purely
+  combinatorial/topological part of the mutual-refinement principle: after inserting all sampled
+  vertices of each skeleton into the other, allow terminal-value-preserving same-path moves to a
+  pair of refinements with the same subdivision parameters. The local PSL branch comparison for
+  that aligned pair is then supplied by the componentwise transition atlas.
 -/
 def PathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3138,6 +1370,16 @@ refinement has the opposite multiplicities.  Splitting the left side at all
 original `S` vertices and the right side at all original `T` vertices makes
 the lengths equal automatically.  The only remaining content is that these
 two weakly ordered finite parameter lists agree pointwise.
+
+%%handwave
+name: The deterministic own-split parameter-alignment principle
+statement:
+  The deterministic own-split parameter-alignment principle. After mutual endpoint-chart
+  insertion, the left refinement has one original copy of each S vertex and two inserted copies
+  of each T vertex; the right refinement has the opposite multiplicities. Splitting the left
+  side at all original S vertices and the right side at all original T vertices makes the
+  lengths equal automatically. The only remaining content is that these two weakly ordered
+  finite parameter lists agree pointwise.
 -/
 def PathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterAlignmentPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3159,6 +1401,13 @@ The multiset/permutation form of the own-split alignment boundary.
 
 Since every skeleton parameter list is weakly sorted, a permutation of the two
 own-split parameter lists is enough to recover pointwise alignment.
+
+%%handwave
+name: The multiset/permutation form of the own-split alignment principle
+statement:
+  The multiset/permutation form of the own-split alignment principle. Since every skeleton
+  parameter list is weakly sorted, a permutation of the two own-split parameter lists is enough
+  to recover pointwise alignment.
 -/
 def PathLocalTransitionBasedWeakHandoffMutualVertexRefinementOwnSplitParameterPermutationPrinciple
     (x₀ : X) (g : HyperbolicMetric X)
@@ -3458,101 +1707,6 @@ theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePr
   pathLocalTransitionBasedWeakHandoffMutualVertexRefinementTerminalValuePrinciple_of_mutualVertexRefinementCommonAlignedSubdivision
     pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_unconditional
 
-omit [RiemannSurface X] in
-/--
-Same-path common-refinement comparisons imply common aligned mutual vertex
-refinements: use the common refinement itself on both sides.
-
-%%handwave
-name: A common refinement gives aligned mutual refinements
-statement: If every two skeletons over a fixed path admit a common refinement, then their mutual vertex insertions admit equal-length, pointwise aligned refinements.
-proof: Apply the assumed common-refinement comparison to the two mutual insertions and use its single refinement on both sides; the lengths and all parameters then agree reflexively.
--/
-theorem pathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple_of_samePathCommonComparison
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hComparison :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffMutualVertexRefinementCommonAlignedSubdivisionPrinciple
-      x₀ g localModels := by
-  intro x p S T
-  let S' := S.insertAllVerticesOfSkeleton T
-  let T' := T.insertAllVerticesOfSkeleton S
-  rcases hComparison S' T' with ⟨C⟩
-  refine ⟨C.refinement, C.refinement, ⟨C.leftWalk⟩, ⟨C.rightWalk⟩, rfl, ?_⟩
-  intro n hnU hnV
-  rfl
-
-omit [RiemannSurface X] in
-/--
-Directed same-path skeleton move walks give common-refinement comparisons by
-taking the target skeleton as the common refinement.
-
-%%handwave
-name: A directed comparison walk gives a common refinement
-statement: If every ordered pair of skeletons $S,T$ over one path is joined by a terminal-value-preserving move walk from $S$ to $T$, then every pair admits a common-refinement comparison.
-proof: Take $T$ itself as the common refinement, use the given walk from $S$ to $T$ on the left, and the empty walk at $T$ on the right.
--/
-theorem pathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple_of_samePathSkeletonMoveWalk
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hWalk :
-      PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalkPrinciple
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple
-      x₀ g localModels := by
-  intro x p S T
-  rcases hWalk S T with ⟨W⟩
-  exact
-    ⟨{ refinement := T
-       leftWalk := W
-       rightWalk :=
-        PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalk.refl T }⟩
-
-omit [RiemannSurface X] in
-/--
-Same-path skeleton move walks imply same-path terminal-value uniqueness.
-
-%%handwave
-name: Same-path comparison walks imply terminal-value uniqueness
-statement: If every pair of continuation skeletons $S,T$ over a fixed path is joined by a finite same-path comparison walk, then $v(S)=v(T)$.
-proof: Choose the asserted walk and compose the terminal-value equality carried by each of its moves.
--/
-theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_of_samePathSkeletonMoveWalk
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hWalk :
-      PathLocalTransitionBasedWeakHandoffSamePathSkeletonMoveWalkPrinciple
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple
-      x₀ g localModels := by
-  intro x p S T
-  rcases hWalk S T with ⟨W⟩
-  exact W.terminalValue_start_eq_end
-
-omit [RiemannSurface X] in
-/--
-Same-path common-refinement comparisons imply same-path terminal-value
-uniqueness.
-
-%%handwave
-name: Common refinements imply terminal-value uniqueness
-statement: If every pair of continuation skeletons $S,T$ over a fixed path admits terminal-value-preserving walks to a common refinement, then $v(S)=v(T)$.
-proof: Choose the common-refinement comparison and compose the equality from $S$ to the refinement with the reverse equality from $T$.
--/
-theorem pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_of_samePathCommonComparison
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hComparison :
-      PathLocalTransitionBasedWeakHandoffSamePathCommonComparisonPrinciple
-        x₀ g localModels) :
-    PathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple
-      x₀ g localModels := by
-  intro x p S T
-  rcases hComparison S T with ⟨C⟩
-  exact C.terminalValue_eq
-
 /--
 Mutual vertex-refinement comparison implies same-path terminal-value
 uniqueness, because finite vertex insertion preserves terminal values on both
@@ -3624,85 +1778,6 @@ theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamVal
   pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnCutReparamValueTransferPrinciple_of_explicitValueWitness
     hExplicit
     pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_unconditional
-
-/--
-The raw-cut reparameterization witness follows from the two one-dimensional
-subpath-merge boundaries.
-
-Top-side merging occurs at the beginning of the cut path, so the branch-data
-merge principle suffices.  Bottom-side merging occurs after a prefix, so it
-uses the prefixed value-witness form.
-
-%%handwave
-name: Subpath merging supplies raw cut reparameterization witnesses
-statement: Assume continuation branch data are invariant when two adjacent subpaths are merged, both at the start of a path and after an arbitrary prefix. Then every chart-contained homotopy column admits equal-valued skeleton pairs comparing its decomposed top and bottom paths with the corresponding raw cut paths.
-proof: Use the unprefixed merge comparison on the top route and the prefixed merge comparison on the bottom route, transfer through fixed-path uniqueness, and cast the endpoint equalities back to the original based paths.
--/
-theorem pathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple_of_subpathMerge
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    (hMerge :
-      PathLocalTransitionBasedWeakHandoffSubpathMergeBranchDataWitnessPrinciple
-        g localModels)
-    (hPrefMerge :
-      PathLocalTransitionBasedWeakHandoffPrefixedSubpathMergeValueWitnessPrinciple
-        g localModels) :
-    PathLocalTransitionBasedWeakHandoffHomotopyChartStripColumnRawCutReparamExplicitValueWitnessPrinciple
-      x₀ g localModels := by
-  intro x p q F t ht0 htmono i m hRect
-  let a := t i
-  let b := t (i + 1)
-  let r₀ := t m
-  let r₁ := t (m + 1)
-  have hSameAtSource :
-      ∀ {y : X} {path : Path (F (a, 0)) y}
-        (S T :
-          PathLocalTransitionModelBasedWeakHandoffSkeleton
-            (F (a, 0)) g localModels path),
-        S.terminalValue = T.terminalValue := by
-    intro y path S T
-    exact
-      pathLocalTransitionBasedWeakHandoffSamePathTerminalValueUniquenessPrinciple_unconditional
-        S T
-  rcases
-    exists_terminalValue_eq_homotopyStripColumnTop_rawCutPathRawCore_of_subpathMerge
-      F a b r₀ r₁ hMerge hSameAtSource with
-    ⟨ScolTopCore, SrawTopCore, hTopCore⟩
-  rcases
-    exists_terminalValue_eq_homotopyStripColumnBottom_rawCutPathRawCore_of_prefixedSubpathMerge
-      F a b r₀ r₁ hPrefMerge hSameAtSource with
-    ⟨ScolBottomCore, SrawBottomCore, hBottomCore⟩
-  have hsource : x₀ = F (a, 0) := by
-    exact (F.source a).symm
-  have htarget : x = F (b, 1) := by
-    exact (F.target b).symm
-  let ScolTopCast :=
-    ScolTopCore.castEndpoints hsource htarget
-  let SrawTopCast :=
-    SrawTopCore.castEndpoints hsource htarget
-  let ScolBottomCast :=
-    ScolBottomCore.castEndpoints hsource htarget
-  let SrawBottomCast :=
-    SrawBottomCore.castEndpoints hsource htarget
-  have hTopCast :
-      SrawTopCast.terminalValue = ScolTopCast.terminalValue := by
-    rw [PathLocalTransitionModelBasedWeakHandoffSkeleton.castEndpoints_terminalValue,
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.castEndpoints_terminalValue]
-    exact hTopCore
-  have hBottomCast :
-      SrawBottomCast.terminalValue = ScolBottomCast.terminalValue := by
-    rw [PathLocalTransitionModelBasedWeakHandoffSkeleton.castEndpoints_terminalValue,
-      PathLocalTransitionModelBasedWeakHandoffSkeleton.castEndpoints_terminalValue]
-    exact hBottomCore
-  constructor
-  · refine ⟨?_, ?_, ?_⟩
-    · simpa [a, b, r₀, r₁, homotopyStripColumnTopPath] using ScolTopCast
-    · simpa [a, b, r₀, r₁, homotopyStripCutPathRaw] using SrawTopCast
-    · simpa using hTopCast
-  · refine ⟨?_, ?_, ?_⟩
-    · simpa [a, b, r₀, r₁, homotopyStripColumnBottomPath] using ScolBottomCast
-    · simpa [a, b, r₀, r₁, homotopyStripCutPathRaw] using SrawBottomCast
-    · simpa using hBottomCast
 
 /--
 The raw-cut reparameterization witness follows from the monotone
@@ -3930,109 +2005,6 @@ theorem pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_
     _ = S.terminalFormulaAt (PathHomotopyUniversalCover.endpoint y') := hT
 
 /--
-The terminal-sheet extension-agreement principle for a coherent choice of
-based weak handoff skeletons.
--/
-def PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g)
-    (basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    Prop :=
-  ∀ {x : X} (p : Path x₀ x)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ (basedWeakHandoffAlong p).terminalSheet),
-      Nonempty
-        (PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement
-          (basedWeakHandoffAlong p) hy'
-          (basedWeakHandoffAlong
-            (p.trans ((basedWeakHandoffAlong p).terminalSheetPathInSet hy'))))
-
-/--
-The PSL-level terminal-sheet extension-agreement principle for a coherent
-choice of based weak handoff skeletons.
-
-This is the projective-strength version of
-`PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple`:
-the terminal chart is kept fixed, but the accumulated Mobius representative is
-only fixed after projection to PSL.
--/
-def PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g)
-    (basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p) :
-    Prop :=
-  ∀ {x : X} (p : Path x₀ x)
-    {y' : PathHomotopyUniversalCover X x₀}
-    (hy' : y' ∈ (basedWeakHandoffAlong p).terminalSheet),
-      Nonempty
-        (PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement
-          (basedWeakHandoffAlong p) hy'
-          (basedWeakHandoffAlong
-            (p.trans ((basedWeakHandoffAlong p).terminalSheetPathInSet hy'))))
-
-/-- Exact terminal-sheet agreement forgets to PSL-level agreement. -/
-def pathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple_of_extensionAgreement
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (hAgreement :
-      PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-        x₀ g localModels basedWeakHandoffAlong) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple
-      x₀ g localModels basedWeakHandoffAlong := by
-  intro x p y' hy'
-  rcases hAgreement p hy' with ⟨A⟩
-  exact ⟨A.toProjectionAgreement⟩
-
-/--
-Terminal-sheet extension agreement implies the terminal-sheet local-extension
-formula.
--/
-def pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_terminalSheetExtensionAgreement
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (hAgreement :
-      PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionAgreementPrinciple
-        x₀ g localModels basedWeakHandoffAlong) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
-      x₀ g localModels basedWeakHandoffAlong := by
-  intro x p y' hy'
-  rcases hAgreement p hy' with ⟨A⟩
-  exact
-    PathLocalTransitionModelBasedWeakHandoffTerminalExtensionAgreement.terminalFormulaAt_eq
-      A
-
-/--
-PSL-level terminal-sheet extension agreement implies the terminal-sheet
-local-extension formula.
--/
-def pathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple_of_terminalSheetExtensionProjectionAgreement
-    {x₀ : X} {g : HyperbolicMetric X}
-    {localModels : HyperbolicLocalModelLocalTransitionAtlas X g}
-    {basedWeakHandoffAlong :
-      ∀ {x : X} (p : Path x₀ x),
-        PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p}
-    (hAgreement :
-      PathLocalTransitionBasedWeakHandoffTerminalSheetExtensionProjectionAgreementPrinciple
-        x₀ g localModels basedWeakHandoffAlong) :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetLocalExtensionPrinciple
-      x₀ g localModels basedWeakHandoffAlong := by
-  intro x p y' hy'
-  rcases hAgreement p hy' with ⟨A⟩
-  exact
-    PathLocalTransitionModelBasedWeakHandoffTerminalExtensionProjectionAgreement.terminalFormulaAt_eq
-      A
-
-/--
 Homotopy-grid walks plus local extension inside the terminal sheet prove the
 terminal-sheet homotopy principle.
 
@@ -4061,22 +2033,6 @@ theorem pathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyPrinciple_of_hom
     W.terminalFormulaAt_start_eq_end.trans
       (hLocal p hy')
 
-/--
-Coherent terminal-sheet homotopy data: a choice of based weak handoff
-skeletons together with the homotopy-grid uniqueness principle for those
-choices.
--/
-structure PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyData
-    (x₀ : X) (g : HyperbolicMetric X)
-    (localModels : HyperbolicLocalModelLocalTransitionAtlas X g) where
-  /-- Chosen based weak handoff skeletons along representative paths. -/
-  basedWeakHandoffAlong :
-    ∀ {x : X} (p : Path x₀ x),
-      PathLocalTransitionModelBasedWeakHandoffSkeleton x₀ g localModels p
-  /-- Terminal-sheet homotopy uniqueness for the chosen skeletons. -/
-  terminalSheetHomotopyPrinciple :
-    PathLocalTransitionBasedWeakHandoffTerminalSheetHomotopyPrinciple
-      x₀ g localModels basedWeakHandoffAlong
 
 end HyperbolicMetric
 

@@ -22,8 +22,17 @@ noncomputable section
 
 attribute [local instance] finrank_real_complex_fact'
 
-/-- Rotate the circle coordinate so that the chosen cut is the standard
-logarithm cut, viewed as a smooth unit-complex phase. -/
+/--
+%%handwave
+name: Circle phase rotated to a chosen logarithm cut
+statement:
+  For $v\in S^1$, define the smooth unit phase on the annular cylinder by
+  \[
+    R_v(q,t)=-v^{-1}q.
+  \]
+  This rotation sends the chosen cut point $v$ to $-1$, the standard branch
+  cut for the principal logarithm.
+-/
 noncomputable def annularCutRotationPhase (v : Circle) :
     ContMDiffMap AnnularCylinderModel (modelWithCornersSelf ℝ ℂ)
       (Circle × ℝ) ℂ ∞ where
@@ -74,7 +83,14 @@ theorem annularCutRotation_antipode_one (q : Circle) :
   apply Subtype.ext
   simp [annularCutRotation, circleAntipode]
 
-/-- The logarithmic one-form of the rotated circle coordinate. -/
+/--
+%%handwave
+name: The logarithmic one-form of the rotated circle coordinate
+statement:
+  Define the closed logarithmic one-form $\omega_v$ of the phase
+  $R_v:S^1\times\mathbb R\to S^1$ by locally writing
+  $R_v=e^{i\theta}$ and setting $\omega_v=d\theta$.
+-/
 noncomputable def annularCutRotationClosedOneForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := Circle × ℝ) (A := ℝ) 1 :=
@@ -82,7 +98,13 @@ noncomputable def annularCutRotationClosedOneForm (v : Circle) :
     (annularCutRotationPhase v) (norm_annularCutRotationPhase v)
     |>.toClosedForm AnnularCylinderModel)
 
-/-- Divide the logarithmic circle-coordinate form by `2 * pi`. -/
+/--
+%%handwave
+name: Normalized logarithmic circle-coordinate form
+statement:
+  Divide the logarithmic circle-coordinate form by $2\pi$, producing the
+  closed one-form whose period around the circle is one.
+-/
 noncomputable def annularRadialNormalizedClosedOneForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := Circle × ℝ) (A := ℝ) 1 :=
@@ -219,14 +241,28 @@ theorem annularCutRotationClosedOneForm_restrict_right (v : Circle) :
     Complex.exp ((((annularRightAngleLift v q : ℝ) : ℂ) * Complex.I))
   exact (annularRightAngleLift_exp_eq_cutRotation v q).symm
 
-/-- The normalized angle jump on the overlap. -/
+/--
+%%handwave
+name: The normalized angle jump on the overlap
+statement:
+  On the cylinder with the two antipodal cut points removed, define the
+  closed zero-form $(2\pi)^{-1}(\theta_L-\theta_R)$ from the two slit-circle
+  angle lifts.
+-/
 noncomputable def annularRadialTransitionClosedForm (v : Circle) :
     DeRhamClosedForms (I := AnnularCylinderModel)
       (M := annularDoublePunctureOpen v) (A := ℝ) 0 :=
   (2 * Real.pi)⁻¹ • annularAngleTransitionClosedForm v
 
-/-- Connecting data computing the normalized radial class from the two
-normalized slit-circle angle lifts. -/
+/--
+%%handwave
+name: Mayer--Vietoris data for the normalized radial class
+statement:
+  For the cover by the two antipodally slit cylinders, use the local
+  zero-forms $(2\pi)^{-1}\theta_L$ and $(2\pi)^{-1}\theta_R$ as a lift of
+  their normalized overlap jump; their differentials glue to the normalized
+  radial form $(2\pi)^{-1}\omega_v$.
+-/
 noncomputable def annularRadialConnectingData (v : Circle) :
     DeRhamMayerVietorisConnectingData (I := AnnularCylinderModel) (A := ℝ)
       (annularPunctureOpen v)

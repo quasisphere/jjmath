@@ -174,39 +174,6 @@ theorem sidePreservingAnnularCollar_exteriorSide_subset_component
 /--
 %%handwave
 name:
-  The incident component equals the exterior half inside the collar
-statement:
-  In a side-preserving annular collar \(W\), if \(V\) is the complementary
-  component incident to the chosen boundary point, then
-  \[
-    W\cap V=W\cap(X\setminus\overline D).
-  \]
-proof:
-  One inclusion follows because \(V\subseteq X\setminus\overline D\).  The
-  reverse inclusion is the containment of the exterior half-collar in the
-  incident component.
--/
-theorem sidePreservingAnnularCollar_inter_component_eq_exteriorSide
-    (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
-    (phi : W ≃ₘ⟮SurfaceRealModel,
-      JJMath.Manifold.AnnularCylinderModel⟯ (Circle × ℝ))
-    (hexteriorSide :
-      ∀ y : W, ((y : X) ∉ closure D.carrier ↔ 0 < (phi y).2))
-    (V : Set X) (hV : IsComponentOf V (closure D.carrier)ᶜ)
-    (p : frontier D.carrier) (hpW : (p : X) ∈ W)
-    (hpV : (p : X) ∈ frontier V) :
-    (W : Set X) ∩ V = (W : Set X) ∩ (closure D.carrier)ᶜ := by
-  apply Subset.antisymm
-  · rintro x ⟨hxW, hxV⟩
-    exact ⟨hxW, hV.subset hxV⟩
-  · intro x hx
-    exact ⟨hx.1,
-      sidePreservingAnnularCollar_exteriorSide_subset_component
-        D W phi hexteriorSide V hV p hpW hpV hx⟩
-
-/--
-%%handwave
-name:
   The collar zero slice is approached from the exterior side
 statement:
   If \(y\) lies on the zero slice \(t=0\) of a side-preserving annular collar
@@ -303,47 +270,28 @@ theorem sidePreservingAnnularCollar_compl_componentClosure_eq_domainSide
       ⟨z, hzD, hzV⟩
     exact hV.subset hzV (subset_closure hzD)
 
-/-- The open union of an incident complementary component and its full
-annular collar. -/
+/--
+%%handwave
+name: The open union of an incident complementary component and its full annular collar
+statement:
+  For an open collar $W$ and an open complementary component $V$, define
+  the open set $W\cup V$.
+-/
 def exteriorComponentCollarUnion
     (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V) :
     TopologicalSpace.Opens X :=
   W ⊔ ⟨V, hVopen⟩
 
-/-- The open complement of the closure of a complementary component. -/
+/--
+%%handwave
+name: The open complement of the closure of a complementary component
+statement:
+  For a complementary component $V$, define the open set
+  $X\setminus\overline V$.
+-/
 def complementComponentClosureOpen (V : Set X) :
     TopologicalSpace.Opens X :=
   ⟨(closure V)ᶜ, isClosed_closure.isOpen_compl⟩
-
-/--
-%%handwave
-name:
-  Mayer--Vietoris cover from a full component collar
-statement:
-  Let \(V\subseteq X\) be open and suppose an open set \(W\) contains
-  \(\partial V\).  Then the two open sets \(W\cup V\) and
-  \(X\setminus\overline V\) cover \(X\).
-proof:
-  A point outside \(\overline V\) is in the second set.  A point of
-  \(\overline V\) is either in \(V\), or lies in \(\partial V\) and therefore
-  in \(W\); in either case it belongs to \(W\cup V\).
--/
-theorem exteriorComponentCollarUnion_sup_complementComponentClosureOpen
-    (W : TopologicalSpace.Opens X) (V : Set X) (hVopen : IsOpen V)
-    (hfrontierW : frontier V ⊆ (W : Set X)) :
-    exteriorComponentCollarUnion W V hVopen ⊔
-      complementComponentClosureOpen V = ⊤ := by
-  ext x
-  change ((x ∈ (W : Set X) ∨ x ∈ V) ∨ x ∉ closure V) ↔ True
-  rw [iff_true]
-  by_cases hxClosure : x ∈ closure V
-  · by_cases hxV : x ∈ V
-    · exact Or.inl (Or.inr hxV)
-    · have hxFrontier : x ∈ frontier V := by
-        rw [frontier, hVopen.interior_eq]
-        exact ⟨hxClosure, hxV⟩
-      exact Or.inl (Or.inl (hfrontierW hxFrontier))
-  · exact Or.inr hxClosure
 
 /--
 %%handwave
@@ -394,8 +342,15 @@ theorem exteriorComponentCollarUnion_inf_complementComponentClosureOpen
       exact hx
     exact ⟨Or.inl hx'.1, hx'.2⟩
 
-/-- The Mayer--Vietoris overlap cut out by an incident side-preserving collar
-is smoothly an annular cylinder. -/
+/--
+%%handwave
+name: The Mayer--Vietoris overlap cut out by an incident side-preserving collar is smoothly an annular cylinder
+statement:
+  If $V$ is incident to a side-preserving annular collar $W$, identify the
+  overlap $(W\cup V)\cap(X\setminus\overline V)$ with an annular cylinder
+  by restricting the collar coordinate to the opposite half and
+  logarithmically reparametrizing its normal coordinate.
+-/
 noncomputable def exteriorComponentCollarMayerVietorisOverlapDiffeomorph
     (D : SmoothBoundaryDomain X) (W : TopologicalSpace.Opens X)
     (phi : W ≃ₘ⟮SurfaceRealModel,

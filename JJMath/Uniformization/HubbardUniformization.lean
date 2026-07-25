@@ -76,8 +76,14 @@ theorem PointedH1ZeroSmoothRelativelyCompactExhaustion.has_pointedDiskUniformiza
     (E.domain n).openCarrier_riemannSurface
   exact (F n).1.biholomorphicOfBijective_base (F n).2
 
-/-- The holomorphic transition from the disk uniformizing an earlier member
-to the disk uniformizing a later member. -/
+/--
+%%handwave
+name: The holomorphic transition from the disk uniformizing an earlier member to the disk uniformizing a later member
+statement:
+  For exhaustion indices $m\le n$ with pointed disk uniformizations
+  $f_m,f_n$, define the transition
+  $T_{m,n}=f_n\circ\iota_{m,n}\circ f_m^{-1}:\mathbb D\to\mathbb D$.
+-/
 noncomputable def PointedDiskUniformization.transition
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -142,8 +148,14 @@ theorem PointedDiskUniformization.transition_zero
       (by simpa using hm.symm)
   simp [PointedDiskUniformization.transition, hinv, hn]
 
-/-- The standard complex-coordinate representative of a holomorphic disk
-self-map. -/
+/--
+%%handwave
+name: The standard complex-coordinate representative of a holomorphic disk self-map
+statement:
+  For $T:\mathbb D\to\mathbb D$, define its ordinary complex-coordinate
+  representative by $z\mapsto T(z)$ after applying the standard chart and
+  inclusion of the unit disk.
+-/
 noncomputable def diskCoordinateRepresentative
     (T : Complex.UnitDisc → Complex.UnitDisc) : ℂ → ℂ :=
   fun z ↦ (T ((chartAt ℂ (0 : Complex.UnitDisc)).symm z) : ℂ)
@@ -314,8 +326,13 @@ theorem PointedDiskUniformization.transition_injective
     (fun q : (E.domain n).openCarrier ↦ (q : X)) hinc
   simpa [PointedDiskUniformization.transition, Function.comp_def] using hincVal
 
-/-- The derivative, in the standard disk coordinate, of the transition from
-the first exhaustion member to the `n`-th member. -/
+/--
+%%handwave
+name: Derivative of an exhaustion transition map
+statement:
+  The derivative, in the standard disk coordinate, of the transition from
+  the first exhaustion member to the $n$-th member.
+-/
 noncomputable def PointedDiskUniformization.coefficient
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -357,8 +374,13 @@ theorem PointedDiskUniformization.coefficient_ne_zero
   exact analyticOnNhd_deriv_ne_zero_of_injOn hA hI
     (mem_ball_self zero_lt_one)
 
-/-- The conformal radius associated with the normalized map on the `n`-th
-exhaustion member. -/
+/--
+%%handwave
+name: Conformal radius of an exhaustion member
+statement:
+  The conformal radius associated with the normalized map on the $n$-th
+  exhaustion member.
+-/
 noncomputable def PointedDiskUniformization.radius
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -384,8 +406,14 @@ theorem PointedDiskUniformization.radius_pos
     0 < P.radius n := by
   exact inv_pos.mpr (norm_pos_iff.mpr (P.coefficient_ne_zero n))
 
-/-- The disk uniformization divided by its derivative in the initial disk
-coordinate, extended set-theoretically by zero outside its member. -/
+/--
+%%handwave
+name: The disk uniformization divided by its derivative in the initial disk coordinate, extended set-theoretically by zero outside its member
+statement:
+  On the $n$-th exhaustion member, define
+  $F_n(x)=f_n(x)/a_n$, where $a_n=T_{0,n}'(0)$, and extend $F_n$ by zero
+  outside that member.
+-/
 noncomputable def PointedDiskUniformization.normalizedMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -417,8 +445,13 @@ theorem PointedDiskUniformization.normalizedMap_apply_of_mem
       ((P.equiv n).toHomeomorph ⟨x, hx⟩ : ℂ) / P.coefficient n := by
   exact Subtype.val_injective.extend_apply _ _ ⟨x, hx⟩
 
-/-- The point of the surface whose coordinate in the first exhaustion disk
-is `z`; only its restriction to the unit disk is used. -/
+/--
+%%handwave
+name: Point represented by an initial disk coordinate
+statement:
+  The point of the surface whose coordinate in the first exhaustion disk
+  is $z$; only its restriction to the unit disk is used.
+-/
 noncomputable def PointedDiskUniformization.initialDiskParameter
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -428,8 +461,13 @@ noncomputable def PointedDiskUniformization.initialDiskParameter
     ((chartAt ℂ (0 : Complex.UnitDisc)).symm z) :
       (E.domain 0).openCarrier)
 
-/-- In the initial disk coordinate, the normalized map on the `n`-th member
-is the transition map divided by its derivative at the origin. -/
+/--
+%%handwave
+name: Normalized map in the initial disk coordinate
+statement:
+  In the initial disk coordinate, the normalized map on the $n$-th member
+  is the transition map divided by its derivative at the origin.
+-/
 noncomputable def PointedDiskUniformization.initialCoordinateMap
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -679,7 +717,16 @@ theorem PointedDiskUniformization.coefficient_eq_transition_deriv_mul
     (hA 0 (mem_ball_self zero_lt_one)).differentiableAt.hasDerivAt
   exact hcomp.deriv
 
-/-- The transition between normalized disks. -/
+/--
+%%handwave
+name: The transition between normalized disks
+statement:
+  For $m\le n$, define the normalized transition
+  \[
+    \widetilde T_{m,n}(z)=\frac{T_{m,n}(a_mz)}{a_n},
+  \]
+  where $a_j=T_{0,j}'(0)$.
+-/
 noncomputable def PointedDiskUniformization.normalizedTransition
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}
@@ -908,8 +955,6 @@ proof:
   The transition from an earlier normalized disk to a later one fixes zero
   and has derivative one.  Schwarz's lemma says that its source radius cannot
   exceed its target radius.
-tags:
-  milestone
 -/
 theorem PointedDiskUniformization.radius_mono
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
@@ -924,8 +969,13 @@ theorem PointedDiskUniformization.radius_mono
     (P.normalizedTransition_zero m n hmn)
     (P.normalizedTransition_deriv_zero m n hmn)
 
-/-- A normalized transition rescaled in both source and target to the unit
-disk. -/
+/--
+%%handwave
+name: A normalized transition rescaled in both source and target to the unit disk
+statement:
+  For conformal radii $r_m,r_n$, define the unit-rescaled transition
+  $U_{m,n}(z)=\widetilde T_{m,n}(r_mz)/r_n$.
+-/
 noncomputable def PointedDiskUniformization.unitTransition
     {X : Type} [TopologicalSpace X] [ChartedSpace ℂ X]
     [RiemannSurface X] {p : X}

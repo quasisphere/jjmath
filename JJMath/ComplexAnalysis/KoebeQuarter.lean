@@ -25,35 +25,6 @@ set_option backward.isDefEq.respectTransparency false
 
 /--
 %%handwave
-name:
-  Planar Stokes identity for a two-chain
-statement:
-  Let $\omega$ be a continuously differentiable real $1$-form on
-  $\mathbb C$, and let $c$ be a smooth singular $2$-chain. Then
-  \[
-    \int_{\partial c}\omega=\int_c d\omega.
-  \]
-proof:
-  [Stokes' theorem identifies integration of a differential form over the boundary of a chain with integration of its exterior derivative over the chain](lean:JJMath.Manifold.integrateChain_boundary_eq_integrateChain_exteriorDerivative). Specialize it to real differential forms of degree $1$ on the complex plane.
--/
-theorem planar_annulus_stokes_identity
-    (omega : C1DifferentialForm (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ) 1)
-    (c : SingularChain (I := 𝓘(ℝ, ℂ)) (M := ℂ) 2 (⊤ : WithTop ℕ∞)) :
-    integrateChain (I := 𝓘(ℝ, ℂ)) (F := ℝ)
-        (pullbackSimplexIntegrationTheory (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ))
-        (show (1 : WithTop ℕ∞) ≤ (⊤ : WithTop ℕ∞) by simp)
-        (DifferentialForm.toContinuous (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ) (n := 1) omega)
-        (boundary (I := 𝓘(ℝ, ℂ)) c) =
-      integrateChain (I := 𝓘(ℝ, ℂ)) (F := ℝ)
-        (pullbackSimplexIntegrationTheory (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ))
-        (show (1 : WithTop ℕ∞) ≤ (⊤ : WithTop ℕ∞) by simp)
-        (exteriorDerivative (I := 𝓘(ℝ, ℂ)) (r := (0 : WithTop ℕ∞)) omega) c := by
-  simpa using integrateChain_boundary_eq_integrateChain_exteriorDerivative
-    (I := 𝓘(ℝ, ℂ)) (M := ℂ) (F := ℝ) (k := 1) (r := (⊤ : WithTop ℕ∞))
-    (show (2 : WithTop ℕ∞) ≤ (⊤ : WithTop ℕ∞) by simp) omega c
-
-/--
-%%handwave
 name: Two-mode Fourier energy bound
 statement:
   If $F:[0,2\pi]\to\mathbb C$ is continuous and $\widehat F(n)=(2\pi)^{-1}\int_0^{2\pi}e^{-int}F(t)\,dt$, then $|\widehat F(0)|^2+|\widehat F(2)|^2\le(2\pi)^{-1}\int_0^{2\pi}|F(t)|^2\,dt$.
@@ -350,18 +321,6 @@ theorem exteriorCircleDerivative_energy_lower
 
 /--
 %%handwave
-name: Polar-coordinate inverse formula
-statement:
-  For $r,t\in\mathbb R$, the inverse polar-coordinate map sends $(r,t)$ to $re^{it}$, the standard parametrization of the circle of radius $r$ about $0$.
-proof:
-  Expand the two parametrizations and use $e^{it}=\cos t+i\sin t$.
--/
-private theorem polarCoord_symm_eq_circleMap (r t : ℝ) :
-    Complex.polarCoord.symm (r, t) = circleMap (0 : ℂ) r t := by
-  simp [Complex.polarCoord_symm_apply, circleMap, Complex.exp_mul_I]
-
-/--
-%%handwave
 name: Polar-coordinate integral over an open annulus
 statement:
   Let $0<r<R$ and let $F:\mathbb C\to\mathbb R$ be continuous on $r\le|z|\le R$. Then $\int_{r<|z|<R}F(z)\,dz=\int_{(r,R)\times(-\pi,\pi)}\rho F(\rho e^{it})\,d\rho\,dt$.
@@ -437,7 +396,7 @@ statement:
 proof:
   The polar integrand is continuous on the compact closed rectangle and hence integrable. Fubini's theorem converts the product integral to the displayed iterated integral; changing open rectangles to interval integrals does not affect the value.
 -/
-private theorem setIntegral_openAnnulus_eq_iterated
+theorem setIntegral_openAnnulus_eq_iterated
     {F : ℂ → ℝ} {r R : ℝ} (hr : 0 < r) (hrR : r < R)
     (hF : ContinuousOn F {z : ℂ | r ≤ ‖z‖ ∧ ‖z‖ ≤ R}) :
     (∫ z in {z : ℂ | r < ‖z‖ ∧ ‖z‖ < R}, F z) =
@@ -951,7 +910,13 @@ theorem gronwall_area_first_coefficient
     convert hbpow using 1 <;> ring
   simpa [hrsq] using hbnorm
 
-/-- The analytic extension to the origin of `f(z) / z`. -/
+/--
+%%handwave
+name:
+  Normalized quotient on the disk
+statement:
+  For $f:\mathbb C\to\mathbb C$, the normalized quotient is $q(z)=f(z)/z$ for $z\ne0$ and $q(0)=f'(0)$, giving the canonical extension of $f(z)/z$ across a simple zero at the origin.
+-/
 def diskNormalizedQuotient (f : ℂ → ℂ) (z : ℂ) : ℂ :=
   if z = 0 then deriv f 0 else f z / z
 
@@ -1466,6 +1431,8 @@ statement:
   \]
 proof:
   [Every normalized univalent disk map contains the open disk of radius $1/4$ in its image](lean:JJMath.ComplexAnalysis.koebe_quarter_normalized). Apply this result to $F(z)=(f(z)-f(0))/f'(0)$ and undo the affine normalization.
+tags:
+  milestone
 -/
 theorem koebe_quarter
     {f : ℂ → ℂ} (hf : AnalyticOnNhd ℂ f (ball 0 1))

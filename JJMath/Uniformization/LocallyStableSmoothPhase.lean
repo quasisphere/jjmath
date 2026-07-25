@@ -93,31 +93,6 @@ theorem exists_smoothUnitPhase_of_locally_eventuallyEq
   rw [hNP N (Nat.le_max_left _ _)]
   exact hNnorm N (Nat.le_max_right _ _)
 
-/-- A locally stationary sequence of unit phases therefore supplies the
-circle primitive of a global smooth logarithmic one-form.
-
-%%handwave
-name: Circle primitive from locally stationary unit phases
-statement:
-  Under the same local-stationarity and eventual unit-norm hypotheses, there is a smooth unit phase $P:M\to S^1$ whose logarithmic one-form has a smooth circle-valued primitive.
-proof:
-  Use the smooth unit phase supplied by the preceding result. The phase $P$ itself is the canonical circle primitive of its logarithmic one-form.
--/
-theorem exists_circlePrimitive_of_locally_eventuallyEq_unitPhase
-    (f : ℕ → M → ℂ)
-    (hlocal : ∀ x : M, ∃ N : ℕ, ∃ U : TopologicalSpace.Opens M,
-      x ∈ U ∧
-      ContMDiffOn I (modelWithCornersSelf ℝ ℂ) ∞ (f N) U ∧
-      ∀ n ≥ N, Set.EqOn (f n) (f N) U)
-    (hnorm : ∀ x : M, ∃ N : ℕ, ∀ n ≥ N, ‖f n x‖ = 1) :
-    ∃ (P : ContMDiffMap I (modelWithCornersSelf ℝ ℂ) M ℂ ∞)
-        (hP : ∀ x : M, ‖P x‖ = 1),
-      Nonempty (JJMath.Manifold.SmoothCirclePrimitive I
-        (smoothUnitPhaseOneForm I P hP)) := by
-  rcases exists_smoothUnitPhase_of_locally_eventuallyEq I f hlocal hnorm with
-    ⟨P, hP, _hstable⟩
-  exact ⟨P, hP, ⟨smoothUnitPhaseCirclePrimitive I P hP⟩⟩
-
 /-- The circle primitive construction may retain the pointwise eventual
 agreement between the global phase and the stationary sequence.
 

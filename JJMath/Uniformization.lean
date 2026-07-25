@@ -1,7 +1,8 @@
 import JJMath.Uniformization.Biholomorphic
 import JJMath.Uniformization.Hyperbolic
 import JJMath.Uniformization.LiouvilleExistence
-import JJMath.Uniformization.SurfaceDiskSurgery
+import JJMath.RiemannianGeometry.SurfaceAnalysis
+import Mathlib.Topology.UrysohnsLemma
 import JJMath.Uniformization.SimplyConnectedExhaustion
 import JJMath.Uniformization.BoundaryComponentPeriod
 import JJMath.Uniformization.BoundaryComponentPrimitive
@@ -65,6 +66,8 @@ import JJMath.Uniformization.GreenConjugateVortex
 import JJMath.Uniformization.BoundedGreenUniformization
 import JJMath.Uniformization.HubbardUniformization
 import JJMath.Uniformization.CompactH1Uniformization
+import JJMath.Uniformization.Classification
+import JJMath.Uniformization.RiemannMappingTheorem
 import JJMath.Uniformization.EvansPotential
 import JJMath.RiemannianGeometry
 

@@ -81,7 +81,13 @@ namespace SimplyConnectedOpenNeighborhood
 
 variable {X : Type*} [TopologicalSpace X] [LocallySimplyConnectedSpace X]
 
-/-- Choose a simply connected open refinement of an open neighborhood. -/
+/--
+%%handwave
+name:
+  Chosen simply connected refinement
+statement:
+  If $x$ belongs to an open set $N$ in a locally simply connected space, choose an open path-connected and simply connected neighborhood $U$ with $x\in U\subseteq N$.
+-/
 noncomputable def choose {x : X} {N : Set X} (hxN : x ∈ N) (hN : IsOpen N) :
     SimplyConnectedOpenNeighborhood x N :=
   let h := LocallySimplyConnectedSpace.exists_subset x hxN hN
@@ -96,7 +102,14 @@ noncomputable def choose {x : X} {N : Set X} (hxN : x ∈ N) (hN : IsOpen N) :
 
 end SimplyConnectedOpenNeighborhood
 
-/-- A Hausdorff complex one-manifold, with no connectedness assumption. -/
+/--
+%%handwave
+name:
+  Complex one-manifold
+statement:
+  A complex one-manifold is a Hausdorff charted topological space with
+  complex-analytic charts; no connectedness assumption is imposed.
+-/
 class ComplexOneManifold (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop
     extends T2Space X, IsManifold 𝓘(ℂ) ⊤ X
 
@@ -156,7 +169,13 @@ noncomputable instance ComplexOneManifold.locallySimplyConnectedSpace
     haveI : ContractibleSpace U := hVU.symm.contractibleSpace
     exact ⟨U, hxU, hUopen, hUN, ⟨inferInstance⟩, ⟨inferInstance⟩⟩
 
-/-- A Riemann surface is a connected complex one-manifold. -/
+/--
+%%handwave
+name:
+  Riemann surface
+statement:
+  A Riemann surface is a connected complex one-manifold.
+-/
 class RiemannSurface (X : Type*) [TopologicalSpace X] [ChartedSpace ℂ X] : Prop
     extends ComplexOneManifold X, ConnectedSpace X
 

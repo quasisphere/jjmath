@@ -43,9 +43,16 @@ structure AtlasVortexPairData (X : Type*) [TopologicalSpace X]
       exact endpoints_ne
         (chart.injOn left_mem_source right_mem_source h)) ⊆ chart.target
 
-/-- A genuine atlas chart carries a compact vortex pair whenever the two
-endpoint coordinates are sufficiently close relative to a coordinate ball
-contained in the chart target. -/
+/--
+%%handwave
+name: Compact vortex-pair data from a chart ball
+statement:
+  Let $e$ be a holomorphic atlas chart containing distinct points $a,b$.
+  If $B(e(a),r)$ lies in the chart image and
+  $2\lVert e(b)-e(a)\rVert<r$, then the compact affine vortex core for
+  $(e(a),e(b))$ lies in the chart image, giving atlas vortex-pair data from
+  $a$ to $b$.
+-/
 def AtlasVortexPairData.ofChartBall {a b : X}
     (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
     (ha : a ∈ e.source) (hb : b ∈ e.source) (hab : a ≠ b)
@@ -63,32 +70,6 @@ def AtlasVortexPairData.ofChartBall {a b : X}
       exact hab (e.injOn ha hb h)
     exact (planarVortexAffineCore_subset_ball_left hcoord
       (by simpa [norm_sub_rev] using hclose)).trans hball
-
-/--
-%%handwave
-name:
-  Nearby points support a compact vortex pair in one chart
-statement:
-  If \(a\) lies in an atlas chart \(e\), there is \(r>0\) such that every
-  \(b\ne a\) in the same chart with \(2|e(b)-e(a)|<r\) determines compact
-  vortex-pair data whose affine core stays in the chart image.
-proof:
-  Choose a coordinate ball \(B(e(a),r)\) contained in the open chart target.
-  The planar affine core lies in the ball of radius \(2|e(b)-e(a)|\) about
-  \(e(a)\), so the closeness hypothesis keeps it inside the chart.
--/
-theorem exists_radius_atlasVortexPairData_of_mem_source
-    (e : OpenPartialHomeomorph X ℂ) (he : e ∈ atlas ℂ X)
-    {a : X} (ha : a ∈ e.source) :
-    ∃ r : ℝ, 0 < r ∧
-      ∀ b : X, b ∈ e.source → b ≠ a → 2 * ‖e b - e a‖ < r →
-        Nonempty (AtlasVortexPairData X a b) := by
-  have hea_target : e a ∈ e.target := e.map_source ha
-  rcases Metric.isOpen_iff.mp e.open_target (e a) hea_target with
-    ⟨r, hr, hball⟩
-  refine ⟨r, hr, ?_⟩
-  intro b hb hba hclose
-  exact ⟨AtlasVortexPairData.ofChartBall e he ha hb hba.symm hball hclose⟩
 
 /--
 %%handwave
@@ -136,34 +117,33 @@ theorem exists_atlasVortexPairData_from_chart
 
 /--
 %%handwave
-name:
-  A compact atlas vortex pair starts at every surface point
+name: The source of the atlas chart carrying the vortex pair
 statement:
-  For every point \(a\) of a Riemann surface, there exists \(b\ne a\) and a
-  compact vortex pair from \(a\) to \(b\) contained in one holomorphic atlas
-  chart.
-proof:
-  Apply the preceding chartwise construction to the canonical chart centered
-  at \(a\).
+  For atlas vortex-pair data carried by a chart $e$, define the ambient
+  open set $U=e.\mathrm{source}$.
 -/
-theorem exists_atlasVortexPairData_from (a : X) :
-    ∃ b : X, Nonempty (AtlasVortexPairData X a b) := by
-  let e : OpenPartialHomeomorph X ℂ := chartAt ℂ a
-  have ha : a ∈ e.source := mem_chart_source ℂ a
-  rcases exists_atlasVortexPairData_from_chart e
-      (chart_mem_atlas ℂ a) a ha with ⟨b, D, _⟩
-  exact ⟨b, ⟨D⟩⟩
-
-/-- The source of the atlas chart carrying the vortex pair. -/
 def AtlasVortexPairData.sourceOpen {a b : X}
     (D : AtlasVortexPairData X a b) : TopologicalSpace.Opens X :=
   ⟨D.chart.source, D.chart.open_source⟩
 
-/-- The two endpoints as points of the chart source. -/
+/--
+%%handwave
+name: The two endpoints as points of the chart source
+statement:
+  Regard the zero endpoint $a$ of an atlas vortex pair as a point of its
+  chart source $U$.
+-/
 def AtlasVortexPairData.leftPoint {a b : X}
     (D : AtlasVortexPairData X a b) : D.sourceOpen :=
   ⟨a, D.left_mem_source⟩
 
+/--
+%%handwave
+name: Right endpoint in the vortex chart
+statement:
+  Regard the right endpoint $b$ of an atlas vortex pair as a point of the
+  source of its chosen chart.
+-/
 def AtlasVortexPairData.rightPoint {a b : X}
     (D : AtlasVortexPairData X a b) : D.sourceOpen :=
   ⟨b, D.right_mem_source⟩
@@ -184,14 +164,27 @@ theorem AtlasVortexPairData.chart_values_ne {a b : X}
   exact D.endpoints_ne
     (D.chart.injOn D.left_mem_source D.right_mem_source h)
 
-/-- A point in the chart part of the twice-punctured surface. -/
+/--
+%%handwave
+name: A point in the chart part of the twice-punctured surface
+statement:
+  For chart source $U$ and endpoints $a,b\in U$, define the open chart
+  patch $U\setminus\{a,b\}$ inside the twice-punctured surface
+  $X\setminus\{a,b\}$.
+-/
 def AtlasVortexPairData.chartPatch {a b : X}
     (D : AtlasVortexPairData X a b) :
     TopologicalSpace.Opens (coordinateVortexPairOpen a b) :=
   coordinateVortexChartPatch D.sourceOpen D.leftPoint D.rightPoint
 
-/-- Forget the punctures and regard a chart-patch point as a point of the
-chart source. -/
+/--
+%%handwave
+name: Forget the punctures and regard a chart-patch point as a point of the chart source
+statement:
+  Define the canonical inclusion
+  $U\setminus\{a,b\}\longrightarrow U$ by forgetting the proofs that a
+  chart-patch point avoids the two vortex endpoints.
+-/
 def AtlasVortexPairData.chartPatchToSource {a b : X}
     (D : AtlasVortexPairData X a b) (x : D.chartPatch) : D.sourceOpen :=
   coordinateVortexChartPatchToChart
@@ -239,8 +232,13 @@ private theorem contMDiffCodRestrictOpen
   filter_upwards [] with y
   simp [retract, hmem]
 
-/-- The chart-patch point mapped to the arbitrary planar twice-punctured
-model. -/
+/--
+%%handwave
+name: The chart-patch point mapped to the arbitrary planar twice-punctured model
+statement:
+  Map $x\in U\setminus\{a,b\}$ to its coordinate
+  $e(x)\in\mathbb C\setminus\{e(a),e(b)\}$.
+-/
 def AtlasVortexPairData.toPlanarPair {a b : X}
     (D : AtlasVortexPairData X a b) (x : D.chartPatch) :
     planarVortexPairOpenAt (D.chart a) (D.chart b) := by
@@ -283,7 +281,13 @@ theorem AtlasVortexPairData.contMDiff_toPlanarPair {a b : X}
     (planarVortexPairOpenAt (D.chart a) (D.chart b))
     (fun x ↦ (D.toPlanarPair x).2)
 
-/-- The compact planar phase in the genuine holomorphic chart. -/
+/--
+%%handwave
+name: The compact planar phase in the genuine holomorphic chart
+statement:
+  On $U\setminus\{a,b\}$, define the chart vortex phase by evaluating the
+  compact planar vortex-pair phase for $(e(a),e(b))$ at $e(x)$.
+-/
 def AtlasVortexPairData.chartPhase {a b : X}
     (D : AtlasVortexPairData X a b) (x : D.chartPatch) : ℂ :=
   planarVortexCompactPhaseAt D.chart_values_ne (D.toPlanarPair x)
@@ -306,7 +310,14 @@ theorem AtlasVortexPairData.contMDiff_chartPhase {a b : X}
   (contMDiff_planarVortexCompactPhaseAt D.chart_values_ne).comp
     D.contMDiff_toPlanarPair
 
-/-- The compact support core, regarded inside the chart source. -/
+/--
+%%handwave
+name: The compact support core, regarded inside the chart source
+statement:
+  Define the chart core
+  $K_U=\{x\in U:e(x)\in K_{\mathrm{aff}}(e(a),e(b))\}$ as the inverse image
+  of the compact affine planar vortex core.
+-/
 def AtlasVortexPairData.core {a b : X}
     (D : AtlasVortexPairData X a b) : Set D.sourceOpen :=
   {x | D.chart (x : X) ∈ planarVortexAffineCore D.chart_values_ne}
@@ -342,7 +353,13 @@ theorem AtlasVortexPairData.core_isCompact {a b : X}
   change IsCompact (D.chart.toHomeomorphSourceTarget ⁻¹' K)
   exact D.chart.toHomeomorphSourceTarget.isCompact_preimage.mpr hK
 
-/-- The ambient compact support core. -/
+/--
+%%handwave
+name: The ambient compact support core
+statement:
+  Define $K_X\subseteq X$ as the image of the chart core $K_U\subseteq U$
+  under the canonical inclusion $U\hookrightarrow X$.
+-/
 def AtlasVortexPairData.ambientCore {a b : X}
     (D : AtlasVortexPairData X a b) : Set X :=
   smoothFormCompactCore D.sourceOpen D.core
@@ -389,7 +406,14 @@ theorem AtlasVortexPairData.chartPhase_eq_normalized_ratio_of_affine_norm_lt_two
   exact planarVortexCompactPhaseAt_eq_normalized_ratio_of_affine_norm_lt_two
     D.chart_values_ne (D.toPlanarPair x) hx
 
-/-- The exterior of the compact phase core in the twice-punctured surface. -/
+/--
+%%handwave
+name: The exterior of the compact phase core in the twice-punctured surface
+statement:
+  Define the exterior patch
+  $(X\setminus\{a,b\})\setminus K_X$, on which the compact vortex phase is
+  identically one.
+-/
 def AtlasVortexPairData.exteriorPatch {a b : X}
     (D : AtlasVortexPairData X a b) :
     TopologicalSpace.Opens (coordinateVortexPairOpen a b) :=
@@ -424,8 +448,14 @@ theorem AtlasVortexPairData.chartPhase_eq_one_of_mem_exterior
   exact planarVortexCompactPhaseAt_eq_one_of_three_le_affine_norm
     D.chart_values_ne (D.toPlanarPair x) hnorm.le
 
-/-- Extend the compact chart phase by one to the ambient twice-punctured
-surface. -/
+/--
+%%handwave
+name: Extend the compact chart phase by one to the ambient twice-punctured surface
+statement:
+  Define a phase on $X\setminus\{a,b\}$ by the chart vortex phase at points
+  of $U$ and by $1$ outside $U$; the chart phase is already $1$ near the
+  gluing region outside its compact core.
+-/
 def AtlasVortexPairData.globalPhaseFun {a b : X}
     (D : AtlasVortexPairData X a b)
     (x : coordinateVortexPairOpen a b) : ℂ := by
@@ -508,7 +538,13 @@ theorem AtlasVortexPairData.contMDiff_globalPhaseFun {a b : X}
   · exact D.chartPatch.isOpen
   · exact D.exteriorPatch.isOpen
 
-/-- The compact atlas vortex pair as a bundled smooth unit phase. -/
+/--
+%%handwave
+name: The compact atlas vortex pair as a bundled smooth unit phase
+statement:
+  Bundle the globally extended compact vortex phase as a smooth map
+  $X\setminus\{a,b\}\to S^1\subset\mathbb C$.
+-/
 def AtlasVortexPairData.globalPhase {a b : X}
     (D : AtlasVortexPairData X a b) :
     ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
@@ -537,16 +573,6 @@ theorem AtlasVortexPairData.norm_globalPhase {a b : X}
       (D.toPlanarPair ⟨x, hxU⟩)
   · change ‖D.globalPhaseFun x‖ = 1
     simp [AtlasVortexPairData.globalPhaseFun, hxU]
-
-/-- The compact atlas vortex pair, viewed as the circle primitive of its
-logarithmic one-form. -/
-def AtlasVortexPairData.circlePrimitive {a b : X}
-    (D : AtlasVortexPairData X a b) :
-    JJMath.Manifold.SmoothCirclePrimitive SurfaceRealModel
-      (smoothUnitPhaseOneForm SurfaceRealModel D.globalPhase
-        D.norm_globalPhase) :=
-  smoothUnitPhaseCirclePrimitive SurfaceRealModel D.globalPhase
-    D.norm_globalPhase
 
 /-! ## Cancellation of consecutive atlas vortex pairs -/
 
@@ -706,148 +732,6 @@ theorem AtlasVortexPairData.consecutive_product_local_extension
   simpa [P, F, z₀, α, β,
     D₂.chart.left_inv hxU.2.1.1,
     D₂.chart.left_inv D₂.left_mem_source] using hseam
-
-/--
-%%handwave
-name:
-  Gluing two consecutive atlas vortex phases
-statement:
-  Consecutive compact vortex phases from \(a\) to \(q\) and from \(q\) to
-  \(b\) glue to a smooth unit phase \(Q\) on \(X\setminus\{a,b\}\), satisfying
-  \[
-    Q(x)=u_{a,q}(x)u_{q,b}(x)
-  \]
-  whenever \(x\ne q\).
-proof:
-  Near \(q\), use the smooth unit extension supplied by local cancellation;
-  away from \(q\), use the product of the two global phases.  The formulas
-  agree on their overlap, so smooth gluing gives \(Q\), and both branches have
-  unit modulus.
--/
-theorem AtlasVortexPairData.exists_combinedPhase
-    {a q b : X} (D₁ : AtlasVortexPairData X a q)
-    (D₂ : AtlasVortexPairData X q b) :
-    ∃ Q : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
-        (coordinateVortexPairOpen a b) ℂ ∞,
-      (∀ x : coordinateVortexPairOpen a b, ‖Q x‖ = 1) ∧
-      ∀ (x : coordinateVortexPairOpen a b) (hxq : (x : X) ≠ q),
-        Q x = D₁.globalPhase ⟨(x : X), ⟨x.2.1, hxq⟩⟩ *
-          D₂.globalPhase ⟨(x : X), ⟨hxq, x.2.2⟩⟩ := by
-  rcases D₁.consecutive_product_local_extension D₂ with
-    ⟨U, hqU, P, hP_smooth, hP_norm, hproduct⟩
-  let A : TopologicalSpace.Opens (coordinateVortexPairOpen a b) :=
-    ⟨{x | (x : X) ∈ U}, U.isOpen.preimage
-      (continuous_subtype_val : Continuous
-        (fun x : coordinateVortexPairOpen a b ↦ (x : X)))⟩
-  let B : TopologicalSpace.Opens (coordinateVortexPairOpen a b) :=
-    ⟨{x | (x : X) ≠ q}, isOpen_ne.preimage
-      (continuous_subtype_val : Continuous
-        (fun x : coordinateVortexPairOpen a b ↦ (x : X)))⟩
-  let Qfun : coordinateVortexPairOpen a b → ℂ := fun x ↦ by
-    classical
-    exact if hxq : (x : X) ≠ q then
-      D₁.globalPhase ⟨(x : X), ⟨x.2.1, hxq⟩⟩ *
-        D₂.globalPhase ⟨(x : X), ⟨hxq, x.2.2⟩⟩
-    else P x
-  have hA_smooth : ContMDiff SurfaceRealModel
-      (modelWithCornersSelf ℝ ℂ) ∞
-      (fun x : A ↦ P (x : X)) := by
-    intro x
-    have hval : ContMDiffAt SurfaceRealModel SurfaceRealModel ∞
-        (fun y : A ↦ (y : X)) x :=
-      (contMDiff_subtype_val.comp contMDiff_subtype_val).contMDiffAt
-    exact (hP_smooth.contMDiffAt
-      (U.isOpen.mem_nhds x.2)).comp x hval
-  have hBto₁ : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-      (fun x : B ↦
-        (⟨(x : X), ⟨x.1.2.1, x.2⟩⟩ : coordinateVortexPairOpen a q)) := by
-    have hval : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-        (fun x : B ↦ (x : X)) :=
-      contMDiff_subtype_val.comp contMDiff_subtype_val
-    exact contMDiffCodRestrictOpen hval (coordinateVortexPairOpen a q)
-      (fun x ↦ ⟨x.1.2.1, x.2⟩)
-  have hBto₂ : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-      (fun x : B ↦
-        (⟨(x : X), ⟨x.2, x.1.2.2⟩⟩ : coordinateVortexPairOpen q b)) := by
-    have hval : ContMDiff SurfaceRealModel SurfaceRealModel ∞
-        (fun x : B ↦ (x : X)) :=
-      contMDiff_subtype_val.comp contMDiff_subtype_val
-    exact contMDiffCodRestrictOpen hval (coordinateVortexPairOpen q b)
-      (fun x ↦ ⟨x.2, x.1.2.2⟩)
-  have hB_smooth : ContMDiff SurfaceRealModel
-      (modelWithCornersSelf ℝ ℂ) ∞
-      (fun x : B ↦
-        D₁.globalPhase
-            (⟨(x : X), ⟨x.1.2.1, x.2⟩⟩ : coordinateVortexPairOpen a q) *
-          D₂.globalPhase
-            (⟨(x : X), ⟨x.2, x.1.2.2⟩⟩ : coordinateVortexPairOpen q b)) :=
-    ContDiff.comp_contMDiff (by
-      fun_prop : ContDiff ℝ ∞ (fun z : ℂ × ℂ ↦ z.1 * z.2))
-      ((D₁.globalPhase.contMDiff.comp hBto₁).prodMk_space
-        (D₂.globalPhase.contMDiff.comp hBto₂))
-  have hQ_smooth : ContMDiff SurfaceRealModel
-      (modelWithCornersSelf ℝ ℂ) ∞ Qfun := by
-    apply contMDiff_of_contMDiffOn_union_of_isOpen
-    · intro x hx
-      apply ContMDiffAt.contMDiffWithinAt
-      let xA : A := ⟨x, hx⟩
-      rw [← contMDiffAt_subtype_iff (U := A) (x := xA)]
-      have heq : (fun y : A ↦ Qfun (y : coordinateVortexPairOpen a b)) =
-          fun y : A ↦ P (y : X) := by
-        funext y
-        by_cases hyq : (y : X) ≠ q
-        · rw [show Qfun (y : coordinateVortexPairOpen a b) =
-              D₁.globalPhase ⟨(y : X), ⟨y.1.2.1, hyq⟩⟩ *
-                D₂.globalPhase ⟨(y : X), ⟨hyq, y.1.2.2⟩⟩ by
-              simp [Qfun, hyq]]
-          exact hproduct (y : X) y.2 y.1.2.1 hyq y.1.2.2
-        · simp [Qfun, hyq]
-      rw [heq]
-      exact hA_smooth.contMDiffAt
-    · intro x hx
-      apply ContMDiffAt.contMDiffWithinAt
-      let xB : B := ⟨x, hx⟩
-      rw [← contMDiffAt_subtype_iff (U := B) (x := xB)]
-      have heq : (fun y : B ↦ Qfun (y : coordinateVortexPairOpen a b)) =
-          fun y : B ↦
-            D₁.globalPhase
-                (⟨(y : X), ⟨y.1.2.1, y.2⟩⟩ : coordinateVortexPairOpen a q) *
-              D₂.globalPhase
-                (⟨(y : X), ⟨y.2, y.1.2.2⟩⟩ : coordinateVortexPairOpen q b) := by
-        funext y
-        dsimp [Qfun]
-        have hyq : (y : X) ≠ q := y.2
-        rw [dif_pos hyq]
-      rw [heq]
-      exact hB_smooth.contMDiffAt
-    · ext x
-      simp only [Set.mem_union, Set.mem_univ, iff_true]
-      by_cases hxq : (x : X) ≠ q
-      · exact Or.inr hxq
-      · left
-        change (x : X) ∈ U
-        simpa [not_ne_iff.mp hxq] using hqU
-    · exact A.isOpen
-    · exact B.isOpen
-  let Q : ContMDiffMap SurfaceRealModel (modelWithCornersSelf ℝ ℂ)
-      (coordinateVortexPairOpen a b) ℂ ∞ := ⟨Qfun, hQ_smooth⟩
-  have hQ_norm : ∀ x : coordinateVortexPairOpen a b, ‖Q x‖ = 1 := by
-    intro x
-    by_cases hxq : (x : X) ≠ q
-    · change ‖Qfun x‖ = 1
-      rw [show Qfun x =
-          D₁.globalPhase ⟨(x : X), ⟨x.2.1, hxq⟩⟩ *
-            D₂.globalPhase ⟨(x : X), ⟨hxq, x.2.2⟩⟩ by
-          simp [Qfun, hxq], norm_mul,
-        D₁.norm_globalPhase, D₂.norm_globalPhase, one_mul]
-    · have hxq' : (x : X) = q := not_ne_iff.mp hxq
-      change ‖Qfun x‖ = 1
-      rw [show Qfun x = P x by simp [Qfun, hxq]]
-      exact hP_norm (x : X) (by simpa [hxq'] using hqU)
-  refine ⟨Q, hQ_norm, ?_⟩
-  intro x hxq
-  change Qfun x = _
-  simp [Qfun, hxq]
 
 end
 
